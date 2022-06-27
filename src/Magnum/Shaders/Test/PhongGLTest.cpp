@@ -1293,9 +1293,7 @@ void PhongGLTest::constructInvalid() {
     auto&& data = ConstructInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1309,9 +1307,7 @@ void PhongGLTest::constructUniformBuffersInvalid() {
     auto&& data = ConstructUniformBuffersInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -1328,9 +1324,7 @@ void PhongGLTest::constructUniformBuffersInvalid() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setUniformUniformBuffersEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -1385,9 +1379,7 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
 }
 
 void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1428,9 +1420,7 @@ void PhongGLTest::bindTexturesInvalid() {
     auto&& data = BindTexturesInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
@@ -1459,9 +1449,7 @@ void PhongGLTest::bindTextureArraysInvalid() {
     auto&& data = BindTextureArraysInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
@@ -1484,9 +1472,7 @@ void PhongGLTest::bindTextureArraysInvalid() {
 #endif
 
 void PhongGLTest::setAlphaMaskNotEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1499,9 +1485,7 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
 }
 
 void PhongGLTest::setSpecularDisabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1521,9 +1505,7 @@ void PhongGLTest::setSpecularDisabled() {
 }
 
 void PhongGLTest::setTextureMatrixNotEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1536,9 +1518,7 @@ void PhongGLTest::setTextureMatrixNotEnabled() {
 }
 
 void PhongGLTest::setNormalTextureScaleNotEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1552,9 +1532,7 @@ void PhongGLTest::setNormalTextureScaleNotEnabled() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setTextureLayerNotArray() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1569,9 +1547,7 @@ void PhongGLTest::setTextureLayerNotArray() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::bindTextureTransformBufferNotEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -1593,9 +1569,7 @@ void PhongGLTest::bindTextureTransformBufferNotEnabled() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setObjectIdNotEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1609,9 +1583,7 @@ void PhongGLTest::setObjectIdNotEnabled() {
 #endif
 
 void PhongGLTest::setWrongLightCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1626,9 +1598,7 @@ void PhongGLTest::setWrongLightCount() {
 }
 
 void PhongGLTest::setWrongLightId() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1644,9 +1614,7 @@ void PhongGLTest::setWrongLightId() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setWrongDrawOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())

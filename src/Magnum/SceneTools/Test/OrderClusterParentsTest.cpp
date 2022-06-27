@@ -119,9 +119,7 @@ void OrderClusterParentsTest::test() {
 }
 
 void OrderClusterParentsTest::noParentField() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 0, nullptr, {}};
 
@@ -143,9 +141,7 @@ void OrderClusterParentsTest::emptyParentField() {
 }
 
 void OrderClusterParentsTest::intoNoParentField() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 0, nullptr, {}};
 
@@ -166,9 +162,7 @@ void OrderClusterParentsTest::intoEmptyParentField() {
 }
 
 void OrderClusterParentsTest::intoWrongDestinationSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -199,9 +193,7 @@ void OrderClusterParentsTest::intoWrongDestinationSize() {
 }
 
 void OrderClusterParentsTest::sparse() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -229,9 +221,7 @@ void OrderClusterParentsTest::sparse() {
 }
 
 void OrderClusterParentsTest::cyclic() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -257,9 +247,7 @@ void OrderClusterParentsTest::cyclic() {
 }
 
 void OrderClusterParentsTest::cyclicDeep() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -287,9 +275,7 @@ void OrderClusterParentsTest::cyclicDeep() {
 }
 
 void OrderClusterParentsTest::sparseAndCyclic() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;

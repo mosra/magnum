@@ -244,9 +244,7 @@ const ImageView2D ActualRed{PixelFormat::R32F, {3, 3}, ActualRedData};
 const ImageView2D ExpectedRed{PixelFormat::R32F, {3, 3}, ExpectedRedData};
 
 void CompareImageTest::formatUnknown() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -258,9 +256,7 @@ void CompareImageTest::formatUnknown() {
 }
 
 void CompareImageTest::formatPackedDepthStencil() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -272,9 +268,7 @@ void CompareImageTest::formatPackedDepthStencil() {
 }
 
 void CompareImageTest::formatImplementationSpecific() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -904,9 +898,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
 }
 
 void CompareImageTest::compareSpecialsDisallowedThreshold() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::stringstream out;
 

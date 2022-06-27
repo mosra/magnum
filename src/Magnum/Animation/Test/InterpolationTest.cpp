@@ -222,9 +222,7 @@ void InterpolationTest::interpolatorFor() {
 }
 
 void InterpolationTest::interpolatorForInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -244,9 +242,7 @@ void InterpolationTest::interpolatorForBool() {
 }
 
 void InterpolationTest::interpolatorForBoolInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -266,9 +262,7 @@ void InterpolationTest::interpolatorForBoolVector() {
 }
 
 void InterpolationTest::interpolatorForBoolVectorInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -292,9 +286,7 @@ void InterpolationTest::interpolatorForComplex() {
 }
 
 void InterpolationTest::interpolatorForComplexInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -318,9 +310,7 @@ void InterpolationTest::interpolatorForQuaternion() {
 }
 
 void InterpolationTest::interpolatorForQuaternionInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -344,9 +334,7 @@ void InterpolationTest::interpolatorForDualQuaternion() {
 }
 
 void InterpolationTest::interpolatorForDualQuaternionInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -367,9 +355,7 @@ void InterpolationTest::interpolatorForCubicHermiteScalar() {
 }
 
 void InterpolationTest::interpolatorForCubicHermiteScalarInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -390,9 +376,7 @@ void InterpolationTest::interpolatorForCubicHermiteVector() {
 }
 
 void InterpolationTest::interpolatorForCubicHermiteVectorInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -413,9 +397,7 @@ void InterpolationTest::interpolatorForCubicHermiteComplex() {
 }
 
 void InterpolationTest::interpolatorForCubicHermiteComplexInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -442,9 +424,7 @@ void InterpolationTest::interpolatorForCubicHermiteQuaternion() {
 }
 
 void InterpolationTest::interpolatorForCubicHermiteQuaternionInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -561,9 +541,7 @@ void InterpolationTest::interpolateStrictIntegerKey() {
 }
 
 void InterpolationTest::interpolateError() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -578,9 +556,7 @@ void InterpolationTest::interpolateError() {
 }
 
 void InterpolationTest::interpolateStrictError() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

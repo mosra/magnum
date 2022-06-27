@@ -593,9 +593,7 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwned() {
 }
 
 void ImageDataTest::constructGenericNotOwnedFlagOwned() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char data[4*4];
 
@@ -609,9 +607,7 @@ void ImageDataTest::constructGenericNotOwnedFlagOwned() {
 }
 
 void ImageDataTest::constructImplementationSpecificNotOwnedFlagOwned() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char data[3*12];
 
@@ -625,9 +621,7 @@ void ImageDataTest::constructImplementationSpecificNotOwnedFlagOwned() {
 }
 
 void ImageDataTest::constructCompressedGenericNotOwnedFlagOwned() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char data[8];
 
@@ -642,9 +636,7 @@ void ImageDataTest::constructCompressedGenericNotOwnedFlagOwned() {
 }
 
 void ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char data[8];
 
@@ -657,9 +649,7 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned()
 }
 
 void ImageDataTest::constructInvalidSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -670,9 +660,7 @@ void ImageDataTest::constructInvalidSize() {
 }
 
 void ImageDataTest::constructInvalidCubeMap() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -707,9 +695,7 @@ void ImageDataTest::constructCompressedInvalidSize() {
 }
 
 void ImageDataTest::constructCompressedInvalidCubeMap() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1026,9 +1012,7 @@ void ImageDataTest::dataRvalue() {
 }
 
 void ImageDataTest::mutableAccessNotAllowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const char data[4*4]{};
     ImageData2D a{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, data};
@@ -1161,9 +1145,7 @@ void ImageDataTest::pixels3D() {
 }
 
 void ImageDataTest::pixelsCompressed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::ImageData2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, Containers::Array<char>{8}};
 

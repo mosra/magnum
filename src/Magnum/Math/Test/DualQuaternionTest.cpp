@@ -434,9 +434,7 @@ void DualQuaternionTest::invertedNormalized() {
 }
 
 void DualQuaternionTest::invertedNormalizedNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -464,9 +462,7 @@ void DualQuaternionTest::rotation() {
 }
 
 void DualQuaternionTest::rotationNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -520,9 +516,7 @@ void DualQuaternionTest::matrix() {
 }
 
 void DualQuaternionTest::matrixNotOrthogonal() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -559,9 +553,7 @@ void DualQuaternionTest::transformVectorNormalized() {
 }
 
 void DualQuaternionTest::transformVectorNormalizedNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -605,9 +597,7 @@ void DualQuaternionTest::transformPointNormalized() {
 }
 
 void DualQuaternionTest::transformPointNormalizedNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

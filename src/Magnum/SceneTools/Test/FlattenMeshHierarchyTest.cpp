@@ -367,9 +367,7 @@ void FlattenMeshHierarchyTest::test3D() {
 }
 
 void FlattenMeshHierarchyTest::not2DNot3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}};
 
@@ -383,9 +381,7 @@ void FlattenMeshHierarchyTest::not2DNot3D() {
 }
 
 void FlattenMeshHierarchyTest::noParentField() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
         Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}

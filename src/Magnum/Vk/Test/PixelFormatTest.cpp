@@ -136,9 +136,7 @@ void PixelFormatTest::mapImplementationSpecific() {
 }
 
 void PixelFormatTest::mapUnsupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #if 1
     CORRADE_SKIP("All pixel formats are supported.");
@@ -152,9 +150,7 @@ void PixelFormatTest::mapUnsupported() {
 }
 
 void PixelFormatTest::mapInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -244,9 +240,7 @@ void PixelFormatTest::mapCompressedImplementationSpecific() {
 }
 
 void PixelFormatTest::mapCompressedUnsupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     CORRADE_VERIFY(!hasPixelFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
@@ -257,9 +251,7 @@ void PixelFormatTest::mapCompressedUnsupported() {
 }
 
 void PixelFormatTest::mapCompressedInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

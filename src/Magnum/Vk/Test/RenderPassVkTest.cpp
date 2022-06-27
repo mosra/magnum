@@ -93,9 +93,7 @@ void RenderPassVkTest::construct() {
 }
 
 void RenderPassVkTest::constructNoSubpasses() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -231,9 +229,7 @@ void RenderPassVkTest::cmdBeginEnd() {
 }
 
 void RenderPassVkTest::cmdBeginEndDisallowedConversion() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(device().isVersionSupported(Version::Vk12) ||device().isExtensionEnabled<Extensions::KHR::create_renderpass2>())
         CORRADE_SKIP("KHR_create_renderpass2 enabled on the device, can't test");

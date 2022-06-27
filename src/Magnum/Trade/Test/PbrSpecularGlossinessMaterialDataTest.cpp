@@ -476,9 +476,7 @@ void PbrSpecularGlossinessMaterialDataTest::texturedExplicitPackedSpecularGlossi
 }
 
 void PbrSpecularGlossinessMaterialDataTest::invalidTextures() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PbrSpecularGlossinessMaterialData data{{}, {}};
 
@@ -643,9 +641,7 @@ void PbrSpecularGlossinessMaterialDataTest::commonCoordinatesLayerImplicit() {
 }
 
 void PbrSpecularGlossinessMaterialDataTest::noCommonTransformationCoordinatesLayer() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PbrSpecularGlossinessMaterialData data{{}, {
         {MaterialAttribute::DiffuseTexture, 3u},

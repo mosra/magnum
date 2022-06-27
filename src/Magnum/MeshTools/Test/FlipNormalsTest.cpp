@@ -71,9 +71,7 @@ FlipNormalsTest::FlipNormalsTest() {
 }
 
 void FlipNormalsTest::wrongIndexCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::stringstream ss;
     Error redirectError{&ss};
@@ -107,9 +105,7 @@ template<class T> void FlipNormalsTest::flipFaceWindingErased() {
 }
 
 void FlipNormalsTest::flipFaceWindingErasedNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char indices[6*4]{};
 
@@ -121,9 +117,7 @@ void FlipNormalsTest::flipFaceWindingErasedNonContiguous() {
 }
 
 void FlipNormalsTest::flipFaceWindingErasedWrongIndexSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char indices[6*3]{};
 

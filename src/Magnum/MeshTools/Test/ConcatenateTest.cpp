@@ -398,9 +398,7 @@ void ConcatenateTest::concatenateOne() {
 }
 
 void ConcatenateTest::concatenateNone() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -577,9 +575,7 @@ void ConcatenateTest::concatenateIntoNonOwnedAttributeArray() {
 }
 
 void ConcatenateTest::concatenateUnsupportedPrimitive() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::TriangleStrip, 0};
 
@@ -593,9 +589,7 @@ void ConcatenateTest::concatenateUnsupportedPrimitive() {
 }
 
 void ConcatenateTest::concatenateInconsistentPrimitive() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Things are a bit duplicated to test correct numbering */
     Trade::MeshData a{MeshPrimitive::Triangles, 0};
@@ -611,9 +605,7 @@ void ConcatenateTest::concatenateInconsistentPrimitive() {
 }
 
 void ConcatenateTest::concatenateInconsistentAttributeFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Things are a bit duplicated to test correct numbering */
     Trade::MeshData a{MeshPrimitive::Lines, nullptr, {
@@ -641,9 +633,7 @@ void ConcatenateTest::concatenateInconsistentAttributeFormat() {
 }
 
 void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Things are a bit duplicated to test correct numbering */
     Trade::MeshData a{MeshPrimitive::Lines, nullptr, {
@@ -671,9 +661,7 @@ void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
 }
 
 void ConcatenateTest::concatenateImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Things are a bit duplicated to test correct numbering */
     Trade::MeshData a{MeshPrimitive::Lines, nullptr, {
@@ -707,9 +695,7 @@ void ConcatenateTest::concatenateImplementationSpecificIndexType() {
 }
 
 void ConcatenateTest::concatenateImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Things are a bit duplicated to test correct numbering */
     Trade::MeshData a{MeshPrimitive::Lines, nullptr, {
@@ -737,9 +723,7 @@ void ConcatenateTest::concatenateImplementationSpecificVertexFormat() {
 }
 
 void ConcatenateTest::concatenateIntoNoMeshes() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData destination{MeshPrimitive::Triangles, 0};
 

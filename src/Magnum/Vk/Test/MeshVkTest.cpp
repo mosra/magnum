@@ -639,9 +639,7 @@ void MeshVkTest::cmdDrawZeroCount() {
 }
 
 void MeshVkTest::cmdDrawNoCountSet() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh{MeshLayout{MeshPrimitive::Triangles}};
 
@@ -825,9 +823,7 @@ void MeshVkTest::cmdDrawDynamicStride() {
 }
 
 void MeshVkTest::cmdDrawDynamicStrideInsufficientImplementation() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(device().isExtensionEnabled<Extensions::EXT::extended_dynamic_state>())
         CORRADE_SKIP("VK_EXT_extended_dynamic_state enabled, can't test.");

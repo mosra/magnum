@@ -134,9 +134,7 @@ void AbstractGlyphCacheTest::setImage() {
 }
 
 void AbstractGlyphCacheTest::setImageOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     DummyGlyphCache cache{{100, 200}};
 
@@ -166,9 +164,7 @@ void AbstractGlyphCacheTest::image() {
 }
 
 void AbstractGlyphCacheTest::imageNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct MyGlyphCache: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
@@ -184,9 +180,7 @@ void AbstractGlyphCacheTest::imageNotSupported() {
 }
 
 void AbstractGlyphCacheTest::imageNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct MyGlyphCache: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;

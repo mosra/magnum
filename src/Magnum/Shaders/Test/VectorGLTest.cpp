@@ -469,9 +469,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersInval
     setTestCaseTemplateName(Utility::format("{}", dimensions));
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -490,9 +488,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersInval
 template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -517,9 +513,7 @@ template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnab
 template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -551,9 +545,7 @@ template<UnsignedInt dimensions> void VectorGLTest::bindBufferUniformBuffersNotE
 template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -569,9 +561,7 @@ template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled()
 template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNotEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -595,9 +585,7 @@ template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNo
 template<UnsignedInt dimensions> void VectorGLTest::setWrongDrawOffset() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())

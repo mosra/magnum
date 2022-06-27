@@ -213,9 +213,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
 }
 
 void AbstractFontConverterTest::exportFontToSingleDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -230,9 +228,7 @@ void AbstractFontConverterTest::exportFontToSingleDataNotSupported() {
 }
 
 void AbstractFontConverterTest::exportFontToSingleDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -247,9 +243,7 @@ void AbstractFontConverterTest::exportFontToSingleDataNotImplemented() {
 }
 
 void AbstractFontConverterTest::exportFontToSingleDataNotSingleFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -291,9 +285,7 @@ void AbstractFontConverterTest::exportFontToData() {
 }
 
 void AbstractFontConverterTest::exportFontToDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -308,9 +300,7 @@ void AbstractFontConverterTest::exportFontToDataNotSupported() {
 }
 
 void AbstractFontConverterTest::exportFontToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -392,9 +382,7 @@ void AbstractFontConverterTest::exportFontToFile() {
 }
 
 void AbstractFontConverterTest::exportFontToFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -409,9 +397,7 @@ void AbstractFontConverterTest::exportFontToFileNotSupported() {
 }
 
 void AbstractFontConverterTest::exportFontToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -517,9 +503,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -534,9 +518,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSupported() {
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -551,9 +533,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotImplemented() {
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSingleFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -594,9 +574,7 @@ void AbstractFontConverterTest::exportGlyphCacheToData() {
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -611,9 +589,7 @@ void AbstractFontConverterTest::exportGlyphCacheToDataNotSupported() {
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -696,9 +672,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -713,9 +687,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFileNotSupported() {
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -820,9 +792,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -837,9 +807,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSupported() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -854,9 +822,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSingleFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -890,9 +856,7 @@ void AbstractFontConverterTest::importGlyphCacheFromData() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -907,9 +871,7 @@ void AbstractFontConverterTest::importGlyphCacheFromDataNotSupported() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataNoData() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -924,9 +886,7 @@ void AbstractFontConverterTest::importGlyphCacheFromDataNoData() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -983,9 +943,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -1000,9 +958,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFileNotSupported() {
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {

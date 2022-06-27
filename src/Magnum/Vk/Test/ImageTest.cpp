@@ -349,9 +349,7 @@ void ImageTest::aspectsFor() {
 }
 
 void ImageTest::aspectsForInvalidFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -380,9 +378,7 @@ void ImageTest::constructCopy() {
 }
 
 void ImageTest::dedicatedMemoryNotDedicated() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Image image{NoCreate};
     CORRADE_VERIFY(!image.hasDedicatedMemory());
@@ -471,9 +467,7 @@ template<class T> void ImageTest::imageCopyConvertToVk() {
 }
 
 void ImageTest::imageCopyConvertDisallowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     ImageCopy copy{ImageAspect{}, 0, 0, 0, {}, 0, 0, 0, {}, {}};
     copy->pNext = &copy;
@@ -708,9 +702,7 @@ template<class T> void ImageTest::bufferImageCopyConvertToVk() {
 }
 
 void ImageTest::bufferImageCopyConvertDisallowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     BufferImageCopy copy{0, 0, 0, ImageAspect{}, 0, 0, 0, {}};
     copy->pNext = &copy;

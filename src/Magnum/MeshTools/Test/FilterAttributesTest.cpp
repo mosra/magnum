@@ -256,9 +256,7 @@ void FilterAttributesTest::filterOnlyAttributeIds() {
 }
 
 void FilterAttributesTest::filterOnlyAttributeIdsOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
     Vertex vertices[3];
@@ -491,9 +489,7 @@ void FilterAttributesTest::filterExceptAttributeIds() {
 }
 
 void FilterAttributesTest::filterExceptAttributeIdsOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
     Vertex vertices[3];

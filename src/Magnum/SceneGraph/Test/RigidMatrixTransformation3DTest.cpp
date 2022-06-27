@@ -102,9 +102,7 @@ template<class T> void RigidMatrixTransformation3DTest::fromMatrix() {
 template<class T> void RigidMatrixTransformation3DTest::fromMatrixInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream o;
     Error redirectError{&o};
@@ -158,9 +156,7 @@ template<class T> void RigidMatrixTransformation3DTest::setTransformation() {
 template<class T> void RigidMatrixTransformation3DTest::setTransformationInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Object3D<T> o;
 
@@ -200,9 +196,7 @@ template<class T> void RigidMatrixTransformation3DTest::transform() {
 template<class T> void RigidMatrixTransformation3DTest::transformInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Can't transform with non-rigid transformation */
     Object3D<T> o;

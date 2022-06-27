@@ -570,9 +570,7 @@ void VectorTest::projectedOntoNormalized() {
 }
 
 void VectorTest::projectedOntoNormalizedNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Vector3 vector(1.0f, 2.0f, 3.0f);
     Vector3 line(1.0f, -1.0f, 0.5f);
@@ -617,9 +615,7 @@ void VectorTest::angleNormalizedButOver1() {
 }
 
 void VectorTest::angleNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

@@ -103,9 +103,7 @@ void MeshTest::mapIndexTypeImplementationSpecific() {
 }
 
 void MeshTest::mapIndexTypeInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -239,9 +237,7 @@ void MeshTest::addVertexBufferOwned() {
 }
 
 void MeshTest::addVertexBufferNoSuchBinding() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh noBindings{MeshLayout{MeshPrimitive::Triangles}};
     Mesh differentBindings{MeshLayout{MeshPrimitive::Lines}
@@ -290,9 +286,7 @@ template<class T> void MeshTest::setIndexBufferOwned() {
 }
 
 void MeshTest::indexPropertiesNotIndexed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh{MeshLayout{MeshPrimitive::Triangles}};
     CORRADE_VERIFY(!mesh.isIndexed());

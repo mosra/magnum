@@ -1177,9 +1177,7 @@ void CompileGLTest::packedAttributes() {
 }
 
 void CompileGLTest::unsupportedIndexStride() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedShort indices[2]{};
     Trade::MeshData data{MeshPrimitive::Points,
@@ -1234,9 +1232,7 @@ void CompileGLTest::unsupportedAttribute() {
 }
 
 void CompileGLTest::unsupportedAttributeStride() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Vector3 data[2]{};
     Trade::MeshData zero{MeshPrimitive::Points, {}, data, {
@@ -1274,9 +1270,7 @@ void CompileGLTest::implementationSpecificAttributeFormat() {
 }
 
 void CompileGLTest::generateNormalsNoPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Triangles, 1};
 
@@ -1288,9 +1282,7 @@ void CompileGLTest::generateNormalsNoPosition() {
 }
 
 void CompileGLTest::generateNormals2DPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Triangles,
         nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
@@ -1304,9 +1296,7 @@ void CompileGLTest::generateNormals2DPosition() {
 }
 
 void CompileGLTest::generateNormalsNoFloats() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Triangles,
         nullptr, {
@@ -1406,9 +1396,7 @@ void CompileGLTest::externalBuffers() {
 }
 
 void CompileGLTest::externalBuffersInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Triangles, 5};
     Trade::MeshData indexedData{MeshPrimitive::Triangles,

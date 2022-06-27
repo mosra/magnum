@@ -890,9 +890,7 @@ void CubicHermiteTest::lerpComplex() {
 }
 
 void CubicHermiteTest::lerpComplexNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -935,9 +933,7 @@ void CubicHermiteTest::lerpQuaternion() {
 }
 
 void CubicHermiteTest::lerpQuaternionNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -979,9 +975,7 @@ void CubicHermiteTest::lerpQuaternionShortestPath() {
 }
 
 void CubicHermiteTest::lerpQuaternionShortestPathNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1019,9 +1013,7 @@ void CubicHermiteTest::slerpComplex() {
 }
 
 void CubicHermiteTest::slerpComplexNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1064,9 +1056,7 @@ void CubicHermiteTest::slerpQuaternion() {
 }
 
 void CubicHermiteTest::slerpQuaternionNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1109,9 +1099,7 @@ void CubicHermiteTest::slerpQuaternionShortestPath() {
 }
 
 void CubicHermiteTest::slerpQuaternionShortestPathNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1185,9 +1173,7 @@ void CubicHermiteTest::splerpComplex() {
 }
 
 void CubicHermiteTest::splerpComplexNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1226,9 +1212,7 @@ void CubicHermiteTest::splerpQuaternion() {
 }
 
 void CubicHermiteTest::splerpQuaternionNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

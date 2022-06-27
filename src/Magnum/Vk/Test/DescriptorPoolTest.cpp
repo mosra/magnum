@@ -79,9 +79,7 @@ void DescriptorPoolTest::createInfoConstruct() {
 }
 
 void DescriptorPoolTest::createInfoConstructNoSets() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -90,9 +88,7 @@ void DescriptorPoolTest::createInfoConstructNoSets() {
 }
 
 void DescriptorPoolTest::createInfoConstructNoPools() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -101,9 +97,7 @@ void DescriptorPoolTest::createInfoConstructNoPools() {
 }
 
 void DescriptorPoolTest::createInfoConstructEmptyPool() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

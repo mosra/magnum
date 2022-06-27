@@ -115,9 +115,7 @@ void DuplicateTest::duplicate() {
 }
 
 void DuplicateTest::duplicateOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     constexpr UnsignedByte indices[]{1, 1, 0, 4, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
@@ -151,9 +149,7 @@ void DuplicateTest::duplicateInto() {
 }
 
 void DuplicateTest::duplicateIntoWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
@@ -184,9 +180,7 @@ template<class T> void DuplicateTest::duplicateIntoErased() {
 }
 
 void DuplicateTest::duplicateIntoErasedWrongTypeSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
@@ -204,9 +198,7 @@ void DuplicateTest::duplicateIntoErasedWrongTypeSize() {
 }
 
 void DuplicateTest::duplicateIntoErasedNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
@@ -240,9 +232,7 @@ template<class T> void DuplicateTest::duplicateErasedIndicesIntoErased() {
 }
 
 void DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     constexpr char indices[6*3]{};
     constexpr Int data[]{-7, 35, 12, -18};
@@ -260,9 +250,7 @@ void DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize() {
 }
 
 void DuplicateTest::duplicateErasedIndicesIntoErasedNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     constexpr char indices[3*6]{};
     constexpr Int data[]{-7, 35, 12, -18};
@@ -322,9 +310,7 @@ template<class T> void DuplicateTest::duplicateMeshData() {
 }
 
 void DuplicateTest::duplicateMeshDataNotIndexed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -333,9 +319,7 @@ void DuplicateTest::duplicateMeshDataNotIndexed() {
 }
 
 void DuplicateTest::duplicateMeshDataImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::Lines,
         nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
@@ -351,9 +335,7 @@ void DuplicateTest::duplicateMeshDataImplementationSpecificIndexType() {
 }
 
 void DuplicateTest::duplicateMeshDataImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::Lines,
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
@@ -437,9 +419,7 @@ void DuplicateTest::duplicateMeshDataExtraEmpty() {
 }
 
 void DuplicateTest::duplicateMeshDataExtraWrongCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
@@ -460,9 +440,7 @@ void DuplicateTest::duplicateMeshDataExtraWrongCount() {
 }
 
 void DuplicateTest::duplicateMeshDataExtraOffsetOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
@@ -478,9 +456,7 @@ void DuplicateTest::duplicateMeshDataExtraOffsetOnly() {
 }
 
 void DuplicateTest::duplicateMeshDataExtraImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::Lines,
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},

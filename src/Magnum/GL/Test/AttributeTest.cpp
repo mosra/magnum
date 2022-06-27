@@ -776,9 +776,7 @@ void AttributeTest::attributeFromGenericFormatEnableNormalized() {
 }
 
 void AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -790,9 +788,7 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void AttributeTest::attributeFromGenericFormatUnexpectedForIntegralKind() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -808,9 +804,7 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForIntegralKind() {
 
 #ifndef MAGNUM_TARGET_GLES
 void AttributeTest::attributeFromGenericFormatUnexpectedForLongKind() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -822,9 +816,7 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForLongKind() {
 #endif
 
 void AttributeTest::attributeFromGenericFormatTooManyVectors() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -834,9 +826,7 @@ void AttributeTest::attributeFromGenericFormatTooManyVectors() {
 }
 
 void AttributeTest::attributeFromGenericFormatTooManyComponents() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

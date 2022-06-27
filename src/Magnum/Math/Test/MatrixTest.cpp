@@ -407,9 +407,7 @@ void MatrixTest::invertedOrthogonal() {
 }
 
 void MatrixTest::invertedOrthogonalNotOrthogonal() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream o;
     Error redirectError{&o};

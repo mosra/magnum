@@ -330,9 +330,7 @@ void PbrClearCoatMaterialDataTest::texturedBaseMaterialMatrixCoordinatesLayer() 
 }
 
 void PbrClearCoatMaterialDataTest::invalidTextures() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PbrClearCoatMaterialData data{{}, {
         {MaterialLayer::ClearCoat},
@@ -478,9 +476,7 @@ void PbrClearCoatMaterialDataTest::commonCoordinatesLayerImplicit() {
 }
 
 void PbrClearCoatMaterialDataTest::noCommonTransformationCoordinatesLayer() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PbrClearCoatMaterialData data{{}, {
         {MaterialLayer::ClearCoat},

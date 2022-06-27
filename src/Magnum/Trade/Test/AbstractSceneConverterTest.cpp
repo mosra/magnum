@@ -133,9 +133,7 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 }
 
 void AbstractSceneConverterTest::featuresNone() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return {}; }
@@ -191,9 +189,7 @@ void AbstractSceneConverterTest::setFlagsNotImplemented() {
 }
 
 void AbstractSceneConverterTest::thingNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override {
@@ -254,9 +250,7 @@ void AbstractSceneConverterTest::convertMeshFailed() {
 }
 
 void AbstractSceneConverterTest::convertMeshNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMesh; }
@@ -320,9 +314,7 @@ void AbstractSceneConverterTest::convertMeshGrowableDeleters() {
 }
 
 void AbstractSceneConverterTest::convertMeshCustomIndexDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMesh; }
@@ -342,9 +334,7 @@ void AbstractSceneConverterTest::convertMeshCustomIndexDataDeleter() {
 }
 
 void AbstractSceneConverterTest::convertMeshCustomVertexDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMesh; }
@@ -364,9 +354,7 @@ void AbstractSceneConverterTest::convertMeshCustomVertexDataDeleter() {
 }
 
 void AbstractSceneConverterTest::convertMeshCustomAttributeDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMesh; }
@@ -427,9 +415,7 @@ void AbstractSceneConverterTest::convertMeshInPlaceFailed() {
 }
 
 void AbstractSceneConverterTest::convertMeshInPlaceNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshInPlace; }
@@ -476,9 +462,7 @@ void AbstractSceneConverterTest::convertMeshToDataFailed() {
 }
 
 void AbstractSceneConverterTest::convertMeshToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
@@ -529,9 +513,7 @@ void AbstractSceneConverterTest::convertMeshToDataGrowableDeleter() {
 }
 
 void AbstractSceneConverterTest::convertMeshToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
@@ -648,9 +630,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
 }
 
 void AbstractSceneConverterTest::convertMeshToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToFile; }

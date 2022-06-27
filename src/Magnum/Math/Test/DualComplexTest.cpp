@@ -397,9 +397,7 @@ void DualComplexTest::invertedNormalized() {
 }
 
 void DualComplexTest::invertedNormalizedNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -461,9 +459,7 @@ void DualComplexTest::matrix() {
 }
 
 void DualComplexTest::matrixNotOrthogonal() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream o;
     Error redirectError{&o};

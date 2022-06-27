@@ -1624,9 +1624,7 @@ void MeshVisualizerGLTest::construct2DInvalid() {
     auto&& data = ConstructInvalidData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1639,9 +1637,7 @@ void MeshVisualizerGLTest::constructUniformBuffers2DInvalid() {
     auto&& data = ConstructUniformBuffersInvalidData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -1659,9 +1655,7 @@ void MeshVisualizerGLTest::construct3DInvalid() {
     auto&& data = ConstructInvalidData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1674,9 +1668,7 @@ void MeshVisualizerGLTest::constructUniformBuffers3DInvalid() {
     auto&& data = ConstructUniformBuffersInvalidData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -1790,9 +1782,7 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -1826,9 +1816,7 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
 }
 
 void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -1877,9 +1865,7 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
 }
 
 void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1908,9 +1894,7 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1948,9 +1932,7 @@ void MeshVisualizerGLTest::bindObjectIdTextureInvalid2D() {
     auto&& data = BindObjectIdTextureInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
@@ -1970,9 +1952,7 @@ void MeshVisualizerGLTest::bindObjectIdTextureInvalid3D() {
     auto&& data = BindObjectIdTextureInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags3D & MeshVisualizerGL3D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
@@ -1992,9 +1972,7 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid2D() {
     auto&& data = BindObjectIdTextureArrayInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
@@ -2015,9 +1993,7 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D() {
     auto&& data = BindObjectIdTextureArrayInvalidData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
@@ -2036,9 +2012,7 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D() {
 #endif
 
 void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2070,9 +2044,7 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2106,9 +2078,7 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::setTextureMatrixNotEnabled2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::ObjectIdTexture};
 
@@ -2120,9 +2090,7 @@ void MeshVisualizerGLTest::setTextureMatrixNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::setTextureMatrixNotEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::ObjectIdTexture};
 
@@ -2134,9 +2102,7 @@ void MeshVisualizerGLTest::setTextureMatrixNotEnabled3D() {
 }
 
 void MeshVisualizerGLTest::setTextureLayerNotArray2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::ObjectIdTexture};
 
@@ -2148,9 +2114,7 @@ void MeshVisualizerGLTest::setTextureLayerNotArray2D() {
 }
 
 void MeshVisualizerGLTest::setTextureLayerNotArray3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::ObjectIdTexture};
 
@@ -2162,9 +2126,7 @@ void MeshVisualizerGLTest::setTextureLayerNotArray3D() {
 }
 
 void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -2184,9 +2146,7 @@ void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -2208,9 +2168,7 @@ void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled3D() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::setObjectIdNotEnabled2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshVisualizerGL2D shader{NoCreate};
 
@@ -2221,9 +2179,7 @@ void MeshVisualizerGLTest::setObjectIdNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::setObjectIdNotEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshVisualizerGL3D shader{NoCreate};
 
@@ -2234,9 +2190,7 @@ void MeshVisualizerGLTest::setObjectIdNotEnabled3D() {
 }
 
 void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2252,9 +2206,7 @@ void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2272,9 +2224,7 @@ void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
@@ -2301,9 +2251,7 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::setWrongDrawOffset2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -2319,9 +2267,7 @@ void MeshVisualizerGLTest::setWrongDrawOffset2D() {
 }
 
 void MeshVisualizerGLTest::setWrongDrawOffset3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())

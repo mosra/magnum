@@ -638,9 +638,7 @@ void PackingBatchTest::castFloatDouble() {
 }
 
 template<class T> void PackingBatchTest::assertionsPackUnpack() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Math::Vector2<T> data[2]{};
     Vector2 resultWrongCount[1]{};
@@ -674,9 +672,7 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
 }
 
 void PackingBatchTest::assertionsPackUnpackHalf() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Vector2us data[2]{};
     Vector2 resultWrongCount[1]{};
@@ -710,9 +706,7 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
 }
 
 template<class U, class T> void PackingBatchTest::assertionsCast() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     setTestCaseTemplateName({TypeTraits<U>::name(), TypeTraits<T>::name()});
 

@@ -133,9 +133,7 @@ struct Shader: AbstractShaderProgram {
 };
 
 void MeshTest::drawCountNotSet() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -147,9 +145,7 @@ void MeshTest::drawCountNotSet() {
 }
 
 void MeshTest::drawViewCountNotSet() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -201,9 +197,7 @@ void MeshTest::mapPrimitiveImplementationSpecific() {
 }
 
 void MeshTest::mapPrimitiveUnsupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -212,9 +206,7 @@ void MeshTest::mapPrimitiveUnsupported() {
 }
 
 void MeshTest::mapPrimitiveInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -260,9 +252,7 @@ void MeshTest::mapIndexTypeImplementationSpecific() {
 }
 
 void MeshTest::mapIndexTypeInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

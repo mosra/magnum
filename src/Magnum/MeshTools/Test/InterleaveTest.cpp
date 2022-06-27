@@ -207,9 +207,7 @@ void InterleaveTest::attributeCountGaps() {
 }
 
 void InterleaveTest::attributeCountInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::stringstream ss;
     Error redirectError{&ss};
@@ -531,9 +529,7 @@ void InterleaveTest::interleavedDataNoVertices() {
 }
 
 void InterleaveTest::interleavedDataNotInterleaved() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::Array<char> vertexData{100 + 3*20};
     auto positions = Containers::arrayCast<Vector2>(vertexData.exceptPrefix(100).prefix(3*8));
@@ -622,9 +618,7 @@ void InterleaveTest::interleavedDataVertexDataWholeMemory() {
 }
 
 void InterleaveTest::interleavedMutableDataNotMutable() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char a[1];
     Trade::MeshData data{MeshPrimitive::Lines, {}, a, {}, 15};
@@ -781,9 +775,7 @@ void InterleaveTest::interleavedLayout() {
 }
 
 void InterleaveTest::interleavedLayoutImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -871,9 +863,7 @@ void InterleaveTest::interleavedLayoutExtraAliased() {
 }
 
 void InterleaveTest::interleavedLayoutExtraTooNegativePadding() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::Array<char> vertexData{3*12};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
@@ -916,9 +906,7 @@ void InterleaveTest::interleavedLayoutExtraOnly() {
 }
 
 void InterleaveTest::interleavedLayoutExtraImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -1232,9 +1220,7 @@ void InterleaveTest::interleaveMeshDataIndexed() {
 }
 
 void InterleaveTest::interleaveMeshDataImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Points,
         nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
@@ -1249,9 +1235,7 @@ void InterleaveTest::interleaveMeshDataImplementationSpecificIndexType() {
 }
 
 void InterleaveTest::interleaveMeshDataImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -1337,9 +1321,7 @@ void InterleaveTest::interleaveMeshDataExtraOriginalEmpty() {
 }
 
 void InterleaveTest::interleaveMeshDataExtraWrongCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
@@ -1358,9 +1340,7 @@ void InterleaveTest::interleaveMeshDataExtraWrongCount() {
 }
 
 void InterleaveTest::interleaveMeshDataExtraOffsetOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::TriangleFan, 5};
 
@@ -1374,9 +1354,7 @@ void InterleaveTest::interleaveMeshDataExtraOffsetOnly() {
 }
 
 void InterleaveTest::interleaveMeshDataExtraImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData data{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},

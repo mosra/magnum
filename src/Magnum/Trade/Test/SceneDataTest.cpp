@@ -590,9 +590,7 @@ void SceneDataTest::mappingTypeSizeAlignment() {
 }
 
 void SceneDataTest::mappingTypeSizeAlignmentInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -645,9 +643,7 @@ void SceneDataTest::customFieldName() {
 }
 
 void SceneDataTest::customFieldNameTooLarge() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -656,9 +652,7 @@ void SceneDataTest::customFieldNameTooLarge() {
 }
 
 void SceneDataTest::customFieldNameNotCustom() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -710,9 +704,7 @@ void SceneDataTest::fieldTypeSizeAlignment() {
 }
 
 void SceneDataTest::fieldTypeSizeAlignmentInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1048,9 +1040,7 @@ void SceneDataTest::constructFieldArrayOffsetOnly() {
 }
 
 void SceneDataTest::constructFieldInconsistentViewSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort rotationMappingData[3]{};
     const Complexd rotationFieldData[2];
@@ -1062,9 +1052,7 @@ void SceneDataTest::constructFieldInconsistentViewSize() {
 }
 
 void SceneDataTest::constructFieldWrongType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort rotationMappingData[3]{};
     const Quaternion rotationFieldData[3];
@@ -1079,9 +1067,7 @@ void SceneDataTest::constructFieldWrongType() {
 }
 
 void SceneDataTest::constructFieldTooLargeMappingStride() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt enough[2];
     char toomuch[2*(32768 + sizeof(UnsignedInt))];
@@ -1106,9 +1092,7 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
 }
 
 void SceneDataTest::constructFieldTooLargeFieldStride() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt enough[2];
     char toomuch[2*(32768 + sizeof(UnsignedInt))];
@@ -1133,9 +1117,7 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
 }
 
 void SceneDataTest::constructFieldOffsetOnlyNotAllowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort rotationMappingData[3]{};
     const Quaternion rotationFieldData[3];
@@ -1151,9 +1133,7 @@ void SceneDataTest::constructFieldOffsetOnlyNotAllowed() {
 }
 
 void SceneDataTest::constructFieldWrongDataAccess() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort rotationMappingData[3]{};
     const Quaternion rotationFieldData[3];
@@ -1175,9 +1155,7 @@ void SceneDataTest::constructFieldWrongDataAccess() {
 }
 
 void SceneDataTest::constructField2DWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char rotationMappingData[5*sizeof(UnsignedInt)];
     char rotationFieldData[5*sizeof(Complex)];
@@ -1198,9 +1176,7 @@ void SceneDataTest::constructField2DWrongSize() {
 }
 
 void SceneDataTest::constructField2DNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char rotationMappingData[8*sizeof(UnsignedInt)];
     char rotationFieldData[8*sizeof(Complex)];
@@ -1221,9 +1197,7 @@ void SceneDataTest::constructField2DNonContiguous() {
 }
 
 void SceneDataTest::constructFieldArrayNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedByte offsetMappingData[3];
     Int offsetFieldData[3*4];
@@ -1235,9 +1209,7 @@ void SceneDataTest::constructFieldArrayNonContiguous() {
 }
 
 void SceneDataTest::constructFieldArrayNotAllowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedShort rotationMappingData[3]{};
     Quaternion rotationFieldData[3];
@@ -1287,9 +1259,7 @@ void SceneDataTest::constructFieldArrayNotAllowed() {
 }
 
 void SceneDataTest::constructFieldArray2DWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char rotationMappingData[4*sizeof(UnsignedInt)];
     char rotationFieldData[4*sizeof(Complex)];
@@ -1305,9 +1275,7 @@ void SceneDataTest::constructFieldArray2DWrongSize() {
 }
 
 void SceneDataTest::constructFieldArray2DNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char offsetMappingData[18*sizeof(UnsignedInt)];
     char offsetFieldData[18*sizeof(Int)];
@@ -1806,9 +1774,7 @@ void SceneDataTest::constructDeprecated() {
 }
 
 void SceneDataTest::constructDeprecatedBoth2DAnd3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1820,9 +1786,7 @@ void SceneDataTest::constructDeprecatedBoth2DAnd3D() {
 #endif
 
 void SceneDataTest::constructDuplicateField() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Builtin fields are checked using a bitfield, as they have monotonic
        numbering */
@@ -1837,9 +1801,7 @@ void SceneDataTest::constructDuplicateField() {
 }
 
 void SceneDataTest::constructDuplicateCustomField() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* These are checked in an O(n^2) way, separately from builtin fields.
        Can't use a bitfield since the field index can be anything. */
@@ -1854,9 +1816,7 @@ void SceneDataTest::constructDuplicateCustomField() {
 }
 
 void SceneDataTest::constructInconsistentMappingType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SceneFieldData meshes{SceneField::Mesh, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::UnsignedShort, nullptr};
     SceneFieldData materials{SceneField::MeshMaterial, SceneMappingType::UnsignedShort, nullptr, SceneFieldType::Int, nullptr};
@@ -1868,9 +1828,7 @@ void SceneDataTest::constructInconsistentMappingType() {
 }
 
 void SceneDataTest::constructMappingDataNotContained() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 5*sizeof(UnsignedShort), [](char*, std::size_t){}};
     Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 5*sizeof(UnsignedShort), [](char*, std::size_t){}};
@@ -1920,9 +1878,7 @@ void SceneDataTest::constructMappingDataNotContained() {
 }
 
 void SceneDataTest::constructFieldDataNotContained() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Mostly the same as constructMappingDataNotContained() with mapping and
        field views swapped, and added checks for array fields */
@@ -1983,9 +1939,7 @@ void SceneDataTest::constructFieldDataNotContained() {
 }
 
 void SceneDataTest::constructMappingTypeTooSmall() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* This is fine */
     SceneData{SceneMappingType::UnsignedByte, 0xff, nullptr, {}};
@@ -2004,9 +1958,7 @@ void SceneDataTest::constructMappingTypeTooSmall() {
 }
 
 void SceneDataTest::constructNotOwnedFlagOwned() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const char data[32]{};
 
@@ -2018,9 +1970,7 @@ void SceneDataTest::constructNotOwnedFlagOwned() {
 }
 
 void SceneDataTest::constructMismatchedTRSViews() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::ArrayView<const char> data{reinterpret_cast<char*>(0xcafe0000),
         /* Three entries, each having a 2D TRS and 3 object IDs */
@@ -2107,9 +2057,7 @@ template<class T> struct NameTraits<T*> {
 template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SceneFieldData transformationMatrices2D{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix3<T>>::type(), nullptr};
     SceneFieldData transformationRectangularMatrices2D{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, Implementation::SceneFieldTypeFor<Math::Matrix3x2<T>>::type(), nullptr};
@@ -2189,9 +2137,7 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
 }
 
 void SceneDataTest::constructMismatchedMeshMaterialView() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::ArrayView<const char> data{reinterpret_cast<char*>(0xcafe0000),
         /* Three entries, each having mesh/material ID and 2 object IDs */
@@ -2219,9 +2165,7 @@ void SceneDataTest::constructMismatchedMeshMaterialView() {
 }
 
 void SceneDataTest::constructAmbiguousSkinDimensions() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2349,9 +2293,7 @@ template<class T> void SceneDataTest::findFieldObjectOffset() {
 }
 
 void SceneDataTest::findFieldObjectOffsetInvalidOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -2381,9 +2323,7 @@ void SceneDataTest::findFieldObjectOffsetInvalidOffset() {
 }
 
 void SceneDataTest::fieldObjectOffsetNotFound() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -2559,9 +2499,7 @@ void SceneDataTest::mappingIntoArrayByName() {
 }
 
 void SceneDataTest::mappingIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -2677,9 +2615,7 @@ void SceneDataTest::parentsIntoArray() {
 }
 
 void SceneDataTest::parentsIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -2987,9 +2923,7 @@ template<class T, class U, class V> void SceneDataTest::transformations2DAsArray
 }
 
 void SceneDataTest::transformations2DAsArrayBut3DType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Because TRSAsArray() allocates an Array<Triple> and then calls
        TRSInto(), which skips views that are nullptr, we wouldn't get the
@@ -3235,9 +3169,7 @@ void SceneDataTest::transformations2DIntoArrayTRS() {
 }
 
 void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -3268,9 +3200,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
 }
 
 void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -3589,9 +3519,7 @@ template<class T, class U, class V> void SceneDataTest::transformations3DAsArray
 }
 
 void SceneDataTest::transformations3DAsArrayBut2DType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Because TRSAsArray() allocates an Array<Triple> and then calls
        TRSInto(), which skips views that are nullptr, we wouldn't get the
@@ -3837,9 +3765,7 @@ void SceneDataTest::transformations3DIntoArrayTRS() {
 }
 
 void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -3870,9 +3796,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
 }
 
 void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4048,9 +3972,7 @@ void SceneDataTest::meshesMaterialsIntoArray() {
 }
 
 void SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4177,9 +4099,7 @@ void SceneDataTest::lightsIntoArray() {
 }
 
 void SceneDataTest::lightsIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4298,9 +4218,7 @@ void SceneDataTest::camerasIntoArray() {
 }
 
 void SceneDataTest::camerasIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4423,9 +4341,7 @@ void SceneDataTest::skinsIntoArray() {
 }
 
 void SceneDataTest::skinsIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4551,9 +4467,7 @@ void SceneDataTest::importerStateIntoArray() {
 }
 
 void SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4584,9 +4498,7 @@ void SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset() {
 }
 
 void SceneDataTest::mutableAccessNotAllowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const struct Field {
         UnsignedInt object;
@@ -4633,9 +4545,7 @@ void SceneDataTest::mutableAccessNotAllowed() {
 }
 
 void SceneDataTest::mappingNotFound() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4678,9 +4588,7 @@ void SceneDataTest::mappingNotFound() {
 }
 
 void SceneDataTest::mappingWrongType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedShort object;
@@ -4709,9 +4617,7 @@ void SceneDataTest::mappingWrongType() {
 }
 
 void SceneDataTest::fieldNotFound() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4858,9 +4764,7 @@ void SceneDataTest::fieldNotFound() {
 }
 
 void SceneDataTest::fieldWrongType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -4897,9 +4801,7 @@ void SceneDataTest::fieldWrongType() {
 }
 
 void SceneDataTest::fieldWrongPointerType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Thing {
         UnsignedInt object;
@@ -4969,9 +4871,7 @@ void SceneDataTest::fieldWrongPointerType() {
 }
 
 void SceneDataTest::fieldWrongArrayAccess() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
         UnsignedInt object;
@@ -5208,9 +5108,7 @@ void SceneDataTest::transformation2DForTRS() {
 }
 
 void SceneDataTest::transformation2DForBut3DType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SceneData scene{SceneMappingType::UnsignedInt, 1, nullptr, {
         SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr}
@@ -5300,9 +5198,7 @@ void SceneDataTest::transformation3DForTRS() {
 }
 
 void SceneDataTest::transformation3DForBut2DType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SceneData scene{SceneMappingType::UnsignedInt, 1, nullptr, {
         SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector2, nullptr}
@@ -5577,9 +5473,7 @@ void SceneDataTest::fieldForFieldMissing() {
 }
 
 void SceneDataTest::findFieldObjectOffsetInvalidObject() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SceneData scene{SceneMappingType::UnsignedInt, 7, nullptr, {
         SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},

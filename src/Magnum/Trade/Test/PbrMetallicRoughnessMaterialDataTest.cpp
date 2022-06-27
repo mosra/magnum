@@ -796,9 +796,7 @@ void PbrMetallicRoughnessMaterialDataTest::texturedExplicitPackedNormalRoughness
 }
 
 void PbrMetallicRoughnessMaterialDataTest::invalidTextures() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PbrMetallicRoughnessMaterialData data{{}, {}};
 
@@ -963,9 +961,7 @@ void PbrMetallicRoughnessMaterialDataTest::commonCoordinatesLayerImplicit() {
 }
 
 void PbrMetallicRoughnessMaterialDataTest::noCommonTransformationCoordinatesLayer() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PbrMetallicRoughnessMaterialData data{{}, {
         {MaterialAttribute::BaseColorTexture, 3u},

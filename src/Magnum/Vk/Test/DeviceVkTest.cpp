@@ -487,9 +487,7 @@ void DeviceVkTest::createInfoFeaturesEnableAllResetAll() {
 }
 
 void DeviceVkTest::createInfoNoQueuePriorities() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -498,9 +496,7 @@ void DeviceVkTest::createInfoNoQueuePriorities() {
 }
 
 void DeviceVkTest::createInfoWrongQueueOutputCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1001,9 +997,7 @@ void DeviceVkTest::constructFeatureWithoutExtension() {
 }
 
 void DeviceVkTest::constructNoQueue() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1079,9 +1073,7 @@ Implementation::deviceFeaturesPortabilitySubset(),
 }
 
 void DeviceVkTest::tryCreateAlreadyCreated() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Queue queue{NoCreate};
     Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
@@ -1191,9 +1183,7 @@ void DeviceVkTest::wrap() {
 }
 
 void DeviceVkTest::wrapAlreadyCreated() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Queue queue{NoCreate};
     Device device{instance(), DeviceCreateInfo{pickDevice(instance())}

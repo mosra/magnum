@@ -761,9 +761,7 @@ void AbstractImporterTest::setFlags() {
 }
 
 void AbstractImporterTest::setFlagsFileOpened() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1049,9 +1047,7 @@ void AbstractImporterTest::openStateFailed() {
 }
 
 void AbstractImporterTest::openFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Importer: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1067,9 +1063,7 @@ void AbstractImporterTest::openFileNotImplemented() {
 }
 
 void AbstractImporterTest::openDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1085,9 +1079,7 @@ void AbstractImporterTest::openDataNotSupported() {
 }
 
 void AbstractImporterTest::openDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
@@ -1103,9 +1095,7 @@ void AbstractImporterTest::openDataNotImplemented() {
 }
 
 void AbstractImporterTest::openStateNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1121,9 +1111,7 @@ void AbstractImporterTest::openStateNotSupported() {
 }
 
 void AbstractImporterTest::openStateNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenState; }
@@ -1231,9 +1219,7 @@ void AbstractImporterTest::setFileCallbackTemplateConst() {
 }
 
 void AbstractImporterTest::setFileCallbackFileOpened() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1267,9 +1253,7 @@ void AbstractImporterTest::setFileCallbackNotImplemented() {
 }
 
 void AbstractImporterTest::setFileCallbackNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1504,9 +1488,7 @@ void AbstractImporterTest::thingCountNotImplemented() {
 }
 
 void AbstractImporterTest::thingCountNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1587,9 +1569,7 @@ void AbstractImporterTest::thingForNameNotImplemented() {
 }
 
 void AbstractImporterTest::thingForNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1705,9 +1685,7 @@ void AbstractImporterTest::thingByNameNotFound() {
 }
 
 void AbstractImporterTest::thingNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1753,9 +1731,7 @@ void AbstractImporterTest::thingNameNoFile() {
 }
 
 void AbstractImporterTest::thingNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1854,9 +1830,7 @@ void AbstractImporterTest::defaultSceneNotImplemented() {
 }
 
 void AbstractImporterTest::defaultSceneOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1954,9 +1928,7 @@ void AbstractImporterTest::object() {
 }
 
 void AbstractImporterTest::sceneForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1974,9 +1946,7 @@ void AbstractImporterTest::sceneForNameOutOfRange() {
 }
 
 void AbstractImporterTest::objectForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3583,9 +3553,7 @@ void AbstractImporterTest::objectNameNotImplemented() {
 }
 
 void AbstractImporterTest::sceneNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3603,9 +3571,7 @@ void AbstractImporterTest::sceneNameOutOfRange() {
 }
 
 void AbstractImporterTest::objectNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3623,9 +3589,7 @@ void AbstractImporterTest::objectNameOutOfRange() {
 }
 
 void AbstractImporterTest::sceneNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3645,9 +3609,7 @@ void AbstractImporterTest::sceneNameCustomDeleter() {
 }
 
 void AbstractImporterTest::objectNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3667,9 +3629,7 @@ void AbstractImporterTest::objectNameCustomDeleter() {
 }
 
 void AbstractImporterTest::sceneNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3687,9 +3647,7 @@ void AbstractImporterTest::sceneNotImplemented() {
 }
 
 void AbstractImporterTest::sceneOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3732,9 +3690,7 @@ void AbstractImporterTest::sceneNonOwningDeleters() {
 }
 
 void AbstractImporterTest::sceneCustomDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3763,9 +3719,7 @@ void AbstractImporterTest::sceneCustomDataDeleter() {
 }
 
 void AbstractImporterTest::sceneCustomFieldDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3825,9 +3779,7 @@ void AbstractImporterTest::sceneFieldNameNotImplemented() {
 }
 
 void AbstractImporterTest::sceneFieldNameNotCustom() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3849,9 +3801,7 @@ void AbstractImporterTest::sceneFieldNameNotCustom() {
 }
 
 void AbstractImporterTest::sceneFieldNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3930,9 +3880,7 @@ void AbstractImporterTest::animationFailed() {
 }
 
 void AbstractImporterTest::animationForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3962,9 +3910,7 @@ void AbstractImporterTest::animationNameNotImplemented() {
 }
 
 void AbstractImporterTest::animationNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3982,9 +3928,7 @@ void AbstractImporterTest::animationNameOutOfRange() {
 }
 
 void AbstractImporterTest::animationNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4004,9 +3948,7 @@ void AbstractImporterTest::animationNameCustomDeleter() {
 }
 
 void AbstractImporterTest::animationNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4024,9 +3966,7 @@ void AbstractImporterTest::animationNotImplemented() {
 }
 
 void AbstractImporterTest::animationOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4085,9 +4025,7 @@ void AbstractImporterTest::animationGrowableDeleters() {
 }
 
 void AbstractImporterTest::animationCustomDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4112,9 +4050,7 @@ void AbstractImporterTest::animationCustomDataDeleter() {
 }
 
 void AbstractImporterTest::animationCustomTrackDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4194,9 +4130,7 @@ void AbstractImporterTest::lightFailed() {
 }
 
 void AbstractImporterTest::lightForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4226,9 +4160,7 @@ void AbstractImporterTest::lightNameNotImplemented() {
 }
 
 void AbstractImporterTest::lightNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4246,9 +4178,7 @@ void AbstractImporterTest::lightNameOutOfRange() {
 }
 
 void AbstractImporterTest::lightNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4268,9 +4198,7 @@ void AbstractImporterTest::lightNameCustomDeleter() {
 }
 
 void AbstractImporterTest::lightNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4288,9 +4216,7 @@ void AbstractImporterTest::lightNotImplemented() {
 }
 
 void AbstractImporterTest::lightOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4363,9 +4289,7 @@ void AbstractImporterTest::cameraFailed() {
 }
 
 void AbstractImporterTest::cameraForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4395,9 +4319,7 @@ void AbstractImporterTest::cameraNameNotImplemented() {
 }
 
 void AbstractImporterTest::cameraNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4415,9 +4337,7 @@ void AbstractImporterTest::cameraNameOutOfRange() {
 }
 
 void AbstractImporterTest::cameraNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4437,9 +4357,7 @@ void AbstractImporterTest::cameraNameCustomDeleter() {
 }
 
 void AbstractImporterTest::cameraNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4457,9 +4375,7 @@ void AbstractImporterTest::cameraNotImplemented() {
 }
 
 void AbstractImporterTest::cameraOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4530,9 +4446,7 @@ void AbstractImporterTest::object2DCountNotImplemented() {
 }
 
 void AbstractImporterTest::object2DCountNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4562,9 +4476,7 @@ void AbstractImporterTest::object2DForNameNotImplemented() {
 }
 
 void AbstractImporterTest::object2DForNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4608,9 +4520,7 @@ void AbstractImporterTest::object2DByNameNotFound() {
 }
 
 void AbstractImporterTest::object2DForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4644,9 +4554,7 @@ void AbstractImporterTest::object2DNameNotImplemented() {
 }
 
 void AbstractImporterTest::object2DNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4664,9 +4572,7 @@ void AbstractImporterTest::object2DNameNoFile() {
 }
 
 void AbstractImporterTest::object2DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4686,9 +4592,7 @@ void AbstractImporterTest::object2DNameOutOfRange() {
 }
 
 void AbstractImporterTest::object2DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4713,9 +4617,7 @@ void AbstractImporterTest::object2DNotImplemented() {
 }
 
 void AbstractImporterTest::object2DNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4736,9 +4638,7 @@ void AbstractImporterTest::object2DNoFile() {
 }
 
 void AbstractImporterTest::object2DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4810,9 +4710,7 @@ void AbstractImporterTest::object3DCountNotImplemented() {
 }
 
 void AbstractImporterTest::object3DCountNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4842,9 +4740,7 @@ void AbstractImporterTest::object3DForNameNotImplemented() {
 }
 
 void AbstractImporterTest::object3DForNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4888,9 +4784,7 @@ void AbstractImporterTest::object3DByNameNotFound() {
 }
 
 void AbstractImporterTest::object3DForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4924,9 +4818,7 @@ void AbstractImporterTest::object3DNameNotImplemented() {
 }
 
 void AbstractImporterTest::object3DNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4944,9 +4836,7 @@ void AbstractImporterTest::object3DNameNoFile() {
 }
 
 void AbstractImporterTest::object3DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4966,9 +4856,7 @@ void AbstractImporterTest::object3DNameOutOfRange() {
 }
 
 void AbstractImporterTest::object3DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4993,9 +4881,7 @@ void AbstractImporterTest::object3DNotImplemented() {
 }
 
 void AbstractImporterTest::object3DNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5016,9 +4902,7 @@ void AbstractImporterTest::object3DNoFile() {
 }
 
 void AbstractImporterTest::object3DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5096,9 +4980,7 @@ void AbstractImporterTest::skin2DFailed() {
 }
 
 void AbstractImporterTest::skin2DForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5128,9 +5010,7 @@ void AbstractImporterTest::skin2DNameNotImplemented() {
 }
 
 void AbstractImporterTest::skin2DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5148,9 +5028,7 @@ void AbstractImporterTest::skin2DNameOutOfRange() {
 }
 
 void AbstractImporterTest::skin2DNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5170,9 +5048,7 @@ void AbstractImporterTest::skin2DNameCustomDeleter() {
 }
 
 void AbstractImporterTest::skin2DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5190,9 +5066,7 @@ void AbstractImporterTest::skin2DNotImplemented() {
 }
 
 void AbstractImporterTest::skin2DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5234,9 +5108,7 @@ void AbstractImporterTest::skin2DNonOwningDeleters() {
 }
 
 void AbstractImporterTest::skin2DCustomJointDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5263,9 +5135,7 @@ void AbstractImporterTest::skin2DCustomJointDataDeleter() {
 }
 
 void AbstractImporterTest::skin2DCustomInverseBindMatrixDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5349,9 +5219,7 @@ void AbstractImporterTest::skin3DFailed() {
 }
 
 void AbstractImporterTest::skin3DForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5382,9 +5250,7 @@ void AbstractImporterTest::skin3DNameNotImplemented() {
 }
 
 void AbstractImporterTest::skin3DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5402,9 +5268,7 @@ void AbstractImporterTest::skin3DNameOutOfRange() {
 }
 
 void AbstractImporterTest::skin3DNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5424,9 +5288,7 @@ void AbstractImporterTest::skin3DNameCustomDeleter() {
 }
 
 void AbstractImporterTest::skin3DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5444,9 +5306,7 @@ void AbstractImporterTest::skin3DNotImplemented() {
 }
 
 void AbstractImporterTest::skin3DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5488,9 +5348,7 @@ void AbstractImporterTest::skin3DNonOwningDeleters() {
 }
 
 void AbstractImporterTest::skin3DCustomJointDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5517,9 +5375,7 @@ void AbstractImporterTest::skin3DCustomJointDataDeleter() {
 }
 
 void AbstractImporterTest::skin3DCustomInverseBindMatrixDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5658,9 +5514,7 @@ void AbstractImporterTest::meshLevelCountNotImplemented() {
 }
 
 void AbstractImporterTest::meshLevelCountOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5677,9 +5531,7 @@ void AbstractImporterTest::meshLevelCountOutOfRange() {
 }
 
 void AbstractImporterTest::meshLevelCountZero() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5705,9 +5557,7 @@ void AbstractImporterTest::meshLevelCountZero() {
 }
 
 void AbstractImporterTest::meshForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5737,9 +5587,7 @@ void AbstractImporterTest::meshNameNotImplemented() {
 }
 
 void AbstractImporterTest::meshNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5757,9 +5605,7 @@ void AbstractImporterTest::meshNameOutOfRange() {
 }
 
 void AbstractImporterTest::meshNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5779,9 +5625,7 @@ void AbstractImporterTest::meshNameCustomDeleter() {
 }
 
 void AbstractImporterTest::meshNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5799,9 +5643,7 @@ void AbstractImporterTest::meshNotImplemented() {
 }
 
 void AbstractImporterTest::meshOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5819,9 +5661,7 @@ void AbstractImporterTest::meshOutOfRange() {
 }
 
 void AbstractImporterTest::meshLevelOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5895,9 +5735,7 @@ void AbstractImporterTest::meshGrowableDeleters() {
 }
 
 void AbstractImporterTest::meshCustomIndexDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5924,9 +5762,7 @@ void AbstractImporterTest::meshCustomIndexDataDeleter() {
 }
 
 void AbstractImporterTest::meshCustomVertexDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -5951,9 +5787,7 @@ void AbstractImporterTest::meshCustomVertexDataDeleter() {
 }
 
 void AbstractImporterTest::meshCustomAttributesDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6013,9 +5847,7 @@ void AbstractImporterTest::meshAttributeNameNotImplemented() {
 }
 
 void AbstractImporterTest::meshAttributeNameNotCustom() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6037,9 +5869,7 @@ void AbstractImporterTest::meshAttributeNameNotCustom() {
 }
 
 void AbstractImporterTest::meshAttributeNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6105,9 +5935,7 @@ void AbstractImporterTest::mesh2DCountNotImplemented() {
 }
 
 void AbstractImporterTest::mesh2DCountNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6137,9 +5965,7 @@ void AbstractImporterTest::mesh2DForNameNotImplemented() {
 }
 
 void AbstractImporterTest::mesh2DForNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6171,9 +5997,7 @@ void AbstractImporterTest::mesh2DNameNotImplemented() {
 }
 
 void AbstractImporterTest::mesh2DNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6191,9 +6015,7 @@ void AbstractImporterTest::mesh2DNameNoFile() {
 }
 
 void AbstractImporterTest::mesh2DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6213,9 +6035,7 @@ void AbstractImporterTest::mesh2DNameOutOfRange() {
 }
 
 void AbstractImporterTest::mesh2DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6235,9 +6055,7 @@ void AbstractImporterTest::mesh2DNotImplemented() {
 }
 
 void AbstractImporterTest::mesh2DNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6255,9 +6073,7 @@ void AbstractImporterTest::mesh2DNoFile() {
 }
 
 void AbstractImporterTest::mesh2DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6323,9 +6139,7 @@ void AbstractImporterTest::mesh3DCountNotImplemented() {
 }
 
 void AbstractImporterTest::mesh3DCountNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6355,9 +6169,7 @@ void AbstractImporterTest::mesh3DForNameNotImplemented() {
 }
 
 void AbstractImporterTest::mesh3DForNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6389,9 +6201,7 @@ void AbstractImporterTest::mesh3DNameNotImplemented() {
 }
 
 void AbstractImporterTest::mesh3DNameNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6409,9 +6219,7 @@ void AbstractImporterTest::mesh3DNameNoFile() {
 }
 
 void AbstractImporterTest::mesh3DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6431,9 +6239,7 @@ void AbstractImporterTest::mesh3DNameOutOfRange() {
 }
 
 void AbstractImporterTest::mesh3DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6455,9 +6261,7 @@ void AbstractImporterTest::mesh3DNotImplemented() {
 }
 
 void AbstractImporterTest::mesh3DNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6475,9 +6279,7 @@ void AbstractImporterTest::mesh3DNoFile() {
 }
 
 void AbstractImporterTest::mesh3DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6595,9 +6397,7 @@ void AbstractImporterTest::materialDeprecatedFallback() {
 #endif
 
 void AbstractImporterTest::materialForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6627,9 +6427,7 @@ void AbstractImporterTest::materialNameNotImplemented() {
 }
 
 void AbstractImporterTest::materialNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6647,9 +6445,7 @@ void AbstractImporterTest::materialNameOutOfRange() {
 }
 
 void AbstractImporterTest::materialNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6669,9 +6465,7 @@ void AbstractImporterTest::materialNameCustomDeleter() {
 }
 
 void AbstractImporterTest::materialNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6689,9 +6483,7 @@ void AbstractImporterTest::materialNotImplemented() {
 }
 
 void AbstractImporterTest::materialOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6732,9 +6524,7 @@ void AbstractImporterTest::materialNonOwningDeleters() {
 }
 
 void AbstractImporterTest::materialCustomAttributeDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6763,9 +6553,7 @@ void AbstractImporterTest::materialCustomAttributeDataDeleter() {
 }
 
 void AbstractImporterTest::materialCustomLayerDataDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6847,9 +6635,7 @@ void AbstractImporterTest::textureFailed() {
 }
 
 void AbstractImporterTest::textureForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6879,9 +6665,7 @@ void AbstractImporterTest::textureNameNotImplemented() {
 }
 
 void AbstractImporterTest::textureNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6899,9 +6683,7 @@ void AbstractImporterTest::textureNameOutOfRange() {
 }
 
 void AbstractImporterTest::textureNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6921,9 +6703,7 @@ void AbstractImporterTest::textureNameCustomDeleter() {
 }
 
 void AbstractImporterTest::textureNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -6941,9 +6721,7 @@ void AbstractImporterTest::textureNotImplemented() {
 }
 
 void AbstractImporterTest::textureOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7033,9 +6811,7 @@ void AbstractImporterTest::image1DLevelCountNotImplemented() {
 }
 
 void AbstractImporterTest::image1DLevelCountOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7052,9 +6828,7 @@ void AbstractImporterTest::image1DLevelCountOutOfRange() {
 }
 
 void AbstractImporterTest::image1DLevelCountZero() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7080,9 +6854,7 @@ void AbstractImporterTest::image1DLevelCountZero() {
 }
 
 void AbstractImporterTest::image1DForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7112,9 +6884,7 @@ void AbstractImporterTest::image1DNameNotImplemented() {
 }
 
 void AbstractImporterTest::image1DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7132,9 +6902,7 @@ void AbstractImporterTest::image1DNameOutOfRange() {
 }
 
 void AbstractImporterTest::image1DNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7154,9 +6922,7 @@ void AbstractImporterTest::image1DNameCustomDeleter() {
 }
 
 void AbstractImporterTest::image1DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7174,9 +6940,7 @@ void AbstractImporterTest::image1DNotImplemented() {
 }
 
 void AbstractImporterTest::image1DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7194,9 +6958,7 @@ void AbstractImporterTest::image1DOutOfRange() {
 }
 
 void AbstractImporterTest::image1DLevelOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7256,9 +7018,7 @@ void AbstractImporterTest::image1DGrowableDeleter() {
 }
 
 void AbstractImporterTest::image1DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7355,9 +7115,7 @@ void AbstractImporterTest::image2DLevelCountNotImplemented() {
 }
 
 void AbstractImporterTest::image2DLevelCountOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7374,9 +7132,7 @@ void AbstractImporterTest::image2DLevelCountOutOfRange() {
 }
 
 void AbstractImporterTest::image2DLevelCountZero() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7402,9 +7158,7 @@ void AbstractImporterTest::image2DLevelCountZero() {
 }
 
 void AbstractImporterTest::image2DForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7434,9 +7188,7 @@ void AbstractImporterTest::image2DNameNotImplemented() {
 }
 
 void AbstractImporterTest::image2DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7454,9 +7206,7 @@ void AbstractImporterTest::image2DNameOutOfRange() {
 }
 
 void AbstractImporterTest::image2DNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7476,9 +7226,7 @@ void AbstractImporterTest::image2DNameCustomDeleter() {
 }
 
 void AbstractImporterTest::image2DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7496,9 +7244,7 @@ void AbstractImporterTest::image2DNotImplemented() {
 }
 
 void AbstractImporterTest::image2DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7516,9 +7262,7 @@ void AbstractImporterTest::image2DOutOfRange() {
 }
 
 void AbstractImporterTest::image2DLevelOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7578,9 +7322,7 @@ void AbstractImporterTest::image2DGrowableDeleter() {
 }
 
 void AbstractImporterTest::image2DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7665,9 +7407,7 @@ void AbstractImporterTest::image3DFailed() {
 }
 
 void AbstractImporterTest::image3DForNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7697,9 +7437,7 @@ void AbstractImporterTest::image3DLevelCountNotImplemented() {
 }
 
 void AbstractImporterTest::image3DLevelCountOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7716,9 +7454,7 @@ void AbstractImporterTest::image3DLevelCountOutOfRange() {
 }
 
 void AbstractImporterTest::image3DLevelCountZero() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7756,9 +7492,7 @@ void AbstractImporterTest::image3DNameNotImplemented() {
 }
 
 void AbstractImporterTest::image3DNameOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7776,9 +7510,7 @@ void AbstractImporterTest::image3DNameOutOfRange() {
 }
 
 void AbstractImporterTest::image3DNameCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7798,9 +7530,7 @@ void AbstractImporterTest::image3DNameCustomDeleter() {
 }
 
 void AbstractImporterTest::image3DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7818,9 +7548,7 @@ void AbstractImporterTest::image3DNotImplemented() {
 }
 
 void AbstractImporterTest::image3DOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7838,9 +7566,7 @@ void AbstractImporterTest::image3DOutOfRange() {
 }
 
 void AbstractImporterTest::image3DLevelOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7900,9 +7626,7 @@ void AbstractImporterTest::image3DGrowableDeleter() {
 }
 
 void AbstractImporterTest::image3DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -7949,9 +7673,7 @@ void AbstractImporterTest::importerStateNotImplemented() {
 }
 
 void AbstractImporterTest::importerStateNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }

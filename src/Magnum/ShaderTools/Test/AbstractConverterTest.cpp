@@ -350,9 +350,7 @@ AbstractConverterTest::AbstractConverterTest() {
 }
 
 void AbstractConverterTest::featuresNone() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -401,9 +399,7 @@ void AbstractConverterTest::setFlags() {
 }
 
 void AbstractConverterTest::setFlagsBothQuietAndVerbose() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -420,9 +416,7 @@ void AbstractConverterTest::setFlagsBothQuietAndVerbose() {
 }
 
 void AbstractConverterTest::setFlagsPreprocessNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -439,9 +433,7 @@ void AbstractConverterTest::setFlagsPreprocessNotSupported() {
 }
 
 void AbstractConverterTest::setFlagsPreprocessOnlyNotAllowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -541,9 +533,7 @@ void AbstractConverterTest::setDefinitions() {
 }
 
 void AbstractConverterTest::setDefinitionsNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -560,9 +550,7 @@ void AbstractConverterTest::setDefinitionsNotSupported() {
 }
 
 void AbstractConverterTest::setDefinitionsNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -598,9 +586,7 @@ void AbstractConverterTest::setOptimizationLevel() {
 }
 
 void AbstractConverterTest::setOptimizationLevelNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -617,9 +603,7 @@ void AbstractConverterTest::setOptimizationLevelNotSupported() {
 }
 
 void AbstractConverterTest::setOptimizationLevelNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -655,9 +639,7 @@ void AbstractConverterTest::setDebugInfoLevel() {
 }
 
 void AbstractConverterTest::setDebugInfoLevelNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -674,9 +656,7 @@ void AbstractConverterTest::setDebugInfoLevelNotSupported() {
 }
 
 void AbstractConverterTest::setDebugInfoLevelNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -731,9 +711,7 @@ void AbstractConverterTest::validateDataFailed() {
 }
 
 void AbstractConverterTest::validateDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -750,9 +728,7 @@ void AbstractConverterTest::validateDataNotSupported() {
 }
 
 void AbstractConverterTest::validateDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -769,9 +745,7 @@ void AbstractConverterTest::validateDataNotImplemented() {
 }
 
 void AbstractConverterTest::validateDataPreprocessOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -789,9 +763,7 @@ void AbstractConverterTest::validateDataPreprocessOnly() {
 }
 
 void AbstractConverterTest::validateDataCustomStringDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -893,9 +865,7 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
 }
 
 void AbstractConverterTest::validateFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -912,9 +882,7 @@ void AbstractConverterTest::validateFileNotSupported() {
 }
 
 void AbstractConverterTest::validateFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -931,9 +899,7 @@ void AbstractConverterTest::validateFileNotImplemented() {
 }
 
 void AbstractConverterTest::validateFilePreprocessOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -951,9 +917,7 @@ void AbstractConverterTest::validateFilePreprocessOnly() {
 }
 
 void AbstractConverterTest::validateFileCustomStringDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1014,9 +978,7 @@ void AbstractConverterTest::convertDataToDataFailed() {
 }
 
 void AbstractConverterTest::convertDataToDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1033,9 +995,7 @@ void AbstractConverterTest::convertDataToDataNotSupported() {
 }
 
 void AbstractConverterTest::convertDataToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1053,9 +1013,7 @@ void AbstractConverterTest::convertDataToDataNotImplemented() {
 }
 
 void AbstractConverterTest::convertDataToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1148,9 +1106,7 @@ void AbstractConverterTest::convertDataToFileThroughDataNotWritable() {
 }
 
 void AbstractConverterTest::convertDataToFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1167,9 +1123,7 @@ void AbstractConverterTest::convertDataToFileNotSupported() {
 }
 
 void AbstractConverterTest::convertDataToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1327,9 +1281,7 @@ void AbstractConverterTest::convertFileToFileThroughDataNotWritable() {
 }
 
 void AbstractConverterTest::convertFileToFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1346,9 +1298,7 @@ void AbstractConverterTest::convertFileToFileNotSupported() {
 }
 
 void AbstractConverterTest::convertFileToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1450,9 +1400,7 @@ void AbstractConverterTest::convertFileToDataAsDataNotFound() {
 }
 
 void AbstractConverterTest::convertFileToDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1470,9 +1418,7 @@ void AbstractConverterTest::convertFileToDataNotSupported() {
 }
 
 void AbstractConverterTest::convertFileToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1489,9 +1435,7 @@ void AbstractConverterTest::convertFileToDataNotImplemented() {
 }
 
 void AbstractConverterTest::convertFileToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1561,9 +1505,7 @@ void AbstractConverterTest::linkDataToDataFailed() {
 }
 
 void AbstractConverterTest::linkDataToDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1580,9 +1522,7 @@ void AbstractConverterTest::linkDataToDataNotSupported() {
 }
 
 void AbstractConverterTest::linkDataToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1600,9 +1540,7 @@ void AbstractConverterTest::linkDataToDataNotImplemented() {
 }
 
 void AbstractConverterTest::linkDataToDataPreprocessOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1620,9 +1558,7 @@ void AbstractConverterTest::linkDataToDataPreprocessOnly() {
 }
 
 void AbstractConverterTest::linkDataToDataNoData() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1639,9 +1575,7 @@ void AbstractConverterTest::linkDataToDataNoData() {
 }
 
 void AbstractConverterTest::linkDataToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1743,9 +1677,7 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
 }
 
 void AbstractConverterTest::linkDataToFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1762,9 +1694,7 @@ void AbstractConverterTest::linkDataToFileNotSupported() {
 }
 
 void AbstractConverterTest::linkDataToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1782,9 +1712,7 @@ void AbstractConverterTest::linkDataToFileNotImplemented() {
 }
 
 void AbstractConverterTest::linkDataToFilePreprocessOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1802,9 +1730,7 @@ void AbstractConverterTest::linkDataToFilePreprocessOnly() {
 }
 
 void AbstractConverterTest::linkDataToFileNoData() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -1987,9 +1913,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
 }
 
 void AbstractConverterTest::linkFilesToFileNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2006,9 +1930,7 @@ void AbstractConverterTest::linkFilesToFileNotSupported() {
 }
 
 void AbstractConverterTest::linkFilesToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2026,9 +1948,7 @@ void AbstractConverterTest::linkFilesToFileNotImplemented() {
 }
 
 void AbstractConverterTest::linkFilesToFilePreprocessOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2046,9 +1966,7 @@ void AbstractConverterTest::linkFilesToFilePreprocessOnly() {
 }
 
 void AbstractConverterTest::linkFilesToFileNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2174,9 +2092,7 @@ void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
 }
 
 void AbstractConverterTest::linkFilesToDataNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2193,9 +2109,7 @@ void AbstractConverterTest::linkFilesToDataNotSupported() {
 }
 
 void AbstractConverterTest::linkFilesToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2214,9 +2128,7 @@ void AbstractConverterTest::linkFilesToDataNotImplemented() {
 }
 
 void AbstractConverterTest::linkFilesToDataPreprocessOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2234,9 +2146,7 @@ void AbstractConverterTest::linkFilesToDataPreprocessOnly() {
 }
 
 void AbstractConverterTest::linkFilesToDataNoFile() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2253,9 +2163,7 @@ void AbstractConverterTest::linkFilesToDataNoFile() {
 }
 
 void AbstractConverterTest::linkFilesToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -2397,9 +2305,7 @@ void AbstractConverterTest::setInputFileCallbackNotImplemented() {
 }
 
 void AbstractConverterTest::setInputFileCallbackNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {

@@ -107,9 +107,7 @@ void CameraDataTest::construct2D() {
 }
 
 void CameraDataTest::construct2DFoV() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -120,9 +118,7 @@ void CameraDataTest::construct2DFoV() {
 }
 
 void CameraDataTest::construct2DNearFar() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -166,9 +162,7 @@ void CameraDataTest::constructMove() {
 }
 
 void CameraDataTest::fovNonPerspective() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

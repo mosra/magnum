@@ -567,9 +567,7 @@ void PipelineTest::computeCreateInfoConstructOwnedEntrypoint() {
 }
 
 void PipelineTest::computeCreateInfoConstructNotSingleShader() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     ShaderSet shaderSet;
 

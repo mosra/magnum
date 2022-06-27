@@ -669,9 +669,7 @@ void ImageViewTest::constructNullptr() {
 }
 
 void ImageViewTest::constructInvalidSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -683,9 +681,7 @@ void ImageViewTest::constructInvalidSize() {
 }
 
 void ImageViewTest::constructInvalidCubeMap() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const char data[4*3*18*4]{};
 
@@ -727,9 +723,7 @@ void ImageViewTest::constructCompressedInvalidSize() {
 }
 
 void ImageViewTest::constructCompressedInvalidCubeMap() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const char data[8*18]{};
 
@@ -807,9 +801,7 @@ template<class T> void ImageViewTest::setDataCompressed() {
 }
 
 void ImageViewTest::setDataInvalidSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

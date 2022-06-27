@@ -778,9 +778,7 @@ void FrameProfilerTest::move() {
 }
 
 void FrameProfilerTest::delayZero() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -790,9 +788,7 @@ void FrameProfilerTest::delayZero() {
 }
 
 void FrameProfilerTest::frameCountZero() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -801,9 +797,7 @@ void FrameProfilerTest::frameCountZero() {
 }
 
 void FrameProfilerTest::delayTooLittleFrames() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -815,9 +809,7 @@ void FrameProfilerTest::delayTooLittleFrames() {
 }
 
 void FrameProfilerTest::startStopFrameUnexpected() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfiler profiler;
 
@@ -837,9 +829,7 @@ void FrameProfilerTest::startStopFrameUnexpected() {
 }
 
 void FrameProfilerTest::measurementOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfiler profiler{{
         FrameProfiler::Measurement{"", FrameProfiler::Units::Count,
@@ -864,9 +854,7 @@ void FrameProfilerTest::measurementOutOfBounds() {
 }
 
 void FrameProfilerTest::frameOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfiler profiler{{
         FrameProfiler::Measurement{"", FrameProfiler::Units::Count,
@@ -889,9 +877,7 @@ void FrameProfilerTest::frameOutOfBounds() {
 }
 
 void FrameProfilerTest::dataNotAvailableYet() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfiler profiler{{
         FrameProfiler::Measurement{"", FrameProfiler::Units::Count, 3,
@@ -955,9 +941,7 @@ void FrameProfilerTest::dataNotAvailableYet() {
 }
 
 void FrameProfilerTest::meanNotAvailableYet() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfiler profiler{{
         FrameProfiler::Measurement{"", FrameProfiler::Units::Count, 3,
@@ -1171,9 +1155,7 @@ void FrameProfilerTest::gl() {
 }
 
 void FrameProfilerTest::glNotEnabled() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfilerGL profiler{{}, 5};
 

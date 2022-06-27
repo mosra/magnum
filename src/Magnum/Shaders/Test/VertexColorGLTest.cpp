@@ -402,9 +402,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructMoveUniformBuf
 template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffersZeroDraws() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -423,9 +421,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
 template<UnsignedInt dimensions> void VertexColorGLTest::setUniformUniformBuffersEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -444,9 +440,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setUniformUniformBuffer
 template<UnsignedInt dimensions> void VertexColorGLTest::bindBufferUniformBuffersNotEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -465,9 +459,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::bindBufferUniformBuffer
 template<UnsignedInt dimensions> void VertexColorGLTest::setWrongDrawOffset() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())

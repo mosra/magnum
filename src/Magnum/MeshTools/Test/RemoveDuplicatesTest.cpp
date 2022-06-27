@@ -254,9 +254,7 @@ void RemoveDuplicatesTest::removeDuplicates() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Int data[8]{};
 
@@ -270,9 +268,7 @@ void RemoveDuplicatesTest::removeDuplicatesNonContiguous() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesIntoWrongOutputSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Int data[8]{};
     UnsignedInt output[7];
@@ -307,9 +303,7 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesIndexedInPlace() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceSmallType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::stringstream out;
     Error redirectError{&out};
@@ -356,9 +350,7 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErase
 }
 
 void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char indices[6*4]{};
     Int data[1]{};
@@ -373,9 +365,7 @@ void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedNonContiguous() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedWrongIndexSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char indices[6*3]{};
     Int data[1]{};
@@ -463,9 +453,7 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceInto() 
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceIntoWrongOutputSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Vector2 data[8]{};
     UnsignedInt output[7];
@@ -525,9 +513,7 @@ template<class IndexType, class T> void RemoveDuplicatesTest::removeDuplicatesFu
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceSmallType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::stringstream out;
     Error redirectError{&out};
@@ -586,9 +572,7 @@ template<class IndexType, class T> void RemoveDuplicatesTest::removeDuplicatesFu
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char indices[6*4]{};
     Vector2 data[1];
@@ -603,9 +587,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguou
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     char indices[6*3]{};
     Vector2 data[1];
@@ -815,9 +797,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataPaddedAttributes() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -827,9 +807,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -843,9 +821,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificIndexTy
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1164,9 +1140,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1176,9 +1150,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1192,9 +1164,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificIn
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

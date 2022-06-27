@@ -2271,9 +2271,7 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
 }
 
 void MeshGLTest::addVertexBufferMovedOutInstance() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Buffer buffer{NoCreate};
     Mesh mesh;
@@ -2598,9 +2596,7 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
 }
 
 void MeshGLTest::setIndexBufferMovedOutInstance() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Buffer buffer{NoCreate};
     Mesh mesh;
@@ -4396,9 +4392,7 @@ void MeshGLTest::multiDrawIndexedViews() {
 }
 
 void MeshGLTest::multiDrawWrongVertexOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     MultiDrawShader shader;
@@ -4415,9 +4409,7 @@ void MeshGLTest::multiDrawWrongVertexOffsetSize() {
 }
 
 void MeshGLTest::multiDrawIndexedWrongVertexOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
@@ -4435,9 +4427,7 @@ void MeshGLTest::multiDrawIndexedWrongVertexOffsetSize() {
 }
 
 void MeshGLTest::multiDrawIndexedWrongIndexOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
@@ -4547,9 +4537,7 @@ void MeshGLTest::multiDrawIndexedViewsBaseVertexNoExtensionAvailable() {
 #endif
 
 void MeshGLTest::multiDrawViewsInstanced() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     MeshView view{mesh};
@@ -4563,9 +4551,7 @@ void MeshGLTest::multiDrawViewsInstanced() {
 }
 
 void MeshGLTest::multiDrawViewsDifferentMeshes() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh a, b;
     MeshView viewA{a}, viewB{b};
@@ -5042,9 +5028,7 @@ template<class T> void MeshGLTest::multiDrawInstancedIndexedSparseArrays() {
 }
 
 void MeshGLTest::multiDrawInstancedWrongInstanceCountSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     MultiDrawInstancedShader shader;
@@ -5061,9 +5045,7 @@ void MeshGLTest::multiDrawInstancedWrongInstanceCountSize() {
 }
 
 void MeshGLTest::multiDrawInstancedWrongVertexOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     MultiDrawInstancedShader shader;
@@ -5082,9 +5064,7 @@ void MeshGLTest::multiDrawInstancedWrongVertexOffsetSize() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::multiDrawInstancedWrongInstanceOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     MultiDrawInstancedShader shader;
@@ -5102,9 +5082,7 @@ void MeshGLTest::multiDrawInstancedWrongInstanceOffsetSize() {
 #endif
 
 void MeshGLTest::multiDrawInstancedIndexedWrongInstanceCountSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
@@ -5122,9 +5100,7 @@ void MeshGLTest::multiDrawInstancedIndexedWrongInstanceCountSize() {
 }
 
 void MeshGLTest::multiDrawInstancedIndexedWrongVertexOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
@@ -5143,9 +5119,7 @@ void MeshGLTest::multiDrawInstancedIndexedWrongVertexOffsetSize() {
 }
 
 void MeshGLTest::multiDrawInstancedIndexedWrongIndexOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);
@@ -5165,9 +5139,7 @@ void MeshGLTest::multiDrawInstancedIndexedWrongIndexOffsetSize() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::multiDrawInstancedIndexedWrongInstanceOffsetSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
     mesh.setIndexBuffer(Buffer{Buffer::TargetHint::ElementArray, {2, 1, 0}}, 0, MeshIndexType::UnsignedInt);

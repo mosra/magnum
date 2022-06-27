@@ -139,9 +139,7 @@ template<class T> void DualComplexTransformationTest::setTransformation() {
 template<class T> void DualComplexTransformationTest::setTransformationInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Object2D<T> o;
 
@@ -181,9 +179,7 @@ template<class T> void DualComplexTransformationTest::transform() {
 template<class T> void DualComplexTransformationTest::transformInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Can't transform with non-rigid transformation */
     Object2D<T> o;

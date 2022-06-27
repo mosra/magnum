@@ -112,9 +112,7 @@ void MemoryTest::requirementsAlignedSize() {
 }
 
 void MemoryTest::requirementsAlignedSizeZeroAlignement() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     VkMemoryRequirements2 vkRequirements{};
     vkRequirements.memoryRequirements.size = 16384;
@@ -167,9 +165,7 @@ void MemoryTest::constructCopy() {
 }
 
 void MemoryTest::mapWrappedUnknownSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Device device{NoCreate};
     Memory memory = Memory::wrap(device, {}, 0);

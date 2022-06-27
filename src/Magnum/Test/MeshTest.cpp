@@ -148,9 +148,7 @@ void MeshTest::primitiveWrap() {
 }
 
 void MeshTest::primitiveWrapInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -166,9 +164,7 @@ void MeshTest::primitiveUnwrap() {
 }
 
 void MeshTest::primitiveUnwrapInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -229,9 +225,7 @@ void MeshTest::indexTypeWrap() {
 }
 
 void MeshTest::indexTypeWrapInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -245,9 +239,7 @@ void MeshTest::indexTypeUnwrap() {
 }
 
 void MeshTest::indexTypeUnwrapInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -264,9 +256,7 @@ void MeshTest::indexTypeSize() {
 }
 
 void MeshTest::indexTypeSizeInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -280,9 +270,7 @@ void MeshTest::indexTypeSizeInvalid() {
 }
 
 void MeshTest::indexTypeSizeImplementationSpecific() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

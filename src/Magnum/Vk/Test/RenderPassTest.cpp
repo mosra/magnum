@@ -350,9 +350,7 @@ template<class T> void RenderPassTest::attachmentDescriptionConvertToVk() {
 }
 
 void RenderPassTest::attachmentDescriptionConvertDisallowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     AttachmentDescription description{PixelFormat{}, AttachmentLoadOperation{}, AttachmentStoreOperation{}, ImageLayout{}, ImageLayout{}};
     description->pNext = &description;
@@ -410,9 +408,7 @@ template<class T> void RenderPassTest::attachmentReferenceConvertToVk() {
 }
 
 void RenderPassTest::attachmentReferenceConvertDisallowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     AttachmentReference reference{0, ImageLayout{}};
     reference->pNext = &reference;
@@ -497,9 +493,7 @@ void RenderPassTest::subpassDescriptionConstructColorResolveAttachments() {
 }
 
 void RenderPassTest::subpassDescriptionConstructColorResolveAttachmentsWrongCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SubpassDescription description;
 
@@ -740,9 +734,7 @@ template<class T> void RenderPassTest::subpassDescriptionConvertToVkNoResolveAtt
 }
 
 void RenderPassTest::subpassDescriptionConvertDisallowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SubpassDescription description;
     description->pNext = &description;
@@ -845,9 +837,7 @@ template<class T> void RenderPassTest::subpassDependencyConvertToVk() {
 }
 
 void RenderPassTest::subpassDependencyConvertDisallowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     SubpassDependency dependency{0, 1, PipelineStages{}, PipelineStages{}, Accesses{}, Accesses{}};
     dependency->pNext = &dependency;
@@ -1159,9 +1149,7 @@ void RenderPassTest::beginInfoConstructImplicitSize() {
 }
 
 void RenderPassTest::beginInfoConstructImplicitSizeUnknown() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Framebuffer framebuffer{NoCreate};
 

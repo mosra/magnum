@@ -482,9 +482,7 @@ template<class T> void TransformTest::meshData2D() {
 }
 
 void TransformTest::meshData2DNoPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -497,9 +495,7 @@ void TransformTest::meshData2DNoPosition() {
 }
 
 void TransformTest::meshData2DNot2D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr}
@@ -535,9 +531,7 @@ void TransformTest::meshData2DImplementationSpecificIndexType() {
 }
 
 void TransformTest::meshData2DImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -702,9 +696,7 @@ void TransformTest::meshData2DRvaluePassthroughVertexDataNotOwned() {
 }
 
 void TransformTest::meshData2DRvaluePassthroughNoPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Mainly to verify there's no other accidental assertion from checking
        vertex format, this message comes from the l-value overload */
@@ -749,9 +741,7 @@ void TransformTest::meshData2DRvaluePassthroughWrongFormat() {
 }
 
 void TransformTest::meshData2DInPlaceNotMutable() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, Trade::DataFlags{}, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -764,9 +754,7 @@ void TransformTest::meshData2DInPlaceNotMutable() {
 }
 
 void TransformTest::meshData2DInPlaceNoPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -779,9 +767,7 @@ void TransformTest::meshData2DInPlaceNoPosition() {
 }
 
 void TransformTest::meshData2DInPlaceWrongFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr},
@@ -921,9 +907,7 @@ template<class T, class U, class V, class W> void TransformTest::meshData3D() {
 }
 
 void TransformTest::meshData3DNoPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
@@ -936,9 +920,7 @@ void TransformTest::meshData3DNoPosition() {
 }
 
 void TransformTest::meshData3DNot3D() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr}
@@ -977,9 +959,7 @@ void TransformTest::meshData3DImplementationSpecificVertexFormat() {
     auto&& data = MeshData3DIMplementationSpecificVertexFormatData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
@@ -1204,9 +1184,7 @@ void TransformTest::meshData3DRvaluePassthroughVertexDataNotOwned() {
 }
 
 void TransformTest::meshData3DRvaluePassthroughNoPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Mainly to verify there's no other accidental assertion from checking
        vertex format, this message comes from the l-value overload */
@@ -1306,9 +1284,7 @@ void TransformTest::meshData3DRvaluePassthroughWrongFormat() {
 }
 
 void TransformTest::meshData3DInPlaceNotMutable() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, Trade::DataFlags{}, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
@@ -1321,9 +1297,7 @@ void TransformTest::meshData3DInPlaceNotMutable() {
 }
 
 void TransformTest::meshData3DInPlaceNoPosition() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3, nullptr},
@@ -1336,9 +1310,7 @@ void TransformTest::meshData3DInPlaceNoPosition() {
 }
 
 void TransformTest::meshData3DInPlaceWrongFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     auto&& data = MeshData3DWrongFormatData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -1426,9 +1398,7 @@ template<class T> void TransformTest::meshDataTextureCoordinates2D() {
 }
 
 void TransformTest::meshDataTextureCoordinates2DNoCoordinates() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
@@ -1464,9 +1434,7 @@ void TransformTest::meshDataTextureCoordinates2DImplementationSpecificIndexType(
 }
 
 void TransformTest::meshDataTextureCoordinates2DImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
@@ -1631,9 +1599,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughVertexDataNotOw
 }
 
 void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughNoCoordinates() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Mainly to verify there's no other accidental assertion from checking
        vertex format, this message comes from the l-value overload */
@@ -1678,9 +1644,7 @@ void TransformTest::meshDataTextureCoordinates2DRvaluePassthroughWrongFormat() {
 }
 
 void TransformTest::meshDataTextureCoordinates2DInPlaceNotMutable() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, Trade::DataFlags{}, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
@@ -1693,9 +1657,7 @@ void TransformTest::meshDataTextureCoordinates2DInPlaceNotMutable() {
 }
 
 void TransformTest::meshDataTextureCoordinates2DInPlaceNoCoordinates() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},
@@ -1708,9 +1670,7 @@ void TransformTest::meshDataTextureCoordinates2DInPlaceNoCoordinates() {
 }
 
 void TransformTest::meshDataTextureCoordinates2DInPlaceWrongFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2, nullptr},

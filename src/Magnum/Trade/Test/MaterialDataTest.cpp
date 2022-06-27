@@ -346,9 +346,7 @@ void MaterialDataTest::attributeTypeSize() {
 }
 
 void MaterialDataTest::attributeTypeSizeInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -669,9 +667,7 @@ void MaterialDataTest::constructAttributeLayer() {
 }
 
 void MaterialDataTest::constructAttributeInvalidName() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -683,9 +679,7 @@ void MaterialDataTest::constructAttributeInvalidName() {
 }
 
 void MaterialDataTest::constructAttributeInvalidLayerName() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -697,9 +691,7 @@ void MaterialDataTest::constructAttributeInvalidLayerName() {
 }
 
 void MaterialDataTest::constructAttributeWrongTypeForName() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -709,9 +701,7 @@ void MaterialDataTest::constructAttributeWrongTypeForName() {
 }
 
 void MaterialDataTest::constructAttributeInvalidType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -723,9 +713,7 @@ void MaterialDataTest::constructAttributeInvalidType() {
 }
 
 void MaterialDataTest::constructAttributeEmptyName() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -739,9 +727,7 @@ void MaterialDataTest::constructAttributeEmptyName() {
 }
 
 void MaterialDataTest::constructAttributeEmptyNameString() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* This has no reason to not be allowed */
     MaterialAttributeData{"hello this string is empty", ""};
@@ -759,9 +745,7 @@ void MaterialDataTest::constructAttributeEmptyNameString() {
 }
 
 void MaterialDataTest::constructAttributeTooLarge() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -782,9 +766,7 @@ void MaterialDataTest::constructAttributeTooLarge() {
 }
 
 void MaterialDataTest::constructAttributeTooLargeString() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -798,9 +780,7 @@ void MaterialDataTest::constructAttributeTooLargeString() {
 }
 
 void MaterialDataTest::constructAttributeTooLargeNameString() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -810,9 +790,7 @@ void MaterialDataTest::constructAttributeTooLargeNameString() {
 }
 
 void MaterialDataTest::constructAttributeWrongAccessType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -821,9 +799,7 @@ void MaterialDataTest::constructAttributeWrongAccessType() {
 }
 
 void MaterialDataTest::constructAttributeWrongAccessPointerType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Int a = 3;
     const Float b = 57.0f;
@@ -847,9 +823,7 @@ void MaterialDataTest::constructAttributeWrongAccessPointerType() {
 }
 
 void MaterialDataTest::constructAttributeWrongAccessTypeString() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -970,9 +944,7 @@ void MaterialDataTest::construct() {
 }
 
 void MaterialDataTest::constructEmptyAttribute() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -984,9 +956,7 @@ void MaterialDataTest::constructEmptyAttribute() {
 }
 
 void MaterialDataTest::constructDuplicateAttribute() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::Array<MaterialAttributeData> attributes{InPlaceInit, {
         /* This attribute is in the first layer, so it should not be reported
@@ -1298,9 +1268,7 @@ void MaterialDataTest::constructLayers() {
 }
 
 void MaterialDataTest::constructLayersNotMonotonic() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1315,9 +1283,7 @@ void MaterialDataTest::constructLayersNotMonotonic() {
 }
 
 void MaterialDataTest::constructLayersOffsetOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1429,9 +1395,7 @@ void MaterialDataTest::constructNonOwnedLayers() {
 }
 
 void MaterialDataTest::constructNonOwnedEmptyAttribute() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
         {"DiffuseTexture"_s, 12u},
@@ -1446,9 +1410,7 @@ void MaterialDataTest::constructNonOwnedEmptyAttribute() {
 }
 
 void MaterialDataTest::constructNonOwnedNotSorted() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
         {"DiffuseTextureCoordinates"_s, 5u},
@@ -1463,9 +1425,7 @@ void MaterialDataTest::constructNonOwnedNotSorted() {
 }
 
 void MaterialDataTest::constructNonOwnedDuplicateAttribute() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
         {"DiffuseTexture"_s, 35u},
@@ -1481,9 +1441,7 @@ void MaterialDataTest::constructNonOwnedDuplicateAttribute() {
 }
 
 void MaterialDataTest::constructNonOwnedLayersNotMonotonic() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
         {MaterialAttribute::AlphaBlend, true},
@@ -1506,9 +1464,7 @@ void MaterialDataTest::constructNonOwnedLayersNotMonotonic() {
 }
 
 void MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
         {MaterialAttribute::AlphaBlend, true},
@@ -1531,9 +1487,7 @@ void MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds() {
 }
 
 void MaterialDataTest::constructNonOwnedAttributeFlagOwned() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
         {MaterialAttribute::DoubleSided, true}
@@ -1546,9 +1500,7 @@ void MaterialDataTest::constructNonOwnedAttributeFlagOwned() {
 }
 
 void MaterialDataTest::constructNonOwnedLayerFlagOwned() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
         {MaterialAttribute::DoubleSided, true}
@@ -1776,9 +1728,7 @@ void MaterialDataTest::accessOptional() {
 }
 
 void MaterialDataTest::accessOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
@@ -1807,9 +1757,7 @@ void MaterialDataTest::accessOutOfBounds() {
 }
 
 void MaterialDataTest::accessNotFound() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {"DiffuseColor", 0xff3366aa_rgbaf}
@@ -1835,9 +1783,7 @@ void MaterialDataTest::accessNotFound() {
 }
 
 void MaterialDataTest::accessWrongType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {"DiffuseColor", 0xff3366aa_rgbaf}
@@ -1871,9 +1817,7 @@ void MaterialDataTest::accessWrongType() {
 }
 
 void MaterialDataTest::accessWrongPointerType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Int a = 3;
     const Double b = 57.0;
@@ -1907,9 +1851,7 @@ void MaterialDataTest::accessWrongPointerType() {
 }
 
 void MaterialDataTest::accessWrongTypeString() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {"Shininess", 0.0f}
@@ -2102,9 +2044,7 @@ void MaterialDataTest::accessLayersTexturedBaseMaterialMatrixCoordinatesLayer() 
 }
 
 void MaterialDataTest::accessLayersInvalidTextures() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {MaterialAttribute::LayerName, "ClearCoat"},
@@ -2366,9 +2306,7 @@ void MaterialDataTest::accessLayerStringOptional() {
 }
 
 void MaterialDataTest::accessLayerOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
@@ -2453,9 +2391,7 @@ void MaterialDataTest::accessLayerOutOfBounds() {
 }
 
 void MaterialDataTest::accessLayerNotFound() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {MaterialAttribute::LayerName, "clearCoat"},
@@ -2540,9 +2476,7 @@ void MaterialDataTest::accessLayerNotFound() {
 }
 
 void MaterialDataTest::accessInvalidLayerName() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {}};
 
@@ -2626,9 +2560,7 @@ void MaterialDataTest::accessInvalidLayerName() {
 }
 
 void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
@@ -2657,9 +2589,7 @@ void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
 }
 
 void MaterialDataTest::accessOutOfBoundsInLayerString() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {MaterialAttribute::LayerName, "ClearCoat"},
@@ -2688,9 +2618,7 @@ void MaterialDataTest::accessOutOfBoundsInLayerString() {
 }
 
 void MaterialDataTest::accessNotFoundInLayerIndex() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {"DiffuseColor", 0xff3366aa_rgbaf}
@@ -2716,9 +2644,7 @@ void MaterialDataTest::accessNotFoundInLayerIndex() {
 }
 
 void MaterialDataTest::accessNotFoundInLayerString() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
         {MaterialAttribute::LayerName, "ClearCoat"},
@@ -2745,9 +2671,7 @@ void MaterialDataTest::accessNotFoundInLayerString() {
 }
 
 void MaterialDataTest::accessInvalidAttributeName() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {}};
 
@@ -2800,9 +2724,7 @@ void MaterialDataTest::accessInvalidAttributeName() {
 }
 
 void MaterialDataTest::accessMutableNotAllowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const MaterialAttributeData attributes[]{
         {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},

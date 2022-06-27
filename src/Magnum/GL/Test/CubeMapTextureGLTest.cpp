@@ -962,9 +962,7 @@ void CubeMapTextureGLTest::imageQueryView() {
 }
 
 void CubeMapTextureGLTest::imageQueryViewNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2});
@@ -981,9 +979,7 @@ void CubeMapTextureGLTest::imageQueryViewNullptr() {
 }
 
 void CubeMapTextureGLTest::imageQueryViewBadSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2});
@@ -1318,9 +1314,7 @@ void CubeMapTextureGLTest::compressedImageQueryView() {
 }
 
 void CubeMapTextureGLTest::compressedImageQueryViewNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1339,9 +1333,7 @@ void CubeMapTextureGLTest::compressedImageQueryViewNullptr() {
 }
 
 void CubeMapTextureGLTest::compressedImageQueryViewBadSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1361,9 +1353,7 @@ void CubeMapTextureGLTest::compressedImageQueryViewBadSize() {
 }
 
 void CubeMapTextureGLTest::compressedImageQueryViewBadDataSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1383,9 +1373,7 @@ void CubeMapTextureGLTest::compressedImageQueryViewBadDataSize() {
 }
 
 void CubeMapTextureGLTest::compressedImageQueryViewBadFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1678,9 +1666,7 @@ void CubeMapTextureGLTest::compressedSubImageQueryView() {
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1699,9 +1685,7 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewNullptr() {
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewBadSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1721,9 +1705,7 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewBadSize() {
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewBadDataSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1743,9 +1725,7 @@ void CubeMapTextureGLTest::compressedSubImageQueryViewBadDataSize() {
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryViewBadFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -1893,9 +1873,7 @@ void CubeMapTextureGLTest::image3DQueryView() {
 }
 
 void CubeMapTextureGLTest::image3DQueryViewNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2});
@@ -1912,9 +1890,7 @@ void CubeMapTextureGLTest::image3DQueryViewNullptr() {
 }
 
 void CubeMapTextureGLTest::image3DQueryViewBadSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2});
@@ -2091,9 +2067,7 @@ void CubeMapTextureGLTest::compressedImage3DQueryView() {
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -2112,9 +2086,7 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewNullptr() {
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewBadSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -2134,9 +2106,7 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewBadSize() {
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewBadDataSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");
@@ -2156,9 +2126,7 @@ void CubeMapTextureGLTest::compressedImage3DQueryViewBadDataSize() {
 }
 
 void CubeMapTextureGLTest::compressedImage3DQueryViewBadFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() << "is not supported.");

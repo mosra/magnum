@@ -248,9 +248,7 @@ template<class T> void ObjectTest::setParentKeepTransformation() {
 template<class T> void ObjectTest::setParentKeepTransformationInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Object3D<T> root;
     root.rotateZ(Math::Deg<T>{35.0});
@@ -365,9 +363,7 @@ template<class T> void ObjectTest::transformationsRelative() {
 template<class T> void ObjectTest::transformationsOrphan() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream o;
     Error redirectError{&o};

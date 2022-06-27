@@ -212,9 +212,7 @@ template<class T> void CompressIndicesTest::compressOffsetNegative() {
 }
 
 void CompressIndicesTest::compressErasedNonContiguous() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const char indices[6*4]{};
 
@@ -226,9 +224,7 @@ void CompressIndicesTest::compressErasedNonContiguous() {
 }
 
 void CompressIndicesTest::compressErasedWrongIndexSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const char indices[6*3]{};
 
@@ -343,9 +339,7 @@ void CompressIndicesTest::compressMeshDataMove() {
 }
 
 void CompressIndicesTest::compressMeshDataNonIndexed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan, 5};
 
@@ -360,9 +354,7 @@ void CompressIndicesTest::compressMeshDataNonIndexed() {
 }
 
 void CompressIndicesTest::compressMeshDataImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Points,
         nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}}, 1};
@@ -378,9 +370,7 @@ void CompressIndicesTest::compressMeshDataImplementationSpecificIndexType() {
 }
 
 void CompressIndicesTest::compressMeshDataImplementationSpecificAtLeastIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt indices[5]{};
     Trade::MeshData mesh{MeshPrimitive::Points,
@@ -395,9 +385,7 @@ void CompressIndicesTest::compressMeshDataImplementationSpecificAtLeastIndexType
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void CompressIndicesTest::compressAsShort() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),

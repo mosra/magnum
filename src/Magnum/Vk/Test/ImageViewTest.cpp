@@ -143,9 +143,7 @@ void ImageViewTest::createInfoConstructFromImage() {
 }
 
 void ImageViewTest::createInfoConstructFromImageFormatUknown() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Device device{NoCreate};
     Image image = Image::wrap(device, imageHandle, PixelFormat{});

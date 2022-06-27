@@ -187,9 +187,7 @@ void DescriptorPoolVkTest::allocateFail() {
         CORRADE_VERIFY(!pool.tryAllocate(layout));
         CORRADE_COMPARE(out.str(), "");
     } {
-        #ifdef CORRADE_NO_ASSERT
-        CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-        #endif
+        CORRADE_SKIP_IF_NO_ASSERT();
 
         /* allocate() should assert with ErrorOutOfPoolMemory */
         std::ostringstream out;
@@ -263,9 +261,7 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
         CORRADE_VERIFY(!pool.tryAllocate(layout, 8));
         CORRADE_COMPARE(out.str(), "");
     } {
-        #ifdef CORRADE_NO_ASSERT
-        CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-        #endif
+        CORRADE_SKIP_IF_NO_ASSERT();
 
         /* allocate() should assert with ErrorOutOfPoolMemory */
         std::ostringstream out;

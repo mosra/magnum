@@ -528,9 +528,7 @@ void DevicePropertiesVkTest::memoryHeaps() {
 }
 
 void DevicePropertiesVkTest::memoryHeapOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());
@@ -572,9 +570,7 @@ void DevicePropertiesVkTest::memoryTypes() {
 }
 
 void DevicePropertiesVkTest::memoryTypeOutOfRange() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());
@@ -630,9 +626,7 @@ void DevicePropertiesVkTest::memoryTypesPickIgnoreSomePreferred() {
 }
 
 void DevicePropertiesVkTest::memoryTypesPickFailed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.isEmpty());

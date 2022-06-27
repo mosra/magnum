@@ -99,9 +99,7 @@ template<class T> void DualQuaternionTransformationTest::fromMatrix() {
 template<class T> void DualQuaternionTransformationTest::fromMatrixInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -156,9 +154,7 @@ template<class T> void DualQuaternionTransformationTest::setTransformation() {
 template<class T> void DualQuaternionTransformationTest::setTransformationInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Object3D<T> o;
 
@@ -198,9 +194,7 @@ template<class T> void DualQuaternionTransformationTest::transform() {
 template<class T> void DualQuaternionTransformationTest::transformInvalid() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Can't transform with non-rigid transformation */
     Object3D<T> o;

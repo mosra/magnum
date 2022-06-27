@@ -228,9 +228,7 @@ void GenerateIndicesTest::primitiveCount() {
 }
 
 void GenerateIndicesTest::primitiveCountInvalidPrimitive() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -267,9 +265,7 @@ void GenerateIndicesTest::generateLineStripIndices() {
 }
 
 void GenerateIndicesTest::generateLineStripIndicesWrongVertexCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -279,9 +275,7 @@ void GenerateIndicesTest::generateLineStripIndicesWrongVertexCount() {
 }
 
 void GenerateIndicesTest::generateLineStripIndicesIntoWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt indices[7];
 
@@ -323,9 +317,7 @@ void GenerateIndicesTest::generateLineLoopIndices() {
 }
 
 void GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -335,9 +327,7 @@ void GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount() {
 }
 
 void GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt indices[9];
 
@@ -378,9 +368,7 @@ void GenerateIndicesTest::generateTriangleStripIndices() {
 }
 
 void GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -390,9 +378,7 @@ void GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount() {
 }
 
 void GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt indices[8];
 
@@ -433,9 +419,7 @@ void GenerateIndicesTest::generateTriangleFanIndices() {
 }
 
 void GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -445,9 +429,7 @@ void GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount() {
 }
 
 void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt indices[8];
 
@@ -561,9 +543,7 @@ template<class T> void GenerateIndicesTest::generateQuadIndicesInto() {
 }
 
 void GenerateIndicesTest::generateQuadIndicesWrongIndexCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt quads[13];
 
@@ -575,9 +555,7 @@ void GenerateIndicesTest::generateQuadIndicesWrongIndexCount() {
 }
 
 void GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt quads[]{5, 4, 6, 7};
     Vector3 positions[7];
@@ -590,9 +568,7 @@ void GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds() {
 }
 
 void GenerateIndicesTest::generateQuadIndicesIntoWrongSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt quads[12];
     UnsignedInt output[19];
@@ -717,9 +693,7 @@ void GenerateIndicesTest::generateIndicesMeshDataMove() {
 }
 
 void GenerateIndicesTest::generateIndicesMeshDataIndexed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedByte indices[]{0};
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
@@ -737,9 +711,7 @@ void GenerateIndicesTest::generateIndicesMeshDataIndexed() {
 }
 
 void GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData mesh{MeshPrimitive::Triangles, 2};
 

@@ -152,9 +152,7 @@ void MeshLayoutTest::mapMeshPrimitiveImplementationSpecific() {
 }
 
 void MeshLayoutTest::mapMeshPrimitiveUnsupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     CORRADE_VERIFY(!hasMeshPrimitive(Magnum::MeshPrimitive::LineLoop));
 
@@ -168,9 +166,7 @@ void MeshLayoutTest::mapMeshPrimitiveUnsupported() {
 }
 
 void MeshLayoutTest::mapMeshPrimitiveInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -337,9 +333,7 @@ void MeshLayoutTest::addInstancedBindingDivisor() {
 }
 
 void MeshLayoutTest::addBindingWrongOrder() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshLayout layout{MeshPrimitive::Triangles};
     layout.addBinding(15, 23);
@@ -373,9 +367,7 @@ template<class T> void MeshLayoutTest::addAttribute() {
 }
 
 void MeshLayoutTest::addAttributeWrongOrder() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     MeshLayout layout{MeshPrimitive::Triangles};
     layout.addAttribute(5, 17, VertexFormat{}, 0);
@@ -512,9 +504,7 @@ void MeshLayoutTest::compare() {
 }
 
 void MeshLayoutTest::compareExternalPointers() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Disallowed pNext inside one struct */
     {

@@ -431,9 +431,7 @@ void ComplexTest::invertedNormalized() {
 }
 
 void ComplexTest::invertedNormalizedNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -472,9 +470,7 @@ void ComplexTest::angleNormalizedButOver1() {
 }
 
 void ComplexTest::angleNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -514,9 +510,7 @@ void ComplexTest::matrix() {
 }
 
 void ComplexTest::matrixNotRotation() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -551,9 +545,7 @@ void ComplexTest::lerp() {
 }
 
 void ComplexTest::lerpNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -581,9 +573,7 @@ void ComplexTest::slerp() {
 }
 
 void ComplexTest::slerpNotNormalized() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

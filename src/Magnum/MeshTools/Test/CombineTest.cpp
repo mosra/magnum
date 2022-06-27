@@ -186,9 +186,7 @@ void CombineTest::combineIndexedAttributesSingleMesh() {
 }
 
 void CombineTest::combineIndexedAttributesNoMeshes() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -197,9 +195,7 @@ void CombineTest::combineIndexedAttributesNoMeshes() {
 }
 
 void CombineTest::combineIndexedAttributesNotIndexed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort indices[5]{};
     Trade::MeshData a{MeshPrimitive::Lines,
@@ -215,9 +211,7 @@ void CombineTest::combineIndexedAttributesNotIndexed() {
 }
 
 void CombineTest::combineIndexedAttributesDifferentPrimitive() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort indices[5]{};
     Trade::MeshData a{MeshPrimitive::Lines,
@@ -232,9 +226,7 @@ void CombineTest::combineIndexedAttributesDifferentPrimitive() {
 }
 
 void CombineTest::combineIndexedAttributesDifferentIndexCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort indices[5]{};
     Trade::MeshData a{MeshPrimitive::Lines,
@@ -252,9 +244,7 @@ void CombineTest::combineIndexedAttributesDifferentIndexCount() {
 }
 
 void CombineTest::combineIndexedAttributesImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::Points,
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
@@ -274,9 +264,7 @@ void CombineTest::combineIndexedAttributesImplementationSpecificIndexType() {
 }
 
 void CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::Points,
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
@@ -420,9 +408,7 @@ void CombineTest::combineFaceAttributes() {
 }
 
 void CombineTest::combineFaceAttributesMeshNotIndexed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const Trade::MeshData mesh{MeshPrimitive::Triangles, 3};
     const Trade::MeshData faceAttributes{MeshPrimitive::Faces, 0};
@@ -435,9 +421,7 @@ void CombineTest::combineFaceAttributesMeshNotIndexed() {
 }
 
 void CombineTest::combineFaceAttributesUnexpectedPrimitive() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedInt indices[] { 0, 0, 0 };
     const Trade::MeshData a{MeshPrimitive::Triangles,
@@ -457,9 +441,7 @@ void CombineTest::combineFaceAttributesUnexpectedPrimitive() {
 }
 
 void CombineTest::combineFaceAttributesUnexpectedFaceCount() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedInt indices[] { 0, 0, 0 };
     const Trade::MeshData mesh{MeshPrimitive::Triangles,
@@ -474,9 +456,7 @@ void CombineTest::combineFaceAttributesUnexpectedFaceCount() {
 }
 
 void CombineTest::combineFaceAttributesImplementationSpecificIndexType() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData triangles{MeshPrimitive::Triangles,
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
@@ -510,9 +490,7 @@ void CombineTest::combineFaceAttributesImplementationSpecificIndexType() {
 }
 
 void CombineTest::combineFaceAttributesImplementationSpecificVertexFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData triangles{MeshPrimitive::Triangles,
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedShort, nullptr},
@@ -552,9 +530,7 @@ void CombineTest::combineFaceAttributesImplementationSpecificVertexFormat() {
 }
 
 void CombineTest::combineFaceAttributesFacesNotInterleaved() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     using namespace Math::Literals;
 
@@ -584,9 +560,7 @@ void CombineTest::combineFaceAttributesFacesNotInterleaved() {
 }
 
 void CombineTest::combineFaceAttributesFaceAttributeOffsetOnly() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

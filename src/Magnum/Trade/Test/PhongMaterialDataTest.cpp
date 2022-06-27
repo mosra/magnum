@@ -242,9 +242,7 @@ void PhongMaterialDataTest::constructDeprecatedTexturedCoordinates() {
 }
 
 void PhongMaterialDataTest::constructDeprecatedTextureTransformNoTextures() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -260,9 +258,7 @@ void PhongMaterialDataTest::constructDeprecatedTextureTransformNoTextures() {
 }
 
 void PhongMaterialDataTest::constructDeprecatedNoTextureTransformationFlag() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -278,9 +274,7 @@ void PhongMaterialDataTest::constructDeprecatedNoTextureTransformationFlag() {
 }
 
 void PhongMaterialDataTest::constructDeprecatedNoTextureCoordinatesFlag() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -478,9 +472,7 @@ void PhongMaterialDataTest::texturedImplicitPackedSpecularGlossiness() {
 }
 
 void PhongMaterialDataTest::invalidTextures() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PhongMaterialData data{{}, {}};
 
@@ -653,9 +645,7 @@ void PhongMaterialDataTest::commonCoordinatesLayerImplicit() {
 }
 
 void PhongMaterialDataTest::noCommonTransformationCoordinatesLayer() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     PhongMaterialData data{{}, {
         {MaterialAttribute::DiffuseTexture, 3u},

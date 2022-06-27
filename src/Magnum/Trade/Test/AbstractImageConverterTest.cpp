@@ -591,9 +591,7 @@ void AbstractImageConverterTest::setFlagsNotImplemented() {
 }
 
 void AbstractImageConverterTest::thingNotSupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return {}; }
@@ -761,9 +759,7 @@ void AbstractImageConverterTest::convert3DFailed() {
 }
 
 void AbstractImageConverterTest::convert1DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1D; }
@@ -776,9 +772,7 @@ void AbstractImageConverterTest::convert1DNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert2DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2D; }
@@ -791,9 +785,7 @@ void AbstractImageConverterTest::convert2DNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert3DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3D; }
@@ -806,9 +798,7 @@ void AbstractImageConverterTest::convert3DNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert1DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1D; }
@@ -824,9 +814,7 @@ void AbstractImageConverterTest::convert1DCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convert2DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2D; }
@@ -842,9 +830,7 @@ void AbstractImageConverterTest::convert2DCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convert3DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3D; }
@@ -956,9 +942,7 @@ void AbstractImageConverterTest::convertCompressed3DFailed() {
 }
 
 void AbstractImageConverterTest::convertCompressed1DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1D; }
@@ -971,9 +955,7 @@ void AbstractImageConverterTest::convertCompressed1DNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed2DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2D; }
@@ -986,9 +968,7 @@ void AbstractImageConverterTest::convertCompressed2DNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed3DNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3D; }
@@ -1001,9 +981,7 @@ void AbstractImageConverterTest::convertCompressed3DNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed1DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1D; }
@@ -1019,9 +997,7 @@ void AbstractImageConverterTest::convertCompressed1DCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convertCompressed2DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2D; }
@@ -1037,9 +1013,7 @@ void AbstractImageConverterTest::convertCompressed2DCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convertCompressed3DCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3D; }
@@ -1250,9 +1224,7 @@ void AbstractImageConverterTest::convert3DToDataFailed() {
 }
 
 void AbstractImageConverterTest::convert1DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToData; }
@@ -1265,9 +1237,7 @@ void AbstractImageConverterTest::convert1DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convert2DToDataZeroSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
@@ -1281,9 +1251,7 @@ void AbstractImageConverterTest::convert2DToDataZeroSize() {
 }
 
 void AbstractImageConverterTest::convert2DToDataNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
@@ -1296,9 +1264,7 @@ void AbstractImageConverterTest::convert2DToDataNullptr() {
 }
 
 void AbstractImageConverterTest::convert3DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToData; }
@@ -1311,9 +1277,7 @@ void AbstractImageConverterTest::convert3DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convert1DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToData; }
@@ -1327,9 +1291,7 @@ void AbstractImageConverterTest::convert1DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert2DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
@@ -1343,9 +1305,7 @@ void AbstractImageConverterTest::convert2DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert3DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToData; }
@@ -1359,9 +1319,7 @@ void AbstractImageConverterTest::convert3DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert1DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToData; }
@@ -1378,9 +1336,7 @@ void AbstractImageConverterTest::convert1DToDataCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convert2DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToData; }
@@ -1397,9 +1353,7 @@ void AbstractImageConverterTest::convert2DToDataCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convert3DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToData; }
@@ -1515,9 +1469,7 @@ void AbstractImageConverterTest::convertCompressed3DToDataFailed() {
 }
 
 void AbstractImageConverterTest::convertCompressed1DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToData; }
@@ -1530,9 +1482,7 @@ void AbstractImageConverterTest::convertCompressed1DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressed2DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToData; }
@@ -1545,9 +1495,7 @@ void AbstractImageConverterTest::convertCompressed2DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressed3DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToData; }
@@ -1560,9 +1508,7 @@ void AbstractImageConverterTest::convertCompressed3DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressed1DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToData; }
@@ -1576,9 +1522,7 @@ void AbstractImageConverterTest::convertCompressed1DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed2DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToData; }
@@ -1592,9 +1536,7 @@ void AbstractImageConverterTest::convertCompressed2DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed3DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToData; }
@@ -1608,9 +1550,7 @@ void AbstractImageConverterTest::convertCompressed3DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed1DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToData; }
@@ -1627,9 +1567,7 @@ void AbstractImageConverterTest::convertCompressed1DToDataCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convertCompressed2DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToData; }
@@ -1646,9 +1584,7 @@ void AbstractImageConverterTest::convertCompressed2DToDataCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convertCompressed3DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToData; }
@@ -1883,9 +1819,7 @@ void AbstractImageConverterTest::convertLevels3DToDataFailed() {
 }
 
 void AbstractImageConverterTest::convertLevels1DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
@@ -1898,9 +1832,7 @@ void AbstractImageConverterTest::convertLevels1DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataNoLevels() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -1913,9 +1845,7 @@ void AbstractImageConverterTest::convertLevels2DToDataNoLevels() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataZeroSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -1932,9 +1862,7 @@ void AbstractImageConverterTest::convertLevels2DToDataZeroSize() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -1951,9 +1879,7 @@ void AbstractImageConverterTest::convertLevels2DToDataNullptr() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -1971,9 +1897,7 @@ void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormat() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormatExtra() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -1991,9 +1915,7 @@ void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormatExtra() 
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataInconsistentFlags() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -2011,9 +1933,7 @@ void AbstractImageConverterTest::convertLevels2DToDataInconsistentFlags() {
 }
 
 void AbstractImageConverterTest::convertLevels3DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
@@ -2026,9 +1946,7 @@ void AbstractImageConverterTest::convertLevels3DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertLevels1DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
@@ -2042,9 +1960,7 @@ void AbstractImageConverterTest::convertLevels1DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -2058,9 +1974,7 @@ void AbstractImageConverterTest::convertLevels2DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertLevels3DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
@@ -2074,9 +1988,7 @@ void AbstractImageConverterTest::convertLevels3DToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertLevels1DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
@@ -2093,9 +2005,7 @@ void AbstractImageConverterTest::convertLevels1DToDataCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
@@ -2112,9 +2022,7 @@ void AbstractImageConverterTest::convertLevels2DToDataCustomDeleter() {
 }
 
 void AbstractImageConverterTest::convertLevels3DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
@@ -2245,9 +2153,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataFailed() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
@@ -2260,9 +2166,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToDataNoLevels() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
@@ -2275,9 +2179,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataNoLevels() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToDataZeroSize() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
@@ -2294,9 +2196,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataZeroSize() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToDataNullptr() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
@@ -2313,9 +2213,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataNullptr() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFormat() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
@@ -2333,9 +2231,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentForm
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFlags() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
@@ -2353,9 +2249,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFlag
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToDataInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
@@ -2368,9 +2262,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
@@ -2384,9 +2276,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataNotImplemented()
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
@@ -2400,9 +2290,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataNotImplemented()
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToDataNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
@@ -2416,9 +2304,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataNotImplemented()
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
@@ -2435,9 +2321,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataCustomDeleter() 
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
@@ -2454,9 +2338,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataCustomDeleter() 
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToDataCustomDeleter() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
@@ -2860,9 +2742,7 @@ void AbstractImageConverterTest::convert3DToFileThroughDataNotWritable() {
 }
 
 void AbstractImageConverterTest::convert1DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToFile; }
@@ -2875,9 +2755,7 @@ void AbstractImageConverterTest::convert1DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convert2DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToFile; }
@@ -2890,9 +2768,7 @@ void AbstractImageConverterTest::convert2DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convert3DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToFile; }
@@ -2905,9 +2781,7 @@ void AbstractImageConverterTest::convert3DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convert1DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert1DToFile; }
@@ -2921,9 +2795,7 @@ void AbstractImageConverterTest::convert1DToFileNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert2DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert2DToFile; }
@@ -2937,9 +2809,7 @@ void AbstractImageConverterTest::convert2DToFileNotImplemented() {
 }
 
 void AbstractImageConverterTest::convert3DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::Convert3DToFile; }
@@ -3256,9 +3126,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileThroughDataNotWritable
 }
 
 void AbstractImageConverterTest::convertCompressed1DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToFile; }
@@ -3271,9 +3139,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressed2DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToFile; }
@@ -3286,9 +3152,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressed3DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToFile; }
@@ -3301,9 +3165,7 @@ void AbstractImageConverterTest::convertCompressed3DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressed1DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed1DToFile; }
@@ -3317,9 +3179,7 @@ void AbstractImageConverterTest::convertCompressed1DToFileNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed2DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed2DToFile; }
@@ -3333,9 +3193,7 @@ void AbstractImageConverterTest::convertCompressed2DToFileNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertCompressed3DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressed3DToFile; }
@@ -3724,9 +3582,7 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataNotWritable() {
 }
 
 void AbstractImageConverterTest::convertLevels1DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
@@ -3739,9 +3595,7 @@ void AbstractImageConverterTest::convertLevels1DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
@@ -3754,9 +3608,7 @@ void AbstractImageConverterTest::convertLevels2DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertLevels3DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
@@ -3769,9 +3621,7 @@ void AbstractImageConverterTest::convertLevels3DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertLevels1DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
@@ -3785,9 +3635,7 @@ void AbstractImageConverterTest::convertLevels1DToFileNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertLevels2DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
@@ -3801,9 +3649,7 @@ void AbstractImageConverterTest::convertLevels2DToFileNotImplemented() {
 }
 
 void AbstractImageConverterTest::convertLevels3DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
@@ -4147,9 +3993,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataNotWr
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
@@ -4162,9 +4006,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
@@ -4177,9 +4019,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFileInvalidImage() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }
@@ -4192,9 +4032,7 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileInvalidImage() {
 }
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
@@ -4208,9 +4046,7 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileNotImplemented()
 }
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
@@ -4224,9 +4060,7 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileNotImplemented()
 }
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFileNotImplemented() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }

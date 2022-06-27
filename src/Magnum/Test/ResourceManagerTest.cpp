@@ -261,9 +261,7 @@ void ResourceManagerTest::stateFallback() {
 }
 
 void ResourceManagerTest::stateDisallowed() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     ResourceManager rm;
 
@@ -304,9 +302,7 @@ void ResourceManagerTest::basic() {
 }
 
 void ResourceManagerTest::changeFinalResource() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     ResourceManager rm;
 
@@ -412,9 +408,7 @@ void ResourceManagerTest::clear() {
 }
 
 void ResourceManagerTest::clearWhileReferenced() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
+    CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Should cover also the destruction case */
 
