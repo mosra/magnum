@@ -781,8 +781,11 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
         return false;
     }
 
-    if(SDL_GL_GetSwapInterval() != interval) {
-        Error() << "Platform::Sdl2Application::setSwapInterval(): swap interval setting ignored by the driver";
+    /* Setting interval to 1 may cause SDL_GL_GetSwapInterval() to return -1,
+       which is a valid case */
+    const Int actualInterval = SDL_GL_GetSwapInterval();
+    if(actualInterval != interval && !(interval == 1 && actualInterval == -1)) {
+        Error() << "Platform::Sdl2Application::setSwapInterval(): swap interval setting ignored by the driver:" << SDL_GetError();
         _flags &= ~Flag::VSyncEnabled;
         return false;
     }

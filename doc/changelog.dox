@@ -725,6 +725,9 @@ See also:
     case as for a WebGL-enabled context
 -   Fixed a crash in @ref Platform::GlfwApplication::setCursor() on the
     upcoming GLFW 3.4
+-   Fixed @ref Platform::Sdl2Application::setSwapInterval() to take late swap
+    behavior (@cpp -1 @ce) into account instead of treating it as an error
+    and continuing with timer-based framerate capping
 -   @ref SceneGraph::BasicMatrixTransformation2D,
     @ref SceneGraph::BasicMatrixTransformation3D,
     @ref SceneGraph::BasicRigidMatrixTransformation2D and
