@@ -29,6 +29,7 @@
 #include <sstream>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
@@ -443,12 +444,14 @@ struct FrameProfilerGL::State {
     #endif
     UnsignedLong frameTimeStartFrame[2];
     UnsignedLong cpuDurationStartFrame;
-    GL::TimeQuery timeQueries[3]{GL::TimeQuery{NoCreate}, GL::TimeQuery{NoCreate}, GL::TimeQuery{NoCreate}};
+
+    enum: std::size_t { QueryCount = 3 };
+    Containers::StaticArray<QueryCount, GL::TimeQuery> timeQueries{DirectInit, NoCreate};
     #ifndef MAGNUM_TARGET_GLES
-    GL::PipelineStatisticsQuery verticesSubmittedQueries[3]{GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}};
-    GL::PipelineStatisticsQuery vertexShaderInvocationsQueries[3]{GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}};
-    GL::PipelineStatisticsQuery clippingInputPrimitivesQueries[3]{GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}};
-    GL::PipelineStatisticsQuery clippingOutputPrimitivesQueries[3]{GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}, GL::PipelineStatisticsQuery{NoCreate}};
+    Containers::StaticArray<QueryCount, GL::PipelineStatisticsQuery> verticesSubmittedQueries{DirectInit, NoCreate};
+    Containers::StaticArray<QueryCount, GL::PipelineStatisticsQuery> vertexShaderInvocationsQueries{DirectInit, NoCreate};
+    Containers::StaticArray<QueryCount, GL::PipelineStatisticsQuery> clippingInputPrimitivesQueries{DirectInit, NoCreate};
+    Containers::StaticArray<QueryCount, GL::PipelineStatisticsQuery> clippingOutputPrimitivesQueries{DirectInit, NoCreate};
     #endif
 };
 
@@ -502,7 +505,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
             q = GL::TimeQuery{GL::TimeQuery::Target::TimeElapsed};
         arrayAppend(measurements, InPlaceInit,
             "GPU duration", Units::Nanoseconds,
-            UnsignedInt(Containers::arraySize(_state->timeQueries)),
+            UnsignedInt(_state->timeQueries.size()),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->timeQueries[current].begin();
             },
@@ -522,7 +525,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::VertexShaderInvocations};
         arrayAppend(measurements, InPlaceInit,
             "Vertex fetch ratio", Units::RatioThousandths,
-            UnsignedInt(Containers::arraySize(_state->verticesSubmittedQueries)),
+            UnsignedInt(_state->verticesSubmittedQueries.size()),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->verticesSubmittedQueries[current].begin();
                 static_cast<State*>(state)->vertexShaderInvocationsQueries[current].begin();
@@ -547,7 +550,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::ClippingOutputPrimitives};
         arrayAppend(measurements, InPlaceInit,
             "Primitives clipped", Units::PercentageThousandths,
-            UnsignedInt(Containers::arraySize(_state->clippingInputPrimitivesQueries)),
+            UnsignedInt(_state->clippingInputPrimitivesQueries.size()),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->clippingInputPrimitivesQueries[current].begin();
                 static_cast<State*>(state)->clippingOutputPrimitivesQueries[current].begin();
