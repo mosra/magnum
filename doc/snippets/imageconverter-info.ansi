@@ -1,8 +1,8 @@
 [1;37m3D image 0:[0m
-  Level 0: {512, 512, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (1536.0 kB)
-  Level 1: {256, 256, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (384.0 kB)
-  Level 2: {128, 128, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (96.0 kB)
-  Level 3: {64, 64, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (24.0 kB)
-  Level 4: {32, 32, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (6.0 kB)
-  Level 5: {16, 16, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (1.5 kB)
+  Level 0:[0;36m CubeMap[0m {512, 512, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (1536.0 kB)
+  Level 1:[0;36m CubeMap[0m {256, 256, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (384.0 kB)
+  Level 2:[0;36m CubeMap[0m {128, 128, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (96.0 kB)
+  Level 3:[0;36m CubeMap[0m {64, 64, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (24.0 kB)
+  Level 4:[0;36m CubeMap[0m {32, 32, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (6.0 kB)
+  Level 5:[0;36m CubeMap[0m {16, 16, 6}[0;34m @[0m[0;33m Bc3RGBAUnorm[0m (1.5 kB)
 Total image data size: 2047.5 kB
