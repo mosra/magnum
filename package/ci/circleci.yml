@@ -7,17 +7,10 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20220427
-  xcode-11_5:
-    # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
-    # have to use 10.3 instead; since 2021-06-08 it refuses to work on 10.14 so
-    # have to use 11.2 at least; since 2022-01-20 the oldest 11 image is 11.4.
-    # Since 2922-05-23, 11.4.1 images wait endlessly for "VM assignment", using
-    # 11.5 instead.
+  # Anything below 11.7 is deprecated as of June 6th 2022
+  xcode-11_7:
     macos:
-      xcode: 11.5
-  xcode-11_6:
-    macos:
-      xcode: 11.6.0
+      xcode: 11.7.0
   emscripten1:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
@@ -467,7 +460,7 @@ jobs:
         script: unix-desktop.sh
 
   macos-gl:
-    executor: xcode-11_5
+    executor: xcode-11_7
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -480,7 +473,7 @@ jobs:
     - lcov
 
   macos-gles3:
-    executor: xcode-11_5
+    executor: xcode-11_7
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -497,9 +490,7 @@ jobs:
     - lcov
 
   macos-vulkan:
-    # SwiftShader is built on 10.15 and can't be used on older versions due to
-    # dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
-    executor: xcode-11_6
+    executor: xcode-11_7
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -515,7 +506,7 @@ jobs:
     - lcov
 
   macos-static:
-    executor: xcode-11_5
+    executor: xcode-11_7
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
@@ -594,7 +585,7 @@ jobs:
         script: android-x86-vulkan.sh
 
   ios-gles3:
-    executor: xcode-11_5
+    executor: xcode-11_7
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"

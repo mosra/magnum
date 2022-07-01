@@ -41,7 +41,7 @@ cd ../..
 curl --insecure -O https://www.libsdl.org/release/SDL2-2.0.10.tar.gz
 tar -xzvf SDL2-2.0.10.tar.gz
 cd SDL2-2.0.10/Xcode-iOS/SDL
-set -o pipefail && xcodebuild -sdk iphonesimulator13.5 | xcbeautify
+set -o pipefail && xcodebuild -sdk iphonesimulator13.7 | xcbeautify
 cp build/Release-iphonesimulator/libSDL2.a $HOME/deps/lib
 mkdir -p $HOME/deps/include/SDL2
 cp -R ../../include/* $HOME/deps/include/SDL2
