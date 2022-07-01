@@ -609,7 +609,7 @@ workflows:
   build:
     jobs:
     - linux-gl
-    #- linux-arm64
+    - linux-arm64
     - linux-vulkan
     - linux-gles2
     - linux-gles3
@@ -617,13 +617,13 @@ workflows:
     - linux-nondeprecated
     - linux-sanitizers
     - linux-threadsanitizer
-    #- macos-gl
-    #- macos-vulkan
-    #- macos-gles3
-    #- macos-static
+    - macos-gl
+    - macos-vulkan
+    - macos-gles3
+    - macos-static
     - emscripten-webgl1
     - emscripten-webgl2
     - android-x86-gles2
-    #- android-x86-gles3
+    - android-x86-gles3
     - android-x86-vulkan
-    #- ios-gles3
+    - ios-gles3
