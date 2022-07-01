@@ -589,6 +589,10 @@ jobs:
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
+      # Yep, xcodebuild is beyond stupid and just DOESN'T build in parallel by
+      # default. The default medium resource class has 4 CPUs and Ninja uses
+      # -j6, so do the same for xcodebuild.
+      XCODE_JOBS: 6
     steps:
     - install-base-macos:
         extra: xcbeautify
