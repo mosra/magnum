@@ -30,7 +30,7 @@ set(CMAKE_FOLDER "Magnum/Math")
 set(MagnumMath_HEADERS
     Angle.h
     Bezier.h
-    BoolVector.h
+    BitVector.h
     Color.h
     Complex.h
     Constants.h
@@ -63,6 +63,10 @@ set(MagnumMath_HEADERS
     Vector2.h
     Vector3.h
     Vector4.h)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND MagnumMath_HEADERS BoolVector.h)
+endif()
 
 set(MagnumMath_INTERNAL_HEADERS
     Implementation/halfTables.hpp)

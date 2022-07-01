@@ -123,9 +123,9 @@ template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<bool, bool>(Animation
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Float, Float>(Animation::Interpolation) -> Float(*)(const Float&, const Float&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<UnsignedInt, UnsignedInt>(Animation::Interpolation) -> UnsignedInt(*)(const UnsignedInt&, const UnsignedInt&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Int, Int>(Animation::Interpolation) -> Int(*)(const Int&, const Int&, Float);
-template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Math::BoolVector<2>, Math::BoolVector<2>>(Animation::Interpolation) -> Math::BoolVector<2>(*)(const Math::BoolVector<2>&, const Math::BoolVector<2>&, Float);
-template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Math::BoolVector<3>, Math::BoolVector<3>>(Animation::Interpolation) -> Math::BoolVector<3>(*)(const Math::BoolVector<3>&, const Math::BoolVector<3>&, Float);
-template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Math::BoolVector<4>, Math::BoolVector<4>>(Animation::Interpolation) -> Math::BoolVector<4>(*)(const Math::BoolVector<4>&, const Math::BoolVector<4>&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Math::BitVector<2>, Math::BitVector<2>>(Animation::Interpolation) -> Math::BitVector<2>(*)(const Math::BitVector<2>&, const Math::BitVector<2>&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Math::BitVector<3>, Math::BitVector<3>>(Animation::Interpolation) -> Math::BitVector<3>(*)(const Math::BitVector<3>&, const Math::BitVector<3>&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Math::BitVector<4>, Math::BitVector<4>>(Animation::Interpolation) -> Math::BitVector<4>(*)(const Math::BitVector<4>&, const Math::BitVector<4>&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector2, Vector2>(Animation::Interpolation) -> Vector2(*)(const Vector2&, const Vector2&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector2i, Vector2i>(Animation::Interpolation) -> Vector2i(*)(const Vector2i&, const Vector2i&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector2ui, Vector2ui>(Animation::Interpolation) -> Vector2ui(*)(const Vector2ui&, const Vector2ui&, Float);
@@ -157,9 +157,9 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
         _c(Float)
         _c(UnsignedInt)
         _c(Int)
-        _c(BoolVector2)
-        _c(BoolVector3)
-        _c(BoolVector4)
+        _c(BitVector2)
+        _c(BitVector3)
+        _c(BitVector4)
         _c(Vector2)
         _c(Vector2ui)
         _c(Vector2i)

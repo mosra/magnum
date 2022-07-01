@@ -106,7 +106,7 @@ Interpolation       | Value type        | Result type   | Interpolator
 @ref Interpolation::Constant "Constant" | any `V`  | `V`           | @ref Math::select()
 @ref Interpolation::Constant "Constant" | @ref Math::CubicHermite "Math::CubicHermite<T>"  | `T` | @ref Math::select(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::select()"
 @ref Interpolation::Linear "Linear" | @cpp bool @ce <b></b> | @cpp bool @ce <b></b> | @ref Math::select()
-@ref Interpolation::Linear "Linear" | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
+@ref Interpolation::Linear "Linear" | @ref Math::BitVector | @ref Math::BitVector | @ref Math::select()
 @ref Interpolation::Linear "Linear" | any scalar `V` | `V`       | @ref Math::lerp()
 @ref Interpolation::Linear "Linear" | any vector `V` | `V`       | @ref Math::lerp()
 @ref Interpolation::Linear "Linear" | @ref Math::Complex | @ref Math::Complex | @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) "Math::slerp()"
@@ -336,7 +336,7 @@ template<class T> auto TypeTraitsBool<T>::interpolator(Interpolation interpolati
     CORRADE_ASSERT_UNREACHABLE("Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 template<> struct TypeTraits<bool, bool>: TypeTraitsBool<bool> {};
-template<std::size_t size> struct TypeTraits<Math::BoolVector<size>, Math::BoolVector<size>>: TypeTraitsBool<Math::BoolVector<size>> {};
+template<std::size_t size> struct TypeTraits<Math::BitVector<size>, Math::BitVector<size>>: TypeTraitsBool<Math::BitVector<size>> {};
 
 /* Complex, preferring slerp() as it is more precise */
 template<class T> struct

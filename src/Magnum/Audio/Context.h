@@ -41,7 +41,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
 #include "Magnum/Audio/visibility.h"
-#include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/BitVector.h"
 
 #if defined(CORRADE_TARGET_APPLE) && !defined(OPENAL_DEPRECATED)
 #define OPENAL_DEPRECATED /* Override deprecation warning macro to nothing */
@@ -409,8 +409,8 @@ class MAGNUM_AUDIO_EXPORT Context {
         ALCdevice* _device;
         ALCcontext* _context;
 
-        Math::BoolVector<Implementation::ExtensionCount> _extensionStatus;
-        Math::BoolVector<Implementation::ExtensionCount> _disabledExtensions;
+        Math::BitVector<Implementation::ExtensionCount> _extensionStatus;
+        Math::BitVector<Implementation::ExtensionCount> _disabledExtensions;
         std::vector<Extension> _supportedExtensions;
         std::vector<std::string> _disabledExtensionStrings;
 };

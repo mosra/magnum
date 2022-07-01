@@ -546,7 +546,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
 
     #ifndef CORRADE_NO_ASSERT
     /* Check various assumptions about field data */
-    Math::BoolVector<12> fieldsPresent; /** @todo some constant for this */
+    Math::BitVector<12> fieldsPresent; /** @todo some constant for this */
     const UnsignedInt mappingTypeSize = sceneMappingTypeSize(_mappingType);
     #endif
     UnsignedInt transformationField = ~UnsignedInt{};

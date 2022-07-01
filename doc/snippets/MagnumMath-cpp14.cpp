@@ -23,29 +23,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/BitVector.h"
 #include "Magnum/Magnum.h"
 
 using namespace Magnum;
 
 int main() {
 {
-/* [BoolVector-indexing] */
-BoolVector4 a{0b0010};
+/* [BitVector-indexing] */
+BitVector4 a{0b0010};
 Debug{} << a[1];  // true
 
-Math::BoolVector<19> b{0b00001000, 0b00000011, 0b100};
+Math::BitVector<19> b{0b00001000, 0b00000011, 0b100};
 Debug{} << b[3];  // true
 Debug{} << b[8];  // true
 Debug{} << b[9];  // true
 Debug{} << b[18]; // true
-/* [BoolVector-indexing] */
+/* [BitVector-indexing] */
 }
 
 {
-/* [BoolVector-debug] */
-Debug{} << BoolVector4{0b1010}
-        << Math::BoolVector<19>{0b00001000, 0b00000011, 0b100};
-/* [BoolVector-debug] */
+/* [BitVector-debug] */
+Debug{} << BitVector4{0b1010}
+        << Math::BitVector<19>{0b00001000, 0b00000011, 0b100};
+/* [BitVector-debug] */
 }
 }

@@ -161,9 +161,9 @@
 namespace Magnum {
 
 typedef Math::Half Half;
-typedef Math::BoolVector<2> BoolVector2;
-typedef Math::BoolVector<3> BoolVector3;
-typedef Math::BoolVector<4> BoolVector4;
+typedef Math::BitVector<2> BitVector2;
+typedef Math::BitVector<3> BitVector3;
+typedef Math::BitVector<4> BitVector4;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector4<Float> Vector4;

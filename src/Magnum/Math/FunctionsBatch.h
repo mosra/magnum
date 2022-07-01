@@ -57,9 +57,9 @@ vectors or scalars.
 @brief If any number in the range is a positive or negative infinity
 
 For scalar types returns @cpp true @ce as soon as it finds an infinite value,
-@cpp false @ce otherwise. For vector types, returns @ref BoolVector with bits
+@cpp false @ce otherwise. For vector types, returns @ref BitVector with bits
 set to @cpp 1 @ce if any value has that component infinite. If the range is
-empty, returns @cpp false @ce or a @ref BoolVector with no bits set.
+empty, returns @cpp false @ce or a @ref BitVector with no bits set.
 @see @ref isInf(T), @ref Constants::inf()
 */
 template<class T> auto isInf(const Corrade::Containers::StridedArrayView1D<const T>& range) -> decltype(isInf(std::declval<T>())) {
@@ -68,7 +68,7 @@ template<class T> auto isInf(const Corrade::Containers::StridedArrayView1D<const
     /* For scalars, this loop exits once any value is infinity. For vectors
        the loop accumulates the bits and exits as soon as all bits are set
        or the input is exhausted */
-    auto out = isInf(range[0]); /* bool or BoolVector */
+    auto out = isInf(range[0]); /* bool or BitVector */
     for(std::size_t i = 1; i != range.size(); ++i) {
         if(out) break;
         out = out || isInf(range[i]);
@@ -109,9 +109,9 @@ template<class T, std::size_t size> inline auto isInf(const T(&array)[size]) -> 
 @brief If any number in the range is a NaN
 
 For scalar types returns @cpp true @ce as soon as it finds a NaN value,
-@cpp false @ce otherwise. For vector types, returns @ref BoolVector with bits
+@cpp false @ce otherwise. For vector types, returns @ref BitVector with bits
 set to @cpp 1 @ce if any value has that component NaN. If the range is empty,
-returns @cpp false @ce or a @ref BoolVector with no bits set.
+returns @cpp false @ce or a @ref BitVector with no bits set.
 @see @ref isNan(T), @ref Constants::nan()
 */
 template<class T> inline auto isNan(const Corrade::Containers::StridedArrayView1D<const T>& range) -> decltype(isNan(std::declval<T>())) {
@@ -120,7 +120,7 @@ template<class T> inline auto isNan(const Corrade::Containers::StridedArrayView1
     /* For scalars, this loop exits once any value is infinity. For vectors
        the loop accumulates the bits and exits as soon as all bits are set
        or the input is exhausted */
-    auto out = isNan(range[0]); /* bool or BoolVector */
+    auto out = isNan(range[0]); /* bool or BitVector */
     for(std::size_t i = 1; i != range.size(); ++i) {
         if(out) break;
         out = out || isNan(range[i]);
@@ -183,7 +183,7 @@ namespace Implementation {
         T out = range[0];
         std::size_t firstValid = 0;
         for(std::size_t i = 1; i != range.size(); ++i) {
-            BoolVector<T::Size> nans = isNan(out);
+            BitVector<T::Size> nans = isNan(out);
             if(nans.none()) break;
             if(nans.all() && firstValid + 1 == i) ++firstValid;
             out = Math::lerp(out, range[i], isNan(out));

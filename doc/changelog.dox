@@ -411,7 +411,7 @@ See also:
     matrices, and with the default on @ref Math::RectangularMatrix being
     zero-fill while @ref Math::Matrix stays with the identity for consistency
     with other constructors.
--   @ref Math::Bezier::data(), @ref Math::BoolVector::data(),
+-   @ref Math::Bezier::data(), @ref Math::BitVector::data(),
     @ref Math::Complex::data(), @ref Math::CubicHermite::data(),
     @ref Math::Dual::data(), @ref Math::DualComplex::data(),
     @ref Math::DualQuaternion::data(), @ref Math::Frustum::data(),
@@ -769,6 +769,12 @@ See also:
     custom uses, the @relativeref{Corrade,Containers::Array1}, @relativeref{Corrade,Containers::Array2} or
     @relativeref{Corrade,Containers::Array3} types provide a suitable
     alternative as well.
+-   The @cpp Math::BoolVector @ce class and the @cpp BoolVector2 @ce,
+    @cpp BoolVector3 @ce and @cpp BoolVector4 @ce typedefs are deprecated in
+    favor of @ref Math::BitVector, @relativeref{Magnum,BitVector2},
+    @relativeref{Magnum,BitVector3} and @relativeref{Magnum,BitVector4} to not
+    imply storing the 8-bit @cpp bool @ce type and for consistency with the new
+    @relativeref{Corrade,Containers::BitArray} types
 -   Markup styling for Emscripten application was switched to prefer using
     CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
     @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,
@@ -2126,8 +2132,8 @@ Released 2019-10-24, tagged as
 -   @ref Color3ub and @ref Color4ub can be printed with
     @ref Corrade::Utility::Debug as actual colors using the
     @ref Corrade::Utility::Debug::color modifier
--   Added convenience @ref BoolVector2, @ref BoolVector3 and @ref BoolVector4
-    typedefs to the root namespace
+-   Added convenience @cpp BoolVector2 @ce, @cpp BoolVector3 @ce and
+    @cpp BoolVector4 @ce typedefs to the root namespace
 -   New @ref Math::IsScalar, @ref Math::IsVector, @ref Math::IsIntegral,
     @ref Math::IsFloatingPoint and @ref Math::IsUnitless type traits and a
     @ref Math::UnderlyingTypeOf utility
@@ -2314,7 +2320,7 @@ Released 2019-10-24, tagged as
 
 @subsubsection changelog-2019-10-changes-math Math library
 
--   @ref Math::BoolVector now implements component-wise @cpp && @ce,
+-   @cpp Math::BoolVector @ce now implements component-wise @cpp && @ce,
     @cpp || @ce and @cpp ! @ce for better consistency with boolean operations
     done on scalar types
 -   Construction using @ref Math::ZeroInit and @ref Math::IdentityInit is
@@ -2336,7 +2342,7 @@ Released 2019-10-24, tagged as
     @ref Math::isNan(const Vector<size, T>&) or the batch
     @ref Math::isNan(const Containers::StridedArrayView1D<const T>&) to detect
     presence of NaN values if needed.
--   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)
+-   Changed the way @cpp Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&) @ce
     works --- the output now has the same bit order as when constructing it
     using binary literals
 -   @ref Math::sincos() now uses the `__builtin_sincos` intrinsic on GCC,
@@ -3056,7 +3062,7 @@ Released 2018-10-23, tagged as
 -   Added a convenience function @ref Math::planeEquation() to aid with passing
     passing parameters to @ref Math::Intersection::planeLine(),
     @ref Math::Distance::pointPlane() and others
--   Ability to convert @ref Math::BoolVector from and to external
+-   Ability to convert @cpp Math::BoolVector @ce from and to external
     representation
 -   Ability to construct @ref Math::Matrix from a smaller or larger square
     matrix by slicing or expanding it

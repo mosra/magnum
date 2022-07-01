@@ -470,12 +470,12 @@ void RectangularMatrixTest::compare() {
 }
 
 void RectangularMatrixTest::compareComponentWise() {
-    typedef BoolVector<3> BoolVector3;
+    typedef BitVector<3> BitVector3;
     typedef RectangularMatrix<3, 1, Float> Matrix3x1;
-    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) < Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x1));
-    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) <= Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x3));
-    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) >= Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x6));
-    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) > Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x4));
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) < Matrix3x1(1.1f, -1.0f, 3.0f), BitVector3(0x1));
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) <= Matrix3x1(1.1f, -1.0f, 3.0f), BitVector3(0x3));
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) >= Matrix3x1(1.1f, -1.0f, 3.0f), BitVector3(0x6));
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) > Matrix3x1(1.1f, -1.0f, 3.0f), BitVector3(0x4));
 }
 
 void RectangularMatrixTest::negative() {

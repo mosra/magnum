@@ -44,8 +44,8 @@ struct InterpolationTest: TestSuite::Tester {
     void interpolatorForInvalid();
     void interpolatorForBool();
     void interpolatorForBoolInvalid();
-    void interpolatorForBoolVector();
-    void interpolatorForBoolVectorInvalid();
+    void interpolatorForBitVector();
+    void interpolatorForBitVectorInvalid();
     void interpolatorForComplex();
     void interpolatorForComplexInvalid();
     void interpolatorForQuaternion();
@@ -163,8 +163,8 @@ InterpolationTest::InterpolationTest() {
               &InterpolationTest::interpolatorForInvalid,
               &InterpolationTest::interpolatorForBool,
               &InterpolationTest::interpolatorForBoolInvalid,
-              &InterpolationTest::interpolatorForBoolVector,
-              &InterpolationTest::interpolatorForBoolVectorInvalid,
+              &InterpolationTest::interpolatorForBitVector,
+              &InterpolationTest::interpolatorForBitVectorInvalid,
               &InterpolationTest::interpolatorForComplex,
               &InterpolationTest::interpolatorForComplexInvalid,
               &InterpolationTest::interpolatorForQuaternion,
@@ -254,20 +254,20 @@ void InterpolationTest::interpolatorForBoolInvalid() {
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
 
-void InterpolationTest::interpolatorForBoolVector() {
-    CORRADE_COMPARE(Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Constant)(
-        Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 0.5f), (Math::BoolVector<4>{0xa}));
-    CORRADE_COMPARE(Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Linear)(
-        Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 0.5f), (Math::BoolVector<4>{0xa}));
+void InterpolationTest::interpolatorForBitVector() {
+    CORRADE_COMPARE(Animation::interpolatorFor<Math::BitVector<4>>(Interpolation::Constant)(
+        Math::BitVector<4>{0xa}, Math::BitVector<4>{0x5}, 0.5f), (Math::BitVector<4>{0xa}));
+    CORRADE_COMPARE(Animation::interpolatorFor<Math::BitVector<4>>(Interpolation::Linear)(
+        Math::BitVector<4>{0xa}, Math::BitVector<4>{0x5}, 0.5f), (Math::BitVector<4>{0xa}));
 }
 
-void InterpolationTest::interpolatorForBoolVectorInvalid() {
+void InterpolationTest::interpolatorForBitVectorInvalid() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
-    Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Custom);
-    Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation(0xde));
+    Animation::interpolatorFor<Math::BitVector<4>>(Interpolation::Custom);
+    Animation::interpolatorFor<Math::BitVector<4>>(Interpolation(0xde));
 
     CORRADE_COMPARE(out.str(),
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"

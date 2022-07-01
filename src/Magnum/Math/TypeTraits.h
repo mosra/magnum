@@ -138,7 +138,7 @@ template<class T> struct IsScalar<Rad<T>>: std::true_type {};
 
 Equivalent to @ref std::true_type for all @ref Vector types and their
 subclasses; equivalent to @ref std::false_type otherwise. In particular, gives
-@ref std::false_type for @ref BoolVector, all matrix types, @ref Complex or
+@ref std::false_type for @ref BitVector, all matrix types, @ref Complex or
 @ref Quaternion.
 @see @ref IsScalar, @ref IsFloatingPoint, @ref IsIntegral
 */

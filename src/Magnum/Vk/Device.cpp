@@ -99,7 +99,7 @@ struct DeviceCreateInfo::State {
     void* firstEnabledFeature{};
     /* Used for checking if the device enables extensions required by features */
     #ifndef CORRADE_NO_ASSERT
-    Math::BoolVector<Implementation::ExtensionCount> featuresRequiredExtensions;
+    Math::BitVector<Implementation::ExtensionCount> featuresRequiredExtensions;
     #endif
 
     Containers::String disabledExtensionsStorage;
@@ -803,7 +803,7 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
 
     #ifndef CORRADE_NO_ASSERT
     /* This is a dumb O(n^2) search but in an assert that's completely fine */
-    const Math::BoolVector<Implementation::ExtensionCount> missingExtensions = ~_enabledExtensions & info._state->featuresRequiredExtensions;
+    const Math::BitVector<Implementation::ExtensionCount> missingExtensions = ~_enabledExtensions & info._state->featuresRequiredExtensions;
     if(missingExtensions.any()) {
         for(std::size_t i = 0; i != Implementation::ExtensionCount; ++i) {
             if(!missingExtensions[i]) continue;

@@ -37,7 +37,7 @@
 #include <Corrade/Containers/StaticArray.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/BitVector.h"
 #include "Magnum/Tags.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
@@ -898,7 +898,7 @@ class MAGNUM_GL_EXPORT Context {
         Flags _flags;
         #endif
 
-        Math::BoolVector<Implementation::ExtensionCount> _extensionStatus;
+        Math::BitVector<Implementation::ExtensionCount> _extensionStatus;
         /* For all extensions that are marked as supported in _extensionStatus,
            this field contains the minimal required GL version the extension
            needs. Extensions that are disabled have None here. */

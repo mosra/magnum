@@ -49,9 +49,51 @@ enum class AnimationTrackType: UnsignedByte {
     Float,              /**< @ref Magnum::Float "Float" */
     UnsignedInt,        /**< @ref Magnum::UnsignedInt "UnsignedInt" */
     Int,                /**< @ref Magnum::Int "Int" */
-    BoolVector2,        /**< @ref Math::BoolVector "Math::BoolVector<2>" */
-    BoolVector3,        /**< @ref Math::BoolVector "Math::BoolVector<3>" */
-    BoolVector4,        /**< @ref Math::BoolVector "Math::BoolVector<4>" */
+
+    /**
+     * @relativeref{Magnum,BitVector2}
+     * @m_since_latest
+     */
+    BitVector2,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @relativeref{Magnum,BitVector2}
+     * @m_deprecated_since_latest Use @ref AnimationTrackType::BitVector2
+     *      instead.
+     */
+    BoolVector2 CORRADE_DEPRECATED_ENUM("use BitVector2 instead") = BitVector2,
+    #endif
+
+    /**
+     * @relativeref{Magnum,BitVector3}
+     * @m_since_latest
+     */
+    BitVector3,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @relativeref{Magnum,BitVector3}
+     * @m_deprecated_since_latest Use @ref AnimationTrackType::BitVector3
+     *      instead.
+     */
+    BoolVector3 CORRADE_DEPRECATED_ENUM("use BitVector3 instead") = BitVector3,
+    #endif
+
+    /**
+     * @relativeref{Magnum,BitVector4}
+     * @m_since_latest
+     */
+    BitVector4,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @relativeref{Magnum,BitVector4}
+     * @m_deprecated_since_latest Use @ref AnimationTrackType::BitVector4
+     *      instead.
+     */
+    BoolVector4 CORRADE_DEPRECATED_ENUM("use BitVector4 instead") = BitVector4,
+    #endif
 
     /**
      * @ref Magnum::Vector2 "Vector2". Usually used for
@@ -609,9 +651,9 @@ namespace Implementation {
     template<> constexpr AnimationTrackType animationTypeFor<UnsignedInt>() { return AnimationTrackType::UnsignedInt; }
     template<> constexpr AnimationTrackType animationTypeFor<Int>() { return AnimationTrackType::Int; }
 
-    template<> constexpr AnimationTrackType animationTypeFor<Math::BoolVector<2>>() { return AnimationTrackType::BoolVector2; }
-    template<> constexpr AnimationTrackType animationTypeFor<Math::BoolVector<3>>() { return AnimationTrackType::BoolVector3; }
-    template<> constexpr AnimationTrackType animationTypeFor<Math::BoolVector<4>>() { return AnimationTrackType::BoolVector4; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::BitVector<2>>() { return AnimationTrackType::BitVector2; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::BitVector<3>>() { return AnimationTrackType::BitVector3; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::BitVector<4>>() { return AnimationTrackType::BitVector4; }
 
     template<> constexpr AnimationTrackType animationTypeFor<Vector2>() { return AnimationTrackType::Vector2; }
     template<> constexpr AnimationTrackType animationTypeFor<Vector3>() { return AnimationTrackType::Vector3; }

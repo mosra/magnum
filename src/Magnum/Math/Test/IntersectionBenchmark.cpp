@@ -38,7 +38,7 @@ template<class T> bool rangeFrustumNaive(const Math::Range3D<T>& box, const Math
         bool cornerHit = 0;
 
         for(UnsignedByte c = 0; c != 8; ++c) {
-            const Math::Vector3<T> corner = Math::lerp(box.min(), box.max(), Math::BoolVector<3>{c});
+            const Math::Vector3<T> corner = Math::lerp(box.min(), box.max(), Math::BitVector<3>{c});
 
             if(Distance::pointPlaneScaled<T>(corner, plane) >= T(0)) {
                 cornerHit = true;

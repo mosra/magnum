@@ -73,7 +73,7 @@ after type name means @ref Float underlying type, `h` means @ref Half, `d` is
 
 | Magnum vector type                             | Equivalent GLSL type      |
 | ---------------------------------------------- | ------------------------- |
-| @ref BoolVector2, @ref BoolVector3, @ref BoolVector4 | @glsl bvec2 @ce, @glsl bvec3 @ce, @glsl bvec4 @ce |
+| @ref BitVector2, @ref BitVector3, @ref BitVector4 | @glsl bvec2 @ce, @glsl bvec3 @ce, @glsl bvec4 @ce |
 | @ref Vector2, @ref Vector3, @ref Color3, @ref Vector4, @ref Color4 | @glsl vec2 @ce, @glsl vec3 @ce, @glsl vec4 @ce |
 | @ref Vector2h, @ref Vector3h, @ref Color3h, @ref Vector4h, @ref Color4h | (*none*) |
 | @ref Vector2d, @ref Vector3d, @ref Vector4d    | @glsl dvec2 @ce, @glsl dvec3 @ce, @glsl dvec4 @ce |

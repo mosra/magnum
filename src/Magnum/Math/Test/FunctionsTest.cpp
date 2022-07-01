@@ -387,11 +387,11 @@ void FunctionsTest::lerp() {
 void FunctionsTest::lerpBool() {
     /* Scalar interpolation phase */
     CORRADE_COMPARE(Math::lerp(Vector3i{1, 2, 3}, Vector3i{5, 6, 7}, true), (Vector3i{5, 6, 7}));
-    CORRADE_COMPARE(Math::lerp(BoolVector<3>{5}, BoolVector<3>{true}, false), BoolVector<3>{5});
+    CORRADE_COMPARE(Math::lerp(BitVector<3>{5}, BitVector<3>{true}, false), BitVector<3>{5});
 
     /* Vector interpolation phase */
-    CORRADE_COMPARE(Math::lerp(Vector3i{1, 2, 3}, Vector3i{5, 6, 7}, BoolVector<3>(5)), (Vector3i{5, 2, 7}));
-    CORRADE_COMPARE(Math::lerp(BoolVector<3>{false}, BoolVector<3>{true}, BoolVector<3>(5)), BoolVector<3>{5});
+    CORRADE_COMPARE(Math::lerp(Vector3i{1, 2, 3}, Vector3i{5, 6, 7}, BitVector<3>(5)), (Vector3i{5, 2, 7}));
+    CORRADE_COMPARE(Math::lerp(BitVector<3>{false}, BitVector<3>{true}, BitVector<3>(5)), BitVector<3>{5});
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::lerp(2.0_degf, 5.0_degf, true), 5.0_degf);
@@ -432,8 +432,8 @@ void FunctionsTest::select() {
 
 void FunctionsTest::selectBool() {
     CORRADE_COMPARE(Math::select(true, false, 0.5f), true);
-    CORRADE_COMPARE(Math::select(Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 1.1f), Math::BoolVector<4>{0x5});
-    CORRADE_COMPARE(Math::select(Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, Vector4{1.1f, -1.0f, 1.3f, 0.5f}), Math::BoolVector<4>{0xf});
+    CORRADE_COMPARE(Math::select(Math::BitVector<4>{0xa}, Math::BitVector<4>{0x5}, 1.1f), Math::BitVector<4>{0x5});
+    CORRADE_COMPARE(Math::select(Math::BitVector<4>{0xa}, Math::BitVector<4>{0x5}, Vector4{1.1f, -1.0f, 1.3f, 0.5f}), Math::BitVector<4>{0xf});
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::select(true, false, 0.5_degf), true);
@@ -482,8 +482,8 @@ void FunctionsTest::isInf() {
 }
 
 void FunctionsTest::isInfVector() {
-    CORRADE_COMPARE(Math::isInf(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BoolVector<3>{0x02});
-    CORRADE_COMPARE(Math::isInf(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BoolVector<3>{0x00});
+    CORRADE_COMPARE(Math::isInf(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BitVector<3>{0x02});
+    CORRADE_COMPARE(Math::isInf(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BitVector<3>{0x00});
 }
 
 void FunctionsTest::isNan() {
@@ -498,8 +498,8 @@ void FunctionsTest::isNan() {
 }
 
 void FunctionsTest::isNanfVector() {
-    CORRADE_COMPARE(Math::isNan(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BoolVector<3>{0x04});
-    CORRADE_COMPARE(Math::isNan(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BoolVector<3>{0x00});
+    CORRADE_COMPARE(Math::isNan(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BitVector<3>{0x04});
+    CORRADE_COMPARE(Math::isNan(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BitVector<3>{0x00});
 }
 
 void FunctionsTest::reflect() {

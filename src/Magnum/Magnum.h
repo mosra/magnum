@@ -269,31 +269,51 @@ typedef float Float;
 typedef Math::Half Half;
 
 /**
-@brief Two-component bool vector
-@m_since{2019,10}
+@brief Two-component vector of bits
+@m_since_latest
 
 Equivalent to GLSL @glsl bvec2 @ce.
 @m_keyword{bvec2,GLSL bvec2,}
 */
-typedef Math::BoolVector<2> BoolVector2;
+typedef Math::BitVector<2> BitVector2;
 
 /**
-@brief Three-component bool vector
-@m_since{2019,10}
+@brief Three-component vector of bits
+@m_since_latest
 
 Equivalent to GLSL @glsl bvec3 @ce.
 @m_keyword{bvec3,GLSL bvec3,}
 */
-typedef Math::BoolVector<3> BoolVector3;
+typedef Math::BitVector<3> BitVector3;
 
 /**
-@brief Four-component bool vector
-@m_since{2019,10}
+@brief Four-component vector of bits
+@m_since_latest
 
 Equivalent to GLSL @glsl bvec4 @ce.
 @m_keyword{bvec4,GLSL bvec4,}
 */
-typedef Math::BoolVector<4> BoolVector4;
+typedef Math::BitVector<4> BitVector4;
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief BitVector2
+@m_deprecated_since_latest Use @ref BitVector2 instead.
+*/
+typedef CORRADE_DEPRECATED("use BitVector2 instead") BitVector2 BoolVector2;
+
+/**
+@brief @copybrief BitVector3
+@m_deprecated_since_latest Use @ref BitVector3 instead.
+*/
+typedef CORRADE_DEPRECATED("use BitVector3 instead") BitVector3 BoolVector3;
+
+/**
+@brief @copybrief BitVector4
+@m_deprecated_since_latest Use @ref BitVector4 instead.
+*/
+typedef CORRADE_DEPRECATED("use BitVector4 instead") BitVector4 BoolVector4;
+#endif
 
 /**
 @brief Two-component float vector

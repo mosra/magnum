@@ -304,7 +304,7 @@ static_cast<void>(min);
 static_cast<void>(max);
 
 /* [matrix-vector-operations-compare] */
-BoolVector3 largerOrEqual = a >= b;             // {false, true, true}
+BitVector3 largerOrEqual = a >= b;              // {false, true, true}
 bool anySmaller = (a < b).any();                // true
 bool allLarger = (a > b).all();                 // false
 /* [matrix-vector-operations-compare] */
@@ -747,13 +747,13 @@ static_cast<void>(tan2);
 
 {
 Vector3 epsilon;
-/* [BoolVector-boolean] */
+/* [BitVector-boolean] */
 Vector3 a, b;
 
 if(!(b < a - epsilon || a + epsilon < b)) {
     // b is around a
 }
-/* [BoolVector-boolean] */
+/* [BitVector-boolean] */
 }
 
 {

@@ -45,7 +45,7 @@
 #endif
 
 #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
-#include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/BitVector.h"
 #endif
 
 namespace Magnum { namespace GL { namespace Implementation {
@@ -189,7 +189,7 @@ struct TextureState {
        texture type. */
     Containers::ArrayView<std::pair<GLenum, GLuint>> bindings;
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
-    Math::BoolVector<80> bufferTextureBound;
+    Math::BitVector<80> bufferTextureBound;
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Texture object ID, level, layered, layer, access */

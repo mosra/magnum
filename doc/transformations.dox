@@ -256,7 +256,7 @@ Interpolation       | Value type        | Result type   | Interpolator
 Constant            | any `V`           | `V`           | @ref Math::select()
 Constant | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::select(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::select()"
 Linear  | @cpp bool @ce <b></b> | @cpp bool @ce <b></b> | @ref Math::select()
-Linear  | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
+Linear    | @ref Math::BitVector | @ref Math::BitVector | @ref Math::select()
 Linear              | any scalar `V`    | `V`           | @ref Math::lerp()
 Linear              | any vector `V`    | `V`           | @ref Math::lerp()
 Linear              | @ref Math::Complex | @ref Math::Complex | @ref Math::lerp(const Complex<T>&, const Complex<T>&, T) "Math::lerp()"

@@ -229,7 +229,7 @@ Component-wise minimum and maximum of two vectors can be done using
 @snippet MagnumMath.cpp matrix-vector-operations-minmax
 
 The vectors can be also compared component-wise, the result is returned in a
-@ref Math::BoolVector class:
+@ref Math::BitVector class:
 
 @snippet MagnumMath.cpp matrix-vector-operations-compare
 

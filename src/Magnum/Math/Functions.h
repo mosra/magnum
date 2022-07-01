@@ -56,9 +56,9 @@ namespace Implementation {
         template<class T> constexpr static T pow(T) { return T(1); }
     };
 
-    template<class> struct IsBoolVectorOrScalar: std::false_type {};
-    template<> struct IsBoolVectorOrScalar<bool>: std::true_type {};
-    template<std::size_t size> struct IsBoolVectorOrScalar<BoolVector<size>>: std::true_type {};
+    template<class> struct IsBitVectorOrScalar: std::false_type {};
+    template<> struct IsBitVectorOrScalar<bool>: std::true_type {};
+    template<std::size_t size> struct IsBitVectorOrScalar<BitVector<size>>: std::true_type {};
 }
 
 /**
@@ -250,8 +250,8 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type
 @overload
 @m_since{2019,10}
 */
-template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<size, T>& value) {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> isInf(const Vector<size, T>& value) {
+    BitVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, Math::isInf(value[i]));
     return out;
@@ -272,8 +272,8 @@ template<class T> typename std::enable_if<IsScalar<T>::value, bool>::type isNan(
 @overload
 @m_since{2019,10}
 */
-template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<size, T>& value) {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> isNan(const Vector<size, T>& value) {
+    BitVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, Math::isNan(value[i]));
     return out;
@@ -507,7 +507,7 @@ See @ref select() for constant interpolation using the same API and
 */
 template<class T, class U> inline
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    typename std::enable_if<(IsVector<T>::value || IsScalar<T>::value) && !Implementation::IsBoolVectorOrScalar<U>::value, T>::type
+    typename std::enable_if<(IsVector<T>::value || IsScalar<T>::value) && !Implementation::IsBitVectorOrScalar<U>::value, T>::type
     #else
     T
     #endif
@@ -527,7 +527,7 @@ Similar to the above, but instead of multiplication and addition it just does
 component-wise selection from either @p a or @p b based on values in @p t.
 @m_keyword{mix(),GLSL mix(),}
 */
-template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, const BoolVector<size>& t) {
+template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, const BitVector<size>& t) {
     Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = t[i] ? b[i] : a[i];
@@ -537,10 +537,10 @@ template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<siz
 /** @overload
 @m_keyword{mix(),GLSL mix(),}
 */
-template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& a, const BoolVector<size>& b, const BoolVector<size>& t) {
+template<std::size_t size> inline BitVector<size> lerp(const BitVector<size>& a, const BitVector<size>& b, const BitVector<size>& t) {
     /* Not using NoInit because it causes some compilers to report unitialized
        value */
-    BoolVector<size> out;
+    BitVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, t[i] ? b[i] : a[i]);
     return out;

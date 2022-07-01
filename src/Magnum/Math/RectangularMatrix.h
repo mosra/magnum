@@ -303,7 +303,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Calls @ref Vector::operator<() on @ref toVector().
          */
-        BoolVector<cols*rows> operator<(const RectangularMatrix<cols, rows, T>& other) const {
+        BitVector<cols*rows> operator<(const RectangularMatrix<cols, rows, T>& other) const {
             return toVector() < other.toVector();
         }
 
@@ -312,7 +312,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Calls @ref Vector::operator<=() on @ref toVector().
          */
-        BoolVector<cols*rows> operator<=(const RectangularMatrix<cols, rows, T>& other) const {
+        BitVector<cols*rows> operator<=(const RectangularMatrix<cols, rows, T>& other) const {
             return toVector() <= other.toVector();
         }
 
@@ -321,7 +321,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Calls @ref Vector::operator>=() on @ref toVector().
          */
-        BoolVector<cols*rows> operator>=(const RectangularMatrix<cols, rows, T>& other) const {
+        BitVector<cols*rows> operator>=(const RectangularMatrix<cols, rows, T>& other) const {
             return toVector() >= other.toVector();
         }
 
@@ -330,7 +330,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Calls @ref Vector::operator>() on @ref toVector().
          */
-        BoolVector<cols*rows> operator>(const RectangularMatrix<cols, rows, T>& other) const {
+        BitVector<cols*rows> operator>(const RectangularMatrix<cols, rows, T>& other) const {
             return toVector() > other.toVector();
         }
 

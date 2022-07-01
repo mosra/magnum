@@ -720,7 +720,7 @@ a high-level overview.
     @ref Math::Quaternion from a different underlying type
 -   Added @ref Math::ZeroInit, @ref Math::NoInit, @ref Math::IdentityInit tags
     to control initialization of all math classes
--   Added @ref Math::lerp(const Vector<size, T>&, const Vector<size, T>&, const BoolVector<size>&)
+-   Added @cpp Math::lerp(const Vector<size, T>&, const Vector<size, T>&, const BoolVector<size>&) @ce
 -   Added @ref Math::Vector::flipped(), @ref Math::RectangularMatrix::flippedCols(),
     @ref Math::RectangularMatrix::flippedRows()
 -   Added @ref Math::TypeTraits::name() and @ref Math::TypeTraits::equalsZero()
@@ -730,7 +730,7 @@ a high-level overview.
 -   Ability to construct @ref Math::DualQuaternion from dual vector and scalar
 -   Ability to save and restore @ref Deg and @ref Rad from
     @ref Corrade::Utility::Configuration
--   Explicit bool conversion for @ref Math::BoolVector (see
+-   Explicit bool conversion for @cpp Math::BoolVector @ce (see
     [mosra/magnum#182](https://github.com/mosra/magnum/issues/182))
 -   Component-wise comparison for @ref Math::RectangularMatrix
 -   Ability to construct @ref Math::RectangularMatrix and derived classes
@@ -1028,7 +1028,7 @@ a high-level overview.
     @ref Math::RectangularMatrix from @ref Corrade::Utility::Configuration
 -   Fixed unfortunate interaction of VAOs and index buffers on platforms
     without direct state access
--   Fixed resetting a bit in @ref Math::BoolVector::set() (see
+-   Fixed resetting a bit in @cpp Math::BoolVector::set() @ce (see
     [mosra/magnum#208](https://github.com/mosra/magnum/issues/208),
     [mosra/magnum#
 -   @ref Audio::Context::hrtfSpecifierString() was crashing on systems

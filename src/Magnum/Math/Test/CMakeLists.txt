@@ -27,7 +27,7 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/Math/Test")
 
-corrade_add_test(MathBoolVectorTest BoolVectorTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathBitVectorTest BitVectorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathConstantsTest ConstantsTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathFunctionsTest FunctionsTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathFunctionsBatchTest FunctionsBatchTest.cpp LIBRARIES MagnumMathTestLib)

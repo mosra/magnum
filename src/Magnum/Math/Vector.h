@@ -38,7 +38,7 @@
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"
-#include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/BitVector.h"
 #include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace Math {
@@ -283,28 +283,28 @@ template<std::size_t size, class T> class Vector {
          *
          * @m_keyword{lessThan(),GLSL lessThan(),}
          */
-        BoolVector<size> operator<(const Vector<size, T>& other) const;
+        BitVector<size> operator<(const Vector<size, T>& other) const;
 
         /**
          * @brief Component-wise less than or equal comparison
          *
          * @m_keyword{lessThanEqual(),GLSL lessThanEqual(),}
          */
-        BoolVector<size> operator<=(const Vector<size, T>& other) const;
+        BitVector<size> operator<=(const Vector<size, T>& other) const;
 
         /**
          * @brief Component-wise greater than or equal comparison
          *
          * @m_keyword{greaterThanEqual(),GLSL greaterThanEqual(),}
          */
-        BoolVector<size> operator>=(const Vector<size, T>& other) const;
+        BitVector<size> operator>=(const Vector<size, T>& other) const;
 
         /**
          * @brief Component-wise greater than comparison
          *
          * @m_keyword{greaterThan(),GLSL greaterThan(),}
          */
-        BoolVector<size> operator>(const Vector<size, T>& other) const;
+        BitVector<size> operator>(const Vector<size, T>& other) const;
 
         /**
          * @brief Whether the vector is zero
@@ -699,8 +699,8 @@ template<std::size_t size, class T> class Vector {
 
         /* So the out-of-class comparators can access data directly to avoid
            function call overhead */
-        template<std::size_t size_, class T_> friend BoolVector<size_> equal(const Vector<size_, T_>&, const Vector<size_, T_>&);
-        template<std::size_t size_, class T_> friend BoolVector<size_> notEqual(const Vector<size_, T_>&, const Vector<size_, T_>&);
+        template<std::size_t size_, class T_> friend BitVector<size_> equal(const Vector<size_, T_>&, const Vector<size_, T_>&);
+        template<std::size_t size_, class T_> friend BitVector<size_> notEqual(const Vector<size_, T_>&, const Vector<size_, T_>&);
 
         template<std::size_t size_, class U> friend U dot(const Vector<size_, U>&, const Vector<size_, U>&);
 
@@ -723,11 +723,11 @@ template<std::size_t size, class T> class Vector {
 @brief Component-wise equality comparison
 @m_since{2019,10}
 
-Unlike @ref Vector::operator==() returns a @ref BoolVector instead of a single
+Unlike @ref Vector::operator==() returns a @ref BitVector instead of a single
 value. Vector complement to @ref equal(T, T).
 */
-template<std::size_t size, class T> inline BoolVector<size> equal(const Vector<size, T>& a, const Vector<size, T>& b) {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> equal(const Vector<size, T>& a, const Vector<size, T>& b) {
+    BitVector<size> out;
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, TypeTraits<T>::equals(a._data[i], b._data[i]));
@@ -739,11 +739,11 @@ template<std::size_t size, class T> inline BoolVector<size> equal(const Vector<s
 @brief Component-wise non-equality comparison
 @m_since{2019,10}
 
-Unlike @ref Vector::operator!=() returns a @ref BoolVector instead of a single
+Unlike @ref Vector::operator!=() returns a @ref BitVector instead of a single
 value. Vector complement to @ref notEqual(T, T).
 */
-template<std::size_t size, class T> inline BoolVector<size> notEqual(const Vector<size, T>& a, const Vector<size, T>& b) {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> notEqual(const Vector<size, T>& a, const Vector<size, T>& b) {
+    BitVector<size> out;
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, !TypeTraits<T>::equals(a._data[i], b._data[i]));
@@ -1441,8 +1441,8 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     }
 #endif
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> Vector<size, T>::operator<(const Vector<size, T>& other) const {
+    BitVector<size> out;
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] < other._data[i]);
@@ -1450,8 +1450,8 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<=(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> Vector<size, T>::operator<=(const Vector<size, T>& other) const {
+    BitVector<size> out;
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] <= other._data[i]);
@@ -1459,8 +1459,8 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator>=(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> Vector<size, T>::operator>=(const Vector<size, T>& other) const {
+    BitVector<size> out;
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] >= other._data[i]);
@@ -1468,8 +1468,8 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator>(const Vector<size, T>& other) const {
-    BoolVector<size> out;
+template<std::size_t size, class T> inline BitVector<size> Vector<size, T>::operator>(const Vector<size, T>& other) const {
+    BitVector<size> out;
 
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, _data[i] > other._data[i]);

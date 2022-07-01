@@ -33,7 +33,7 @@
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Tags.h"
-#include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/BitVector.h"
 #include "Magnum/Vk/TypeTraits.h"
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
@@ -441,7 +441,7 @@ class MAGNUM_VK_EXPORT Instance {
         VkInstance _handle;
         HandleFlags _flags;
         Version _version;
-        Math::BoolVector<Implementation::InstanceExtensionCount> _extensionStatus;
+        Math::BitVector<Implementation::InstanceExtensionCount> _extensionStatus;
         Containers::Pointer<Implementation::InstanceState> _state;
 
         /* This member is bigger than you might think */

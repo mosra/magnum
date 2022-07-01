@@ -33,12 +33,19 @@
 
 #include "Magnum/Types.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Math {
 
 /** @todo Denormals to zero */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t> class BoolVector;
+template<std::size_t> class BitVector;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<std::size_t size> using BoolVector CORRADE_DEPRECATED_ALIAS("use BitVector instead") = BitVector<size>;
+#endif
 
 template<class> struct Constants;
 

@@ -69,7 +69,7 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
 
     /* Ensure each known attribute gets bound only once. There's 16 generic
        attribs at most. */
-    Math::BoolVector<16> boundAttributes;
+    Math::BitVector<16> boundAttributes;
 
     for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
         Containers::Optional<GL::DynamicAttribute> attribute;
