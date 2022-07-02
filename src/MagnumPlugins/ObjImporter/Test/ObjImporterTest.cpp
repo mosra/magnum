@@ -70,6 +70,7 @@ struct ObjImporterTest: TestSuite::Tester {
        with each case testing one file and just the invalid() case testing
        separate files. */
     void invalid();
+    void invalidMixedPrimitives();
     void invalidNumbers();
     void invalidNumberCount();
     void invalidInconsistentIndexTuple();
@@ -88,10 +89,20 @@ const struct {
     const char* filename;
     const char* message;
 } InvalidData[]{
-    {"mixed primitives", "invalid-mixed-primitives.obj",
-        "mixed primitive MeshPrimitive::Points and MeshPrimitive::Lines"},
     {"unknown keyword", "invalid-keyword.obj",
         "unknown keyword bleh"}
+};
+
+const struct {
+    const char* name;
+    const char* message;
+} InvalidMixedPrimitivesData[]{
+    {"points after some other",
+        "mixed primitive MeshPrimitive::Triangles and MeshPrimitive::Points"},
+    {"lines after some other",
+        "mixed primitive MeshPrimitive::Points and MeshPrimitive::Lines"},
+    {"triangles after some other",
+        "mixed primitive MeshPrimitive::Lines and MeshPrimitive::Triangles"},
 };
 
 const struct {
@@ -170,6 +181,9 @@ ObjImporterTest::ObjImporterTest() {
 
     addInstancedTests({&ObjImporterTest::invalid},
         Containers::arraySize(InvalidData));
+
+    addInstancedTests({&ObjImporterTest::invalidMixedPrimitives},
+        Containers::arraySize(InvalidMixedPrimitivesData));
 
     addInstancedTests({&ObjImporterTest::invalidNumbers},
         Containers::arraySize(InvalidNumbersData));
@@ -540,6 +554,22 @@ void ObjImporterTest::invalid() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh(0));
+    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::ObjImporter::mesh(): {}\n", data.message));
+}
+
+void ObjImporterTest::invalidMixedPrimitives() {
+    auto&& data = InvalidMixedPrimitivesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "invalid-mixed-primitives.obj")));
+
+    /* Ensure we didn't forget to test any case */
+    CORRADE_COMPARE(importer->meshCount(), Containers::arraySize(InvalidMixedPrimitivesData));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->mesh(data.name));
     CORRADE_COMPARE(out.str(), Utility::formatString("Trade::ObjImporter::mesh(): {}\n", data.message));
 }
 
