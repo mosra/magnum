@@ -98,53 +98,53 @@ const struct {
     const char* name;
     const char* message;
 } InvalidNumbersData[]{
-    {"WrongFloat", "error while converting numeric data"},
-    {"WrongInteger", "error while converting numeric data"},
-    {"PositionIndexOutOfRange", "index 1 out of range for 1 vertices"},
-    {"TextureIndexOutOfRange", "index 2 out of range for 1 vertices"},
-    {"ZeroIndex", "index 0 out of range for 1 vertices"}
+    {"invalid float literal", "error while converting numeric data"},
+    {"invalid integer literal", "error while converting numeric data"},
+    {"position index out of range", "index 1 out of range for 1 vertices"},
+    {"texture index out of range", "index 2 out of range for 1 vertices"},
+    {"zero index", "index 0 out of range for 1 vertices"}
 };
 
 const struct {
     const char* name;
     const char* message;
 } InvalidNumberCountData[]{
-    {"ShortFloat", "invalid float array size"},
-    {"LongFloat", "invalid float array size"},
-    {"LongOptionalFloat", "invalid float array size"},
-    {"InvalidIndices", "invalid index data"},
-    {"WrongPointIndices", "wrong index count for point"},
-    {"WrongLineIndices", "wrong index count for line"},
-    {"WrongTriangleIndices", "wrong index count for triangle"},
-    {"PolygonIndices", "polygons are not supported"}
+    {"two-component position", "invalid float array size"},
+    {"five-component position with optional fourth component", "invalid float array size"},
+    {"four-component normal", "invalid float array size"},
+    {"four-component index tuple", "invalid index data"},
+    {"point with two indices", "wrong index count for point"},
+    {"line with one index", "wrong index count for line"},
+    {"triangle with two indices", "wrong index count for triangle"},
+    {"quad", "polygons are not supported"}
 };
 
 const struct {
     const char* name;
     const char* message;
 } InvalidInconsistentIndexTupleData[]{
-    {"ShortNormalIndices", "some normal indices are missing"},
-    {"ShortTextureIndices", "some texture coordinate indices are missing"},
+    {"missing normal reference", "some normal indices are missing"},
+    {"missing texture reference", "some texture coordinate indices are missing"},
 };
 
 const struct {
     const char* name;
     const char* message;
 } InvalidIncompleteDataData[]{
-    {"MissingPositionData", "incomplete position data"},
-    {"MissingPositionIndices", "incomplete position data"},
-    {"MissingNormalData", "incomplete normal data"},
-    {"MissingNormalIndices", "incomplete normal data"},
-    {"MissingTextureData", "incomplete texture coordinate data"},
-    {"MissingTextureIndices", "incomplete texture coordinate data"},
+    {"missing position data", "incomplete position data"},
+    {"missing position indices", "incomplete position data"},
+    {"missing normal data", "incomplete normal data"},
+    {"missing normal indices", "incomplete normal data"},
+    {"missing texture coordinate data", "incomplete texture coordinate data"},
+    {"missing texture coordinate indices", "incomplete texture coordinate data"},
 };
 
 const struct {
     const char* name;
     const char* message;
 } InvalidOptionalCoordinateData[]{
-    {"UnsupportedPositionW", "homogeneous coordinates are not supported"},
-    {"UnsupportedTextureW", "3D texture coordinates are not supported"}
+    {"position with optional fourth component not one", "homogeneous coordinates are not supported"},
+    {"texture with optional third component not zero", "3D texture coordinates are not supported"}
 };
 
 ObjImporterTest::ObjImporterTest() {

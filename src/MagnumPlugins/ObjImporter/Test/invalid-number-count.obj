@@ -1,29 +1,29 @@
-o ShortFloat
+o two-component position
 v 0.5 1.0
 
-o LongFloat
+o five-component position with optional fourth component
+v 0.5 1 2 0.0 3.5
+
+o four-component normal
 v 0.5 1 2
 vn 0.5 1.0 2.3 7.4
 
-o LongOptionalFloat
-v 0.5 1 2 0.0 3.5
-
-o InvalidIndices
+o four-component index tuple
 v 1 2 3
 p 4/1/1/1
 
-o WrongPointIndices
+o point with two indices
 v 1 2 3
 p 5 5
 
-o WrongLineIndices
+o line with one index
 v 1 2 3
 l 6
 
-o WrongTriangleIndices
+o triangle with two indices
 v 1 2 3
 f 7 7
 
-o PolygonIndices
+o quad
 v 1 2 3
 f 8 8 8 8
