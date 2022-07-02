@@ -78,7 +78,7 @@ const struct {
     const char* name;
     Containers::String filename;
 } LoadData[]{
-    {"OBJ", Utility::Path::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")},
+    {"OBJ", Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-primitive-points.obj")},
 };
 
 constexpr struct {
@@ -157,7 +157,7 @@ void AnySceneImporterTest::loadDeprecatedMeshData() {
         CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-primitive-points.obj")));
 
     /* Check only size, as it is good enough proof that it is working */
 
@@ -298,7 +298,7 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     Containers::Array<char> storage;
     importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
-        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj"));
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-primitive-points.obj"));
         CORRADE_VERIFY(data);
         storage = *std::move(data);
         return Containers::ArrayView<const char>{storage};

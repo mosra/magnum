@@ -46,23 +46,26 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(ObjImporterTest ObjImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
-        emptyFile.obj
-        keywords.obj
-        lineMesh.obj
-        missingData.obj
-        mixedPrimitives.obj
-        moreMeshes.obj
-        namedMesh.obj
-        normals.obj
-        optionalCoordinates.obj
-        pointMesh.obj
-        textureCoordinatesNormals.obj
-        textureCoordinates.obj
-        triangleMesh.obj
-        unnamedFirstMesh.obj
-        wrongIndexCount.obj
-        wrongNumberCount.obj
-        wrongNumbers.obj)
+        empty.obj
+        invalid-incomplete-data.obj
+        invalid-inconsistent-index-tuple.obj
+        invalid-keyword.obj
+        invalid-mixed-primitives.obj
+        invalid-number-count.obj
+        invalid-numbers.obj
+        invalid-optional-coordinate.obj
+        mesh-ignored-keyword.obj
+        mesh-multiple.obj
+        mesh-named-first-unnamed.obj
+        mesh-named.obj
+        mesh-normals.obj
+        mesh-positions-optional-coordinate.obj
+        mesh-primitive-lines.obj
+        mesh-primitive-points.obj
+        mesh-primitive-triangles.obj
+        mesh-texture-coordinates.obj
+        mesh-texture-coordinates-normals.obj
+        mesh-texture-coordinates-optional-coordinate.obj)
 target_include_directories(ObjImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_OBJIMPORTER_BUILD_STATIC)
     target_link_libraries(ObjImporterTest PRIVATE ObjImporter)
