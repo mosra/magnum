@@ -101,7 +101,8 @@ const struct {
     {"invalid float literal", "error while converting numeric data"},
     {"invalid integer literal", "error while converting numeric data"},
     {"position index out of range", "index 1 out of range for 1 vertices"},
-    {"texture index out of range", "index 2 out of range for 1 vertices"},
+    {"texture index out of range", "index 4 out of range for 3 vertices"},
+    {"normal index out of range", "index 3 out of range for 2 vertices"},
     {"zero index", "index 0 out of range for 1 vertices"}
 };
 
