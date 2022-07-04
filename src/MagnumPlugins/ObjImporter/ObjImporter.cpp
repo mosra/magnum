@@ -26,17 +26,13 @@
 
 #include "ObjImporter.h"
 
-#include <fstream>
-#include <limits>
-#include <sstream>
 #include <unordered_map>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once iostream is dropped */
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Containers/StringStlHash.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -46,52 +42,103 @@
 
 namespace Magnum { namespace Trade {
 
+using namespace Containers::Literals;
+
 namespace {
 
 struct Mesh {
-    std::streampos begin;
-    std::streampos end;
+    /* Points to File::fileData, the end is implicitly `(this + 1)->begin` */
+    const char* begin;
+    /* Name of the mesh. The first mesh has a name only if it appears before
+       any data line (v/vt/vn/... or p/l/f/...).  */
+    Containers::StringView name;
+    /* Offset of the first position, texture coordinate and normal index.
+       Assuming that not only vertex data but also index data follow the mesh
+       name, this way we don't have to parse the whole file if just a single
+       mesh out of many is requested. */
     UnsignedInt positionIndexOffset;
     UnsignedInt textureCoordinateIndexOffset;
     UnsignedInt normalIndexOffset;
-    std::string name;
 };
 
 }
 
 struct ObjImporter::File {
-    std::unordered_map<std::string, UnsignedInt> meshesForName;
+    std::unordered_map<Containers::StringView, UnsignedInt> meshesForName;
+    /* Contains always n + 1 entries, with the last entry being an upper bound
+       on the file range and index offsets */
     Containers::Array<Mesh> meshes;
-    Containers::Pointer<std::istream> in;
+    Containers::Array<char> fileData;
 };
 
 namespace {
 
-void ignoreLine(std::istream& in) {
-    in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+/* The spec doesn't say anything explicit about whitespace, but at the very
+   least the examples at http://paulbourke.net/dataformats/obj/ pad the values
+   with whitespace and various tools are also producing such files, as reported
+   at https://forum.babylonjs.com/t/extra-whitespace-breaks-obj-parsing/5244
+
+   Besides space I'm considering a tab and a CR character. *Not* a newline,
+   since that is a significant delimiter that has to be treated separately. */
+constexpr Containers::StringView Whitespace = " \t\r"_s;
+
+/* Mostly just a copy of Corrade's Utility::Json::parseFloatInternal() and
+   parseUnsignedIntInternal() */
+/** @todo make a common API in Corrade once we have something that can parse
+    numbers like a grownup */
+inline bool parseFloat(const char* const errorPrefix, const Containers::StringView string, Float& out) {
+    /** @todo replace with something that can parse non-null-terminated stuff,
+        then drop this "too long" error */
+    char buffer[128];
+    const std::size_t size = string.size();
+    if(size > Containers::arraySize(buffer) - 1) {
+        Error{} << errorPrefix << "too long numeric literal" << string;
+        return false;
+    }
+
+    std::memcpy(buffer, string.data(), size);
+    buffer[size] = '\0';
+    char* end;
+    out = std::strtof(buffer, &end);
+    if(!string || std::size_t(end - buffer) != size) {
+        Error{} << errorPrefix << "invalid floating-point literal" << string;
+        return false;
+    }
+
+    /* Success; value already written above */
+    return true;
 }
 
-template<std::size_t size> Math::Vector<size, Float> extractFloatData(const std::string& str, Float* extra = nullptr) {
-    std::vector<std::string> data = Utility::String::splitWithoutEmptyParts(str, ' ');
-    if(data.size() < size || data.size() > size + (extra ? 1 : 0)) {
-        Error() << "Trade::ObjImporter::mesh(): invalid float array size";
-        throw 0;
+inline bool parseUnsignedInt(const char* const errorPrefix, const Containers::StringView string, UnsignedInt& out) {
+    /** @todo replace with something that can parse non-null-terminated stuff,
+        then drop this "too long" error */
+    char buffer[128];
+    const std::size_t size = string.size();
+    if(size > Containers::arraySize(buffer) - 1) {
+        Error{} << errorPrefix << "too long numeric literal" << string;
+        return false;
     }
 
-    Math::Vector<size, Float> output;
-
-    for(std::size_t i = 0; i != size; ++i)
-        output[i] = std::stof(data[i]);
-
-    if(data.size() == size+1) {
-        /* This should be obvious from the first if, but add this just to make
-           Clang Analyzer happy */
-        CORRADE_INTERNAL_ASSERT(extra);
-
-        *extra = std::stof(data.back());
+    std::memcpy(buffer, string.data(), size);
+    buffer[size] = '\0';
+    char* end;
+    /* Not using strtoul() here as on Windows it's 32-bit and we wouldn't be
+       able to detect overflows */
+    /** @todo replace with something that can report errors in a non-insane
+        way */
+    const std::uint64_t outLong = std::strtoull(buffer, &end, 10);
+    if(!string || std::size_t(end - buffer) != size) {
+        Error{} << errorPrefix << "invalid integer literal" << string;
+        return false;
+    }
+    if(outLong > ~std::uint32_t{}) {
+        Error{} << errorPrefix << "too large integer literal" << string;
+        return false;
     }
 
-    return output;
+    /* On success convert the value to 32 bits */
+    out = outLong;
+    return true;
 }
 
 }
@@ -104,84 +151,72 @@ ObjImporter::~ObjImporter() = default;
 
 ImporterFeatures ObjImporter::doFeatures() const { return ImporterFeature::OpenData; }
 
-void ObjImporter::doClose() { _file.reset(); }
+void ObjImporter::doClose() {
+    _file = {};
+}
 
 bool ObjImporter::doIsOpened() const { return !!_file; }
 
-void ObjImporter::doOpenFile(const Containers::StringView filename) {
-    /** @todo ARGH clean this up, won't work with UTF-8 */
-    Containers::Pointer<std::istream> in{new std::ifstream{filename, std::ios::binary}};
-    if(!in->good()) {
-        Error() << "Trade::ObjImporter::openFile(): cannot open file" << filename;
-        return;
+void ObjImporter::doOpenData(Containers::Array<char>&& data, const DataFlags dataFlags) {
+    _file.reset(new File);
+
+    /* Copy file content. Take over the existing array or copy the data if we
+       can't. We need to keep the data around as JSON tokens are views onto it
+       and also for the GLB binary chunk. */
+    if(dataFlags & (DataFlag::Owned|DataFlag::ExternallyOwned)) {
+        _file->fileData = std::move(data);
+    } else {
+        _file->fileData = Containers::Array<char>{NoInit, data.size()};
+        Utility::copy(data, _file->fileData);
     }
 
-    _file.reset(new File);
-    _file->in = Utility::move(in);
-    parseMeshNames();
-}
-
-void ObjImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
-    _file.reset(new File);
-    /** @todo ARGH MY EYES what is this cursed thing, burn it to the ground */
-    _file->in.reset(new std::istringstream{{data.begin(), data.size()}});
-
-    parseMeshNames();
-}
-
-void ObjImporter::parseMeshNames() {
-    /* First mesh starts at the beginning, its indices start from 1. The end
-       offset will be updated to proper value later. */
+    /* First mesh starts at the beginning, its indices start from 1 */
     UnsignedInt positionIndexOffset = 1;
     UnsignedInt normalIndexOffset = 1;
     UnsignedInt textureCoordinateIndexOffset = 1;
+    arrayAppend(_file->meshes, InPlaceInit, _file->fileData.begin(), Containers::StringView{}, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
+
     /* The first mesh doesn't have name by default but we might find it later,
        so we need to track whether there are any data before first name */
     bool thisIsFirstMeshAndItHasNoData = true;
-    arrayAppend(_file->meshes, InPlaceInit, 0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset, std::string{});
 
-    while(_file->in->good()) {
-        /* The previous object might end at the beginning of this line */
-        const std::streampos end = _file->in->tellg();
+    /** @todo check size < 1G on 32b? currently it'd just assert, but it's
+        unlikely that such amount of contiguous memory would even be available
+        there, so ¯\_(ツ)_/¯ */
+    Containers::StringView in{_file->fileData, _file->fileData.size()};
+    while(in) {
+        /* Get a (trimmed) line from the input */
+        const Containers::StringView lineEnd = in.findOr('\n', in.end());
+        const Containers::StringView line = in.prefix(lineEnd.begin()).trimmed(Whitespace);
+        in = in.suffix(lineEnd.end());
 
-        /* Comment line */
-        if(_file->in->peek() == '#') {
-            ignoreLine(*_file->in);
-            continue;
-        }
+        /* Comment or empty line, skip */
+        if(!line || line.hasPrefix('#')) continue;
 
         /* Parse the keyword */
-        std::string keyword;
-        *_file->in >> keyword;
+        const Containers::StringView keywordEnd = line.findAnyOr(Whitespace, line.end());
+        const Containers::StringView keyword = line.prefix(keywordEnd.begin());
 
         /* Mesh name */
-        if(keyword == "o") {
-            std::string name;
-            std::getline(*_file->in, name);
-            name = Utility::String::trim(name);
+        if(keyword == "o"_s) {
+            const Containers::StringView name = line.suffix(keywordEnd.end()).trimmed(Whitespace);
 
             /* This is the name of first mesh */
             if(thisIsFirstMeshAndItHasNoData) {
                 thisIsFirstMeshAndItHasNoData = false;
 
                 /* Update its name and add it to name map */
-                if(!name.empty())
+                if(name)
                     _file->meshesForName.emplace(name, _file->meshes.size() - 1);
-                _file->meshes.back().name = Utility::move(name);
-
-                /* Update its begin offset to be more precise */
-                _file->meshes.back().begin = _file->in->tellg();
+                _file->meshes.back().name = name;
 
             /* Otherwise this is a name of new mesh */
             } else {
-                /* Set end of the previous one */
-                _file->meshes.back().end = end;
-
                 /* Save name and offset of the new one. The end offset will be
                    updated later. */
-                if(!name.empty())
+                if(name)
                     _file->meshesForName.emplace(name, _file->meshes.size());
-                arrayAppend(_file->meshes, InPlaceInit, _file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset, Utility::move(name));
+                arrayAppend(_file->meshes, InPlaceInit, in.begin(), name, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
             }
 
             continue;
@@ -190,43 +225,40 @@ void ObjImporter::parseMeshNames() {
            the first object is unnamed. We need to check for them. */
 
         /* Vertex data, update index offset for the following meshes */
-        } else if(keyword == "v") {
+        } else if(keyword == "v"_s) {
             ++positionIndexOffset;
             thisIsFirstMeshAndItHasNoData = false;
-        } else if(keyword == "vt") {
+        } else if(keyword == "vt"_s) {
             ++textureCoordinateIndexOffset;
             thisIsFirstMeshAndItHasNoData = false;
-        } else if(keyword == "vn") {
+        } else if(keyword == "vn"_s) {
             ++normalIndexOffset;
             thisIsFirstMeshAndItHasNoData = false;
 
         /* Index data, just mark that we found something for first unnamed
            object */
-        } else if(thisIsFirstMeshAndItHasNoData) for(const std::string data: {"p", "l", "f"}) {
-            if(keyword == data) {
-                thisIsFirstMeshAndItHasNoData = false;
-                break;
-            }
+        } else if(keyword == "p"_s ||
+                  keyword == "l"_s ||
+                  keyword == "f"_s) {
+            thisIsFirstMeshAndItHasNoData = false;
         }
-
-        /* Ignore the rest of the line */
-        ignoreLine(*_file->in);
     }
 
-    /* Set end of the last object */
-    _file->in->clear();
-    _file->in->seekg(0, std::ios::end);
-    _file->meshes.back().end = _file->in->tellg();
+    /* Save the final offset so we have an upper bound on index offsets */
+    arrayAppend(_file->meshes, InPlaceInit, in.begin(), Containers::StringView{}, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
 }
 
-UnsignedInt ObjImporter::doMeshCount() const { return _file->meshes.size(); }
+UnsignedInt ObjImporter::doMeshCount() const {
+    /* There's always one more item for an upper bound */
+    return _file->meshes.size() - 1;
+}
 
 Int ObjImporter::doMeshForName(const Containers::StringView name) {
     const auto it = _file->meshesForName.find(name);
     return it == _file->meshesForName.end() ? -1 : it->second;
 }
 
-Containers::String ObjImporter::doMeshName(UnsignedInt id) {
+Containers::String ObjImporter::doMeshName(const UnsignedInt id) {
     return _file->meshes[id].name;
 }
 
@@ -246,10 +278,9 @@ template<class T> bool checkAndDuplicateInto(const Containers::StridedArrayView1
 
 }
 
-Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) {
+Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, UnsignedInt) {
     /* Seek the file, set mesh parsing parameters */
     const Mesh& mesh = _file->meshes[id];
-    _file->in->seekg(mesh.begin);
 
     Containers::Optional<MeshPrimitive> primitive;
     Containers::Array<Vector3> positions;
@@ -260,68 +291,151 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
     Containers::Array<Vector3ui> indices;
     std::size_t textureCoordinateIndexCount = 0, normalIndexCount = 0;
 
-    try { while(_file->in->good() && _file->in->tellg() < mesh.end) {
-        /* Ignore comments */
-        if(_file->in->peek() == '#') {
-            ignoreLine(*_file->in);
+    Containers::StringView in{mesh.begin, std::size_t(_file->meshes[id + 1].begin - mesh.begin)};
+    while(in) {
+        /* Get a line from the input */
+        const Containers::StringView lineEnd = in.findOr('\n', in.end());
+        const Containers::StringView line = in.prefix(lineEnd.begin()).trimmed(Whitespace);
+        in = in.suffix(lineEnd.end());
+
+        /* Comment or empty line, skip */
+        if(!line || line.hasPrefix('#')) continue;
+
+        /* Parse the keyword */
+        const Containers::StringView keywordEnd = line.findAnyOr(Whitespace, line.end());
+        const Containers::StringView keyword = line.prefix(keywordEnd.begin());
+
+        /* Skip keywords that are not interesting to us or that were parsed
+           earlier. In particular, the `o` can be here because the mesh range
+           is everything until the next mesh data start, so including the next mesh name. */
+        if(keyword == "o"_s ||
+           keyword == "g"_s ||
+           keyword == "s"_s ||
+           keyword == "mtllib"_s ||
+           keyword == "usemtl"_s)
             continue;
-        }
 
-        /* Get the line */
-        std::string line;
-        std::getline(*_file->in, line);
-        line = Utility::String::trim(line);
+        /* Keyword contents */
+        Containers::StringView contents = line.suffix(keywordEnd.end()).trimmedPrefix(Whitespace);
 
-        /* Ignore empty lines */
-        if(line.empty()) continue;
+        /* Vertex data */
+        if(keyword == "v"_s || keyword == "vt"_s || keyword == "vn"_s) {
+            /* Decide on how many components we expect at most. There's
+               optional behavior for four-component positions and
+               three-component texture coordinates, so it can't be an exact
+               count. */
+            std::size_t maxComponentCount;
+            if(keyword == "v"_s) maxComponentCount = 4;
+            else if(keyword == "vt"_s) maxComponentCount = 3;
+            else if(keyword == "vn"_s) maxComponentCount = 3;
+            else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
-        /* Split the line into keyword and contents */
-        const std::size_t keywordEnd = line.find(' ');
-        const std::string keyword = line.substr(0, keywordEnd);
-        const std::string contents = keywordEnd != std::string::npos ?
-            Utility::String::ltrim(line.substr(keywordEnd+1)) : "";
+            /* Parse them all. If there's less than expected, `i` would be too
+               small; if there's more then `contents` would stay non-empty. */
+            Float data[4];
+            std::size_t i = 0;
+            for(; i != maxComponentCount && contents; ++i) {
+                const Containers::StringView foundSpace = contents.findAnyOr(Whitespace, contents.end());
 
-        /* Vertex position */
-        if(keyword == "v") {
-            Float extra{1.0f};
-            const Vector3 data = extractFloatData<3>(contents, &extra);
-            if(!Math::TypeTraits<Float>::equals(extra, 1.0f)) {
-                Error() << "Trade::ObjImporter::mesh(): homogeneous coordinates are not supported";
-                return Containers::NullOpt;
+                if(!parseFloat("Trade::ObjImporter::mesh():", contents.prefix(foundSpace.begin()), data[i]))
+                    return {};
+
+                contents = contents.suffix(foundSpace.end()).trimmedPrefix(Whitespace);
             }
 
-            arrayAppend(positions, data);
+            /* Position */
+            if(keyword == "v"_s) {
+                if(i < 3 || contents) {
+                    Error{} << "Trade::ObjImporter::mesh(): expected 3 or 4 position coordinates, got" << line.suffix(keywordEnd.end());
+                    return {};
+                }
+                if(i == 4 && !Math::equal(data[3], 1.0f)) {
+                    Error{} << "Trade::ObjImporter::mesh(): homogeneous coordinates are not supported";
+                    return {};
+                }
 
-        /* Texture coordinate */
-        } else if(keyword == "vt") {
-            Float extra{0.0f};
-            const Vector2 data = extractFloatData<2>(contents, &extra);
-            if(!Math::TypeTraits<Float>::equals(extra, 0.0f)) {
-                Error() << "Trade::ObjImporter::mesh(): 3D texture coordinates are not supported";
-                return Containers::NullOpt;
-            }
+                arrayAppend(positions, Vector3::from(data));
 
-            arrayAppend(textureCoordinates, data);
+            /* Texture coordinate */
+            } else if(keyword == "vt"_s) {
+                if(i < 2 || contents) {
+                    Error{} << "Trade::ObjImporter::mesh(): expected 2 or 3 texture coordinates, got" << line.suffix(keywordEnd.end());
+                    return {};
+                }
+                if(i == 3 && !Math::equal(data[2], 0.0f)) {
+                    Error{} << "Trade::ObjImporter::mesh(): 3D texture coordinates are not supported";
+                    return {};
+                }
 
-        /* Normal */
-        } else if(keyword == "vn") {
-            arrayAppend(normals, Vector3{extractFloatData<3>(contents)});
+                arrayAppend(textureCoordinates, Vector2::from(data));
+
+            /* Normal */
+            } else if(keyword == "vn"_s) {
+                if(i < 3 || contents) {
+                    Error{} << "Trade::ObjImporter::mesh(): expected 3 normal coordinates, got" << line.suffix(keywordEnd.end());
+                    return {};
+                }
+
+                arrayAppend(normals, Vector3::from(data));
+
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
         /* Indices */
-        } else if(keyword == "p" || keyword == "l" || keyword == "f") {
-            const std::vector<std::string> indexTuples = Utility::String::splitWithoutEmptyParts(contents, ' ');
+        } else if(keyword == "p"_s || keyword == "l"_s || keyword == "f"_s) {
+            /* Decide on how many tuples we expect */
+            std::size_t indexTupleCount;
+            if(keyword == "p"_s) indexTupleCount = 1;
+            else if(keyword == "l"_s) indexTupleCount = 2;
+            else if(keyword == "f"_s) indexTupleCount = 3;
+            else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
+            /* Parse them all. If there's less than expected, `i` would be too
+               small; if there's more then `contents` would stay non-empty. */
+            Vector3ui data[3];
+            std::size_t i = 0;
+            for(; i != indexTupleCount && contents; ++i) {
+                const Containers::StringView foundSpace = contents.findAnyOr(Whitespace, contents.end());
+                Containers::StringView indexTuple = contents.prefix(foundSpace.begin());
+
+                /* The number before first slash is a position index */
+                const Containers::StringView foundSlash1 = indexTuple.findOr('/', indexTuple.end());
+                if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash1.begin()), data[i][0]))
+                    return {};
+                data[i][0] -= mesh.positionIndexOffset;
+
+                /* If there was a slash, next is a texture coordinate or
+                   empty */
+                if(foundSlash1) {
+                    indexTuple = indexTuple.suffix(foundSlash1.end());
+                    const Containers::StringView foundSlash2 = indexTuple.findOr('/', indexTuple.end());
+                    if(!foundSlash2 || foundSlash2.begin() != indexTuple.begin()) {
+                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash2.begin()), data[i][2]))
+                            return {};
+                        data[i][2] -= mesh.textureCoordinateIndexOffset;
+                        ++textureCoordinateIndexCount;
+                    }
+
+                    /* If there was a second slash, last is a normal */
+                    if(foundSlash2) {
+                        indexTuple = indexTuple.suffix(foundSlash2.end());
+                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple, data[i][1]))
+                            return {};
+                        data[i][1] -= mesh.normalIndexOffset;
+                        ++normalIndexCount;
+                    }
+                }
+
+                contents = contents.suffix(foundSpace.end()).trimmedPrefix(Whitespace);
+            }
 
             /* Points */
             if(keyword == "p") {
-                /* Check that we don't mix the primitives in one mesh */
                 if(primitive && primitive != MeshPrimitive::Points) {
                     Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Points;
                     return Containers::NullOpt;
                 }
-
-                /* Check vertex count per primitive */
-                if(indexTuples.size() != 1) {
-                    Error() << "Trade::ObjImporter::mesh(): wrong index count for point";
+                if(i < 1 || contents) {
+                    Error() << "Trade::ObjImporter::mesh(): expected exactly 1 position index tuple for a point, got" << line.suffix(keywordEnd.end());
                     return Containers::NullOpt;
                 }
 
@@ -329,15 +443,12 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 
             /* Lines */
             } else if(keyword == "l") {
-                /* Check that we don't mix the primitives in one mesh */
                 if(primitive && primitive != MeshPrimitive::Lines) {
                     Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Lines;
                     return Containers::NullOpt;
                 }
-
-                /* Check vertex count per primitive */
-                if(indexTuples.size() != 2) {
-                    Error() << "Trade::ObjImporter::mesh(): wrong index count for line";
+                if(i < 2 || contents) {
+                    Error() << "Trade::ObjImporter::mesh(): expected exactly 2 position index tuples for a line, got" << line.suffix(keywordEnd.end());
                     return Containers::NullOpt;
                 }
 
@@ -345,18 +456,12 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 
             /* Faces */
             } else if(keyword == "f") {
-                /* Check that we don't mix the primitives in one mesh */
                 if(primitive && primitive != MeshPrimitive::Triangles) {
                     Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Triangles;
                     return Containers::NullOpt;
                 }
-
-                /* Check vertex count per primitive */
-                if(indexTuples.size() < 3) {
-                    Error() << "Trade::ObjImporter::mesh(): wrong index count for triangle";
-                    return Containers::NullOpt;
-                } else if(indexTuples.size() != 3) {
-                    Error() << "Trade::ObjImporter::mesh(): polygons are not supported";
+                if(i < 3 || contents) {
+                    Error() << "Trade::ObjImporter::mesh(): expected exactly 3 position index tuples for a triangle, got" << line.suffix(keywordEnd.end());
                     return Containers::NullOpt;
                 }
 
@@ -364,50 +469,14 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
-            for(const std::string& indexTuple: indexTuples) {
-                std::vector<std::string> indexStrings = Utility::String::split(indexTuple, '/');
-                if(indexStrings.size() > 3) {
-                    Error() << "Trade::ObjImporter::mesh(): invalid index data";
-                    return Containers::NullOpt;
-                }
+            /** @todo fix arrayAppend() to not need the cast here */
+            arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(i));
 
-                Vector3ui index;
-
-                /* Position indices */
-                index[0] = std::stoul(indexStrings[0]) - mesh.positionIndexOffset;
-
-                /* Texture coordinates */
-                if(indexStrings.size() == 2 || (indexStrings.size() == 3 && !indexStrings[1].empty())) {
-                    index[2] = std::stoul(indexStrings[1]) - mesh.textureCoordinateIndexOffset;
-                    ++textureCoordinateIndexCount;
-                }
-
-                /* Normal indices */
-                if(indexStrings.size() == 3) {
-                    index[1] = std::stoul(indexStrings[2]) - mesh.normalIndexOffset;
-                    ++normalIndexCount;
-                }
-
-                arrayAppend(indices, index);
-            }
-
-        /* Ignore unsupported keywords, error out on unknown keywords */
-        } else if(![&keyword](){
-            /* Using lambda to emulate for-else construct like in Python */
-            for(const std::string expected: {"mtllib", "usemtl", "g", "s"})
-                if(keyword == expected) return true;
-            return false;
-        }()) {
-            Error() << "Trade::ObjImporter::mesh(): unknown keyword" << keyword;
-            return Containers::NullOpt;
+        /* Unknown keyword */
+        } else {
+            Error{} << "Trade::ObjImporter::mesh(): unknown keyword" << keyword;
+            return {};
         }
-
-    }} catch(const std::exception&) {
-        Error() << "Trade::ObjImporter::mesh(): error while converting numeric data";
-        return Containers::NullOpt;
-    } catch(...) {
-        /* Error message already printed */
-        return Containers::NullOpt;
     }
 
     /* There should be at least indexed position data */

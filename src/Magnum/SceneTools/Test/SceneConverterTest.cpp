@@ -1109,7 +1109,7 @@ const struct {
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
         }},
         "ObjImporter", nullptr, nullptr, nullptr,
-        "Trade::ObjImporter::mesh(): wrong index count for point\n"
+        "Trade::ObjImporter::mesh(): expected exactly 1 position index tuple for a point, got 5 5\n"
         "Cannot import the mesh\n"},
     {"can't import a mesh for concatenation", {InPlaceInit, {
             "-I", "ObjImporter", "--concatenate-meshes",
@@ -1117,7 +1117,7 @@ const struct {
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
         }},
         "ObjImporter", nullptr, nullptr, nullptr,
-        "Trade::ObjImporter::mesh(): wrong index count for point\n"
+        "Trade::ObjImporter::mesh(): expected exactly 1 position index tuple for a point, got 5 5\n"
         "Cannot import mesh 0\n"},
     {"can't import a scene for concatenation", {InPlaceInit, {
             /** @todo change to an OBJ once ObjImporter imports materials (and
@@ -1135,7 +1135,7 @@ const struct {
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
         }},
         "ObjImporter", nullptr, nullptr, nullptr,
-        "Trade::ObjImporter::mesh(): wrong index count for point\n"
+        "Trade::ObjImporter::mesh(): expected exactly 1 position index tuple for a point, got 5 5\n"
         "Cannot import mesh 0\n"},
     {"invalid mesh attribute filter", {InPlaceInit, {
             /** @todo drop --mesh once it's not needed anymore again */
@@ -1188,7 +1188,7 @@ const struct {
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
         }},
         "ObjImporter", nullptr, "StanfordSceneConverter", nullptr,
-        "Trade::ObjImporter::mesh(): wrong index count for point\n"
+        "Trade::ObjImporter::mesh(): expected exactly 1 position index tuple for a point, got 5 5\n"
         "Cannot add importer contents\n"},
     {"can't add processed meshes", {InPlaceInit, {
             "-I", "ObjImporter", "-C", "StanfordSceneConverter",

@@ -45,13 +45,6 @@ if(MAGNUM_OBJIMPORTER_BUILD_STATIC AND MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(ObjImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(ObjImporter PUBLIC MagnumTrade MagnumMeshTools)
-if(CORRADE_TARGET_EMSCRIPTEN)
-    # Since 1.39.0, this needs to be enabled on the plugin. Before (on 1.38.44
-    # at least) this wasn't needed, at least for the test -- having it enabled
-    # for the test binary and in the linker was enough. Most probably related
-    # to fastcomp->llvm backend switch.
-    set_property(TARGET ObjImporter APPEND_STRING PROPERTY COMPILE_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0")
-endif()
 
 install(FILES ObjImporter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)

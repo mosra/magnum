@@ -1,6 +1,15 @@
+o too long float literal
+v 1234.567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567 0 0
+
+o too long integer literal
+p 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
+
+o too large integer literal
+p 4294967296
+
 o invalid float literal
 v 1 bleh 2
-p 1
+p 2
 
 o invalid integer literal
 v 1 0 2
@@ -8,8 +17,8 @@ p bleh
 
 o position index out of range
 v 1 0 2
-# Should be 3
-p 1
+# Should be 4
+p 3
 
 o texture index out of range
 v 1 0 2
@@ -17,14 +26,14 @@ vt 0 1
 vt 0 1
 vt 0 1
 # Should be 4/3
-p 4/4
+p 5/4
 
 o normal index out of range
 v 1 0 2
 vn 0 0 1
 vn 0 0 1
 # Should be 5/2
-p 5//3
+p 6//3
 
 o zero index
 v 1 0 2

@@ -68,13 +68,15 @@ struct ObjImporterTest: TestSuite::Tester {
        maintain. So it's instead grouped into files by a common error scenario
        with each case testing one file and just the invalid() case testing
        separate files. */
-    void invalid();
+    void invalidKeywords();
     void invalidMixedPrimitives();
     void invalidNumbers();
     void invalidNumberCount();
     void invalidInconsistentIndexTuple();
     void invalidIncompleteData();
     void invalidOptionalCoordinate();
+
+    void whitespace();
 
     void openTwice();
     void importTwice();
@@ -93,11 +95,11 @@ const struct {
 
 const struct {
     const char* name;
-    const char* filename;
     const char* message;
-} InvalidData[]{
-    {"unknown keyword", "invalid-keyword.obj",
-        "unknown keyword bleh"}
+} InvalidKeywordsData[]{
+    {"unknown keyword", "unknown keyword bleh"},
+    {"no space between vertex keyword and number", "unknown keyword vt3"},
+    {"no space between index keyword and number", "unknown keyword p6"}
 };
 
 const struct {
@@ -116,9 +118,12 @@ const struct {
     const char* name;
     const char* message;
 } InvalidNumbersData[]{
-    {"invalid float literal", "error while converting numeric data"},
-    {"invalid integer literal", "error while converting numeric data"},
-    {"position index out of range", "index 1 out of range for 1 vertices"},
+    {"too long float literal", "too long numeric literal 1234.567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567"},
+    {"too long integer literal", "too long numeric literal 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678"},
+    {"too large integer literal", "too large integer literal 4294967296"},
+    {"invalid float literal", "invalid floating-point literal bleh"},
+    {"invalid integer literal", "invalid integer literal bleh"},
+    {"position index out of range", "index 3 out of range for 1 vertices"},
     {"texture index out of range", "index 4 out of range for 3 vertices"},
     {"normal index out of range", "index 3 out of range for 2 vertices"},
     {"zero index", "index 0 out of range for 1 vertices"}
@@ -128,14 +133,25 @@ const struct {
     const char* name;
     const char* message;
 } InvalidNumberCountData[]{
-    {"two-component position", "invalid float array size"},
-    {"five-component position with optional fourth component", "invalid float array size"},
-    {"four-component normal", "invalid float array size"},
-    {"four-component index tuple", "invalid index data"},
-    {"point with two indices", "wrong index count for point"},
-    {"line with one index", "wrong index count for line"},
-    {"triangle with two indices", "wrong index count for triangle"},
-    {"quad", "polygons are not supported"}
+    {"no position component at all", "expected 3 or 4 position coordinates, got "},
+    {"two-component position", "expected 3 or 4 position coordinates, got 0.5 1.0"},
+    {"five-component position with optional fourth component", "expected 3 or 4 position coordinates, got 0.5 1 2 1.0 3.5"},
+    {"no texture coordinate component at all", "expected 2 or 3 texture coordinates, got "},
+    {"one-component texture coordinate", "expected 2 or 3 texture coordinates, got 0.5"},
+    {"four-component texture coordinate with optional third component", "expected 2 or 3 texture coordinates, got 0.5 1.0 0.0 7.4"},
+    {"no normal component at all", "expected 3 normal coordinates, got "},
+    {"two-component normal", "expected 3 normal coordinates, got 0.5 0.0"},
+    {"four-component normal", "expected 3 normal coordinates, got 0.5 1.0 2.3 7.4"},
+    {"no index at all", "expected exactly 1 position index tuple for a point, got "},
+    /** @todo better error message (the literal is empty) */
+    {"no index before first slash", "invalid integer literal "},
+    {"no index after first slash", "invalid integer literal "},
+    {"no index after second slash", "invalid integer literal "},
+    {"four-component index tuple", "invalid integer literal 1/1"},
+    {"point with two indices", "expected exactly 1 position index tuple for a point, got 9 9"},
+    {"line with one index", "expected exactly 2 position index tuples for a line, got 10"},
+    {"triangle with two indices", "expected exactly 3 position index tuples for a triangle, got 11 11"},
+    {"quad", "expected exactly 3 position index tuples for a triangle, got 12 12 12 12"}
 };
 
 const struct {
@@ -188,8 +204,8 @@ ObjImporterTest::ObjImporterTest() {
 
     addTests({&ObjImporterTest::moreMeshes});
 
-    addInstancedTests({&ObjImporterTest::invalid},
-        Containers::arraySize(InvalidData));
+    addInstancedTests({&ObjImporterTest::invalidKeywords},
+        Containers::arraySize(InvalidKeywordsData));
 
     addInstancedTests({&ObjImporterTest::invalidMixedPrimitives},
         Containers::arraySize(InvalidMixedPrimitivesData));
@@ -209,7 +225,9 @@ ObjImporterTest::ObjImporterTest() {
     addInstancedTests({&ObjImporterTest::invalidOptionalCoordinate},
         Containers::arraySize(InvalidOptionalCoordinateData));
 
-    addTests({&ObjImporterTest::openTwice,
+    addTests({&ObjImporterTest::whitespace,
+
+              &ObjImporterTest::openTwice,
               &ObjImporterTest::importTwice});
 
     #ifdef OBJIMPORTER_PLUGIN_FILENAME
@@ -554,18 +572,19 @@ void ObjImporterTest::moreMeshes() {
         TestSuite::Compare::Container);
 }
 
-void ObjImporterTest::invalid() {
-    auto&& data = InvalidData[testCaseInstanceId()];
+void ObjImporterTest::invalidKeywords() {
+    auto&& data = InvalidKeywordsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, data.filename)));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "invalid-keywords.obj")));
 
-    CORRADE_COMPARE(importer->meshCount(), 1);
+    /* Ensure we didn't forget to test any case */
+    CORRADE_COMPARE(importer->meshCount(), Containers::arraySize(InvalidKeywordsData));
 
     Containers::String out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!importer->mesh(0));
+    CORRADE_VERIFY(!importer->mesh(data.name));
     CORRADE_COMPARE(out, Utility::format("Trade::ObjImporter::mesh(): {}\n", data.message));
 }
 
@@ -663,6 +682,54 @@ void ObjImporterTest::invalidOptionalCoordinate() {
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh(data.name));
     CORRADE_COMPARE(out, Utility::format("Trade::ObjImporter::mesh(): {}\n", data.message));
+}
+
+void ObjImporterTest::whitespace() {
+    /* Using an embedded string to have the whitespace visualized clearer */
+
+    Containers::StringView data =
+        " \t\r  # This file has various \t\n"
+        "  #whitespace that should be treated properly \n"
+        " \r\t o\t \tObject \t name   \r\n"
+        " \t  v\r  \t 3  5 \t7  \t1\n"
+        " \rvt  8\t 9\t\t\r0\n"
+        "\n  \r \n"
+        "     vn \t  2  \t 4 \r6\n"
+        "\n \t   \r\n"
+        /* There's no space expected inside the index tuple */
+        "  f\t  1/1/1  \r1/1/1 \t1/1/1  \t\r\n"
+        "\n\n"
+        "\n";
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    CORRADE_VERIFY(importer->openData(data));
+
+    CORRADE_COMPARE(importer->meshCount(), 1);
+    /* The name is trimmed from both ends, but internal whitespace is left
+       intact */
+    CORRADE_COMPARE(importer->meshName(0), "Object \t name");
+
+    const Containers::Optional<MeshData> mesh = importer->mesh(0);
+    CORRADE_VERIFY(mesh);
+    CORRADE_COMPARE(mesh->primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(mesh->attributeCount(), 3);
+    CORRADE_COMPARE_AS(mesh->attribute<Vector3>(MeshAttribute::Position),
+        Containers::arrayView<Vector3>({
+            {3.0f, 5.0f, 7.0f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(mesh->attribute<Vector2>(MeshAttribute::TextureCoordinates),
+        Containers::arrayView<Vector2>({
+            {8.0f, 9.0f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(mesh->attribute<Vector3>(MeshAttribute::Normal),
+        Containers::arrayView<Vector3>({
+            {2.0f, 4.0f, 6.0f}
+        }), TestSuite::Compare::Container);
+    CORRADE_VERIFY(mesh->isIndexed());
+    CORRADE_COMPARE(mesh->indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(mesh->indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({0, 0, 0}),
+        TestSuite::Compare::Container);
 }
 
 void ObjImporterTest::openTwice() {

@@ -1,29 +1,62 @@
+o no position component at all
+v
+
 o two-component position
 v 0.5 1.0
 
 o five-component position with optional fourth component
-v 0.5 1 2 0.0 3.5
+v 0.5 1 2 1.0 3.5
+
+o no texture coordinate component at all
+vt
+
+o one-component texture coordinate
+v 0.5 1 2
+vt 0.5
+
+o four-component texture coordinate with optional third component
+v 0.5 1 2
+vt 0.5 1.0 0.0 7.4
+
+o no normal component at all
+vn
+
+o two-component normal
+v 0.5 1 2
+vn 0.5 0.0
 
 o four-component normal
 v 0.5 1 2
 vn 0.5 1.0 2.3 7.4
 
+o no index at all
+p
+
+o no index before first slash
+p /
+
+o no index after first slash
+p 8/
+
+o no index after second slash
+p 8//
+
 o four-component index tuple
 v 1 2 3
-p 4/1/1/1
+p 8/1/1/1
 
 o point with two indices
 v 1 2 3
-p 5 5
+p 9 9
 
 o line with one index
 v 1 2 3
-l 6
+l 10
 
 o triangle with two indices
 v 1 2 3
-f 7 7
+f 11 11
 
 o quad
 v 1 2 3
-f 8 8 8 8
+f 12 12 12 12

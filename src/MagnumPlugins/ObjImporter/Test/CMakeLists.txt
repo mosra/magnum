@@ -50,7 +50,7 @@ corrade_add_test(ObjImporterTest ObjImporterTest.cpp
         empty.obj
         invalid-incomplete-data.obj
         invalid-inconsistent-index-tuple.obj
-        invalid-keyword.obj
+        invalid-keywords.obj
         invalid-mixed-primitives.obj
         invalid-number-count.obj
         invalid-numbers.obj
