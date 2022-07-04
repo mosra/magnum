@@ -57,6 +57,7 @@ corrade_add_test(ObjImporterTest ObjImporterTest.cpp
         mesh-ignored-keyword.obj
         mesh-multiple.obj
         mesh-named-first-unnamed.obj
+        mesh-named-first-unnamed-index-first.obj
         mesh-named.obj
         mesh-normals.obj
         mesh-positions-optional-coordinate.obj

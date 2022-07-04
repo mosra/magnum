@@ -87,6 +87,14 @@ struct ObjImporterTest: TestSuite::Tester {
 const struct {
     const char* name;
     const char* filename;
+} MeshNamedFirstUnnamedData[]{
+    {"", "mesh-named-first-unnamed.obj"},
+    {"index first", "mesh-named-first-unnamed-index-first.obj"},
+};
+
+const struct {
+    const char* name;
+    const char* filename;
     const char* message;
 } InvalidData[]{
     {"unknown keyword", "invalid-keyword.obj",
@@ -174,10 +182,12 @@ ObjImporterTest::ObjImporterTest() {
 
               &ObjImporterTest::meshIgnoredKeyword,
 
-              &ObjImporterTest::meshNamed,
-              &ObjImporterTest::meshNamedFirstUnnamed,
+              &ObjImporterTest::meshNamed});
 
-              &ObjImporterTest::moreMeshes});
+    addInstancedTests({&ObjImporterTest::meshNamedFirstUnnamed},
+        Containers::arraySize(MeshNamedFirstUnnamedData));
+
+    addTests({&ObjImporterTest::moreMeshes});
 
     addInstancedTests({&ObjImporterTest::invalid},
         Containers::arraySize(InvalidData));
@@ -451,8 +461,11 @@ void ObjImporterTest::meshNamed() {
 }
 
 void ObjImporterTest::meshNamedFirstUnnamed() {
+    auto&& data = MeshNamedFirstUnnamedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-named-first-unnamed.obj")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, data.filename)));
     CORRADE_COMPARE(importer->meshCount(), 2);
 
     CORRADE_COMPARE(importer->meshName(0), "");
