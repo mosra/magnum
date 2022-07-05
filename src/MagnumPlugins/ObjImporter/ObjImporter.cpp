@@ -284,8 +284,8 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
 
     Containers::Optional<MeshPrimitive> primitive;
     Containers::Array<Vector3> positions;
-    Containers::Array<Vector3> normals;
     Containers::Array<Vector2> textureCoordinates;
+    Containers::Array<Vector3> normals;
     /* Taking a shortcut as there's fortunately nothing else than just 3 types
        of data. First positions, then normals, then texture coordinates. */
     Containers::Array<Vector3ui> indices;
@@ -409,18 +409,18 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
                     indexTuple = indexTuple.suffix(foundSlash1.end());
                     const Containers::StringView foundSlash2 = indexTuple.findOr('/', indexTuple.end());
                     if(!foundSlash2 || foundSlash2.begin() != indexTuple.begin()) {
-                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash2.begin()), data[i][2]))
+                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash2.begin()), data[i][1]))
                             return {};
-                        data[i][2] -= mesh.textureCoordinateIndexOffset;
+                        data[i][1] -= mesh.textureCoordinateIndexOffset;
                         ++textureCoordinateIndexCount;
                     }
 
                     /* If there was a second slash, last is a normal */
                     if(foundSlash2) {
                         indexTuple = indexTuple.suffix(foundSlash2.end());
-                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple, data[i][1]))
+                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple, data[i][2]))
                             return {};
-                        data[i][1] -= mesh.normalIndexOffset;
+                        data[i][2] -= mesh.normalIndexOffset;
                         ++normalIndexCount;
                     }
                 }
@@ -486,24 +486,24 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
     }
 
     /* If there are index data, there should be also vertex data (and also the other way) */
-    if(normals.isEmpty() != (normalIndexCount == 0)) {
-        Error() << "Trade::ObjImporter::mesh(): incomplete normal data";
-        return Containers::NullOpt;
-    }
     if(textureCoordinates.isEmpty() != (textureCoordinateIndexCount == 0)) {
         Error() << "Trade::ObjImporter::mesh(): incomplete texture coordinate data";
         return Containers::NullOpt;
     }
-
-    /* All index arrays should have the same length */
-    if(normalIndexCount && normalIndexCount != indices.size()) {
-        CORRADE_INTERNAL_ASSERT(normalIndexCount < indices.size());
-        Error() << "Trade::ObjImporter::mesh(): some normal indices are missing";
+    if(normals.isEmpty() != (normalIndexCount == 0)) {
+        Error() << "Trade::ObjImporter::mesh(): incomplete normal data";
         return Containers::NullOpt;
     }
+
+    /* All index arrays should have the same length */
     if(textureCoordinateIndexCount && textureCoordinateIndexCount != indices.size()) {
         CORRADE_INTERNAL_ASSERT(textureCoordinateIndexCount < indices.size());
         Error() << "Trade::ObjImporter::mesh(): some texture coordinate indices are missing";
+        return Containers::NullOpt;
+    }
+    if(normalIndexCount && normalIndexCount != indices.size()) {
+        CORRADE_INTERNAL_ASSERT(normalIndexCount < indices.size());
+        Error() << "Trade::ObjImporter::mesh(): some normal indices are missing";
         return Containers::NullOpt;
     }
 
@@ -517,13 +517,13 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
     /* Allocate attribute and vertex data */
     std::size_t attributeCount = 1;
     UnsignedInt stride = sizeof(Vector3);
-    if(normalIndexCount) {
-        ++attributeCount;
-        stride += sizeof(Vector3);
-    }
     if(textureCoordinateIndexCount) {
         ++attributeCount;
         stride += sizeof(Vector2);
+    }
+    if(normalIndexCount) {
+        ++attributeCount;
+        stride += sizeof(Vector3);
     }
     Containers::Array<MeshAttributeData> attributeData{attributeCount};
     Containers::Array<char> vertexData{NoInit, vertexCount*stride};
@@ -540,21 +540,21 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Position, view};
         offset += sizeof(Vector3);
     }
-    if(normalIndexCount) {
-        Containers::StridedArrayView1D<Vector3> view{vertexData,
-            reinterpret_cast<Vector3*>(vertexData.data() + offset), vertexCount, stride};
-        if(!checkAndDuplicateInto(indicesPerAttribute[1].prefix(vertexCount), normals, view, mesh.normalIndexOffset))
-            return Containers::NullOpt;
-        attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Normal, view};
-        offset += sizeof(Vector3);
-    }
     if(textureCoordinateIndexCount) {
         Containers::StridedArrayView1D<Vector2> view{vertexData,
             reinterpret_cast<Vector2*>(vertexData.data() + offset), vertexCount, stride};
-        if(!checkAndDuplicateInto(indicesPerAttribute[2].prefix(vertexCount), textureCoordinates, view, mesh.textureCoordinateIndexOffset))
+        if(!checkAndDuplicateInto(indicesPerAttribute[1].prefix(vertexCount), textureCoordinates, view, mesh.textureCoordinateIndexOffset))
             return Containers::NullOpt;
         attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::TextureCoordinates, view};
         offset += sizeof(Vector2);
+    }
+    if(normalIndexCount) {
+        Containers::StridedArrayView1D<Vector3> view{vertexData,
+            reinterpret_cast<Vector3*>(vertexData.data() + offset), vertexCount, stride};
+        if(!checkAndDuplicateInto(indicesPerAttribute[2].prefix(vertexCount), normals, view, mesh.normalIndexOffset))
+            return Containers::NullOpt;
+        attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Normal, view};
+        offset += sizeof(Vector3);
     }
     CORRADE_INTERNAL_ASSERT(offset == stride && attributeIndex == attributeCount);
 
