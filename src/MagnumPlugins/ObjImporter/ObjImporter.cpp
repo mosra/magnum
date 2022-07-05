@@ -383,18 +383,19 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
 
         /* Indices */
         } else if(keyword == "p"_s || keyword == "l"_s || keyword == "f"_s) {
-            /* Decide on how many tuples we expect */
-            std::size_t indexTupleCount;
-            if(keyword == "p"_s) indexTupleCount = 1;
-            else if(keyword == "l"_s) indexTupleCount = 2;
-            else if(keyword == "f"_s) indexTupleCount = 3;
+            /* Decide on how many tuples we expect. Since we handle both
+               triangles and quads, it can't be an exact count. */
+            std::size_t maxIndexTupleCount;
+            if(keyword == "p"_s) maxIndexTupleCount = 1;
+            else if(keyword == "l"_s) maxIndexTupleCount = 2;
+            else if(keyword == "f"_s) maxIndexTupleCount = 4;
             else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             /* Parse them all. If there's less than expected, `i` would be too
                small; if there's more then `contents` would stay non-empty. */
-            Vector3ui data[3];
+            Vector3ui data[4];
             std::size_t i = 0;
-            for(; i != indexTupleCount && contents; ++i) {
+            for(; i != maxIndexTupleCount && contents; ++i) {
                 const Containers::StringView foundSpace = contents.findAnyOr(Whitespace, contents.end());
                 Containers::StringView indexTuple = contents.prefix(foundSpace.begin());
 
@@ -457,6 +458,9 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
 
                 primitive = MeshPrimitive::Points;
 
+                /** @todo fix arrayAppend() to not need the cast here */
+                arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(1));
+
             /* Lines */
             } else if(keyword == "l") {
                 if(primitive && primitive != MeshPrimitive::Lines) {
@@ -470,6 +474,9 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
 
                 primitive = MeshPrimitive::Lines;
 
+                /** @todo fix arrayAppend() to not need the cast here */
+                arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(2));
+
             /* Faces */
             } else if(keyword == "f") {
                 if(primitive && primitive != MeshPrimitive::Triangles) {
@@ -477,16 +484,44 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
                     return Containers::NullOpt;
                 }
                 if(i < 3 || contents) {
-                    Error() << "Trade::ObjImporter::mesh(): expected exactly 3 position index tuples for a triangle, got" << line.suffix(keywordEnd.end());
+                    Error() << "Trade::ObjImporter::mesh(): expected 3 or 4 position index tuples for a face, got" << line.suffix(keywordEnd.end());
                     return Containers::NullOpt;
+                }
+
+                /* If it's a quad, convert it to two triangles */
+                if(i == 4) {
+                    /** @todo use MeshTools::generateQuadIndices() once it
+                        can take extra index data into account */
+                    /* 0 0---3
+                       |\ \  |
+                       | \ \ |
+                       |  \ \|
+                       1---2 2 */
+                    arrayAppend(indices, {
+                        data[0],
+                        data[1],
+                        data[2],
+                        data[0],
+                        data[2],
+                        data[3]
+                    });
+
+                    /* If we have texture coordinate / normal indices, add two
+                       more to the counters as well. If they matched the index
+                       array size before, they'll continue to match; if they
+                       didn't, they'll continue to not match. */
+                    if(textureCoordinateIndexCount)
+                        textureCoordinateIndexCount += 2;
+                    if(normalIndexCount)
+                        normalIndexCount += 2;
+                } else {
+                    /** @todo fix arrayAppend() to not need the cast here */
+                    arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(3));
                 }
 
                 primitive = MeshPrimitive::Triangles;
 
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-
-            /** @todo fix arrayAppend() to not need the cast here */
-            arrayAppend(indices, Containers::ArrayView<const Vector3ui>{data}.prefix(i));
 
         /* Unknown keyword */
         } else {

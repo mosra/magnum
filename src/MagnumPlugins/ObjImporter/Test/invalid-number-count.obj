@@ -57,6 +57,6 @@ o triangle with two indices
 v 1 2 3
 f 11 11
 
-o quad
+o five-vertex face
 v 1 2 3
-f 12 12 12 12
+f 12 12 12 12 12

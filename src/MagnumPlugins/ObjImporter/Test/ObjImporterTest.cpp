@@ -57,6 +57,7 @@ struct ObjImporterTest: TestSuite::Tester {
     void meshTextureCoordinatesNormals();
 
     void meshNegativeIndices();
+    void meshQuads();
 
     void meshIgnoredKeyword();
 
@@ -153,8 +154,8 @@ const struct {
     {"four-component index tuple", "invalid integer literal 1/1"},
     {"point with two indices", "expected exactly 1 position index tuple for a point, got 9 9"},
     {"line with one index", "expected exactly 2 position index tuples for a line, got 10"},
-    {"triangle with two indices", "expected exactly 3 position index tuples for a triangle, got 11 11"},
-    {"quad", "expected exactly 3 position index tuples for a triangle, got 12 12 12 12"}
+    {"triangle with two indices", "expected 3 or 4 position index tuples for a face, got 11 11"},
+    {"five-vertex face", "expected 3 or 4 position index tuples for a face, got 12 12 12 12 12"}
 };
 
 const struct {
@@ -199,6 +200,7 @@ ObjImporterTest::ObjImporterTest() {
               &ObjImporterTest::meshTextureCoordinatesNormals,
 
               &ObjImporterTest::meshNegativeIndices,
+              &ObjImporterTest::meshQuads,
 
               &ObjImporterTest::meshIgnoredKeyword,
 
@@ -506,6 +508,63 @@ void ObjImporterTest::meshNegativeIndices() {
             /* The first 8 elements should be the same as in
                meshTextureCoordinatesNormals() */
             5, 6
+        }), TestSuite::Compare::Container);
+}
+
+void ObjImporterTest::meshQuads() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-quads.obj")));
+    CORRADE_COMPARE(importer->meshCount(), 1);
+
+    /*    1            1
+         / \          / \
+        /   \        /   \
+       2 --- 5      2 --- 3
+       |     |  ->  4 --- 7
+       |     |      |     |
+       3 --- 4      5 --- 6 */
+    const Containers::Optional<MeshData> data = importer->mesh(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(data->attributeCount(), 3);
+    CORRADE_COMPARE_AS(data->attribute<Vector3>(MeshAttribute::Position),
+        Containers::arrayView<Vector3>({
+            {0.0f, 3.0f, 0.0f},
+            {-1.0f, 1.0f, 0.0f},
+            {1.0f, 1.0f, 0.0f},
+
+            {-1.0f, 1.0f, 0.0f},
+            {-1.0f, -1.0f, 0.0f},
+            {1.0f, -1.0f, 0.0f},
+            {1.0f, 1.0f, 0.0f},
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(data->attribute<Vector2>(MeshAttribute::TextureCoordinates),
+        Containers::arrayView<Vector2>({
+            {0.5f, 1.0f},
+            {0.0f, 0.5f},
+            {1.0f, 0.5f},
+
+            {0.0f, 0.5f},
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {1.0f, 0.5f},
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(data->attribute<Vector3>(MeshAttribute::Normal),
+        Containers::arrayView<Vector3>({
+            {0.0f, 1.0f, 0.0f},
+            {-1.0f, 0.0f, 0.0f},
+            {1.0f, 0.0f, 0.0f},
+
+            {0.0f, -1.0f, 0.0f},
+            {0.0f, -1.0f, 0.0f},
+            {0.0f, -1.0f, 0.0f},
+            {0.0f, -1.0f, 0.0f},
+        }), TestSuite::Compare::Container);
+    CORRADE_VERIFY(data->isIndexed());
+    CORRADE_COMPARE(data->indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(data->indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 4, 5, 3, 5, 6
         }), TestSuite::Compare::Container);
 }
 

@@ -66,6 +66,7 @@ corrade_add_test(ObjImporterTest ObjImporterTest.cpp
         mesh-primitive-lines.obj
         mesh-primitive-points.obj
         mesh-primitive-triangles.obj
+        mesh-quads.obj
         mesh-texture-coordinates.obj
         mesh-texture-coordinates-normals.obj
         mesh-texture-coordinates-optional-coordinate.obj)

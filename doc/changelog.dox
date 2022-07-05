@@ -1097,7 +1097,7 @@ See also:
     consistent with @ref Trade::SceneData::findFieldId().
 -   Added @ref Trade::MeshData::attributeId() that returns ID of an attribute
     in a set of attributes of the same name
--   @relativeref{Trade,ObjImporter} now supports negative indices
+-   @relativeref{Trade,ObjImporter} now supports quads and negative indices
 -   Added @ref Trade::TextureType::Texture1DArray,
     @relativeref{Trade::TextureType,Texture2DArray} and
     @relativeref{Trade::TextureType,CubeMapArray} in order to be able to

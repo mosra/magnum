@@ -108,9 +108,10 @@ positions with optional @ref VertexFormat::Vector3 normals and
 Negative indices (where @cpp -1 @ce is the last position / texture coordinate
 / normal known at given point in the file, @cpp -2 @ce is the second-to-last,
 etc.), produced for example by 3ds Max or [Mineways](http://mineways.com), are
+supported. Quads are converted to two triangles, higher-order polygons are not
 supported.
 
-Polygons (quads etc.) and material properties are currently not supported.
+Material properties are currently not supported.
 */
 class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
     public:
