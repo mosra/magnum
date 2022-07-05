@@ -1,0 +1,35 @@
+# OBJ files produced by http://mineways.com have this, for example the Rungholt
+# scene from the McGuire archive (https://casual-effects.com/data/) has this.
+# Not sure what's the point of having such a feature or even using such a
+# feature, since the file starts with
+#
+#   f -53570/-200/-18 -53569/-199/-18 -53568/-198/-18 -53567/-197/-18
+#
+# and then the numbers just decrease going forward. I would see a point when
+# the face and vertex declarations were interleaved -- to make the indices
+# shorter -- but not like this. Honestly this looks like once upon a time,
+# someone just randomly flipped signs until the export-import cycle started
+# making sense, and then the other importers had to follow suit?! The same
+# insanity is exported by 3dsMax: https://github.com/CGAL/cgal/issues/4062
+
+v 0.5 2 3
+v 0 1.5 1
+vt 1 0.5
+vt 0.5 1
+vn 1 0.5 3.5
+vn 0.5 1 0.5
+
+# -2 is 1, -1 is 2 for all
+l -2/-2/-2 -1/-2/-1
+l -2/-1/-1 -1/-1/-2
+
+v 1.5 0 2
+v 2 1.5 0
+vt 0 0.5
+
+# -4 is 1, -3 is 2, -2 is 3, -1 is 4 for positions
+# -3 is 1, -2 is 2, -1 is 3 for texture coordinates
+# -2 is 1, -1 is 2 for normals
+l -3/-3/-1 -4/-3/-2
+l -3/-2/-1 -4/-2/-1
+l -1/-2/-1 -2/-1/-2

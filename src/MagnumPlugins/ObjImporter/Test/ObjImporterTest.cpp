@@ -56,6 +56,8 @@ struct ObjImporterTest: TestSuite::Tester {
     void meshNormals();
     void meshTextureCoordinatesNormals();
 
+    void meshNegativeIndices();
+
     void meshIgnoredKeyword();
 
     void meshNamed();
@@ -120,7 +122,8 @@ const struct {
 } InvalidNumbersData[]{
     {"too long float literal", "too long numeric literal 1234.567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567"},
     {"too long integer literal", "too long numeric literal 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678"},
-    {"too large integer literal", "too large integer literal 4294967296"},
+    {"too small integer literal", "too small or large integer literal -2147483649"},
+    {"too large integer literal", "too small or large integer literal 2147483648"},
     {"invalid float literal", "invalid floating-point literal bleh"},
     {"invalid integer literal", "invalid integer literal bleh"},
     {"position index out of range", "index 3 out of range for 1 vertices"},
@@ -194,6 +197,8 @@ ObjImporterTest::ObjImporterTest() {
               &ObjImporterTest::meshTextureCoordinatesOptionalCoordinate,
               &ObjImporterTest::meshNormals,
               &ObjImporterTest::meshTextureCoordinatesNormals,
+
+              &ObjImporterTest::meshNegativeIndices,
 
               &ObjImporterTest::meshIgnoredKeyword,
 
@@ -446,6 +451,62 @@ void ObjImporterTest::meshTextureCoordinatesNormals() {
     CORRADE_COMPARE_AS(data->indices<UnsignedInt>(),
         Containers::arrayView<UnsignedInt>({0, 1, 2, 3, 1, 0, 4, 2}),
         TestSuite::Compare::Container);
+}
+
+void ObjImporterTest::meshNegativeIndices() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-negative-indices.obj")));
+    CORRADE_COMPARE(importer->meshCount(), 1);
+
+    const Containers::Optional<MeshData> data = importer->mesh(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
+    CORRADE_COMPARE(data->attributeCount(), 3);
+    CORRADE_COMPARE_AS(data->attribute<Vector3>(MeshAttribute::Position),
+        Containers::arrayView<Vector3>({
+            {0.5f, 2.0f, 3.0f},
+            {0.0f, 1.5f, 1.0f},
+            {0.5f, 2.0f, 3.0f},
+            {0.0f, 1.5f, 1.0f},
+            {0.0f, 1.5f, 1.0f},
+            /* The first 5 elements should be the same as in
+               meshTextureCoordinatesNormals() */
+            {2.0f, 1.5f, 0.0f},
+            {1.5f, 0.0f, 2.0f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(data->attribute<Vector2>(MeshAttribute::TextureCoordinates),
+        Containers::arrayView<Vector2>({
+            {1.0f, 0.5f},
+            {1.0f, 0.5f},
+            {0.5f, 1.0f},
+            {0.5f, 1.0f},
+            {0.5f, 1.0f},
+            /* The first 5 elements should be the same as in
+               meshTextureCoordinatesNormals() */
+            {0.5f, 1.0f},
+            {0.0f, 0.5f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(data->attribute<Vector3>(MeshAttribute::Normal),
+        Containers::arrayView<Vector3>({
+            {1.0f, 0.5f, 3.5f},
+            {0.5f, 1.0f, 0.5f},
+            {0.5f, 1.0f, 0.5f},
+            {1.0f, 0.5f, 3.5f},
+            {0.5f, 1.0f, 0.5f},
+            /* The first 5 elements should be the same as in
+               meshTextureCoordinatesNormals() */
+            {0.5f, 1.0f, 0.5f},
+            {1.0f, 0.5f, 3.5f}
+        }), TestSuite::Compare::Container);
+    CORRADE_VERIFY(data->isIndexed());
+    CORRADE_COMPARE(data->indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(data->indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({
+            0, 1, 2, 3, 1, 0, 4, 2,
+            /* The first 8 elements should be the same as in
+               meshTextureCoordinatesNormals() */
+            5, 6
+        }), TestSuite::Compare::Container);
 }
 
 void ObjImporterTest::meshIgnoredKeyword() {

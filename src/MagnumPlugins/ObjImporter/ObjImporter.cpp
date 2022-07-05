@@ -26,6 +26,7 @@
 
 #include "ObjImporter.h"
 
+#include <climits>
 #include <unordered_map>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
@@ -109,7 +110,7 @@ inline bool parseFloat(const char* const errorPrefix, const Containers::StringVi
     return true;
 }
 
-inline bool parseUnsignedInt(const char* const errorPrefix, const Containers::StringView string, UnsignedInt& out) {
+inline bool parseInt(const char* const errorPrefix, const Containers::StringView string, Int& out) {
     /** @todo replace with something that can parse non-null-terminated stuff,
         then drop this "too long" error */
     char buffer[128];
@@ -122,17 +123,17 @@ inline bool parseUnsignedInt(const char* const errorPrefix, const Containers::St
     std::memcpy(buffer, string.data(), size);
     buffer[size] = '\0';
     char* end;
-    /* Not using strtoul() here as on Windows it's 32-bit and we wouldn't be
+    /* Not using strtol() here as on Windows it's 32-bit and we wouldn't be
        able to detect overflows */
     /** @todo replace with something that can report errors in a non-insane
         way */
-    const std::uint64_t outLong = std::strtoull(buffer, &end, 10);
+    const std::int64_t outLong = std::strtoll(buffer, &end, 10);
     if(!string || std::size_t(end - buffer) != size) {
         Error{} << errorPrefix << "invalid integer literal" << string;
         return false;
     }
-    if(outLong > ~std::uint32_t{}) {
-        Error{} << errorPrefix << "too large integer literal" << string;
+    if(outLong < INT_MIN || outLong > INT_MAX) {
+        Error{} << errorPrefix << "too small or large integer literal" << string;
         return false;
     }
 
@@ -399,9 +400,14 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
 
                 /* The number before first slash is a position index */
                 const Containers::StringView foundSlash1 = indexTuple.findOr('/', indexTuple.end());
-                if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash1.begin()), data[i][0]))
+                Int index;
+                if(!parseInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash1.begin()), index))
                     return {};
-                data[i][0] -= mesh.positionIndexOffset;
+                /* If the number is negative, it counts from the end (-1 is
+                   the last known position at this point, counting from 1) */
+                if(index < 0)
+                    index += positions.size() + 1;
+                data[i][0] = index - mesh.positionIndexOffset;
 
                 /* If there was a slash, next is a texture coordinate or
                    empty */
@@ -409,18 +415,28 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
                     indexTuple = indexTuple.suffix(foundSlash1.end());
                     const Containers::StringView foundSlash2 = indexTuple.findOr('/', indexTuple.end());
                     if(!foundSlash2 || foundSlash2.begin() != indexTuple.begin()) {
-                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash2.begin()), data[i][1]))
+                        if(!parseInt("Trade::ObjImporter::mesh():", indexTuple.prefix(foundSlash2.begin()), index))
                             return {};
-                        data[i][1] -= mesh.textureCoordinateIndexOffset;
+                        /* If the number is negative, it counts from the end
+                           (-1 is the last known texture coordinate at this
+                           point, counting from 1) */
+                        if(index < 0)
+                            index += textureCoordinates.size() + 1;
+                        data[i][1] = index - mesh.textureCoordinateIndexOffset;
                         ++textureCoordinateIndexCount;
                     }
 
                     /* If there was a second slash, last is a normal */
                     if(foundSlash2) {
                         indexTuple = indexTuple.suffix(foundSlash2.end());
-                        if(!parseUnsignedInt("Trade::ObjImporter::mesh():", indexTuple, data[i][2]))
+                        if(!parseInt("Trade::ObjImporter::mesh():", indexTuple, index))
                             return {};
-                        data[i][2] -= mesh.normalIndexOffset;
+                        /* If the number is negative, it counts from the end
+                           (-1 is the last known normal at this point, counting
+                           from 1) */
+                        if(index < 0)
+                            index += normals.size() + 1;
+                        data[i][2] = index - mesh.normalIndexOffset;
                         ++normalIndexCount;
                     }
                 }

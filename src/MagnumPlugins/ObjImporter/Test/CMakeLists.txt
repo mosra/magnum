@@ -60,6 +60,7 @@ corrade_add_test(ObjImporterTest ObjImporterTest.cpp
         mesh-named-first-unnamed.obj
         mesh-named-first-unnamed-index-first.obj
         mesh-named.obj
+        mesh-negative-indices.obj
         mesh-normals.obj
         mesh-positions-optional-coordinate.obj
         mesh-primitive-lines.obj
