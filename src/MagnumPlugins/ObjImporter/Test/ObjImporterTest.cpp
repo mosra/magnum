@@ -28,6 +28,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
 
@@ -56,6 +57,7 @@ struct ObjImporterTest: TestSuite::Tester {
     void meshNormals();
     void meshTextureCoordinatesNormals();
 
+    void meshNoMergeIndexArrays();
     void meshNegativeIndices();
     void meshQuads();
 
@@ -199,6 +201,7 @@ ObjImporterTest::ObjImporterTest() {
               &ObjImporterTest::meshNormals,
               &ObjImporterTest::meshTextureCoordinatesNormals,
 
+              &ObjImporterTest::meshNoMergeIndexArrays,
               &ObjImporterTest::meshNegativeIndices,
               &ObjImporterTest::meshQuads,
 
@@ -453,6 +456,55 @@ void ObjImporterTest::meshTextureCoordinatesNormals() {
     CORRADE_COMPARE_AS(data->indices<UnsignedInt>(),
         Containers::arrayView<UnsignedInt>({0, 1, 2, 3, 1, 0, 4, 2}),
         TestSuite::Compare::Container);
+}
+
+void ObjImporterTest::meshNoMergeIndexArrays() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    importer->configuration().setValue("mergeIndexArrays", false);
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-texture-coordinates-normals.obj")));
+    CORRADE_COMPARE(importer->meshCount(), 1);
+
+    /* Same as meshTextureCoordinatesNormals() but with the index array used
+       to duplicate the vertex data */
+
+    const Containers::Optional<MeshData> data = importer->mesh(0);
+    CORRADE_VERIFY(data);
+    CORRADE_VERIFY(!data->isIndexed());
+    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
+    CORRADE_COMPARE(data->attributeCount(), 3);
+    CORRADE_COMPARE_AS(data->attribute<Vector3>(MeshAttribute::Position),
+        Containers::arrayView<Vector3>({
+            {0.5f, 2.0f, 3.0f},
+            {0.0f, 1.5f, 1.0f},
+            {0.5f, 2.0f, 3.0f},
+            {0.0f, 1.5f, 1.0f},
+            {0.0f, 1.5f, 1.0f},
+            {0.5f, 2.0f, 3.0f},
+            {0.0f, 1.5f, 1.0f},
+            {0.5f, 2.0f, 3.0f},
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(data->attribute<Vector2>(MeshAttribute::TextureCoordinates),
+        Containers::arrayView<Vector2>({
+            {1.0f, 0.5f},
+            {1.0f, 0.5f},
+            {0.5f, 1.0f},
+            {0.5f, 1.0f},
+            {1.0f, 0.5f},
+            {1.0f, 0.5f},
+            {0.5f, 1.0f},
+            {0.5f, 1.0f},
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(data->attribute<Vector3>(MeshAttribute::Normal),
+        Containers::arrayView<Vector3>({
+            {1.0f, 0.5f, 3.5f},
+            {0.5f, 1.0f, 0.5f},
+            {0.5f, 1.0f, 0.5f},
+            {1.0f, 0.5f, 3.5f},
+            {0.5f, 1.0f, 0.5f},
+            {1.0f, 0.5f, 3.5f},
+            {0.5f, 1.0f, 0.5f},
+            {0.5f, 1.0f, 0.5f},
+        }), TestSuite::Compare::Container);
 }
 
 void ObjImporterTest::meshNegativeIndices() {

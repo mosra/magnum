@@ -101,9 +101,13 @@ information.
 @section Trade-ObjImporter-behavior Behavior and limitations
 
 Meshes are imported as @ref MeshPrimitive::Triangles with
-@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
-positions with optional @ref VertexFormat::Vector3 normals and
-@ref VertexFormat::Vector2 texture coordinates, if present in the source file.
+@ref VertexFormat::Vector3 positions interleaved with optional
+@ref VertexFormat::Vector3 normals and @ref VertexFormat::Vector2 texture
+coordinates, if present in the source file. By default the per-attribute index
+arrays are merged into a single @ref MeshIndexType::UnsignedInt index buffer.
+If you disable the @cb{.ini} mergeIndexArrays @ce @ref Trade-ObjImporter-configuration "configuration option",
+the resulting mesh will be nonindexed, with the vertex data duplicated
+according to per-attribute index arrays.
 
 Negative indices (where @cpp -1 @ce is the last position / texture coordinate
 / normal known at given point in the file, @cpp -2 @ce is the second-to-last,
@@ -112,6 +116,16 @@ supported. Quads are converted to two triangles, higher-order polygons are not
 supported.
 
 Material properties are currently not supported.
+
+@section Trade-ObjImporter-configuration Plugin-specific configuration
+
+It's possible to tune various import options through @ref configuration(). See
+below for all options and their default values:
+
+@snippet MagnumPlugins/ObjImporter/ObjImporter.conf configuration_
+
+See @ref plugins-configuration for more information and an example showing how
+to edit the configuration values.
 */
 class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
     public:

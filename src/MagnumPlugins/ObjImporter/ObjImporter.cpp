@@ -34,6 +34,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStlHash.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -558,12 +559,20 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
         return Containers::NullOpt;
     }
 
-    /* Merge index arrays. If any of the attributes was not there, the whole
-       index array has zeros, not affecting the uniqueness in any way. */
-    Containers::Array<char> indexData{NoInit, indices.size()*sizeof(UnsignedInt)};
-    const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
-    const std::size_t vertexCount = MeshTools::removeDuplicatesInPlaceInto(
-        Containers::arrayCast<2, char>(arrayView(indices)), indexDataI);
+    /* Merge index arrays, unless disabled. If any of the attributes was not
+       there, the whole index array has zeros, not affecting the uniqueness in
+       any way. */
+    Containers::Array<char> indexData;
+    std::size_t vertexCount;
+    if(configuration().value<bool>("mergeIndexArrays")) {
+        indexData = Containers::Array<char>{NoInit, indices.size()*sizeof(UnsignedInt)};
+        const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
+        vertexCount = MeshTools::removeDuplicatesInPlaceInto(
+            Containers::arrayCast<2, char>(arrayView(indices)), indexDataI);
+
+    /* If merging was disabled, this behaves like if all index tuples were
+       unique. No other change needed. */
+    } else vertexCount = indices.size();
 
     /* Allocate attribute and vertex data */
     std::size_t attributeCount = 1;
@@ -609,8 +618,13 @@ Containers::Optional<MeshData> ObjImporter::doMesh(const UnsignedInt id, Unsigne
     }
     CORRADE_INTERNAL_ASSERT(offset == stride && attributeIndex == attributeCount);
 
+    /* If mergeIndexArrays was disabled, indexData is nullptr and the mesh is
+       not indexed */
+    const auto meshIndices = indexData ?
+        Trade::MeshIndexData{MeshIndexType::UnsignedInt, indexData} :
+        Trade::MeshIndexData{};
     return MeshData{*primitive,
-        Utility::move(indexData), Trade::MeshIndexData{indexDataI},
+        Utility::move(indexData), meshIndices,
         Utility::move(vertexData), Utility::move(attributeData)};
 }
 
