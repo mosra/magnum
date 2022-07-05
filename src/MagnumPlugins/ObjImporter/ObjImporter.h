@@ -53,13 +53,9 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief OBJ importer plugin
+@brief Wavefront OBJ importer plugin
 
-Loads Wavefront OBJ (`*.obj`) files, with the following supported features:
-
--   multiple objects
--   vertex positions, normals and 2D texture coordinates
--   triangles, lines and points
+Loads meshes from Wavefront OBJ (`*.obj`) files.
 
 @section Trade-ObjImporter-usage Usage
 
@@ -100,20 +96,27 @@ information.
 
 @section Trade-ObjImporter-behavior Behavior and limitations
 
-Meshes are imported as @ref MeshPrimitive::Triangles with
-@ref VertexFormat::Vector3 positions interleaved with optional
-@ref VertexFormat::Vector3 normals and @ref VertexFormat::Vector2 texture
-coordinates, if present in the source file. By default the per-attribute index
-arrays are merged into a single @ref MeshIndexType::UnsignedInt index buffer.
-If you disable the @cb{.ini} mergeIndexArrays @ce @ref Trade-ObjImporter-configuration "configuration option",
-the resulting mesh will be nonindexed, with the vertex data duplicated
+Meshes are imported as @ref MeshPrimitive::Triangles, @ref MeshPrimitive::Lines
+or @ref MeshPrimitive::Points with @ref VertexFormat::Vector3 positions
+interleaved with optional @ref VertexFormat::Vector3 normals and
+@ref VertexFormat::Vector2 texture coordinates, if present in the source file.
+By default the per-attribute index arrays are merged into a single
+@ref MeshIndexType::UnsignedInt index buffer. If you disable the
+@cb{.ini} mergeIndexArrays @ce @ref Trade-ObjImporter-configuration "configuration option",
+the resulting mesh will be non-indexed, with the vertex data duplicated
 according to per-attribute index arrays.
 
-Negative indices (where @cpp -1 @ce is the last position / texture coordinate
-/ normal known at given point in the file, @cpp -2 @ce is the second-to-last,
-etc.), produced for example by 3ds Max or [Mineways](http://mineways.com), are
-supported. Quads are converted to two triangles, higher-order polygons are not
-supported.
+Optional fourth position coordinates are allowed if they're set to 1, optional
+third texture coordinate is allowed if it's set to 0.
+
+Negative indices (where -1 is the last position / texture coordinate / normal
+known at given point in the file, -2 is the second-to-last, etc.), produced for
+example by 3ds Max or [Mineways](http://mineways.com), are supported. Quads are
+converted to two triangles. Higher-order polygons are not supported, meshes
+that mix points, lines and faces together are not supported.
+
+Files containing object name annotations (`o`) are split into multiple meshes,
+with the object name available through @ref meshName() / @ref meshForName().
 
 Material properties are currently not supported.
 
