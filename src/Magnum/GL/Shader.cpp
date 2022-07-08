@@ -749,14 +749,27 @@ Shader& Shader::addFile(const std::string& filename) {
 
 bool Shader::compile() { return compile({*this}); }
 
-bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
-    bool allSuccess = true;
+void Shader::submitCompile() { submitCompile({*this}); }
 
+bool Shader::checkCompile() { return checkCompile({*this}); }
+
+bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
+    submitCompile(shaders);
+    return checkCompile(shaders);
+}
+
+bool Shader::isCompileFinished() {
+    GLint success;
+    glGetShaderiv(_id, GL_COMPLETION_STATUS_KHR, &success);
+    return success == GL_TRUE;
+}
+
+void Shader::submitCompile(std::initializer_list<Containers::Reference<Shader>> shaders) {
     /* Allocate large enough array for source pointers and sizes (to avoid
        reallocating it for each of them) */
     std::size_t maxSourceCount = 0;
     for(Shader& shader: shaders) {
-        CORRADE_ASSERT(shader._sources.size() > 1, "GL::Shader::compile(): no files added", false);
+        CORRADE_ASSERT(shader._sources.size() > 1, "GL::Shader::compile(): no files added", );
         maxSourceCount = Math::max(shader._sources.size(), maxSourceCount);
     }
     /** @todo ArrayTuple/VLAs */
@@ -775,6 +788,10 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
 
     /* Invoke (possibly parallel) compilation on all shaders */
     for(Shader& shader: shaders) glCompileShader(shader._id);
+}
+
+bool Shader::checkCompile(std::initializer_list<Containers::Reference<Shader>> shaders) {
+    bool allSuccess = true;
 
     /* After compilation phase, check status of all shaders */
     Int i = 1;

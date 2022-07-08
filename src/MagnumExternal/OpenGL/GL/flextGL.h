@@ -1523,7 +1523,7 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 /* GL_VERSION_4_5 */
 
-#define GL_CONTEXT_LOST 0x0507
+#define GL_CONTEXT_LOST 0x0507 
 #define GL_LOWER_LEFT 0x8CA1
 #define GL_UPPER_LEFT 0x8CA2
 #define GL_NEGATIVE_ONE_TO_ONE 0x935E
@@ -1772,6 +1772,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 /* GL_KHR_blend_equation_advanced_coherent */
 
 #define GL_BLEND_ADVANCED_COHERENT_KHR 0x9285
+
+/* GL_KHR_parallel_shader_compile */
+
+#define GL_COMPLETION_STATUS_KHR 0x91B1 
 
 /* GL_NV_sample_locations */
 

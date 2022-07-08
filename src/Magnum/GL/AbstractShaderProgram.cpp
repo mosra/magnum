@@ -586,10 +586,21 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
 bool AbstractShaderProgram::link() { return link({*this}); }
 
 bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
-    bool allSuccess = true;
+    submitLink(shaders);
+    return checkLink(shaders);
+}
 
-    /* Invoke (possibly parallel) linking on all shaders */
+void AbstractShaderProgram::submitLink() { submitLink({*this}); }
+
+bool AbstractShaderProgram::checkLink() { return checkLink({*this}); }
+
+void AbstractShaderProgram::submitLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
+     /* Invoke (possibly parallel) linking on all shaders */
     for(AbstractShaderProgram& shader: shaders) glLinkProgram(shader._id);
+}
+
+bool AbstractShaderProgram::checkLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
+    bool allSuccess = true;
 
     /* After linking phase, check status of all shaders */
     Int i = 1;
@@ -630,6 +641,16 @@ bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<Abs
     }
 
     return allSuccess;
+}
+
+bool AbstractShaderProgram::isLinkFinished() {
+    GLint success;
+    glGetProgramiv(_id, GL_COMPLETION_STATUS_KHR, &success);
+    return success == GL_TRUE;
+}
+
+bool AbstractShaderProgram::CompileState::isLinkFinished() {
+    return AbstractShaderProgram::isLinkFinished();
 }
 
 void AbstractShaderProgram::cleanLogImplementationNoOp(std::string&) {}

@@ -31,7 +31,6 @@
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
-#include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
@@ -68,16 +67,11 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
-    #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt materialCount, const UnsignedInt drawCount
-    #endif
-):
-    _flags{flags}
-    #ifndef MAGNUM_TARGET_GLES2
-    , _materialCount{materialCount}, _drawCount{drawCount}
-    #endif
-{
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(Flags flags
+#ifndef MAGNUM_TARGET_GLES2
+, UnsignedInt materialCount, UnsignedInt drawCount
+#endif
+) {
     #ifndef CORRADE_NO_ASSERT
     {
         const bool textureTransformationNotEnabledOrTextured = !(flags & Flag::TextureTransformation) || flags & Flag::Textured
@@ -86,22 +80,22 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
             #endif
             ;
         CORRADE_ASSERT(textureTransformationNotEnabledOrTextured,
-            "Shaders::FlatGL: texture transformation enabled but the shader is not textured", );
+            "Shaders::FlatGL: texture transformation enabled but the shader is not textured", CompileState{NoCreate});
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
-        "Shaders::FlatGL: material count can't be zero", );
+        "Shaders::FlatGL: material count can't be zero", CompileState{NoCreate});
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
-        "Shaders::FlatGL: draw count can't be zero", );
+        "Shaders::FlatGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags & Flag::TextureArrays) || flags & Flag::Textured || flags >= Flag::ObjectIdTexture,
-        "Shaders::FlatGL: texture arrays enabled but the shader is not textured", );
+        "Shaders::FlatGL: texture arrays enabled but the shader is not textured", CompileState{NoCreate});
     CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
-        "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", );
+        "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -195,9 +189,14 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("Flat.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    GL::Shader::submitCompile({vert, frag});
 
-    attachShaders({vert, frag});
+    CompileState cs{std::move(frag), std::move(vert), flags
+    #ifndef MAGNUM_TARGET_GLES2
+    , materialCount, drawCount
+    #endif
+    };
+    cs.attachShaders({cs._frag, cs._vert});
 
     /* ES3 has this done in the shader directly and doesn't even provide
        bindFragmentDataLocation() */
@@ -206,53 +205,71 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
+        cs.bindAttributeLocation(Position::Location, "position");
         if(flags & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
             || flags >= Flag::ObjectIdTexture
             #endif
         )
-            bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+            cs.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         if(flags & Flag::VertexColor)
-            bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
+            cs.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & Flag::ObjectId) {
-            bindFragmentDataLocation(ColorOutput, "color");
-            bindFragmentDataLocation(ObjectIdOutput, "objectId");
+            cs.bindFragmentDataLocation(ColorOutput, "color");
+            cs.bindFragmentDataLocation(ObjectIdOutput, "objectId");
         }
         if(flags >= Flag::InstancedObjectId)
-            bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+            cs.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
         if(flags & Flag::InstancedTransformation)
-            bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            cs.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
         if(flags >= Flag::InstancedTextureOffset)
-            bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+            cs.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
     }
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    cs.submitLink();
+
+    return cs;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
+: AbstractShaderProgram{static_cast<AbstractShaderProgram&&>(std::move(cs))},
+    _flags(cs._flags), _materialCount{cs._materialCount}, _drawCount(cs._drawCount) {
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::checkCompile({cs._vert, cs._frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+
+    const GL::Context& context = GL::Context::current();
+
+    #ifndef MAGNUM_TARGET_GLES
+    const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    #else
+    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix");
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & Flag::TextureArrays)
+            if(_flags & Flag::TextureArrays)
                 _textureLayerUniform = uniformLocation("textureLayer");
             #endif
             _colorUniform = uniformLocation("color");
-            if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
+            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
+            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
             #endif
         }
     }
@@ -261,13 +278,13 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
-        if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
+        if(_flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
+        if(_flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
         }
@@ -277,21 +294,33 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
     } else
     #endif
     {
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
-        if(flags & Flag::TextureTransformation)
+        if(_flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
         /* Texture layer is zero by default */
         setColor(Magnum::Color4{1.0f});
-        if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+        if(_flags & Flag::AlphaMask) setAlphaMask(0.5f);
         /* Object ID is zero by default */
     }
     #endif
 }
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags
+    #ifndef MAGNUM_TARGET_GLES2
+    , UnsignedInt materialCount, UnsignedInt drawCount
+    #endif
+):
+    #ifndef MAGNUM_TARGET_GLES2
+    FlatGL(compile(flags, materialCount, drawCount))
+    #else
+    FlatGL{compile(flags)}
+    #endif
+{}
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): FlatGL{flags, 1, 1} {}

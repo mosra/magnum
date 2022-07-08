@@ -522,6 +522,23 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         static bool compile(std::initializer_list<Containers::Reference<Shader>> shaders);
 
         /**
+         * @brief Submit multiple shaders for compilation
+         *
+         * The operation is batched in a way that
+         * allows the driver to perform multiple compilations simultaneously
+         * (i.e. in multiple threads).
+         */
+        static void submitCompile(std::initializer_list<Containers::Reference<Shader>> shaders);
+
+        /**
+         * @brief Check compilations status of multiple shaders and await completion
+         *
+         * Returns @cpp false @ce if compilation of any shader failed,
+         * @cpp true @ce if everything succeeded.
+         */
+        static bool checkCompile(std::initializer_list<Containers::Reference<Shader>> shaders);
+
+        /**
          * @brief Constructor
          * @param version   Target version
          * @param type      Shader type
@@ -642,6 +659,25 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * information.
          */
         bool compile();
+
+        /**
+         * @brief Submit shader for compilation
+         *
+         * Submits shader for compilation.
+         */
+        void submitCompile();
+
+        /**
+         * @brief Check compilation status and await completion
+         *
+         */
+        bool checkCompile();
+
+        /**
+         * @brief Non-blocking compilation status check
+         *
+         */
+        bool isCompileFinished();
 
     private:
         void MAGNUM_GL_LOCAL addSourceImplementationDefault(std::string source);

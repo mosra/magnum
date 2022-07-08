@@ -32,6 +32,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -601,6 +602,48 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit FlatGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
+
+        struct CompileState;
+
+        explicit FlatGL(CompileState&& cs);
+
+        static CompileState compile(Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
+        struct CompileState : public GL::AbstractShaderProgram::CompileState {
+            friend CompileState FlatGL::compile(Flags
+            #ifndef MAGNUM_TARGET_GLES2
+            , UnsignedInt, UnsignedInt
+            #endif
+            );
+            friend FlatGL::FlatGL(CompileState&&);
+
+            explicit CompileState(NoCreateT) noexcept: GL::AbstractShaderProgram::CompileState({NoCreate}), 
+                _vert(NoCreate), _frag(NoCreate) {}
+
+            CompileState(GL::Shader&& vert, GL::Shader&& frag, Flags flags
+                #ifndef MAGNUM_TARGET_GLES2
+                , UnsignedInt materialCount, UnsignedInt drawCount
+                #endif
+                )
+                : _vert(std::move(vert)), _frag(std::move(frag)), _flags(flags) 
+                #ifndef MAGNUM_TARGET_GLES2
+                ,_materialCount(materialCount), _drawCount(drawCount) 
+                #endif
+                {}
+
+        private:
+            GL::Shader _vert, _frag;
+            Flags _flags;
+            
+            #ifndef MAGNUM_TARGET_GLES2
+            UnsignedInt _materialCount;
+            UnsignedInt _drawCount;
+            #endif
+        };
 
         /** @brief Copying is not allowed */
         FlatGL(const FlatGL<dimensions>&) = delete;

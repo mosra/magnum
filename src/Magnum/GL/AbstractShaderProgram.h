@@ -449,6 +449,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
     friend Implementation::ShaderProgramState;
 
     public:
+        struct CompileState;
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Buffer mode for transform feedback
@@ -1260,7 +1262,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
     protected:
         /**
-         * @brief Link the shader
+         * @brief Link the shaders
          *
          * Returns @cpp false @ce if linking of any shader failed, @cpp true @ce
          * if everything succeeded. Linker message (if any) is printed to error
@@ -1273,6 +1275,26 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @fn_gl_keyword{GetProgramInfoLog}
          */
         static bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
+
+        /**
+         * @brief Submit shaders for linking
+         *
+         * The operation is batched in a
+         * way that allows the driver to link multiple shaders simultaneously
+         * (i.e. in multiple threads).
+         *
+         */
+        static void submitLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
+
+        /**
+         * @brief Check linking status of shaders and await completion
+         *
+         * Returns @cpp false @ce if linking of any shader failed, @cpp true @ce
+         * if everything succeeded. Linker message (if any) is printed to error
+         * output.
+         *
+         */
+        static bool checkLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
@@ -1452,6 +1474,24 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * information.
          */
         bool link();
+
+        /**
+         * @brief Submit single shader for linking
+         *
+         */
+        void submitLink();
+
+        /**
+         * @brief Check link status and await completion
+         *
+         */
+        bool checkLink();
+
+        /**
+         * @brief Non-blocking linking status check
+         *
+         */
+        bool isLinkFinished();
 
         /**
          * @brief Get uniform location
@@ -1727,6 +1767,11 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
            workaround */
         std::vector<std::string> _transformFeedbackVaryingNames;
         #endif
+};
+
+struct AbstractShaderProgram::CompileState : public AbstractShaderProgram {
+    using AbstractShaderProgram::AbstractShaderProgram;
+    bool isLinkFinished();
 };
 
 }}
