@@ -63,21 +63,16 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
-):
-    _flags{flags}
-    #ifndef MAGNUM_TARGET_GLES2
-    , _materialCount{materialCount}, _drawCount{drawCount}
-    #endif
-{
+) {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
-        "Shaders::VectorGL: material count can't be zero", );
+        "Shaders::VectorGL: material count can't be zero", CompileState{NoCreate});
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
-        "Shaders::VectorGL: draw count can't be zero", );
+        "Shaders::VectorGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -141,9 +136,17 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("Vector.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    vert.submitCompile();
+    frag.submitCompile();
 
-    attachShaders({vert,  frag});
+    VectorGL out{NoInit};
+    out._flags = flags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._materialCount = materialCount;
+    out._drawCount = drawCount;
+    #endif
+
+    out.attachShaders({vert,  frag});
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -151,25 +154,37 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
-        bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
     }
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    out.submitLink();
+
+    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
+}
+
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& cs): VectorGL{static_cast<VectorGL&&>(std::move(cs))} {
+    if (id() == 0) return;
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+
+    const GL::Context& context = GL::Context::current();
+    const GL::Version version = cs._version;
+
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix");
             _backgroundColorUniform = uniformLocation("backgroundColor");
             _colorUniform = uniformLocation("color");
@@ -182,10 +197,10 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     {
         setUniform(uniformLocation("vectorTexture"), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
         }
@@ -195,23 +210,35 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flag
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
     } else
     #endif
     {
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
-        if(flags & Flag::TextureTransformation)
+        if(_flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
         /* Background color is zero by default */
         setColor(Color4{1.0f});
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(Flags flags): VectorGL{compile(flags)} {}
+
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): VectorGL{flags, 1, 1} {}
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(Flags flags) {
+    return compile(flags, 1, 1);
+}
+
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
+    VectorGL{compile(flags, materialCount, drawCount)} {}
 #endif
+
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(NoInitT) {}
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2

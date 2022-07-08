@@ -29,6 +29,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
@@ -74,8 +75,10 @@ struct VertexColorGLTest: GL::OpenGLTester {
     explicit VertexColorGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffers();
+    template<UnsignedInt dimensions> void constructUniformBuffersAsync();
     #endif
 
     template<UnsignedInt dimensions> void constructMove();
@@ -190,13 +193,19 @@ constexpr struct {
 VertexColorGLTest::VertexColorGLTest() {
     addTests<VertexColorGLTest>({
         &VertexColorGLTest::construct<2>,
-        &VertexColorGLTest::construct<3>});
+        &VertexColorGLTest::construct<3>,
+        &VertexColorGLTest::constructAsync<2>,
+        &VertexColorGLTest::constructAsync<3>});
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<VertexColorGLTest>({
         &VertexColorGLTest::constructUniformBuffers<2>,
         &VertexColorGLTest::constructUniformBuffers<3>},
         Containers::arraySize(ConstructUniformBuffersData));
+
+    addTests<VertexColorGLTest>({
+        &VertexColorGLTest::constructUniformBuffersAsync<2>,
+        &VertexColorGLTest::constructUniformBuffersAsync<3>});
     #endif
 
     addTests<VertexColorGLTest>({
@@ -309,6 +318,28 @@ template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+template<UnsignedInt dimensions> void VertexColorGLTest::constructAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    auto compileState = VertexColorGL<dimensions>::compile({});
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    VertexColorGL<dimensions> shader{std::move(compileState)};
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
@@ -337,6 +368,36 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
     VertexColorGL<dimensions> shader{data.flags, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffersAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    auto compileState = VertexColorGL<dimensions>::compile(VertexColorGL2D::Flag::UniformBuffers, 63);
+    CORRADE_COMPARE(compileState.flags(), VertexColorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(compileState.drawCount(), 63);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    VertexColorGL<dimensions> shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), VertexColorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(shader.drawCount(), 63);
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

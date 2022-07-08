@@ -31,6 +31,7 @@
  */
 
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -820,6 +821,20 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit PhongGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
+
+        class CompileState;
+
+        explicit PhongGL(CompileState&& cs);
+
+        static CompileState compile(Flags flags, UnsignedInt lightCount
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags, UnsignedInt lightCount);
+        #endif
 
         /** @brief Copying is not allowed */
         PhongGL(const PhongGL&) = delete;
@@ -1744,6 +1759,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         #endif
 
     private:
+        explicit PhongGL(NoInitT) {}
+
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
         using GL::AbstractShaderProgram::drawTransformFeedback;
@@ -1782,6 +1799,19 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
            so it can alias them */
         Int _drawOffsetUniform{0};
         #endif
+};
+
+class PhongGL::CompileState: public PhongGL {
+private:
+    friend class PhongGL;
+
+    explicit CompileState(NoCreateT): PhongGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(PhongGL&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
+        PhongGL{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+
+    GL::Shader _vert, _frag;
+    GL::Version _version;
 };
 
 /** @debugoperatorclassenum{PhongGL,PhongGL::Flag} */

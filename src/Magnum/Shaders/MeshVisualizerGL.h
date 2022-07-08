@@ -32,8 +32,10 @@
 
 #include <Corrade/Utility/Utility.h>
 
+#include <Corrade/Containers/Optional.h>
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -69,14 +71,17 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(FlagsBase)
 
-        explicit MeshVisualizerGLBase(FlagsBase flags
+        explicit MeshVisualizerGLBase(NoInitT) {}
+
+        explicit MeshVisualizerGLBase(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
+
+        static MAGNUM_SHADERS_LOCAL void assertExtensions(const FlagsBase flags);
+        static MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs,
+            const FlagsBase flags
             #ifndef MAGNUM_TARGET_GLES2
             , UnsignedInt materialCount, UnsignedInt drawCount
             #endif
         );
-        explicit MeshVisualizerGLBase(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
-
-        MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const;
 
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGLBase& setTextureMatrix(const Matrix3& matrix);
@@ -505,6 +510,20 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          */
         explicit MeshVisualizerGL2D(NoCreateT) noexcept: Implementation::MeshVisualizerGLBase{NoCreate} {}
 
+        class CompileState;
+
+        explicit MeshVisualizerGL2D(CompileState&& cs);
+
+        static CompileState compile(Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags);
+        #endif
+
         /** @brief Copying is not allowed */
         MeshVisualizerGL2D(const MeshVisualizerGL2D&) = delete;
 
@@ -862,7 +881,24 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         #endif
 
     private:
+        explicit MeshVisualizerGL2D(NoInitT) : Implementation::MeshVisualizerGLBase{NoInit} {}
+
         Int _transformationProjectionMatrixUniform{9};
+};
+
+class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
+private:
+    friend class MeshVisualizerGL2D;
+
+    explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version):
+        MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
+
+    GL::Shader _vert, _frag;
+    Containers::Optional<GL::Shader> _geom;
+    Flags _flags;
+    GL::Version _version;
 };
 
 /**
@@ -1639,7 +1675,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_deprecated_since{2020,06} Use @ref MeshVisualizerGL3D(Flags)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use MeshVisualizerGL3D(Flags) instead") MeshVisualizerGL3D(): MeshVisualizerGL3D{{}} {}
+        explicit CORRADE_DEPRECATED("use MeshVisualizerGL3D(Flags) instead") MeshVisualizerGL3D(): MeshVisualizerGL3D{Flags{}} {}
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -1697,6 +1733,21 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit MeshVisualizerGL3D(NoCreateT) noexcept: Implementation::MeshVisualizerGLBase{NoCreate} {}
+
+        class CompileState;
+
+        explicit MeshVisualizerGL3D(CompileState&& cs);
+
+        static CompileState compile(Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags);
+        #endif
+
 
         /** @brief Copying is not allowed */
         MeshVisualizerGL3D(const MeshVisualizerGL3D&) = delete;
@@ -2326,6 +2377,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         #endif
 
     private:
+        explicit MeshVisualizerGL3D(NoInitT) : Implementation::MeshVisualizerGLBase{NoInit} {}
+
         Int _transformationMatrixUniform{9},
             _projectionMatrixUniform{10};
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -2334,6 +2387,22 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
             _lineLengthUniform{13};
         #endif
 };
+
+class MeshVisualizerGL3D::CompileState : public MeshVisualizerGL3D {
+private:
+    friend class MeshVisualizerGL3D;
+
+    explicit CompileState(NoCreateT) : MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(MeshVisualizerGL3D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version) :
+        MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
+
+    GL::Shader _vert, _frag;
+    Containers::Optional<GL::Shader> _geom;
+    Flags _flags;
+    GL::Version _version;
+};
+
 
 /** @debugoperatorclassenum{MeshVisualizerGL2D,MeshVisualizerGL2D::Flag} */
 MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, MeshVisualizerGL2D::Flag value);

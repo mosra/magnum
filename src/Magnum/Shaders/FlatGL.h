@@ -32,6 +32,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -602,6 +603,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          */
         explicit FlatGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
+        class CompileState;
+
+        explicit FlatGL(CompileState&& cs);
+
+        static CompileState compile(Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags);
+        #endif
+
         /** @brief Copying is not allowed */
         FlatGL(const FlatGL<dimensions>&) = delete;
 
@@ -1011,6 +1026,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         #endif
 
     private:
+        /* Creates the GL shader program object but nothing else. Internal, used by compile(). */
+        explicit FlatGL(NoInitT);
+
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
         using GL::AbstractShaderProgram::drawTransformFeedback;
@@ -1036,6 +1054,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
            so it can alias them */
         Int _drawOffsetUniform{0};
         #endif
+};
+
+template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState: public FlatGL<dimensions> {
+private:
+    friend class FlatGL;
+
+    explicit CompileState(NoCreateT): FlatGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(FlatGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
+        FlatGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+
+    GL::Shader _vert, _frag;
+    GL::Version _version;
 };
 
 /**

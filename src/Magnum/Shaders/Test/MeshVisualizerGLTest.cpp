@@ -31,6 +31,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
@@ -88,12 +89,16 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     explicit MeshVisualizerGLTest();
 
     void construct2D();
+    void construct2DAsync();
     #ifndef MAGNUM_TARGET_GLES2
     void constructUniformBuffers2D();
+    void constructUniformBuffers2DAsync();
     #endif
     void construct3D();
+    void construct3DAsync();
     #ifndef MAGNUM_TARGET_GLES2
     void constructUniformBuffers3D();
+    void constructUniformBuffers3DAsync();
     #endif
 
     void construct2DInvalid();
@@ -1055,17 +1060,23 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests({&MeshVisualizerGLTest::construct2D},
         Containers::arraySize(ConstructData2D));
 
+    addTests({&MeshVisualizerGLTest::construct2DAsync});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers2D},
         Containers::arraySize(ConstructUniformBuffersData2D));
+    addTests({&MeshVisualizerGLTest::constructUniformBuffers2DAsync});
     #endif
 
     addInstancedTests({&MeshVisualizerGLTest::construct3D},
         Containers::arraySize(ConstructData3D));
 
+    addTests({&MeshVisualizerGLTest::construct3DAsync});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers3D},
         Containers::arraySize(ConstructUniformBuffersData3D));
+    addTests({&MeshVisualizerGLTest::constructUniformBuffers3DAsync});
     #endif
 
     addInstancedTests({&MeshVisualizerGLTest::construct2DInvalid},
@@ -1403,6 +1414,28 @@ void MeshVisualizerGLTest::construct2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+
+void MeshVisualizerGLTest::construct2DAsync() {
+    auto compileState = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(compileState.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL2D shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::constructUniformBuffers2D() {
     auto&& data = ConstructUniformBuffersData2D[testCaseInstanceId()];
@@ -1480,7 +1513,39 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+
+void MeshVisualizerGLTest::constructUniformBuffers2DAsync() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    auto compileState = MeshVisualizerGL2D::compile( MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 8, 55);
+    CORRADE_COMPARE(compileState.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(compileState.materialCount(), 8);
+    CORRADE_COMPARE(compileState.drawCount(), 55);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL2D shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(shader.materialCount(), 8);
+    CORRADE_COMPARE(shader.drawCount(), 55);
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
 #endif
+
 
 void MeshVisualizerGLTest::construct3D() {
     auto&& data = ConstructData3D[testCaseInstanceId()];
@@ -1530,6 +1595,27 @@ void MeshVisualizerGLTest::construct3D() {
 
     MeshVisualizerGL3D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MeshVisualizerGLTest::construct3DAsync() {
+    auto compileState = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(compileState.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL3D shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1608,6 +1694,36 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
 
     MeshVisualizerGL3D shader{data.flags, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MeshVisualizerGLTest::constructUniformBuffers3DAsync() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    auto compileState = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 6, 28);
+    CORRADE_COMPARE(compileState.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(compileState.materialCount(), 6);
+    CORRADE_COMPARE(compileState.drawCount(), 28);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL3D shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(compileState.materialCount(), 6);
+    CORRADE_COMPARE(compileState.drawCount(), 28);
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

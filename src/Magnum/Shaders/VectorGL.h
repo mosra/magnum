@@ -32,6 +32,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -272,6 +273,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit VectorGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
+
+        class CompileState;
+
+        explicit VectorGL(CompileState&& cs);
+
+        static CompileState compile(Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags);
+        #endif
 
         /** @brief Copying is not allowed */
         VectorGL(const VectorGL<dimensions>&) = delete;
@@ -554,6 +569,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         #endif
 
     private:
+        /* Creates the GL shader program object but nothing else. Internal, used by compile(). */
+        explicit VectorGL(NoInitT);
+
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
         using GL::AbstractShaderProgram::drawTransformFeedback;
@@ -575,6 +593,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
            so it can alias them */
         Int _drawOffsetUniform{0};
         #endif
+};
+
+template<UnsignedInt dimensions> class VectorGL<dimensions>::CompileState: public VectorGL<dimensions> {
+private:
+    friend class VectorGL;
+
+    explicit CompileState(NoCreateT): VectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(VectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
+        VectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+
+    GL::Shader _vert, _frag;
+    GL::Version _version;
 };
 
 /**

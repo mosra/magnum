@@ -32,6 +32,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -264,6 +265,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          */
         explicit VertexColorGL(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
 
+        class CompileState;
+
+        explicit VertexColorGL(CompileState&& cs);
+
+        static CompileState compile(Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt drawCount
+        #endif
+        );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags);
+        #endif
+
         /** @brief Copying is not allowed */
         VertexColorGL(const VertexColorGL<dimensions>&) = delete;
 
@@ -406,6 +421,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         #endif
 
     private:
+        explicit VertexColorGL(NoInitT);
+
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
         using GL::AbstractShaderProgram::drawTransformFeedback;
@@ -424,6 +441,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
            so it can alias them */
         Int _drawOffsetUniform{0};
         #endif
+};
+
+template<UnsignedInt dimensions> class VertexColorGL<dimensions>::CompileState: public VertexColorGL<dimensions> {
+private:
+    friend class VertexColorGL;
+
+    explicit CompileState(NoCreateT): VertexColorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(VertexColorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
+        VertexColorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+
+    GL::Shader _vert, _frag;
+    GL::Version _version;
 };
 
 /**

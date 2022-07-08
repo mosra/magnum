@@ -32,6 +32,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -279,6 +280,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit DistanceFieldVectorGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
+
+        class CompileState;
+
+        explicit DistanceFieldVectorGL(CompileState&& cs);
+
+        static CompileState compile(Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags);
+        #endif
 
         /** @brief Copying is not allowed */
         DistanceFieldVectorGL(const DistanceFieldVectorGL<dimensions>&) = delete;
@@ -602,6 +617,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         #endif
 
     private:
+        explicit DistanceFieldVectorGL(NoInitT);
+
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
         using GL::AbstractShaderProgram::drawTransformFeedback;
@@ -625,6 +642,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
            so it can alias them */
         Int _drawOffsetUniform{0};
         #endif
+};
+
+
+template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::CompileState: public DistanceFieldVectorGL<dimensions> {
+private:
+    friend class DistanceFieldVectorGL;
+
+    explicit CompileState(NoCreateT): DistanceFieldVectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(DistanceFieldVectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
+        DistanceFieldVectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+
+    GL::Shader _vert, _frag;
+    GL::Version _version;
 };
 
 /**
