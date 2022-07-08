@@ -23,8 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Shader is <string>-free */
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/GL/Context.h"
@@ -55,6 +58,9 @@ struct ShaderGLTest: OpenGLTester {
     void addSourceNoVersion();
     void addFile();
     void compile();
+    void compileFailure();
+    void compileAsync();
+    void compileAsyncFailure();
     void compileUtf8();
     void compileNoVersion();
 };
@@ -72,6 +78,9 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
               &ShaderGLTest::compile,
+              &ShaderGLTest::compileFailure,
+              &ShaderGLTest::compileAsync,
+              &ShaderGLTest::compileAsyncFailure,
               &ShaderGLTest::compileUtf8,
               &ShaderGLTest::compileNoVersion});
 }
@@ -276,11 +285,84 @@ void ShaderGLTest::compile() {
 
     Shader shader(v, Shader::Type::Fragment);
     shader.addSource("void main() {}\n");
-    CORRADE_VERIFY(shader.compile());
 
-    Shader shader2(v, Shader::Type::Fragment);
-    shader2.addSource("[fu] bleh error #:! stuff\n");
-    CORRADE_VERIFY(!shader2.compile());
+    CORRADE_VERIFY(shader.compile());
+    CORRADE_VERIFY(shader.isCompileFinished());
+}
+
+void ShaderGLTest::compileFailure() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Fragment);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    CORRADE_VERIFY(!shader.compile());
+    CORRADE_VERIFY(shader.isCompileFinished());
+}
+
+void ShaderGLTest::compileAsync() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Fragment);
+    shader.addSource("void main() {}\n");
+    shader.submitCompile();
+
+    while(!shader.isCompileFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(shader.checkCompile());
+    CORRADE_VERIFY(shader.isCompileFinished());
+}
+
+void ShaderGLTest::compileAsyncFailure() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Fragment);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.submitCompile();
+
+    while(!shader.isCompileFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(out.str().empty());
+
+    CORRADE_VERIFY(!shader.checkCompile());
+    CORRADE_VERIFY(shader.isCompileFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
 }
 
 void ShaderGLTest::compileUtf8() {

@@ -1258,19 +1258,26 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         AbstractShaderProgram& dispatchCompute(const Vector3ui& workgroupCount);
         #endif
 
-    protected:
         /**
-         * @brief Link the shader
+         * @brief Non-blocking linking status check
+         * @return @cpp true @ce if linking finished, @cpp false @ce otherwise
          *
+         * On some drivers this might return false even after
+         * @ref checkLink() reported successful linking.
+         *
+         * @see @fn_gl_keyword{GetProgram} with
+         * @def_gl_extension{COMPLETION_STATUS,KHR,parallel_shader_compile}
+         */
+        bool isLinkFinished();
+
+    protected:
+        /** @brief Link the shaders
+         *
+         * Calls @ref submitLink() on all shaders first, then @ref checkLink().
          * Returns @cpp false @ce if linking of any shader failed, @cpp true @ce
-         * if everything succeeded. Linker message (if any) is printed to error
-         * output. All attached shaders must be compiled with
-         * @ref Shader::compile() before linking. The operation is batched in a
+         * if everything succeeded. The operation is batched in a
          * way that allows the driver to link multiple shaders simultaneously
          * (i.e. in multiple threads).
-         * @see @fn_gl_keyword{LinkProgram}, @fn_gl_keyword{GetProgram} with
-         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
-         *      @fn_gl_keyword{GetProgramInfoLog}
          */
         static bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
 
@@ -1446,12 +1453,36 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Link the shader
          *
-         * Links single shader. If possible, prefer to link multiple shaders
-         * at once using @ref link(std::initializer_list<Containers::Reference<AbstractShaderProgram>>)
+         * Calls @ref submitLink(), then @ref checkLink().
+         * If possible, prefer to link multiple shaders at once using
+         * @ref link(std::initializer_list<Containers::Reference<AbstractShaderProgram>>)
          * for improved performance, see its documentation for more
          * information.
          */
         bool link();
+
+        /**
+         * @brief Submit for linking
+         *
+         * The attached shaders must be compiled with @ref Shader::compile()
+         * or @ref Shader::submitCompile() before linking.
+         *
+         * @see @fn_gl_keyword{LinkProgram}
+         */
+        void submitLink();
+
+        /**
+         * @brief Check link status and await completion
+         *
+         * Returns @cpp false @ce if linking failed, @cpp true @ce on success.
+         * Linker message (if any) is printed to error output. This function
+         * must be called only after @ref submitLink().
+         *
+         * @see @fn_gl_keyword{GetProgram} with
+         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
+         *      @fn_gl_keyword{GetProgramInfoLog}
+         */
+        bool checkLink();
 
         /**
          * @brief Get uniform location
@@ -1667,6 +1698,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
         static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(std::string& message);
         #endif
+
+        MAGNUM_GL_LOCAL static void APIENTRY completionStatusImplementationFallback(GLuint, GLenum, GLint*);
 
         MAGNUM_GL_LOCAL static void use(GLuint id);
         void use();

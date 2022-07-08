@@ -47,6 +47,9 @@ struct ShaderProgramState {
     void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(Containers::ArrayView<const std::string>, AbstractShaderProgram::TransformFeedbackBufferMode);
     #endif
     void(*cleanLogImplementation)(std::string&);
+    /* This is a direct pointer to a GL function, so needs a __stdcall on
+       Windows to compile properly on 32 bits */
+    void(APIENTRY *completionStatusImplementation)(GLuint, GLenum, GLint* value);
 
     #ifndef MAGNUM_TARGET_WEBGL
     void(APIENTRY *uniform1fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);

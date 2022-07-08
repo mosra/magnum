@@ -78,6 +78,13 @@ ShaderProgramState::ShaderProgramState(Context& context, Containers::StaticArray
         cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationNoOp;
     }
 
+    if(context.isExtensionSupported<Extensions::KHR::parallel_shader_compile>()) {
+        extensions[Extensions::KHR::parallel_shader_compile::Index] = Extensions::KHR::parallel_shader_compile::string();
+        completionStatusImplementation = glGetProgramiv;
+    } else {
+        completionStatusImplementation = &AbstractShaderProgram::completionStatusImplementationFallback;
+    }
+
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES

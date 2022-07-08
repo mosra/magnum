@@ -749,72 +749,67 @@ Shader& Shader::addFile(const std::string& filename) {
 
 bool Shader::compile() { return compile({*this}); }
 
-bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
-    bool allSuccess = true;
+void Shader::submitCompile() {
+    CORRADE_ASSERT(_sources.size() > 1, "GL::Shader::compile(): no files added", );
 
-    /* Allocate large enough array for source pointers and sizes (to avoid
-       reallocating it for each of them) */
-    std::size_t maxSourceCount = 0;
-    for(Shader& shader: shaders) {
-        CORRADE_ASSERT(shader._sources.size() > 1, "GL::Shader::compile(): no files added", false);
-        maxSourceCount = Math::max(shader._sources.size(), maxSourceCount);
-    }
     /** @todo ArrayTuple/VLAs */
-    Containers::Array<const GLchar*> pointers(maxSourceCount);
-    Containers::Array<GLint> sizes(maxSourceCount);
+    Containers::Array<const GLchar*> pointers(_sources.size());
+    Containers::Array<GLint> sizes(_sources.size());
 
     /* Upload sources of all shaders */
-    for(Shader& shader: shaders) {
-        for(std::size_t i = 0; i != shader._sources.size(); ++i) {
-            pointers[i] = static_cast<const GLchar*>(shader._sources[i].data());
-            sizes[i] = shader._sources[i].size();
-        }
-
-        glShaderSource(shader._id, shader._sources.size(), pointers, sizes);
+    for(std::size_t i = 0; i != _sources.size(); ++i) {
+        pointers[i] = static_cast<const GLchar*>(_sources[i].data());
+        sizes[i] = _sources[i].size();
     }
 
+    glShaderSource(_id, _sources.size(), pointers, sizes);
+    glCompileShader(_id);
+}
+
+bool Shader::checkCompile() { /* After compilation phase, check status of all shaders */
+    GLint success, logLength;
+    glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &logLength);
+
+    /* Error or warning message. The string is returned null-terminated,
+       strip the \0 at the end afterwards. */
+    std::string message(logLength, '\0');
+    if(message.size() > 1)
+        glGetShaderInfoLog(_id, message.size(), nullptr, &message[0]);
+    message.resize(Math::max(logLength, 1)-1);
+
+    /* Some drivers are chatty and can't keep shut when there's nothing to
+       be said, handle that as well. */
+    Context::current().state().shader.cleanLogImplementation(message);
+
+    /* Show error log */
+    if(!success) {
+        Error out{Debug::Flag::NoNewlineAtTheEnd};
+        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader"
+            << "failed with the following message:" << Debug::newline << message;
+
+    /* Or just warnings, if any */
+    } else if(!message.empty()) {
+        Warning out{Debug::Flag::NoNewlineAtTheEnd};
+        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader"
+            << "succeeded with the following message:" << Debug::newline << message;
+    }
+
+    return success;
+}
+
+bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
     /* Invoke (possibly parallel) compilation on all shaders */
-    for(Shader& shader: shaders) glCompileShader(shader._id);
-
-    /* After compilation phase, check status of all shaders */
-    Int i = 1;
-    for(Shader& shader: shaders) {
-        GLint success, logLength;
-        glGetShaderiv(shader._id, GL_COMPILE_STATUS, &success);
-        glGetShaderiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
-
-        /* Error or warning message. The string is returned null-terminated,
-           strip the \0 at the end afterwards. */
-        std::string message(logLength, '\0');
-        if(message.size() > 1)
-            glGetShaderInfoLog(shader._id, message.size(), nullptr, &message[0]);
-        message.resize(Math::max(logLength, 1)-1);
-
-        /* Some drivers are chatty and can't keep shut when there's nothing to
-           be said, handle that as well. */
-        Context::current().state().shader.cleanLogImplementation(message);
-
-        /* Show error log */
-        if(!success) {
-            Error out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
-            if(shaders.size() != 1) out << i;
-            out << "failed with the following message:" << Debug::newline << message;
-
-        /* Or just warnings, if any */
-        } else if(!message.empty()) {
-            Warning out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
-            if(shaders.size() != 1) out << i;
-            out << "succeeded with the following message:" << Debug::newline << message;
-        }
-
-        /* Success of all depends on each of them */
-        allSuccess = allSuccess && success;
-        ++i;
-    }
-
+    for(Shader& shader: shaders) shader.submitCompile();
+    bool allSuccess = true;
+    for(Shader& shader: shaders) allSuccess = allSuccess && shader.checkCompile();
     return allSuccess;
+}
+
+bool Shader::isCompileFinished() {
+    GLint success;
+    Context::current().state().shader.completionStatusImplementation(_id, GL_COMPLETION_STATUS_KHR, &success);
+    return success == GL_TRUE;
 }
 
 void Shader::cleanLogImplementationNoOp(std::string&) {}
@@ -824,6 +819,10 @@ void Shader::cleanLogImplementationIntelWindows(std::string& message) {
     if(message == "No errors.\n") message = {};
 }
 #endif
+
+void Shader::completionStatusImplementationFallback(GLuint, GLenum, GLint* value) {
+    *value = GL_TRUE;
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {

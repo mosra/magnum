@@ -27,8 +27,10 @@
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/System.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -68,8 +70,11 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void createMultipleOutputsIndexed();
     #endif
+    void createAsync();
 
     void linkFailure();
+    void linkFailureAsync();
+
     void uniformNotFound();
 
     void uniform();
@@ -103,12 +108,14 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               #endif
 
               &AbstractShaderProgramGLTest::create,
+              &AbstractShaderProgramGLTest::createAsync,
               &AbstractShaderProgramGLTest::createMultipleOutputs,
               #ifndef MAGNUM_TARGET_GLES
               &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
               #endif
 
               &AbstractShaderProgramGLTest::linkFailure,
+              &AbstractShaderProgramGLTest::linkFailureAsync,
               &AbstractShaderProgramGLTest::uniformNotFound,
 
               &AbstractShaderProgramGLTest::uniform,
@@ -205,6 +212,8 @@ struct MyPublicShader: AbstractShaderProgram {
     using AbstractShaderProgram::bindFragmentDataLocation;
     #endif
     using AbstractShaderProgram::link;
+    using AbstractShaderProgram::submitLink;
+    using AbstractShaderProgram::checkLink;
     using AbstractShaderProgram::uniformLocation;
     #ifndef MAGNUM_TARGET_GLES2
     using AbstractShaderProgram::uniformBlockIndex;
@@ -257,6 +266,80 @@ void AbstractShaderProgramGLTest::create() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
+
+    // Some drivers need a bit of time to update this result
+    Utility::System::sleep(200);
+    CORRADE_VERIFY(program.isLinkFinished());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(valid);
+    }
+
+    const Int matrixUniform = program.uniformLocation("matrix");
+    const Int multiplierUniform = program.uniformLocation("multiplier");
+    const Int colorUniform = program.uniformLocation("color");
+    const Int additionsUniform = program.uniformLocation("additions");
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_VERIFY(matrixUniform >= 0);
+    CORRADE_VERIFY(multiplierUniform >= 0);
+    CORRADE_VERIFY(colorUniform >= 0);
+    CORRADE_VERIFY(additionsUniform >= 0);
+}
+
+void AbstractShaderProgramGLTest::createAsync() {
+    Utility::Resource rs("AbstractShaderProgramGLTest");
+
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Vertex);
+    vert.addSource(rs.getString("MyShader.vert"));
+    const bool vertCompiled = vert.compile();
+
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Fragment);
+    frag.addSource(rs.getString("MyShader.frag"));
+    const bool fragCompiled = frag.compile();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_VERIFY(vertCompiled);
+    CORRADE_VERIFY(fragCompiled);
+
+    MyPublicShader program;
+    program.attachShaders({vert, frag});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    program.bindAttributeLocation(0, "position");
+    program.submitLink();
+
+    while(!program.isLinkFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(program.checkLink());
+    CORRADE_VERIFY(program.isLinkFinished());
+    const bool valid = program.validate().first;
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -410,6 +493,46 @@ void AbstractShaderProgramGLTest::linkFailure() {
     MyPublicShader program;
     program.attachShaders({shader});
     CORRADE_VERIFY(!program.link());
+
+    Utility::System::sleep(200);
+    CORRADE_VERIFY(program.isLinkFinished());
+}
+
+void AbstractShaderProgramGLTest::linkFailureAsync() {
+    Shader shader(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Fragment);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    {
+        Error redirectError{nullptr};
+        CORRADE_VERIFY(!shader.compile());
+    }
+
+    MyPublicShader program;
+    program.attachShaders({shader});
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    program.submitLink();
+
+    while(!program.isLinkFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(out.str().empty());
+
+    CORRADE_VERIFY(!program.checkLink());
+    CORRADE_VERIFY(program.isLinkFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
 }
 
 void AbstractShaderProgramGLTest::uniformNotFound() {
