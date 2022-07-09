@@ -43,12 +43,15 @@ TagsTest::TagsTest() {
 }
 
 void TagsTest::noDefaultConstructor() {
+    /* Isn't default constructible to prevent ambiguity when calling
+       foo({}) if both foo(TagT) and foo(whatever) is available */
     CORRADE_VERIFY(!std::is_default_constructible<NoInitT>::value);
     CORRADE_VERIFY(!std::is_default_constructible<NoCreateT>::value);
     CORRADE_VERIFY(!std::is_default_constructible<NoAllocateT>::value);
 }
 
 void TagsTest::inlineDefinition() {
+    /* Just a sanity check that the types match */
     CORRADE_VERIFY(std::is_same<decltype(NoInit), const NoInitT>::value);
     CORRADE_VERIFY(std::is_same<decltype(NoCreate), const NoCreateT>::value);
     CORRADE_VERIFY(std::is_same<decltype(NoAllocate), const NoAllocateT>::value);
