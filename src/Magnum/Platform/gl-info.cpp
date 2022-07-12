@@ -413,9 +413,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug{} << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    Debug{} << "Context flags:" << c.flags();
+    Debug{} << "Context flags:" << Debug::packed << c.flags();
     #endif
-    Debug{} << "Detected driver:" << c.detectedDriver();
+    Debug{} << "Detected driver:" << Debug::packed << c.detectedDriver();
 
     Debug{} << "Supported GLSL versions:";
     Debug{} << "   " << ", "_s.joinWithoutEmptyParts(c.shadingLanguageVersionStrings());
