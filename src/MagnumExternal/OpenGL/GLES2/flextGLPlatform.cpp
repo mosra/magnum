@@ -187,6 +187,9 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.PopDebugGroupKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glPopDebugGroupKHR"));
     flextGL.PushDebugGroupKHR = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(loader.load("glPushDebugGroupKHR"));
 
+    /* GL_KHR_parallel_shader_compile */
+    flextGL.MaxShaderCompilerThreadsKHR = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glMaxShaderCompilerThreadsKHR"));
+
     /* GL_KHR_robustness */
     flextGL.GetGraphicsResetStatusKHR = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatusKHR"));
     flextGL.GetnUniformfvKHR = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLfloat *)>(loader.load("glGetnUniformfvKHR"));

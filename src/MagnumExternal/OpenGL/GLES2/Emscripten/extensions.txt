@@ -40,6 +40,10 @@ extension KHR_texture_compression_astc_ldr      optional
 # barrier
 extension KHR_blend_equation_advanced           optional
 
+# KHR_parallel_shader_compile includes just GL_COMPLETION_STATUS_KHR and not
+# the max threads setting
+extension KHR_parallel_shader_compile           optional
+
 # From the gl_angle_ext file, base for WEBGL_multi_draw
 extension ANGLE_multi_draw                      optional
 # Base for WEBGL_{multi_,}draw_instanced_base_vertex_base_instance
@@ -52,6 +56,8 @@ extension ANGLE_base_vertex_base_instance       optional
 begin functions blacklist
     # Not present in WEBGL_blend_equation_advanced_coherent
     BlendBarrierKHR
+    # Not present in WebGL variant of KHR_parallel_shader_compile
+    MaxShaderCompilerThreadsKHR
 end functions blacklist
 
 # kate: hl python

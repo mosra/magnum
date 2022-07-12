@@ -879,6 +879,11 @@ typedef struct __GLsync *GLsync;
 #define GL_HSL_COLOR_KHR 0x92AF
 #define GL_HSL_LUMINOSITY_KHR 0x92B0
 
+/* GL_KHR_parallel_shader_compile */
+
+#define GL_MAX_SHADER_COMPILER_THREADS_KHR 0x91B0
+#define GL_COMPLETION_STATUS_KHR 0x91B1
+
 /* Function prototypes */
 
 /* GL_ANGLE_base_vertex_base_instance */

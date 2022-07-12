@@ -104,6 +104,7 @@ constexpr Extension ExtensionList[]{
     Extensions::GREMEDY::string_marker{},
     Extensions::KHR::blend_equation_advanced{},
     Extensions::KHR::blend_equation_advanced_coherent{},
+    Extensions::KHR::parallel_shader_compile{},
     Extensions::KHR::texture_compression_astc_hdr{},
     Extensions::KHR::texture_compression_astc_ldr{},
     Extensions::KHR::texture_compression_astc_sliced_3d{},
@@ -290,6 +291,7 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::texture_norm16{},
     #endif
+    Extensions::KHR::parallel_shader_compile{},
     Extensions::OES::texture_float_linear{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::OVR::multiview2{},
@@ -394,6 +396,7 @@ constexpr Extension ExtensionList[]{
     Extensions::KHR::blend_equation_advanced_coherent{},
     Extensions::KHR::context_flush_control{},
     Extensions::KHR::no_error{},
+    Extensions::KHR::parallel_shader_compile{},
     Extensions::KHR::texture_compression_astc_hdr{},
     Extensions::KHR::texture_compression_astc_sliced_3d{},
     #ifndef MAGNUM_TARGET_GLES2

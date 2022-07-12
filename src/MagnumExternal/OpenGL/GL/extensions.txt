@@ -41,6 +41,7 @@ extension KHR_texture_compression_astc_ldr      optional
 extension KHR_blend_equation_advanced           optional
 extension KHR_blend_equation_advanced_coherent  optional
 # extension KHR_texture_compression_astc_sliced_3d optional
+extension KHR_parallel_shader_compile           optional
 extension NV_sample_locations                   optional
 extension NV_fragment_shader_barycentric        optional
 extension OVR_multiview                         optional

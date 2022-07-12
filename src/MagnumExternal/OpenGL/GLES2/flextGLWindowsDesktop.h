@@ -1015,6 +1015,11 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 
 #define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
 
+/* GL_KHR_parallel_shader_compile */
+
+#define GL_MAX_SHADER_COMPILER_THREADS_KHR 0x91B0
+#define GL_COMPLETION_STATUS_KHR 0x91B1
+
 /* GL_NV_texture_border_clamp */
 
 #define GL_TEXTURE_BORDER_COLOR_NV 0x1004
@@ -1393,6 +1398,10 @@ struct FlextGL {
     void(APIENTRY *PopDebugGroupKHR)(void);
     void(APIENTRY *PushDebugGroupKHR)(GLenum, GLuint, GLsizei, const GLchar *);
 
+    /* GL_KHR_parallel_shader_compile */
+
+    void(APIENTRY *MaxShaderCompilerThreadsKHR)(GLuint);
+
     /* GL_KHR_robustness */
 
     GLenum(APIENTRY *GetGraphicsResetStatusKHR)(void);
@@ -1742,6 +1751,10 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glObjectPtrLabelKHR flextGL.ObjectPtrLabelKHR
 #define glPopDebugGroupKHR flextGL.PopDebugGroupKHR
 #define glPushDebugGroupKHR flextGL.PushDebugGroupKHR
+
+/* GL_KHR_parallel_shader_compile */
+
+#define glMaxShaderCompilerThreadsKHR flextGL.MaxShaderCompilerThreadsKHR
 
 /* GL_KHR_robustness */
 
