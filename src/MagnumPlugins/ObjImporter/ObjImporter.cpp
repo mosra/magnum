@@ -38,7 +38,6 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/Math/Color.h"

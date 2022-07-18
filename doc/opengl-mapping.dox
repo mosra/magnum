@@ -290,6 +290,7 @@ OpenGL function                         | Matching API
 @fn_gl_extension{MakeTextureHandleResident,ARB,bindless_texture} | |
 @fn_gl_extension{MakeTextureHandleNonResident,ARB,bindless_texture} | |
 @fn_gl{MapBuffer}, \n `glMapNamedBuffer()`, \n @fn_gl{MapBufferRange}, \n `glMapNamedBufferRange()`, \n @fn_gl{UnmapBuffer}, \n `glUnmapNamedBuffer()` | @ref GL::Buffer::map(), @ref GL::Buffer::unmap()
+@fn_gl_extension{MaxShaderCompilerThreads,KHR,parallel_shader_compile} | |
 @fn_gl{MemoryBarrier}, \n `glMemoryBarrierByRegion()` | @ref GL::Renderer::setMemoryBarrier(), \n @ref GL::Renderer::setMemoryBarrierByRegion()
 @fn_gl{MinSampleShading}                | @ref GL::Renderer::setMinSampleShading()
 @fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex} | @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)

@@ -561,14 +561,41 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 10. Iterate until the CIs are green
 11. Merge to `master`
 
-@section developers-gl-extensions Checklist for adding / removing GL versions and extensions
+@section developers-gl-extensions Checklist for adding / removing GL extensions
 
-1.  Install [flextGL](https://github.com/mosra/flextgl)
-2.  Go to `src/MagnumExternal/OpenGL/`:
-    -   Update `GL/extensions.txt`, `GLES2/extensions.txt`,
+1.  Add new extensions to the GL, GLES and WebGL sections of
+    `src/Magnum/GL/Extensions.h`
+    -   Order them by extension ID that is mentioned in every extension spec
+        file. If the extension isn't in the official Khronos registry (such as
+        various ANGLE extensions), at it at the end of the range.
+    -   Update the numbering to stay monotonic and unique, round up start index
+        of next section to nearest ten to make the updates bearable
+    -   In case there's a lot of new extensions,
+        @cpp Implementation::ExtensionCount @ce might needed to be increased.
+2.  Add them alphabetically ordered to the correct list in
+    `src/magnum/GL/Context.cpp`
+    -   run GL, ES2, ES3, WebGL1 and WebGL2 build of `GLContextTest` to verify
+        everything is still okay
+    -   run GL, ES2, ES3, WebGL1 and WebGL2 build of `magnum-gl-info`
+        -   the extension should be listed unless it's not available on given
+            GL flavor
+        -   and also marked as supported unless the machine doesn't support it
+            (cross-check with `--extension-strings`)
+3.  Get [flextGL](https://github.com/mosra/flextgl) and go to
+    `src/MagnumExternal/OpenGL/`:
+    -   Add/remove extensions in `GL/extensions.txt`, `GLES2/extensions.txt`,
         `GLES2/Emscripten/extensions.txt`, `GLES3/extensions.txt`,
-        `GLES3/Emscripten/extensions.txt` (bump versions or add/remove
-        extensions)
+        `GLES3/Emscripten/extensions.txt`, in the same order as in
+        `src/Magnum/GL/Extensions.h`
+    -   For GLES and WebGL extensions, if they aren't in the official Khronos
+        registry (such as various ANGLE extensions), check if they're in
+        ANGLE's [gl_angle_ext.xml](https://raw.githubusercontent.com/google/angle/master/scripts/gl_angle_ext.xml)
+        at least. If not, like with core WebGL functionality that has no match
+        in the base GLES spec, you may need to craft your own XML file. See
+        `src/MagnumExternal/OpenGL/GLES3/webgl.xml` for an example.
+    -   WebGL extensions usually have a GLES extension as a base, but then may
+        remove certains entrypoints from it. If that's the case, add it to the
+        function blacklist at the end of the Emscripten-specific files.
     -   Run `./update-flextgl.sh` to update everything. Reason there is so many
         variants of the files are the following:
         -   Desktop GLES on Windows still links to the ancient `opengl32.dll`
@@ -580,11 +607,44 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
             set the function pointers to those exported symbols in case the
             system GL header defines them.
         -   Emscripten doesn't have the ability to manually load extension
-            pointers, thus it has only header files.
-3.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
-4.  For every new added function, add an entry to `doc/opengl-mapping.dox`
-5.  For every new added limit query (various `GL_MIN_*` and `GL_MAX_*` macros
-    etc.), add an entry to the bottom of `doc/opengl-mapping.dox`
+            pointers either, thus it has only header files.
+4.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
+    -   If any extensions don't add any useful symbols, comment them out in
+        the `extensions.txt` files and regenerate to avoid needless bloat
+5.  For every new function that appeared in the regenerated extension headers,
+    add an entry to `doc/opengl-mapping.dox`
+6.  For every new added limit query that appeared in the regenerated extension
+    headers (various `GL_MIN_*` and `GL_MAX_*` macros etc.), add an entry to
+    the bottom of `doc/opengl-mapping.dox`
+7.  Add new extensions to the general GL, GLES and WebGL lists in
+    `doc/opengl-support.dox`, again matching the order in `Extensions.h` ---
+    grouped by prefix, but then ordered by extension number
+
+In order to remove GL functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
+@see @ref developers-gl-versions, @ref developers-vk-extensions
+
+@section developers-gl-versions Checklist for adding / removing GL versions
+
+1.  Add new version enum value:
+    -   to `src/Magnum/GL/Version.h`
+    -   to debug output in `src/Magnum/GL/Version.cpp`
+    -   to @cpp GL::Extension::extensions() @ce in `src/Magnum/GL/Context.cpp`
+    -   to @cpp GL::Context::tryCreate() @ce in `src/Magnum/GL/Context.cpp`
+    -   to specify GLSL version in `src/Magnum/GL/Shader.cpp`
+    -   to the list in `src/Magnum/Platform/gl-info.cpp`
+    -   to the test in `src/Magnum/GL/Test/ContextTest.cpp`
+2.  Update existing extensions with version in which they became core (last
+    parameter of the `_extension()` macro in `src/Magnum/GL/Extensions.h`)
+3.  Go to `src/MagnumExternal/OpenGL/`, bump versions in `GL/extensions.txt`,
+    `GLES2/extensions.txt`, `GLES2/Emscripten/extensions.txt`,
+    `GLES3/extensions.txt`, `GLES3/Emscripten/extensions.txt`
+4.  Continue with @ref developers-gl-extensions for all extensions that were
+    added by the new version and were not already present
+5.  For all existing extensions APIs that lose their suffix in the new version,
+    update doc references to be without the suffix
 6.  Add a table listing the new version and all new extensions in it to
     `doc/opengl-support.dox` (take a list of them from the changelog in the
     official spec PDF). Some extensions might be already present in the general
@@ -595,30 +655,12 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 8.  Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` alias
     to `Doxyfile`, `Doxyfile-mcss` and `Doxyfile-public`, copypaste it from
     existing and change the numbers
-9.  Add new version enum value:
-    -   to `src/Magnum/GL/Version.h`
-    -   to debug output in `src/Magnum/GL/Version.cpp`
-    -   to @ref GL::Extension::extensions() in `src/Magnum/GL/Context.cpp`
-    -   to @cpp GL::Context::tryCreate() @ce in `src/Magnum/GL/Context.cpp`
-    -   to specify GLSL version in `src/Magnum/GL/Shader.cpp`
-    -   to the list in `src/Magnum/Platform/gl-info.cpp`
-    -   to the test in `src/Magnum/GL/Test/ContextTest.cpp`
-10. Add new extensions to `src/Magnum/GL/Extensions.h`
-    -   order them by extension ID that is mentioned in every extension spec
-        file
-    -   update the numbering to stay monotonic and unique, round up start index
-        of next section to nearest ten to make the updates bearable
-    -   in case there's a lot of new extensions, @cpp Implementation::ExtensionCount @ce
-        might needed to be increased
-    -   run `ContextTest` to verify everything is still okay
-11. Update existing extensions with version in which they become core (last
-    parameter of the `_extension()` macro)
-12. Update extension list in `src/magnum/GL/Context.cpp` according to changes
-    in `src/Magnum/GL/Extensions.h`
 
 In order to remove GL functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
 unless it doesn't affect public API at all.
+
+@see @ref developers-vk-versions
 
 @section developers-gl-functionality Checklist for adding / removing GL functionality
 
@@ -728,11 +770,11 @@ In order to remove OpenAL functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
 unless it doesn't affect public API at all.
 
-@section developers-vk-extensions Checklist for adding / removing Vulkan versions and extensions
+@section developers-vk-extensions Checklist for adding / removing Vulkan extensions
 
-1. Add new extensions to `src/Magnum/Vk/Extensions.h`
+1.  Add new extensions to `src/Magnum/Vk/Extensions.h`
     -   there's a separate list for instance and device extensions, ensure each
-        in the right list
+        is in the right list
     -   order them by extension ID that is mentioned on every extension spec
         page
     -   update the numbering to stay monotonic and unique, round up start index
@@ -743,36 +785,60 @@ unless it doesn't affect public API at all.
         need to be increased
 2.  Add them alphabetically ordered to the correct list in
     `src/Magnum/Vk/Extensions.cpp`
-3.  Update existing extensions with version in which they become core (last
-    parameter of the `_extension()` macro)
-4.  Get [flextGL](https://github.com/mosra/flextgl) and go to
+    -   run `VkExtensionsTest` to verify everything is still okay
+    -   run `magnum-vk-info`, the extension should be listed and also marked as
+        supported, unless the machine doesn't support it (cross-check with
+        `--extension-strings`)
+3.  Get [flextGL](https://github.com/mosra/flextgl) and go to
     `src/MagnumExternal/Vulkan/`:
-    -   Update `extensions.txt` (bump a version or add/remove extensions),
-        in the same order as `Extensions.h`
+    -   Add/remove extensions in `extensions.txt`, in the same order as in
+        `src/Magnum/Vk/Extensions.h`
     -   Run `./update-flexgl.sh` to update everything
-5.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
-6.  For every new added function and structure, add an entry to
+4.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
+    -   If any extensions don't add any useful symbols, comment them out in
+        the `extensions.txt` file and regenerate to avoid needless bloat
+5.  For every new added function and structure, add an entry to
     `doc/vulkan-mapping.dox`
-7.  For every new `*Feature` structure, expand the @ref Vk::DeviceFeatures
+6.  For every new `*Feature` structure, expand the @ref Vk::DeviceFeatures
     enum according to @ref developers-vk-features
-8.  Add a table listing the new version and all new extensions in it to
-    `doc/vulkan-support.dox` (take a list of them from the changelog in the
-    official spec PDF). Some extensions might be already present in the general
-    extension list, move them out of there.
-9.  Add a new `requires-vkXY` page with @c \@m_footernavigation to
-    `doc/vulkan-support.dox`, mention it as a @c \@subpage at a correct
-    position in the list
-10. Add a new `requires-vkXY` alias to `Doxyfile`, `Doxyfile-mcss` and
-    `Doxyfile-public`, copypaste it from existing and change the numbers
-11. Add new version enum value:
-    -   to `src/Magnum/Vk/Version.h`
-    -   to the list in `src/Magnum/Vk/vk-info.cpp`
-    -   to @ref Vk::InstanceExtension::extensions() and
-        @ref Vk::Extension::extensions() in `src/Magnum/Vk/Extensions.cpp`
+7.  Add new extensions to the general list in `doc/vulkan-support.dox`, again
+    matching the order in `Extensions.h` --- grouped by prefix, but then
+    ordered by extension number
 
 In order to remove Vulkan functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
 unless it doesn't affect public API at all.
+
+@see @ref developers-vk-versions, @ref developers-gl-extensions
+
+@section developers-vk-versions Checklist for adding / removing Vulkan versions
+
+1.  Add new version enum value:
+    -   to `src/Magnum/Vk/Version.h`
+    -   to the list in `src/Magnum/Vk/vk-info.cpp`
+    -   to @cpp Vk::InstanceExtension::extensions() @ce and
+        @cpp Vk::Extension::extensions() @ce in `src/Magnum/Vk/Extensions.cpp`
+2.  Update existing extensions with version in which they became core (last
+    parameter of the `_extension()` macro)
+3.  Continue with @ref developers-vk-extensions for all extensions that were
+    added by the new version and were not already present
+4.  For all existing extensions APIs that lose their suffix in the new version,
+    update doc references to be without the suffix
+5.  Add a table listing the new version and all new extensions in it to
+    `doc/vulkan-support.dox` (take a list of them from the changelog in the
+    official spec). Some extensions might be already present in the general
+    extension list, move them out of there.
+6.  Add a new `requires-vkXY` page with @c \@m_footernavigation to
+    `doc/vulkan-support.dox`, mention it as a @c \@subpage at a correct
+    position in the list
+7.  Add a new `requires-vkXY` alias to `Doxyfile`, `Doxyfile-mcss` and
+    `Doxyfile-public`, copypaste it from existing and change the numbers
+
+In order to remove Vulkan functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
+@see @ref developers-gl-versions
 
 @section developers-vk-functionality Checklist for adding / removing Vulkan functionality
 

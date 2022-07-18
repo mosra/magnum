@@ -1,0 +1,31 @@
+o invalid float literal
+v 1 bleh 2
+p 1
+
+o invalid integer literal
+v 1 0 2
+p bleh
+
+o position index out of range
+v 1 0 2
+# Should be 3
+p 1
+
+o texture index out of range
+v 1 0 2
+vt 0 1
+vt 0 1
+vt 0 1
+# Should be 4/3
+p 4/4
+
+o normal index out of range
+v 1 0 2
+vn 0 0 1
+vn 0 0 1
+# Should be 5/2
+p 5//3
+
+o zero index
+v 1 0 2
+p 0

@@ -33,10 +33,6 @@ else()
     set(OBJIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
-# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
-# doesn't support dynamic plugins on iOS, this sorta works around that. Should
-# be revisited when updating Travis to newer Xcode (xcode7.3 has CMake 3.6).
 if(NOT MAGNUM_OBJIMPORTER_BUILD_STATIC)
     set(OBJIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:ObjImporter>)
 endif()
@@ -50,23 +46,27 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(ObjImporterTest ObjImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
-        emptyFile.obj
-        keywords.obj
-        lineMesh.obj
-        missingData.obj
-        mixedPrimitives.obj
-        moreMeshes.obj
-        namedMesh.obj
-        normals.obj
-        optionalCoordinates.obj
-        pointMesh.obj
-        textureCoordinatesNormals.obj
-        textureCoordinates.obj
-        triangleMesh.obj
-        unnamedFirstMesh.obj
-        wrongIndexCount.obj
-        wrongNumberCount.obj
-        wrongNumbers.obj)
+        empty.obj
+        invalid-incomplete-data.obj
+        invalid-inconsistent-index-tuple.obj
+        invalid-keyword.obj
+        invalid-mixed-primitives.obj
+        invalid-number-count.obj
+        invalid-numbers.obj
+        invalid-optional-coordinate.obj
+        mesh-ignored-keyword.obj
+        mesh-multiple.obj
+        mesh-named-first-unnamed.obj
+        mesh-named-first-unnamed-index-first.obj
+        mesh-named.obj
+        mesh-normals.obj
+        mesh-positions-optional-coordinate.obj
+        mesh-primitive-lines.obj
+        mesh-primitive-points.obj
+        mesh-primitive-triangles.obj
+        mesh-texture-coordinates.obj
+        mesh-texture-coordinates-normals.obj
+        mesh-texture-coordinates-optional-coordinate.obj)
 target_include_directories(ObjImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_OBJIMPORTER_BUILD_STATIC)
     target_link_libraries(ObjImporterTest PRIVATE ObjImporter)

@@ -1,0 +1,8 @@
+o position with optional fourth component not one
+v 1.5 2 3 0.8
+p 1
+
+o texture with optional third component not zero
+v 1.5 2 3
+vt 0.5 0.7 0.5
+p 2/1

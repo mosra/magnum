@@ -83,10 +83,10 @@ using Corrade::NoCreateT;
 Used to distinguish construction without allocating memory.
 @see @ref NoAllocate
 */
-/* Explicit constructor to avoid ambiguous calls when using {} */
 struct NoAllocateT {
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    struct Init{};
+    struct Init {};
+    /* Explicit constructor to avoid ambiguous calls when using {} */
     constexpr explicit NoAllocateT(Init) {}
     #endif
 };

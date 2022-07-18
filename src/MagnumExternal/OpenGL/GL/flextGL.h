@@ -1775,7 +1775,8 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 /* GL_KHR_parallel_shader_compile */
 
-#define GL_COMPLETION_STATUS_KHR 0x91B1 
+#define GL_MAX_SHADER_COMPILER_THREADS_KHR 0x91B0
+#define GL_COMPLETION_STATUS_KHR 0x91B1
 
 /* GL_NV_sample_locations */
 
@@ -1879,6 +1880,10 @@ struct FlextGL {
     /* GL_KHR_blend_equation_advanced */
 
     void(APIENTRY *BlendBarrierKHR)(void);
+
+    /* GL_KHR_parallel_shader_compile */
+
+    void(APIENTRY *MaxShaderCompilerThreadsKHR)(GLuint);
 
     /* GL_NV_sample_locations */
 
@@ -2683,6 +2688,10 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 /* GL_KHR_blend_equation_advanced */
 
 #define glBlendBarrierKHR flextGL.BlendBarrierKHR
+
+/* GL_KHR_parallel_shader_compile */
+
+#define glMaxShaderCompilerThreadsKHR flextGL.MaxShaderCompilerThreadsKHR
 
 /* GL_NV_sample_locations */
 

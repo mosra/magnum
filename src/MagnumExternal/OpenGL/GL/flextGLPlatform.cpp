@@ -186,6 +186,9 @@ void flextGLInit(Magnum::GL::Context& context) {
     /* GL_KHR_blend_equation_advanced */
     flextGL.BlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glBlendBarrierKHR"));
 
+    /* GL_KHR_parallel_shader_compile */
+    flextGL.MaxShaderCompilerThreadsKHR = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glMaxShaderCompilerThreadsKHR"));
+
     /* GL_NV_sample_locations */
     flextGL.FramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLfloat *)>(loader.load("glFramebufferSampleLocationsfvNV"));
     flextGL.NamedFramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLfloat *)>(loader.load("glNamedFramebufferSampleLocationsfvNV"));

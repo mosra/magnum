@@ -104,6 +104,7 @@ constexpr Extension ExtensionList[]{
     Extensions::GREMEDY::string_marker{},
     Extensions::KHR::blend_equation_advanced{},
     Extensions::KHR::blend_equation_advanced_coherent{},
+    Extensions::KHR::parallel_shader_compile{},
     Extensions::KHR::texture_compression_astc_hdr{},
     Extensions::KHR::texture_compression_astc_ldr{},
     Extensions::KHR::texture_compression_astc_sliced_3d{},
@@ -290,6 +291,7 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::texture_norm16{},
     #endif
+    Extensions::KHR::parallel_shader_compile{},
     Extensions::OES::texture_float_linear{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::OVR::multiview2{},
@@ -394,6 +396,7 @@ constexpr Extension ExtensionList[]{
     Extensions::KHR::blend_equation_advanced_coherent{},
     Extensions::KHR::context_flush_control{},
     Extensions::KHR::no_error{},
+    Extensions::KHR::parallel_shader_compile{},
     Extensions::KHR::texture_compression_astc_hdr{},
     Extensions::KHR::texture_compression_astc_sliced_3d{},
     #ifndef MAGNUM_TARGET_GLES2
@@ -1281,11 +1284,14 @@ Context::Configuration& Context::Configuration::addDisabledExtensions(std::initi
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_WEBGL
 Debug& operator<<(Debug& debug, const Context::Flag value) {
-    debug << "GL::Context::Flag" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "GL::Context::Flag" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Context::Flag::value: return debug << "::" #value;
+        #define _c(value) case Context::Flag::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Debug)
         #ifndef MAGNUM_TARGET_GLES
         _c(ForwardCompatible)
@@ -1298,11 +1304,11 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const Context::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "GL::Context::Flags{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "GL::Context::Flags{}", {
         Context::Flag::Debug,
         #ifndef MAGNUM_TARGET_GLES
         Context::Flag::ForwardCompatible,
@@ -1316,11 +1322,14 @@ Debug& operator<<(Debug& debug, const Context::Flags value) {
 #endif
 
 Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
-    debug << "GL::Context::DetectedDriver" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "GL::Context::DetectedDriver" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Context::DetectedDriver::value: return debug << "::" #value;
+        #define _c(value) case Context::DetectedDriver::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Amd)
         #ifdef MAGNUM_TARGET_GLES
         _c(Angle)
@@ -1339,11 +1348,11 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
-    return Containers::enumSetDebugOutput(debug, value, "GL::Context::DetectedDrivers{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "GL::Context::DetectedDrivers{}", {
         #ifndef MAGNUM_TARGET_WEBGL
         Context::DetectedDriver::Amd,
         #endif

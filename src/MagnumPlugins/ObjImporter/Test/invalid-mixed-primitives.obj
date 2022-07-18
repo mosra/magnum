@@ -1,0 +1,14 @@
+o points after some other
+v 2 3 5.0
+f 1 1 1
+p 1
+
+o lines after some other
+v 2 3 5.0
+p 2
+l 2 2 2
+
+o triangles after some other
+v 2 3 5.0
+l 3 3
+f 3 3 3

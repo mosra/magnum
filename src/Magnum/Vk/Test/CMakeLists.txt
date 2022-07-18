@@ -39,11 +39,6 @@ if(MAGNUM_BUILD_VK_TESTS)
         set(VK_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
-    # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
-    # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since
-    # Corrade doesn't support dynamic plugins on iOS, this sorta works around
-    # that. Should be revisited when updating Travis to newer Xcode (xcode7.3
-    # has CMake 3.6).
     if(NOT MAGNUM_BUILD_PLUGINS_STATIC)
         if(MAGNUM_WITH_ANYIMAGEIMPORTER)
             set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)

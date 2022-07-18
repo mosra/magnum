@@ -256,8 +256,9 @@ namespace AMD {
     _extension(167,KHR,blend_equation_advanced_coherent, GL210, None) // #174
     _extension(168,KHR,no_error,                        GL210, GL460) // #175
     _extension(169,KHR,texture_compression_astc_sliced_3d, GL210, None) // #189
+    _extension(170,KHR,parallel_shader_compile,         GL210,  None) // #192
 } namespace MAGNUM {
-    _extension(170,MAGNUM,shader_vertex_id,             GL300, GL300)
+    _extension(171,MAGNUM,shader_vertex_id,             GL300, GL300)
 } namespace NV {
     _extension(175,NV,primitive_restart,                GL210, GL310) // #285
     _extension(176,NV,depth_buffer_float,               GL210, GL300) // #334
@@ -305,6 +306,8 @@ namespace ANGLE {
     #ifndef MAGNUM_TARGET_GLES2
     _extension(16,EXT,draw_buffers_indexed,         GLES300,    None) // #45
     #endif
+} namespace KHR {
+    _extension(17,KHR,parallel_shader_compile,      GLES200,    None) // #37
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2
     _extension(20,OES,texture_float,                GLES200, GLES300) // #1
@@ -488,6 +491,7 @@ namespace ANDROID {
     _extension( 87,KHR,context_flush_control,       GLES200,    None) // #191
     _extension( 88,KHR,no_error,                    GLES200,    None) // #243
     _extension( 89,KHR,texture_compression_astc_sliced_3d, GLES200, None) // #249
+    _extension( 90,KHR,parallel_shader_compile,     GLES200,    None) // #288
 } namespace NV {
     #ifdef MAGNUM_TARGET_GLES2
     _extension(100,NV,draw_buffers,                 GLES200, GLES300) // #91

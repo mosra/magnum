@@ -131,6 +131,7 @@
 #undef glObjectPtrLabelKHR
 #undef glPopDebugGroupKHR
 #undef glPushDebugGroupKHR
+#undef glMaxShaderCompilerThreadsKHR
 #undef glGetGraphicsResetStatusKHR
 #undef glGetnUniformfvKHR
 #undef glGetnUniformivKHR
@@ -370,6 +371,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.ObjectPtrLabelKHR = reinterpret_cast<void(APIENTRY*)(const void *, GLsizei, const GLchar *)>(glObjectPtrLabelKHR);
     flextGL.PopDebugGroupKHR = reinterpret_cast<void(APIENTRY*)(void)>(glPopDebugGroupKHR);
     flextGL.PushDebugGroupKHR = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(glPushDebugGroupKHR);
+    #endif
+
+    /* GL_KHR_parallel_shader_compile */
+    #if GL_KHR_parallel_shader_compile
+    flextGL.MaxShaderCompilerThreadsKHR = reinterpret_cast<void(APIENTRY*)(GLuint)>(glMaxShaderCompilerThreadsKHR);
     #endif
 
     /* GL_KHR_robustness */

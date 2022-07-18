@@ -222,6 +222,9 @@ FlextGL flextGL{
     /* GL_KHR_blend_equation_advanced */
     nullptr,
 
+    /* GL_KHR_parallel_shader_compile */
+    nullptr,
+
     /* GL_NV_sample_locations */
     nullptr,
     nullptr,

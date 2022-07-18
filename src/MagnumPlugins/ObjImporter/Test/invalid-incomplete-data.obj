@@ -1,0 +1,23 @@
+o missing position data
+p 1
+
+o missing position indices
+v 1 2 3
+
+o missing normal data
+v 1 2 3
+p 3//3
+
+o missing normal indices
+v 1 2 3
+vn 1 2 3
+p 4
+
+o missing texture coordinate data
+v 1 2 3
+p 5/1
+
+o missing texture coordinate indices
+v 1 2 3
+vt 1 2
+p 6

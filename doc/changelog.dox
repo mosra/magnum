@@ -108,8 +108,11 @@ See also:
     resulted in a new @cpp "firefox-deprecated-debug-renderer-info" @ce
     workaround being added, see @ref opengl-workarounds for more info.
 -   Recognizing @webgl_extension{EXT,float_blend} and
-    @webgl_extension{WEBGL,debug_shaders} extensions, no implementation done
-    yet
+    @webgl_extension{WEBGL,debug_shaders} WebGL extensions, no implementation
+    done yet
+-   Recognizing @gl_extension{KHR,parallel_shader_compile} GL, GLES and
+    @webgl_extension{KHR,parallel_shader_compile} WebGL extensions, no
+    implementation done yet
 -   Recognizing ANGLE GLES and WebGL base vertex, base instance and multi-draw
     extensions and using them in @ref GL::AbstractShaderProgram::draw(Mesh&)
     and @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>):
