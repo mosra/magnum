@@ -57,7 +57,7 @@ class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
         #endif
 
         /**
-         * @brief Whether the material has a specular texture
+         * @brief Whether the material has a texture
          *
          * Returns @cpp true @ce if any of the
          * @ref MaterialAttribute::BaseColorTexture or

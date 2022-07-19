@@ -227,10 +227,7 @@ index array. The @ref MeshIndexType gets inferred from the view type:
 
 Alternatively, you can pass a typeless @cpp const void @ce view and supply
 @ref MeshIndexType explicitly, or a contiguous 2D view and let the class detect
-the actual index type from second dimension size. Note that the class accepts
-only contiguous views and not @relativeref{Corrade,Containers::StridedArrayView},
-following limitations of GPU index buffers that also have to be contiguous.
-@see @ref MeshAttributeData
+the actual index type from second dimension size.
 */
 class MAGNUM_TRADE_EXPORT MeshIndexData {
     public:
