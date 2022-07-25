@@ -189,7 +189,8 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("Flat.frag"));
 
-    GL::Shader::submitCompile({vert, frag});
+    vert.submitCompile();
+    frag.submitCompile();
 
     CompileState cs{std::move(frag), std::move(vert), version, flags
     #ifndef MAGNUM_TARGET_GLES
@@ -236,7 +237,8 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
 : FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::checkCompile({cs._vert, cs._frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(cs._vert.checkCompile());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(cs._frag.checkCompile());
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
@@ -319,10 +321,10 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT, Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , UnsignedInt materialCount, UnsignedInt drawCount
     #endif
-) : GL::AbstractShaderProgram{}, _flags(flags), 
+) : GL::AbstractShaderProgram{}, _flags(flags),
     #ifndef MAGNUM_TARGET_GLES2
     _materialCount(materialCount), _drawCount(drawCount)
-    #endif 
+    #endif
 {}
 
 #ifndef MAGNUM_TARGET_GLES2

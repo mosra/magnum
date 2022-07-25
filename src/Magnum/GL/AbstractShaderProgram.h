@@ -1280,26 +1280,6 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         static bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
 
-        /**
-         * @brief Submit shaders for linking
-         *
-         * The operation is batched in a
-         * way that allows the driver to link multiple shaders simultaneously
-         * (i.e. in multiple threads).
-         *
-         */
-        static void submitLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
-
-        /**
-         * @brief Check linking status of shaders and await completion
-         *
-         * Returns @cpp false @ce if linking of any shader failed, @cpp true @ce
-         * if everything succeeded. Linker message (if any) is printed to error
-         * output.
-         *
-         */
-        static bool checkLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
-
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Allow retrieving program binary

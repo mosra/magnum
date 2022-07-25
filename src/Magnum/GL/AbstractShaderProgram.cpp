@@ -585,61 +585,48 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
 
 bool AbstractShaderProgram::link() { return link({*this}); }
 
-bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
-    submitLink(shaders);
-    return checkLink(shaders);
+void AbstractShaderProgram::submitLink() {
+    glLinkProgram(_id);
 }
 
-void AbstractShaderProgram::submitLink() { submitLink({*this}); }
+bool AbstractShaderProgram::checkLink() {
+    GLint success, logLength;
+    glGetProgramiv(_id, GL_LINK_STATUS, &success);
+    glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
 
-bool AbstractShaderProgram::checkLink() { return checkLink({*this}); }
+    /* Error or warning message. The string is returned null-terminated,
+       strip the \0 at the end afterwards. */
+    std::string message(logLength, '\n');
+    if(message.size() > 1)
+        glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
+    message.resize(Math::max(logLength, 1)-1);
 
-void AbstractShaderProgram::submitLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
-     /* Invoke (possibly parallel) linking on all shaders */
-    for(AbstractShaderProgram& shader: shaders) glLinkProgram(shader._id);
-}
+    /* Some drivers are chatty and can't keep shut when there's nothing to
+       be said, handle that as well. */
+    Context::current().state().shaderProgram.cleanLogImplementation(message);
 
-bool AbstractShaderProgram::checkLink(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
-    bool allSuccess = true;
+    /** @todo update log messages */
 
-    /* After linking phase, check status of all shaders */
-    Int i = 1;
-    for(AbstractShaderProgram& shader: shaders) {
-        GLint success, logLength;
-        glGetProgramiv(shader._id, GL_LINK_STATUS, &success);
-        glGetProgramiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
+    /* Show error log */
+    if(!success) {
+        Error out{Debug::Flag::NoNewlineAtTheEnd};
+        out << "GL::AbstractShaderProgram::link(): linking";
+        out << "failed with the following message:" << Debug::newline << message;
 
-        /* Error or warning message. The string is returned null-terminated,
-           strip the \0 at the end afterwards. */
-        std::string message(logLength, '\n');
-        if(message.size() > 1)
-            glGetProgramInfoLog(shader._id, message.size(), nullptr, &message[0]);
-        message.resize(Math::max(logLength, 1)-1);
-
-        /* Some drivers are chatty and can't keep shut when there's nothing to
-           be said, handle that as well. */
-        Context::current().state().shaderProgram.cleanLogImplementation(message);
-
-        /* Show error log */
-        if(!success) {
-            Error out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) out << "of shader" << i;
-            out << "failed with the following message:" << Debug::newline << message;
-
-        /* Or just warnings, if any */
-        } else if(!message.empty()) {
-            Warning out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) out << "of shader" << i;
-            out << "succeeded with the following message:" << Debug::newline << message;
-        }
-
-        /* Success of all depends on each of them */
-        allSuccess = allSuccess && success;
-        ++i;
+    /* Or just warnings, if any */
+    } else if(!message.empty()) {
+        Warning out{Debug::Flag::NoNewlineAtTheEnd};
+        out << "GL::AbstractShaderProgram::link(): linking";
+        out << "succeeded with the following message:" << Debug::newline << message;
     }
 
+    return success;
+}
+
+bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
+    for(AbstractShaderProgram& shader: shaders) shader.submitLink();
+    bool allSuccess = true;
+    for(AbstractShaderProgram& shader: shaders) allSuccess &= shader.checkLink();
     return allSuccess;
 }
 
