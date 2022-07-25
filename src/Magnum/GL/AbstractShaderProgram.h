@@ -449,8 +449,6 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
     friend Implementation::ShaderProgramState;
 
     public:
-        struct CompileState;
-
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Buffer mode for transform feedback
@@ -1260,6 +1258,12 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         AbstractShaderProgram& dispatchCompute(const Vector3ui& workgroupCount);
         #endif
 
+        /**
+         * @brief Non-blocking linking status check
+         *
+         */
+        bool isLinkFinished();
+
     protected:
         /**
          * @brief Link the shaders
@@ -1486,12 +1490,6 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          */
         bool checkLink();
-
-        /**
-         * @brief Non-blocking linking status check
-         *
-         */
-        bool isLinkFinished();
 
         /**
          * @brief Get uniform location
@@ -1767,11 +1765,6 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
            workaround */
         std::vector<std::string> _transformFeedbackVaryingNames;
         #endif
-};
-
-struct AbstractShaderProgram::CompileState : public AbstractShaderProgram {
-    using AbstractShaderProgram::AbstractShaderProgram;
-    bool isLinkFinished();
 };
 
 }}

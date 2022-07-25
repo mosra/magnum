@@ -649,10 +649,6 @@ bool AbstractShaderProgram::isLinkFinished() {
     return success == GL_TRUE;
 }
 
-bool AbstractShaderProgram::CompileState::isLinkFinished() {
-    return AbstractShaderProgram::isLinkFinished();
-}
-
 void AbstractShaderProgram::cleanLogImplementationNoOp(std::string&) {}
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)

@@ -191,8 +191,8 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 
     GL::Shader::submitCompile({vert, frag});
 
-    CompileState cs{std::move(frag), std::move(vert), flags
-    #ifndef MAGNUM_TARGET_GLES2
+    CompileState cs{std::move(frag), std::move(vert), version, flags
+    #ifndef MAGNUM_TARGET_GLES
     , materialCount, drawCount
     #endif
     };
@@ -235,19 +235,12 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
-: AbstractShaderProgram{static_cast<AbstractShaderProgram&&>(std::move(cs))},
-    _flags(cs._flags), _materialCount{cs._materialCount}, _drawCount(cs._drawCount) {
-
+: FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::checkCompile({cs._vert, cs._frag}));
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-
-    #ifndef MAGNUM_TARGET_GLES
-    const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
-    #else
-    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
-    #endif
+    const GL::Version version = cs._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
@@ -320,6 +313,16 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags
     #else
     FlatGL{compile(flags)}
     #endif
+{}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT, Flags flags
+    #ifndef MAGNUM_TARGET_GLES2
+    , UnsignedInt materialCount, UnsignedInt drawCount
+    #endif
+) : GL::AbstractShaderProgram{}, _flags(flags), 
+    #ifndef MAGNUM_TARGET_GLES2
+    _materialCount(materialCount), _drawCount(drawCount)
+    #endif 
 {}
 
 #ifndef MAGNUM_TARGET_GLES2

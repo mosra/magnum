@@ -613,38 +613,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         #endif
         );
 
-        struct CompileState : public GL::AbstractShaderProgram::CompileState {
-            friend CompileState FlatGL::compile(Flags
-            #ifndef MAGNUM_TARGET_GLES2
-            , UnsignedInt, UnsignedInt
-            #endif
-            );
-            friend FlatGL::FlatGL(CompileState&&);
-
-            explicit CompileState(NoCreateT) noexcept: GL::AbstractShaderProgram::CompileState({NoCreate}), 
-                _vert(NoCreate), _frag(NoCreate) {}
-
-            CompileState(GL::Shader&& vert, GL::Shader&& frag, Flags flags
-                #ifndef MAGNUM_TARGET_GLES2
-                , UnsignedInt materialCount, UnsignedInt drawCount
-                #endif
-                )
-                : _vert(std::move(vert)), _frag(std::move(frag)), _flags(flags) 
-                #ifndef MAGNUM_TARGET_GLES2
-                ,_materialCount(materialCount), _drawCount(drawCount) 
-                #endif
-                {}
-
-        private:
-            GL::Shader _vert, _frag;
-            Flags _flags;
-            
-            #ifndef MAGNUM_TARGET_GLES2
-            UnsignedInt _materialCount;
-            UnsignedInt _drawCount;
-            #endif
-        };
-
         /** @brief Copying is not allowed */
         FlatGL(const FlatGL<dimensions>&) = delete;
 
@@ -1053,6 +1021,17 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         }
         #endif
 
+    protected:
+        /**
+         * @brief Construct without running shader compilation and linking
+         *
+         */
+        FlatGL(NoInitT, Flags flags
+        #ifndef MAGNUM_TARGET_GLES2
+        , UnsignedInt materialCount, UnsignedInt drawCount
+        #endif
+        );
+
     private:
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
@@ -1079,6 +1058,27 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
            so it can alias them */
         Int _drawOffsetUniform{0};
         #endif
+};
+
+template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState : public FlatGL<dimensions> {
+private:
+    friend class FlatGL;
+    using FlatGL::FlatGL;
+
+    CompileState(NoCreateT) : FlatGL(NoCreate), _vert{NoCreate}, _frag{NoCreate} {}
+
+    CompileState(GL::Shader&& vert, GL::Shader&& frag, GL::Version version, Flags flags
+    #ifndef MAGNUM_TARGET_GLES2
+     , UnsignedInt materialCount, UnsignedInt drawCount
+    #endif
+    ) : FlatGL(NoInit, flags
+        #ifndef MAGNUM_TARGET_GLES2    
+        , materialCount, drawCount
+        #endif
+        ), _vert(std::move(vert)), _frag(std::move(frag)), _version(version) {}
+
+    GL::Shader _vert, _frag;
+    GL::Version _version;
 };
 
 /**
