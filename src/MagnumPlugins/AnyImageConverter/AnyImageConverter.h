@@ -68,9 +68,9 @@ tries to convert the file with it. Supported formats for uncompressed data:
     `HdrImageConverter`. Only uncompressed 2D images.
 -   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), converted with @ref JpegImageConverter
     or any other plugin that provides it. Only uncompressed 2D images.
--   KTX2 (`*.ktx2`), converted with @ref KtxImageConverter or any other plugin
-    that provides it. Uncompressed, compressed, 1D/2D/3D and multi-level
-    1D/2D/3D images.
+-   KTX1 and KTX2 (`*.ktx`, `*.ktx2`), converted with @ref KtxImageConverter or
+    any other plugin that provides it. Uncompressed, compressed, 1D/2D/3D and
+    multi-level 1D/2D/3D images.
 -   Portable Network Graphics (`*.png`), converted with @ref PngImageConverter
     or any other plugin that provides it. Only uncompressed 2D images.
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), converted with

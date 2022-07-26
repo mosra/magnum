@@ -73,7 +73,8 @@ bool AnyImageConverter::doConvertToFile(const ImageView1D& image, const Containe
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a 1D image";
@@ -129,7 +130,8 @@ bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containe
             normalizedExtension == ".jpeg"_s ||
             normalizedExtension == ".jpe"_s)
         plugin = "JpegImageConverter"_s;
-    else if(normalizedExtension == ".ktx2"_s)
+    else if(normalizedExtension == ".ktx"_s ||
+            normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else if(normalizedExtension == ".png"_s)
         plugin = "PngImageConverter"_s;
@@ -184,7 +186,8 @@ bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containe
         plugin = "BasisImageConverter"_s;
     else if(normalizedExtension == ".exr"_s)
         plugin = "OpenExrImageConverter"_s;
-    else if(normalizedExtension == ".ktx2"_s)
+    else if(normalizedExtension == ".ktx"_s ||
+            normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else if(normalizedExtension == ".vdb"_s)
         plugin = "OpenVdbImageConverter"_s;
@@ -230,7 +233,8 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView1D& image, cons
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 1D image";
@@ -274,7 +278,8 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView2D& image, cons
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 2D image";
@@ -318,7 +323,8 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView3D& image, cons
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a compressed 3D image";
@@ -362,7 +368,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 1D image";
@@ -410,7 +417,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
         plugin = "BasisImageConverter"_s;
     else if(normalizedExtension == ".exr"_s)
         plugin = "OpenExrImageConverter"_s;
-    else if(normalizedExtension == ".ktx2"_s)
+    else if(normalizedExtension == ".ktx"_s ||
+            normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 2D image";
@@ -458,7 +466,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
         plugin = "BasisImageConverter"_s;
     else if(normalizedExtension == ".exr"_s)
         plugin = "OpenExrImageConverter"_s;
-    else if(normalizedExtension == ".ktx2"_s)
+    else if(normalizedExtension == ".ktx"_s ||
+            normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level 3D image";
@@ -502,7 +511,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 1D image";
@@ -546,7 +556,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 2D image";
@@ -590,7 +601,8 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ktx2"_s)
+    if(normalizedExtension == ".ktx"_s ||
+       normalizedExtension == ".ktx2"_s)
         plugin = "KtxImageConverter"_s;
     else {
         Error{} << "Trade::AnyImageConverter::convertToFile(): cannot determine the format of" << filename << "for a multi-level compressed 3D image";

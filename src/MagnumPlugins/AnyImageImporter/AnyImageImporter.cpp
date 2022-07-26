@@ -94,7 +94,8 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
         plugin = "JpegImporter"_s;
     else if(normalizedExtension == ".jp2"_s)
         plugin = "Jpeg2000Importer"_s;
-    else if(normalizedExtension == ".ktx2"_s)
+    else if(normalizedExtension == ".ktx"_s ||
+            normalizedExtension == ".ktx2"_s)
         plugin = "KtxImporter"_s;
     else if(normalizedExtension == ".mng"_s)
         plugin = "MngImporter"_s;
@@ -199,8 +200,10 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     /* https://en.wikipedia.org/wiki/JPEG#Syntax_and_structure */
     else if(dataString.hasPrefix("\xff\xd8\xff"_s))
         plugin = "JpegImporter"_s;
-    /* https://github.khronos.org/KTX-Specification/#_identifier */
-    else if(dataString.hasPrefix("\xabKTX 20\xbb\r\n\x1a\n"_s))
+    /* https://github.khronos.org/KTX-Specification/#_identifier and
+       https://www.khronos.org/registry/KTX/specs/1.0/ktxspec_v1.html */
+    else if(dataString.hasPrefix("\xabKTX 20\xbb\r\n\x1a\n"_s) ||
+            dataString.hasPrefix("\xabKTX 11\xbb\r\n\x1a\n"_s))
         plugin = "KtxImporter"_s;
     /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
     else if(dataString.hasPrefix("\x89PNG\x0d\x0a\x1a\x0a"_s))

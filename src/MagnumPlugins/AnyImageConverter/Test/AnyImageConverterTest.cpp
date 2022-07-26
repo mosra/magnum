@@ -141,6 +141,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } Detect1DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
@@ -159,6 +160,7 @@ constexpr struct {
     {"JPEG weird extension", "file.jpe", "JpegImageConverter"},
     /* Have at least one test case with uppercase */
     {"JPEG uppercase", "output.JPG", "JpegImageConverter"},
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "foo.ktx2", "KtxImageConverter"},
     {"PNG", "file.png", "PngImageConverter"}
 };
@@ -170,6 +172,7 @@ constexpr struct {
 } Detect3DData[]{
     {"Basis Universal", "file.basis", "BasisImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     {"OpenVDB", "volume.vdb", "OpenVdbImageConverter"},
     /* Have at least one test case with uppercase */
@@ -181,6 +184,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectLevels1DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
@@ -193,6 +197,7 @@ constexpr struct {
 } DetectLevels2DData[]{
     {"Basis Universal", "file.basis", "BasisImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
@@ -205,6 +210,7 @@ constexpr struct {
 } DetectLevels3DData[]{
     {"Basis Universal", "file.basis", "BasisImageConverter"},
     {"EXR", "file.exr", "OpenExrImageConverter"},
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"EXR uppercase", "FIL~1.EXR", "OpenExrImageConverter"}
@@ -218,6 +224,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectCompressed1DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
@@ -228,6 +235,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectCompressed2DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
@@ -238,6 +246,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectCompressed3DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
@@ -248,6 +257,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectCompressedLevels1DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
@@ -258,6 +268,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectCompressedLevels2DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
@@ -268,6 +279,7 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectCompressedLevels3DData[]{
+    {"KTX1", "file.ktx", "KtxImageConverter"},
     {"KTX2", "file.ktx2", "KtxImageConverter"},
     /* Have at least one test case with uppercase */
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
