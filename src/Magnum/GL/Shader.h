@@ -510,14 +510,11 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         /**
          * @brief Compile multiple shaders simultaneously
          *
+         * Calls @ref submitCompile() on all shaders first, then @ref checkCompile().
          * Returns @cpp false @ce if compilation of any shader failed,
-         * @cpp true @ce if everything succeeded. Compiler messages (if any)
-         * are printed to error output. The operation is batched in a way that
+         * @cpp true @ce if everything succeeded. The operation is batched in a way that
          * allows the driver to perform multiple compilations simultaneously
          * (i.e. in multiple threads).
-         * @see @fn_gl_keyword{ShaderSource}, @fn_gl_keyword{CompileShader},
-         *      @fn_gl_keyword{GetShader} with @def_gl{COMPILE_STATUS} and
-         *      @def_gl{INFO_LOG_LENGTH}, @fn_gl_keyword{GetShaderInfoLog}
          */
         static bool compile(std::initializer_list<Containers::Reference<Shader>> shaders);
 
@@ -636,8 +633,9 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         /**
          * @brief Compile shader
          *
-         * Compiles single shader. Prefer to compile multiple shaders at once
-         * using @ref compile(std::initializer_list<Containers::Reference<Shader>>)
+         * Calls @ref submitCompile(), then @ref checkCompile().
+         * Prefer to compile multiple shaders at once using
+         * @ref compile(std::initializer_list<Containers::Reference<Shader>>)
          * for improved performance, see its documentation for more
          * information.
          */
@@ -646,13 +644,18 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         /**
          * @brief Submit shader for compilation
          *
-         * Submits shader for compilation.
+         * @see @fn_gl_keyword{ShaderSource}, @fn_gl_keyword{CompileShader}
          */
         void submitCompile();
 
         /**
          * @brief Check compilation status and await completion
          *
+         * Returns @cpp false @ce if compilation of failed, @cpp true @ce on success.
+         * This function must be called only after @ref submitCompile().
+         *
+         * @see @fn_gl_keyword{GetShader} with @def_gl{COMPILE_STATUS} and
+         *      @def_gl{INFO_LOG_LENGTH}, @fn_gl_keyword{GetShaderInfoLog}
          */
         bool checkCompile();
 
