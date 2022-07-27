@@ -804,7 +804,7 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
     /* Invoke (possibly parallel) compilation on all shaders */
     for(Shader& shader: shaders) shader.submitCompile();
     bool allSuccess = true;
-    for(Shader& shader: shaders) allSuccess &= shader.checkCompile();
+    for(Shader& shader: shaders) allSuccess = allSuccess && shader.checkCompile();
     return allSuccess;
 }
 

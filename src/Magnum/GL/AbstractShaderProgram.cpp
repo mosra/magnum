@@ -626,7 +626,7 @@ bool AbstractShaderProgram::checkLink() {
 bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
     for(AbstractShaderProgram& shader: shaders) shader.submitLink();
     bool allSuccess = true;
-    for(AbstractShaderProgram& shader: shaders) allSuccess &= shader.checkLink();
+    for(AbstractShaderProgram& shader: shaders) allSuccess = allSuccess && shader.checkLink();
     return allSuccess;
 }
 

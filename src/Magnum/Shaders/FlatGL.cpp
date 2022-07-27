@@ -192,12 +192,14 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     vert.submitCompile();
     frag.submitCompile();
 
-    CompileState cs{std::move(frag), std::move(vert), version, flags
-    #ifndef MAGNUM_TARGET_GLES
-    , materialCount, drawCount
+    FlatGL<dimensions> out{NoInit};
+    out._flags = flags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._materialCount = materialCount;
+    out._drawCount = drawCount;
     #endif
-    };
-    cs.attachShaders({cs._frag, cs._vert});
+
+    out.attachShaders({vert, frag});
 
     /* ES3 has this done in the shader directly and doesn't even provide
        bindFragmentDataLocation() */
@@ -230,9 +232,9 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     }
     #endif
 
-    cs.submitLink();
+    out.submitLink();
 
-    return cs;
+    return CompileState{std::move(out), std::move()};
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
@@ -314,16 +316,6 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags
     FlatGL(compile(flags, materialCount, drawCount))
     #else
     FlatGL{compile(flags)}
-    #endif
-{}
-
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT, Flags flags
-    #ifndef MAGNUM_TARGET_GLES2
-    , UnsignedInt materialCount, UnsignedInt drawCount
-    #endif
-) : GL::AbstractShaderProgram{}, _flags(flags),
-    #ifndef MAGNUM_TARGET_GLES2
-    _materialCount(materialCount), _drawCount(drawCount)
     #endif
 {}
 
