@@ -603,7 +603,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          */
         explicit FlatGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
-        struct CompileState;
+        class CompileState;
 
         explicit FlatGL(CompileState&& cs);
 
@@ -1053,14 +1053,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 };
 
 template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState : public FlatGL<dimensions> {
+public:
+    using FlatGL::isLinkFinished;
+
 private:
     friend class FlatGL;
-    using FlatGL::isLinkFinished;
 
     CompileState(NoCreateT) : FlatGL(NoCreate), _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(FlatGL<dimensions>&& shader, GL:Shader&& vert, GL::Shader&& frag, GL::Version version) :
-     FlatGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+    CompileState(FlatGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version) :
+        FlatGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;
     GL::Version _version;

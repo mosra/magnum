@@ -782,19 +782,17 @@ bool Shader::checkCompile() { /* After compilation phase, check status of all sh
        be said, handle that as well. */
     Context::current().state().shader.cleanLogImplementation(message);
 
-    /** @todo update log messages */
-
     /* Show error log */
     if(!success) {
         Error out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader";
-        out << "failed with the following message:" << Debug::newline << message;
+        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader"
+            << "failed with the following message:" << Debug::newline << message;
 
     /* Or just warnings, if any */
     } else if(!message.empty()) {
         Warning out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader";
-        out << "succeeded with the following message:" << Debug::newline << message;
+        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader"
+            << "succeeded with the following message:" << Debug::newline << message;
     }
 
     return success;
@@ -810,7 +808,7 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
 
 bool Shader::isCompileFinished() {
     GLint success;
-    glGetShaderiv(_id, GL_COMPLETION_STATUS_KHR, &success);
+    Context::current().state().shader.completionStatusImplementation(_id, GL_COMPLETION_STATUS_KHR, &success);
     return success == GL_TRUE;
 }
 
@@ -821,6 +819,10 @@ void Shader::cleanLogImplementationIntelWindows(std::string& message) {
     if(message == "No errors.\n") message = {};
 }
 #endif
+
+void Shader::completionStatusImplementationFallback(GLuint, GLenum, GLint* value) {
+    *value = GL_TRUE;
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {

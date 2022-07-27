@@ -1692,6 +1692,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(std::string& message);
         #endif
 
+        static MAGNUM_GL_LOCAL void completionStatusImplementationFallback(GLuint, GLenum, GLint*);
+
         MAGNUM_GL_LOCAL static void use(GLuint id);
         void use();
 

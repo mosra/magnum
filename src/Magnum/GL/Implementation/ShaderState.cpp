@@ -31,12 +31,13 @@
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Shader.h"
+#include "Magnum/GL/Extensions.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
 
 using namespace Containers::Literals;
 
-ShaderState::ShaderState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*>):
+ShaderState::ShaderState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions):
     maxVertexOutputComponents{}, maxFragmentInputComponents{},
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     maxTessellationControlInputComponents{}, maxTessellationControlOutputComponents{}, maxTessellationControlTotalOutputComponents{}, maxTessellationEvaluationInputComponents{}, maxTessellationEvaluationOutputComponents{}, maxGeometryInputComponents{}, maxGeometryOutputComponents{}, maxGeometryTotalOutputComponents{}, maxAtomicCounterBuffers{}, maxCombinedAtomicCounterBuffers{}, maxAtomicCounters{}, maxCombinedAtomicCounters{}, maxImageUniforms{}, maxCombinedImageUniforms{}, maxShaderStorageBlocks{}, maxCombinedShaderStorageBlocks{},
@@ -68,9 +69,12 @@ ShaderState::ShaderState(Context& context, Containers::StaticArrayView<Implement
         cleanLogImplementation = &Shader::cleanLogImplementationNoOp;
     }
 
-    /* Needed only if neither of these ifdefs above hits, but I won't bother
-       crafting the preprocessor logic for this. */
-    static_cast<void>(context);
+     if(context.isExtensionSupported<GL::Extensions::KHR::parallel_shader_compile>()) {
+        extensions[Extensions::KHR::parallel_shader_compile::Index] = Extensions::KHR::parallel_shader_compile::string();
+        completionStatusImplementation = glGetShaderiv;
+    } else {
+        completionStatusImplementation = &Shader::completionStatusImplementationFallback;
+    }
 }
 
 }}}

@@ -605,19 +605,17 @@ bool AbstractShaderProgram::checkLink() {
        be said, handle that as well. */
     Context::current().state().shaderProgram.cleanLogImplementation(message);
 
-    /** @todo update log messages */
-
     /* Show error log */
     if(!success) {
         Error out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::AbstractShaderProgram::link(): linking";
-        out << "failed with the following message:" << Debug::newline << message;
+        out << "GL::AbstractShaderProgram::link(): linking failed with the following message:"
+            << Debug::newline << message;
 
     /* Or just warnings, if any */
     } else if(!message.empty()) {
         Warning out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::AbstractShaderProgram::link(): linking";
-        out << "succeeded with the following message:" << Debug::newline << message;
+        out << "GL::AbstractShaderProgram::link(): linking succeeded with the following message:"
+            << Debug::newline << message;
     }
 
     return success;
@@ -632,7 +630,7 @@ bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<Abs
 
 bool AbstractShaderProgram::isLinkFinished() {
     GLint success;
-    glGetProgramiv(_id, GL_COMPLETION_STATUS_KHR, &success);
+    Context::current().state().shaderProgram.completionStatusImplementation(_id, GL_COMPLETION_STATUS_KHR, &success);
     return success == GL_TRUE;
 }
 
@@ -649,6 +647,10 @@ void AbstractShaderProgram::cleanLogImplementationAngle(std::string& message) {
     if(message == "\n") message = {};
 }
 #endif
+
+void AbstractShaderProgram::completionStatusImplementationFallback(GLuint, GLenum, GLint* value) {
+    *value = GL_TRUE;
+}
 
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
     const GLint location = glGetUniformLocation(_id, name);

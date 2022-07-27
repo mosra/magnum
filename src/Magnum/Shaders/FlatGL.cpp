@@ -208,33 +208,33 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        cs.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Position::Location, "position");
         if(flags & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
             || flags >= Flag::ObjectIdTexture
             #endif
         )
-            cs.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         if(flags & Flag::VertexColor)
-            cs.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
+            out.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & Flag::ObjectId) {
-            cs.bindFragmentDataLocation(ColorOutput, "color");
-            cs.bindFragmentDataLocation(ObjectIdOutput, "objectId");
+            out.bindFragmentDataLocation(ColorOutput, "color");
+            out.bindFragmentDataLocation(ObjectIdOutput, "objectId");
         }
         if(flags >= Flag::InstancedObjectId)
-            cs.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
         if(flags & Flag::InstancedTransformation)
-            cs.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
         if(flags >= Flag::InstancedTextureOffset)
-            cs.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
     }
     #endif
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move()};
+    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
@@ -305,6 +305,9 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
         /* Object ID is zero by default */
     }
     #endif
+
+    static_cast<void>(version);
+    static_cast<void>(context);
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags

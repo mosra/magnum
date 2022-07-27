@@ -53,6 +53,7 @@ struct ShaderState {
 
     void(Shader::*addSourceImplementation)(std::string);
     void(*cleanLogImplementation)(std::string&);
+    void(*completionStatusImplementation)(GLuint, GLenum, GLint* value);
 
     GLint maxVertexOutputComponents,
         maxFragmentInputComponents;
