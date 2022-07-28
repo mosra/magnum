@@ -89,7 +89,6 @@ endif()
 add_library(MagnumAudio ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumAudioObjects>
     ${MagnumAudio_GracefulAssert_SRCS})
-target_include_directories(MagnumAudio PUBLIC ${OPENAL_INCLUDE_DIR})
 set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumAudio PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
