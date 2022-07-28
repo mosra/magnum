@@ -239,6 +239,8 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
 : FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
+    if (_id == 0) return;
+
     CORRADE_INTERNAL_ASSERT_OUTPUT(cs._vert.checkCompile());
     CORRADE_INTERNAL_ASSERT_OUTPUT(cs._frag.checkCompile());
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
@@ -309,22 +311,6 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
     static_cast<void>(version);
     static_cast<void>(context);
 }
-
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags
-    #ifndef MAGNUM_TARGET_GLES2
-    , UnsignedInt materialCount, UnsignedInt drawCount
-    #endif
-):
-    #ifndef MAGNUM_TARGET_GLES2
-    FlatGL(compile(flags, materialCount, drawCount))
-    #else
-    FlatGL{compile(flags)}
-    #endif
-{}
-
-#ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): FlatGL{flags, 1, 1} {}
-#endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2

@@ -1458,7 +1458,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Submit for linking
          *
-         * The attached shaders must be compiled with @ref Shader::compile() before linking.
+         * The attached shaders must be compiled with @ref Shader::compile()
+         * or @ref Shader::submitCompile() before linking.
          *
          * @see @fn_gl_keyword{LinkProgram}
          */

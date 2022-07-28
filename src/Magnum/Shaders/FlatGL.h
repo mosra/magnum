@@ -550,7 +550,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @ref FlatGL(Flags, UnsignedInt, UnsignedInt) with @p materialCount
          * and @p drawCount set to @cpp 1 @ce.
          */
-        explicit FlatGL(Flags flags = {});
+        explicit FlatGL(Flags flags = {}) : FlatGL{compile(flags)} {}
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -586,7 +586,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
             for this might be too confusing); what if some parameters won't be
             (unsigned) integers? like a string with shader extensions? make a
             whole Configuration class? */
-        explicit FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        explicit FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
+            FlatGL{compile(flags, materialCount, drawCount)} {}
         #endif
 
         /**
@@ -612,6 +613,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         , UnsignedInt materialCount, UnsignedInt drawCount
         #endif
         );
+
+        #ifndef MAGNUM_TARGET_GLES2
+        static CompileState compile(Flags flags) {
+            return compile(flags, 1, 1);
+        }
+        #endif
 
         /** @brief Copying is not allowed */
         FlatGL(const FlatGL<dimensions>&) = delete;
@@ -1053,13 +1060,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 };
 
 template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState : public FlatGL<dimensions> {
-public:
-    using FlatGL::isLinkFinished;
-
 private:
     friend class FlatGL;
 
-    CompileState(NoCreateT) : FlatGL(NoCreate), _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT) : FlatGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
     CompileState(FlatGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version) :
         FlatGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
