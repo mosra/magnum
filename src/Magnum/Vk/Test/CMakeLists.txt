@@ -103,7 +103,7 @@ add_library(VkAssertTestObjects OBJECT AssertTest.cpp)
 target_include_directories(VkAssertTestObjects PRIVATE $<TARGET_PROPERTY:MagnumVk,INTERFACE_INCLUDE_DIRECTORIES>)
 corrade_add_test(VkAssertTest
     $<TARGET_OBJECTS:VkAssertTestObjects>
-    ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+    ${PROJECT_SOURCE_DIR}/src/dummy.cpp # XCode workaround, see file comment for details
     LIBRARIES MagnumVk)
 # WILL_FAIL doesn't work for abort() on desktop, test this only on embedded
 # then. Oh well. Also the tests could be just one executable added multiple
@@ -112,28 +112,28 @@ corrade_add_test(VkAssertTest
 if(CORRADE_TARGET_ANDROID)
     corrade_add_test(VkAssertTestFailAssertSuccess
         $<TARGET_OBJECTS:VkAssertTestObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp # XCode workaround, see file comment for details
         ARGUMENTS --fail-on-assert-success true
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertSuccess PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = r failed with Vk::Result::ErrorFragmentedPool at ")
     corrade_add_test(VkAssertTestFailAssertSuccessOr
         $<TARGET_OBJECTS:VkAssertTestObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp # XCode workaround, see file comment for details
         ARGUMENTS --fail-on-assert-success-or true
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertSuccessOr PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = r failed with Vk::Result::ErrorExtensionNotPresent at ")
     corrade_add_test(VkAssertTestFailAssertVkSuccess
         $<TARGET_OBJECTS:VkAssertTestObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp # XCode workaround, see file comment for details
         ARGUMENTS --fail-on-assert-vk-success true
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertVkSuccess PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorFragmentedPool at ")
     corrade_add_test(VkAssertTestFailAssertVkSuccessOr
         $<TARGET_OBJECTS:VkAssertTestObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp # XCode workaround, see file comment for details
         ARGUMENTS --fail-on-assert-vk-success-or true
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertVkSuccessOr PROPERTIES
