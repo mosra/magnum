@@ -506,6 +506,7 @@ glGet() parameter                       | Matching API
 @def_gl{MAX_RENDERBUFFER_SIZE}          | @ref GL::Renderbuffer::maxSize()
 @def_gl{MAX_SAMPLE_MASK_WORDS}          | |
 @def_gl{MAX_SERVER_WAIT_TIMEOUT}        | |
+@def_gl_extension{MAX_SHADER_COMPILER_THREADS,KHR,parallel_shader_compile} | |
 @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE}  | @ref GL::AbstractShaderProgram::maxShaderStorageBlockSize()
 @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS} | @ref GL::Buffer::maxShaderStorageBindings()
 @def_gl_extension{MAX_SPARSE_TEXTURE_SIZE,ARB,sparse_texture} | |
