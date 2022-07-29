@@ -239,7 +239,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
 : FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
-    if (_id == 0) return;
+    if (id() == 0) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(cs._vert.checkCompile());
     CORRADE_INTERNAL_ASSERT_OUTPUT(cs._frag.checkCompile());
