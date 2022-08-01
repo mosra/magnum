@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Cpu.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -154,8 +155,16 @@ are supported.
 Used application: Platform::WindowlessGlxApplication
 Compilation flags:
     CORRADE_BUILD_DEPRECATED
+    CORRADE_BUILD_MULTITHREADED
     CORRADE_TARGET_UNIX
+    CORRADE_TARGET_X86
+    CORRADE_TARGET_GCC
+    CORRADE_TARGET_LIBSTDCXX
     MAGNUM_BUILD_DEPRECATED
+Compiled CPU features:
+    Sse2|Sse3|Ssse3|Sse41|Sse42
+Detected CPU features:
+    Sse2|Sse3|Ssse3|Sse41|Sse42|Avx|Popcnt|AvxF16c
 
 Renderer: AMD Radeon R7 M260 Series by ATI Technologies Inc.
 OpenGL version: 4.5.13399 Compatibility Profile Context 15.201.1151
@@ -319,57 +328,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_TARGET_DINKUMWARE
     Debug{} << "    CORRADE_TARGET_DINKUMWARE";
     #endif
-    #ifdef CORRADE_TARGET_SSE2
-    {
-        Debug d;
-        d << "    CORRADE_TARGET_SSE2";
-        #ifdef CORRADE_TARGET_SSE3
-        d << Debug::nospace << ",SSE3";
-        #endif
-        #ifdef CORRADE_TARGET_SSSE3
-        d << Debug::nospace << ",SSSE3";
-        #endif
-        #ifdef CORRADE_TARGET_SSE41
-        d << Debug::nospace << ",SSE41";
-        #endif
-        #ifdef CORRADE_TARGET_SSE42
-        d << Debug::nospace << ",SSE42";
-        #endif
-    }
-    #endif
-    #ifdef CORRADE_TARGET_AVX
-    {
-        Debug d;
-        d << "    CORRADE_TARGET_AVX";
-        #ifdef CORRADE_TARGET_AVX_F16C
-        d << Debug::nospace << ",AVX_F16C";
-        #endif
-        #ifdef CORRADE_TARGET_AVX_FMA
-        d << Debug::nospace << ",AVX_FMA";
-        #endif
-        #ifdef CORRADE_TARGET_AVX2
-        d << Debug::nospace << ",AVX2";
-        #endif
-        #ifdef CORRADE_TARGET_AVX512F
-        d << Debug::nospace << ",AVX512F";
-        #endif
-    }
-    #endif
-    #ifdef CORRADE_TARGET_NEON
-    {
-        Debug d;
-        d << "    CORRADE_TARGET_NEON";
-        #ifdef CORRADE_TARGET_NEON_FP16
-        d << Debug::nospace << ",NEON_FP16";
-        #endif
-        #ifdef CORRADE_TARGET_NEON_FMA
-        d << Debug::nospace << ",NEON_FMA";
-        #endif
-    }
-    #endif
-    #ifdef CORRADE_TARGET_SIMD128
-    Debug{} << "    CORRADE_TARGET_SIMD128";
-    #endif
     #ifdef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     Debug{} << "    CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT";
     #endif
@@ -399,6 +357,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef MAGNUM_TARGET_HEADLESS
     Debug{} << "    MAGNUM_TARGET_HEADLESS";
+    #endif
+    Debug{} << "Compiled CPU features:";
+    Debug{} << "   " << Debug::packed << Cpu::compiledFeatures();
+    #ifdef CORRADE_BUILD_CPU_RUNTIME_DISPATCH
+    Debug{} << "Detected CPU features:";
+    Debug{} << "   " << Debug::packed << Cpu::runtimeFeatures();
     #endif
     Debug{} << "";
 
