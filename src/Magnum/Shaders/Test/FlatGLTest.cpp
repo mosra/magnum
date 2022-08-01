@@ -83,8 +83,10 @@ struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffers();
+    template<UnsignedInt dimensions> void constructUniformBuffersAsync();
     #endif
 
     template<UnsignedInt dimensions> void constructMove();
@@ -597,13 +599,18 @@ constexpr struct {
 FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::construct<2>,
-        &FlatGLTest::construct<3>},
+        &FlatGLTest::construct<3>,
+        &FlatGLTest::constructAsync<2>,
+        &FlatGLTest::constructAsync<3>},
         Containers::arraySize(ConstructData));
+
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::constructUniformBuffers<2>,
-        &FlatGLTest::constructUniformBuffers<3>},
+        &FlatGLTest::constructUniformBuffers<3>,
+        &FlatGLTest::constructUniformBuffersAsync<2>,
+        &FlatGLTest::constructUniformBuffersAsync<3>},
         Containers::arraySize(ConstructUniformBuffersData));
     #endif
 
@@ -853,6 +860,37 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    auto compileState = FlatGL<dimensions>::compile(data.flags);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+
+    FlatGL<dimensions> shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    // TODO: decide on this.
+    // CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
@@ -896,6 +934,55 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & FlatGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= FlatGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    auto compileState = FlatGL<dimensions>::compile(data.flags, data.materialCount, data.drawCount);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+    CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
+    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+
+    FlatGL<dimensions> shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.materialCount(), data.materialCount);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #endif
 
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {

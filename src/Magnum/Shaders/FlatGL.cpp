@@ -241,9 +241,9 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
 : FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
     if (id() == 0) return;
 
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
     CORRADE_INTERNAL_ASSERT_OUTPUT(cs._vert.checkCompile());
     CORRADE_INTERNAL_ASSERT_OUTPUT(cs._frag.checkCompile());
-    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = cs._version;
