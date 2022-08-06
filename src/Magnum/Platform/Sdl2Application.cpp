@@ -847,21 +847,7 @@ void Sdl2Application::exit(const int exitCode) {
     _exitCode = exitCode;
 }
 
-bool Sdl2Application::mainLoopIteration() {
-    /* If exit was requested directly in the constructor, exit immediately
-       without calling anything else */
-    if(_flags & Flag::Exit) return false;
-
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_ASSERT(_window, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
-    #else
-    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
-    #endif
-
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
-    #endif
-
+bool Sdl2Application::mainLoopEventIteration() {
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     /* The resize event is not fired on window resize, so poll for the canvas
        size here. But only if the window was requested to be resizable, to
@@ -993,15 +979,50 @@ bool Sdl2Application::mainLoopIteration() {
             default: if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
         }
     }
+    return !(_flags & Flag::Exit);
+}
 
-    /* Tick event */
-    if(!(_flags & Flag::NoTickEvent)) tickEvent();
+bool Sdl2Application::mainLoopTickEventIteration() {
+    if(!(_flags & Flag::NoTickEvent)) {
+        tickEvent();
+        return true;
+    }
+    return false;
+}
 
-    /* Draw event */
+bool Sdl2Application::mainLoopDrawEventIteration() {
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
         drawEvent();
+        return true;
+    }
+    return false;  
+}
 
+bool Sdl2Application::mainLoopIteration() {
+    /* If exit was requested directly in the constructor, exit immediately
+       without calling anything else */
+    if(_flags & Flag::Exit) return false;
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
+    #else
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
+    #endif
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
+    #endif
+
+    /* exit was requested in the event loop */
+    if (!mainLoopEventIteration())
+        return false;
+
+    /* call tickEvent() if implemented */
+    mainLoopTickEventIteration();
+
+    /* drawEvent() was called */
+    if (mainLoopDrawEventIteration()) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
         if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriod) {

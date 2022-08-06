@@ -571,12 +571,40 @@ class Sdl2Application {
          * @return @cpp false @ce if @ref exit() was called and the application
          *      should exit, @cpp true @ce otherwise
          *
+         * Calls @ref mainLoopEventIteration(), @ref mainLoopTickEventIteration() and
+         * @ref mainLoopDrawEventIteration() managing the delays between them.
          * Called internally from @ref exec(). If you want to have better
          * control over how the main loop behaves, you can call this function
+         * (or the sub mainLoopIteration functions)
          * yourself from your own `main()` function instead of it being called
          * automatically from @ref exec() / @ref MAGNUM_SDL2APPLICATION_MAIN().
          */
         bool mainLoopIteration();
+
+        /**
+         * @brief Process pending application events
+         * @return @cpp false @ce if @ref exit() was called and the application
+         *      should exit, @cpp true @ce otherwise
+         * 
+         * Called internally from @ref mainLoopIteration().
+         */
+        bool mainLoopEventIteration();
+
+        /**
+         * @brief Calls @ref tickEvent() if implemented
+         * @return @cpp true @ce if @ref tickEvent() was called, @cpp false @ce otherwise
+         * 
+         * Called internally from @ref mainLoopIteration().
+         */
+        bool mainLoopTickEventIteration();
+
+        /**
+         * @brief Calls @ref drawEvent() if @ref Flag::Redraw is set and unset it.
+         * @return @cpp true @ce if @ref drawEvent() was called, @cpp false @ce otherwise
+         * 
+         * Called internally from @ref mainLoopIteration().
+         */
+        bool mainLoopDrawEventIteration();
 
         /**
          * @brief Exit application
