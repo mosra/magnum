@@ -30,6 +30,7 @@
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/System.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -265,8 +266,10 @@ void AbstractShaderProgramGLTest::create() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
-    // TODO: decide on this.
-    //CORRADE_VERIFY(program.isLinkFinished());
+
+    // Some drivers need a bit of time to update this result
+    Utility::System::sleep(200);
+    CORRADE_VERIFY(program.isLinkFinished());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -329,7 +332,11 @@ void AbstractShaderProgramGLTest::createAsync() {
     program.bindAttributeLocation(0, "position");
     program.submitLink();
 
+    while(!program.isLinkFinished())
+        Utility::System::sleep(100);
+
     CORRADE_VERIFY(program.checkLink());
+    CORRADE_VERIFY(program.isLinkFinished());
     const bool valid = program.validate().first;
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -486,6 +493,9 @@ void AbstractShaderProgramGLTest::linkFailure() {
     MyPublicShader program;
     program.attachShaders({shader});
     CORRADE_VERIFY(!program.link());
+
+    Utility::System::sleep(200);
+    CORRADE_VERIFY(program.isLinkFinished());
 }
 
 void AbstractShaderProgramGLTest::linkFailureAsync() {
@@ -512,11 +522,15 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
 
     std::ostringstream out;
     Error redirectError{&out};
-
     program.submitLink();
+
+    while(!program.isLinkFinished())
+        Utility::System::sleep(100);
+
     CORRADE_VERIFY(out.str().empty());
 
     CORRADE_VERIFY(!program.checkLink());
+    CORRADE_VERIFY(program.isLinkFinished());
     CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
 }

@@ -1260,7 +1260,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /**
          * @brief Non-blocking linking status check
+         * @return @cpp true @ce if linking finished, @cpp false @ce otherwise
          *
+         * On some drivers this might return false even after
+         * @ref checkLink() reported successful linking.
+         *
+         * @see @fn_gl_keyword{GetProgram} with
+         * @def_gl_extension{COMPLETION_STATUS,KHR,parallel_shader_compile}
          */
         bool isLinkFinished();
 

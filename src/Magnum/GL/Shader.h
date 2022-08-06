@@ -661,6 +661,10 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 
         /**
          * @brief Non-blocking compilation status check
+         * @return @cpp true @ce if shader compilation finished, @cpp false @ce otherwise
+         *
+         * @see @fn_gl_keyword{GetProgram} with
+         * @def_gl_extension{COMPLETION_STATUS,KHR,parallel_shader_compile}
          *
          */
         bool isCompileFinished();

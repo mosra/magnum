@@ -31,6 +31,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
@@ -599,19 +600,22 @@ constexpr struct {
 FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::construct<2>,
-        &FlatGLTest::construct<3>,
-        &FlatGLTest::constructAsync<2>,
-        &FlatGLTest::constructAsync<3>},
+        &FlatGLTest::construct<3>},
         Containers::arraySize(ConstructData));
 
+    addTests<FlatGLTest>({
+        &FlatGLTest::constructAsync<2>,
+        &FlatGLTest::constructAsync<3>});
 
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::constructUniformBuffers<2>,
-        &FlatGLTest::constructUniformBuffers<3>,
-        &FlatGLTest::constructUniformBuffersAsync<2>,
-        &FlatGLTest::constructUniformBuffersAsync<3>},
+        &FlatGLTest::constructUniformBuffers<3>},
         Containers::arraySize(ConstructUniformBuffersData));
+
+    addTests<FlatGLTest>({
+        &FlatGLTest::constructUniformBuffersAsync<2>,
+        &FlatGLTest::constructUniformBuffersAsync<3>});
     #endif
 
     addTests<FlatGLTest>({
@@ -863,7 +867,14 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    auto&& data = ConstructData[testCaseInstanceId()];
+    constexpr struct {
+        const char* name;
+        FlatGL2D::Flags flags;
+    } data {
+        "textured + texture transformation",
+        FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation
+    };
+
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -876,10 +887,12 @@ template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
     auto compileState = FlatGL<dimensions>::compile(data.flags);
     CORRADE_COMPARE(compileState.flags(), data.flags);
 
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
     FlatGL<dimensions> shader{std::move(compileState)};
     CORRADE_COMPARE(shader.flags(), data.flags);
-    // TODO: decide on this.
-    // CORRADE_VERIFY(shader.isLinkFinished());
+
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -938,7 +951,16 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
 template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
+    constexpr struct {
+        const char* name;
+        FlatGL2D::Flags flags;
+        UnsignedInt materialCount, drawCount;
+    }  data {
+        "alpha mask",
+        FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask,
+        1, 1
+    };
+
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -967,6 +989,9 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync()
     CORRADE_COMPARE(compileState.flags(), data.flags);
     CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
     CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
 
     FlatGL<dimensions> shader{std::move(compileState)};
     CORRADE_COMPARE(shader.flags(), data.flags);
