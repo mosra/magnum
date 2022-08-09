@@ -31,6 +31,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
@@ -83,8 +84,10 @@ struct VectorGLTest: GL::OpenGLTester {
     explicit VectorGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffers();
+    template<UnsignedInt dimensions> void constructUniformBuffersAsync();
     #endif
 
     template<UnsignedInt dimensions> void constructMove();
@@ -247,11 +250,19 @@ VectorGLTest::VectorGLTest() {
         &VectorGLTest::construct<3>},
         Containers::arraySize(ConstructData));
 
+    addTests<VectorGLTest>({
+        &VectorGLTest::constructAsync<2>,
+        &VectorGLTest::constructAsync<3>});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<VectorGLTest>({
         &VectorGLTest::constructUniformBuffers<2>,
         &VectorGLTest::constructUniformBuffers<3>},
         Containers::arraySize(ConstructUniformBuffersData));
+
+    addTests<VectorGLTest>({
+        &VectorGLTest::constructUniformBuffersAsync<2>,
+        &VectorGLTest::constructUniformBuffersAsync<3>});
     #endif
 
     addTests<VectorGLTest>({
@@ -370,6 +381,38 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+template<UnsignedInt dimensions> void VectorGLTest::constructAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    constexpr struct {
+        const char* name;
+        VectorGL2D::Flags flags;
+    } data {
+        "texture transformation", VectorGL2D::Flag::TextureTransformation
+    };
+    setTestCaseDescription(data.name);
+
+    auto compileState = VectorGL<dimensions>::compile(data.flags);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    VectorGL<dimensions> shader{std::move(compileState)};
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
@@ -396,6 +439,57 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
     }
 
     VectorGL<dimensions> shader{data.flags, data.materialCount, data.drawCount};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    constexpr struct {
+        const char* name;
+        VectorGL2D::Flags flags;
+        UnsignedInt materialCount, drawCount;
+    } data {"texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1, 1};
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & VectorGL<dimensions>::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= VectorGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    auto compileState = VectorGL<dimensions>::compile(data.flags, data.materialCount, data.drawCount);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+    CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
+    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    VectorGL<dimensions> shader{std::move(compileState)};
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
