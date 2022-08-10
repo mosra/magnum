@@ -30,7 +30,7 @@
  * @m_since{2019,10}
  */
 
-#include <string>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
 #include "Magnum/Math/Angle.h"
@@ -57,12 +57,12 @@ template<class T> struct ConfigurationValue<Magnum::Math::Deg<T>> {
     ConfigurationValue() = delete;
 
     /** @brief Writes degrees as a number */
-    static std::string toString(const Magnum::Math::Deg<T>& value, ConfigurationValueFlags flags) {
+    static Containers::String toString(const Magnum::Math::Deg<T>& value, ConfigurationValueFlags flags) {
         return ConfigurationValue<T>::toString(T(value), flags);
     }
 
     /** @brief Reads degrees as a number */
-    static Magnum::Math::Deg<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::Deg<T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         return Magnum::Math::Deg<T>(ConfigurationValue<T>::fromString(stringValue, flags));
     }
 };
@@ -72,12 +72,12 @@ template<class T> struct ConfigurationValue<Magnum::Math::Rad<T>> {
     ConfigurationValue() = delete;
 
     /** @brief Writes degrees as a number */
-    static std::string toString(const Magnum::Math::Rad<T>& value, ConfigurationValueFlags flags) {
+    static Containers::String toString(const Magnum::Math::Rad<T>& value, ConfigurationValueFlags flags) {
         return ConfigurationValue<T>::toString(T(value), flags);
     }
 
     /** @brief Reads degrees as a number */
-    static Magnum::Math::Rad<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::Rad<T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         return Magnum::Math::Rad<T>(ConfigurationValue<T>::fromString(stringValue, flags));
     }
 };
@@ -87,33 +87,34 @@ template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vect
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Vector<size, T>& value, ConfigurationValueFlags flags) {
-        std::string output;
+    static Containers::String toString(const Magnum::Math::Vector<size, T>& value, ConfigurationValueFlags flags) {
+        Containers::String output;
 
         for(std::size_t i = 0; i != size; ++i) {
-            if(!output.empty()) output += ' ';
-            output += ConfigurationValue<T>::toString(value[i], flags);
+            if(!output.isEmpty()) output = output + " ";
+            output = output + ConfigurationValue<T>::toString(value[i], flags);
         }
 
         return output;
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Vector<size, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::Vector<size, T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         Magnum::Math::Vector<size, T> result;
 
-        std::size_t oldpos = 0, pos = std::string::npos, i = 0;
+        Containers::StringView next, cursor = stringValue;
+        std::size_t i = 0;
         do {
-            pos = stringValue.find(' ', oldpos);
-            std::string part = stringValue.substr(oldpos, pos-oldpos);
+            next = cursor.find(" ");
+            Containers::StringView part = cursor.exceptSuffix(next);
 
-            if(!part.empty()) {
+            if(!part.isEmpty()) {
                 result[i] = ConfigurationValue<T>::fromString(part, flags);
                 ++i;
             }
 
-            oldpos = pos+1;
-        } while(pos != std::string::npos && i != size);
+            cursor = cursor.exceptPrefix(next);
+        } while(cursor);
 
         return result;
     }
@@ -158,13 +159,13 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::RectangularMatrix<cols, rows, T>& value, ConfigurationValueFlags flags) {
-        std::string output;
+    static Containers::String toString(const Magnum::Math::RectangularMatrix<cols, rows, T>& value, ConfigurationValueFlags flags) {
+        Containers::String output;
 
         for(std::size_t row = 0; row != rows; ++row) {
             for(std::size_t col = 0; col != cols; ++col) {
-                if(!output.empty()) output += ' ';
-                output += ConfigurationValue<T>::toString(value[col][row], flags);
+                if(!output.isEmpty()) output = output + " ";
+                output = output + ConfigurationValue<T>::toString(value[col][row], flags);
             }
         }
 
@@ -172,21 +173,22 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::RectangularMatrix<cols, rows, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::RectangularMatrix<cols, rows, T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         Magnum::Math::RectangularMatrix<cols, rows, T> result;
 
-        std::size_t oldpos = 0, pos = std::string::npos, i = 0;
+        Containers::StringView next, cursor = stringValue;
+        std::size_t i = 0;
         do {
-            pos = stringValue.find(' ', oldpos);
-            std::string part = stringValue.substr(oldpos, pos-oldpos);
+            next = cursor.find(" ");
+            Containers::StringView part = cursor.exceptSuffix(next);
 
-            if(!part.empty()) {
+            if(!part.isEmpty()) {
                 result[i%cols][i/cols] = ConfigurationValue<T>::fromString(part, flags);
                 ++i;
             }
 
-            oldpos = pos+1;
-        } while(pos != std::string::npos && i != cols*rows);
+            cursor = cursor.exceptPrefix(next);
+        } while(cursor);
 
         return result;
     }
@@ -234,13 +236,13 @@ template<Magnum::UnsignedInt dimensions, class T> struct ConfigurationValue<Magn
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Range<dimensions, T>& value, const ConfigurationValueFlags flags) {
+    static Containers::String toString(const Magnum::Math::Range<dimensions, T>& value, const ConfigurationValueFlags flags) {
         return ConfigurationValue<Magnum::Math::Vector<dimensions*2, T>>::toString(
             reinterpret_cast<const Magnum::Math::Vector<dimensions*2, T>&>(value), flags);
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Range<dimensions, T> fromString(const std::string& stringValue, const ConfigurationValueFlags flags) {
+    static Magnum::Math::Range<dimensions, T> fromString(Containers::StringView stringValue, const ConfigurationValueFlags flags) {
         const auto vec = ConfigurationValue<Magnum::Math::Vector<dimensions*2, T>>::fromString(stringValue, flags);
         return *reinterpret_cast<const Magnum::Math::Range<dimensions, T>*>(vec.data());
     }
@@ -267,12 +269,12 @@ template<class T> struct ConfigurationValue<Magnum::Math::Complex<T>> {
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Complex<T>& value, ConfigurationValueFlags flags) {
+    static Containers::String toString(const Magnum::Math::Complex<T>& value, ConfigurationValueFlags flags) {
         return ConfigurationValue<Magnum::Math::Vector<2, T>>::toString(reinterpret_cast<const Magnum::Math::Vector<2, T>&>(value), flags);
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Complex<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::Complex<T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         const Magnum::Math::Vector<2, T> value = ConfigurationValue<Magnum::Math::Vector<2, T>>::fromString(stringValue, flags);
         return reinterpret_cast<const Magnum::Math::Complex<T>&>(value);
     }
@@ -283,12 +285,12 @@ template<class T> struct ConfigurationValue<Magnum::Math::DualComplex<T>> {
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::DualComplex<T>& value, ConfigurationValueFlags flags) {
+    static Containers::String toString(const Magnum::Math::DualComplex<T>& value, ConfigurationValueFlags flags) {
         return ConfigurationValue<Magnum::Math::Vector<4, T>>::toString(reinterpret_cast<const Magnum::Math::Vector<4, T>&>(value), flags);
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::DualComplex<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::DualComplex<T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         const Magnum::Math::Vector<4, T> value = ConfigurationValue<Magnum::Math::Vector<4, T>>::fromString(stringValue, flags);
         return reinterpret_cast<const Magnum::Math::DualComplex<T>&>(value);
     }
@@ -302,12 +304,12 @@ template<class T> struct ConfigurationValue<Magnum::Math::Quaternion<T>> {
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Quaternion<T>& value, ConfigurationValueFlags flags) {
+    static Containers::String toString(const Magnum::Math::Quaternion<T>& value, ConfigurationValueFlags flags) {
         return ConfigurationValue<Magnum::Math::Vector<4, T>>::toString(reinterpret_cast<const Magnum::Math::Vector<4, T>&>(value), flags);
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Quaternion<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::Quaternion<T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         const Magnum::Math::Vector<4, T> value = ConfigurationValue<Magnum::Math::Vector<4, T>>::fromString(stringValue, flags);
         return reinterpret_cast<const Magnum::Math::Quaternion<T>&>(value);
     }
@@ -321,12 +323,12 @@ template<class T> struct ConfigurationValue<Magnum::Math::DualQuaternion<T>> {
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::DualQuaternion<T>& value, ConfigurationValueFlags flags) {
+    static Containers::String toString(const Magnum::Math::DualQuaternion<T>& value, ConfigurationValueFlags flags) {
         return ConfigurationValue<Magnum::Math::Vector<8, T>>::toString(reinterpret_cast<const Magnum::Math::Vector<8, T>&>(value), flags);
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::DualQuaternion<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::DualQuaternion<T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         const Magnum::Math::Vector<8, T> value = ConfigurationValue<Magnum::Math::Vector<8, T>>::fromString(stringValue, flags);
         return reinterpret_cast<const Magnum::Math::DualQuaternion<T>&>(value);
     }
@@ -343,13 +345,13 @@ template<Magnum::UnsignedInt order, Magnum::UnsignedInt dimensions, class T> str
     ConfigurationValue() = delete;
 
     /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Bezier<order, dimensions, T>& value, ConfigurationValueFlags flags) {
-        std::string output;
+    static Containers::String toString(const Magnum::Math::Bezier<order, dimensions, T>& value, ConfigurationValueFlags flags) {
+        Containers::String output;
 
         for(std::size_t o = 0; o != order + 1; ++o) {
             for(std::size_t i = 0; i != dimensions; ++i) {
-                if(!output.empty()) output += ' ';
-                output += ConfigurationValue<T>::toString(value[o][i], flags);
+                if(!output.isEmpty()) output = output + " ";
+                output = output + ConfigurationValue<T>::toString(value[o][i], flags);
             }
         }
 
@@ -357,21 +359,22 @@ template<Magnum::UnsignedInt order, Magnum::UnsignedInt dimensions, class T> str
     }
 
     /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Bezier<order, dimensions, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+    static Magnum::Math::Bezier<order, dimensions, T> fromString(Containers::StringView stringValue, ConfigurationValueFlags flags) {
         Magnum::Math::Bezier<order, dimensions, T> result;
 
-        std::size_t oldpos = 0, pos = std::string::npos, i = 0;
+        Containers::StringView next, cursor = stringValue;
+        std::size_t i = 0;
         do {
-            pos = stringValue.find(' ', oldpos);
-            std::string part = stringValue.substr(oldpos, pos-oldpos);
+            next = cursor.find(" ");
+            Containers::StringView part = cursor.exceptSuffix(next);
 
-            if(!part.empty()) {
+            if(!part.isEmpty()) {
                 result[i/dimensions][i%dimensions] = ConfigurationValue<T>::fromString(part, flags);
                 ++i;
             }
 
-            oldpos = pos+1;
-        } while(pos != std::string::npos);
+            cursor = cursor.exceptPrefix(next);
+        } while(cursor);
 
         return result;
     }

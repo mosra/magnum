@@ -25,7 +25,7 @@
 
 #include "PixelFormat.h"
 
-#include <string>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -556,14 +556,14 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
 
 namespace Corrade { namespace Utility {
 
-std::string ConfigurationValue<Magnum::PixelFormat>::toString(Magnum::PixelFormat value, ConfigurationValueFlags) {
+Containers::String ConfigurationValue<Magnum::PixelFormat>::toString(Magnum::PixelFormat value, ConfigurationValueFlags) {
     if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::PixelFormatNames))
         return Magnum::PixelFormatNames[Magnum::UnsignedInt(value) - 1];
 
     return {};
 }
 
-Magnum::PixelFormat ConfigurationValue<Magnum::PixelFormat>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+Magnum::PixelFormat ConfigurationValue<Magnum::PixelFormat>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     /** @todo This is extremely slow with >100 values. Do a binary search on a
         sorted index list instead (extracted into a common utility) */
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::PixelFormatNames); ++i)
@@ -572,14 +572,14 @@ Magnum::PixelFormat ConfigurationValue<Magnum::PixelFormat>::fromString(const st
     return {};
 }
 
-std::string ConfigurationValue<Magnum::CompressedPixelFormat>::toString(Magnum::CompressedPixelFormat value, ConfigurationValueFlags) {
+Containers::String ConfigurationValue<Magnum::CompressedPixelFormat>::toString(Magnum::CompressedPixelFormat value, ConfigurationValueFlags) {
     if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::CompressedPixelFormatNames))
         return Magnum::CompressedPixelFormatNames[Magnum::UnsignedInt(value) - 1];
 
     return {};
 }
 
-Magnum::CompressedPixelFormat ConfigurationValue<Magnum::CompressedPixelFormat>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+Magnum::CompressedPixelFormat ConfigurationValue<Magnum::CompressedPixelFormat>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     /** @todo This is extremely slow with >100 values. Do a binary search on a
         sorted index list instead (extracted into a common utility) */
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::CompressedPixelFormatNames); ++i)

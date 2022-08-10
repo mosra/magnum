@@ -30,7 +30,6 @@
  */
 
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -1473,14 +1472,14 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::VertexFormat> {
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::VertexFormat value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::VertexFormat value, ConfigurationValueFlags);
 
     /**
      * @brief Read enum value as string
      *
      * If the value is invalid, returns a zero (invalid) format.
      */
-    static Magnum::VertexFormat fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::VertexFormat fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 
 }}

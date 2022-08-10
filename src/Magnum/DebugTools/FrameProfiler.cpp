@@ -682,14 +682,14 @@ namespace Corrade { namespace Utility {
 using namespace Magnum;
 
 #ifdef MAGNUM_TARGET_GL
-std::string ConfigurationValue<DebugTools::FrameProfilerGL::Value>::toString(const DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags) {
+Containers::String ConfigurationValue<DebugTools::FrameProfilerGL::Value>::toString(const DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags) {
     const UnsignedInt bit = Math::log2(UnsignedShort(value));
     if(1 << bit == UnsignedShort(value))
         return DebugTools::FrameProfilerGLValueNames[bit];
     return "";
 }
 
-DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerGL::Value>::fromString(const std::string& value, ConfigurationValueFlags) {
+DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerGL::Value>::fromString(Containers::StringView value, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
         if(DebugTools::FrameProfilerGLValueNames[i] == value)
             return DebugTools::FrameProfilerGL::Value(1 << i);
@@ -697,7 +697,7 @@ DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerG
     return DebugTools::FrameProfilerGL::Value{};
 }
 
-std::string ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
+Containers::String ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
     std::string out;
 
     for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i) {
@@ -711,8 +711,8 @@ std::string ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(co
     return out;
 }
 
-DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(const std::string& value, ConfigurationValueFlags) {
-    const std::vector<std::string> bits = Utility::String::splitWithoutEmptyParts(value);
+DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(Containers::StringView value, ConfigurationValueFlags) {
+    const Containers::Array<Containers::StringView> bits = value.splitWithoutEmptyParts();
 
     DebugTools::FrameProfilerGL::Values values;
     for(const std::string& bit: bits)
