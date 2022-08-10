@@ -25,7 +25,7 @@
 
 #include "Mesh.h"
 
-#include <string>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -105,28 +105,28 @@ UnsignedInt meshIndexTypeSize(const MeshIndexType type) {
 
 namespace Corrade { namespace Utility {
 
-std::string ConfigurationValue<Magnum::MeshPrimitive>::toString(Magnum::MeshPrimitive value, ConfigurationValueFlags) {
+Containers::String ConfigurationValue<Magnum::MeshPrimitive>::toString(Magnum::MeshPrimitive value, ConfigurationValueFlags) {
     if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::MeshPrimitiveNames))
         return Magnum::MeshPrimitiveNames[Magnum::UnsignedInt(value) - 1];
 
     return {};
 }
 
-Magnum::MeshPrimitive ConfigurationValue<Magnum::MeshPrimitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+Magnum::MeshPrimitive ConfigurationValue<Magnum::MeshPrimitive>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::MeshPrimitiveNames); ++i)
         if(stringValue == Magnum::MeshPrimitiveNames[i]) return Magnum::MeshPrimitive(i + 1);
 
     return {};
 }
 
-std::string ConfigurationValue<Magnum::MeshIndexType>::toString(Magnum::MeshIndexType value, ConfigurationValueFlags) {
+Containers::String ConfigurationValue<Magnum::MeshIndexType>::toString(Magnum::MeshIndexType value, ConfigurationValueFlags) {
     if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::MeshIndexTypeNames))
         return Magnum::MeshIndexTypeNames[Magnum::UnsignedInt(value) - 1];
 
     return {};
 }
 
-Magnum::MeshIndexType ConfigurationValue<Magnum::MeshIndexType>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+Magnum::MeshIndexType ConfigurationValue<Magnum::MeshIndexType>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::MeshIndexTypeNames); ++i)
         if(stringValue == Magnum::MeshIndexTypeNames[i]) return Magnum::MeshIndexType(i + 1);
 

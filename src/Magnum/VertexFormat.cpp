@@ -25,7 +25,7 @@
 
 #include "VertexFormat.h"
 
-#include <string>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -930,14 +930,14 @@ Debug& operator<<(Debug& debug, const VertexFormat value) {
 
 namespace Corrade { namespace Utility {
 
-std::string ConfigurationValue<Magnum::VertexFormat>::toString(Magnum::VertexFormat value, ConfigurationValueFlags) {
+Containers::String ConfigurationValue<Magnum::VertexFormat>::toString(Magnum::VertexFormat value, ConfigurationValueFlags) {
     if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::VertexFormatNames))
         return Magnum::VertexFormatNames[Magnum::UnsignedInt(value) - 1];
 
     return {};
 }
 
-Magnum::VertexFormat ConfigurationValue<Magnum::VertexFormat>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+Magnum::VertexFormat ConfigurationValue<Magnum::VertexFormat>::fromString(Containers::StringView stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::VertexFormatNames); ++i)
         if(stringValue == Magnum::VertexFormatNames[i]) return Magnum::VertexFormat(i + 1);
 
