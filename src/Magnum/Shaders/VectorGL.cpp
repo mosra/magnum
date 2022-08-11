@@ -138,7 +138,7 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
 
     vert.submitCompile();
     frag.submitCompile();
-    
+
     VectorGL out{NoInit};
     out._flags = flags;
     #ifndef MAGNUM_TARGET_GLES2
@@ -162,10 +162,9 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     out.submitLink();
 
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
-
 }
 
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& cs) 
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& cs)
 : VectorGL{static_cast<VectorGL&&>(std::move(cs))} {
     if (id() == 0) return;
 

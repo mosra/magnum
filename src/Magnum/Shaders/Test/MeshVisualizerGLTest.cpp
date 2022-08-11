@@ -31,6 +31,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
@@ -88,12 +89,16 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     explicit MeshVisualizerGLTest();
 
     void construct2D();
+    void construct2DAsync();
     #ifndef MAGNUM_TARGET_GLES2
     void constructUniformBuffers2D();
+    void constructUniformBuffers2DAsync();
     #endif
     void construct3D();
+    void construct3DAsync();
     #ifndef MAGNUM_TARGET_GLES2
     void constructUniformBuffers3D();
+    void constructUniformBuffers3DAsync();
     #endif
 
     void construct2DInvalid();
@@ -1055,17 +1060,23 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests({&MeshVisualizerGLTest::construct2D},
         Containers::arraySize(ConstructData2D));
 
+    addTests({&MeshVisualizerGLTest::construct2DAsync});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers2D},
         Containers::arraySize(ConstructUniformBuffersData2D));
+    addTests({&MeshVisualizerGLTest::constructUniformBuffers2DAsync});
     #endif
 
     addInstancedTests({&MeshVisualizerGLTest::construct3D},
         Containers::arraySize(ConstructData3D));
 
+    addTests({&MeshVisualizerGLTest::construct3DAsync});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffers3D},
         Containers::arraySize(ConstructUniformBuffersData3D));
+    addTests({&MeshVisualizerGLTest::constructUniformBuffers3DAsync});
     #endif
 
     addInstancedTests({&MeshVisualizerGLTest::construct2DInvalid},
@@ -1403,6 +1414,78 @@ void MeshVisualizerGLTest::construct2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+
+void MeshVisualizerGLTest::construct2DAsync() {
+    constexpr struct {
+        const char* name;
+        MeshVisualizerGL2D::Flags flags;
+    } data {
+        "wireframe w/o GS", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader
+    };
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags & MeshVisualizerGL2D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if((data.flags & MeshVisualizerGL2D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    auto compileState = MeshVisualizerGL2D::compile(data.flags);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL2D shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::constructUniformBuffers2D() {
     auto&& data = ConstructUniformBuffersData2D[testCaseInstanceId()];
@@ -1480,6 +1563,99 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+
+void MeshVisualizerGLTest::constructUniformBuffers2DAsync() {
+    constexpr struct {
+        const char* name;
+        MeshVisualizerGL2D::Flags flags;
+        UnsignedInt materialCount, drawCount;
+    } data {
+        "multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::VertexId, 8, 55
+    };
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags & MeshVisualizerGL2D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if((data.flags & MeshVisualizerGL2D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.flags & MeshVisualizerGL2D::Flag::UniformBuffers && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= MeshVisualizerGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    auto compileState = MeshVisualizerGL2D::compile(data.flags, data.materialCount, data.drawCount);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+    CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
+    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL2D shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
 #endif
 
 void MeshVisualizerGLTest::construct3D() {
@@ -1530,6 +1706,77 @@ void MeshVisualizerGLTest::construct3D() {
 
     MeshVisualizerGL3D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MeshVisualizerGLTest::construct3DAsync() {
+    constexpr struct {
+        const char* name;
+        MeshVisualizerGL3D::Flags flags;
+    } data {
+        "object ID texture array", MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays
+    };
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(((data.flags & MeshVisualizerGL3D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)) || (data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection))) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    auto compileState = MeshVisualizerGL3D::compile(data.flags);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL3D shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(compileState.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1608,6 +1855,98 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
 
     MeshVisualizerGL3D shader{data.flags, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MeshVisualizerGLTest::constructUniformBuffers3DAsync() {
+    constexpr struct {
+        const char* name;
+        MeshVisualizerGL3D::Flags flags;
+        UnsignedInt materialCount, drawCount;
+    } data {
+        "multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::VertexId, 6, 28
+    };
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizerGL3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags & MeshVisualizerGL3D::Flag::PrimitiveId && !(data.flags >= MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(((data.flags & MeshVisualizerGL3D::Flag::Wireframe) && !(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)) || (data.flags & (MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection))) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            CORRADE_INFO("Using" << GL::Extensions::NV::shader_noperspective_interpolation::string());
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.flags & MeshVisualizerGL3D::Flag::UniformBuffers && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= MeshVisualizerGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    auto compileState = MeshVisualizerGL3D::compile(data.flags, data.materialCount, data.drawCount);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+    CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
+    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    MeshVisualizerGL3D shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
