@@ -345,7 +345,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-PhongGL::PhongGL(CompileState&& cs) 
+PhongGL::PhongGL(CompileState&& cs)
 : PhongGL{static_cast<PhongGL&&>(std::move(cs))} {
     if (id() == 0) return;
 
@@ -457,6 +457,9 @@ PhongGL::PhongGL(CompileState&& cs)
         /* Object ID is zero by default */
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
 PhongGL::PhongGL(Flags flags, UnsignedInt lightCount) : PhongGL{compile(flags, lightCount)} {}
@@ -464,7 +467,7 @@ PhongGL::PhongGL(Flags flags, UnsignedInt lightCount) : PhongGL{compile(flags, l
 #ifndef MAGNUM_TARGET_GLES2
 PhongGL::CompileState PhongGL::compile(Flags flags, UnsignedInt lightCount) {
     return compile(flags, lightCount, 1, 1);
-} 
+}
 
 PhongGL::PhongGL(Flags flags, UnsignedInt lightCount, UnsignedInt materialCount, UnsignedInt drawCount)
     : PhongGL{compile(flags, lightCount, materialCount, drawCount)} {}

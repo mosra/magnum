@@ -1722,7 +1722,7 @@ void MeshVisualizerGLTest::construct3DAsync() {
         const char* name;
         MeshVisualizerGL3D::Flags flags;
     } data {
-        "object ID texture array", MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays
+        "wireframe w/o GS", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader
     };
     setTestCaseDescription(data.name);
 
