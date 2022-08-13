@@ -31,12 +31,12 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
-#include <Corrade/Utility/System.h> /* isSandboxed() */
 #endif
 
 #include "Magnum/Image.h"
@@ -83,8 +83,10 @@ struct PhongGLTest: GL::OpenGLTester {
     explicit PhongGLTest();
 
     void construct();
+    void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     void constructUniformBuffers();
+    void constructUniformBuffersAsync();
     #endif
 
     void constructMove();
@@ -927,9 +929,13 @@ PhongGLTest::PhongGLTest() {
     addInstancedTests({&PhongGLTest::construct},
         Containers::arraySize(ConstructData));
 
+    addTests({&PhongGLTest::constructAsync});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&PhongGLTest::constructUniformBuffers},
         Containers::arraySize(ConstructUniformBuffersData));
+
+    addTests({&PhongGLTest::constructUniformBuffersAsync});
     #endif
 
     addTests({
@@ -1192,6 +1198,45 @@ void PhongGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+void PhongGLTest::constructAsync() {
+    constexpr struct {
+        const char* name;
+        PhongGL::Flags flags;
+        UnsignedInt lightCount;
+    } data {
+        "instanced specular texture offset", PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3
+    };
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    auto compileState = PhongGL::compile(data.flags, data.lightCount);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+    CORRADE_COMPARE(compileState.lightCount(), data.lightCount);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    PhongGL shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.lightCount(), data.lightCount);
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::constructUniformBuffers() {
     auto&& data = ConstructUniformBuffersData[testCaseInstanceId()];
@@ -1224,6 +1269,64 @@ void PhongGLTest::constructUniformBuffers() {
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void PhongGLTest::constructUniformBuffersAsync() {
+    constexpr struct {
+        const char* name;
+        PhongGL::Flags flags;
+        UnsignedInt lightCount, materialCount, drawCount;
+    } data {
+        "multiple lights, materials, draws + light culling", PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling, 8, 8, 24
+    };
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & PhongGL::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= PhongGL::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    auto compileState = PhongGL::compile(data.flags, data.lightCount, data.materialCount, data.drawCount);
+    CORRADE_COMPARE(compileState.flags(), data.flags);
+    CORRADE_COMPARE(compileState.lightCount(), data.lightCount);
+    CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
+    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+
+    while(!compileState.isLinkFinished())
+        Utility::System::sleep(100);
+
+    PhongGL shader{std::move(compileState)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.lightCount(), data.lightCount);
+    CORRADE_COMPARE(shader.materialCount(), data.materialCount);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
