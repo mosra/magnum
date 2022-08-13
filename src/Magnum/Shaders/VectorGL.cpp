@@ -225,6 +225,9 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& c
         setColor(Color4{1.0f});
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {

@@ -633,6 +633,9 @@ MeshVisualizer2D::MeshVisualizerGL2D(CompileState&& cs)
         #endif
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
 MeshVisualizerGL2D& MeshVisualizerGL2D::setViewportSize(const Vector2& size) {
@@ -715,7 +718,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
         "Shaders::MeshVisualizerGL3D: at least one visualization feature has to be enabled", CompileState{NoCreate});
     #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
-        "Shaders::MeshVisualizerGL3D: at least Flag::Wireframe has to be enabled", );
+        "Shaders::MeshVisualizerGL3D: at least Flag::Wireframe has to be enabled", CompileState{NoCreate});
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -1047,6 +1050,9 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& cs)
         #endif
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::setTransformationMatrix(const Matrix4& matrix) {
