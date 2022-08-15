@@ -78,6 +78,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
 ) {
+    #ifndef CORRADE_NO_ASSERT
     {
         const bool textureTransformationNotEnabledOrTextured = !(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture))
             #ifndef MAGNUM_TARGET_GLES2
@@ -87,6 +88,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
         CORRADE_ASSERT(textureTransformationNotEnabledOrTextured,
             "Shaders::PhongGL: texture transformation enabled but the shader is not textured", CompileState{NoCreate});
     }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::InstancedObjectId) || !(flags & Flag::Bitangent),
