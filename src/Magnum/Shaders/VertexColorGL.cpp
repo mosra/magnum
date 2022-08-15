@@ -31,7 +31,6 @@
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
-#include "Magnum/GL/Shader.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -57,19 +56,14 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt drawCount
     #endif
-):
-    _flags{flags}
-    #ifndef MAGNUM_TARGET_GLES2
-    , _drawCount{drawCount}
-    #endif
-{
+) {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
-        "Shaders::VertexColorGL: draw count can't be zero", );
+        "Shaders::VertexColorGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -121,9 +115,16 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("VertexColor.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    vert.submitCompile();
+    frag.submitCompile();
 
-    attachShaders({vert, frag});
+    VertexColorGL<dimensions> out{NoInit};
+    out._flags = flags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._drawCount = drawCount;
+    #endif
+
+    out.attachShaders({vert, frag});
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -131,19 +132,33 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
-        bindAttributeLocation(Color3::Location, "color"); /* Color4 is the same */
+        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Color3::Location, "color"); /* Color4 is the same */
     }
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    out.submitLink();
+
+    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
+}
+
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& cs):
+    VertexColorGL{static_cast<VertexColorGL&&>(std::move(cs))} {
+    if (id() == 0) return;
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(cs._vert.checkCompile());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(cs._frag.checkCompile());
+
+    const GL::Context& context = GL::Context::current();
+    const GL::Version version = cs._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
@@ -153,7 +168,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     }
 
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers
+    if(_flags >= Flag::UniformBuffers
         #ifndef MAGNUM_TARGET_GLES
         && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version)
         #endif
@@ -165,7 +180,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
     } else
     #endif
@@ -173,11 +188,10 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
     }
     #endif
-}
 
-#ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags): VertexColorGL{flags, 1} {}
-#endif
+    static_cast<void>(context);
+    static_cast<void>(version);
+}
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2
