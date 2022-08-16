@@ -28,6 +28,7 @@
 
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/AnyReference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Vk/Assert.h"
@@ -90,7 +91,7 @@ DescriptorSetLayoutBinding& DescriptorSetLayoutBinding::operator=(DescriptorSetL
     return *this;
 }
 
-DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::ArrayView<const Containers::AnyReference<const DescriptorSetLayoutBinding>> bindings, const Flags flags): _info{} {
+DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::Iterable<const DescriptorSetLayoutBinding> bindings, const Flags flags): _info{} {
     /* Check the total count of immutable samplers to allocate them all in a
        contiguous memory location. Also check if we have any binding flags. If
        yes, we have to create an additional array and put a structure into the
@@ -146,7 +147,7 @@ DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::A
     }
 }
 
-DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const std::initializer_list<Containers::AnyReference<const DescriptorSetLayoutBinding>> bindings, const Flags flags): DescriptorSetLayoutCreateInfo{Containers::arrayView(bindings), flags} {}
+DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const std::initializer_list<Containers::AnyReference<const DescriptorSetLayoutBinding>> bindings, const Flags flags): DescriptorSetLayoutCreateInfo{Containers::Iterable<const DescriptorSetLayoutBinding>{bindings}, flags} {}
 
 DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(NoInitT) noexcept {}
 

@@ -46,6 +46,14 @@
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* DescriptorSetLayoutCreateInfo constructor used to take an
+   ArrayView<Reference<DescriptorSetLayoutBinding>>, now it's through the
+   Iterable class. Include it explicitly until people learn to include it
+   themselves. */
+#include <Corrade/Containers/Iterable.h>
+#endif
+
 namespace Magnum { namespace Vk {
 
 /**
@@ -315,8 +323,12 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutCreateInfo {
          * -    `pBindingFlags` to a list of all
          *      @ref DescriptorSetLayoutBinding::flags() from @p bindings
          */
-        explicit DescriptorSetLayoutCreateInfo(Containers::ArrayView<const Containers::AnyReference<const DescriptorSetLayoutBinding>> bindings, Flags flags = {});
+        explicit DescriptorSetLayoutCreateInfo(Containers::Iterable<const DescriptorSetLayoutBinding> bindings, Flags flags = {});
+
         /** @overload */
+        /* Iterable takes std::initializer_list itself but having it also here
+           allows to do stuff like `DescriptorSetLayoutCreateInfo{a, b}` and
+           (admittedly weird) `DescriptorSetLayoutCreateInfo{}` as well. */
         explicit DescriptorSetLayoutCreateInfo(std::initializer_list<Containers::AnyReference<const DescriptorSetLayoutBinding>> bindings, Flags flags = {});
 
         /**

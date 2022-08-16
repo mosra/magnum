@@ -24,6 +24,7 @@
 */
 
 #include <new>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
