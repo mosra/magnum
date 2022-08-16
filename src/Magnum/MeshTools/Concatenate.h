@@ -31,7 +31,7 @@
  */
 
 #include <Corrade/Containers/GrowableArray.h>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
@@ -39,8 +39,8 @@
 namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
-    MAGNUM_MESHTOOLS_EXPORT std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes);
-    MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::Array<char>&& indexData, UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, const char* assertPrefix);
+    MAGNUM_MESHTOOLS_EXPORT std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(Containers::Iterable<const Trade::MeshData> meshes);
+    MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::Array<char>&& indexData, UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, Containers::Iterable<const Trade::MeshData> meshes, const char* assertPrefix);
 }
 
 /**
@@ -82,13 +82,7 @@ to compress it to a smaller type, if desired.
     @ref SceneTools::flattenMeshHierarchy2D(),
     @ref SceneTools::flattenMeshHierarchy3D()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
-
-/**
- * @overload
- * @m_since{2020,06}
- */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::Iterable<const Trade::MeshData> meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Concatenate a list of meshes into a pre-existing destination, enlarging it if necessary
@@ -99,14 +93,14 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(std::initializer_list<Contai
 @param[in] flags            Flags to pass to @ref interleavedLayout()
 @m_since{2020,06}
 
-Compared to @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags)
+Compared to @ref concatenate(Containers::Iterable<const Trade::MeshData>, InterleaveFlags)
 this function resizes existing index and vertex buffers in @p destination using
 @ref Containers::arrayResize() and given @p allocator, and reuses its
 atttribute data array instead of always allocating new ones. Only the attribute
 layout from @p destination is used, all vertex/index data are taken from
 @p meshes. Expects that @p meshes contains at least one item.
 */
-template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes) {
+template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, Containers::Iterable<const Trade::MeshData> meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes) {
     CORRADE_ASSERT(!meshes.isEmpty(),
         "MeshTools::concatenateInto(): no meshes passed", );
     #ifndef CORRADE_NO_ASSERT
@@ -140,14 +134,6 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
     }
 
     destination = Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenateInto():");
-}
-
-/**
- * @overload
- * @m_since{2020,06}
- */
-template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes) {
-    concatenateInto<Allocator>(destination, Containers::arrayView(meshes), flags);
 }
 
 }}

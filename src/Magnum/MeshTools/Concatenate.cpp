@@ -33,7 +33,7 @@ namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
 
-std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes) {
+std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(Containers::Iterable<const Trade::MeshData> meshes) {
     UnsignedInt indexCount = 0;
     UnsignedInt vertexCount = 0;
     for(const Trade::MeshData& mesh: meshes) {
@@ -62,7 +62,7 @@ struct MeshAttributeHash: std::hash<typename std::underlying_type<Trade::MeshAtt
     }
 };
 
-Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, const char* const assertPrefix) {
+Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::Iterable<const Trade::MeshData> meshes, const char* const assertPrefix) {
     #ifdef CORRADE_NO_ASSERT
     static_cast<void>(assertPrefix);
     #endif
@@ -82,17 +82,17 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
     /** @todo delegate to `indexTriangleStrip()` (`duplicate*()`?) etc when
         those are done */
     CORRADE_ASSERT(
-        meshes.front()->primitive() != MeshPrimitive::LineStrip &&
-        meshes.front()->primitive() != MeshPrimitive::LineLoop &&
-        meshes.front()->primitive() != MeshPrimitive::TriangleStrip &&
-        meshes.front()->primitive() != MeshPrimitive::TriangleFan,
-        assertPrefix << meshes.front()->primitive() << "is not supported, turn it into a plain indexed mesh first",
+        meshes.front().primitive() != MeshPrimitive::LineStrip &&
+        meshes.front().primitive() != MeshPrimitive::LineLoop &&
+        meshes.front().primitive() != MeshPrimitive::TriangleStrip &&
+        meshes.front().primitive() != MeshPrimitive::TriangleFan,
+        assertPrefix << meshes.front().primitive() << "is not supported, turn it into a plain indexed mesh first",
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     /* Populate the resulting instance with what we have. It'll be used below
        for convenient access to vertex / index data */
     auto indices = Containers::arrayCast<UnsignedInt>(indexData);
-    Trade::MeshData out{meshes.front()->primitive(),
+    Trade::MeshData out{meshes.front().primitive(),
         /* If the index array is empty, we're creating a non-indexed mesh (not
            an indexed mesh with zero indices) */
         std::move(indexData), indices.isEmpty() ?
@@ -189,13 +189,13 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
 }
 
-Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, const InterleaveFlags flags) {
+Trade::MeshData concatenate(const Containers::Iterable<const Trade::MeshData> meshes, const InterleaveFlags flags) {
     CORRADE_ASSERT(!meshes.isEmpty(),
         "MeshTools::concatenate(): expected at least one mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
     #ifndef CORRADE_NO_ASSERT
-    for(std::size_t i = 0; i != meshes.front()->attributeCount(); ++i) {
-        const VertexFormat format = meshes.front()->attributeFormat(i);
+    for(std::size_t i = 0; i != meshes.front().attributeCount(); ++i) {
+        const VertexFormat format = meshes.front().attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
             "MeshTools::concatenate(): attribute" << i << "of the first mesh has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -208,13 +208,13 @@ Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Refere
        no attributes in the original array, pass just vertex count ---
        otherwise MeshData will assert on that to avoid it getting lost. */
     Containers::Array<Trade::MeshAttributeData> attributeData;
-    if(meshes.front()->attributeCount())
-        attributeData = Implementation::interleavedLayout(Trade::MeshData{meshes.front()->primitive(),
-            {}, meshes.front()->vertexData(),
-            Trade::meshAttributeDataNonOwningArray(meshes.front()->attributeData())}, {}, flags);
+    if(meshes.front().attributeCount())
+        attributeData = Implementation::interleavedLayout(Trade::MeshData{meshes.front().primitive(),
+            {}, meshes.front().vertexData(),
+            Trade::meshAttributeDataNonOwningArray(meshes.front().attributeData())}, {}, flags);
     else attributeData =
-        Implementation::interleavedLayout(Trade::MeshData{meshes.front()->primitive(),
-            meshes.front()->vertexCount()}, {}, flags);
+        Implementation::interleavedLayout(Trade::MeshData{meshes.front().primitive(),
+            meshes.front().vertexCount()}, {}, flags);
 
     /* Calculate total index/vertex count and allocate the target memory.
        Index data are allocated with NoInit as the whole array will be written,
@@ -225,10 +225,6 @@ Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Refere
     Containers::Array<char> vertexData{ValueInit,
         attributeData.isEmpty() ? 0 : (attributeData[0].stride()*indexVertexCount.second)};
     return Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
-}
-
-Trade::MeshData concatenate(const std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes, const InterleaveFlags flags) {
-    return concatenate(Containers::arrayView(meshes), flags);
 }
 
 }}
