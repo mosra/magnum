@@ -200,9 +200,10 @@ delimited with @ref beginRenderPass() and @ref endRenderPass(), see
 
 @snippet MagnumVk.cpp CommandBuffer-usage
 
-Once recorded, the command buffer can be submitted to a compatible @ref Queue
-that was set up at @ref Vk-Device-creation "device creation time". Usually
-you'd want to wait on the submit completion with a @link Fence @endlink:
+Once recorded, call @ref Queue::submit() to submit the command buffer to a
+compatible @ref Queue that was set up at
+@ref Vk-Device-creation "device creation time". Usually you'd want to wait on
+the submit completion with a @link Fence @endlink:
 
 @snippet MagnumVk.cpp CommandBuffer-usage-submit
 */
