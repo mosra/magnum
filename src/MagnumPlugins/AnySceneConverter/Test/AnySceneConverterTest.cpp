@@ -130,13 +130,16 @@ void AnySceneConverterTest::detect() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, data.filename));
-    /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
     #endif
 }
 
