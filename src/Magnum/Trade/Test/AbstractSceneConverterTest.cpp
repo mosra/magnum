@@ -103,18 +103,21 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void convertMeshToFileNotImplemented();
 
     void beginEnd();
-    void beginEndFailed();
+    void beginFailed();
+    void endFailed();
     void beginNotImplemented();
     void endNotImplemented();
 
     void beginEndData();
-    void beginEndDataFailed();
+    void beginDataFailed();
+    void endDataFailed();
     void beginDataNotImplemented();
     void endDataNotImplemented();
     void beginEndDataCustomDeleter();
 
     void beginEndFile();
-    void beginEndFileFailed();
+    void beginFileFailed();
+    void endFileFailed();
     void beginEndFileThroughData();
     void beginEndFileThroughDataFailed();
     void beginEndFileThroughDataNotWritable();
@@ -316,18 +319,21 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::convertMeshToFileNotImplemented,
 
               &AbstractSceneConverterTest::beginEnd,
-              &AbstractSceneConverterTest::beginEndFailed,
+              &AbstractSceneConverterTest::beginFailed,
+              &AbstractSceneConverterTest::endFailed,
               &AbstractSceneConverterTest::beginNotImplemented,
               &AbstractSceneConverterTest::endNotImplemented,
 
               &AbstractSceneConverterTest::beginEndData,
-              &AbstractSceneConverterTest::beginEndDataFailed,
+              &AbstractSceneConverterTest::beginDataFailed,
+              &AbstractSceneConverterTest::endDataFailed,
               &AbstractSceneConverterTest::beginDataNotImplemented,
               &AbstractSceneConverterTest::endDataNotImplemented,
               &AbstractSceneConverterTest::beginEndDataCustomDeleter,
 
               &AbstractSceneConverterTest::beginEndFile,
-              &AbstractSceneConverterTest::beginEndFileFailed,
+              &AbstractSceneConverterTest::beginFileFailed,
+              &AbstractSceneConverterTest::endFileFailed,
               &AbstractSceneConverterTest::beginEndFileThroughData,
               &AbstractSceneConverterTest::beginEndFileThroughDataFailed,
               &AbstractSceneConverterTest::beginEndFileThroughDataNotWritable,
@@ -946,8 +952,9 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatch() {
             return {};
         }
 
-        void doBeginData() override {
+        bool doBeginData() override {
             _vertexCount = 42;
+            return true;
         }
 
         bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView) override {
@@ -977,7 +984,7 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
             return false;
@@ -1004,7 +1011,7 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchEndFailed() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
             return true;
@@ -1203,8 +1210,9 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatch() {
             return {};
         }
 
-        void doBeginFile(Containers::StringView filename) override {
+        bool doBeginFile(Containers::StringView filename) override {
             _filename = filename;
+            return true;
         }
 
         bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView) override {
@@ -1241,7 +1249,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBeginFile(Containers::StringView) override {}
+        bool doBeginFile(Containers::StringView) override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
             return false;
@@ -1268,7 +1276,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchEndFailed() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBeginFile(Containers::StringView) override {}
+        bool doBeginFile(Containers::StringView) override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
             return true;
@@ -1306,9 +1314,10 @@ void AbstractSceneConverterTest::beginEnd() {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        void doBegin() override {
+        bool doBegin() override {
             CORRADE_VERIFY(!beginCalled);
             beginCalled = true;
+            return true;
         }
 
         Containers::Pointer<AbstractImporter> doEnd() override {
@@ -1332,7 +1341,7 @@ void AbstractSceneConverterTest::beginEnd() {
     } converter;
 
     CORRADE_VERIFY(!converter.isConverting());
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_VERIFY(converter.beginCalled);
     CORRADE_VERIFY(!converter.endCalled);
     CORRADE_VERIFY(converter.isConverting());
@@ -1344,20 +1353,38 @@ void AbstractSceneConverterTest::beginEnd() {
     CORRADE_VERIFY(!converter.isConverting());
 }
 
-void AbstractSceneConverterTest::beginEndFailed() {
+void AbstractSceneConverterTest::beginFailed() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return false; }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.begin());
+    CORRADE_COMPARE(out.str(), "");
+
+    CORRADE_VERIFY(!converter.isConverting());
+}
+
+void AbstractSceneConverterTest::endFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple;
+        }
+
+        bool doBegin() override { return true; }
 
         Containers::Pointer<AbstractImporter> doEnd() override {
             return nullptr;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     /* The implementation is expected to print an error message on its own */
     std::ostringstream out;
@@ -1392,10 +1419,10 @@ void AbstractSceneConverterTest::endNotImplemented() {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1410,9 +1437,10 @@ void AbstractSceneConverterTest::beginEndData() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {
+        bool doBeginData() override {
             CORRADE_VERIFY(!beginCalled);
             beginCalled = true;
+            return true;
         }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
@@ -1425,7 +1453,7 @@ void AbstractSceneConverterTest::beginEndData() {
     } converter;
 
     CORRADE_VERIFY(!converter.isConverting());
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
     CORRADE_VERIFY(converter.beginCalled);
     CORRADE_VERIFY(!converter.endCalled);
     CORRADE_VERIFY(converter.isConverting());
@@ -1439,20 +1467,38 @@ void AbstractSceneConverterTest::beginEndData() {
     CORRADE_VERIFY(!converter.isConverting());
 }
 
-void AbstractSceneConverterTest::beginEndDataFailed() {
+void AbstractSceneConverterTest::beginDataFailed() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return false; }
+    } converter;
+
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.beginData());
+    CORRADE_COMPARE(out.str(), "");
+
+    CORRADE_VERIFY(!converter.isConverting());
+}
+
+void AbstractSceneConverterTest::endDataFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData;
+        }
+
+        bool doBeginData() override { return true; }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
             return {};
         }
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     /* The implementation is expected to print an error message on its own */
     std::ostringstream out;
@@ -1487,10 +1533,10 @@ void AbstractSceneConverterTest::endDataNotImplemented() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1507,7 +1553,7 @@ void AbstractSceneConverterTest::beginEndDataCustomDeleter() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
             return Containers::Array<char>{data, 1, [](char*, std::size_t) {}};
@@ -1516,7 +1562,7 @@ void AbstractSceneConverterTest::beginEndDataCustomDeleter() {
         char data[1];
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1530,11 +1576,12 @@ void AbstractSceneConverterTest::beginEndFile() {
             return SceneConverterFeature::ConvertMultipleToFile;
         }
 
-        void doBeginFile(Containers::StringView filename) override {
+        bool doBeginFile(Containers::StringView filename) override {
             CORRADE_VERIFY(!beginCalled);
             beginCalled = true;
             CORRADE_COMPARE(filename, "file.gltf");
             filenameDataPointer = filename.data();
+            return true;
         }
 
         bool doEndFile(Containers::StringView filename) override {
@@ -1552,7 +1599,7 @@ void AbstractSceneConverterTest::beginEndFile() {
     } converter;
 
     CORRADE_VERIFY(!converter.isConverting());
-    converter.beginFile("file.gltf!"_s.exceptSuffix(1));
+    CORRADE_VERIFY(converter.beginFile("file.gltf!"_s.exceptSuffix(1)));
     CORRADE_VERIFY(converter.beginCalled);
     CORRADE_VERIFY(!converter.endCalled);
     CORRADE_VERIFY(converter.isConverting());
@@ -1562,20 +1609,36 @@ void AbstractSceneConverterTest::beginEndFile() {
     CORRADE_VERIFY(!converter.isConverting());
 }
 
-void AbstractSceneConverterTest::beginEndFileFailed() {
+void AbstractSceneConverterTest::beginFileFailed() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override {
             return SceneConverterFeature::ConvertMultipleToFile;
         }
 
-        void doBeginFile(Containers::StringView) override {}
-
-        bool doEndFile(Containers::StringView) override {
-            return false;
-        }
+        bool doBeginFile(Containers::StringView) override { return false; }
     } converter;
 
-    converter.beginFile("file.gltf");
+    /* The implementation is expected to print an error message on its own */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.beginFile("file.gltf"));
+    CORRADE_COMPARE(out.str(), "");
+
+    CORRADE_VERIFY(!converter.isConverting());
+}
+
+void AbstractSceneConverterTest::endFileFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToFile;
+        }
+
+        bool doBeginFile(Containers::StringView) override { return true; }
+
+        bool doEndFile(Containers::StringView) override { return false; }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginFile("file.gltf"));
 
     /* The implementation is expected to print an error message on its own */
     std::ostringstream out;
@@ -1592,7 +1655,7 @@ void AbstractSceneConverterTest::beginEndFileThroughData() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
             return Containers::array({'h', 'e', 'l', 'l', 'o'});
@@ -1604,7 +1667,7 @@ void AbstractSceneConverterTest::beginEndFileThroughData() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    converter.beginFile(filename);
+    CORRADE_VERIFY(converter.beginFile(filename));
 
     /* doEndFile() should call doEndData() */
     CORRADE_VERIFY(converter.endFile());
@@ -1618,7 +1681,7 @@ void AbstractSceneConverterTest::beginEndFileThroughDataFailed() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
             return {};
@@ -1630,7 +1693,7 @@ void AbstractSceneConverterTest::beginEndFileThroughDataFailed() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    converter.beginFile(filename);
+    CORRADE_VERIFY(converter.beginFile(filename));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -1648,14 +1711,14 @@ void AbstractSceneConverterTest::beginEndFileThroughDataNotWritable() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
             return Containers::array({'h', 'e', 'l', 'l', 'o'});
         }
     } converter;
 
-    converter.beginFile("/some/path/that/does/not/exist");
+    CORRADE_VERIFY(converter.beginFile("/some/path/that/does/not/exist"));
 
     /* Function should fail, no file should get written and no error output
        should be printed (the base implementation assumes the plugin does it) */
@@ -1692,10 +1755,10 @@ void AbstractSceneConverterTest::endFileNotImplemented() {
             return SceneConverterFeature::ConvertMultipleToFile;
         }
 
-        void doBeginFile(Containers::StringView) override {}
+        bool doBeginFile(Containers::StringView) override { return true; }
     } converter;
 
-    converter.beginFile("file.gltf");
+    CORRADE_VERIFY(converter.beginFile("file.gltf"));
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1709,7 +1772,7 @@ void AbstractSceneConverterTest::abort() {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         void doAbort() override {
             CORRADE_VERIFY(!abortCalled);
@@ -1720,7 +1783,7 @@ void AbstractSceneConverterTest::abort() {
     } converter;
 
     CORRADE_VERIFY(!converter.abortCalled);
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_VERIFY(!converter.abortCalled);
     CORRADE_VERIFY(converter.isConverting());
     converter.abort();
@@ -1734,11 +1797,11 @@ void AbstractSceneConverterTest::abortNotImplemented() {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     /* This should work, there's no need for a plugin to implement this */
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_VERIFY(converter.isConverting());
     converter.abort();
     CORRADE_VERIFY(!converter.isConverting());
@@ -1768,7 +1831,7 @@ void AbstractSceneConverterTest::thingNoBegin() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
     } converter;
 
     std::ostringstream out;
@@ -1885,10 +1948,10 @@ void AbstractSceneConverterTest::endMismatchedBegin() {
             return SceneConverterFeature::ConvertMultipleToData;
         }
 
-        void doBeginData() override {}
+        bool doBeginData() override { return true; }
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1904,10 +1967,10 @@ void AbstractSceneConverterTest::endDataMismatchedBegin() {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1923,10 +1986,10 @@ void AbstractSceneConverterTest::endFileMismatchedBegin() {
             return SceneConverterFeature::ConvertMultiple;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1941,7 +2004,7 @@ void AbstractSceneConverterTest::addScene() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const SceneData& scene, Containers::StringView name) override {
             /* Scene count should not be increased before the function
@@ -1958,7 +2021,7 @@ void AbstractSceneConverterTest::addScene() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.sceneCount(), 0);
     CORRADE_COMPARE(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -1974,14 +2037,14 @@ void AbstractSceneConverterTest::addSceneFailed() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.sceneCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -2006,10 +2069,10 @@ void AbstractSceneConverterTest::addSceneNotImplemented() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2024,7 +2087,7 @@ void AbstractSceneConverterTest::setSceneFieldName() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         void doSetSceneFieldName(UnsignedInt field, Containers::StringView name) override {
             CORRADE_COMPARE(field, 1337);
@@ -2037,7 +2100,7 @@ void AbstractSceneConverterTest::setSceneFieldName() {
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     converter.setSceneFieldName(sceneFieldCustom(1337), "hello!");
     CORRADE_VERIFY(converter.setSceneFieldNameCalled);
 }
@@ -2049,11 +2112,11 @@ void AbstractSceneConverterTest::setSceneFieldNameNotImplemented() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     /* This should work, there's no need for a plugin to implement this */
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     converter.setSceneFieldName(sceneFieldCustom(1337), "hello!");
     CORRADE_VERIFY(true);
 }
@@ -2067,10 +2130,10 @@ void AbstractSceneConverterTest::setSceneFieldNameNotCustom() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2085,7 +2148,7 @@ void AbstractSceneConverterTest::setObjectName() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         void doSetObjectName(UnsignedLong object, Containers::StringView name) override {
             CORRADE_COMPARE(object, 1337);
@@ -2098,7 +2161,7 @@ void AbstractSceneConverterTest::setObjectName() {
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     converter.setObjectName(1337, "hey!");
     CORRADE_VERIFY(converter.setObjectNameCalled);
 }
@@ -2110,11 +2173,11 @@ void AbstractSceneConverterTest::setObjectNameNotImplemented() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     /* This should work, there's no need for a plugin to implement this */
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     converter.setObjectName(1337, "hey!");
     CORRADE_VERIFY(true);
 }
@@ -2126,7 +2189,7 @@ void AbstractSceneConverterTest::setDefaultScene() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
             return true;
@@ -2140,7 +2203,7 @@ void AbstractSceneConverterTest::setDefaultScene() {
         bool setDefaultSceneCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_VERIFY(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
     CORRADE_VERIFY(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
     CORRADE_COMPARE(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}), 2);
@@ -2158,14 +2221,14 @@ void AbstractSceneConverterTest::setDefaultSceneNotImplemented() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
             return true;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_VERIFY(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
     CORRADE_COMPARE(converter.sceneCount(), 1);
 
@@ -2182,14 +2245,14 @@ void AbstractSceneConverterTest::setDefaultSceneOutOfRange() {
                    SceneConverterFeature::AddScenes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
             return true;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_VERIFY(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
     CORRADE_VERIFY(converter.add(SceneData{SceneMappingType::UnsignedInt, 0, nullptr, nullptr}));
     CORRADE_COMPARE(converter.sceneCount(), 2);
@@ -2207,7 +2270,7 @@ void AbstractSceneConverterTest::addAnimation() {
                    SceneConverterFeature::AddAnimations;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const AnimationData& animation, Containers::StringView name) override {
             /* Animation count should not be increased before the function
@@ -2224,7 +2287,7 @@ void AbstractSceneConverterTest::addAnimation() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.animationCount(), 0);
     CORRADE_COMPARE(converter.add(AnimationData{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -2240,14 +2303,14 @@ void AbstractSceneConverterTest::addAnimationFailed() {
                    SceneConverterFeature::AddAnimations;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const AnimationData&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.animationCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -2272,10 +2335,10 @@ void AbstractSceneConverterTest::addAnimationNotImplemented() {
                    SceneConverterFeature::AddAnimations;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2290,7 +2353,7 @@ void AbstractSceneConverterTest::addLight() {
                    SceneConverterFeature::AddLights;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const LightData& light, Containers::StringView name) override {
             /* Light count should not be increased before the function
@@ -2307,7 +2370,7 @@ void AbstractSceneConverterTest::addLight() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.lightCount(), 0);
     CORRADE_COMPARE(converter.add(LightData{LightData::Type::Point, {}, 0.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -2323,14 +2386,14 @@ void AbstractSceneConverterTest::addLightFailed() {
                    SceneConverterFeature::AddLights;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const LightData&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.lightCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -2355,10 +2418,10 @@ void AbstractSceneConverterTest::addLightNotImplemented() {
                    SceneConverterFeature::AddLights;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2373,7 +2436,7 @@ void AbstractSceneConverterTest::addCamera() {
                    SceneConverterFeature::AddCameras;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const CameraData& camera, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -2390,7 +2453,7 @@ void AbstractSceneConverterTest::addCamera() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.cameraCount(), 0);
     CORRADE_COMPARE(converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -2406,14 +2469,14 @@ void AbstractSceneConverterTest::addCameraFailed() {
                    SceneConverterFeature::AddCameras;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const CameraData&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.cameraCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -2438,10 +2501,10 @@ void AbstractSceneConverterTest::addCameraNotImplemented() {
                    SceneConverterFeature::AddCameras;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2456,7 +2519,7 @@ void AbstractSceneConverterTest::addSkin2D() {
                    SceneConverterFeature::AddSkins2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const SkinData2D& skin, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -2473,7 +2536,7 @@ void AbstractSceneConverterTest::addSkin2D() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.skin2DCount(), 0);
     CORRADE_COMPARE(converter.add(SkinData2D{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -2489,14 +2552,14 @@ void AbstractSceneConverterTest::addSkin2DFailed() {
                    SceneConverterFeature::AddSkins2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SkinData2D&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.skin2DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -2521,10 +2584,10 @@ void AbstractSceneConverterTest::addSkin2DNotImplemented() {
                    SceneConverterFeature::AddSkins2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2539,7 +2602,7 @@ void AbstractSceneConverterTest::addSkin3D() {
                    SceneConverterFeature::AddSkins3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const SkinData3D& skin, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -2556,7 +2619,7 @@ void AbstractSceneConverterTest::addSkin3D() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.skin3DCount(), 0);
     CORRADE_COMPARE(converter.add(SkinData3D{nullptr, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -2572,14 +2635,14 @@ void AbstractSceneConverterTest::addSkin3DFailed() {
                    SceneConverterFeature::AddSkins3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const SkinData3D&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.skin3DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -2604,10 +2667,10 @@ void AbstractSceneConverterTest::addSkin3DNotImplemented() {
                    SceneConverterFeature::AddSkins3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2622,7 +2685,7 @@ void AbstractSceneConverterTest::addMesh() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -2639,7 +2702,7 @@ void AbstractSceneConverterTest::addMesh() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.meshCount(), 0);
     CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -2655,14 +2718,14 @@ void AbstractSceneConverterTest::addMeshFailed() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.meshCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -2689,8 +2752,9 @@ void AbstractSceneConverterTest::addMeshThroughConvertMesh() {
             return MeshData{MeshPrimitive::Lines, mesh.vertexCount()*2};
         }
 
-        void doBegin() override {
+        bool doBegin() override {
             CORRADE_FAIL_IF(true, "doBegin() should not be called");
+            return {};
         }
 
         Containers::Pointer<AbstractImporter> doEnd() override {
@@ -2706,7 +2770,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMesh() {
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     CORRADE_COMPARE(converter.meshCount(), 0);
     CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 6}), 0);
@@ -2749,7 +2813,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshFailed() {
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Lines, 6}));
     /* It shouldn't abort the whole process */
@@ -2771,7 +2835,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshZeroMeshes() {
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2791,7 +2855,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshTwoMeshes() {
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     CORRADE_COMPARE(converter.meshCount(), 0);
     CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 6}), 0);
@@ -2829,8 +2893,9 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToData() {
             return Containers::Array<char>{nullptr, mesh.vertexCount()};
         }
 
-        void doBeginData() override {
+        bool doBeginData() override {
             CORRADE_FAIL_IF(true, "doBeginData() should not be called");
+            return {};
         }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
@@ -2844,7 +2909,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToData() {
         }
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     CORRADE_COMPARE(converter.meshCount(), 0);
     CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 6}), 0);
@@ -2867,7 +2932,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataFailed() {
         }
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Lines, 6}));
     /* It shouldn't abort the whole process */
@@ -2889,7 +2954,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataZeroMeshes() {
         }
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2909,7 +2974,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataTwoMeshes() {
         }
     } converter;
 
-    converter.beginData();
+    CORRADE_VERIFY(converter.beginData());
 
     CORRADE_COMPARE(converter.meshCount(), 0);
     CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 6}), 0);
@@ -2942,8 +3007,9 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFile() {
             return Utility::Path::write(filename, Containers::arrayView({char(mesh.vertexCount())}));
         }
 
-        void doBeginFile(Containers::StringView) override {
+        bool doBeginFile(Containers::StringView) override {
             CORRADE_FAIL_IF(true, "doBeginFile() should not be called");
+            return {};
         }
 
         bool doEndFile(Containers::StringView) override {
@@ -2962,7 +3028,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFile() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    converter.beginFile(filename);
+    CORRADE_VERIFY(converter.beginFile(filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
 
     CORRADE_COMPARE(converter.meshCount(), 0);
@@ -2991,8 +3057,9 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileThroughData() {
             return Containers::array({char(mesh.vertexCount())});
         }
 
-        void doBeginData() override {
+        bool doBeginData() override {
             CORRADE_FAIL_IF(true, "doBeginData() should not be called");
+            return {};
         }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
@@ -3000,8 +3067,9 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileThroughData() {
             return {};
         }
 
-        void doBeginFile(Containers::StringView) override {
+        bool doBeginFile(Containers::StringView) override {
             CORRADE_FAIL_IF(true, "doBeginFile() should not be called");
+            return {};
         }
 
         bool doEndFile(Containers::StringView) override {
@@ -3020,7 +3088,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileThroughData() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    converter.beginFile(filename);
+    CORRADE_VERIFY(converter.beginFile(filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
 
     CORRADE_COMPARE(converter.meshCount(), 0);
@@ -3055,7 +3123,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileFailed() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    converter.beginFile(filename);
+    CORRADE_VERIFY(converter.beginFile(filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
 
     CORRADE_VERIFY(!converter.add(MeshData{MeshPrimitive::Lines, 6}));
@@ -3084,7 +3152,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileZeroMeshes() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    converter.beginFile(filename);
+    CORRADE_VERIFY(converter.beginFile(filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
 
     std::ostringstream out;
@@ -3111,7 +3179,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileTwoMeshes() {
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
-    converter.beginFile(filename);
+    CORRADE_VERIFY(converter.beginFile(filename));
     CORRADE_VERIFY(!Utility::Path::exists(filename));
 
     CORRADE_COMPARE(converter.meshCount(), 0);
@@ -3150,10 +3218,10 @@ void AbstractSceneConverterTest::addMeshNotImplemented() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3169,7 +3237,7 @@ void AbstractSceneConverterTest::addMeshLevels() {
                    SceneConverterFeature::MeshLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData> meshLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -3187,7 +3255,7 @@ void AbstractSceneConverterTest::addMeshLevels() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.meshCount(), 0);
     CORRADE_COMPARE(converter.add({
         MeshData{MeshPrimitive::Lines, 0},
@@ -3212,14 +3280,14 @@ void AbstractSceneConverterTest::addMeshLevelsFailed() {
                    SceneConverterFeature::MeshLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.meshCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -3248,10 +3316,10 @@ void AbstractSceneConverterTest::addMeshLevelsNoLevels() {
                    SceneConverterFeature::MeshLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3269,10 +3337,10 @@ void AbstractSceneConverterTest::addMeshLevelsNotImplemented() {
                    SceneConverterFeature::MeshLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3291,7 +3359,7 @@ void AbstractSceneConverterTest::addMeshThroughLevels() {
                    SceneConverterFeature::MeshLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const MeshData> meshLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -3305,7 +3373,7 @@ void AbstractSceneConverterTest::addMeshThroughLevels() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.add(MeshData{MeshPrimitive::Triangles, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.meshCount(), 1);
@@ -3318,7 +3386,7 @@ void AbstractSceneConverterTest::setMeshAttributeName() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         void doSetMeshAttributeName(UnsignedShort field, Containers::StringView name) override {
             CORRADE_COMPARE(field, 1337);
@@ -3331,7 +3399,7 @@ void AbstractSceneConverterTest::setMeshAttributeName() {
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     converter.setMeshAttributeName(meshAttributeCustom(1337), "hello!");
     CORRADE_VERIFY(converter.setMeshAttributeNameCalled);
 }
@@ -3343,11 +3411,11 @@ void AbstractSceneConverterTest::setMeshAttributeNameNotImplemented() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     /* This should work, there's no need for a plugin to implement this */
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     converter.setMeshAttributeName(meshAttributeCustom(1337), "hello!");
     CORRADE_VERIFY(true);
 }
@@ -3361,10 +3429,10 @@ void AbstractSceneConverterTest::setMeshAttributeNameNotCustom() {
                    SceneConverterFeature::AddMeshes;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3379,7 +3447,7 @@ void AbstractSceneConverterTest::addMaterial() {
                    SceneConverterFeature::AddMaterials;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const MaterialData& material, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -3396,7 +3464,7 @@ void AbstractSceneConverterTest::addMaterial() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.materialCount(), 0);
     CORRADE_COMPARE(converter.add(MaterialData{{}, nullptr, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -3412,14 +3480,14 @@ void AbstractSceneConverterTest::addMaterialFailed() {
                    SceneConverterFeature::AddMaterials;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const MaterialData&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.materialCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -3444,10 +3512,10 @@ void AbstractSceneConverterTest::addMaterialNotImplemented() {
                    SceneConverterFeature::AddMaterials;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3462,7 +3530,7 @@ void AbstractSceneConverterTest::addTexture() {
                    SceneConverterFeature::AddTextures;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const TextureData& texture, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -3479,7 +3547,7 @@ void AbstractSceneConverterTest::addTexture() {
         bool addCalled = false;
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.textureCount(), 0);
     CORRADE_COMPARE(converter.add(TextureData{{}, {}, {}, {}, {}, 0, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -3495,14 +3563,14 @@ void AbstractSceneConverterTest::addTextureFailed() {
                    SceneConverterFeature::AddTextures;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const TextureData&, Containers::StringView) override {
             return false;
         }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.textureCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -3527,10 +3595,10 @@ void AbstractSceneConverterTest::addTextureNotImplemented() {
                    SceneConverterFeature::AddTextures;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3545,7 +3613,7 @@ void AbstractSceneConverterTest::addImage1D() {
                    SceneConverterFeature::AddImages1D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const ImageData1D& image, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -3564,7 +3632,7 @@ void AbstractSceneConverterTest::addImage1D() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -3580,7 +3648,7 @@ void AbstractSceneConverterTest::addImage1DView() {
                    SceneConverterFeature::AddImages1D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData1D& image, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -3599,7 +3667,7 @@ void AbstractSceneConverterTest::addImage1DView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageView1D{
         PixelStorage{}.setAlignment(2),
@@ -3615,7 +3683,7 @@ void AbstractSceneConverterTest::addImage1DCompressedView() {
                    SceneConverterFeature::AddCompressedImages1D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData1D& image, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -3634,7 +3702,7 @@ void AbstractSceneConverterTest::addImage1DCompressedView() {
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
     CORRADE_COMPARE(converter.add(CompressedImageView1D{
         CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}),
@@ -3651,7 +3719,7 @@ void AbstractSceneConverterTest::addImage1DFailed() {
                    SceneConverterFeature::AddCompressedImages1D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData1D&, Containers::StringView) override {
             return false;
@@ -3660,7 +3728,7 @@ void AbstractSceneConverterTest::addImage1DFailed() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -3689,10 +3757,10 @@ void AbstractSceneConverterTest::addImage1DInvalidImage() {
                    SceneConverterFeature::AddImages1D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3709,10 +3777,10 @@ void AbstractSceneConverterTest::addImage1DNotImplemented() {
                    SceneConverterFeature::AddImages1D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     const char imageData[4]{};
 
@@ -3729,7 +3797,7 @@ void AbstractSceneConverterTest::addImage2D() {
                    SceneConverterFeature::AddImages2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const ImageData2D& image, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -3748,7 +3816,7 @@ void AbstractSceneConverterTest::addImage2D() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -3764,7 +3832,7 @@ void AbstractSceneConverterTest::addImage2DView() {
                    SceneConverterFeature::AddImages2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData2D& image, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -3783,7 +3851,7 @@ void AbstractSceneConverterTest::addImage2DView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageView2D{
         PixelStorage{}.setAlignment(2),
@@ -3799,7 +3867,7 @@ void AbstractSceneConverterTest::addImage2DCompressedView() {
                    SceneConverterFeature::AddCompressedImages2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData2D& image, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -3818,7 +3886,7 @@ void AbstractSceneConverterTest::addImage2DCompressedView() {
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add(CompressedImageView2D{
         CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}),
@@ -3835,7 +3903,7 @@ void AbstractSceneConverterTest::addImage2DFailed() {
                    SceneConverterFeature::AddCompressedImages2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData2D&, Containers::StringView) override {
             return false;
@@ -3844,7 +3912,7 @@ void AbstractSceneConverterTest::addImage2DFailed() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -3873,12 +3941,12 @@ void AbstractSceneConverterTest::addImage2DZeroSize() {
                    SceneConverterFeature::AddImages2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[16]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3895,10 +3963,10 @@ void AbstractSceneConverterTest::addImage2DNullptr() {
                    SceneConverterFeature::AddImages2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3915,10 +3983,10 @@ void AbstractSceneConverterTest::addImage2DNotImplemented() {
                    SceneConverterFeature::AddImages2D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     const char imageData[4]{};
 
@@ -3935,7 +4003,7 @@ void AbstractSceneConverterTest::addImage3D() {
                    SceneConverterFeature::AddImages3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, const ImageData3D& image, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -3954,7 +4022,7 @@ void AbstractSceneConverterTest::addImage3D() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
@@ -3970,7 +4038,7 @@ void AbstractSceneConverterTest::addImage3DView() {
                    SceneConverterFeature::AddImages3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData3D& image, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -3989,7 +4057,7 @@ void AbstractSceneConverterTest::addImage3DView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageView3D{
         PixelStorage{}.setAlignment(2),
@@ -4005,7 +4073,7 @@ void AbstractSceneConverterTest::addImage3DCompressedView() {
                    SceneConverterFeature::AddCompressedImages3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData3D& image, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4024,7 +4092,7 @@ void AbstractSceneConverterTest::addImage3DCompressedView() {
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add(CompressedImageView3D{
         CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}),
@@ -4041,7 +4109,7 @@ void AbstractSceneConverterTest::addImage3DFailed() {
                    SceneConverterFeature::AddCompressedImages3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, const ImageData3D&, Containers::StringView) override {
             return false;
@@ -4050,7 +4118,7 @@ void AbstractSceneConverterTest::addImage3DFailed() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -4079,10 +4147,10 @@ void AbstractSceneConverterTest::addImage3DInvalidImage() {
                    SceneConverterFeature::AddImages3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4099,12 +4167,12 @@ void AbstractSceneConverterTest::addImage3DNotImplemented() {
                    SceneConverterFeature::AddImages3D;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4120,7 +4188,7 @@ void AbstractSceneConverterTest::addImageLevels1D() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -4140,7 +4208,7 @@ void AbstractSceneConverterTest::addImageLevels1D() {
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
     CORRADE_COMPARE(converter.add({
         /* Arbitrary dimensions should be fine */
@@ -4166,7 +4234,7 @@ void AbstractSceneConverterTest::addImageLevels1DView() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4186,7 +4254,7 @@ void AbstractSceneConverterTest::addImageLevels1DView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
     CORRADE_COMPARE(converter.add({
         ImageView1D{PixelFormat::RG8Snorm, 1, imageData},
@@ -4204,7 +4272,7 @@ void AbstractSceneConverterTest::addImageLevels1DCompressedView() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4224,7 +4292,7 @@ void AbstractSceneConverterTest::addImageLevels1DCompressedView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
     CORRADE_COMPARE(converter.add({
         CompressedImageView1D{CompressedPixelFormat::Astc3x3x3RGBASrgb, 1, imageData},
@@ -4243,7 +4311,7 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
             return false;
@@ -4252,7 +4320,7 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image1DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -4291,10 +4359,10 @@ void AbstractSceneConverterTest::addImageLevels1DInvalidImage() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4312,12 +4380,12 @@ void AbstractSceneConverterTest::addImageLevels1DNotImplemented() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4336,7 +4404,7 @@ void AbstractSceneConverterTest::addImageLevels2D() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -4356,7 +4424,7 @@ void AbstractSceneConverterTest::addImageLevels2D() {
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add({
         /* Arbitrary dimensions should be fine */
@@ -4382,7 +4450,7 @@ void AbstractSceneConverterTest::addImageLevels2DView() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4402,7 +4470,7 @@ void AbstractSceneConverterTest::addImageLevels2DView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add({
         ImageView2D{PixelFormat::RG8Snorm, {1, 1}, imageData},
@@ -4420,7 +4488,7 @@ void AbstractSceneConverterTest::addImageLevels2DCompressedView() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4440,7 +4508,7 @@ void AbstractSceneConverterTest::addImageLevels2DCompressedView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add({
         CompressedImageView2D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1}, imageData},
@@ -4459,7 +4527,7 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
             return false;
@@ -4468,7 +4536,7 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -4507,10 +4575,10 @@ void AbstractSceneConverterTest::addImageLevels2DNoLevels() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4528,12 +4596,12 @@ void AbstractSceneConverterTest::addImageLevels2DZeroSize() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4554,12 +4622,12 @@ void AbstractSceneConverterTest::addImageLevels2DNullptr() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4580,12 +4648,12 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentCompressed() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     ImageData2D a{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, imageData};
     ImageData2D b{CompressedPixelFormat::Astc10x10RGBAF, {1, 1}, DataFlags{}, imageData};
@@ -4609,12 +4677,12 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentFormat() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4636,12 +4704,12 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentFormatExtra() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4663,12 +4731,12 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentCompressedFormat() 
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4690,12 +4758,12 @@ void AbstractSceneConverterTest::addImageLevels2DInconsistentFlags() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4717,12 +4785,12 @@ void AbstractSceneConverterTest::addImageLevels2DNotImplemented() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4741,7 +4809,7 @@ void AbstractSceneConverterTest::addImageLevels3D() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
@@ -4761,7 +4829,7 @@ void AbstractSceneConverterTest::addImageLevels3D() {
 
     const char imageData[4*4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add({
         /* Arbitrary dimensions should be fine */
@@ -4787,7 +4855,7 @@ void AbstractSceneConverterTest::addImageLevels3DView() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4807,7 +4875,7 @@ void AbstractSceneConverterTest::addImageLevels3DView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add({
         ImageView3D{PixelFormat::RG8Snorm, {1, 1, 1}, imageData},
@@ -4825,7 +4893,7 @@ void AbstractSceneConverterTest::addImageLevels3DCompressedView() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4845,7 +4913,7 @@ void AbstractSceneConverterTest::addImageLevels3DCompressedView() {
 
     const char imageData[6]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add({
         CompressedImageView3D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1, 1}, imageData},
@@ -4864,7 +4932,7 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
             return false;
@@ -4873,7 +4941,7 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
 
     /* The implementation is expected to print an error message on its own */
@@ -4912,10 +4980,10 @@ void AbstractSceneConverterTest::addImageLevels3DInvalidImage() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4933,12 +5001,12 @@ void AbstractSceneConverterTest::addImageLevels3DNotImplemented() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
     } converter;
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -4957,7 +5025,7 @@ void AbstractSceneConverterTest::addImage1DThroughLevels() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -4973,7 +5041,7 @@ void AbstractSceneConverterTest::addImage1DThroughLevels() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.add(ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, imageData, ImageFlags1D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image1DCount(), 1);
@@ -4987,7 +5055,7 @@ void AbstractSceneConverterTest::addImage2DThroughLevels() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -5003,7 +5071,7 @@ void AbstractSceneConverterTest::addImage2DThroughLevels() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.add(ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, imageData, ImageFlags2D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
@@ -5017,7 +5085,7 @@ void AbstractSceneConverterTest::addImage3DThroughLevels() {
                    SceneConverterFeature::ImageLevels;
         }
 
-        void doBegin() override {}
+        bool doBegin() override { return true; }
 
         bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
@@ -5033,7 +5101,7 @@ void AbstractSceneConverterTest::addImage3DThroughLevels() {
 
     const char imageData[4]{};
 
-    converter.begin();
+    CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.add(ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, imageData, ImageFlags3D{}, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);

@@ -301,22 +301,28 @@ void AbstractSceneConverter::abort() {
 
 void AbstractSceneConverter::doAbort() {}
 
-void AbstractSceneConverter::begin() {
+bool AbstractSceneConverter::begin() {
     if(_state) abort();
 
     _state.emplace(State::Type::Convert);
 
     if(features() >= SceneConverterFeature::ConvertMultiple) {
-        doBegin();
+        if(!doBegin()) {
+            _state = {};
+            return false;
+        }
+
+        return true;
 
     } else if(features() & SceneConverterFeature::ConvertMesh) {
         /* Actual operation performed in doAdd(const MeshData&) */
+        return true;
 
-    } else CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::begin(): feature not supported", );
+    } else CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::begin(): feature not supported", {});
 }
 
-void AbstractSceneConverter::doBegin() {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::begin(): feature advertised but not implemented", );
+bool AbstractSceneConverter::doBegin() {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::begin(): feature advertised but not implemented", {});
 }
 
 Containers::Pointer<AbstractImporter> AbstractSceneConverter::end() {
@@ -378,22 +384,28 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::doEnd() {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::end(): feature advertised but not implemented", {});
 }
 
-void AbstractSceneConverter::beginData() {
+bool AbstractSceneConverter::beginData() {
     if(_state) abort();
 
     _state.emplace(State::Type::ConvertToData);
 
     if(features() >= SceneConverterFeature::ConvertMultipleToData) {
-        doBeginData();
+        if(!doBeginData()) {
+            _state = {};
+            return false;
+        }
+
+        return true;
 
     } else if(features() >= SceneConverterFeature::ConvertMeshToData) {
         /* Actual operation performed in doAdd(const MeshData&) */
+        return true;
 
-    } else CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::beginData(): feature not supported", );
+    } else CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::beginData(): feature not supported", {});
 }
 
-void AbstractSceneConverter::doBeginData() {
-    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::beginData(): feature advertised but not implemented", );
+bool AbstractSceneConverter::doBeginData() {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::beginData(): feature advertised but not implemented", {});
 }
 
 Containers::Optional<Containers::Array<char>> AbstractSceneConverter::endData() {
@@ -429,26 +441,32 @@ Containers::Optional<Containers::Array<char>> AbstractSceneConverter::doEndData(
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::endData(): feature advertised but not implemented", {});
 }
 
-void AbstractSceneConverter::beginFile(const Containers::StringView filename) {
+bool AbstractSceneConverter::beginFile(const Containers::StringView filename) {
     if(_state) abort();
 
     _state.emplace(State::Type::ConvertToFile);
     _state->filename = Containers::String::nullTerminatedGlobalView(filename);
 
     if(features() >= SceneConverterFeature::ConvertMultipleToFile) {
-        doBeginFile(_state->filename);
+        if(!doBeginFile(_state->filename)) {
+            _state = {};
+            return false;
+        }
+
+        return true;
 
     } else if(features() >= SceneConverterFeature::ConvertMeshToFile) {
         /* Actual operation performed in doAdd(const MeshData&) */
+        return true;
 
-    } else CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::beginFile(): feature not supported", );
+    } else CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::beginFile(): feature not supported", {});
 }
 
-void AbstractSceneConverter::doBeginFile(Containers::StringView) {
+bool AbstractSceneConverter::doBeginFile(Containers::StringView) {
     CORRADE_ASSERT(features() >= SceneConverterFeature::ConvertMultipleToData,
-        "Trade::AbstractSceneConverter::beginFile(): feature advertised but not implemented", );
+        "Trade::AbstractSceneConverter::beginFile(): feature advertised but not implemented", {});
 
-    doBeginData();
+    return doBeginData();
 }
 
 bool AbstractSceneConverter::endFile() {

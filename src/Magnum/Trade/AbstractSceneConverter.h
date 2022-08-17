@@ -753,7 +753,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * If a conversion is currently in progress, calls @ref abort() first.
          * The converted output of data supplied via various @ref add() and
          * `set*()` APIs is returned via an importer instance upon calling
-         * @ref end().
+         * @ref end(). On failure prints a message to @relativeref{Magnum,Error}
+         * and returns @cpp false @ce.
          *
          * Expects that @ref SceneConverterFeature::ConvertMultiple is
          * supported. If not and @ref SceneConverterFeature::ConvertMesh is
@@ -763,7 +764,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref end().
          * @see @ref features(), @ref beginData(), @ref beginFile()
          */
-        void begin();
+        bool begin();
 
         /**
          * @brief End converting a scene
@@ -806,7 +807,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * If a conversion is currently in progress, calls @ref abort() first.
          * The converted output of data supplied via various @ref add() and
-         * `set*()` APIs is returned upon calling @ref endData().
+         * `set*()` APIs is returned upon calling @ref endData(). On failure
+         * prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce.
          *
          * Expects that @ref SceneConverterFeature::ConvertMultipleToData is
          * supported. If not and @ref SceneConverterFeature::ConvertMeshToData
@@ -816,7 +819,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref endData().
          * @see @ref features(), @ref begin(), @ref beginFile()
          */
-        void beginData();
+        bool beginData();
 
         /**
          * @brief End converting a scene to raw data
@@ -842,7 +845,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * If a conversion is currently in progress, calls @ref abort() first.
          * The converted output of data supplied via various @ref add() and
-         * `set*()` APIs is returned upon calling @ref endFile().
+         * `set*()` APIs is returned upon calling @ref endFile(). On failure
+         * prints a message to @relativeref{Magnum,Error} and returns
+         * @cpp false @ce.
          *
          * Expects that @ref SceneConverterFeature::ConvertMultipleToFile is
          * supported. If not and @ref SceneConverterFeature::ConvertMeshToFile
@@ -852,7 +857,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * return the result from @ref endFile().
          * @see @ref features(), @ref begin(), @ref beginData()
          */
-        void beginFile(Containers::StringView filename);
+        bool beginFile(Containers::StringView filename);
 
         /**
          * @brief End converting a scene to raw data
@@ -1757,7 +1762,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated},
          * however.
          */
-        virtual void doBeginFile(Containers::StringView filename);
+        virtual bool doBeginFile(Containers::StringView filename);
 
         /**
          * @brief Implementation for @ref endFile()
@@ -1832,7 +1837,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @brief Implementation for @ref begin()
          * @m_since_latest
          */
-        virtual void doBegin();
+        virtual bool doBegin();
 
         /**
          * @brief Implementation for @ref end()
@@ -1847,7 +1852,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @brief Implementation for @ref beginData()
          * @m_since_latest
          */
-        virtual void doBeginData();
+        virtual bool doBeginData();
 
         /**
          * @brief Implementation for @ref endData()
