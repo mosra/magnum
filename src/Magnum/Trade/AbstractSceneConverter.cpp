@@ -482,7 +482,7 @@ bool AbstractSceneConverter::endFile() {
 
     } else if(features() & SceneConverterFeature::ConvertMeshToFile) {
         if(_state->meshCount != 1) {
-            Error{} << "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh";
+            Error{} << "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh, got" << _state->meshCount;
             return {};
         }
 
@@ -704,7 +704,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const MeshData& me
                             SceneConverterFeature::ConvertMeshToData|
                             SceneConverterFeature::ConvertMeshToFile)) {
         if(_state->meshCount != 0) {
-            Error{} << "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh";
+            Error{} << "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got" << _state->meshCount + 1;
             return {};
         }
 

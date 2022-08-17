@@ -2868,7 +2868,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshTwoMeshes() {
         /* It shouldn't abort the whole process */
         CORRADE_VERIFY(converter.isConverting());
         CORRADE_COMPARE(converter.meshCount(), 1);
-        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh\n");
+        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
     }
 
     /* Getting the result should still work */
@@ -2987,7 +2987,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataTwoMeshes() {
         /* It shouldn't abort the whole process */
         CORRADE_VERIFY(converter.isConverting());
         CORRADE_COMPARE(converter.meshCount(), 1);
-        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh\n");
+        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
     }
 
     /* Getting the result should still work */
@@ -3137,7 +3137,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileFailed() {
     CORRADE_VERIFY(!converter.endFile());
     CORRADE_VERIFY(!converter.isConverting());
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh\n");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileZeroMeshes() {
@@ -3160,7 +3160,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileZeroMeshes() {
     CORRADE_VERIFY(!converter.endFile());
     CORRADE_VERIFY(!converter.isConverting());
     CORRADE_VERIFY(!Utility::Path::exists(filename));
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh\n");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endFile(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileTwoMeshes() {
@@ -3198,7 +3198,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileTwoMeshes() {
         /* It shouldn't abort the whole process */
         CORRADE_VERIFY(converter.isConverting());
         CORRADE_COMPARE(converter.meshCount(), 1);
-        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh\n");
+        CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): the converter requires exactly one mesh, got 2\n");
     }
 
     /* Getting the result should still work */
