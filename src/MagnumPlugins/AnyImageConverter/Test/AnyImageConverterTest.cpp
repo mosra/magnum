@@ -422,7 +422,7 @@ const ImageView1D Image1D{PixelFormat::RGB8Unorm, 2, Data};
 const ImageView2D Image2D{PixelFormat::RGB8Unorm, {2, 3}, Data};
 const ImageView2D Image2DFloat{PixelFormat::Depth32F, {3, 2}, FloatData};
 const ImageView3D Image3D{PixelFormat::RGB8Unorm, {2, 3, 2}, Data};
-const ImageView3D ImageCube{PixelFormat::Depth32F, {1, 1, 6}, CubeData};
+const ImageView3D ImageCube{PixelFormat::Depth32F, {1, 1, 6}, CubeData, ImageFlag3D::CubeMap};
 const CompressedImageView1D CompressedImage1D{CompressedPixelFormat::Bc1RGBAUnorm, 3, Data};
 const CompressedImageView2D CompressedImage2D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 3}, Data};
 const CompressedImageView3D CompressedImage3D{CompressedPixelFormat::Bc1RGBAUnorm, {1, 1, 3}, Data};
@@ -1096,7 +1096,6 @@ void AnyImageConverterTest::propagateFlags3D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("envmap", "cube");
     /* This will make the verbose output print the detected hardware thread
        count, but also the info about updating global thread count for the
        first time. Thus run it once w/o a verbose flag and then again with to
@@ -1193,7 +1192,6 @@ void AnyImageConverterTest::propagateFlagsLevels3D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("envmap", "cube");
     /* This will make the verbose output print the detected hardware thread
        count, but also the info about updating global thread count for the
        first time. Thus run it once w/o a verbose flag and then again with to
