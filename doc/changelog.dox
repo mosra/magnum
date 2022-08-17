@@ -287,7 +287,8 @@ See also:
     well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
 -   The @ref Trade::AbstractSceneConverter plugin interface gained support for
     batch conversion of whole scenes --- meshes, hierarchies, materials,
-    textures, animations and other data
+    textures, animations and other data; @relativeref{Trade,AnySceneConverter}
+    is updated to support batch conversion as well
 -   1D and 3D image support in @ref Trade::AbstractImageConverter
 -   @ref Trade::LightData got extended to support light attenuation and range
     parameters as well and spot light inner and outer angle
