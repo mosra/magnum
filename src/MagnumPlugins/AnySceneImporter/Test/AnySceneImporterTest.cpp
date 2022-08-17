@@ -196,13 +196,12 @@ void AnySceneImporterTest::detect() {
 }
 
 void AnySceneImporterTest::unknown() {
-    std::ostringstream output;
-    Error redirectError{&output};
-
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
-    CORRADE_VERIFY(!importer->openFile("mesh.wtf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openFile("mesh.wtf"));
+    CORRADE_COMPARE(out.str(), "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
 }
 
 void AnySceneImporterTest::propagateFlags() {

@@ -135,13 +135,12 @@ void AnyImporterTest::detect() {
 }
 
 void AnyImporterTest::unknown() {
-    std::ostringstream output;
-    Error redirectError{&output};
-
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
-    CORRADE_VERIFY(!importer->openFile("sound.mid"));
 
-    CORRADE_COMPARE(output.str(), "Audio::AnyImporter::openFile(): cannot determine the format of sound.mid\n");
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openFile("sound.mid"));
+    CORRADE_COMPARE(out.str(), "Audio::AnyImporter::openFile(): cannot determine the format of sound.mid\n");
 }
 
 void AnyImporterTest::propagateConfiguration() {

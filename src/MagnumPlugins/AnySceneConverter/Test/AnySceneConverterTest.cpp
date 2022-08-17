@@ -144,13 +144,12 @@ void AnySceneConverterTest::detect() {
 }
 
 void AnySceneConverterTest::unknown() {
-    std::ostringstream output;
-    Error redirectError{&output};
-
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
-    CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, "mesh.obj"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, "mesh.obj"));
+    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
 }
 
 void AnySceneConverterTest::propagateFlags() {

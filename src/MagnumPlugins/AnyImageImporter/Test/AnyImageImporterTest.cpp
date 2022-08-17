@@ -311,36 +311,33 @@ void AnyImageImporterTest::detect() {
 }
 
 void AnyImageImporterTest::unknownExtension() {
-    std::ostringstream output;
-    Error redirectError{&output};
-
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
-    CORRADE_VERIFY(!importer->openFile("image.xcf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openFile(): cannot determine the format of image.xcf\n");
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openFile("image.xcf"));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageImporter::openFile(): cannot determine the format of image.xcf\n");
 }
 
 void AnyImageImporterTest::unknownSignature() {
     auto&& data = DetectUnknownData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::ostringstream output;
-    Error redirectError{&output};
-
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
-    CORRADE_VERIFY(!importer->openData(data.data));
 
-    CORRADE_COMPARE(output.str(), Utility::formatString("Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x{}\n", data.signature));
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openData(data.data));
+    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x{}\n", data.signature));
 }
 
 void AnyImageImporterTest::emptyData() {
-    std::ostringstream output;
-    Error redirectError{&output};
-
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
-    CORRADE_VERIFY(!importer->openData(nullptr));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): file is empty\n");
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openData(nullptr));
+    CORRADE_COMPARE(out.str(), "Trade::AnyImageImporter::openData(): file is empty\n");
 }
 
 void AnyImageImporterTest::propagateFlags() {
