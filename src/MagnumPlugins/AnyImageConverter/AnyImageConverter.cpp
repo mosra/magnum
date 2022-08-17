@@ -26,7 +26,6 @@
 #include "AnyImageConverter.h"
 
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /* for PluginManager */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
