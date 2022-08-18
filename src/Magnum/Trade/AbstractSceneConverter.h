@@ -511,6 +511,10 @@ checked by the implementation:
     @ref doAdd() functions are called only if a corresponding @ref begin(),
     @ref beginData() or @ref beginFile() was called before and @ref abort()
     wasn't called in the meantime.
+-   The @ref doConvert(), @ref doConvertInPlace(), @ref doConvertToData(),
+    @ref doConvertToFile(), @ref doBegin(), @ref doBeginData() and
+    @ref doBeginFile() functions are called only after the previous conversion
+    (if any) was aborted with @ref doAbort().
 -   The @ref doAdd() and various `doSet*()` functions are called only if a
     corresponding @ref SceneConverterFeature is supported.
 -   The @ref doAdd((UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView)
@@ -652,7 +656,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         /**
          * @brief Convert a mesh
          *
-         * On failure prints a message to @relativeref{Magnum,Error} and
+         * If a (batch) conversion is currently in progress, calls @ref abort()
+         * first. On failure prints a message to @relativeref{Magnum,Error} and
          * returns @ref Containers::NullOpt.
          *
          * Expects that @ref SceneConverterFeature::ConvertMesh is supported.
@@ -661,26 +666,30 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * and retrieve the output from the importer returned by @ref end() ---
          * in such case the process can also return zero or more than one mesh
          * instead of always exactly one.
-         * @see @ref features(), @ref convertInPlace(MeshData&)
+         * @see @ref isConverting(), @ref features(),
+         *      @ref convertInPlace(MeshData&)
          */
         Containers::Optional<MeshData> convert(const MeshData& mesh);
 
         /**
          * @brief Convert a mesh in-place
          *
-         * On failure prints a message to @relativeref{Magnum,Error} and
+         * If a (batch) conversion is currently in progress, calls @ref abort()
+         * first. On failure prints a message to @relativeref{Magnum,Error} and
          * returns @cpp false @ce, @p mesh is guaranteed to stay unchanged.
          *
          * Expects that @ref SceneConverterFeature::ConvertMeshInPlace is
          * supported.
-         * @see @ref features(), @ref convert(const MeshData&)
+         * @see @ref isConverting(), @ref features(),
+         *      @ref convert(const MeshData&)
          */
         bool convertInPlace(MeshData& mesh);
 
         /**
          * @brief Convert a mesh to a raw data
          *
-         * On failure prints a message to @relativeref{Magnum,Error} and
+         * If (batch) conversion is currently in progress, calls @ref abort()
+         * first. On failure prints a message to @relativeref{Magnum,Error} and
          * returns @ref Containers::NullOpt.
          *
          * Expects that @ref SceneConverterFeature::ConvertMeshToData is
@@ -689,7 +698,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref SceneConverterFeature::AddMeshes is supported instead,
          * delegates to a sequence of @ref beginData(),
          * @ref add(const MeshData&, Containers::StringView) and @ref endData().
-         * @see @ref features(), @ref convertToFile()
+         * @see @ref isConverting(), @ref features(), @ref convertToFile()
          */
         #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
         Containers::Optional<Containers::Array<char>>
@@ -702,7 +711,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @brief Convert a mesh to a file
          * @m_since_latest
          *
-         * On failure prints a message to @relativeref{Magnum,Error} and
+         * If a (batch) conversion is currently in progress, calls @ref abort()
+         * first. On failure prints a message to @relativeref{Magnum,Error} and
          * returns @cpp false @ce.
          *
          * Expects that @ref SceneConverterFeature::ConvertMeshToFile is
@@ -712,7 +722,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * delegates to a sequence of @ref beginFile(),
          * @ref add(const MeshData&, Containers::StringView) and
          * @ref endFile().
-         * @see @ref features(), @ref convertToData()
+         * @see @ref isConverting(), @ref features(), @ref convertToData()
          */
         bool convertToFile(const MeshData& mesh, Containers::StringView filename);
 
@@ -762,7 +772,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref add(const MeshData&, Containers::StringView) to
          * @ref convert(const MeshData&) and return the result from
          * @ref end().
-         * @see @ref features(), @ref beginData(), @ref beginFile()
+         * @see @ref isConverting(), @ref features(), @ref beginData(),
+         *      @ref beginFile()
          */
         bool begin();
 
@@ -817,7 +828,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref add(const MeshData&, Containers::StringView) to
          * @ref convertToData(const MeshData&) and return the result from
          * @ref endData().
-         * @see @ref features(), @ref begin(), @ref beginFile()
+         * @see @ref isConverting(), @ref features(), @ref begin(),
+         *      @ref beginFile()
          */
         bool beginData();
 
@@ -855,7 +867,8 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref add(const MeshData&, Containers::StringView) to
          * @ref convertToFile(const MeshData&, Containers::StringView) and
          * return the result from @ref endFile().
-         * @see @ref features(), @ref begin(), @ref beginData()
+         * @see @ref isConverting(), @ref features(), @ref begin(),
+         *      @ref beginData()
          */
         bool beginFile(Containers::StringView filename);
 

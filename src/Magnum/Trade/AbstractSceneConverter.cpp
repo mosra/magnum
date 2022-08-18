@@ -188,6 +188,8 @@ void AbstractSceneConverter::clearFlags(SceneConverterFlags flags) {
 }
 
 Containers::Optional<MeshData> AbstractSceneConverter::convert(const MeshData& mesh) {
+    abort();
+
     CORRADE_ASSERT(features() & SceneConverterFeature::ConvertMesh,
         "Trade::AbstractSceneConverter::convert(): mesh conversion not supported", {});
 
@@ -205,6 +207,8 @@ Containers::Optional<MeshData> AbstractSceneConverter::doConvert(const MeshData&
 }
 
 bool AbstractSceneConverter::convertInPlace(MeshData& mesh) {
+    abort();
+
     CORRADE_ASSERT(features() & SceneConverterFeature::ConvertMeshInPlace,
         "Trade::AbstractSceneConverter::convertInPlace(): mesh conversion not supported", {});
 
@@ -221,6 +225,8 @@ Containers::Optional<Containers::Array<char>>
 Implementation::SceneConverterOptionalButAlsoArray<char>
 #endif
 AbstractSceneConverter::convertToData(const MeshData& mesh) {
+    abort();
+
     if(features() >= SceneConverterFeature::ConvertMeshToData) {
         Containers::Optional<Containers::Array<char>> out = doConvertToData(mesh);
         CORRADE_ASSERT(!out || !out->deleter() || out->deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || out->deleter() == ArrayAllocator<char>::deleter,
@@ -251,6 +257,8 @@ Containers::Optional<Containers::Array<char>> AbstractSceneConverter::doConvertT
 }
 
 bool AbstractSceneConverter::convertToFile(const MeshData& mesh, const Containers::StringView filename) {
+    abort();
+
     if(features() >= SceneConverterFeature::ConvertMeshToFile) {
         return doConvertToFile(mesh, filename);
 
@@ -302,7 +310,7 @@ void AbstractSceneConverter::abort() {
 void AbstractSceneConverter::doAbort() {}
 
 bool AbstractSceneConverter::begin() {
-    if(_state) abort();
+    abort();
 
     _state.emplace(State::Type::Convert);
 
@@ -385,7 +393,7 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::doEnd() {
 }
 
 bool AbstractSceneConverter::beginData() {
-    if(_state) abort();
+    abort();
 
     _state.emplace(State::Type::ConvertToData);
 
@@ -442,7 +450,7 @@ Containers::Optional<Containers::Array<char>> AbstractSceneConverter::doEndData(
 }
 
 bool AbstractSceneConverter::beginFile(const Containers::StringView filename) {
-    if(_state) abort();
+    abort();
 
     _state.emplace(State::Type::ConvertToFile);
     _state->filename = Containers::String::nullTerminatedGlobalView(filename);

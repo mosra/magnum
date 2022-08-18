@@ -126,6 +126,13 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 
     void abort();
     void abortNotImplemented();
+    void abortImplicitlyConvertMesh();
+    void abortImplicitlyConvertMeshInPlace();
+    void abortImplicitlyConvertMeshToData();
+    void abortImplicitlyConvertMeshToFile();
+    void abortImplicitlyBegin();
+    void abortImplicitlyBeginData();
+    void abortImplicitlyBeginFile();
 
     void thingNoBegin();
     void endMismatchedBegin();
@@ -342,6 +349,13 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 
               &AbstractSceneConverterTest::abort,
               &AbstractSceneConverterTest::abortNotImplemented,
+              &AbstractSceneConverterTest::abortImplicitlyConvertMesh,
+              &AbstractSceneConverterTest::abortImplicitlyConvertMeshInPlace,
+              &AbstractSceneConverterTest::abortImplicitlyConvertMeshToData,
+              &AbstractSceneConverterTest::abortImplicitlyConvertMeshToFile,
+              &AbstractSceneConverterTest::abortImplicitlyBegin,
+              &AbstractSceneConverterTest::abortImplicitlyBeginData,
+              &AbstractSceneConverterTest::abortImplicitlyBeginFile,
 
               &AbstractSceneConverterTest::thingNoBegin,
               &AbstractSceneConverterTest::endMismatchedBegin,
@@ -1805,6 +1819,236 @@ void AbstractSceneConverterTest::abortNotImplemented() {
     CORRADE_VERIFY(converter.isConverting());
     converter.abort();
     CORRADE_VERIFY(!converter.isConverting());
+}
+
+void AbstractSceneConverterTest::abortImplicitlyConvertMesh() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMesh|
+                   SceneConverterFeature::ConvertMultiple;
+        }
+
+        Containers::Optional<MeshData> doConvert(const MeshData&) override {
+            return MeshData{MeshPrimitive::Lines, 2};
+        }
+
+        void doAbort() override {
+            CORRADE_VERIFY(!abortCalled);
+            abortCalled = true;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool abortCalled = false;
+    } converter;
+
+    /* Shouldn't be called if there's no previous conversion happening */
+    CORRADE_VERIFY(!converter.abortCalled);
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(!converter.abortCalled);
+
+    /* Should be called if there's a batch conversion happening and the
+       immediate APIs are used */
+    CORRADE_VERIFY(converter.convert(MeshData{MeshPrimitive::Triangles, 6}));
+    CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.abortCalled);
+}
+
+void AbstractSceneConverterTest::abortImplicitlyConvertMeshInPlace() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshInPlace|
+                   SceneConverterFeature::ConvertMultiple;
+        }
+
+        bool doConvertInPlace(MeshData&) override {
+            return true;
+        }
+
+        void doAbort() override {
+            CORRADE_VERIFY(!abortCalled);
+            abortCalled = true;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool abortCalled = false;
+    } converter;
+
+    /* Shouldn't be called if there's no previous conversion happening */
+    CORRADE_VERIFY(!converter.abortCalled);
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(!converter.abortCalled);
+
+    /* Should be called if there's a batch conversion happening and the
+       immediate APIs are used */
+    MeshData mesh{MeshPrimitive::Triangles, 6};
+    CORRADE_VERIFY(converter.convertInPlace(mesh));
+    CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.abortCalled);
+}
+
+void AbstractSceneConverterTest::abortImplicitlyConvertMeshToData() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshToData|
+                   SceneConverterFeature::ConvertMultiple;
+        }
+
+        Containers::Optional<Containers::Array<char>> doConvertToData(const MeshData&) override {
+            return Containers::Array<char>{};
+        }
+
+        void doAbort() override {
+            CORRADE_VERIFY(!abortCalled);
+            abortCalled = true;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool abortCalled = false;
+    } converter;
+
+    /* Shouldn't be called if there's no previous conversion happening */
+    CORRADE_VERIFY(!converter.abortCalled);
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(!converter.abortCalled);
+
+    /* Should be called if there's a batch conversion happening and the
+       immediate APIs are used */
+    CORRADE_VERIFY(converter.convertToData(MeshData{MeshPrimitive::Triangles, 6}));
+    CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.abortCalled);
+}
+
+void AbstractSceneConverterTest::abortImplicitlyConvertMeshToFile() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshToFile|
+                   SceneConverterFeature::ConvertMultiple;
+        }
+
+        bool doConvertToFile(const MeshData&, Containers::StringView) override {
+            return true;
+        }
+
+        void doAbort() override {
+            CORRADE_VERIFY(!abortCalled);
+            abortCalled = true;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool abortCalled = false;
+    } converter;
+
+    /* Shouldn't be called if there's no previous conversion happening */
+    CORRADE_VERIFY(!converter.abortCalled);
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(!converter.abortCalled);
+
+    /* Should be called if there's a batch conversion happening and the
+       immediate APIs are used */
+    CORRADE_VERIFY(converter.convertToFile(MeshData{MeshPrimitive::Triangles, 6}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
+    CORRADE_VERIFY(!converter.isConverting());
+    CORRADE_VERIFY(converter.abortCalled);
+}
+
+void AbstractSceneConverterTest::abortImplicitlyBegin() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple;
+        }
+
+        void doAbort() override {
+            CORRADE_VERIFY(!abortCalled);
+            abortCalled = true;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool abortCalled = false;
+    } converter;
+
+    /* Shouldn't be called if there's no previous conversion happening */
+    CORRADE_VERIFY(!converter.abortCalled);
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(!converter.abortCalled);
+
+    /* Should be called if calling begin() while another conversion is already
+       happening. Then, what is happening is the new conversion. */
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(converter.abortCalled);
+}
+
+void AbstractSceneConverterTest::abortImplicitlyBeginData() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::ConvertMultipleToData;
+        }
+
+        void doAbort() override {
+            CORRADE_VERIFY(!abortCalled);
+            abortCalled = true;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool doBeginData() override { return true; }
+
+        bool abortCalled = false;
+    } converter;
+
+    /* Shouldn't be called if there's no previous conversion happening */
+    CORRADE_VERIFY(!converter.abortCalled);
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(!converter.abortCalled);
+
+    /* Should be called if calling beginData() while another conversion is
+       already happening. Then, what is happening is the new conversion. */
+    CORRADE_VERIFY(converter.beginData());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(converter.abortCalled);
+}
+
+void AbstractSceneConverterTest::abortImplicitlyBeginFile() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::ConvertMultipleToFile;
+        }
+
+        void doAbort() override {
+            CORRADE_VERIFY(!abortCalled);
+            abortCalled = true;
+        }
+
+        bool doBegin() override { return true; }
+
+        bool doBeginFile(Containers::StringView) override { return true; }
+
+        bool abortCalled = false;
+    } converter;
+
+    /* Shouldn't be called if there's no previous conversion happening */
+    CORRADE_VERIFY(!converter.abortCalled);
+    CORRADE_VERIFY(converter.begin());
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(!converter.abortCalled);
+
+    /* Should be called if calling beginData() while another conversion is
+       already happening. Then, what is happening is the new conversion. */
+    CORRADE_VERIFY(converter.beginFile(Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "mesh.out")));
+    CORRADE_VERIFY(converter.isConverting());
+    CORRADE_VERIFY(converter.abortCalled);
 }
 
 void AbstractSceneConverterTest::thingNoBegin() {
