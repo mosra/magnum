@@ -147,7 +147,7 @@ Are the below lists missing your name or something's wrong?
 -   **Hilario Pérez Corona** ([\@hpcorona](https://github.com/hpcorona)) ---
     improvements to @cb{.cmake} android_create_apk() @ce
 -   **Hugo Amnov** ([\@hugoam](https://github.com/hugoam)) --- buildsystem
-    improvements
+    improvements and STL usage cleanup
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Ivan Sanz Carasa** ([\@isc30](https://github.com/isc30)) --- buildsystem

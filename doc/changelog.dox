@@ -341,6 +341,9 @@ See also:
 -   @ref Image, @ref CompressedImage, @ref ImageView, @ref CompressedImageView
     as well as @ref Trade::ImageData are now able to annotate array, cube map
     and cube map array images using @ref ImageFlags
+-   Removed unnecessary @ref std::string usage from certain
+    @relativeref{Corrade,Utility::ConfigurationValue} specializations (see
+    [mosra/magnum#582](https://github.com/mosra/magnum/pull/582))
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
