@@ -97,6 +97,10 @@ and have the files smaller, use the @ref StbImageConverter plugin instead.
 The TGA file format doesn't have a way to distinguish between 2D and 1D array
 images. If an image has @ref ImageFlag2D::Array set, a warning is printed and
 the file is saved as a regular 2D image.
+
+While TGA files can have several extensions, @ref extension() always returns
+@cpp "tga" @ce as that's the most common one. As TGA doesn't have a registered
+MIME type, @ref mimeType() returns @cpp "image/x-tga" @ce.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:
@@ -108,6 +112,8 @@ class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageCon
 
     private:
         MAGNUM_TGAIMAGECONVERTER_LOCAL ImageConverterFeatures doFeatures() const override;
+        MAGNUM_TGAIMAGECONVERTER_LOCAL Containers::String doExtension() const override;
+        MAGNUM_TGAIMAGECONVERTER_LOCAL Containers::String doMimeType() const override;
         MAGNUM_TGAIMAGECONVERTER_LOCAL Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D& image) override;
 };
 

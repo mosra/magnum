@@ -142,6 +142,9 @@ void TgaImageConverterTest::rgb() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    CORRADE_COMPARE(converter->extension(), "tga");
+    CORRADE_COMPARE(converter->mimeType(), "image/x-tga");
+
     converter->setFlags(data.flags);
 
     std::ostringstream out;
