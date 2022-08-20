@@ -107,8 +107,8 @@ class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageCon
         explicit TgaImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
     private:
-        ImageConverterFeatures MAGNUM_TGAIMAGECONVERTER_LOCAL doFeatures() const override;
-        Containers::Optional<Containers::Array<char>> MAGNUM_TGAIMAGECONVERTER_LOCAL doConvertToData(const ImageView2D& image) override;
+        MAGNUM_TGAIMAGECONVERTER_LOCAL ImageConverterFeatures doFeatures() const override;
+        MAGNUM_TGAIMAGECONVERTER_LOCAL Containers::Optional<Containers::Array<char>> doConvertToData(const ImageView2D& image) override;
 };
 
 }}
