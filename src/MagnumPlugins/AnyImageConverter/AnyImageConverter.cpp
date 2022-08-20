@@ -626,4 +626,4 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageConverter, Magnum::Trade::AnyImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.2")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.3")
