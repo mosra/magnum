@@ -572,36 +572,39 @@ based on what features are supported.
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   The function @ref doConvert(const ImageView2D&) is called only if
-    @ref ImageConverterFeature::Convert2D is supported and equivalently for the
+-   The @ref doConvert(const ImageView2D&) function is called only if
+    @ref ImageConverterFeature::Convert2D is supported; equivalently for the
     1D and 3D case.
--   The function @ref doConvert(const CompressedImageView2D&) is called only if
-    @ref ImageConverterFeature::ConvertCompressed2D is supported and
-    equivalently for the 1D and 3D case.
--   The function @ref doConvertToData(const ImageView2D&) is called only if
-    @ref ImageConverterFeature::Convert2DToData is supported and equivalently
+-   The @ref doConvert(const CompressedImageView2D&) function is called only if
+    @ref ImageConverterFeature::ConvertCompressed2D is supported; equivalently
     for the 1D and 3D case.
--   The function @ref doConvertToData(Containers::ArrayView<const ImageView2D>)
+-   The @ref doConvertToData(const ImageView2D&) function is called only if
+    @ref ImageConverterFeature::Convert2DToData is supported; equivalently
+    for the 1D and 3D case.
+-   The @ref doConvertToData(Containers::ArrayView<const ImageView2D>) function
     is called only if @ref ImageConverterFeature::ConvertLevels2DToData is
-    supported and equivalently for the 1D and 3D case.
--   The function @ref doConvertToData(const CompressedImageView2D&) is called
-    only if @ref ImageConverterFeature::ConvertCompressed2DToData is supported
-    and equivalently for the 1D and 3D case.
--   The function @ref doConvertToData(Containers::ArrayView<const CompressedImageView2D>)
-    is called only if @ref ImageConverterFeature::ConvertCompressedLevels2DToData
-    is supported and equivalently for the 1D and 3D case.
--   The function @ref doConvertToFile(const ImageView2D&, Containers::StringView)
-    is called only if @ref ImageConverterFeature::Convert2DToFile is supported
-    and equivalently for the 1D and 3D case.
--   The function @ref doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView)
-    is called only if @ref ImageConverterFeature::ConvertLevels2DToFile is
-    supported and equivalently for the 1D and 3D case.
--   The function @ref doConvertToFile(const CompressedImageView2D&, Containers::StringView)
-    is called only if @ref ImageConverterFeature::ConvertCompressed2DToFile is
-    supported and equivalently for the 1D and 3D case.
--   The function @ref doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView)
-    is called only if @ref ImageConverterFeature::ConvertCompressedLevels2DToFile
-    is supported and equivalently for the 1D and 3D case.
+    supported; equivalently for the 1D and 3D case.
+-   The @ref doConvertToData(const CompressedImageView2D&) function is called
+    only if @ref ImageConverterFeature::ConvertCompressed2DToData is supported;
+    equivalently for the 1D and 3D case.
+-   The @ref doConvertToData(Containers::ArrayView<const CompressedImageView2D>)
+    function is called only if
+    @ref ImageConverterFeature::ConvertCompressedLevels2DToData is supported;
+    equivalently for the 1D and 3D case.
+-   The @ref doConvertToFile(const ImageView2D&, Containers::StringView)
+    function is called only if @ref ImageConverterFeature::Convert2DToFile is
+    supported; equivalently for the 1D and 3D case.
+-   The @ref doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView)
+    function is called only if @ref ImageConverterFeature::ConvertLevels2DToFile
+    is supported; equivalently for the 1D and 3D case.
+-   The @ref doConvertToFile(const CompressedImageView2D&, Containers::StringView)
+    function is called only if
+    @ref ImageConverterFeature::ConvertCompressed2DToFile is supported;
+    equivalently for the 1D and 3D case.
+-   The @ref doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView)
+    function is called only if
+    @ref ImageConverterFeature::ConvertCompressedLevels2DToFile is supported;
+    equivalently for the 1D and 3D case.
 -   All @ref doConvertToData() and @ref doConvertToFile() functions taking a
     single (compressed) image are called only if the image has a non-zero size
     in all dimensions and the view is not @cpp nullptr @ce. Note that this does
