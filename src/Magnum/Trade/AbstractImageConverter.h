@@ -572,6 +572,10 @@ based on what features are supported.
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
+-   The @ref doExtension() and @ref doMimeType() functions are called only
+    if @ref ImageConverterFeature::Convert2DToData "ImageConverterFeature::Convert*ToData"
+    or @ref ImageConverterFeature::Convert2DToFile "Convert*ToFile" is
+    supported
 -   The @ref doConvert(const ImageView2D&) function is called only if
     @ref ImageConverterFeature::Convert2D is supported; equivalently for the
     1D and 3D case.
@@ -723,6 +727,38 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @see @ref addFlags()
          */
         void clearFlags(ImageConverterFlags flags);
+
+        /**
+         * @brief File extension
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert2DToFile "ImageConverterFeature::Convert*ToFile"
+         * or @ref ImageConverterFeature::Convert2DToData "ImageConverterFeature::Convert*ToData"
+         * is supported. Returns a standardized file extension corresponding
+         * to the file format used, such as @cpp "png" @ce for PNG files. If
+         * the file format doesn't have a standardized extension, empty string
+         * is returned.
+         *
+         * The returned value may depend on flags or configuration options and
+         * can change during plugin lifetime.
+         */
+        Containers::String extension() const;
+
+        /**
+         * @brief File MIME type
+         * @m_since_latest
+         *
+         * Available only if @ref ImageConverterFeature::Convert2DToFile "ImageConverterFeature::Convert*ToFile"
+         * or @ref ImageConverterFeature::Convert2DToData "ImageConverterFeature::Convert*ToData"
+         * is supported. Returns a standardized [MIME type](https://en.wikipedia.org/wiki/Media_type)
+         * corresponding to the file format used, such as @cpp "image/png" @ce
+         * for PNG files. If the file format doesn't have a standardized MIME
+         * type, empty string is returned.
+         *
+         * The returned value may depend on flags or configuration options and
+         * can change during plugin lifetime.
+         */
+        Containers::String mimeType() const;
 
         /**
          * @brief Convert a 1D image
@@ -1776,6 +1812,22 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * functions, where the user is expected to do error handling anyway.
          */
         virtual void doSetFlags(ImageConverterFlags flags);
+
+        /**
+         * @brief Implementation for @ref extension()
+         * @m_since_latest
+         *
+         * Default implementation returns an empty string.
+         */
+        virtual Containers::String doExtension() const;
+
+        /**
+         * @brief Implementation for @ref mimeType()
+         * @m_since_latest
+         *
+         * Default implementation returns an empty string.
+         */
+        virtual Containers::String doMimeType() const;
 
         /**
          * @brief Implementation for @ref convert(const ImageView1D&)

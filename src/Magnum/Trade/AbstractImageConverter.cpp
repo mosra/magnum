@@ -57,7 +57,7 @@ using namespace Containers::Literals;
 Containers::StringView AbstractImageConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.2"_s
+"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.3"_s
 /* [interface] */
     ;
 }
@@ -105,6 +105,40 @@ void AbstractImageConverter::addFlags(ImageConverterFlags flags) {
 void AbstractImageConverter::clearFlags(ImageConverterFlags flags) {
     setFlags(_flags & ~flags);
 }
+
+Containers::String AbstractImageConverter::extension() const {
+    CORRADE_ASSERT(features() & (ImageConverterFeature::Convert1DToFile|
+                                 ImageConverterFeature::Convert2DToFile|
+                                 ImageConverterFeature::Convert3DToFile|
+                                 ImageConverterFeature::ConvertCompressed1DToFile|
+                                 ImageConverterFeature::ConvertCompressed2DToFile|
+                                 ImageConverterFeature::ConvertCompressed3DToFile),
+        "Trade::AbstractImageConverter::extension(): file conversion not supported", {});
+
+    Containers::String out = doExtension();
+    CORRADE_ASSERT(out.isSmall() || !out.deleter(),
+        "Trade::AbstractImageConverter::extension(): implementation is not allowed to use a custom String deleter", {});
+    return out;
+}
+
+Containers::String AbstractImageConverter::doExtension() const { return {}; }
+
+Containers::String AbstractImageConverter::mimeType() const {
+    CORRADE_ASSERT(features() & (ImageConverterFeature::Convert1DToFile|
+                                 ImageConverterFeature::Convert2DToFile|
+                                 ImageConverterFeature::Convert3DToFile|
+                                 ImageConverterFeature::ConvertCompressed1DToFile|
+                                 ImageConverterFeature::ConvertCompressed2DToFile|
+                                 ImageConverterFeature::ConvertCompressed3DToFile),
+        "Trade::AbstractImageConverter::mimeType(): file conversion not supported", {});
+
+    Containers::String out = doMimeType();
+    CORRADE_ASSERT(out.isSmall() || !out.deleter(),
+        "Trade::AbstractImageConverter::mimeType(): implementation is not allowed to use a custom String deleter", {});
+    return out;
+}
+
+Containers::String AbstractImageConverter::doMimeType() const { return {}; }
 
 Containers::Optional<ImageData1D> AbstractImageConverter::convert(const ImageView1D& image) {
     CORRADE_ASSERT(features() & ImageConverterFeature::Convert1D,

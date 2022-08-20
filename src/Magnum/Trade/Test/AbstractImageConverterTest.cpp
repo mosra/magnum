@@ -56,6 +56,10 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void thingNotSupported();
 
+    void extensionMimeType();
+    void extensionMimeTypeNotImplemented();
+    void extensionMimeTypeCustomDeleter();
+
     void convert1D();
     void convert2D();
     void convert3D();
@@ -306,6 +310,10 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::setFlagsNotImplemented,
 
               &AbstractImageConverterTest::thingNotSupported,
+
+              &AbstractImageConverterTest::extensionMimeType,
+              &AbstractImageConverterTest::extensionMimeTypeNotImplemented,
+              &AbstractImageConverterTest::extensionMimeTypeCustomDeleter,
 
               &AbstractImageConverterTest::convert1D,
               &AbstractImageConverterTest::convert2D,
@@ -599,6 +607,8 @@ void AbstractImageConverterTest::thingNotSupported() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    converter.extension();
+    converter.mimeType();
     converter.convert(ImageView1D{PixelFormat::R8Unorm, 0, nullptr});
     converter.convert(ImageView2D{PixelFormat::R8Unorm, {}, nullptr});
     converter.convert(ImageView3D{PixelFormat::R8Unorm, {}, nullptr});
@@ -630,6 +640,8 @@ void AbstractImageConverterTest::thingNotSupported() {
     converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImageConverter::extension(): file conversion not supported\n"
+        "Trade::AbstractImageConverter::mimeType(): file conversion not supported\n"
         "Trade::AbstractImageConverter::convert(): 1D image conversion not supported\n"
         "Trade::AbstractImageConverter::convert(): 2D image conversion not supported\n"
         "Trade::AbstractImageConverter::convert(): 3D image conversion not supported\n"
@@ -660,6 +672,54 @@ void AbstractImageConverterTest::thingNotSupported() {
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 1D image conversion not supported\n"
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 2D image conversion not supported\n"
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion not supported\n");
+}
+
+void AbstractImageConverterTest::extensionMimeType() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressedLevels3DToData;
+        }
+        Containers::String doExtension() const override { return "yello"; }
+        Containers::String doMimeType() const override { return "yel/low"; }
+    } converter;
+
+    CORRADE_COMPARE(converter.extension(), "yello");
+    CORRADE_COMPARE(converter.mimeType(), "yel/low");
+}
+
+void AbstractImageConverterTest::extensionMimeTypeNotImplemented() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile;
+        }
+    } converter;
+
+    CORRADE_COMPARE(converter.extension(), "");
+    CORRADE_COMPARE(converter.mimeType(), "");
+}
+
+void AbstractImageConverterTest::extensionMimeTypeCustomDeleter() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData;
+        }
+        Containers::String doExtension() const override {
+            return Containers::String{"yello", 5, [](char*, std::size_t) {}};
+        }
+        Containers::String doMimeType() const override {
+            return Containers::String{"yel/low", 7, [](char*, std::size_t) {}};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.extension();
+    converter.mimeType();
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImageConverter::extension(): implementation is not allowed to use a custom String deleter\n"
+        "Trade::AbstractImageConverter::mimeType(): implementation is not allowed to use a custom String deleter\n");
 }
 
 void AbstractImageConverterTest::convert1D() {

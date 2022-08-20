@@ -527,6 +527,10 @@ See also:
     @relativeref{Trade::AbstractImageConverter,doConvertToData()}, for example
     when the implementation only neeeds to do a format detection based on file
     extension
+-   New @ref Trade::AbstractImageConverter::extension() and
+    @relativeref{Trade::AbstractImageConverter,mimeType()} interfaces to get
+    a file extension and MIME type corresponding to a file format produced by
+    a particular plugin.
 -   Recognizing BMP and TIFF file header magic in @relativeref{Trade,AnyImageImporter}
 -   Recognizing ASTC and WebP files and data in
     @relativeref{Trade,AnyImageImporter}
