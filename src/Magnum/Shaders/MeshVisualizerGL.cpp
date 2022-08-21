@@ -522,7 +522,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags
 MeshVisualizerGL2D::MeshVisualizerGL2D(Flags flags) : MeshVisualizerGL2D{compile(flags)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-MeshVisualizer2D::CompileState MeshVisualizer2D::compile(Flags flags) {
+MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags) {
     return compile(flags, 1, 1);
 }
 
@@ -530,7 +530,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(Flags flags, UnsignedInt materialCount, U
     : MeshVisualizerGL2D{compile(flags, materialCount, drawCount)} {}
 #endif
 
-MeshVisualizer2D::MeshVisualizerGL2D(CompileState&& cs)
+MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& cs)
 : MeshVisualizerGL2D{static_cast<MeshVisualizerGL2D&&>(std::move(cs))} {
     if (id() == 0) return;
 
