@@ -517,7 +517,7 @@ checked by the implementation:
     (if any) was aborted with @ref doAbort().
 -   The @ref doAdd() and various `doSet*()` functions are called only if a
     corresponding @ref SceneConverterFeature is supported.
--   The @ref doAdd((UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView)
+-   The @ref doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView)
     function is called only if the list has at least one mesh
 -   All @ref doAdd() functions taking a single image are called only if the
     image has a non-zero size in all dimensions and the data is not
