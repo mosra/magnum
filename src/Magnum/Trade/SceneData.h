@@ -1488,7 +1488,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Whether the scene has given field
          * @m_since_latest
          *
-         * @see @ref is2D(), @ref is3D()
+         * @see @ref is2D(), @ref is3D(), @ref findFieldId()
          */
         bool hasField(SceneField name) const;
 

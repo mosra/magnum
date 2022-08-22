@@ -1396,7 +1396,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Whether the mesh has given attribute
          *
-         * @see @ref attributeCount(MeshAttribute) const
+         * @see @ref attributeCount(MeshAttribute) const,
+         *      @ref findAttributeId()
          */
         bool hasAttribute(MeshAttribute name) const {
             return attributeCount(name);

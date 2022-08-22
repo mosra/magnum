@@ -2038,7 +2038,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @cpp 0 @ce is skipped as well) to avoid confusing base material with
          * a layer. If you want to create a material consisting of just a
          * layer, use @cpp 0 @ce for the first layer offset in the constructor.
-         * @see @ref hasAttribute()
+         * @see @ref hasAttribute(), @ref findLayerId()
          */
         bool hasLayer(Containers::StringView layer) const;
         bool hasLayer(MaterialLayer layer) const; /**< @overload */
@@ -2046,7 +2046,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         /**
          * @brief Find ID of a named layer
          *
-         * The @p layer doesn't exist, returns @ref Containers::NullOpt.
+         * The @p layer doesn't exist, returns @ref Containers::NullOpt. The
+         * lookup is done in an @f$ \mathcal{O}(n) @f$ complexity with
+         * @f$ n @f$ being the layer count.
          * @see @ref hasLayer()
          */
         Containers::Optional<UnsignedInt> findLayerId(Containers::StringView layer) const;
@@ -2259,7 +2261,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Whether a material layer has given attribute
          *
          * The @p layer is expected to be smaller than @ref layerCount() const.
-         * @see @ref tryAttribute(), @ref attributeOr(), @ref hasLayer()
+         * @see @ref tryAttribute(), @ref attributeOr(), @ref hasLayer(),
+         *      @ref findAttributeId()
          */
         bool hasAttribute(UnsignedInt layer, Containers::StringView name) const;
         bool hasAttribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
@@ -2268,7 +2271,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Whether a named material layer has given attribute
          *
          * The @p layer is expected to exist.
-         * @see @ref tryAttribute(), @ref attributeOr(), @ref hasLayer()
+         * @see @ref tryAttribute(), @ref attributeOr(), @ref hasLayer(),
+         *      @ref findAttributeId()
          */
         bool hasAttribute(Containers::StringView layer, Containers::StringView name) const;
         bool hasAttribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
@@ -2280,7 +2284,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * Equivalent to calling @ref hasAttribute(UnsignedInt, Containers::StringView) const
          * with @p layer set to @cpp 0 @ce.
-         * @see @ref tryAttribute(), @ref attributeOr()
+         * @see @ref tryAttribute(), @ref attributeOr(), @ref findAttributeId()
          */
         bool hasAttribute(Containers::StringView name) const {
             return hasAttribute(0, name);
@@ -2293,7 +2297,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Find ID of a named attribute in given material layer
          *
          * If @p name doesn't exist, returns @ref Containers::NullOpt. The
-         * @p layer is expected to be smaller than @ref layerCount() const.
+         * @p layer is expected to be smaller than @ref layerCount() const. The
+         * lookup is done in an @f$ \mathcal{O}(\log n) @f$ complexity with
+         * @f$ n @f$ being attribute count in given @p layer.
          * @see @ref hasAttribute(), @ref attributeId()
          */
         Containers::Optional<UnsignedInt> findAttributeId(UnsignedInt layer, Containers::StringView name) const;
@@ -2303,7 +2309,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Find ID of a named attribute in a named material layer
          *
          * If @p name doesn't exist, returns @ref Containers::NullOpt. The
-         * @p layer is expected to exist.
+         * @p layer is expected to exist. The lookup is done in an
+         * @f$ \mathcal{O}(m + \log n) @f$ complexity with @f$ m @f$ being
+         * layer count and @f$ n @f$ being attribute count in given @p layer.
          * @see @ref hasLayer(), @ref hasAttribute(), @ref attributeId(),
          *      @ref findLayerId()
          */
