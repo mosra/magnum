@@ -30,6 +30,8 @@
  * @m_since_latest
  */
 
+#include <Corrade/Containers/Optional.h>
+
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Trade/MaterialData.h"
 
@@ -139,6 +141,18 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         }
         bool hasAttribute(MaterialAttribute name) const {
             return MaterialData::hasAttribute(layer, name);
+        } /**< @overload */
+
+        /**
+         * @brief Find ID of a named attribute in this layer
+         *
+         * Same as calling @ref MaterialData::findAttributeId() with @p layer.
+         */
+        Containers::Optional<UnsignedInt> findAttributeId(Containers::StringView name) const {
+            return MaterialData::findAttributeId(layer, name);
+        }
+        Containers::Optional<UnsignedInt> findAttributeId(MaterialAttribute name) const {
+            return MaterialData::findAttributeId(layer, name);
         } /**< @overload */
 
         /**
@@ -294,6 +308,7 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         #if !defined(CORRADE_TARGET_MSVC) || defined(CORRADE_TARGET_CLANG_CL)
         using MaterialData::attributeCount;
         using MaterialData::hasAttribute;
+        using MaterialData::findAttributeId;
         using MaterialData::attributeId;
         using MaterialData::attributeName;
         using MaterialData::attributeType;
@@ -329,6 +344,25 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         }
         bool hasAttribute(MaterialLayer layer_, MaterialAttribute name) const {
             return MaterialData::hasAttribute(layer_, name);
+        }
+
+        Containers::Optional<UnsignedInt> findAttributeId(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::findAttributeId(layer_, name);
+        }
+        Containers::Optional<UnsignedInt> findAttributeId(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::findAttributeId(layer_, name);
+        }
+        Containers::Optional<UnsignedInt> findAttributeId(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::findAttributeId(layer_, name);
+        }
+        Containers::Optional<UnsignedInt> findAttributeId(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::findAttributeId(layer_, name);
+        }
+        Containers::Optional<UnsignedInt> findAttributeId(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::findAttributeId(layer_, name);
+        }
+        Containers::Optional<UnsignedInt> findAttributeId(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::findAttributeId(layer_, name);
         }
 
         UnsignedInt attributeId(UnsignedInt layer_, Containers::StringView name) const {

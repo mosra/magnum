@@ -885,7 +885,13 @@ void MaterialDataTest::construct() {
     /* Access by name */
     CORRADE_VERIFY(data.hasAttribute(MaterialAttribute::DoubleSided));
     CORRADE_VERIFY(data.hasAttribute(MaterialAttribute::AmbientTextureMatrix));
+    CORRADE_VERIFY(data.hasAttribute(MaterialAttribute::DiffuseTextureCoordinates));
     CORRADE_VERIFY(!data.hasAttribute(MaterialAttribute::TextureMatrix));
+
+    CORRADE_COMPARE(data.findAttributeId(MaterialAttribute::DoubleSided), 2);
+    CORRADE_COMPARE(data.findAttributeId(MaterialAttribute::AmbientTextureMatrix), 0);
+    CORRADE_COMPARE(data.findAttributeId(MaterialAttribute::DiffuseTextureCoordinates), 1);
+    CORRADE_VERIFY(!data.findAttributeId(MaterialAttribute::TextureMatrix));
 
     CORRADE_COMPARE(data.attributeId(MaterialAttribute::DoubleSided), 2);
     CORRADE_COMPARE(data.attributeId(MaterialAttribute::AmbientTextureMatrix), 0);
@@ -912,7 +918,15 @@ void MaterialDataTest::construct() {
     /* Access by string */
     CORRADE_VERIFY(data.hasAttribute("DoubleSided"));
     CORRADE_VERIFY(data.hasAttribute("highlightColor"));
+    CORRADE_VERIFY(data.hasAttribute("DiffuseTextureCoordinates"));
+    CORRADE_VERIFY(data.hasAttribute("highlightColor"));
     CORRADE_VERIFY(!data.hasAttribute("TextureMatrix"));
+
+    CORRADE_COMPARE(data.findAttributeId("DoubleSided"), 2);
+    CORRADE_COMPARE(data.findAttributeId("AmbientTextureMatrix"), 0);
+    CORRADE_COMPARE(data.findAttributeId("DiffuseTextureCoordinates"), 1);
+    CORRADE_COMPARE(data.findAttributeId("highlightColor"), 3);
+    CORRADE_VERIFY(!data.findAttributeId("TextureMatrix"));
 
     CORRADE_COMPARE(data.attributeId("DoubleSided"), 2);
     CORRADE_COMPARE(data.attributeId("AmbientTextureMatrix"), 0);
@@ -1044,6 +1058,13 @@ void MaterialDataTest::constructLayers() {
     CORRADE_VERIFY(data.hasLayer(MaterialLayer::ClearCoat));
     CORRADE_VERIFY(!data.hasLayer(""));
     CORRADE_VERIFY(!data.hasLayer("DoubleSided"));
+    /** @todo test hasLayer(MaterialLayer) once there's more than ClearCoat */
+
+    CORRADE_COMPARE(data.findLayerId("ClearCoat"), 1);
+    CORRADE_COMPARE(data.findLayerId(MaterialLayer::ClearCoat), 1);
+    CORRADE_VERIFY(!data.findLayerId(""));
+    CORRADE_VERIFY(!data.findLayerId("DoubleSided"));
+    /** @todo test findLayerId(MaterialLayer) once there's more than ClearCoat */
 
     CORRADE_COMPARE(data.layerId("ClearCoat"), 1);
     CORRADE_COMPARE(data.layerId(MaterialLayer::ClearCoat), 1);
@@ -1087,6 +1108,14 @@ void MaterialDataTest::constructLayers() {
     CORRADE_VERIFY(!data.hasAttribute(2, MaterialAttribute::NormalTexture));
     CORRADE_VERIFY(data.hasAttribute(3, MaterialAttribute::NormalTexture));
 
+    CORRADE_COMPARE(data.findAttributeId(0, MaterialAttribute::DiffuseTextureCoordinates), 0);
+    CORRADE_VERIFY(!data.findAttributeId(0, MaterialAttribute::AlphaBlend));
+    CORRADE_COMPARE(data.findAttributeId(1, MaterialAttribute::AlphaBlend), 1);
+    CORRADE_COMPARE(data.findAttributeId(1, MaterialAttribute::LayerName), 0);
+    CORRADE_VERIFY(!data.findAttributeId(2, MaterialAttribute::LayerName));
+    CORRADE_VERIFY(!data.findAttributeId(2, MaterialAttribute::NormalTexture));
+    CORRADE_COMPARE(data.findAttributeId(3, MaterialAttribute::NormalTexture), 0);
+
     CORRADE_COMPARE(data.attributeId(0, MaterialAttribute::DiffuseTextureCoordinates), 0);
     CORRADE_COMPARE(data.attributeId(1, MaterialAttribute::AlphaBlend), 1);
     CORRADE_COMPARE(data.attributeId(1, MaterialAttribute::LayerName), 0);
@@ -1123,6 +1152,14 @@ void MaterialDataTest::constructLayers() {
     CORRADE_VERIFY(!data.hasAttribute(2, " LayerName"));
     CORRADE_VERIFY(!data.hasAttribute(2, "NormalTexture"));
     CORRADE_VERIFY(data.hasAttribute(3, "NormalTexture"));
+
+    CORRADE_COMPARE(data.findAttributeId(0, "DoubleSided"), 1);
+    CORRADE_VERIFY(!data.findAttributeId(0, "highlightColor"));
+    CORRADE_COMPARE(data.findAttributeId(1, "highlightColor"), 2);
+    CORRADE_COMPARE(data.findAttributeId(1, " LayerName"), 0);
+    CORRADE_VERIFY(!data.findAttributeId(2, " LayerName"));
+    CORRADE_VERIFY(!data.findAttributeId(2, " NormalTexture"));
+    CORRADE_COMPARE(data.findAttributeId(3, "NormalTexture"), 0);
 
     CORRADE_COMPARE(data.attributeId(0, "DoubleSided"), 1);
     CORRADE_COMPARE(data.attributeId(1, "highlightColor"), 2);
@@ -1172,6 +1209,11 @@ void MaterialDataTest::constructLayers() {
     /* Access by layer name and attribute name */
     CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend));
     CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, MaterialAttribute::LayerName));
+    CORRADE_VERIFY(!data.hasAttribute(MaterialLayer::ClearCoat, MaterialAttribute::BaseColor));
+
+    CORRADE_COMPARE(data.findAttributeId(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend), 1);
+    CORRADE_COMPARE(data.findAttributeId(MaterialLayer::ClearCoat, MaterialAttribute::LayerName), 0);
+    CORRADE_VERIFY(!data.findAttributeId(MaterialLayer::ClearCoat, MaterialAttribute::BaseColor));
 
     CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend), 1);
     CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, MaterialAttribute::LayerName), 0);
@@ -1192,6 +1234,11 @@ void MaterialDataTest::constructLayers() {
     /* Access by layer name and attribute string */
     CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, "highlightColor"));
     CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, " LayerName"));
+    CORRADE_VERIFY(!data.hasAttribute(MaterialLayer::ClearCoat, "BaseColor"));
+
+    CORRADE_COMPARE(data.findAttributeId(MaterialLayer::ClearCoat, "highlightColor"), 2);
+    CORRADE_COMPARE(data.findAttributeId(MaterialLayer::ClearCoat, " LayerName"), 0);
+    CORRADE_VERIFY(!data.findAttributeId(MaterialLayer::ClearCoat, "BaseColor"));
 
     CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, "highlightColor"), 2);
     CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, " LayerName"), 0);
@@ -1229,6 +1276,11 @@ void MaterialDataTest::constructLayers() {
     /* Access by layer string and attribute name */
     CORRADE_VERIFY(data.hasAttribute("ClearCoat", MaterialAttribute::AlphaBlend));
     CORRADE_VERIFY(data.hasAttribute("ClearCoat", MaterialAttribute::LayerName));
+    CORRADE_VERIFY(!data.hasAttribute("ClearCoat", MaterialAttribute::BaseColor));
+
+    CORRADE_COMPARE(data.findAttributeId("ClearCoat", MaterialAttribute::AlphaBlend), 1);
+    CORRADE_COMPARE(data.findAttributeId("ClearCoat", MaterialAttribute::LayerName), 0);
+    CORRADE_VERIFY(!data.findAttributeId("ClearCoat", MaterialAttribute::BaseColor));
 
     CORRADE_COMPARE(data.attributeId("ClearCoat", MaterialAttribute::AlphaBlend), 1);
     CORRADE_COMPARE(data.attributeId("ClearCoat", MaterialAttribute::LayerName), 0);
@@ -1249,6 +1301,11 @@ void MaterialDataTest::constructLayers() {
     /* Access by layer string and attribute string */
     CORRADE_VERIFY(data.hasAttribute("ClearCoat", "highlightColor"));
     CORRADE_VERIFY(data.hasAttribute("ClearCoat", " LayerName"));
+    CORRADE_VERIFY(!data.hasAttribute("ClearCoat", "BaseColor"));
+
+    CORRADE_COMPARE(data.findAttributeId("ClearCoat", "highlightColor"), 2);
+    CORRADE_COMPARE(data.findAttributeId("ClearCoat", " LayerName"), 0);
+    CORRADE_VERIFY(!data.findAttributeId("ClearCoat", "BaseColor"));
 
     CORRADE_COMPARE(data.attributeId("ClearCoat", "highlightColor"), 2);
     CORRADE_COMPARE(data.attributeId("ClearCoat", " LayerName"), 0);
@@ -1763,7 +1820,9 @@ void MaterialDataTest::accessNotFound() {
         {"DiffuseColor", 0xff3366aa_rgbaf}
     }};
 
+    /* These are fine */
     CORRADE_VERIFY(!data.hasAttribute("DiffuseColour"));
+    CORRADE_VERIFY(!data.findAttributeId("DiffuseColour"));
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2325,6 +2384,8 @@ void MaterialDataTest::accessLayerOutOfBounds() {
     data.attributeCount(2);
     data.hasAttribute(2, "AlphaMask");
     data.hasAttribute(2, MaterialAttribute::AlphaMask);
+    data.findAttributeId(2, "AlphaMask");
+    data.findAttributeId(2, MaterialAttribute::AlphaMask);
     data.attributeId(2, "AlphaMask");
     data.attributeId(2, MaterialAttribute::AlphaMask);
     data.attributeName(2, 0);
@@ -2362,6 +2423,8 @@ void MaterialDataTest::accessLayerOutOfBounds() {
         "Trade::MaterialData::attributeCount(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::hasAttribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::hasAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::findAttributeId(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::findAttributeId(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeId(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeId(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 layers\n"
@@ -2398,6 +2461,9 @@ void MaterialDataTest::accessLayerNotFound() {
         {MaterialAttribute::AlphaMask, 0.5f},
     }, {0, 2}};
 
+    /* This is fine */
+    CORRADE_VERIFY(!data.findLayerId("ClearCoat"));
+
     std::ostringstream out;
     Error redirectError{&out};
     data.layerId("ClearCoat");
@@ -2410,6 +2476,8 @@ void MaterialDataTest::accessLayerNotFound() {
     data.attributeCount("ClearCoat");
     data.hasAttribute("ClearCoat", "AlphaMask");
     data.hasAttribute("ClearCoat", MaterialAttribute::AlphaMask);
+    data.findAttributeId("ClearCoat", "AlphaMask");
+    data.findAttributeId("ClearCoat", MaterialAttribute::AlphaMask);
     data.attributeId("ClearCoat", "AlphaMask");
     data.attributeId("ClearCoat", MaterialAttribute::AlphaMask);
     data.attributeName("ClearCoat", 0);
@@ -2447,6 +2515,8 @@ void MaterialDataTest::accessLayerNotFound() {
         "Trade::MaterialData::attributeCount(): layer ClearCoat not found\n"
         "Trade::MaterialData::hasAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::hasAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::findAttributeId(): layer ClearCoat not found\n"
+        "Trade::MaterialData::findAttributeId(): layer ClearCoat not found\n"
         "Trade::MaterialData::attributeId(): layer ClearCoat not found\n"
         "Trade::MaterialData::attributeId(): layer ClearCoat not found\n"
         "Trade::MaterialData::attributeName(): layer ClearCoat not found\n"
@@ -2482,7 +2552,8 @@ void MaterialDataTest::accessInvalidLayerName() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    data.layerId(MaterialLayer(0x0));
+    data.findLayerId(MaterialLayer(0x0));
+    data.findLayerId(MaterialLayer(0xfefe));
     data.layerId(MaterialLayer(0xfefe));
     data.layerFactor(MaterialLayer(0xfefe));
     data.layerFactorTexture(MaterialLayer(0xfefe));
@@ -2493,6 +2564,8 @@ void MaterialDataTest::accessInvalidLayerName() {
     data.attributeCount(MaterialLayer(0xfefe));
     data.hasAttribute(MaterialLayer(0xfefe), "AlphaMask");
     data.hasAttribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.findAttributeId(MaterialLayer(0xfefe), "AlphaMask");
+    data.findAttributeId(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
     data.attributeId(MaterialLayer(0xfefe), "AlphaMask");
     data.attributeId(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
     data.attributeName(MaterialLayer(0xfefe), 0);
@@ -2520,7 +2593,8 @@ void MaterialDataTest::accessInvalidLayerName() {
     data.attributeOr(MaterialLayer(0xfefe), "AlphaMask", false);
     data.attributeOr(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask, false);
     CORRADE_COMPARE(out.str(),
-        "Trade::MaterialData::layerId(): invalid name Trade::MaterialLayer(0x0)\n"
+        "Trade::MaterialData::findLayerId(): invalid name Trade::MaterialLayer(0x0)\n"
+        "Trade::MaterialData::findLayerId(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::layerId(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::layerFactor(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::layerFactorTexture(): invalid name Trade::MaterialLayer(0xfefe)\n"
@@ -2531,6 +2605,8 @@ void MaterialDataTest::accessInvalidLayerName() {
         "Trade::MaterialData::attributeCount(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::findAttributeId(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::findAttributeId(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::attributeId(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::attributeId(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::attributeName(): invalid name Trade::MaterialLayer(0xfefe)\n"
@@ -2624,7 +2700,9 @@ void MaterialDataTest::accessNotFoundInLayerIndex() {
         {"DiffuseColor", 0xff3366aa_rgbaf}
     }, {0, 1}};
 
+    /* These are fine */
     CORRADE_VERIFY(!data.hasAttribute(1, "DiffuseColour"));
+    CORRADE_VERIFY(!data.findAttributeId(1, "DiffuseColour"));
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2651,7 +2729,9 @@ void MaterialDataTest::accessNotFoundInLayerString() {
         {"DiffuseColor", 0xff3366aa_rgbaf}
     }, {0, 1}};
 
-    CORRADE_VERIFY(!data.hasAttribute(1, "DiffuseColour"));
+    /* These are fine */
+    CORRADE_VERIFY(!data.hasAttribute("ClearCoat", "DiffuseColour"));
+    CORRADE_VERIFY(!data.findAttributeId("ClearCoat", "DiffuseColour"));
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2682,6 +2762,8 @@ void MaterialDataTest::accessInvalidAttributeName() {
     Error redirectError{&out};
     data.hasAttribute(0, MaterialAttribute(0x0));
     data.hasAttribute("Layer", MaterialAttribute(0xfefe));
+    data.findAttributeId(0, MaterialAttribute(0x0));
+    data.findAttributeId("Layer", MaterialAttribute(0xfefe));
     data.attributeId(0, MaterialAttribute(0x0));
     data.attributeId("Layer", MaterialAttribute(0xfefe));
     data.attributeType(0, MaterialAttribute(0x0));
@@ -2703,6 +2785,8 @@ void MaterialDataTest::accessInvalidAttributeName() {
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::findAttributeId(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::findAttributeId(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::attributeId(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::attributeId(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::attributeType(): invalid name Trade::MaterialAttribute(0x0)\n"
@@ -2880,6 +2964,9 @@ void MaterialDataTest::templateLayerAccess() {
     CORRADE_VERIFY(!data.hasAttribute("BaseColor"));
     CORRADE_VERIFY(data.hasAttribute(0, MaterialAttribute::BaseColor));
     CORRADE_VERIFY(data.hasAttribute(0, "BaseColor"));
+
+    CORRADE_COMPARE(data.findAttributeId(MaterialAttribute::LayerFactorTexture), 2);
+    CORRADE_COMPARE(data.findAttributeId("LayerFactorTexture"), 2);
 
     CORRADE_COMPARE(data.attributeId(MaterialAttribute::LayerFactorTexture), 2);
     CORRADE_COMPARE(data.attributeId("LayerFactorTexture"), 2);

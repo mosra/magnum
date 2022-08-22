@@ -334,6 +334,17 @@ bool MaterialData::hasLayer(const MaterialLayer layer) const {
     return hasLayer(string);
 }
 
+Containers::Optional<UnsignedInt> MaterialData::findLayerId(const Containers::StringView layer) const {
+    const UnsignedInt id = findLayerIdInternal(layer);
+    return id == ~UnsignedInt{} ? Containers::Optional<UnsignedInt>{} : id;
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findLayerId(const MaterialLayer layer) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findLayerId(): invalid name" << layer, {});
+    return findLayerId(string);
+}
+
 UnsignedInt MaterialData::layerId(const Containers::StringView layer) const {
     const UnsignedInt id = findLayerIdInternal(layer);
     CORRADE_ASSERT(id != ~UnsignedInt{},
@@ -592,6 +603,53 @@ bool MaterialData::hasAttribute(const MaterialLayer layer, const MaterialAttribu
     const Containers::StringView string = layerString(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::hasAttribute(): invalid name" << layer, {});
     return hasAttribute(string, name);
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::findAttributeId(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
+    return id == ~UnsignedInt{} ? Containers::Optional<UnsignedInt>{} : id;
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const UnsignedInt layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << name, {});
+    return findAttributeId(layer, string);
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = findLayerIdInternal(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::findAttributeId(): layer" << layer << "not found", {});
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
+    return id == ~UnsignedInt{} ? Containers::Optional<UnsignedInt>{} : id;
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const Containers::StringView layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << name, {});
+    return findAttributeId(layer, string);
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const MaterialLayer layer, const Containers::StringView name) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << layer, {});
+    return findAttributeId(string, name);
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const MaterialLayer layer, const MaterialAttribute name) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << layer, {});
+    return findAttributeId(string, name);
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const Containers::StringView name) const {
+    return findAttributeId(0, name);
+}
+
+Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const MaterialAttribute name) const {
+    return findAttributeId(0, name);
 }
 
 UnsignedInt MaterialData::attributeId(const UnsignedInt layer, const Containers::StringView name) const {

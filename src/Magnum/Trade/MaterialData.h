@@ -2044,9 +2044,18 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         bool hasLayer(MaterialLayer layer) const; /**< @overload */
 
         /**
+         * @brief Find ID of a named layer
+         *
+         * The @p layer doesn't exist, returns @ref Containers::NullOpt.
+         * @see @ref hasLayer()
+         */
+        Containers::Optional<UnsignedInt> findLayerId(Containers::StringView layer) const;
+        Containers::Optional<UnsignedInt> findLayerId(MaterialLayer layer) const; /**< @overload */
+
+        /**
          * @brief ID of a named layer
          *
-         * The @p layer is expected to exist.
+         * Like @ref findLayerId(), but the @p layer is expected to exist.
          * @see @ref hasLayer()
          */
         UnsignedInt layerId(Containers::StringView layer) const;
@@ -2281,11 +2290,44 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         } /**< @overload */
 
         /**
+         * @brief Find ID of a named attribute in given material layer
+         *
+         * If @p name doesn't exist, returns @ref Containers::NullOpt. The
+         * @p layer is expected to be smaller than @ref layerCount() const.
+         * @see @ref hasAttribute(), @ref attributeId()
+         */
+        Containers::Optional<UnsignedInt> findAttributeId(UnsignedInt layer, Containers::StringView name) const;
+        Containers::Optional<UnsignedInt> findAttributeId(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Find ID of a named attribute in a named material layer
+         *
+         * If @p name doesn't exist, returns @ref Containers::NullOpt. The
+         * @p layer is expected to exist.
+         * @see @ref hasLayer(), @ref hasAttribute(), @ref attributeId(),
+         *      @ref findLayerId()
+         */
+        Containers::Optional<UnsignedInt> findAttributeId(Containers::StringView layer, Containers::StringView name) const;
+        Containers::Optional<UnsignedInt> findAttributeId(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        Containers::Optional<UnsignedInt> findAttributeId(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        Containers::Optional<UnsignedInt> findAttributeId(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Find ID of a named attribute in the base material
+         *
+         * Equivalent to calling @ref findAttributeId(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        Containers::Optional<UnsignedInt> findAttributeId(Containers::StringView name) const;
+        Containers::Optional<UnsignedInt> findAttributeId(MaterialAttribute name) const; /**< @overload */
+
+        /**
          * @brief ID of a named attribute in given material layer
          *
-         * The @p layer is expected to be smaller than @ref layerCount() const
-         * and @p name is expected to exist in that layer.
-         * @see @ref hasAttribute()
+         * Like @ref findAttributeId(UnsignedInt, Containers::StringView) const,
+         * but the @p name is expected to exist.
+         * @see @ref hasAttribute(),
+         *      @ref attributeName(UnsignedInt, UnsignedInt) const
          */
         UnsignedInt attributeId(UnsignedInt layer, Containers::StringView name) const;
         UnsignedInt attributeId(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
@@ -2293,8 +2335,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         /**
          * @brief ID of a named attribute in a named material layer
          *
-         * The @p layer is expected to exist and @p name is expected to exist
-         * in that layer.
+         * Like @ref findAttributeId(Containers::StringView, Containers::StringView) const,
+         * but the @p name is expected to exist.
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         UnsignedInt attributeId(Containers::StringView layer, Containers::StringView name) const;
