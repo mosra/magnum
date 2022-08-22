@@ -94,9 +94,31 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
         plugin = "JpegImporter"_s;
     else if(normalizedExtension == ".jp2"_s)
         plugin = "Jpeg2000Importer"_s;
-    else if(normalizedExtension == ".ktx2"_s)
+    else if(normalizedExtension == ".ktx2"_s) {
         plugin = "KtxImporter"_s;
-    else if(normalizedExtension == ".mng"_s)
+
+        /* KtxImporter delegates to BasisImporter in case the file is
+           Basis-compressed, so that's a good default choice. However, if it
+           isn't available, we should try delegating to BasisImporter instead,
+           so people that have just Basis-compressed KTX files don't need to
+           have KtxImporter as well.
+
+           BasisImporter unfortunately can't handle non-Basis-compressed KTX
+           files, so in case people have just BasisImporter and not
+           KtxImporter, it'll fail, but with a clear message suggesting to use
+           KtxImporter. If neither BasisImporter would be available, it'd fail
+           too (complaining that KtxImporter isn't available), so the behavior
+           is roughly the same.
+
+           Further discussion and reasoning here:
+           https://github.com/mosra/magnum-plugins/pull/112#discussion_r734976174 */
+        if(manager()->loadState("KtxImporter"_s) == PluginManager::LoadState::NotFound &&
+           manager()->loadState("BasisImporter"_s) != PluginManager::LoadState::NotFound) {
+            if(flags() & ImporterFlag::Verbose)
+                Debug{} << "Trade::AnyImageImporter::openFile(): KtxImporter not found, trying a fallback";
+            plugin = "BasisImporter"_s;
+        }
+    } else if(normalizedExtension == ".mng"_s)
         plugin = "MngImporter"_s;
     else if(normalizedExtension == ".pbm"_s)
         plugin = "PbmImporter"_s;
@@ -200,10 +222,19 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     else if(dataString.hasPrefix("\xff\xd8\xff"_s))
         plugin = "JpegImporter"_s;
     /* https://github.khronos.org/KTX-Specification/#_identifier */
-    else if(dataString.hasPrefix("\xabKTX 20\xbb\r\n\x1a\n"_s))
+    else if(dataString.hasPrefix("\xabKTX 20\xbb\r\n\x1a\n"_s)) {
         plugin = "KtxImporter"_s;
+
+        /* Same logic as in doOpenFile() for *.ktx2 files, see above for more
+           information */
+        if(manager()->loadState("KtxImporter"_s) == PluginManager::LoadState::NotFound &&
+           manager()->loadState("BasisImporter"_s) != PluginManager::LoadState::NotFound) {
+            if(flags() & ImporterFlag::Verbose)
+                Debug{} << "Trade::AnyImageImporter::openData(): KtxImporter not found, trying a fallback";
+            plugin = "BasisImporter"_s;
+        }
     /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
-    else if(dataString.hasPrefix("\x89PNG\x0d\x0a\x1a\x0a"_s))
+    } else if(dataString.hasPrefix("\x89PNG\x0d\x0a\x1a\x0a"_s))
         plugin = "PngImporter"_s;
     /* http://paulbourke.net/dataformats/tiff/,
        http://paulbourke.net/dataformats/tiff/tiff_summary.pdf */

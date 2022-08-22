@@ -29,6 +29,7 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -50,6 +51,9 @@ struct AnyImageImporterTest: TestSuite::Tester {
     void load2D();
     void load3D();
     void detect();
+
+    void ktxBasisFallbackFile();
+    void ktxBasisFallbackData();
 
     void unknownExtension();
     void unknownSignature();
@@ -129,6 +133,31 @@ constexpr struct {
     /* Not testing everything, just the most important ones */
 };
 
+const struct {
+    const char* name;
+    bool ktxImporterPresent;
+    bool basisImporterPresent;
+    bool verbose;
+    const char* expectedMessage;
+} KtxBasisFallbackData[]{
+    {"both KtxImporter and BasisImporter present", true, true, true,
+        "Trade::AnyImageImporter::{}(): using KtxImporter\n"},
+    {"only KtxImporter present", true, false, true,
+        "Trade::AnyImageImporter::{}(): using KtxImporter\n"},
+    {"only BasisImporter present", false, true, true,
+        "Trade::AnyImageImporter::{0}(): KtxImporter not found, trying a fallback\n"
+        "Trade::AnyImageImporter::{0}(): using BasisImporter\n"},
+    {"only BasisImporter present, verbose output disabled", false, true, false,
+        nullptr},
+    {"neither present", false, false, true,
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+        "PluginManager::Manager::load(): plugin KtxImporter is not static and was not found in nonexistent\n"
+        #else
+        "PluginManager::Manager::load(): plugin KtxImporter was not found\n"
+        #endif
+        "Trade::AnyImageImporter::{}(): cannot load the KtxImporter plugin"}
+};
+
 using namespace Containers::Literals;
 
 const struct {
@@ -172,6 +201,10 @@ AnyImageImporterTest::AnyImageImporterTest() {
 
     addInstancedTests({&AnyImageImporterTest::detect},
         Containers::arraySize(DetectData));
+
+    addInstancedTests({&AnyImageImporterTest::ktxBasisFallbackFile,
+                       &AnyImageImporterTest::ktxBasisFallbackData},
+        Containers::arraySize(KtxBasisFallbackData));
 
     addTests({&AnyImageImporterTest::unknownExtension});
 
@@ -308,6 +341,85 @@ void AnyImageImporterTest::detect() {
         "Trade::AnyImageImporter::{1}(): cannot load the {0} plugin\n",
         data.plugin, data.asData ? "openData" : "openFile"));
     #endif
+}
+
+void AnyImageImporterTest::ktxBasisFallbackFile() {
+    auto&& data = KtxBasisFallbackData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(data.ktxImporterPresent && !(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+    if(data.basisImporterPresent && !(manager.load("BasisImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("BasisImporter plugin can't be loaded.");
+
+    /* Set invalid plugin directory to ensure the remaining plugins don't get
+       loaded after this point */
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    manager.setPluginDirectory("nonexistent");
+    #endif
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    if(data.verbose)
+        importer->setFlags(ImporterFlag::Verbose);
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Error redirectError{&out};
+    /* We don't care if the file opens (it won't if BasisImporter isn't
+       present), just verifying if correct plugin got picked by checking the
+       message. */
+    importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "basis.ktx2"));
+    if(data.expectedMessage) CORRADE_COMPARE_AS(out.str(),
+        Utility::formatString(data.expectedMessage, "openFile"),
+        TestSuite::Compare::StringHasPrefix);
+    else CORRADE_COMPARE(out.str(), "");
+}
+
+void AnyImageImporterTest::ktxBasisFallbackData() {
+    auto&& data = KtxBasisFallbackData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(data.ktxImporterPresent && !(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+    if(data.basisImporterPresent && !(manager.load("BasisImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("BasisImporter plugin can't be loaded.");
+
+    /* Set invalid plugin directory to ensure the remaining plugins don't get
+       loaded after this point */
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    manager.setPluginDirectory("nonexistent");
+    #endif
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    if(data.verbose)
+        importer->setFlags(ImporterFlag::Verbose);
+
+    Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "basis.ktx2"));
+    CORRADE_VERIFY(read);
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Error redirectError{&out};
+    /* We don't care if the file opens (it won't if BasisImporter isn't
+       present), just verifying if correct plugin got picked by checking the
+       message. */
+    importer->openData(*read);
+    if(data.expectedMessage) CORRADE_COMPARE_AS(out.str(),
+        Utility::formatString(data.expectedMessage, "openData"),
+        TestSuite::Compare::StringHasPrefix);
+    else CORRADE_COMPARE(out.str(), "");
 }
 
 void AnyImageImporterTest::unknownExtension() {

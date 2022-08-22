@@ -79,7 +79,8 @@ Supported formats:
 -   JPEG 2000 (`*.jp2`), loaded with any plugin that provides
     `Jpeg2000Importer`
 -   KTX2 (`*.ktx2` or data with corresponding signature), loaded with
-    @ref KtxImporter or any other plugin that provides it
+    @ref KtxImporter or any other plugin that provides it. If not found,
+    @ref BasisImporter is tried as a fallback.
 -   Multiple-image Network Graphics (`*.mng`), loaded with any plugin that
     provides `MngImporter`
 -   Portable Bitmap (`*.pbm`), loaded with any plugin that provides `PbmImporter`
