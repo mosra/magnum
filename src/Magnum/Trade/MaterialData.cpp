@@ -314,7 +314,7 @@ Containers::StringView MaterialData::attributeString(const MaterialAttribute nam
     return AttributeMap[UnsignedInt(name) - 1].name;
 }
 
-UnsignedInt MaterialData::layerFor(const Containers::StringView layer) const {
+UnsignedInt MaterialData::findLayerIdInternal(const Containers::StringView layer) const {
     for(std::size_t i = 1; i < _layerOffsets.size(); ++i) {
         if(_layerOffsets[i] > _layerOffsets[i - 1] &&
            _data[_layerOffsets[i - 1]].name() == " LayerName"_s &&
@@ -325,7 +325,7 @@ UnsignedInt MaterialData::layerFor(const Containers::StringView layer) const {
 }
 
 bool MaterialData::hasLayer(const Containers::StringView layer) const {
-    return layerFor(layer) != ~UnsignedInt{};
+    return findLayerIdInternal(layer) != ~UnsignedInt{};
 }
 
 bool MaterialData::hasLayer(const MaterialLayer layer) const {
@@ -335,7 +335,7 @@ bool MaterialData::hasLayer(const MaterialLayer layer) const {
 }
 
 UnsignedInt MaterialData::layerId(const Containers::StringView layer) const {
-    const UnsignedInt id = layerFor(layer);
+    const UnsignedInt id = findLayerIdInternal(layer);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::layerId(): layer" << layer << "not found", {});
     return id;
@@ -363,7 +363,7 @@ Float MaterialData::layerFactor(const UnsignedInt layer) const {
 }
 
 Float MaterialData::layerFactor(const Containers::StringView layer) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactor(): layer" << layer << "not found", {});
     return layerFactor(layerId);
@@ -383,7 +383,7 @@ UnsignedInt MaterialData::layerFactorTexture(const UnsignedInt layer) const {
 
 UnsignedInt MaterialData::layerFactorTexture(const Containers::StringView layer) const {
     #ifndef CORRADE_NO_ASSERT
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     #endif
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactorTexture(): layer" << layer << "not found", {});
@@ -408,7 +408,7 @@ MaterialTextureSwizzle MaterialData::layerFactorTextureSwizzle(const UnsignedInt
 
 MaterialTextureSwizzle MaterialData::layerFactorTextureSwizzle(const Containers::StringView layer) const {
     #ifndef CORRADE_NO_ASSERT
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     #endif
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactorTextureSwizzle(): layer" << layer << "not found", {});
@@ -438,7 +438,7 @@ Matrix3 MaterialData::layerFactorTextureMatrix(const UnsignedInt layer) const {
 }
 
 Matrix3 MaterialData::layerFactorTextureMatrix(const Containers::StringView layer) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactorTextureMatrix(): layer" << layer << "not found", {});
     CORRADE_ASSERT(hasAttribute(layerId, MaterialAttribute::LayerFactorTexture),
@@ -471,7 +471,7 @@ UnsignedInt MaterialData::layerFactorTextureCoordinates(const UnsignedInt layer)
 }
 
 UnsignedInt MaterialData::layerFactorTextureCoordinates(const Containers::StringView layer) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactorTextureCoordinates(): layer" << layer << "not found", {});
     CORRADE_ASSERT(hasAttribute(layerId, MaterialAttribute::LayerFactorTexture),
@@ -504,7 +504,7 @@ UnsignedInt MaterialData::layerFactorTextureLayer(const UnsignedInt layer) const
 }
 
 UnsignedInt MaterialData::layerFactorTextureLayer(const Containers::StringView layer) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactorTextureLayer(): layer" << layer << "not found", {});
     CORRADE_ASSERT(hasAttribute(layerId, MaterialAttribute::LayerFactorTexture),
@@ -533,7 +533,7 @@ UnsignedInt MaterialData::attributeCount(const UnsignedInt layer) const {
 }
 
 UnsignedInt MaterialData::attributeCount(const Containers::StringView layer) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attributeCount(): layer" << layer << "not found", {});
     return attributeCount(layerId);
@@ -545,7 +545,7 @@ UnsignedInt MaterialData::attributeCount(const MaterialLayer layer) const {
     return attributeCount(string);
 }
 
-UnsignedInt MaterialData::attributeFor(const UnsignedInt layer, const Containers::StringView name) const {
+UnsignedInt MaterialData::findAttributeIdInternal(const UnsignedInt layer, const Containers::StringView name) const {
     const MaterialAttributeData* begin = _data.begin() +
         (layer && _layerOffsets ? _layerOffsets[layer - 1] : 0);
     const MaterialAttributeData* end =
@@ -560,7 +560,7 @@ UnsignedInt MaterialData::attributeFor(const UnsignedInt layer, const Containers
 bool MaterialData::hasAttribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::hasAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    return attributeFor(layer, name) != ~UnsignedInt{};
+    return findAttributeIdInternal(layer, name) != ~UnsignedInt{};
 }
 
 bool MaterialData::hasAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
@@ -570,7 +570,7 @@ bool MaterialData::hasAttribute(const UnsignedInt layer, const MaterialAttribute
 }
 
 bool MaterialData::hasAttribute(const Containers::StringView layer, const Containers::StringView name) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::hasAttribute(): layer" << layer << "not found", {});
     return hasAttribute(layerId, name);
@@ -597,7 +597,7 @@ bool MaterialData::hasAttribute(const MaterialLayer layer, const MaterialAttribu
 UnsignedInt MaterialData::attributeId(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeId(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attributeId(): attribute" << name << "not found in layer" << layer, {});
     return id;
@@ -610,10 +610,10 @@ UnsignedInt MaterialData::attributeId(const UnsignedInt layer, const MaterialAtt
 }
 
 UnsignedInt MaterialData::attributeId(const Containers::StringView layer, const Containers::StringView name) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attributeId(): layer" << layer << "not found", {});
-    const UnsignedInt id = attributeFor(layerId, name);
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attributeId(): attribute" << name << "not found in layer" << layer, {});
     return id;
@@ -646,7 +646,7 @@ Containers::StringView MaterialData::attributeName(const UnsignedInt layer, cons
 }
 
 Containers::StringView MaterialData::attributeName(const Containers::StringView layer, const UnsignedInt id) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attributeName(): layer" << layer << "not found", {});
     CORRADE_ASSERT(id < attributeCount(layer),
@@ -671,7 +671,7 @@ MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const
 MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeType(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attributeType(): attribute" << name << "not found in layer" << layer, {});
     return _data[layerOffset(layer) + id]._data.type;
@@ -684,7 +684,7 @@ MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const
 }
 
 MaterialAttributeType MaterialData::attributeType(const Containers::StringView layer, const UnsignedInt id) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attributeType(): layer" << layer << "not found", {});
     CORRADE_ASSERT(id < attributeCount(layer),
@@ -693,10 +693,10 @@ MaterialAttributeType MaterialData::attributeType(const Containers::StringView l
 }
 
 MaterialAttributeType MaterialData::attributeType(const Containers::StringView layer, const Containers::StringView name) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attributeType(): layer" << layer << "not found", {});
-    const UnsignedInt id = attributeFor(layerId, name);
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attributeType(): attribute" << name << "not found in layer" << layer, {});
     return _data[layerOffset(layerId) + id]._data.type;
@@ -747,7 +747,7 @@ void* MaterialData::mutableAttribute(const UnsignedInt layer, const UnsignedInt 
 const void* MaterialData::attribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
     return _data[layerOffset(layer) + id].value();
@@ -758,7 +758,7 @@ void* MaterialData::mutableAttribute(const UnsignedInt layer, const Containers::
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::mutableAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, {});
     return const_cast<void*>(_data[layerOffset(layer) + id].value());
@@ -777,7 +777,7 @@ void* MaterialData::mutableAttribute(const UnsignedInt layer, const MaterialAttr
 }
 
 const void* MaterialData::attribute(const Containers::StringView layer, const UnsignedInt id) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
     CORRADE_ASSERT(id < attributeCount(layer),
@@ -788,7 +788,7 @@ const void* MaterialData::attribute(const Containers::StringView layer, const Un
 void* MaterialData::mutableAttribute(const Containers::StringView layer, const UnsignedInt id) {
     CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", {});
     CORRADE_ASSERT(id < attributeCount(layer),
@@ -797,10 +797,10 @@ void* MaterialData::mutableAttribute(const Containers::StringView layer, const U
 }
 
 const void* MaterialData::attribute(const Containers::StringView layer, const Containers::StringView name) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
-    const UnsignedInt id = attributeFor(layerId, name);
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
     return _data[layerOffset(layerId) + id].value();
@@ -809,10 +809,10 @@ const void* MaterialData::attribute(const Containers::StringView layer, const Co
 void* MaterialData::mutableAttribute(const Containers::StringView layer, const Containers::StringView name) {
     CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", {});
-    const UnsignedInt id = attributeFor(layerId, name);
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, {});
     return const_cast<void*>(_data[layerOffset(layerId) + id].value());
@@ -901,7 +901,7 @@ template<> MAGNUM_TRADE_EXPORT Containers::MutableStringView MaterialData::mutab
 const void* MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::tryAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     if(id == ~UnsignedInt{}) return nullptr;
     return _data[layerOffset(layer) + id].value();
 }
@@ -913,10 +913,10 @@ const void* MaterialData::tryAttribute(const UnsignedInt layer, const MaterialAt
 }
 
 const void* MaterialData::tryAttribute(const Containers::StringView layer, const Containers::StringView name) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::tryAttribute(): layer" << layer << "not found", {});
-    const UnsignedInt id = attributeFor(layerId, name);
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
     if(id == ~UnsignedInt{}) return nullptr;
     return _data[layerOffset(layerId) + id].value();
 }

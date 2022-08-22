@@ -2962,11 +2962,11 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         static Containers::StringView layerString(MaterialLayer name);
         static Containers::StringView attributeString(MaterialAttribute name);
         /* Internal helpers that don't assert, unlike layerId() / attributeId() */
-        UnsignedInt layerFor(Containers::StringView layer) const;
+        UnsignedInt findLayerIdInternal(Containers::StringView layer) const;
         UnsignedInt layerOffset(UnsignedInt layer) const {
             return layer && _layerOffsets ? _layerOffsets[layer - 1] : 0;
         }
-        UnsignedInt attributeFor(UnsignedInt layer, Containers::StringView name) const;
+        UnsignedInt findAttributeIdInternal(UnsignedInt layer, Containers::StringView name) const;
 
         Containers::Array<MaterialAttributeData> _data;
         Containers::Array<UnsignedInt> _layerOffsets;
@@ -3141,7 +3141,7 @@ template<> Containers::MutableStringView MaterialData::mutableAttribute<Containe
 template<class T> T MaterialData::attribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
     return attribute<T>(layer, id);
@@ -3150,7 +3150,7 @@ template<class T> T MaterialData::attribute(const UnsignedInt layer, const Conta
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const UnsignedInt layer, const Containers::StringView name) {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::mutableAttribute(): index" << layer << "out of range for" << layerCount() << "layers", *reinterpret_cast<T*>(this));
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, *reinterpret_cast<T*>(this));
     return mutableAttribute<T>(layer, id);
@@ -3169,7 +3169,7 @@ template<class T> typename std::conditional<std::is_same<T, Containers::MutableS
 }
 
 template<class T> T MaterialData::attribute(const Containers::StringView layer, const UnsignedInt id) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
     CORRADE_ASSERT(id < attributeCount(layer),
@@ -3178,7 +3178,7 @@ template<class T> T MaterialData::attribute(const Containers::StringView layer, 
 }
 
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const Containers::StringView layer, const UnsignedInt id) {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", *reinterpret_cast<T*>(this));
     CORRADE_ASSERT(id < attributeCount(layer),
@@ -3187,20 +3187,20 @@ template<class T> typename std::conditional<std::is_same<T, Containers::MutableS
 }
 
 template<class T> T MaterialData::attribute(const Containers::StringView layer, const Containers::StringView name) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
-    const UnsignedInt id = attributeFor(layerId, name);
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
     return attribute<T>(layerId, id);
 }
 
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const Containers::StringView layer, const Containers::StringView name) {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): layer" << layer << "not found", *reinterpret_cast<T*>(this));
-    const UnsignedInt id = attributeFor(layerId, name);
+    const UnsignedInt id = findAttributeIdInternal(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
         "Trade::MaterialData::mutableAttribute(): attribute" << name << "not found in layer" << layer, *reinterpret_cast<T*>(this));
     return mutableAttribute<T>(layerId, id);
@@ -3257,7 +3257,7 @@ template<class T> typename std::conditional<std::is_same<T, Containers::MutableS
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::tryAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     if(id == ~UnsignedInt{}) return {};
     return attribute<T>(layer, id);
 }
@@ -3269,7 +3269,7 @@ template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Unsig
 }
 
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Containers::StringView layer, const Containers::StringView name) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::tryAttribute(): layer" << layer << "not found", {});
     return tryAttribute<T>(layerId, name);
@@ -3296,7 +3296,7 @@ template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Mater
 template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const Containers::StringView name, const T& defaultValue) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeOr(): index" << layer << "out of range for" << layerCount() << "layers", {});
-    const UnsignedInt id = attributeFor(layer, name);
+    const UnsignedInt id = findAttributeIdInternal(layer, name);
     if(id == ~UnsignedInt{}) return defaultValue;
     return attribute<T>(layer, id);
 }
@@ -3308,7 +3308,7 @@ template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const Mat
 }
 
 template<class T> T MaterialData::attributeOr(const Containers::StringView layer, const Containers::StringView name, const T& defaultValue) const {
-    const UnsignedInt layerId = layerFor(layer);
+    const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::attributeOr(): layer" << layer << "not found", {});
     return attributeOr<T>(layerId, name, defaultValue);
