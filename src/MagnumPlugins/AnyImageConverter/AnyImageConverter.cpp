@@ -54,12 +54,7 @@ ImageConverterFeatures AnyImageConverter::doFeatures() const {
         ImageConverterFeature::ConvertCompressed1DToFile|
         ImageConverterFeature::ConvertCompressed2DToFile|
         ImageConverterFeature::ConvertCompressed3DToFile|
-        ImageConverterFeature::ConvertLevels1DToFile|
-        ImageConverterFeature::ConvertLevels2DToFile|
-        ImageConverterFeature::ConvertLevels3DToFile|
-        ImageConverterFeature::ConvertCompressedLevels1DToFile|
-        ImageConverterFeature::ConvertCompressedLevels2DToFile|
-        ImageConverterFeature::ConvertCompressedLevels3DToFile;
+        ImageConverterFeature::Levels;
 }
 
 bool AnyImageConverter::doConvertToFile(const ImageView1D& image, const Containers::StringView filename) {

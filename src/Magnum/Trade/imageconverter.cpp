@@ -1021,10 +1021,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                         Trade::ImageConverterFeature::ConvertCompressed3DToFile :
                         Trade::ImageConverterFeature::Convert3DToFile;
                 } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-                /** @todo use a sane flag once the feature enum is ... sane */
-                constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
-                    Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
-                if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
+                if(outputIsMultiLevel)
+                    expectedFeatures |= Trade::ImageConverterFeature::Levels;
                 if(!(converter->features() >= expectedFeatures)) {
                     Error err;
                     err << converterName << "doesn't support";
