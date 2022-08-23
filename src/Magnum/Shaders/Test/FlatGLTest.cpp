@@ -866,32 +866,14 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 
 template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
-
-    constexpr struct {
-        const char* name;
-        FlatGL2D::Flags flags;
-    } data {
-        "textured + texture transformation",
-        FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation
-    };
-
-    setTestCaseDescription(data.name);
-
-    #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
-    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
-        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
-    #endif
-
-    auto compileState = FlatGL<dimensions>::compile(data.flags);
-    CORRADE_COMPARE(compileState.flags(), data.flags);
+    auto compileState = FlatGL<dimensions>::compile(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(compileState.flags(),  FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
 
     while(!compileState.isLinkFinished())
         Utility::System::sleep(100);
 
     FlatGL<dimensions> shader{std::move(compileState)};
-    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
 
     CORRADE_VERIFY(shader.id());
     {
@@ -951,52 +933,23 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
 template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    constexpr struct {
-        const char* name;
-        FlatGL2D::Flags flags;
-        UnsignedInt materialCount, drawCount;
-    }  data {
-        "alpha mask",
-        FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask,
-        1, 1
-    };
-
-    setTestCaseDescription(data.name);
-
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & FlatGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
-    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
-    if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
-        CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    if(data.flags >= FlatGL2D::Flag::MultiDraw) {
-        #ifndef MAGNUM_TARGET_GLES
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
-            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
-        #elif !defined(MAGNUM_TARGET_WEBGL)
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
-            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
-        #else
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
-            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
-        #endif
-    }
-
-    auto compileState = FlatGL<dimensions>::compile(data.flags, data.materialCount, data.drawCount);
-    CORRADE_COMPARE(compileState.flags(), data.flags);
-    CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
-    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+    auto compileState = FlatGL<dimensions>::compile(FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1, 1);
+    CORRADE_COMPARE(compileState.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
+    CORRADE_COMPARE(compileState.materialCount(), 1);
+    CORRADE_COMPARE(compileState.drawCount(), 1);
 
     while(!compileState.isLinkFinished())
         Utility::System::sleep(100);
 
     FlatGL<dimensions> shader{std::move(compileState)};
-    CORRADE_COMPARE(shader.flags(), data.flags);
-    CORRADE_COMPARE(shader.materialCount(), data.materialCount);
-    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
+    CORRADE_COMPARE(shader.materialCount(), 1);
+    CORRADE_COMPARE(shader.drawCount(), 1);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

@@ -384,23 +384,15 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
 template<UnsignedInt dimensions> void VectorGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    constexpr struct {
-        const char* name;
-        VectorGL2D::Flags flags;
-    } data {
-        "texture transformation", VectorGL2D::Flag::TextureTransformation
-    };
-    setTestCaseDescription(data.name);
-
-    auto compileState = VectorGL<dimensions>::compile(data.flags);
-    CORRADE_COMPARE(compileState.flags(), data.flags);
+    auto compileState = VectorGL<dimensions>::compile(VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(compileState.flags(), VectorGL2D::Flag::TextureTransformation);
 
     while(!compileState.isLinkFinished())
         Utility::System::sleep(100);
 
     VectorGL<dimensions> shader{std::move(compileState)};
     CORRADE_VERIFY(shader.isLinkFinished());
-    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::TextureTransformation);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -455,43 +447,24 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
 template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    constexpr struct {
-        const char* name;
-        VectorGL2D::Flags flags;
-        UnsignedInt materialCount, drawCount;
-    } data {"texture transformation", VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1, 1};
-    setTestCaseDescription(data.name);
-
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & VectorGL<dimensions>::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    if(data.flags >= VectorGL2D::Flag::MultiDraw) {
-        #ifndef MAGNUM_TARGET_GLES
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
-            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
-        #elif !defined(MAGNUM_TARGET_WEBGL)
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
-            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
-        #else
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
-            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
-        #endif
-    }
-
-    auto compileState = VectorGL<dimensions>::compile(data.flags, data.materialCount, data.drawCount);
-    CORRADE_COMPARE(compileState.flags(), data.flags);
-    CORRADE_COMPARE(compileState.materialCount(), data.materialCount);
-    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+    auto compileState = VectorGL<dimensions>::compile(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1, 1);
+    CORRADE_COMPARE(compileState.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(compileState.materialCount(), 1);
+    CORRADE_COMPARE(compileState.drawCount(), 1);
 
     while(!compileState.isLinkFinished())
         Utility::System::sleep(100);
 
     VectorGL<dimensions> shader{std::move(compileState)};
     CORRADE_VERIFY(shader.isLinkFinished());
-    CORRADE_COMPARE(shader.flags(), data.flags);
-    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(shader.materialCount(), 1);
+    CORRADE_COMPARE(shader.drawCount(), 1);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

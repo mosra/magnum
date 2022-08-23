@@ -382,42 +382,21 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
 template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffersAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    constexpr struct {
-        const char* name;
-        VertexColorGL2D::Flags flags;
-        UnsignedInt drawCount;
-    } data {
-        "multiple draws", VertexColorGL2D::Flag::UniformBuffers, 63
-    };
-    setTestCaseDescription(data.name);
-
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & VertexColorGL<dimensions>::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    if(data.flags >= VertexColorGL2D::Flag::MultiDraw) {
-        #ifndef MAGNUM_TARGET_GLES
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
-            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
-        #elif !defined(MAGNUM_TARGET_WEBGL)
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
-            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
-        #else
-        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
-            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
-        #endif
-    }
-    auto compileState = VertexColorGL<dimensions>::compile(data.flags, data.drawCount);
-    CORRADE_COMPARE(compileState.flags(), data.flags);
-    CORRADE_COMPARE(compileState.drawCount(), data.drawCount);
+    auto compileState = VertexColorGL<dimensions>::compile(VertexColorGL2D::Flag::UniformBuffers, 63);
+    CORRADE_COMPARE(compileState.flags(), VertexColorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(compileState.drawCount(), 63);
 
     while(!compileState.isLinkFinished())
         Utility::System::sleep(100);
 
     VertexColorGL<dimensions> shader{std::move(compileState)};
-    CORRADE_COMPARE(shader.flags(), data.flags);
-    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_COMPARE(shader.flags(), VertexColorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(shader.drawCount(), 63);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
