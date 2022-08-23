@@ -217,7 +217,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * @ref VertexColorGL(Flags, UnsignedInt) with @p drawCount set to
          * @cpp 1 @ce.
          */
-        explicit VertexColorGL(Flags flags = {}): VertexColorGL{compile(flags)} {}
+        explicit VertexColorGL(Flags flags = {});
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -248,8 +248,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
             for this might be too confusing); what if some parameters won't be
             (unsigned) integers? like a string with shader extensions? make a
             whole Configuration class? */
-        explicit VertexColorGL(Flags flags, UnsignedInt drawCount):
-            VertexColorGL{compile(flags, drawCount)} {}
+        explicit VertexColorGL(Flags flags, UnsignedInt drawCount);
         #endif
 
         /**
@@ -277,9 +276,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         );
 
         #ifndef MAGNUM_TARGET_GLES2
-        static CompileState compile(Flags flags) {
-            return compile(flags, 1);
-        }
+        static CompileState compile(Flags flags);
         #endif
 
         /** @brief Copying is not allowed */
@@ -424,7 +421,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         #endif
 
     private:
-        explicit VertexColorGL(NoInitT) {}
+        explicit VertexColorGL(NoInitT);
 
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES

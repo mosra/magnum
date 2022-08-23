@@ -193,6 +193,20 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     static_cast<void>(version);
 }
 
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Flags flags): VertexColorGL{compile(flags)} {}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(Flags flags) {
+    return compile(flags, 1);
+}
+
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Flags flags, UnsignedInt drawCount)
+    : VertexColorGL{compile(flags, drawCount)} {}
+#endif
+
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(NoInitT) {}
+
+
 template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
