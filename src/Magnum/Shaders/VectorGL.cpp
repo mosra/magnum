@@ -230,6 +230,20 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& c
     static_cast<void>(version);
 }
 
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(Flags flags) : VectorGL{compile(flags)} {}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(Flags flags) {
+    return compile(flags, 1, 1);
+}
+
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount)
+    : VectorGL{compile(flags, materialCount, drawCount)} {}
+#endif
+
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(NoInitT) {}
+
+
 template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),

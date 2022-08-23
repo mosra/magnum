@@ -222,7 +222,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @ref VectorGL(Flags, UnsignedInt, UnsignedInt) with @p materialCount
          * and @p drawCount set to @cpp 1 @ce.
          */
-        explicit VectorGL(Flags flags = {}) : VectorGL{compile(flags)} {};
+        explicit VectorGL(Flags flags = {});
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -257,8 +257,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
             for this might be too confusing); what if some parameters won't be
             (unsigned) integers? like a string with shader extensions? make a
             whole Configuration class? */
-        explicit VectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount) :
-            VectorGL{compile(flags, materialCount, drawCount)} {}
+        explicit VectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
         #endif
 
         /**
@@ -286,9 +285,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         );
 
         #ifndef MAGNUM_TARGET_GLES2
-        static CompileState compile(Flags flags) {
-            return compile(flags, 1, 1);
-        }
+        static CompileState compile(Flags flags);
         #endif
 
         /** @brief Copying is not allowed */
@@ -573,7 +570,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
 
     private:
         /* Creates the GL shader program object but nothing else. Internal, used by compile(). */
-        explicit VectorGL(NoInitT) {}
+        explicit VectorGL(NoInitT);
 
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
