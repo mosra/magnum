@@ -312,6 +312,19 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
     static_cast<void>(context);
 }
 
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags) : FlatGL{compile(flags)} {}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(Flags flags) {
+    return compile(flags, 1, 1);
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount)
+    : FlatGL{compile(flags, materialCount, drawCount)} {}
+#endif
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT) {}
+
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),

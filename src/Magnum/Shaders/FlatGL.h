@@ -550,7 +550,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @ref FlatGL(Flags, UnsignedInt, UnsignedInt) with @p materialCount
          * and @p drawCount set to @cpp 1 @ce.
          */
-        explicit FlatGL(Flags flags = {}) : FlatGL{compile(flags)} {}
+        explicit FlatGL(Flags flags = {});
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -586,8 +586,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
             for this might be too confusing); what if some parameters won't be
             (unsigned) integers? like a string with shader extensions? make a
             whole Configuration class? */
-        explicit FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
-            FlatGL{compile(flags, materialCount, drawCount)} {}
+        explicit FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
         #endif
 
         /**
@@ -615,9 +614,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         );
 
         #ifndef MAGNUM_TARGET_GLES2
-        static CompileState compile(Flags flags) {
-            return compile(flags, 1, 1);
-        }
+        static CompileState compile(Flags flags);
         #endif
 
         /** @brief Copying is not allowed */
@@ -1030,7 +1027,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 
     private:
         /* Creates the GL shader program object but nothing else. Internal, used by compile(). */
-        explicit FlatGL(NoInitT) {}
+        explicit FlatGL(NoInitT);
 
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
