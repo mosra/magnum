@@ -1184,8 +1184,8 @@ enum class MaterialAttributeType: UnsignedByte {
 
     /**
      * Null-terminated string. Can be stored using any type convertible to
-     * @ref Corrade::Containers::StringView, retrieval has to be done using
-     * @ref Corrade::Containers::StringView.
+     * @relativeref{Corrade,Containers::StringView}, retrieval has to be done
+     * using @relativeref{Corrade,Containers::StringView}.
      */
     String,
 
@@ -1355,7 +1355,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * @brief Attribute name
          *
          * The returned view always has
-         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set.
          */
         Containers::StringView name() const { return _data.data + 1; }
 
@@ -1697,7 +1697,7 @@ existing attributes.
 @section Trade-MaterialData-populating Populating an instance
 
 A @ref MaterialData instance by default takes over ownership of an
-@ref Corrade::Containers::Array containing @ref MaterialAttributeData
+@relativeref{Corrade,Containers::Array} containing @ref MaterialAttributeData
 instances, together with @ref MaterialTypes suggesting available material types
 (or an empty set, in case of a fully custom material). Attribute values can be
 in one of the types from @ref MaterialAttributeType, and the type is in most
@@ -1727,8 +1727,8 @@ already sorted by name.
 @par
     Additionally, as shown above, in order to create a @cpp constexpr @ce
     @ref MaterialAttributeData array, you need to use
-    @ref Corrade::Containers::StringView literals instead of plain C strings
-    or the @ref MaterialAttribute enum, and be sure to call only
+    @relativeref{Corrade,Containers::StringView} literals instead of plain C
+    strings or the @ref MaterialAttribute enum, and be sure to call only
     @cpp constexpr @ce-enabled constructors of stored data types.
 
 @subsection Trade-MaterialData-populating-custom Custom material attributes
@@ -2371,7 +2371,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * The @p layer is expected to be smaller than @ref layerCount() const
          * and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
          * in that layer. The returned view always has
-         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set.
          * @see @ref attributeType()
          */
         Containers::StringView attributeName(UnsignedInt layer, UnsignedInt id) const;
@@ -2643,7 +2643,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @ref attributeCount(UnsignedInt) const in that layer. Expects that
          * @p T corresponds to @ref attributeType(UnsignedInt, UnsignedInt) const
          * for given @p layer and @p id. In case of a string, the returned view
-         * always has @ref Corrade::Containers::StringViewFlag::NullTerminated
+         * always has @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
          * set.
          */
         template<class T> T attribute(UnsignedInt layer, UnsignedInt id) const;
@@ -2669,8 +2669,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * and @p name is expected to exist in that layer. Expects that @p T
          * corresponds to @ref attributeType(UnsignedInt, Containers::StringView) const
          * for given @p layer and @p name. In case of a string, the returned
-         * view always has
-         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
+         * view always has @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * set.
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         template<class T> T attribute(UnsignedInt layer, Containers::StringView name) const;
@@ -2699,7 +2699,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * Expects that @p T corresponds to
          * @ref attributeType(Containers::StringView, UnsignedInt) const
          * for given @p layer and @p id. In case of a string, the returned view
-         * always has @ref Corrade::Containers::StringViewFlag::NullTerminated
+         * always has @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
          * set.
          * @see @ref hasLayer()
          */
@@ -2728,8 +2728,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * in that layer. Expects that @p T corresponds to
          * @ref attributeType(Containers::StringView, Containers::StringView) const
          * for given @p layer and @p name. In case of a string, the returned
-         * view always has
-         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
+         * view always has @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * set.
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         template<class T> T attribute(Containers::StringView layer, Containers::StringView name) const;
@@ -2830,9 +2830,10 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Value of a named attribute in given material layer, if exists
          *
          * Compared to @ref attribute(UnsignedInt, Containers::StringView name) const,
-         * if @p name doesn't exist, returns @ref Corrade::Containers::NullOpt
-         * instead of asserting. Expects that @p layer is smaller than
-         * @ref layerCount() const and that @p T corresponds to
+         * if @p name doesn't exist, returns
+         * @relativeref{Corrade,Containers::NullOpt} instead of asserting.
+         * Expects that @p layer is smaller than @ref layerCount() const and
+         * that @p T corresponds to
          * @ref attributeType(UnsignedInt, Containers::StringView) const for
          * given @p layer and @p name.
          */
@@ -2843,9 +2844,10 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Value of a named attribute in a named material layer, if exists
          *
          * Compared to @ref attribute(Containers::StringView, Containers::StringView name) const,
-         * if @p name doesn't exist, returns @ref Corrade::Containers::NullOpt
-         * instead of asserting. Expects that @p layer exists and that @p T
-         * corresponds to @ref attributeType(Containers::StringView, Containers::StringView) const
+         * if @p name doesn't exist, returns
+         * @relativeref{Corrade,Containers::NullOpt} instead of asserting.
+         * Expects that @p layer exists and that @p T corresponds to
+         * @ref attributeType(Containers::StringView, Containers::StringView) const
          * for given @p layer and @p name.
          * @see @ref hasLayer()
          */
