@@ -65,6 +65,39 @@ constexpr struct {
 
 }
 
+namespace Implementation {
+
+Containers::StringView materialLayerNameInternal(const MaterialLayer layer) {
+    #ifndef CORRADE_NO_ASSERT
+    if(UnsignedInt(layer) - 1 >= Containers::arraySize(LayerMap))
+        return nullptr;
+    #endif
+    return LayerMap[UnsignedInt(layer) - 1];
+}
+
+Containers::StringView materialAttributeNameInternal(const MaterialAttribute attribute) {
+    #ifndef CORRADE_NO_ASSERT
+    if(UnsignedInt(attribute) - 1 >= Containers::arraySize(AttributeMap))
+        return nullptr;
+    #endif
+    return AttributeMap[UnsignedInt(attribute) - 1].name;
+}
+
+}
+
+Containers::StringView materialLayerName(const MaterialLayer layer) {
+    CORRADE_ASSERT(UnsignedInt(layer) - 1 < Containers::arraySize(LayerMap),
+        "Trade::materialLayerName(): invalid layer" << layer, {});
+    return LayerMap[UnsignedInt(layer) - 1];
+}
+
+Containers::StringView materialAttributeName(const MaterialAttribute attribute) {
+    CORRADE_ASSERT(UnsignedInt(attribute) - 1 < Containers::arraySize(AttributeMap),
+        "Trade::materialAttributeName(): invalid attribute" << attribute, {});
+    return AttributeMap[UnsignedInt(attribute) - 1].name;
+}
+
+
 UnsignedInt materialTextureSwizzleComponentCount(const MaterialTextureSwizzle swizzle) {
     return (UnsignedInt(swizzle) & 0xff000000u ? 1 : 0) +
            (UnsignedInt(swizzle) & 0x00ff0000u ? 1 : 0) +
@@ -298,22 +331,6 @@ MaterialData::~MaterialData() = default;
 
 MaterialData& MaterialData::operator=(MaterialData&&) noexcept = default;
 
-Containers::StringView MaterialData::layerString(const MaterialLayer name) {
-    #ifndef CORRADE_NO_ASSERT
-    if(UnsignedInt(name) - 1 >= Containers::arraySize(LayerMap))
-        return nullptr;
-    #endif
-    return LayerMap[UnsignedInt(name) - 1];
-}
-
-Containers::StringView MaterialData::attributeString(const MaterialAttribute name) {
-    #ifndef CORRADE_NO_ASSERT
-    if(UnsignedInt(name) - 1 >= Containers::arraySize(AttributeMap))
-        return nullptr;
-    #endif
-    return AttributeMap[UnsignedInt(name) - 1].name;
-}
-
 UnsignedInt MaterialData::findLayerIdInternal(const Containers::StringView layer) const {
     for(std::size_t i = 1; i < _layerOffsets.size(); ++i) {
         if(_layerOffsets[i] > _layerOffsets[i - 1] &&
@@ -329,7 +346,7 @@ bool MaterialData::hasLayer(const Containers::StringView layer) const {
 }
 
 bool MaterialData::hasLayer(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::hasLayer(): invalid name" << layer, {});
     return hasLayer(string);
 }
@@ -340,7 +357,7 @@ Containers::Optional<UnsignedInt> MaterialData::findLayerId(const Containers::St
 }
 
 Containers::Optional<UnsignedInt> MaterialData::findLayerId(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::findLayerId(): invalid name" << layer, {});
     return findLayerId(string);
 }
@@ -353,7 +370,7 @@ UnsignedInt MaterialData::layerId(const Containers::StringView layer) const {
 }
 
 UnsignedInt MaterialData::layerId(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::layerId(): invalid name" << layer, {});
     return layerId(string);
 }
@@ -381,7 +398,7 @@ Float MaterialData::layerFactor(const Containers::StringView layer) const {
 }
 
 Float MaterialData::layerFactor(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::layerFactor(): invalid name" << layer, {});
     return layerFactor(string);
 }
@@ -404,7 +421,7 @@ UnsignedInt MaterialData::layerFactorTexture(const Containers::StringView layer)
 }
 
 UnsignedInt MaterialData::layerFactorTexture(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::layerFactorTexture(): invalid name" << layer, {});
     return layerFactorTexture(string);
 }
@@ -431,7 +448,7 @@ MaterialTextureSwizzle MaterialData::layerFactorTextureSwizzle(const Containers:
 }
 
 MaterialTextureSwizzle MaterialData::layerFactorTextureSwizzle(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::layerFactorTextureSwizzle(): invalid name" << layer, {});
     return layerFactorTextureSwizzle(string);
 }
@@ -464,7 +481,7 @@ Matrix3 MaterialData::layerFactorTextureMatrix(const Containers::StringView laye
 }
 
 Matrix3 MaterialData::layerFactorTextureMatrix(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::layerFactorTextureMatrix(): invalid name" << layer, {});
     return layerFactorTextureMatrix(string);
 }
@@ -497,7 +514,7 @@ UnsignedInt MaterialData::layerFactorTextureCoordinates(const Containers::String
 }
 
 UnsignedInt MaterialData::layerFactorTextureCoordinates(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::layerFactorTextureCoordinates(): invalid name" << layer, {});
     return layerFactorTextureCoordinates(string);
 }
@@ -530,7 +547,7 @@ UnsignedInt MaterialData::layerFactorTextureLayer(const Containers::StringView l
 }
 
 UnsignedInt MaterialData::layerFactorTextureLayer(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::layerFactorTextureLayer(): invalid name" << layer, {});
     return layerFactorTextureLayer(string);
 }
@@ -551,7 +568,7 @@ UnsignedInt MaterialData::attributeCount(const Containers::StringView layer) con
 }
 
 UnsignedInt MaterialData::attributeCount(const MaterialLayer layer) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeCount(): invalid name" << layer, {});
     return attributeCount(string);
 }
@@ -575,7 +592,7 @@ bool MaterialData::hasAttribute(const UnsignedInt layer, const Containers::Strin
 }
 
 bool MaterialData::hasAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::hasAttribute(): invalid name" << name, {});
     return hasAttribute(layer, string);
 }
@@ -588,19 +605,19 @@ bool MaterialData::hasAttribute(const Containers::StringView layer, const Contai
 }
 
 bool MaterialData::hasAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::hasAttribute(): invalid name" << name, {});
     return hasAttribute(layer, string);
 }
 
 bool MaterialData::hasAttribute(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::hasAttribute(): invalid name" << layer, {});
     return hasAttribute(string, name);
 }
 
 bool MaterialData::hasAttribute(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::hasAttribute(): invalid name" << layer, {});
     return hasAttribute(string, name);
 }
@@ -613,7 +630,7 @@ Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const UnsignedIn
 }
 
 Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << name, {});
     return findAttributeId(layer, string);
 }
@@ -627,19 +644,19 @@ Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const Containers
 }
 
 Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << name, {});
     return findAttributeId(layer, string);
 }
 
 Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << layer, {});
     return findAttributeId(string, name);
 }
 
 Containers::Optional<UnsignedInt> MaterialData::findAttributeId(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::findAttributeId(): invalid name" << layer, {});
     return findAttributeId(string, name);
 }
@@ -662,7 +679,7 @@ UnsignedInt MaterialData::attributeId(const UnsignedInt layer, const Containers:
 }
 
 UnsignedInt MaterialData::attributeId(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeId(): invalid name" << name, {});
     return attributeId(layer, string);
 }
@@ -678,19 +695,19 @@ UnsignedInt MaterialData::attributeId(const Containers::StringView layer, const 
 }
 
 UnsignedInt MaterialData::attributeId(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeId(): invalid name" << name, {});
     return attributeId(layer, string);
 }
 
 UnsignedInt MaterialData::attributeId(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeId(): invalid name" << layer, {});
     return attributeId(string, name);
 }
 
 UnsignedInt MaterialData::attributeId(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeId(): invalid name" << layer, {});
     return attributeId(string, name);
 }
@@ -713,7 +730,7 @@ Containers::StringView MaterialData::attributeName(const Containers::StringView 
 }
 
 Containers::StringView MaterialData::attributeName(const MaterialLayer layer, const UnsignedInt id) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeName(): invalid name" << layer, {});
     return attributeName(string, id);
 }
@@ -736,7 +753,7 @@ MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const
 }
 
 MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeType(): invalid name" << name, {});
     return attributeType(layer, string);
 }
@@ -761,25 +778,25 @@ MaterialAttributeType MaterialData::attributeType(const Containers::StringView l
 }
 
 MaterialAttributeType MaterialData::attributeType(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeType(): invalid name" << name, {});
     return attributeType(layer, string);
 }
 
 MaterialAttributeType MaterialData::attributeType(const MaterialLayer layer, const UnsignedInt id) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeType(): invalid name" << layer, {});
     return attributeType(string, id);
 }
 
 MaterialAttributeType MaterialData::attributeType(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeType(): invalid name" << layer, {});
     return attributeType(string, name);
 }
 
 MaterialAttributeType MaterialData::attributeType(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attributeType(): invalid name" << layer, {});
     return attributeType(string, name);
 }
@@ -823,13 +840,13 @@ void* MaterialData::mutableAttribute(const UnsignedInt layer, const Containers::
 }
 
 const void* MaterialData::attribute(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute(layer, string);
 }
 
 void* MaterialData::mutableAttribute(const UnsignedInt layer, const MaterialAttribute name) {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::mutableAttribute(): invalid name" << name, {});
     return mutableAttribute(layer, string);
 }
@@ -877,49 +894,49 @@ void* MaterialData::mutableAttribute(const Containers::StringView layer, const C
 }
 
 const void* MaterialData::attribute(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute(layer, string);
 }
 
 void* MaterialData::mutableAttribute(const Containers::StringView layer, const MaterialAttribute name) {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::mutableAttribute(): invalid name" << name, {});
     return mutableAttribute(layer, string);
 }
 
 const void* MaterialData::attribute(const MaterialLayer layer, const UnsignedInt id) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute(string, id);
 }
 
 void* MaterialData::mutableAttribute(const MaterialLayer layer, const UnsignedInt id) {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::mutableAttribute(): invalid name" << layer, {});
     return mutableAttribute(string, id);
 }
 
 const void* MaterialData::attribute(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute(string, name);
 }
 
 void* MaterialData::mutableAttribute(const MaterialLayer layer, const Containers::StringView name) {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::mutableAttribute(): invalid name" << layer, {});
     return mutableAttribute(string, name);
 }
 
 const void* MaterialData::attribute(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute(string, name);
 }
 
 void* MaterialData::mutableAttribute(const MaterialLayer layer, const MaterialAttribute name) {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::mutableAttribute(): invalid name" << layer, {});
     return mutableAttribute(string, name);
 }
@@ -965,7 +982,7 @@ const void* MaterialData::tryAttribute(const UnsignedInt layer, const Containers
 }
 
 const void* MaterialData::tryAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
     return tryAttribute(layer, string);
 }
@@ -980,19 +997,19 @@ const void* MaterialData::tryAttribute(const Containers::StringView layer, const
 }
 
 const void* MaterialData::tryAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
     return tryAttribute(layer, string);
 }
 
 const void* MaterialData::tryAttribute(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
     return tryAttribute(string, name);
 }
 
 const void* MaterialData::tryAttribute(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
     return tryAttribute(string, name);
 }

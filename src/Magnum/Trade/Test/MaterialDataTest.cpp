@@ -46,6 +46,10 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct MaterialDataTest: TestSuite::Tester {
     explicit MaterialDataTest();
 
+    void layerName();
+    void layerNameInvalid();
+    void attributeName();
+    void attributeNameInvalid();
     void textureSwizzleComponentCount();
     void attributeTypeSize();
     void attributeTypeSizeInvalid();
@@ -172,10 +176,16 @@ struct MaterialDataTest: TestSuite::Tester {
 };
 
 MaterialDataTest::MaterialDataTest() {
-    addTests({&MaterialDataTest::textureSwizzleComponentCount,
+    addTests({&MaterialDataTest::layerName,
+              &MaterialDataTest::layerNameInvalid,
 
+              &MaterialDataTest::attributeName,
+              &MaterialDataTest::attributeNameInvalid,
+
+              &MaterialDataTest::textureSwizzleComponentCount,
               &MaterialDataTest::attributeTypeSize,
               &MaterialDataTest::attributeTypeSizeInvalid,
+
               &MaterialDataTest::attributeMap,
               &MaterialDataTest::layerMap,
 
@@ -324,6 +334,38 @@ MaterialDataTest::MaterialDataTest() {
 
 using namespace Containers::Literals;
 using namespace Math::Literals;
+
+void MaterialDataTest::layerName() {
+    CORRADE_COMPARE(materialLayerName(MaterialLayer::ClearCoat), "ClearCoat");
+}
+
+void MaterialDataTest::layerNameInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    materialLayerName(MaterialLayer(0x0));
+    materialLayerName(MaterialLayer(0xdeadbeef));
+    CORRADE_COMPARE(out.str(),
+        "Trade::materialLayerName(): invalid layer Trade::MaterialLayer(0x0)\n"
+        "Trade::materialLayerName(): invalid layer Trade::MaterialLayer(0xdeadbeef)\n");
+}
+
+void MaterialDataTest::attributeName() {
+    CORRADE_COMPARE(materialAttributeName(MaterialAttribute::BaseColorTextureMatrix), "BaseColorTextureMatrix");
+}
+
+void MaterialDataTest::attributeNameInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    materialAttributeName(MaterialAttribute(0x0));
+    materialAttributeName(MaterialAttribute(0xdeadbeef));
+    CORRADE_COMPARE(out.str(),
+        "Trade::materialAttributeName(): invalid attribute Trade::MaterialAttribute(0x0)\n"
+        "Trade::materialAttributeName(): invalid attribute Trade::MaterialAttribute(0xdeadbeef)\n");
+}
 
 void MaterialDataTest::textureSwizzleComponentCount() {
     CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::B), 1);

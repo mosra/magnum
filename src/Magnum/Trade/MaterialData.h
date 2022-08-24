@@ -57,7 +57,8 @@ for @cpp "ClearCoat" @ce. Each layer is expected to contain (a subset of) the
 @ref MaterialAttribute::LayerFactorTextureMatrix,
 @ref MaterialAttribute::LayerFactorTextureCoordinates attributes in addition to
 what's specified for a particular named layer.
-@see @ref MaterialData, @ref MaterialData::layerName(), @ref MaterialLayerData
+@see @ref MaterialData, @ref MaterialData::layerName(), @ref MaterialLayerData,
+    @ref materialLayerName()
 */
 enum class MaterialLayer: UnsignedInt {
     /* Zero used for an invalid value */
@@ -80,6 +81,21 @@ enum class MaterialLayer: UnsignedInt {
     ClearCoat = 1,
 };
 
+namespace Implementation {
+    /* Compared to materialLayerName() below returns an empty string for
+       invalid layers, used internally to provide better assertion messages */
+    MAGNUM_TRADE_EXPORT Containers::StringView materialLayerNameInternal(MaterialLayer layer);
+}
+
+/**
+@brief Material layer name as a string
+
+Expects that @p layer is a valid @ref MaterialLayer value. The returned view
+has both @relativeref{Corrade,Containers::StringViewFlag::Global} and
+@relativeref{Corrade::Containers::StringViewFlag,NullTerminated} set.
+*/
+MAGNUM_TRADE_EXPORT Containers::StringView materialLayerName(MaterialLayer layer);
+
 /**
 @debugoperatorenum{MaterialLayer}
 @m_since_latest
@@ -99,7 +115,8 @@ only exception is @ref MaterialAttribute::LayerName which is
 When this enum is used in @ref MaterialAttributeData constructors, the data are
 additionally checked for type compatibility. Other than that, there is no
 difference to the string variants.
-@see @ref MaterialAttributeData, @ref MaterialData
+@see @ref MaterialAttributeData, @ref MaterialData,
+    @ref materialAttributeName()
 */
 enum class MaterialAttribute: UnsignedInt {
     /* Zero used for an invalid value */
@@ -1051,6 +1068,22 @@ enum class MaterialAttribute: UnsignedInt {
      */
     TextureLayer,
 };
+
+namespace Implementation {
+    /* Compared to materialLayerName() below returns an empty string for
+       invalid layers, used internally to provide better assertion messages */
+    MAGNUM_TRADE_EXPORT Containers::StringView materialAttributeNameInternal(MaterialAttribute attribute);
+}
+
+/**
+@brief Material layer name as a string
+@m_since_latest
+
+Expects that @p attribute is a valid @ref MaterialAttribute value. The returned
+view has both @relativeref{Corrade,Containers::StringViewFlag::Global} and
+@relativeref{Corrade::Containers::StringViewFlag,NullTerminated} set.
+*/
+MAGNUM_TRADE_EXPORT Containers::StringView materialAttributeName(MaterialAttribute attribute);
 
 /**
 @debugoperatorenum{MaterialAttribute}
@@ -2075,6 +2108,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @cpp 0 @ce) to avoid confsing base material with a layer. If you
          * want to create a material consisting of just a layer, use @cpp 0 @ce
          * for the first layer offset in the constructor.
+         * @see @ref materialLayerName()
          */
         Containers::StringView layerName(UnsignedInt layer) const;
 
@@ -2372,7 +2406,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
          * in that layer. The returned view always has
          * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set.
-         * @see @ref attributeType()
+         * @see @ref attributeType(), @ref materialAttributeName()
          */
         Containers::StringView attributeName(UnsignedInt layer, UnsignedInt id) const;
 
@@ -2381,7 +2415,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * The @p layer is expected to exist and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
          * in that layer.
-         * @see @ref hasLayer()
+         * @see @ref hasLayer(), @ref materialAttributeName()
          */
         Containers::StringView attributeName(Containers::StringView layer, UnsignedInt id) const;
         Containers::StringView attributeName(MaterialLayer layer, UnsignedInt id) const; /**< @overload */
@@ -2391,6 +2425,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * Equivalent to calling @ref attributeName(UnsignedInt, UnsignedInt) const
          * with @p layer set to @cpp 0 @ce.
+         * @see @ref materialAttributeName()
          */
         Containers::StringView attributeName(UnsignedInt id) const {
             return attributeName(0, id);
@@ -3011,8 +3046,6 @@ class MAGNUM_TRADE_EXPORT MaterialData {
            implementations. */
         friend AbstractImporter;
 
-        static Containers::StringView layerString(MaterialLayer name);
-        static Containers::StringView attributeString(MaterialAttribute name);
         /* Internal helpers that don't assert, unlike layerId() / attributeId() */
         UnsignedInt findLayerIdInternal(Containers::StringView layer) const;
         UnsignedInt layerOffset(UnsignedInt layer) const {
@@ -3209,13 +3242,13 @@ template<class T> typename std::conditional<std::is_same<T, Containers::MutableS
 }
 
 template<class T> T MaterialData::attribute(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute<T>(layer, string);
 }
 
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const UnsignedInt layer, const MaterialAttribute name) {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << name, *reinterpret_cast<T*>(this));
     return mutableAttribute<T>(layer, string);
 }
@@ -3259,49 +3292,49 @@ template<class T> typename std::conditional<std::is_same<T, Containers::MutableS
 }
 
 template<class T> T MaterialData::attribute(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
     return attribute<T>(layer, string);
 }
 
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const Containers::StringView layer, const MaterialAttribute name) {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << name, *reinterpret_cast<T*>(this));
     return mutableAttribute<T>(layer, string);
 }
 
 template<class T> T MaterialData::attribute(const MaterialLayer layer, const UnsignedInt id) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute<T>(string, id);
 }
 
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const MaterialLayer layer, const UnsignedInt id) {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, *reinterpret_cast<T*>(this));
     return mutableAttribute<T>(string, id);
 }
 
 template<class T> T MaterialData::attribute(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute<T>(string, name);
 }
 
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const MaterialLayer layer, const Containers::StringView name) {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, *reinterpret_cast<T*>(this));
     return mutableAttribute<T>(string, name);
 }
 
 template<class T> T MaterialData::attribute(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
     return attribute<T>(string, name);
 }
 
 template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type MaterialData::mutableAttribute(const MaterialLayer layer, const MaterialAttribute name) {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::mutableAttribute(): invalid name" << layer, *reinterpret_cast<T*>(this));
     return mutableAttribute<T>(string, name);
 }
@@ -3315,7 +3348,7 @@ template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Unsig
 }
 
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
     return tryAttribute<T>(layer, string);
 }
@@ -3328,19 +3361,19 @@ template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Conta
 }
 
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
     return tryAttribute<T>(layer, string);
 }
 
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const MaterialLayer layer, const Containers::StringView name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
     return tryAttribute<T>(string, name);
 }
 
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const MaterialLayer layer, const MaterialAttribute name) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
     return tryAttribute<T>(string, name);
 }
@@ -3354,7 +3387,7 @@ template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const Con
 }
 
 template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const MaterialAttribute name, const T& defaultValue) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << name, {});
     return attributeOr<T>(layer, string, defaultValue);
 }
@@ -3367,19 +3400,19 @@ template<class T> T MaterialData::attributeOr(const Containers::StringView layer
 }
 
 template<class T> T MaterialData::attributeOr(const Containers::StringView layer, const MaterialAttribute name, const T& defaultValue) const {
-    const Containers::StringView string = attributeString(name);
+    const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << name, {});
     return attributeOr<T>(layer, string, defaultValue);
 }
 
 template<class T> T MaterialData::attributeOr(const MaterialLayer layer, const Containers::StringView name, const T& defaultValue) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << layer, {});
     return attributeOr<T>(string, name, defaultValue);
 }
 
 template<class T> T MaterialData::attributeOr(const MaterialLayer layer, const MaterialAttribute name, const T& defaultValue) const {
-    const Containers::StringView string = layerString(layer);
+    const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << layer, {});
     return attributeOr<T>(string, name, defaultValue);
 }
