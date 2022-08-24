@@ -903,19 +903,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
     return CompileState{std::move(out), std::move(vert), std::move(frag), std::move(geom), flags, version};
 }
 
-MeshVisualizerGL3D::MeshVisualizerGL3D(Flags flags) : MeshVisualizerGL3D{compile(flags)} {}
-
-#ifndef MAGNUM_TARGET_GLES2
-MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags) {
-    return compile(flags, 1, 1);
-}
-
-MeshVisualizerGL3D::MeshVisualizerGL3D(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount)
-    : MeshVisualizerGL3D{compile(flags, materialCount, drawCount)} {}
-#endif
-
-MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& cs)
-: MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(cs))} {
+MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& cs): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(cs))} {
     if (id() == 0) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
@@ -1054,6 +1042,17 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& cs)
     static_cast<void>(context);
     static_cast<void>(version);
 }
+
+MeshVisualizerGL3D::MeshVisualizerGL3D(Flags flags) : MeshVisualizerGL3D{compile(flags)} {}
+
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags) {
+    return compile(flags, 1, 1);
+}
+
+MeshVisualizerGL3D::MeshVisualizerGL3D(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
+    MeshVisualizerGL3D{compile(flags, materialCount, drawCount)} {}
+#endif
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::setTransformationMatrix(const Matrix4& matrix) {
     #ifndef MAGNUM_TARGET_GLES2

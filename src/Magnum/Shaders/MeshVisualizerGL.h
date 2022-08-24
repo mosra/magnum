@@ -886,13 +886,13 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         Int _transformationProjectionMatrixUniform{9};
 };
 
-class MeshVisualizerGL2D::CompileState : public MeshVisualizerGL2D {
+class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
 private:
     friend class MeshVisualizerGL2D;
 
-    explicit CompileState(NoCreateT) : MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version) :
+    CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version):
         MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
 
     GL::Shader _vert, _frag;

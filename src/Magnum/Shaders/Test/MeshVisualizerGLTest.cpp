@@ -1546,6 +1546,7 @@ void MeshVisualizerGLTest::constructUniformBuffers2DAsync() {
 }
 #endif
 
+
 void MeshVisualizerGLTest::construct3D() {
     auto&& data = ConstructData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -1612,10 +1613,9 @@ void MeshVisualizerGLTest::construct3DAsync() {
     while(!compileState.isLinkFinished())
         Utility::System::sleep(100);
 
-    // TODO: FIXME MeshVisualizerGL3D shader{std::move(compileState)};
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
+    MeshVisualizerGL3D shader{std::move(compileState)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
-    CORRADE_VERIFY(compileState.isLinkFinished());
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
