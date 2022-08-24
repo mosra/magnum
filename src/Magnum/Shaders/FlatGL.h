@@ -1056,13 +1056,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         #endif
 };
 
-template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState : public FlatGL<dimensions> {
+template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState: public FlatGL<dimensions> {
 private:
     friend class FlatGL;
 
-    explicit CompileState(NoCreateT) : FlatGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): FlatGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(FlatGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version) :
+    CompileState(FlatGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
         FlatGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;

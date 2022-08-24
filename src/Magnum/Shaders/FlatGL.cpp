@@ -237,8 +237,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
-: FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs): FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
     if (id() == 0) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
@@ -312,15 +311,15 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs)
     static_cast<void>(context);
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags) : FlatGL{compile(flags)} {}
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags): FlatGL{compile(flags)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(Flags flags) {
     return compile(flags, 1, 1);
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount)
-    : FlatGL{compile(flags, materialCount, drawCount)} {}
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
+    FlatGL{compile(flags, materialCount, drawCount)} {}
 #endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT) {}

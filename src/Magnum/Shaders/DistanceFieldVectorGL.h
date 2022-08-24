@@ -645,13 +645,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
 };
 
 
-template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::CompileState : public DistanceFieldVectorGL<dimensions> {
+template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::CompileState: public DistanceFieldVectorGL<dimensions> {
 private:
     friend class DistanceFieldVectorGL;
 
-    explicit CompileState(NoCreateT) : DistanceFieldVectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): DistanceFieldVectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(DistanceFieldVectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version) :
+    CompileState(DistanceFieldVectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
         DistanceFieldVectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;

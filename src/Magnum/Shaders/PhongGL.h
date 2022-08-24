@@ -1801,13 +1801,13 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         #endif
 };
 
-class PhongGL::CompileState : public PhongGL {
+class PhongGL::CompileState: public PhongGL {
 private:
     friend class PhongGL;
 
-    explicit CompileState(NoCreateT) : PhongGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): PhongGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(PhongGL&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version) :
+    CompileState(PhongGL&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
         PhongGL{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;

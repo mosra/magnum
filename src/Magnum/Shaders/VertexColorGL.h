@@ -443,13 +443,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         #endif
 };
 
-template<UnsignedInt dimensions> class VertexColorGL<dimensions>::CompileState : public VertexColorGL<dimensions> {
+template<UnsignedInt dimensions> class VertexColorGL<dimensions>::CompileState: public VertexColorGL<dimensions> {
 private:
     friend class VertexColorGL;
 
-    explicit CompileState(NoCreateT) : VertexColorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): VertexColorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(VertexColorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version) :
+    CompileState(VertexColorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
         VertexColorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;

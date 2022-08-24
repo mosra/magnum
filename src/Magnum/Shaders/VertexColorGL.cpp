@@ -142,8 +142,7 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& cs):
-    VertexColorGL{static_cast<VertexColorGL&&>(std::move(cs))} {
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& cs): VertexColorGL{static_cast<VertexColorGL&&>(std::move(cs))} {
     if (id() == 0) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
@@ -200,12 +199,11 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     return compile(flags, 1);
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Flags flags, UnsignedInt drawCount)
-    : VertexColorGL{compile(flags, drawCount)} {}
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Flags flags, UnsignedInt drawCount):
+    VertexColorGL{compile(flags, drawCount)} {}
 #endif
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(NoInitT) {}
-
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2

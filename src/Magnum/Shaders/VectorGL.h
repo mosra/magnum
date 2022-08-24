@@ -595,13 +595,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         #endif
 };
 
-template<UnsignedInt dimensions> class VectorGL<dimensions>::CompileState : public VectorGL<dimensions> {
+template<UnsignedInt dimensions> class VectorGL<dimensions>::CompileState: public VectorGL<dimensions> {
 private:
     friend class VectorGL;
 
-    explicit CompileState(NoCreateT) : VectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): VectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(VectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version) :
+    CompileState(VectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
         VectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;

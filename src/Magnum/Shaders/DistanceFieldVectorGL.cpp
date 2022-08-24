@@ -162,8 +162,7 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(CompileState&& cs)
-: DistanceFieldVectorGL{static_cast<DistanceFieldVectorGL&&>(std::move(cs))} {
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(CompileState&& cs): DistanceFieldVectorGL{static_cast<DistanceFieldVectorGL&&>(std::move(cs))} {
     if (id() == 0) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
@@ -237,7 +236,8 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     return compile(flags, 1, 1);
 }
 
-template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags, UnsignedInt materialCount, UnsignedInt drawCount): DistanceFieldVectorGL{compile(flags, materialCount, drawCount)} {}
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
+    DistanceFieldVectorGL{compile(flags, materialCount, drawCount)} {}
 #endif
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
