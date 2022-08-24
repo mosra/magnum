@@ -359,7 +359,7 @@ class CompareImage {
 };
 
 /**
-@brief Image file comparator
+@brief Image file comparator for @ref Corrade::TestSuite
 
 Similar to @ref CompareImage, but comparing images loaded from files. Example
 usage:
@@ -465,7 +465,7 @@ class CompareImageFile {
 };
 
 /**
-@brief Image-to-file comparator
+@brief Image-to-file comparator for @ref Corrade::TestSuite
 
 A combination of @ref CompareImage and @ref CompareImageFile, which allows to
 compare an in-memory image to a image file. See their documentation for more
@@ -528,7 +528,7 @@ class CompareImageToFile {
 };
 
 /**
-@brief File-to-image comparator
+@brief File-to-image comparator for @ref Corrade::TestSuite
 
 A combination of @ref CompareImage and @ref CompareImageFile, which allows to
 compare an image file to an in-memory image. See their documentation for more
