@@ -92,7 +92,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
         void saveDiagnostic(TestSuite::ComparisonStatusFlags flags, Utility::Debug& out, Containers::StringView path);
 
     private:
-        class MAGNUM_DEBUGTOOLS_LOCAL State;
+        class State;
         Containers::Pointer<State> _state;
 };
 
