@@ -1706,32 +1706,23 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
 }
 
 void MeshVisualizerGLTest::constructUniformBuffers3DAsync() {
-    constexpr struct {
-        const char* name;
-        MeshVisualizerGL3D::Flags flags;
-        UnsignedInt materialCount, drawCount;
-    } data {
-        "multiple materials, draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 8, 55
-    };
-    setTestCaseDescription(data.name);
-
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 8, 55);
+    auto compileState = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 6, 28);
     CORRADE_COMPARE(compileState.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
-    CORRADE_COMPARE(compileState.materialCount(), 8);
-    CORRADE_COMPARE(compileState.drawCount(), 55);
+    CORRADE_COMPARE(compileState.materialCount(), 6);
+    CORRADE_COMPARE(compileState.drawCount(), 28);
 
     while(!compileState.isLinkFinished())
         Utility::System::sleep(100);
 
     MeshVisualizerGL3D shader{std::move(compileState)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
-    CORRADE_COMPARE(compileState.materialCount(), 8);
-    CORRADE_COMPARE(compileState.drawCount(), 55);
+    CORRADE_COMPARE(compileState.materialCount(), 6);
+    CORRADE_COMPARE(compileState.drawCount(), 28);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
