@@ -225,6 +225,9 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
         setSmoothness(0.04f);
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(NoInitT) {}
