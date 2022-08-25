@@ -75,9 +75,7 @@ if(MAGNUM_BUILD_GL_TESTS)
     find_package(Corrade REQUIRED PluginManager)
 
     corrade_add_test(GLAbstractTextureGLTest AbstractTextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
-    corrade_add_test(GLBufferGLTest BufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLCubeMapTextureGLTest CubeMapTextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
-    corrade_add_test(GLFramebufferGLTest FramebufferGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLMeshGLTest MeshGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLRenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLTextureGLTest TextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
@@ -88,6 +86,24 @@ if(MAGNUM_BUILD_GL_TESTS)
         AbstractShaderProgramGLTest.cpp
         ${GLAbstractShaderProgramGLTest_RES}
         LIBRARIES MagnumOpenGLTester)
+
+    corrade_add_test(GLBufferGLTest BufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
+    if(NOT MAGNUM_TARGET_GLES2)
+        target_link_libraries(GLBufferGLTest PRIVATE MagnumDebugTools)
+    endif()
+
+    corrade_add_test(GLFramebufferGLTest FramebufferGLTest.cpp)
+    # See DebugTools/CMakeLists.txt for details about
+    # MagnumDebugToolsGLTestLibSubset. It also has to be before
+    # MagnumOpenGLTesterTestLib to pick GL symbols with CORRADE_GRACEFUL_ASSERT
+    # over ones without... because MagnumOpenGLTesterTestLib is actually
+    # linking to MagnumGL on Linux and macOS.
+    # TODO fix MagnumOpenGLTesterTestLib to link to MagnumGLTestLib always
+    if(NOT MAGNUM_TARGET_GLES2)
+        target_link_libraries(GLFramebufferGLTest PRIVATE MagnumDebugToolsGLTestLibSubset MagnumOpenGLTesterTestLib)
+    else()
+        target_link_libraries(GLFramebufferGLTest PRIVATE MagnumOpenGLTesterTestLib)
+    endif()
 
     corrade_add_test(GLContextGLTest ContextGLTest.cpp LIBRARIES MagnumOpenGLTester)
     if(NOT CORRADE_TARGET_EMSCRIPTEN)
@@ -157,10 +173,17 @@ if(MAGNUM_BUILD_GL_TESTS)
     endif()
 
     if(NOT MAGNUM_TARGET_GLES2)
-        corrade_add_test(GLBufferImageGLTest BufferImageGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
+        # See DebugTools/CMakeLists.txt for details about
+        # MagnumDebugToolsGLTestLibSubset. It also has to be before
+        # MagnumOpenGLTesterTestLib to pick GL symbols with
+        # CORRADE_GRACEFUL_ASSERT over ones without... because
+        # MagnumOpenGLTesterTestLib is actually linking to MagnumGL on Linux
+        # and macOS.
+        # TODO fix MagnumOpenGLTesterTestLib to link to MagnumGLTestLib always
+        corrade_add_test(GLBufferImageGLTest BufferImageGLTest.cpp LIBRARIES MagnumDebugToolsGLTestLibSubset MagnumOpenGLTesterTestLib)
         corrade_add_test(GLPrimitiveQueryGLTest PrimitiveQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLTextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLTransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(GLTransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES MagnumOpenGLTester MagnumDebugTools)
     endif()
 
     if(NOT MAGNUM_TARGET_GLES2 AND NOT MAGNUM_TARGET_WEBGL)
