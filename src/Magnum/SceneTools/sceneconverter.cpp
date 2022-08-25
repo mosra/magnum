@@ -823,7 +823,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         std::size_t totalSceneDataSize = 0;
         for(const SceneInfo& info: sceneInfos) {
             Debug d{useColor};
-            d << Debug::boldColor(Debug::Color::White) << "Scene" << info.scene << Debug::nospace << ":" << Debug::resetColor;
+            d << Debug::boldColor(Debug::Color::Default) << "Scene" << info.scene << Debug::nospace << ":" << Debug::resetColor;
             if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
             d << Debug::newline;
             d << "  Bound:" << info.mappingBound << "objects"
@@ -840,7 +840,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             d << Debug::newline << "  Fields:";
             for(const SceneFieldInfo& field: info.fields) {
                 d << Debug::newline << "   "
-                    << Debug::boldColor(Debug::Color::White);
+                    << Debug::boldColor(Debug::Color::Default);
                 if(Trade::isSceneFieldCustom(field.name)) {
                     d << "Custom(" << Debug::nospace
                         << Trade::sceneFieldCustom(field.name)
@@ -848,7 +848,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                         << Debug::color(Debug::Color::Yellow)
                         << sceneFieldNames[sceneFieldCustom(field.name)]
                         << Debug::nospace
-                        << Debug::boldColor(Debug::Color::White) << ")";
+                        << Debug::boldColor(Debug::Color::Default) << ")";
                 } else d << Debug::packed << field.name;
 
                 d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << field.type;
@@ -872,7 +872,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             if(!info.name && !info.scenes) continue;
 
             Debug d{useColor};
-            d << Debug::boldColor(Debug::Color::White) << "Object" << info.object << Debug::resetColor;
+            d << Debug::boldColor(Debug::Color::Default) << "Object" << info.object << Debug::resetColor;
 
             if(sceneInfos) {
                 const UnsignedInt count = Math::popcount(info.scenes);
@@ -881,7 +881,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 if(!count) d << Debug::resetColor;
             }
 
-            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+            d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                 << Debug::resetColor;
             if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                 << info.name << Debug::resetColor;
@@ -911,7 +911,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         std::size_t totalAnimationDataSize = 0;
         for(const AnimationInfo& info: animationInfos) {
             Debug d{useColor};
-            d << Debug::boldColor(Debug::Color::White) << "Animation" << info.animation << Debug::nospace << ":" << Debug::resetColor;
+            d << Debug::boldColor(Debug::Color::Default) << "Animation" << info.animation << Debug::nospace << ":" << Debug::resetColor;
             if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
             d << Debug::newline << "  Duration:" << info.data.duration()
@@ -924,7 +924,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             for(UnsignedInt i = 0; i != info.data.trackCount(); ++i) {
                 d << Debug::newline << "  Track" << i << Debug::nospace << ":"
-                    << Debug::packed << Debug::boldColor(Debug::Color::White)
+                    << Debug::packed << Debug::boldColor(Debug::Color::Default)
                     << info.data.trackTargetType(i)
                     << Debug::color(Debug::Color::Blue) << "@"
                     << Debug::packed << Debug::color(Debug::Color::Cyan)
@@ -958,7 +958,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
         for(const SkinInfo& info: skinInfos) {
             Debug d{useColor};
-            d << Debug::boldColor(Debug::Color::White) << "Skin" << info.skin
+            d << Debug::boldColor(Debug::Color::Default) << "Skin" << info.skin
                 << Debug::resetColor;
 
             /* Print reference count only if there actually are scenes and they
@@ -970,7 +970,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 if(!count) d << Debug::resetColor;
             }
 
-            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+            d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                 << Debug::resetColor;
             if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                 << info.name << Debug::resetColor;
@@ -980,7 +980,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
         for(const LightInfo& info: lightInfos) {
             Debug d{useColor};
-            d << Debug::boldColor(Debug::Color::White) << "Light" << info.light << Debug::resetColor;
+            d << Debug::boldColor(Debug::Color::Default) << "Light" << info.light << Debug::resetColor;
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
@@ -991,7 +991,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 if(!count) d << Debug::resetColor;
             }
 
-            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+            d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                 << Debug::resetColor;
             if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                 << info.name << Debug::resetColor;
@@ -1019,7 +1019,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
         for(const MaterialInfo& info: materialInfos) {
             Debug d{useColor};
-            d << Debug::boldColor(Debug::Color::White) << "Material" << info.material << Debug::resetColor;
+            d << Debug::boldColor(Debug::Color::Default) << "Material" << info.material << Debug::resetColor;
 
             /* Print reference count only if there actually are scenes and they
                were parsed, otherwise this information is useless */
@@ -1030,7 +1030,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 if(!count) d << Debug::resetColor;
             }
 
-            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+            d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                 << Debug::resetColor;
             if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
 
@@ -1043,7 +1043,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     d << Debug::newline << "  Layer" << i << Debug::nospace << ":";
                     if(!info.data.layerName(i).isEmpty()) {
                         if(std::isupper(info.data.layerName(i)[0]))
-                            d << Debug::boldColor(Debug::Color::White);
+                            d << Debug::boldColor(Debug::Color::Default);
                         else
                             d << Debug::color(Debug::Color::Yellow);
                         d << info.data.layerName(i) << Debug::resetColor;
@@ -1063,7 +1063,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
                     d << Debug::newline << indent;
                     if(std::isupper(info.data.attributeName(i, j)[0]))
-                        d << Debug::boldColor(Debug::Color::White);
+                        d << Debug::boldColor(Debug::Color::Default);
                     else
                         d << Debug::color(Debug::Color::Yellow);
                     d << info.data.attributeName(i, j) << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan)
@@ -1136,7 +1136,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         for(const MeshInfo& info: meshInfos) {
             Debug d{useColor};
             if(info.level == 0) {
-                d << Debug::boldColor(Debug::Color::White) << "Mesh" << info.mesh << Debug::resetColor;
+                d << Debug::boldColor(Debug::Color::Default) << "Mesh" << info.mesh << Debug::resetColor;
 
                 /* Print reference count only if there actually are scenes and
                    they were parsed, otherwise this information is useless */
@@ -1147,7 +1147,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     if(!count) d << Debug::resetColor;
                 }
 
-                d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                     << Debug::resetColor;
                 if(info.name) d << Debug::boldColor(Debug::Color::Yellow) << info.name << Debug::resetColor;
                 d << Debug::newline;
@@ -1164,14 +1164,14 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
             for(const MeshAttributeInfo& attribute: info.attributes) {
                 d << Debug::newline << "   "
-                    << Debug::boldColor(Debug::Color::White);
+                    << Debug::boldColor(Debug::Color::Default);
                 if(Trade::isMeshAttributeCustom(attribute.name)) {
                     d << "Custom(" << Debug::nospace
                         << Trade::meshAttributeCustom(attribute.name)
                         << Debug::nospace << ":" << Debug::nospace
                         << Debug::color(Debug::Color::Yellow)
                         << attribute.customName << Debug::nospace
-                        << Debug::boldColor(Debug::Color::White) << ")";
+                        << Debug::boldColor(Debug::Color::Default) << ")";
                 } else d << Debug::packed << attribute.name;
 
                 d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << attribute.format;
@@ -1205,7 +1205,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
 
         for(const TextureInfo& info: textureInfos) {
             Debug d{useColor};
-            d << Debug::boldColor(Debug::Color::White) << "Texture" << info.texture << Debug::resetColor;
+            d << Debug::boldColor(Debug::Color::Default) << "Texture" << info.texture << Debug::resetColor;
 
             /* Print reference count only if there actually are materials and
                they were parsed, otherwise this information is useless */
@@ -1216,7 +1216,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                 if(!count) d << Debug::resetColor;
             }
 
-            d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+            d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                 << Debug::resetColor;
             if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                 << info.name << Debug::resetColor;
@@ -1247,7 +1247,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         for(const Trade::Implementation::ImageInfo& info: imageInfos) {
             Debug d{useColor};
             if(info.level == 0) {
-                d << Debug::boldColor(Debug::Color::White);
+                d << Debug::boldColor(Debug::Color::Default);
                 if(info.size.z()) d << "3D image";
                 else if(info.size.y()) d << "2D image";
                 else d << "1D image";
@@ -1270,7 +1270,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
                     if(!*count) d << Debug::resetColor;
                 }
 
-                d << Debug::boldColor(Debug::Color::White) << Debug::nospace << ":"
+                d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
                     << Debug::resetColor;
                 if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
                     << info.name << Debug::resetColor;

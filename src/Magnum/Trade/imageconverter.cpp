@@ -599,7 +599,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 for(const Trade::Implementation::ImageInfo& info: infos) {
                     Debug d{useColor};
                     if(info.level == 0) {
-                        d << Debug::boldColor(Debug::Color::White);
+                        d << Debug::boldColor(Debug::Color::Default);
                         if(info.size.z()) d << "3D image";
                         else if(info.size.y()) d << "2D image";
                         else d << "1D image";
