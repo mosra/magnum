@@ -334,9 +334,15 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
     }
 
+    /* Importer manager */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths().back())};
+
+    /* Scene converter manager */
+    PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths().back())};
 
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) {
@@ -1408,10 +1414,6 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         if(args.isSet("verbose"))
             Debug{} << "Fuzzy duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
     }
-
-    PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
-        args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths().back())};
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnySceneConverter. All converters except the last one are
