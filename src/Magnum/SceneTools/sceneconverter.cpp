@@ -325,6 +325,31 @@ attributes that are present in the first mesh are taken, if --only-attributes
 is specified as well, the IDs reference attributes of the first mesh.)")
         .parse(argc, argv);
 
+    /* Colored output. Enable only if a TTY. */
+    Debug::Flags useColor;
+    bool useColor24;
+    if(args.value("color") == "on") {
+        useColor = Debug::Flags{};
+        useColor24 = true;
+    } else if(args.value("color") == "4bit") {
+        useColor = Debug::Flags{};
+        useColor24 = false;
+    } else if(args.value("color") == "off") {
+        useColor = Debug::Flag::DisableColors;
+        useColor24 = false;
+    } else if(Debug::isTty()) {
+        useColor = Debug::Flags{};
+        /* https://unix.stackexchange.com/a/450366, not perfect but good enough
+           I'd say */
+        /** @todo make this more robust and put directly on Debug,
+            including a "Disable 24 colors" flag */
+        const Containers::StringView colorterm = std::getenv("COLORTERM");
+        useColor24 = colorterm == "truecolor"_s || colorterm == "24bit"_s;
+    } else {
+        useColor = Debug::Flag::DisableColors;
+        useColor24 = false;
+    }
+
     /* Generic checks */
     if(!args.value<Containers::StringView>("output").isEmpty()) {
         /* Not an error in this case, it should be possible to just append
@@ -799,31 +824,6 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos;
         if(args.isSet("info") || args.isSet("info-images")) {
             imageInfos = Trade::Implementation::imageInfo(*importer, error, importTime);
-        }
-
-        /* Colored output. Enable only if a TTY. */
-        Debug::Flags useColor;
-        bool useColor24;
-        if(args.value("color") == "on") {
-            useColor = Debug::Flags{};
-            useColor24 = true;
-        } else if(args.value("color") == "4bit") {
-            useColor = Debug::Flags{};
-            useColor24 = false;
-        } else if(args.value("color") == "off") {
-            useColor = Debug::Flag::DisableColors;
-            useColor24 = false;
-        } else if(Debug::isTty()) {
-            useColor = Debug::Flags{};
-            /* https://unix.stackexchange.com/a/450366, not perfect but good
-               enough I'd say */
-            /** @todo make this more robust and put directly on Debug,
-                including a "Disable 24 colors" flag */
-            const Containers::StringView colorterm = std::getenv("COLORTERM");
-            useColor24 = colorterm == "truecolor"_s || colorterm == "24bit"_s;
-        } else {
-            useColor = Debug::Flag::DisableColors;
-            useColor24 = false;
         }
 
         std::size_t totalSceneDataSize = 0;
