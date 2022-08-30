@@ -391,8 +391,8 @@ void AbstractImporterTest::debugFeature() {
 void AbstractImporterTest::debugFeatures() {
     std::ostringstream out;
 
-    Debug{&out} << ImporterFeature::OpenData << ImporterFeatures{};
-    CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData Audio::ImporterFeatures{}\n");
+    Debug{&out} << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << ImporterFeatures{};
+    CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData|Audio::ImporterFeature(0xf0) Audio::ImporterFeatures{}\n");
 }
 
 }}}}
