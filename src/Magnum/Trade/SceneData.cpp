@@ -851,6 +851,13 @@ Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal
     return fieldDataFieldViewInternal(field, 0, field._size);
 }
 
+std::size_t SceneData::fieldSizeBound() const {
+    std::size_t out = 0;
+    for(const SceneFieldData& i: _fields)
+        out = Math::max(out, std::size_t(i._size));
+    return out;
+}
+
 SceneFieldData SceneData::fieldData(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::fieldData(): index" << id << "out of range for" << _fields.size() << "fields", SceneFieldData{});
