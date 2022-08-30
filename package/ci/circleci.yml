@@ -67,6 +67,10 @@ commands:
           if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov curl"; fi
           sudo apt install -y ninja-build gcc cmake $LCOV_PACKAGES << parameters.extra >>
 
+  # TODO this might get resolved with 1.11.1:
+  #   https://github.com/ninja-build/ninja/pull/1827
+  #   https://github.com/ninja-build/ninja/pull/2174
+  # But wouldn't it build too slow then? Heh
   cap-ninja-jobs:
     parameters:
       count:
