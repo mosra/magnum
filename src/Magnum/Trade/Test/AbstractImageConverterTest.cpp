@@ -296,10 +296,13 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed3DToFileThroughLevels();
 
     void debugFeature();
+    void debugFeaturePacked();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void debugFeatureDeprecated();
+    void debugFeatureDeprecatedPacked();
     #endif
     void debugFeatures();
+    void debugFeaturesPacked();
     void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
@@ -535,10 +538,13 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed3DToFileThroughLevels,
 
               &AbstractImageConverterTest::debugFeature,
+              &AbstractImageConverterTest::debugFeaturePacked,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImageConverterTest::debugFeatureDeprecated,
+              &AbstractImageConverterTest::debugFeatureDeprecatedPacked,
               #endif
               &AbstractImageConverterTest::debugFeatures,
+              &AbstractImageConverterTest::debugFeaturesPacked,
               &AbstractImageConverterTest::debugFeaturesSupersets,
               &AbstractImageConverterTest::debugFlag,
               &AbstractImageConverterTest::debugFlags});
@@ -4515,6 +4521,13 @@ void AbstractImageConverterTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressed2D Trade::ImageConverterFeature(0xdeadbeef)\n");
 }
 
+void AbstractImageConverterTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressed2D << Debug::packed << ImageConverterFeature(0xdeadbeef) << ImageConverterFeature::Convert3D;
+    CORRADE_COMPARE(out.str(), "ConvertCompressed2D 0xdeadbeef Trade::ImageConverterFeature::Convert3D\n");
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractImageConverterTest::debugFeatureDeprecated() {
     std::ostringstream out;
@@ -4524,6 +4537,16 @@ void AbstractImageConverterTest::debugFeatureDeprecated() {
     CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressed1DToData|Trade::ImageConverterFeature::Levels Trade::ImageConverterFeature::Convert3DToFile|Trade::ImageConverterFeature::Levels\n");
 }
+
+void AbstractImageConverterTest::debugFeatureDeprecatedPacked() {
+    std::ostringstream out;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressedLevels1DToData << Debug::packed << ImageConverterFeature::ConvertLevels3DToFile << ImageConverterFeature::Convert1D;
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "ConvertCompressed1DToData|Levels Convert3DToFile|Levels Trade::ImageConverterFeature::Convert1D\n");
+}
 #endif
 
 void AbstractImageConverterTest::debugFeatures() {
@@ -4531,6 +4554,13 @@ void AbstractImageConverterTest::debugFeatures() {
 
     Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << ImageConverterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::Convert2DToData|Trade::ImageConverterFeature::ConvertCompressed2DToFile Trade::ImageConverterFeatures{}\n");
+}
+
+void AbstractImageConverterTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << Debug::packed << ImageConverterFeatures{} << ImageConverterFeature::Convert1D;
+    CORRADE_COMPARE(out.str(), "Convert2DToData|ConvertCompressed2DToFile {} Trade::ImageConverterFeature::Convert1D\n");
 }
 
 void AbstractImageConverterTest::debugFeaturesSupersets() {

@@ -1278,18 +1278,21 @@ bool AbstractImageConverter::doConvertToFile(const Containers::ArrayView<const C
 }
 
 Debug& operator<<(Debug& debug, const ImageConverterFeature value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
     #ifdef MAGNUM_BUILD_DEPRECATED
     /* If printing a deprecated flag combination, make it look like the enum
        set */
     if((value & ImageConverterFeature::Levels) && (value & ~ImageConverterFeature::Levels))
-        return debug << (value & ~ImageConverterFeature::Levels) << Debug::nospace << "|Trade::ImageConverterFeature::Levels";
+        return debug << (value & ~ImageConverterFeature::Levels) << Debug::nospace << (packed ? "|Levels" : "|Trade::ImageConverterFeature::Levels");
     #endif
 
-    debug << "Trade::ImageConverterFeature" << Debug::nospace;
+    if(!packed)
+        debug << "Trade::ImageConverterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case ImageConverterFeature::v: return debug << "::" #v;
+        #define _c(v) case ImageConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(Convert1D)
         _c(Convert2D)
         _c(Convert3D)
@@ -1333,11 +1336,11 @@ Debug& operator<<(Debug& debug, const ImageConverterFeature value) {
         #endif
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const ImageConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::ImageConverterFeatures{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::ImageConverterFeatures{}", {
         ImageConverterFeature::Convert1D,
         ImageConverterFeature::Convert2D,
         ImageConverterFeature::Convert3D,

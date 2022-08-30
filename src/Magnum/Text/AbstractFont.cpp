@@ -283,11 +283,14 @@ Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCa
 }
 
 Debug& operator<<(Debug& debug, const FontFeature value) {
-    debug << "Text::FontFeature" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Text::FontFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case FontFeature::v: return debug << "::" #v;
+        #define _c(v) case FontFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(OpenData)
         _c(FileCallback)
         _c(PreparedGlyphCache)
@@ -295,11 +298,11 @@ Debug& operator<<(Debug& debug, const FontFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const FontFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, "Text::FontFeatures{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Text::FontFeatures{}", {
         FontFeature::OpenData,
         FontFeature::FileCallback,
         FontFeature::PreparedGlyphCache});

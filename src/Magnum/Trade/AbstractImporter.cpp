@@ -1598,11 +1598,14 @@ const void* AbstractImporter::importerState() const {
 const void* AbstractImporter::doImporterState() const { return nullptr; }
 
 Debug& operator<<(Debug& debug, const ImporterFeature value) {
-    debug << "Trade::ImporterFeature" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::ImporterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case ImporterFeature::v: return debug << "::" #v;
+        #define _c(v) case ImporterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(OpenData)
         _c(OpenState)
         _c(FileCallback)
@@ -1610,11 +1613,11 @@ Debug& operator<<(Debug& debug, const ImporterFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const ImporterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::ImporterFeatures{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::ImporterFeatures{}", {
         ImporterFeature::OpenData,
         ImporterFeature::OpenState,
         ImporterFeature::FileCallback});

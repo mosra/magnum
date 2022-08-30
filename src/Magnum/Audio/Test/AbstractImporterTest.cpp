@@ -67,7 +67,9 @@ struct AbstractImporterTest: TestSuite::Tester {
     void dataCustomDeleter();
 
     void debugFeature();
+    void debugFeaturePacked();
     void debugFeatures();
+    void debugFeaturesPacked();
 };
 
 AbstractImporterTest::AbstractImporterTest() {
@@ -92,7 +94,9 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::dataCustomDeleter,
 
               &AbstractImporterTest::debugFeature,
-              &AbstractImporterTest::debugFeatures});
+              &AbstractImporterTest::debugFeaturePacked,
+              &AbstractImporterTest::debugFeatures,
+              &AbstractImporterTest::debugFeaturesPacked});
 }
 
 void AbstractImporterTest::construct() {
@@ -388,11 +392,25 @@ void AbstractImporterTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData Audio::ImporterFeature(0xf0)\n");
 }
 
+void AbstractImporterTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImporterFeature::OpenData << Debug::packed << ImporterFeature(0xf0) << ImporterFeature::OpenData;
+    CORRADE_COMPARE(out.str(), "OpenData 0xf0 Audio::ImporterFeature::OpenData\n");
+}
+
 void AbstractImporterTest::debugFeatures() {
     std::ostringstream out;
 
     Debug{&out} << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << ImporterFeatures{};
     CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData|Audio::ImporterFeature(0xf0) Audio::ImporterFeatures{}\n");
+}
+
+void AbstractImporterTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ImporterFeature::OpenData|ImporterFeature(0xf0)) << Debug::packed << ImporterFeatures{} << ImporterFeature::OpenData;
+    CORRADE_COMPARE(out.str(), "OpenData|0xf0 {} Audio::ImporterFeature::OpenData\n");
 }
 
 }}}}

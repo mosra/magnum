@@ -275,7 +275,9 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void addImage3DThroughLevels();
 
     void debugFeature();
+    void debugFeaturePacked();
     void debugFeatures();
+    void debugFeaturesPacked();
     void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
@@ -488,7 +490,9 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::addImage3DThroughLevels,
 
               &AbstractSceneConverterTest::debugFeature,
+              &AbstractSceneConverterTest::debugFeaturePacked,
               &AbstractSceneConverterTest::debugFeatures,
+              &AbstractSceneConverterTest::debugFeaturesPacked,
               &AbstractSceneConverterTest::debugFeaturesSupersets,
               &AbstractSceneConverterTest::debugFlag,
               &AbstractSceneConverterTest::debugFlags});
@@ -5358,11 +5362,25 @@ void AbstractSceneConverterTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMeshInPlace Trade::SceneConverterFeature(0xdeaddead)\n");
 }
 
+void AbstractSceneConverterTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << SceneConverterFeature::ConvertMeshInPlace << Debug::packed << SceneConverterFeature(0xdeaddead) << SceneConverterFeature::AddCameras;
+    CORRADE_COMPARE(out.str(), "ConvertMeshInPlace 0xdeaddead Trade::SceneConverterFeature::AddCameras\n");
+}
+
 void AbstractSceneConverterTest::debugFeatures() {
     std::ostringstream out;
 
     Debug{&out} << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << SceneConverterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMeshToFile Trade::SceneConverterFeatures{}\n");
+}
+
+void AbstractSceneConverterTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (SceneConverterFeature::ConvertMesh|SceneConverterFeature::ConvertMeshToFile) << Debug::packed << SceneConverterFeatures{} << SceneConverterFeature::AddLights;
+    CORRADE_COMPARE(out.str(), "ConvertMesh|ConvertMeshToFile {} Trade::SceneConverterFeature::AddLights\n");
 }
 
 void AbstractSceneConverterTest::debugFeaturesSupersets() {

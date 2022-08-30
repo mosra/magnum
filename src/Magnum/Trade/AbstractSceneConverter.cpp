@@ -1187,11 +1187,14 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
 }
 
 Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
-    debug << "Trade::SceneConverterFeature" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneConverterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case SceneConverterFeature::v: return debug << "::" #v;
+        #define _c(v) case SceneConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(ConvertMesh)
         _c(ConvertMeshInPlace)
         _c(ConvertMeshToData)
@@ -1220,11 +1223,11 @@ Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const SceneConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::SceneConverterFeatures{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::SceneConverterFeatures{}", {
         SceneConverterFeature::ConvertMesh,
         SceneConverterFeature::ConvertMeshInPlace,
         SceneConverterFeature::ConvertMeshToData,

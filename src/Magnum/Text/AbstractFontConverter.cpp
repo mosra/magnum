@@ -263,11 +263,14 @@ Containers::Pointer<AbstractGlyphCache> AbstractFontConverter::doImportGlyphCach
 }
 
 Debug& operator<<(Debug& debug, const FontConverterFeature value) {
-    debug << "Text::FontConverterFeature" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Text::FontConverterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case FontConverterFeature::v: return debug << "::" #v;
+        #define _c(v) case FontConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(ExportFont)
         _c(ExportGlyphCache)
         _c(ImportGlyphCache)
@@ -277,11 +280,11 @@ Debug& operator<<(Debug& debug, const FontConverterFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(Containers::enumCastUnderlyingType(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(Containers::enumCastUnderlyingType(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const FontConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, "Text::FontConverterFeatures{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Text::FontConverterFeatures{}", {
         FontConverterFeature::ExportFont,
         FontConverterFeature::ExportGlyphCache,
         FontConverterFeature::ImportGlyphCache,
