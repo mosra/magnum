@@ -60,6 +60,8 @@ namespace Magnum { namespace Trade {
 Detects file type based on file extension, loads corresponding plugin and then
 tries to convert the file with it. Supported formats:
 
+-   glTF (`*.gltf`, `*.glb`), converted with @ref GltfSceneConverter or any
+    other plugin that provides it
 -   Stanford (`*.ply`), converted with @ref StanfordSceneConverter or any other
     plugin that provides it
 

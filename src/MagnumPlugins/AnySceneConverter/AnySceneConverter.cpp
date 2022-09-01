@@ -83,7 +83,10 @@ bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ply"_s)
+    if(normalizedExtension == ".gltf"_s ||
+       normalizedExtension == ".glb"_s)
+        plugin = "GltfSceneConverter"_s;
+    else if(normalizedExtension == ".ply"_s)
         plugin = "StanfordSceneConverter"_s;
     else {
         Error{} << "Trade::AnySceneConverter::convertToFile(): cannot determine the format of" << filename;
@@ -132,7 +135,10 @@ bool AnySceneConverter::doBeginFile(const Containers::StringView filename) {
 
     /* Detect the plugin from extension */
     Containers::StringView plugin;
-    if(normalizedExtension == ".ply"_s)
+    if(normalizedExtension == ".gltf"_s ||
+       normalizedExtension == ".glb"_s)
+        plugin = "GltfSceneConverter"_s;
+    else if(normalizedExtension == ".ply"_s)
         plugin = "StanfordSceneConverter"_s;
     else {
         Error{} << "Trade::AnySceneConverter::beginFile(): cannot determine the format of" << filename;

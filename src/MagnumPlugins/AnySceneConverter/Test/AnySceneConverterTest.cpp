@@ -73,6 +73,8 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectConvertData[]{
+    {"glTF", "khronos.gltf", "GltfSceneConverter"},
+    {"glTF binary", "khronos.glb", "GltfSceneConverter"},
     {"Stanford PLY", "bunny.ply", "StanfordSceneConverter"},
     /* Have at least one test case with uppercase */
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordSceneConverter"}
@@ -83,6 +85,8 @@ constexpr struct {
     const char* filename;
     const char* plugin;
 } DetectBeginEndData[]{
+    {"glTF", "khronos.gltf", "GltfSceneConverter"},
+    {"glTF binary", "khronos.glb", "GltfSceneConverter"},
     {"Stanford PLY", "bunny.ply", "StanfordSceneConverter"},
     /* Have at least one test case with uppercase */
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordSceneConverter"}
