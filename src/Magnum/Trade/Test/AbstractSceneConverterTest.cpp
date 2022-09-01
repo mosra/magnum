@@ -3904,6 +3904,7 @@ void AbstractSceneConverterTest::addImage1DView() {
             CORRADE_COMPARE(image.storage().alignment(), 2);
             CORRADE_COMPARE(image.format(), PixelFormat::RG8Snorm);
             CORRADE_COMPARE(image.size(), 3);
+            CORRADE_COMPARE(image.flags(), ImageFlags1D{});
             CORRADE_VERIFY(image.data());
 
             addCalled = true;
@@ -3939,6 +3940,7 @@ void AbstractSceneConverterTest::addImage1DCompressedView() {
             CORRADE_COMPARE(image.compressedStorage().compressedBlockSize(), Vector3i{3});
             CORRADE_COMPARE(image.compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(image.size(), 3);
+            CORRADE_COMPARE(image.flags(), ImageFlags1D{});
             CORRADE_VERIFY(image.data());
 
             addCalled = true;
@@ -4088,6 +4090,7 @@ void AbstractSceneConverterTest::addImage2DView() {
             CORRADE_COMPARE(image.storage().alignment(), 2);
             CORRADE_COMPARE(image.format(), PixelFormat::RG8Snorm);
             CORRADE_COMPARE(image.size(), (Vector2i{3, 1}));
+            CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
             CORRADE_VERIFY(image.data());
 
             addCalled = true;
@@ -4103,7 +4106,8 @@ void AbstractSceneConverterTest::addImage2DView() {
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageView2D{
         PixelStorage{}.setAlignment(2),
-        PixelFormat::RG8Snorm, {3, 1}, imageData}, "hello"), 0);
+        PixelFormat::RG8Snorm, {3, 1}, imageData, ImageFlag2D::Array},
+        "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
 }
@@ -4123,6 +4127,7 @@ void AbstractSceneConverterTest::addImage2DCompressedView() {
             CORRADE_COMPARE(image.compressedStorage().compressedBlockSize(), Vector3i{3});
             CORRADE_COMPARE(image.compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(image.size(), (Vector2i{3, 2}));
+            CORRADE_COMPARE(image.flags(), ImageFlag2D::Array);
             CORRADE_VERIFY(image.data());
 
             addCalled = true;
@@ -4138,7 +4143,8 @@ void AbstractSceneConverterTest::addImage2DCompressedView() {
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add(CompressedImageView2D{
         CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}),
-        CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 2}, imageData}, "hello"), 0);
+        CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 2}, imageData,
+        ImageFlag2D::Array}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
 }
@@ -4294,6 +4300,7 @@ void AbstractSceneConverterTest::addImage3DView() {
             CORRADE_COMPARE(image.storage().alignment(), 2);
             CORRADE_COMPARE(image.format(), PixelFormat::RG8Snorm);
             CORRADE_COMPARE(image.size(), (Vector3i{1, 3, 1}));
+            CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
             CORRADE_VERIFY(image.data());
 
             addCalled = true;
@@ -4309,7 +4316,8 @@ void AbstractSceneConverterTest::addImage3DView() {
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add(ImageView3D{
         PixelStorage{}.setAlignment(2),
-        PixelFormat::RG8Snorm, {1, 3, 1}, imageData}, "hello"), 0);
+        PixelFormat::RG8Snorm, {1, 3, 1}, imageData, ImageFlag3D::Array},
+        "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
 }
@@ -4329,6 +4337,7 @@ void AbstractSceneConverterTest::addImage3DCompressedView() {
             CORRADE_COMPARE(image.compressedStorage().compressedBlockSize(), Vector3i{3});
             CORRADE_COMPARE(image.compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(image.size(), (Vector3i{1, 3, 1}));
+            CORRADE_COMPARE(image.flags(), ImageFlag3D::Array);
             CORRADE_VERIFY(image.data());
 
             addCalled = true;
@@ -4344,7 +4353,8 @@ void AbstractSceneConverterTest::addImage3DCompressedView() {
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add(CompressedImageView3D{
         CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}),
-        CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 3, 1}, imageData}, "hello"), 0);
+        CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 3, 1}, imageData,
+        ImageFlag3D::Array}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
 }
@@ -4491,6 +4501,7 @@ void AbstractSceneConverterTest::addImageLevels1DView() {
             CORRADE_COMPARE(imageLevels[1].storage().alignment(), 2);
             CORRADE_COMPARE(imageLevels[1].format(), PixelFormat::RG8Snorm);
             CORRADE_COMPARE(imageLevels[1].size(), 3);
+            CORRADE_COMPARE(imageLevels[1].flags(), ImageFlags1D{});
             CORRADE_VERIFY(imageLevels[1].data());
 
             addCalled = true;
@@ -4529,6 +4540,7 @@ void AbstractSceneConverterTest::addImageLevels1DCompressedView() {
             CORRADE_COMPARE(imageLevels[1].compressedStorage().compressedBlockSize(), Vector3i{3});
             CORRADE_COMPARE(imageLevels[1].compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(imageLevels[1].size(), 3);
+            CORRADE_COMPARE(imageLevels[1].flags(), ImageFlags1D{});
             CORRADE_VERIFY(imageLevels[1].data());
 
             addCalled = true;
@@ -4707,6 +4719,7 @@ void AbstractSceneConverterTest::addImageLevels2DView() {
             CORRADE_COMPARE(imageLevels[1].storage().alignment(), 2);
             CORRADE_COMPARE(imageLevels[1].format(), PixelFormat::RG8Snorm);
             CORRADE_COMPARE(imageLevels[1].size(), (Vector2i{1, 3}));
+            CORRADE_COMPARE(imageLevels[1].flags(), ImageFlag2D::Array);
             CORRADE_VERIFY(imageLevels[1].data());
 
             addCalled = true;
@@ -4721,8 +4734,8 @@ void AbstractSceneConverterTest::addImageLevels2DView() {
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add({
-        ImageView2D{PixelFormat::RG8Snorm, {1, 1}, imageData},
-        ImageView2D{PixelStorage{}.setAlignment(2), PixelFormat::RG8Snorm, {1, 3}, imageData}
+        ImageView2D{PixelFormat::RG8Snorm, {1, 1}, imageData, ImageFlag2D::Array},
+        ImageView2D{PixelStorage{}.setAlignment(2), PixelFormat::RG8Snorm, {1, 3}, imageData, ImageFlag2D::Array}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
@@ -4745,6 +4758,7 @@ void AbstractSceneConverterTest::addImageLevels2DCompressedView() {
             CORRADE_COMPARE(imageLevels[1].compressedStorage().compressedBlockSize(), Vector3i{3});
             CORRADE_COMPARE(imageLevels[1].compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(imageLevels[1].size(), (Vector2i{3, 1}));
+            CORRADE_COMPARE(imageLevels[1].flags(), ImageFlag2D::Array);
             CORRADE_VERIFY(imageLevels[1].data());
 
             addCalled = true;
@@ -4759,8 +4773,8 @@ void AbstractSceneConverterTest::addImageLevels2DCompressedView() {
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image2DCount(), 0);
     CORRADE_COMPARE(converter.add({
-        CompressedImageView2D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1}, imageData},
-        CompressedImageView2D{CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1}, imageData}
+        CompressedImageView2D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1}, imageData, ImageFlag2D::Array},
+        CompressedImageView2D{CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1}, imageData, ImageFlag2D::Array}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image2DCount(), 1);
@@ -5112,6 +5126,7 @@ void AbstractSceneConverterTest::addImageLevels3DView() {
             CORRADE_COMPARE(imageLevels[1].storage().alignment(), 2);
             CORRADE_COMPARE(imageLevels[1].format(), PixelFormat::RG8Snorm);
             CORRADE_COMPARE(imageLevels[1].size(), (Vector3i{1, 3, 1}));
+            CORRADE_COMPARE(imageLevels[1].flags(), ImageFlag3D::Array);
             CORRADE_VERIFY(imageLevels[1].data());
 
             addCalled = true;
@@ -5126,8 +5141,8 @@ void AbstractSceneConverterTest::addImageLevels3DView() {
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add({
-        ImageView3D{PixelFormat::RG8Snorm, {1, 1, 1}, imageData},
-        ImageView3D{PixelStorage{}.setAlignment(2), PixelFormat::RG8Snorm, {1, 3, 1}, imageData}
+        ImageView3D{PixelFormat::RG8Snorm, {1, 1, 1}, imageData, ImageFlag3D::Array},
+        ImageView3D{PixelStorage{}.setAlignment(2), PixelFormat::RG8Snorm, {1, 3, 1}, imageData, ImageFlag3D::Array}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);
@@ -5150,6 +5165,7 @@ void AbstractSceneConverterTest::addImageLevels3DCompressedView() {
             CORRADE_COMPARE(imageLevels[1].compressedStorage().compressedBlockSize(), Vector3i{3});
             CORRADE_COMPARE(imageLevels[1].compressedFormat(), CompressedPixelFormat::Astc3x3x3RGBASrgb);
             CORRADE_COMPARE(imageLevels[1].size(), (Vector3i{3, 1, 1}));
+            CORRADE_COMPARE(imageLevels[1].flags(), ImageFlag3D::Array);
             CORRADE_VERIFY(imageLevels[1].data());
 
             addCalled = true;
@@ -5164,8 +5180,8 @@ void AbstractSceneConverterTest::addImageLevels3DCompressedView() {
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.image3DCount(), 0);
     CORRADE_COMPARE(converter.add({
-        CompressedImageView3D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1, 1}, imageData},
-        CompressedImageView3D{CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1, 1}, imageData}
+        CompressedImageView3D{CompressedPixelFormat::Astc3x3x3RGBASrgb, {1, 1, 1}, imageData, ImageFlag3D::Array},
+        CompressedImageView3D{CompressedPixelStorage{}.setCompressedBlockSize({3, 3, 3}), CompressedPixelFormat::Astc3x3x3RGBASrgb, {3, 1, 1}, imageData, ImageFlag3D::Array}
     }, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.image3DCount(), 1);

@@ -915,7 +915,7 @@ bool AbstractSceneConverter::doAdd(const UnsignedInt id, const ImageData1D& imag
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView1D& image, const Containers::StringView name) {
-    return add(ImageData1D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data()}, name);
+    return add(ImageData1D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data(), image.flags()}, name);
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView1D& image) {
@@ -923,7 +923,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView1D&
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedImageView1D& image, const Containers::StringView name) {
-    return add(ImageData1D{image.storage(), image.format(), image.size(), DataFlags{}, image.data()}, name);
+    return add(ImageData1D{image.storage(), image.format(), image.size(), DataFlags{}, image.data(), image.flags()}, name);
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedImageView1D& image) {
@@ -960,7 +960,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     Containers::Array<ImageData1D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const ImageView1D& image = imageLevels[i];
-        new(&data[i]) ImageData1D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data()};
+        new(&data[i]) ImageData1D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data(), image.flags()};
     }
 
     return add(data, name);
@@ -974,7 +974,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     Containers::Array<ImageData1D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const CompressedImageView1D& image = imageLevels[i];
-        new(&data[i]) ImageData1D{image.storage(), image.format(), image.size(), DataFlags{}, image.data()};
+        new(&data[i]) ImageData1D{image.storage(), image.format(), image.size(), DataFlags{}, image.data(), image.flags()};
     }
 
     return add(data, name);
@@ -1016,7 +1016,7 @@ bool AbstractSceneConverter::doAdd(const UnsignedInt id, const ImageData2D& imag
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView2D& image, const Containers::StringView name) {
-    return add(ImageData2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data()}, name);
+    return add(ImageData2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data(), image.flags()}, name);
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView2D& image) {
@@ -1024,7 +1024,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView2D&
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedImageView2D& image, const Containers::StringView name) {
-    return add(ImageData2D{image.storage(), image.format(), image.size(), DataFlags{}, image.data()}, name);
+    return add(ImageData2D{image.storage(), image.format(), image.size(), DataFlags{}, image.data(), image.flags()}, name);
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedImageView2D& image) {
@@ -1061,7 +1061,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     Containers::Array<ImageData2D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const ImageView2D& image = imageLevels[i];
-        new(&data[i]) ImageData2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data()};
+        new(&data[i]) ImageData2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data(), image.flags()};
     }
 
     return add(data, name);
@@ -1075,7 +1075,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     Containers::Array<ImageData2D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const CompressedImageView2D& image = imageLevels[i];
-        new(&data[i]) ImageData2D{image.storage(), image.format(), image.size(), DataFlags{}, image.data()};
+        new(&data[i]) ImageData2D{image.storage(), image.format(), image.size(), DataFlags{}, image.data(), image.flags()};
     }
 
     return add(data, name);
@@ -1117,7 +1117,7 @@ bool AbstractSceneConverter::doAdd(const UnsignedInt id, const ImageData3D& imag
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView3D& image, const Containers::StringView name) {
-    return add(ImageData3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data()}, name);
+    return add(ImageData3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data(), image.flags()}, name);
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView3D& image) {
@@ -1125,7 +1125,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const ImageView3D&
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedImageView3D& image, const Containers::StringView name) {
-    return add(ImageData3D{image.storage(), image.format(), image.size(), DataFlags{}, image.data()}, name);
+    return add(ImageData3D{image.storage(), image.format(), image.size(), DataFlags{}, image.data(), image.flags()}, name);
 }
 
 Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedImageView3D& image) {
@@ -1162,7 +1162,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     Containers::Array<ImageData3D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const ImageView3D& image = imageLevels[i];
-        new(&data[i]) ImageData3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data()};
+        new(&data[i]) ImageData3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), image.size(), DataFlags{}, image.data(), image.flags()};
     }
 
     return add(data, name);
@@ -1176,7 +1176,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     Containers::Array<ImageData3D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const CompressedImageView3D& image = imageLevels[i];
-        new(&data[i]) ImageData3D{image.storage(), image.format(), image.size(), DataFlags{}, image.data()};
+        new(&data[i]) ImageData3D{image.storage(), image.format(), image.size(), DataFlags{}, image.data(), image.flags()};
     }
 
     return add(data, name);
