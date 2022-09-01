@@ -91,6 +91,7 @@ constexpr struct {
     {"3MF", "print.3mf", "3mfImporter"},
     {"FBX", "autodesk.fbx", "FbxImporter"},
     {"glTF", "khronos.gltf", "GltfImporter"},
+    {"glTF binary", "khronos.glb", "GltfImporter"},
     {"OpenGEX", "eric.ogex", "OpenGexImporter"},
     {"Stanford PLY", "bunny.ply", "StanfordImporter"},
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordImporter"},
