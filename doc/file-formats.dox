@@ -583,6 +583,16 @@ Derived from @ref Trade::AbstractSceneConverter.
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center"></td>
 </tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th>glTF (`*.gltf`, `*.glb`)</th>
+<td>`GltfSceneConverter`</td>
+<td>@relativeref{Trade,GltfSceneConverter}</td>
+<td class="m-text-center m-warning">@ref Trade-GltfSceneConverter-behavior "some"</td>
+<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center"></td>
+</tr>
 </table>
 
 @endparblock
