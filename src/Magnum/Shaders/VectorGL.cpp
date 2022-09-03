@@ -168,8 +168,6 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& c
     if (id() == 0) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
-    CORRADE_INTERNAL_ASSERT_OUTPUT(cs._vert.checkCompile());
-    CORRADE_INTERNAL_ASSERT_OUTPUT(cs._frag.checkCompile());
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = cs._version;

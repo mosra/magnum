@@ -680,7 +680,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
         #endif
 
-        static MAGNUM_GL_LOCAL void completionStatusImplementationFallback(GLuint, GLenum, GLint*);
+        static MAGNUM_GL_LOCAL APIENTRY void completionStatusImplementationFallback(GLuint, GLenum, GLint*);
 
         Type _type;
         GLuint _id;
