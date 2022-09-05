@@ -1192,7 +1192,7 @@ Example usage:
 #define MAGNUM_ASSERT_GL_VERSION_SUPPORTED(version)                         \
     do {                                                                    \
         if(!Magnum::GL::Context::current().isVersionSupported(version)) {   \
-            Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
+            Corrade::Utility::Error{} << "Magnum::GL: required version" << version << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
     } while(0)
@@ -1221,7 +1221,7 @@ Example usage:
 #define MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(extension)                     \
     do {                                                                    \
         if(!Magnum::GL::Context::current().isExtensionSupported<extension>()) { \
-            Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
+            Corrade::Utility::Error{} << "Magnum::GL: required extension" << extension::string() << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
     } while(0)
