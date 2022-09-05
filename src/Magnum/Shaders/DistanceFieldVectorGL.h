@@ -554,7 +554,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          */
 
         /**
-         * @brief Bind vector texture
+         * @brief Bind a vector texture
          * @return Reference to self (for method chaining)
          *
          * @see @ref DistanceFieldVectorGL::Flag::TextureTransformation,
