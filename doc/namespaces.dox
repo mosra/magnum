@@ -109,8 +109,10 @@ more information.
     #include <MagnumMath.hpp>
     @endcode
 @par
-    In addition, contents of the @ref GlmIntegration and @ref EigenIntegration
-    libraries are included as well --- opt-in by specifying either
+    If you need the deinlined symbols to be exported from a shared library,
+    @cpp #define MAGNUM_EXPORT @ce as appropriate. In addition, contents of the
+    @ref GlmIntegration and @ref EigenIntegration libraries are included as
+    well --- opt-in by specifying either
     @cpp #define MAGNUM_MATH_GLM_INTEGRATION @ce or
     @cpp #define MAGNUM_MATH_EIGEN_INTEGRATION @ce before including the file.
     Including it multiple times with different macros defined works as well.
