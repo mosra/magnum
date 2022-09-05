@@ -90,165 +90,6 @@
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
-int main() {
-
-#ifndef MAGNUM_TARGET_GLES2
-{
-ImageView2D diffuse{PixelFormat::RGBA8Unorm, {}};
-ImageView2D specular{PixelFormat::RGBA8Unorm, {}};
-ImageView2D bump{PixelFormat::RGBA8Unorm, {}};
-/* [method-chaining-texture] */
-GL::Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
-
-carDiffuseTexture.setStorage(5, GL::TextureFormat::SRGB8, {256, 256});
-carSpecularTexture.setStorage(3, GL::TextureFormat::R8, {256, 256});
-carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256});
-carDiffuseTexture.setSubImage(0, {}, diffuse);
-carSpecularTexture.setSubImage(0, {}, specular);
-carBumpTexture.setSubImage(0, {}, bump);
-carDiffuseTexture.generateMipmap();
-carSpecularTexture.generateMipmap();
-carBumpTexture.generateMipmap();
-/* [method-chaining-texture] */
-
-/* [method-chaining-texture-chained] */
-carDiffuseTexture.setStorage(5, GL::TextureFormat::SRGB8, {256, 256})
-    .setSubImage(0, {}, diffuse)
-    .generateMipmap();
-carSpecularTexture.setStorage(3, GL::TextureFormat::R8, {256, 256})
-    .setSubImage(0, {}, diffuse)
-    .generateMipmap();
-carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256})
-    .setSubImage(0, {}, bump)
-    .generateMipmap();
-/* [method-chaining-texture-chained] */
-}
-#endif
-
-{
-struct Foo {
-    void setSomeBuffer(GLuint) {}
-    GLuint someBuffer() { return {}; }
-} externalLib;
-char someData[1];
-/* [opengl-wrapping-transfer] */
-/* Transferring the instance to external library */
-{
-    GL::Buffer buffer;
-    buffer.setData(someData, GL::BufferUsage::StaticDraw);
-    GLuint id = buffer.release();
-    externalLib.setSomeBuffer(id); /* The library is responsible for deletion */
-}
-
-/* Acquiring an instance from external library */
-{
-    GLuint id = externalLib.someBuffer();
-    GL::Buffer buffer = GL::Buffer::wrap(id, GL::ObjectFlag::DeleteOnDestruction);
-    /* The buffer instance now handles deletion */
-}
-/* [opengl-wrapping-transfer] */
-}
-
-#ifndef MAGNUM_TARGET_GLES
-{
-struct: GL::AbstractShaderProgram {} someShader;
-/* [opengl-wrapping-state] */
-GL::Buffer buffer;
-GL::Mesh mesh;
-// ...
-someShader.draw(mesh);
-
-{
-    /* Entering a section with 3rd-party OpenGL code -- clean up all state that
-       could cause accidental modifications of our objects from outside */
-    GL::Context::current().resetState(GL::Context::State::EnterExternal);
-
-    /* Raw OpenGL calls */
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.id());
-    glBufferStorage(GL_ARRAY_BUFFER, 32768, nullptr, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
-    // ...
-
-    /* Exiting a section with 3rd-party OpenGL code -- reset our state tracker */
-    GL::Context::current().resetState(GL::Context::State::ExitExternal);
-}
-
-/* Use the buffer through Magnum again */
-auto data = buffer.map(0, 32768, GL::Buffer::MapFlag::Read|GL::Buffer::MapFlag::Write);
-// ...
-/* [opengl-wrapping-state] */
-static_cast<void>(data);
-}
-#endif
-
-#ifndef MAGNUM_TARGET_GLES
-{
-/* [opengl-wrapping-extensions] */
-GL::TextureFormat format;
-if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::depth_buffer_float>())
-    format = GL::TextureFormat::DepthComponent32F;
-else
-    format = GL::TextureFormat::DepthComponent24;
-/* [opengl-wrapping-extensions] */
-static_cast<void>(format);
-}
-#endif
-
-#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-{
-/* [opengl-wrapping-dsa] */
-GL::Texture2D texture;
-
-/* - on OpenGL 4.5+/ARB_direct_state_access this calls glTextureStorage2D()
-   - on OpenGL 4.2+/ARB_texture_storage and OpenGL ES 3.0+ calls glTexStorage2D()
-   - on OpenGL ES 2.0 with EXT_texture_storage calls glTexStorage2DEXT()
-   - otherwise emulated using a sequence of four glTexImage2D() calls */
-texture.setStorage(4, GL::TextureFormat::RGBA8, {256, 256});
-/* [opengl-wrapping-dsa] */
-}
-#endif
-
-{
-/* [portability-targets] */
-#ifndef MAGNUM_TARGET_GLES
-GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
-// draw mesh as wireframe...
-#else
-// use different mesh, as polygon mode is not supported in OpenGL ES...
-#endif
-/* [portability-targets] */
-}
-
-#ifndef MAGNUM_TARGET_GLES
-{
-/* [portability-extensions] */
-if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>()) {
-    // draw mesh with wireframe on top in one pass using geometry shader...
-} else {
-    // draw underlying mesh...
-    GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
-    // draw mesh as wirefreame in second pass...
-}
-/* [portability-extensions] */
-}
-
-{
-/* [portability-extension-assert] */
-MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::geometry_shader4);
-// just use geometry shader and don't care about old hardware
-/* [portability-extension-assert] */
-}
-
-{
-/* [portability-shaders] */
-// MyShader.cpp
-GL::Version version = GL::Context::current().supportedVersion({
-    GL::Version::GL430, GL::Version::GL330, GL::Version::GL210});
-GL::Shader vert{version, GL::Shader::Type::Vertex};
-vert.addFile("MyShader.vert");
-/* [portability-shaders] */
-}
-#endif
-
 #ifndef MAGNUM_TARGET_GLES
 struct MyShader: GL::AbstractShaderProgram {
 /* [AbstractShaderProgram-input-attributes] */
@@ -414,6 +255,165 @@ setTransformFeedbackOutputs({
 /* [AbstractShaderProgram-xfb-outputs] */
 }
 };
+#endif
+
+int main() {
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+ImageView2D diffuse{PixelFormat::RGBA8Unorm, {}};
+ImageView2D specular{PixelFormat::RGBA8Unorm, {}};
+ImageView2D bump{PixelFormat::RGBA8Unorm, {}};
+/* [method-chaining-texture] */
+GL::Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
+
+carDiffuseTexture.setStorage(5, GL::TextureFormat::SRGB8, {256, 256});
+carSpecularTexture.setStorage(3, GL::TextureFormat::R8, {256, 256});
+carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256});
+carDiffuseTexture.setSubImage(0, {}, diffuse);
+carSpecularTexture.setSubImage(0, {}, specular);
+carBumpTexture.setSubImage(0, {}, bump);
+carDiffuseTexture.generateMipmap();
+carSpecularTexture.generateMipmap();
+carBumpTexture.generateMipmap();
+/* [method-chaining-texture] */
+
+/* [method-chaining-texture-chained] */
+carDiffuseTexture.setStorage(5, GL::TextureFormat::SRGB8, {256, 256})
+    .setSubImage(0, {}, diffuse)
+    .generateMipmap();
+carSpecularTexture.setStorage(3, GL::TextureFormat::R8, {256, 256})
+    .setSubImage(0, {}, diffuse)
+    .generateMipmap();
+carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256})
+    .setSubImage(0, {}, bump)
+    .generateMipmap();
+/* [method-chaining-texture-chained] */
+}
+#endif
+
+{
+struct Foo {
+    void setSomeBuffer(GLuint) {}
+    GLuint someBuffer() { return {}; }
+} externalLib;
+char someData[1];
+/* [opengl-wrapping-transfer] */
+/* Transferring the instance to external library */
+{
+    GL::Buffer buffer;
+    buffer.setData(someData, GL::BufferUsage::StaticDraw);
+    GLuint id = buffer.release();
+    externalLib.setSomeBuffer(id); /* The library is responsible for deletion */
+}
+
+/* Acquiring an instance from external library */
+{
+    GLuint id = externalLib.someBuffer();
+    GL::Buffer buffer = GL::Buffer::wrap(id, GL::ObjectFlag::DeleteOnDestruction);
+    /* The buffer instance now handles deletion */
+}
+/* [opengl-wrapping-transfer] */
+}
+
+#ifndef MAGNUM_TARGET_GLES
+{
+struct: GL::AbstractShaderProgram {} someShader;
+/* [opengl-wrapping-state] */
+GL::Buffer buffer;
+GL::Mesh mesh;
+// ...
+someShader.draw(mesh);
+
+{
+    /* Entering a section with 3rd-party OpenGL code -- clean up all state that
+       could cause accidental modifications of our objects from outside */
+    GL::Context::current().resetState(GL::Context::State::EnterExternal);
+
+    /* Raw OpenGL calls */
+    glBindBuffer(GL_ARRAY_BUFFER, buffer.id());
+    glBufferStorage(GL_ARRAY_BUFFER, 32768, nullptr, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
+    // ...
+
+    /* Exiting a section with 3rd-party OpenGL code -- reset our state tracker */
+    GL::Context::current().resetState(GL::Context::State::ExitExternal);
+}
+
+/* Use the buffer through Magnum again */
+auto data = buffer.map(0, 32768, GL::Buffer::MapFlag::Read|GL::Buffer::MapFlag::Write);
+// ...
+/* [opengl-wrapping-state] */
+static_cast<void>(data);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+{
+/* [opengl-wrapping-extensions] */
+GL::TextureFormat format;
+if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::depth_buffer_float>())
+    format = GL::TextureFormat::DepthComponent32F;
+else
+    format = GL::TextureFormat::DepthComponent24;
+/* [opengl-wrapping-extensions] */
+static_cast<void>(format);
+}
+#endif
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+{
+/* [opengl-wrapping-dsa] */
+GL::Texture2D texture;
+
+/* - on OpenGL 4.5+/ARB_direct_state_access this calls glTextureStorage2D()
+   - on OpenGL 4.2+/ARB_texture_storage and OpenGL ES 3.0+ calls glTexStorage2D()
+   - on OpenGL ES 2.0 with EXT_texture_storage calls glTexStorage2DEXT()
+   - otherwise emulated using a sequence of four glTexImage2D() calls */
+texture.setStorage(4, GL::TextureFormat::RGBA8, {256, 256});
+/* [opengl-wrapping-dsa] */
+}
+#endif
+
+{
+/* [portability-targets] */
+#ifndef MAGNUM_TARGET_GLES
+GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
+// draw mesh as wireframe...
+#else
+// use different mesh, as polygon mode is not supported in OpenGL ES...
+#endif
+/* [portability-targets] */
+}
+
+#ifndef MAGNUM_TARGET_GLES
+{
+/* [portability-extensions] */
+if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>()) {
+    // draw mesh with wireframe on top in one pass using geometry shader...
+} else {
+    // draw underlying mesh...
+    GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
+    // draw mesh as wirefreame in second pass...
+}
+/* [portability-extensions] */
+}
+
+{
+/* [portability-extension-assert] */
+MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::geometry_shader4);
+// just use geometry shader and don't care about old hardware
+/* [portability-extension-assert] */
+}
+
+{
+/* [portability-shaders] */
+// MyShader.cpp
+GL::Version version = GL::Context::current().supportedVersion({
+    GL::Version::GL430, GL::Version::GL330, GL::Version::GL210});
+GL::Shader vert{version, GL::Shader::Type::Vertex};
+vert.addFile("MyShader.vert");
+/* [portability-shaders] */
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
