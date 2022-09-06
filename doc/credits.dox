@@ -228,6 +228,8 @@ Are the below lists missing your name or something's wrong?
     --- OpenGL ES compatibility improvements
 -   **Travis Watkins** ([\@amaranth](https://github.com/amaranth)) --- support
     for windowless applications under macOS
+-   **Vladislav** ([\@dranikpg](https://github.com/dranikpg)) --- Async @ref GL
+    shader compilation
 */
 
 }

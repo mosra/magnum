@@ -110,9 +110,11 @@ See also:
 -   Recognizing @webgl_extension{EXT,float_blend} and
     @webgl_extension{WEBGL,debug_shaders} WebGL extensions, no implementation
     done yet
--   Recognizing @gl_extension{KHR,parallel_shader_compile} GL, GLES and
-    @webgl_extension{KHR,parallel_shader_compile} WebGL extensions, no
-    implementation done yet
+-   Implemented @ref GL-AbstractShaderProgram-async "Async shader compilation and linking"
+    including the @gl_extension{KHR,parallel_shader_compile} GL, GLES and
+    @webgl_extension{KHR,parallel_shader_compile} WebGL extension (see
+    [mosra/magnum#534](https://github.com/mosra/magnum/issues/534) and
+    [mosra/magnum#576](https://github.com/mosra/magnum/pull/576))
 -   Recognizing ANGLE GLES and WebGL base vertex, base instance and multi-draw
     extensions and using them in @ref GL::AbstractShaderProgram::draw(Mesh&)
     and @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>):
@@ -229,6 +231,10 @@ See also:
     OpenGL ES 3.0+ and WebGL 2.0, including multi-draw functionality for
     massive driver overhead reduction. The @ref shaders overview page was
     updated with an introduction the new features.
+-   All builtin shaders now have opt-in capability of
+    @ref shaders-async "async compilation and linking" (see
+    [mosra/magnum534](https://github.com/mosra/magnum/issues/534) and
+    [mosra/magnum#576](https://github.com/mosra/magnum/pull/576))
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support texture arrays,
     available also in multi-draw and instanced scenarios
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support object ID
