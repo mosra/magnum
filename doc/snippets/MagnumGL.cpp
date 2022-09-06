@@ -471,11 +471,11 @@ vert.addFile("MyShader.vert");
 
 #ifndef MAGNUM_TARGET_GLES
 {
-MyShader shader;
 GL::Mesh mesh;
 Matrix4 transformation, projection;
 GL::Texture2D diffuseTexture, specularTexture;
 /* [AbstractShaderProgram-rendering] */
+MyShader shader;
 shader.setTransformationMatrix(transformation)
     .setProjectionMatrix(projection)
     .bindDiffuseTexture(diffuseTexture)
