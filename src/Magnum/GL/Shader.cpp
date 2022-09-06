@@ -783,17 +783,26 @@ bool Shader::checkCompile() {
        be said, handle that as well. */
     Context::current().state().shader.cleanLogImplementation(message);
 
+    /* Usually the driver messages contain a newline at the end. But sometimes
+       not, such as in case of a program link error due to shaders not being
+       compiled yet on Mesa; sometimes there's two newlines, sometimes just a
+       newline and nothing else etc. Because trying do this in driver-specific
+       workarounds would involve an impossible task of checking all possible
+       error messages on every possible driver, just trim all whitespace around
+       the message always and let Debug add its own newline. */
+    const Containers::StringView messageTrimmed = Containers::StringView{message}.trimmed();
+
     /* Show error log */
     if(!success) {
-        Error out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader"
-            << "failed with the following message:" << Debug::newline << message;
+        Error{} << "GL::Shader::compile(): compilation of" << shaderName(_type)
+            << "shader failed with the following message:" << Debug::newline
+            << messageTrimmed;
 
     /* Or just warnings, if any */
-    } else if(!message.empty()) {
-        Warning out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::Shader::compile(): compilation of" << shaderName(_type) << "shader"
-            << "succeeded with the following message:" << Debug::newline << message;
+    } else if(messageTrimmed) {
+        Warning{} << "GL::Shader::compile(): compilation of" << shaderName(_type)
+            << "shader succeeded with the following message:" << Debug::newline
+            << messageTrimmed;
     }
 
     return success;

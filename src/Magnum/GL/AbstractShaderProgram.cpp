@@ -31,6 +31,7 @@
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
+#include <Corrade/Containers/StringStl.h> /** @todo remove once <string>-free */
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -606,17 +607,24 @@ bool AbstractShaderProgram::checkLink() {
        be said, handle that as well. */
     Context::current().state().shaderProgram.cleanLogImplementation(message);
 
+    /* Usually the driver messages contain a newline at the end. But sometimes
+       not, such as in case of a program link error due to shaders not being
+       compiled yet on Mesa; sometimes there's two newlines, sometimes just a
+       newline and nothing else etc. Because trying do this in driver-specific
+       workarounds would involve an impossible task of checking all possible
+       error messages on every possible driver, just trim all whitespace around
+       the message always and let Debug add its own newline. */
+    const Containers::StringView messageTrimmed = Containers::StringView{message}.trimmed();
+
     /* Show error log */
     if(!success) {
-        Error out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::AbstractShaderProgram::link(): linking failed with the following message:"
-            << Debug::newline << message;
+        Error{} << "GL::AbstractShaderProgram::link(): linking failed with the following message:"
+            << Debug::newline << messageTrimmed;
 
     /* Or just warnings, if any */
-    } else if(!message.empty()) {
-        Warning out{Debug::Flag::NoNewlineAtTheEnd};
-        out << "GL::AbstractShaderProgram::link(): linking succeeded with the following message:"
-            << Debug::newline << message;
+    } else if(messageTrimmed) {
+        Warning{} << "GL::AbstractShaderProgram::link(): linking succeeded with the following message:"
+            << Debug::newline << messageTrimmed;
     }
 
     return success;
