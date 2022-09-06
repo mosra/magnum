@@ -645,7 +645,7 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
 }
 #endif
 
-Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
+Shader::Shader(const Version version, const Type type): _type{type}, _flags{ObjectFlag::DeleteOnDestruction|ObjectFlag::Created} {
     _id = glCreateShader(GLenum(_type));
 
     switch(version) {
@@ -678,9 +678,11 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
     CORRADE_ASSERT_UNREACHABLE("GL::Shader::Shader(): unsupported version" << version, );
 }
 
+Shader::Shader(const Type type, const GLuint id, ObjectFlags flags) noexcept: _type{type}, _id{id}, _flags{flags} {}
+
 Shader::~Shader() {
-    /* Moved out, nothing to do */
-    if(!_id) return;
+    /* Moved out or not deleting on destruction, nothing to do */
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     glDeleteShader(_id);
 }

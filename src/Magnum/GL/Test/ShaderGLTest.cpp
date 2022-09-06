@@ -49,6 +49,7 @@ struct ShaderGLTest: OpenGLTester {
     void construct();
     void constructNoVersion();
     void constructMove();
+    void wrap();
 
     #ifndef MAGNUM_TARGET_WEBGL
     void label();
@@ -69,6 +70,7 @@ ShaderGLTest::ShaderGLTest() {
     addTests({&ShaderGLTest::construct,
               &ShaderGLTest::constructNoVersion,
               &ShaderGLTest::constructMove,
+              &ShaderGLTest::wrap,
 
               #ifndef MAGNUM_TARGET_WEBGL
               &ShaderGLTest::label,
@@ -158,6 +160,20 @@ void ShaderGLTest::constructMove() {
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Shader>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Shader>::value);
+}
+
+void ShaderGLTest::wrap() {
+    GLuint id = glCreateShader(GL_FRAGMENT_SHADER);
+
+    /* Releasing won't delete anything */
+    {
+        auto shader = Shader::wrap(Shader::Type::Fragment, id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(shader.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Shader::wrap(Shader::Type::Fragment, id);
+    glDeleteShader(id);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

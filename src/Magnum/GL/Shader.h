@@ -527,6 +527,23 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         #endif
 
         /**
+         * @brief Wrap existing OpenGL shader object
+         * @param type          Shader type
+         * @param id            OpenGL shader ID
+         * @param flags         Object creation flags
+         * @m_since_latest
+         *
+         * The @p id is expected to be of an existing OpenGL shader object.
+         * Unlike a shader created using a constructor, the OpenGL object is by
+         * default not deleted on destruction, use @p flags for different
+         * behavior.
+         * @see @ref release()
+         */
+        static Shader wrap(Type type, GLuint id, ObjectFlags flags = {}) {
+            return Shader{type, id, flags};
+        }
+
+        /**
          * @brief Constructor
          * @param version   Target version
          * @param type      Shader type
@@ -535,7 +552,8 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * corresponding to @p version parameter at the beginning. If
          * @ref Version::None is specified, (not) adding the @glsl #version @ce
          * directive is left to the user.
-         * @see @fn_gl_keyword{CreateShader}
+         * @see @ref Shader(NoCreateT), @ref wrap(),
+         *      @fn_gl_keyword{CreateShader}
          */
         explicit Shader(Version version, Type type);
 
@@ -564,7 +582,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL shader.
-         * @see @fn_gl_keyword{DeleteShader}
+         * @see @ref wrap(), @ref release(), @fn_gl_keyword{DeleteShader}
          */
         ~Shader();
 
@@ -576,6 +594,18 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 
         /** @brief OpenGL shader ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release the underlying OpenGL object
+         * @m_since_latest
+         *
+         * Releases ownership of the OpenGL shader object and returns its ID so
+         * it's not deleted on destruction. The internal state is then
+         * equivalent to a moved-from state.
+         * @see @ref wrap()
+         */
+        /* MinGW complains loudly if the declaration doesn't also have inline */
+        inline GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -711,6 +741,8 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         bool isCompileFinished();
 
     private:
+        explicit Shader(Type type, GLuint id, ObjectFlags flags) noexcept;
+
         void MAGNUM_GL_LOCAL addSourceImplementationDefault(std::string source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
         void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(std::string source);
@@ -725,6 +757,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 
         Type _type;
         GLuint _id;
+        ObjectFlags _flags;
 
         std::vector<std::string> _sources;
 };
@@ -732,7 +765,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 /** @debugoperatorclassenum{Shader,Shader::Type} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Shader::Type value);
 
-inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._id), _sources(std::move(other._sources)) {
+inline Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _flags{other._flags}, _sources{std::move(other._sources)} {
     other._id = 0;
 }
 
@@ -740,8 +773,15 @@ inline Shader& Shader::operator=(Shader&& other) noexcept {
     using std::swap;
     swap(_type, other._type);
     swap(_id, other._id);
+    swap(_flags, other._flags);
     swap(_sources, other._sources);
     return *this;
+}
+
+inline GLuint Shader::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 }}

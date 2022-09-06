@@ -61,8 +61,8 @@ Magnum object instance using @cpp wrap() @ce:
 @snippet MagnumGL.cpp opengl-wrapping-transfer
 
 The @cpp wrap() @ce and @cpp release() @ce functions are available for all
-OpenGL classes except for @ref GL::Shader, instances of which are rather
-short-lived and thus wrapping external instances makes less sense.
+OpenGL classes except for @ref GL::AbstractShaderProgram, where the desired
+usage via subclassing isn't really suited for wrapping external objects.
 
 @attention
     Note that interaction with third-party OpenGL code as shown above usually
