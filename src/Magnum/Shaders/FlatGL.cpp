@@ -239,7 +239,11 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state): FlatGL{static_cast<FlatGL&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
     if(!id()) return;
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 

@@ -349,7 +349,11 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
 }
 
 PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
     if(!id()) return;
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 

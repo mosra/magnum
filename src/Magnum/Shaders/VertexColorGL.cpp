@@ -144,7 +144,11 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
 }
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& state): VertexColorGL{static_cast<VertexColorGL&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
     if(!id()) return;
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 

@@ -530,7 +530,11 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags, const UnsignedInt mate
 #endif
 
 MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D{static_cast<MeshVisualizerGL2D&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
     if(!id()) return;
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
@@ -902,7 +906,11 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
 }
 
 MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
     if(!id()) return;
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
