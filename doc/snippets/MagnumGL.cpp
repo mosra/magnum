@@ -257,6 +257,59 @@ setTransformFeedbackOutputs({
 };
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
+namespace Foo {
+
+struct MyShader: GL::AbstractShaderProgram {
+    class CompileState;
+
+    MyShader(NoInitT);
+    MyShader(CompileState&&);
+    MyShader(int);
+
+    static CompileState compile(int);
+};
+
+/* [AbstractShaderProgram-async] */
+class MyShader::CompileState: public MyShader {
+    friend MyShader;
+
+    explicit CompileState(MyShader&& shader, GL::Shader&& vert, GL::Shader&& frag):
+        MyShader{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)} {}
+
+    GL::Shader _vert, _frag;
+};
+
+MyShader::CompileState MyShader::compile(DOXYGEN_ELLIPSIS(int)) {
+    GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
+    GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
+    DOXYGEN_ELLIPSIS()
+    vert.submitCompile();
+    frag.submitCompile();
+
+    MyShader out{NoInit};
+    DOXYGEN_ELLIPSIS()
+    out.attachShaders({vert, frag});
+    out.submitLink();
+
+    return CompileState{std::move(out), std::move(vert), std::move(frag)};
+}
+
+MyShader::MyShader(NoInitT) {}
+
+MyShader::MyShader(CompileState&& state):
+    MyShader{static_cast<MyShader&&>(std::move(state))}
+{
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+    DOXYGEN_ELLIPSIS()
+}
+
+MyShader::MyShader(DOXYGEN_ELLIPSIS(int a)): MyShader{compile(DOXYGEN_ELLIPSIS(a))} {}
+/* [AbstractShaderProgram-async] */
+
+}
+#endif
+
 int main() {
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -429,6 +482,22 @@ shader.setTransformationMatrix(transformation)
     .bindSpecularTexture(specularTexture)
     .draw(mesh);
 /* [AbstractShaderProgram-rendering] */
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+{
+using Foo::MyShader;
+/* [AbstractShaderProgram-async-usage] */
+MyShader::CompileState state = MyShader::compile(DOXYGEN_ELLIPSIS(0));
+// Other shaders to compile....
+
+while(!state.isLinkFinished()) {
+    // Do other work...
+}
+
+MyShader shader{std::move(state)};
+/* [AbstractShaderProgram-async-usage] */
 }
 #endif
 

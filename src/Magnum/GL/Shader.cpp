@@ -766,7 +766,7 @@ void Shader::submitCompile() {
     glCompileShader(_id);
 }
 
-bool Shader::checkCompile() { /* After compilation phase, check status of all shaders */
+bool Shader::checkCompile() {
     GLint success, logLength;
     glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
     glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &logLength);

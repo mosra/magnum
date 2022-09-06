@@ -631,41 +631,68 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Shader& addFile(const std::string& filename);
 
         /**
-         * @brief Compile shader
+         * @brief Compile the shader
          *
-         * Calls @ref submitCompile(), then @ref checkCompile().
-         * Prefer to compile multiple shaders at once using
-         * @ref compile(std::initializer_list<Containers::Reference<Shader>>)
-         * for improved performance, see its documentation for more
-         * information.
+         * Calls @ref submitCompile(), immediately followed by
+         * @ref checkCompile(), passing back its return value. See
+         * documentation of those two functions for details.
          */
         bool compile();
 
         /**
-         * @brief Submit shader for compilation
+         * @brief Submit the shader for compilation
+         * @m_since_latest
          *
+         * You can call @ref isCompileFinished() or @ref checkCompile() after,
+         * but in most cases it's enough to defer that to after
+         * @ref AbstractShaderProgram::attachShader() and
+         * @relativeref{AbstractShaderProgram,submitLink()} were called, and
+         * then continuing with @relativeref{AbstractShaderProgram,isLinkFinished()}
+         * or @relativeref{AbstractShaderProgram,checkLink()} on the final
+         * program --- if compilation would fail, subsequent linking will as
+         * well. See @ref GL-AbstractShaderProgram-async for more information.
          * @see @fn_gl_keyword{ShaderSource}, @fn_gl_keyword{CompileShader}
          */
         void submitCompile();
 
         /**
-         * @brief Check compilation status and await completion
+         * @brief Check shader compilation status and await completion
+         * @m_since_latest
          *
-         * Returns @cpp false @ce if compilation of failed, @cpp true @ce on success.
-         * This function must be called only after @ref submitCompile().
-         *
+         * Has to be called only if @ref submitCompile() was called before. In
+         * most cases it's enough to defer this check to after
+         * @ref AbstractShaderProgram::attachShader() and
+         * @relativeref{AbstractShaderProgram,submitLink()} were called, and
+         * then continuing with @relativeref{AbstractShaderProgram,isLinkFinished()}
+         * or @relativeref{AbstractShaderProgram,checkLink()} on the final
+         * program --- if compilation would fail, subsequent linking will as
+         * well. See @ref GL-AbstractShaderProgram-async for more information.
          * @see @fn_gl_keyword{GetShader} with @def_gl{COMPILE_STATUS} and
          *      @def_gl{INFO_LOG_LENGTH}, @fn_gl_keyword{GetShaderInfoLog}
          */
         bool checkCompile();
 
         /**
-         * @brief Non-blocking compilation status check
-         * @return @cpp true @ce if shader compilation finished, @cpp false @ce otherwise
+         * @brief Whether a @ref submitCompile() operation has finished
+         * @m_since_latest
          *
+         * Has to be called only if @ref submitCompile() was called before, and
+         * before @ref checkCompile(). If returns @cpp false @ce, a subsequent
+         * @ref checkCompile() call will block until the compilation is
+         * finished. If @gl_extension{KHR,parallel_shader_compile} is not
+         * available, the function always returns @cpp true @ce --- i.e., as if
+         * the compilation was done synchronously.
+         *
+         * In most cases it's enough to only wait for the final link to finish,
+         * and not for particular compilations --- i.e., right after
+         * @ref submitCompile() continue with
+         * @ref AbstractShaderProgram::attachShader() and
+         * @relativeref{AbstractShaderProgram,submitLink()}, and then check
+         * with @relativeref{AbstractShaderProgram,isLinkFinished()} on the
+         * final program. See @ref GL-AbstractShaderProgram-async for more
+         * information.
          * @see @fn_gl_keyword{GetProgram} with
-         * @def_gl_extension{COMPLETION_STATUS,KHR,parallel_shader_compile}
-         *
+         *      @def_gl_extension{COMPLETION_STATUS,KHR,parallel_shader_compile}
          */
         bool isCompileFinished();
 
