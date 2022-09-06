@@ -33,6 +33,7 @@
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
@@ -171,7 +172,7 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     if(!id()) return;
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = state._version;

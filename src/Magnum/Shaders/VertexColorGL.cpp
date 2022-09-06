@@ -151,7 +151,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     if(!id()) return;
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = state._version;

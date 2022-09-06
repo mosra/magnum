@@ -33,11 +33,10 @@
 
 #include <Corrade/Utility/Utility.h>
 
-#include <Corrade/Containers/Optional.h>
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
-#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
+#include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
@@ -928,12 +927,13 @@ class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
     /* Everything deliberately private except for the inheritance */
     friend class MeshVisualizerGL2D;
 
-    explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate}, _geom{NoCreate} {}
 
-    explicit CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version): MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
+    explicit CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Shader* geom, Flags flags, GL::Version version): MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{NoCreate}, _flags{flags}, _version{version} {
+        if(geom) _geom = Implementation::GLShaderWrapper{std::move(*geom)};
+    }
 
-    GL::Shader _vert, _frag;
-    Containers::Optional<GL::Shader> _geom;
+    Implementation::GLShaderWrapper _vert, _frag, _geom;
     Flags _flags;
     GL::Version _version;
 };
@@ -2465,12 +2465,13 @@ class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
     /* Everything deliberately private except for the inheritance */
     friend class MeshVisualizerGL3D;
 
-    explicit CompileState(NoCreateT): MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate}, _geom{NoCreate} {}
 
-    explicit CompileState(MeshVisualizerGL3D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version): MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
+    explicit CompileState(MeshVisualizerGL3D&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Shader* geom, Flags flags, GL::Version version): MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{NoCreate}, _flags{flags}, _version{version} {
+        if(geom) _geom = Implementation::GLShaderWrapper{std::move(*geom)};
+    }
 
-    GL::Shader _vert, _frag;
-    Containers::Optional<GL::Shader> _geom;
+    Implementation::GLShaderWrapper _vert, _frag, _geom;
     Flags _flags;
     GL::Version _version;
 };

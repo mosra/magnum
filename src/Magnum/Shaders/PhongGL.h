@@ -32,8 +32,8 @@
  */
 
 #include "Magnum/GL/AbstractShaderProgram.h"
-#include "Magnum/GL/Shader.h"
 #include "Magnum/Shaders/GenericGL.h"
+#include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
@@ -1847,7 +1847,7 @@ class PhongGL::CompileState: public PhongGL {
 
     explicit CompileState(PhongGL&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): PhongGL{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
-    GL::Shader _vert, _frag;
+    Implementation::GLShaderWrapper _vert, _frag;
     GL::Version _version;
 };
 
