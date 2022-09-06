@@ -652,7 +652,8 @@ void AbstractShaderProgramGLTest::uniformNotFound() {
         #endif
         );
 
-    CORRADE_VERIFY(Shader::compile({vert, frag}));
+    CORRADE_VERIFY(vert.compile() && frag.compile());
+
     program.attachShaders({vert, frag});
     CORRADE_VERIFY(program.link());
 
@@ -702,10 +703,10 @@ MyShader::MyShader() {
         Version::GLES200
         #endif
         , Shader::Type::Fragment);
-    vert.addSource(rs.getString("MyShader.vert"));
-    frag.addSource(rs.getString("MyShader.frag"));
-
-    Shader::compile({vert, frag});
+    vert.addSource(rs.getString("MyShader.vert"))
+        .compile();
+    frag.addSource(rs.getString("MyShader.frag"))
+        .compile();
 
     attachShaders({vert, frag});
 
@@ -786,10 +787,10 @@ MyDoubleShader::MyDoubleShader() {
 
     Shader vert(Version::GL320, Shader::Type::Vertex);
     Shader frag(Version::GL320, Shader::Type::Fragment);
-    vert.addSource(rs.getString("MyDoubleShader.vert"));
-    frag.addSource(rs.getString("MyDoubleShader.frag"));
-
-    Shader::compile({vert, frag});
+    vert.addSource(rs.getString("MyDoubleShader.vert"))
+        .compile();
+    frag.addSource(rs.getString("MyDoubleShader.frag"))
+        .compile();
 
     attachShaders({vert, frag});
 
@@ -948,8 +949,8 @@ void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
     vert.addSource("void main() { gl_Position = vec4(0.0); }");
     frag.addSource("out lowp vec4 color;\n"
                    "void main() { color = vec4(1.0); }");
+    CORRADE_VERIFY(vert.compile() && frag.compile());
 
-    CORRADE_VERIFY(Shader::compile({vert, frag}));
     program.attachShaders({vert, frag});
     CORRADE_VERIFY(program.link());
 
@@ -989,10 +990,11 @@ UniformBlockShader::UniformBlockShader() {
         Version::GLES300
         #endif
         , Shader::Type::Fragment);
-    vert.addSource(rs.getString("UniformBlockShader.vert"));
-    frag.addSource(rs.getString("UniformBlockShader.frag"));
+    vert.addSource(rs.getString("UniformBlockShader.vert"))
+        .compile();
+    frag.addSource(rs.getString("UniformBlockShader.frag"))
+        .compile();
 
-    Shader::compile({vert, frag});
     attachShaders({vert, frag});
 
     link();

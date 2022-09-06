@@ -39,6 +39,7 @@
 #include "Magnum/GL/GL.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
 /* For label() / setLabel(), which used to be a std::string. Not ideal for the
    return type, but at least something. */
 #include <Corrade/Containers/StringStl.h>
@@ -508,16 +509,22 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         static Int maxCombinedUniformComponents(Type type);
         #endif
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Compile multiple shaders simultaneously
+         * @m_deprecated_since_latest Originally meant to batch multiple
+         *      compile operations together in a way that allowed the driver to
+         *      perform the compilation in multiple threads. Superseded by
+         *      @ref submitCompile() and @ref checkCompile(), use either those
+         *      or the zero-argument @ref compile() instead. See
+         *      @ref GL-AbstractShaderProgram-async for more information.
          *
-         * Calls @ref submitCompile() on all shaders first, then @ref checkCompile().
-         * Returns @cpp false @ce if compilation of any shader failed,
-         * @cpp true @ce if everything succeeded. The operation is batched in a way that
-         * allows the driver to perform multiple compilations simultaneously
-         * (i.e. in multiple threads).
+         * Calls @ref submitCompile() on all shaders first, then
+         * @ref checkCompile(). Returns @cpp false @ce if compilation of any
+         * shader failed, @cpp true @ce if everything succeeded.
          */
-        static bool compile(std::initializer_list<Containers::Reference<Shader>> shaders);
+        static CORRADE_DEPRECATED("use either submitCompile() and checkCompile() or the zero-argument compile() instead") bool compile(std::initializer_list<Containers::Reference<Shader>> shaders);
+        #endif
 
         /**
          * @brief Constructor

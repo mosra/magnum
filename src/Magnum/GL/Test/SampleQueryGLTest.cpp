@@ -207,7 +207,7 @@ MyShader::MyShader() {
         "    color = vec4(1.0, 1.0, 1.0, 1.0);\n"
         "}\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 

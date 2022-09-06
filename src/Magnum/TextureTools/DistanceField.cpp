@@ -104,7 +104,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     frag.addSource(Utility::formatString("#define RADIUS {}\n", radius))
         .addSource(rs.getString("DistanceFieldShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 

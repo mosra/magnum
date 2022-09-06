@@ -147,8 +147,8 @@ explicit MyShader() {
     vert.addFile("MyShader.vert");
     frag.addFile("MyShader.frag");
 
-    /* Invoke parallel compilation for best performance */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    /* Compile them */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     /* Attach the shaders */
     attachShaders({vert, frag});

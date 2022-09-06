@@ -43,6 +43,7 @@
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
 /* For label() / setLabel(), which used to be a std::string */
 #include <Corrade/Containers/StringStl.h>
 #endif
@@ -1345,15 +1346,22 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         bool isLinkFinished();
 
     protected:
-        /** @brief Link the shaders
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Link multiple shaders simultaenously
+         * @m_deprecated_since_latest Originally meant to batch multiple link
+         *      operations together in a way that allowed the driver to perform
+         *      the linking in multiple threads. Superseded by @ref submitLink()
+         *      and @ref checkLink(), use either those or the zero-argument
+         *      @ref link() instead. See @ref GL-AbstractShaderProgram-async
+         *      for more information.
          *
          * Calls @ref submitLink() on all shaders first, then @ref checkLink().
          * Returns @cpp false @ce if linking of any shader failed, @cpp true @ce
-         * if everything succeeded. The operation is batched in a
-         * way that allows the driver to link multiple shaders simultaneously
-         * (i.e. in multiple threads).
+         * if everything succeeded.
          */
-        static bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
+        static CORRADE_DEPRECATED("use either submitLink() and checkLink() or the zero-argument link() instead") bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
+        #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**

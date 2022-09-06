@@ -27,7 +27,9 @@
 #include "Shader.h"
 
 #include <Corrade/Containers/Array.h>
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Reference.h>
+#endif
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
@@ -748,7 +750,10 @@ Shader& Shader::addFile(const std::string& filename) {
     return *this;
 }
 
-bool Shader::compile() { return compile({*this}); }
+bool Shader::compile() {
+    submitCompile();
+    return checkCompile();
+}
 
 void Shader::submitCompile() {
     CORRADE_ASSERT(_sources.size() > 1, "GL::Shader::compile(): no files added", );
@@ -808,6 +813,7 @@ bool Shader::checkCompile() {
     return success;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
     /* Invoke (possibly parallel) compilation on all shaders */
     for(Shader& shader: shaders) shader.submitCompile();
@@ -815,6 +821,7 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
     for(Shader& shader: shaders) allSuccess = allSuccess && shader.checkCompile();
     return allSuccess;
 }
+#endif
 
 bool Shader::isCompileFinished() {
     GLint success;

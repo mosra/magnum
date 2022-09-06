@@ -821,6 +821,16 @@ See also:
     @ref DebugTools::FrameProfilerGL. The new name plays better with IDE
     autocompletion and makes the GL-specific class appear next to the
     API-independent base in alphabetically sorted lists.
+-   List-taking @cpp GL::Shader::compile() @ce and
+    @cpp GL::AbstractShaderProgram::link() @ce functions are deprecated in
+    favor of new @ref GL::Shader::submitCompile(),
+    @relativeref{GL::Shader,checkCompile()},
+    @ref GL::AbstractShaderProgram::submitLink() and
+    @relativeref{GL::AbstractShaderProgram,checkLink()} APIs. These were
+    originally meant to make use of parallel shader compilation, but in
+    practice that meant compiling at most two or three shaders at once. The new
+    API allows for much larger parallelism as well as an ability to query
+    completion status.
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,

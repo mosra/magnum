@@ -635,7 +635,8 @@ void TransformFeedbackGLTest::draw() {
             else geom.addSource(
                 "    EmitVertex();\n");
             geom.addSource("}\n");
-            CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, geom}));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && geom.compile());
+
             attachShaders({vert, geom});
             setTransformFeedbackOutputs({"geomOutput"}, TransformFeedbackBufferMode::SeparateAttributes);
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
@@ -696,8 +697,8 @@ void TransformFeedbackGLTest::draw() {
                 "void main() {\n"
                 "    outputData = interleaved.x + 2*interleaved.y;\n"
                 "}\n");
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
-            CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
             attachShaders({vert, frag});
             bindAttributeLocation(Input::Location, "inputData");
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());

@@ -586,7 +586,10 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
 #endif
 #endif
 
-bool AbstractShaderProgram::link() { return link({*this}); }
+bool AbstractShaderProgram::link() {
+    submitLink();
+    return checkLink({});
+}
 
 void AbstractShaderProgram::submitLink() {
     glLinkProgram(_id);
@@ -637,12 +640,14 @@ bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader> shaders
     return success;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
     for(AbstractShaderProgram& shader: shaders) shader.submitLink();
     bool allSuccess = true;
     for(AbstractShaderProgram& shader: shaders) allSuccess = allSuccess && shader.checkLink({});
     return allSuccess;
 }
+#endif
 
 bool AbstractShaderProgram::isLinkFinished() {
     GLint success;

@@ -1023,7 +1023,7 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
         "#endif\n"
         "void main() { result = " + conversion + "; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 
@@ -1065,7 +1065,7 @@ IntegerShader::IntegerShader(const std::string& type) {
                    "out mediump " + type + " result;\n"
                    "void main() { result = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 
@@ -1100,7 +1100,7 @@ DoubleShader::DoubleShader(const std::string& type, const std::string& outputTyp
                    "out " + outputType + " result;\n"
                    "void main() { result = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 
@@ -2147,7 +2147,7 @@ MultipleShader::MultipleShader() {
         "#endif\n"
         "void main() { result = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 
@@ -3836,7 +3836,7 @@ MultiDrawShader::MultiDrawShader(bool vertexId, bool drawId) {
         "#endif\n"
         "void main() { result.r = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 
@@ -4641,7 +4641,7 @@ MultiDrawInstancedShader::MultiDrawInstancedShader(bool vertexId, bool drawId
         "#endif\n"
         "void main() { result.r = valueInterpolated; }\n");
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 
