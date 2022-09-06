@@ -485,6 +485,7 @@ void AbstractShaderProgramGLTest::linkFailure() {
         , Shader::Type::Fragment);
     shader.addSource("[fu] bleh error #:! stuff\n");
 
+    /* The compilation should fail */
     {
         Error redirectError{nullptr};
         CORRADE_VERIFY(!shader.compile());
@@ -492,10 +493,19 @@ void AbstractShaderProgramGLTest::linkFailure() {
 
     MyPublicShader program;
     program.attachShaders({shader});
-    CORRADE_VERIFY(!program.link());
+
+    /* And thus linking as well, saying something like "error: linking with
+       uncompiled/unspecialized shader" */
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!program.link());
+    }
 
     Utility::System::sleep(200);
     CORRADE_VERIFY(program.isLinkFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
 }
 
 void AbstractShaderProgramGLTest::linkFailureAsync() {
@@ -512,6 +522,7 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
         , Shader::Type::Fragment);
     shader.addSource("[fu] bleh error #:! stuff\n");
 
+    /* The compilation should fail */
     {
         Error redirectError{nullptr};
         CORRADE_VERIFY(!shader.compile());
@@ -520,16 +531,24 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
     MyPublicShader program;
     program.attachShaders({shader});
 
+    /* The link submission should not print anything ... */
     std::ostringstream out;
-    Error redirectError{&out};
-    program.submitLink();
+    {
+        Error redirectError{&out};
+        program.submitLink();
+    }
 
     while(!program.isLinkFinished())
         Utility::System::sleep(100);
 
     CORRADE_VERIFY(out.str().empty());
 
-    CORRADE_VERIFY(!program.checkLink());
+    /* ... only the final check should. In this case it's "error: linking with
+       uncompiled/unspecialized shader" as well. */
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!program.checkLink());
+    }
     CORRADE_VERIFY(program.isLinkFinished());
     CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringHasPrefix);

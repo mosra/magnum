@@ -58,9 +58,9 @@ struct ShaderGLTest: OpenGLTester {
     void addSourceNoVersion();
     void addFile();
     void compile();
-    void compileFailure();
     void compileAsync();
-    void compileAsyncFailure();
+    void compileFailure();
+    void compileFailureAsync();
     void compileUtf8();
     void compileNoVersion();
 };
@@ -78,9 +78,9 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
               &ShaderGLTest::compile,
-              &ShaderGLTest::compileFailure,
               &ShaderGLTest::compileAsync,
-              &ShaderGLTest::compileAsyncFailure,
+              &ShaderGLTest::compileFailure,
+              &ShaderGLTest::compileFailureAsync,
               &ShaderGLTest::compileUtf8,
               &ShaderGLTest::compileNoVersion});
 }
@@ -290,26 +290,6 @@ void ShaderGLTest::compile() {
     CORRADE_VERIFY(shader.isCompileFinished());
 }
 
-void ShaderGLTest::compileFailure() {
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr Version v =
-        #ifndef CORRADE_TARGET_APPLE
-        Version::GL210
-        #else
-        Version::GL310
-        #endif
-        ;
-    #else
-    constexpr Version v = Version::GLES200;
-    #endif
-
-    Shader shader(v, Shader::Type::Fragment);
-    shader.addSource("[fu] bleh error #:! stuff\n");
-
-    CORRADE_VERIFY(!shader.compile());
-    CORRADE_VERIFY(shader.isCompileFinished());
-}
-
 void ShaderGLTest::compileAsync() {
     #ifndef MAGNUM_TARGET_GLES
     constexpr Version v =
@@ -334,7 +314,33 @@ void ShaderGLTest::compileAsync() {
     CORRADE_VERIFY(shader.isCompileFinished());
 }
 
-void ShaderGLTest::compileAsyncFailure() {
+void ShaderGLTest::compileFailure() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Vertex);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!shader.compile());
+    }
+    CORRADE_VERIFY(shader.isCompileFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of vertex shader failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
+}
+
+void ShaderGLTest::compileFailureAsync() {
     #ifndef MAGNUM_TARGET_GLES
     constexpr Version v =
         #ifndef CORRADE_TARGET_APPLE
@@ -350,16 +356,23 @@ void ShaderGLTest::compileAsyncFailure() {
     Shader shader(v, Shader::Type::Fragment);
     shader.addSource("[fu] bleh error #:! stuff\n");
 
+    /* The compile submission should not print anything ... */
     std::ostringstream out;
-    Error redirectError{&out};
-    shader.submitCompile();
+    {
+        Error redirectError{&out};
+        shader.submitCompile();
+    }
 
     while(!shader.isCompileFinished())
         Utility::System::sleep(100);
 
     CORRADE_VERIFY(out.str().empty());
 
-    CORRADE_VERIFY(!shader.checkCompile());
+    /* ... only the final check should */
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!shader.checkCompile());
+    }
     CORRADE_VERIFY(shader.isCompileFinished());
     CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
