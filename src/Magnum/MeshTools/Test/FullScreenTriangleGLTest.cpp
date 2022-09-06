@@ -24,7 +24,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Resource.h>
 

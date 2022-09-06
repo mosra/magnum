@@ -31,7 +31,6 @@
 #endif
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Iterable.h>
-#include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/FormatStl.h>

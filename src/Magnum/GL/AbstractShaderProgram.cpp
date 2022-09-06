@@ -536,7 +536,7 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
     glAttachShader(_id, shader.id());
 }
 
-void AbstractShaderProgram::attachShaders(std::initializer_list<Containers::Reference<Shader>> shaders) {
+void AbstractShaderProgram::attachShaders(Containers::Iterable<Shader> shaders) {
     for(Shader& s: shaders) attachShader(s);
 }
 

@@ -23,9 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/Reference.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Path.h>
 

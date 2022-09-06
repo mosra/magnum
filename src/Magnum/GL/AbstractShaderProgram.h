@@ -44,6 +44,8 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
+/* For attachShaders(), which used to take a std::initializer_list<Reference> */
+#include <Corrade/Containers/Iterable.h>
 /* For label() / setLabel(), which used to be a std::string */
 #include <Corrade/Containers/StringStl.h>
 #endif
@@ -1414,7 +1416,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * than one shader at once. Other than that there is no other
          * (performance) difference when using this function.
          */
-        void attachShaders(std::initializer_list<Containers::Reference<Shader>> shaders);
+        void attachShaders(Containers::Iterable<Shader> shaders);
 
         /**
          * @brief Bind an attribute to given location

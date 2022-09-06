@@ -28,7 +28,6 @@
 
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Iterable.h>
-#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
