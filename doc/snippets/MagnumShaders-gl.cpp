@@ -284,7 +284,7 @@ ImageView2D coneDiffuse{DOXYGEN_ELLIPSIS({}, {})}, cubeDiffuse{DOXYGEN_ELLIPSIS(
 GL::Texture2DArray diffuseTexture;
 diffuseTexture
     DOXYGEN_ELLIPSIS()
-    /* Assuming all iamges have the same format and size */
+    /* Assuming all images have the same format and size */
     .setStorage(1, GL::textureFormat(coneDiffuse.format()),
         {coneDiffuse.size(), 3})
     .setSubImage(0, {}, coneDiffuse)
