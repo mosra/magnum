@@ -25,6 +25,7 @@
 
 #include <tuple> /* for std::tie() :( */
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 
@@ -300,7 +301,7 @@ MyShader::MyShader(NoInitT) {}
 MyShader::MyShader(CompileState&& state):
     MyShader{static_cast<MyShader&&>(std::move(state))}
 {
-    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag}));
     DOXYGEN_ELLIPSIS()
 }
 

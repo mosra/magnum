@@ -27,6 +27,7 @@
 #include "MeshVisualizerGL.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -536,7 +537,10 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     if(!id()) return;
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+    if(state._geom)
+        CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag, *state._geom}));
+    else
+        CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag}));
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = state._version;
@@ -912,7 +916,10 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     if(!id()) return;
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+    if(state._geom)
+        CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag, *state._geom}));
+    else
+        CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag}));
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = state._version;

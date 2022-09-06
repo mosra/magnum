@@ -27,6 +27,7 @@
 #include "AbstractShaderProgram.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
@@ -591,7 +592,13 @@ void AbstractShaderProgram::submitLink() {
     glLinkProgram(_id);
 }
 
-bool AbstractShaderProgram::checkLink() {
+bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader> shaders) {
+    /* If any compilation failed, abort without even checking the link status.
+       The checkCompile() API is called always, to print also compilation
+       warnings even in case everything still manages to link well. */
+    for(Shader& shader: shaders)
+        if(!shader.checkCompile()) return false;
+
     GLint success, logLength;
     glGetProgramiv(_id, GL_LINK_STATUS, &success);
     glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
@@ -633,7 +640,7 @@ bool AbstractShaderProgram::checkLink() {
 bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
     for(AbstractShaderProgram& shader: shaders) shader.submitLink();
     bool allSuccess = true;
-    for(AbstractShaderProgram& shader: shaders) allSuccess = allSuccess && shader.checkLink();
+    for(AbstractShaderProgram& shader: shaders) allSuccess = allSuccess && shader.checkLink({});
     return allSuccess;
 }
 

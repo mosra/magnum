@@ -27,6 +27,7 @@
 #include "DistanceFieldVectorGL.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -170,7 +171,7 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     if(!id()) return;
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag}));
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = state._version;

@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -74,6 +75,7 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
 
     void linkFailure();
     void linkFailureAsync();
+    void linkFailureAsyncShaderList();
 
     void uniformNotFound();
 
@@ -116,6 +118,7 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
 
               &AbstractShaderProgramGLTest::linkFailure,
               &AbstractShaderProgramGLTest::linkFailureAsync,
+              &AbstractShaderProgramGLTest::linkFailureAsyncShaderList,
               &AbstractShaderProgramGLTest::uniformNotFound,
 
               &AbstractShaderProgramGLTest::uniform,
@@ -335,7 +338,7 @@ void AbstractShaderProgramGLTest::createAsync() {
     while(!program.isLinkFinished())
         Utility::System::sleep(100);
 
-    CORRADE_VERIFY(program.checkLink());
+    CORRADE_VERIFY(program.checkLink({vert, frag}));
     CORRADE_VERIFY(program.isLinkFinished());
     const bool valid = program.validate().first;
 
@@ -544,14 +547,74 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
     CORRADE_VERIFY(out.str().empty());
 
     /* ... only the final check should. In this case it's "error: linking with
-       uncompiled/unspecialized shader" as well. */
+       uncompiled/unspecialized shader" as well, but if the shaders would be
+       supplied like in linkFailureAsyncShaderList() below, it'd print the
+       shader failure instead. */
     {
         Error redirectError{&out};
-        CORRADE_VERIFY(!program.checkLink());
+        CORRADE_VERIFY(!program.checkLink({}));
     }
     CORRADE_VERIFY(program.isLinkFinished());
     CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
+}
+
+void AbstractShaderProgramGLTest::linkFailureAsyncShaderList() {
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Vertex);
+    vert.addSource("void main() {}\n");
+
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Fragment);
+    frag.addSource("[fu] bleh error #:! stuff\n");
+
+    vert.submitCompile();
+    frag.submitCompile();
+
+    MyPublicShader program;
+    program.attachShaders({vert, frag});
+
+    /* The link submission should not print anything ... */
+    {
+        std::ostringstream out;
+        Error redirectError{&out};
+        program.submitLink();
+        CORRADE_VERIFY(out.str().empty());
+    }
+
+    /* ... only the final check should. Vertex shader should be fine, but
+       fragment should fail. */
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!program.checkLink({vert, frag}));
+    }
+    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
+
+    /* The linker error (which would most probably say something like "error:
+       linking with uncompiled/unspecialized shader") should not be even
+       printed */
+    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+        TestSuite::Compare::StringNotContains);
 }
 
 void AbstractShaderProgramGLTest::uniformNotFound() {

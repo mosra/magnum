@@ -446,9 +446,9 @@ the application to schedule other work in the meantime.
 
 Async compilation and linking can be implemented by using
 @ref Shader::submitCompile() and @ref submitLink(), followed by
-@ref checkLink() (and optionally @ref Shader::checkCompile()), instead of
-@ref Shader::compile() and @ref link(). Calling the submit functions will
-trigger a (potentially async) compilation and linking, calling the check
+@ref checkLink() (which optionally delegates to @ref Shader::checkCompile()),
+instead of @ref Shader::compile() and @ref link(). Calling the submit functions
+will trigger a (potentially async) compilation and linking, calling the check
 functions will check the operation result, potentially stalling if the async
 operation isn't finished yet.
 
@@ -476,9 +476,9 @@ creation capability while keeping also the simple constructor is the following:
     @cpp CompileState @ce instance.
 4.  A @cpp MyShader(CompileState&&) @ce constructor then takes over the base
     of @cpp CompileState @ce by delegating it into the move constructor. Then
-    it calls @ref checkLink() (and if that fails also @ref Shader::checkCompile()
-    to provide more context) and then performs any remaining post-link steps
-    such as uniform setup.
+    it calls @ref checkLink(), passing all input shaders to it for a complete
+    context in case of an error, and finally performs any remaining post-link
+    steps such as uniform setup.
 5.  The original @cpp MyShader(…) @ce constructor now only passes the result of
     @cpp compile() @ce to @cpp MyShader(CompileState&&) @ce.
 
@@ -1551,16 +1551,31 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @m_since_latest
          *
          * Has to be called only if @ref submitLink() was called before.
+         *
+         * If @p shaders are not empty, first calls @ref Shader::checkCompile()
+         * on each. If a compilation failure is reached, returns @cpp false @ce
+         * without even checking link status. To have error messages with full
+         * context in case of a failed shader compilation or linking, an
+         * application is encouraged to pass all input @ref Shader instances to
+         * this function or, if not possible, explicitly call
+         * @ref Shader::checkCompile() on each.
+         *
+         * Then, link status is checked and a message (if any) is printed
          * Returns @cpp false @ce if linking failed, @cpp true @ce on success.
-         * Linker message (if any) is printed to error output. The function
-         * will stall until a (potentially async) linking operation finishes,
-         * you can use @ref isLinkFinished() to check the status instead. See
-         * @ref GL-AbstractShaderProgram-async for more information.
+         * If linking failed, it first goes through @p shaders and calls
+         * @ref Shader::checkCompile() on each until a failure is reached. If
+         * no compilation failed, a linker message is printed to error output.
+         * The function will stall until a (potentially async) linking
+         * operation finishes, you can use @ref isLinkFinished() to check the
+         * status instead. See @ref GL-AbstractShaderProgram-async for more
+         * information.
          * @see @ref Shader::checkCompile(), @fn_gl_keyword{GetProgram} with
          *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
          *      @fn_gl_keyword{GetProgramInfoLog}
          */
-        bool checkLink();
+        /* No default argument is provided in order to *really* encourage apps
+           to pass the shaders here */
+        bool checkLink(Containers::Iterable<Shader> shaders);
 
         /**
          * @brief Get uniform location

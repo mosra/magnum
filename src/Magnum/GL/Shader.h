@@ -645,13 +645,16 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @m_since_latest
          *
          * You can call @ref isCompileFinished() or @ref checkCompile() after,
-         * but in most cases it's enough to defer that to after
+         * but it's recommended to instead immediately call
          * @ref AbstractShaderProgram::attachShader() and
-         * @relativeref{AbstractShaderProgram,submitLink()} were called, and
-         * then continuing with @relativeref{AbstractShaderProgram,isLinkFinished()}
-         * or @relativeref{AbstractShaderProgram,checkLink()} on the final
-         * program --- if compilation would fail, subsequent linking will as
-         * well. See @ref GL-AbstractShaderProgram-async for more information.
+         * @relativeref{AbstractShaderProgram,submitLink()}, then optionally
+         * continue with @relativeref{AbstractShaderProgram,isLinkFinished()}
+         * and pass all input shaders to
+         * @relativeref{AbstractShaderProgram,checkLink()} on the final program
+         * --- if compilation would fail, subsequent linking will as well, and
+         * @relativeref{AbstractShaderProgram,checkLink()} will print the
+         * compilation error if linking failed due to that. See
+         * @ref GL-AbstractShaderProgram-async for more information.
          * @see @fn_gl_keyword{ShaderSource}, @fn_gl_keyword{CompileShader}
          */
         void submitCompile();
@@ -660,14 +663,17 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @brief Check shader compilation status and await completion
          * @m_since_latest
          *
-         * Has to be called only if @ref submitCompile() was called before. In
-         * most cases it's enough to defer this check to after
+         * Has to be called only if @ref submitCompile() was called before.
+         * It's however recommended to instead immediately call
          * @ref AbstractShaderProgram::attachShader() and
-         * @relativeref{AbstractShaderProgram,submitLink()} were called, and
-         * then continuing with @relativeref{AbstractShaderProgram,isLinkFinished()}
-         * or @relativeref{AbstractShaderProgram,checkLink()} on the final
-         * program --- if compilation would fail, subsequent linking will as
-         * well. See @ref GL-AbstractShaderProgram-async for more information.
+         * @relativeref{AbstractShaderProgram,submitLink()}, then optionally
+         * continue with @relativeref{AbstractShaderProgram,isLinkFinished()}
+         * and pass all input shaders to
+         * @relativeref{AbstractShaderProgram,checkLink()} on the final program
+         * --- if compilation would fail, subsequent linking will as well, and
+         * @relativeref{AbstractShaderProgram,checkLink()} will print the
+         * compilation error if linking failed due to that. See
+         * @ref GL-AbstractShaderProgram-async for more information.
          * @see @fn_gl_keyword{GetShader} with @def_gl{COMPILE_STATUS} and
          *      @def_gl{INFO_LOG_LENGTH}, @fn_gl_keyword{GetShaderInfoLog}
          */
@@ -684,7 +690,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * available, the function always returns @cpp true @ce --- i.e., as if
          * the compilation was done synchronously.
          *
-         * In most cases it's enough to only wait for the final link to finish,
+         * It's however recommended to wait only for the final link to finish,
          * and not for particular compilations --- i.e., right after
          * @ref submitCompile() continue with
          * @ref AbstractShaderProgram::attachShader() and
