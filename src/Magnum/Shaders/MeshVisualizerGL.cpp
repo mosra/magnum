@@ -517,7 +517,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, flags, version};
+    return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, version};
 }
 
 MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): MeshVisualizerGL2D{compile(flags)} {}
@@ -544,7 +544,7 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = state._version;
-    const Flags flags = state._flags;
+    const Flags flags = state.flags();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
@@ -906,7 +906,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, flags, version};
+    return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, version};
 }
 
 MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(state))} {
@@ -923,7 +923,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
 
     const GL::Context& context = GL::Context::current();
     const GL::Version version = state._version;
-    Flags flags = state._flags;
+    Flags flags = state.flags();
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
