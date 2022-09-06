@@ -31,8 +31,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
-#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -384,13 +384,13 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
 template<UnsignedInt dimensions> void VectorGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    auto compileState = VectorGL<dimensions>::compile(VectorGL2D::Flag::TextureTransformation);
-    CORRADE_COMPARE(compileState.flags(), VectorGL2D::Flag::TextureTransformation);
+    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.flags(), VectorGL2D::Flag::TextureTransformation);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VectorGL<dimensions> shader{std::move(compileState)};
+    VectorGL<dimensions> shader{std::move(state)};
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::TextureTransformation);
     CORRADE_VERIFY(shader.id());
@@ -452,19 +452,19 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersAsync
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = VectorGL<dimensions>::compile(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 1, 1);
-    CORRADE_COMPARE(compileState.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
-    CORRADE_COMPARE(compileState.materialCount(), 1);
-    CORRADE_COMPARE(compileState.drawCount(), 1);
+    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 15, 42);
+    CORRADE_COMPARE(state.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.materialCount(), 15);
+    CORRADE_COMPARE(state.drawCount(), 42);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VectorGL<dimensions> shader{std::move(compileState)};
+    VectorGL<dimensions> shader{std::move(state)};
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
-    CORRADE_COMPARE(shader.materialCount(), 1);
-    CORRADE_COMPARE(shader.drawCount(), 1);
+    CORRADE_COMPARE(shader.materialCount(), 15);
+    CORRADE_COMPARE(shader.drawCount(), 42);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

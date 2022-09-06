@@ -164,14 +164,13 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& cs): VectorGL{static_cast<VectorGL&&>(std::move(cs))} {
-    if (id() == 0) return;
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& state): VectorGL{static_cast<VectorGL&&>(std::move(state))} {
+    if(!id()) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-    const GL::Version version = cs._version;
-
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
@@ -227,15 +226,14 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& c
     static_cast<void>(version);
 }
 
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(Flags flags): VectorGL{compile(flags)} {}
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): VectorGL{compile(flags)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(Flags flags) {
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Flags flags) {
     return compile(flags, 1, 1);
 }
 
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
-    VectorGL{compile(flags, materialCount, drawCount)} {}
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): VectorGL{compile(flags, materialCount, drawCount)} {}
 #endif
 
 template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(NoInitT) {}

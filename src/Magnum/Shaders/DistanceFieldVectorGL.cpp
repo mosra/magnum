@@ -162,13 +162,13 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(CompileState&& cs): DistanceFieldVectorGL{static_cast<DistanceFieldVectorGL&&>(std::move(cs))} {
-    if (id() == 0) return;
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(CompileState&& state): DistanceFieldVectorGL{static_cast<DistanceFieldVectorGL&&>(std::move(state))} {
+    if(!id()) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-    const GL::Version version = cs._version;
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))

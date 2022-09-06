@@ -29,8 +29,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
-#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -321,12 +321,12 @@ template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
 template<UnsignedInt dimensions> void VertexColorGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    auto compileState = VertexColorGL<dimensions>::compile({});
+    typename VertexColorGL<dimensions>::CompileState state = VertexColorGL<dimensions>::compile({});
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VertexColorGL<dimensions> shader{std::move(compileState)};
+    VertexColorGL<dimensions> shader{std::move(state)};
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
@@ -387,14 +387,14 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = VertexColorGL<dimensions>::compile(VertexColorGL2D::Flag::UniformBuffers, 63);
-    CORRADE_COMPARE(compileState.flags(), VertexColorGL2D::Flag::UniformBuffers);
-    CORRADE_COMPARE(compileState.drawCount(), 63);
+    typename VertexColorGL<dimensions>::CompileState state = VertexColorGL<dimensions>::compile(VertexColorGL2D::Flag::UniformBuffers, 63);
+    CORRADE_COMPARE(state.flags(), VertexColorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(state.drawCount(), 63);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VertexColorGL<dimensions> shader{std::move(compileState)};
+    VertexColorGL<dimensions> shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), VertexColorGL2D::Flag::UniformBuffers);
     CORRADE_COMPARE(shader.drawCount(), 63);
     CORRADE_VERIFY(shader.isLinkFinished());

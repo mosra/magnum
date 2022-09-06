@@ -347,13 +347,13 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-PhongGL::PhongGL(CompileState&& cs): PhongGL{static_cast<PhongGL&&>(std::move(cs))} {
-    if (id() == 0) return;
+PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move(state))} {
+    if(!id()) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-    const GL::Version version = cs._version;
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
@@ -463,15 +463,14 @@ PhongGL::PhongGL(CompileState&& cs): PhongGL{static_cast<PhongGL&&>(std::move(cs
     static_cast<void>(version);
 }
 
-PhongGL::PhongGL(Flags flags, UnsignedInt lightCount): PhongGL{compile(flags, lightCount)} {}
+PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): PhongGL{compile(flags, lightCount)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-PhongGL::CompileState PhongGL::compile(Flags flags, UnsignedInt lightCount) {
+PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt lightCount) {
     return compile(flags, lightCount, 1, 1);
 }
 
-PhongGL::PhongGL(Flags flags, UnsignedInt lightCount, UnsignedInt materialCount, UnsignedInt drawCount):
-    PhongGL{compile(flags, lightCount, materialCount, drawCount)} {}
+PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount, const UnsignedInt materialCount, const UnsignedInt drawCount): PhongGL{compile(flags, lightCount, materialCount, drawCount)} {}
 #endif
 
 PhongGL& PhongGL::setAmbientColor(const Magnum::Color4& color) {

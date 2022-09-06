@@ -31,9 +31,9 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -1199,14 +1199,14 @@ void PhongGLTest::construct() {
 }
 
 void PhongGLTest::constructAsync() {
-    auto compileState = PhongGL::compile(PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3);
-    CORRADE_COMPARE(compileState.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
-    CORRADE_COMPARE(compileState.lightCount(), 3);
+    PhongGL::CompileState state = PhongGL::compile(PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3);
+    CORRADE_COMPARE(state.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
+    CORRADE_COMPARE(state.lightCount(), 3);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    PhongGL shader{std::move(compileState)};
+    PhongGL shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
     CORRADE_COMPARE(shader.lightCount(), 3);
     CORRADE_VERIFY(shader.isLinkFinished());
@@ -1270,16 +1270,16 @@ void PhongGLTest::constructUniformBuffersAsync() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = PhongGL::compile(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling, 8, 8, 24);
-    CORRADE_COMPARE(compileState.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
-    CORRADE_COMPARE(compileState.lightCount(), 8);
-    CORRADE_COMPARE(compileState.materialCount(), 8);
-    CORRADE_COMPARE(compileState.drawCount(), 24);
+    PhongGL::CompileState state = PhongGL::compile(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling, 8, 8, 24);
+    CORRADE_COMPARE(state.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
+    CORRADE_COMPARE(state.lightCount(), 8);
+    CORRADE_COMPARE(state.materialCount(), 8);
+    CORRADE_COMPARE(state.drawCount(), 24);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    PhongGL shader{std::move(compileState)};
+    PhongGL shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
     CORRADE_COMPARE(shader.lightCount(), 8);
     CORRADE_COMPARE(shader.materialCount(), 8);

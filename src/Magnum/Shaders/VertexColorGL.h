@@ -111,6 +111,8 @@ similar for all shaders, see @ref shaders-usage-multidraw for an example.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: public GL::AbstractShaderProgram {
     public:
+        class CompileState;
+
         /**
          * @brief Vertex position
          *
@@ -209,6 +211,34 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         #endif
 
         /**
+         * @brief Compile asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref VertexColorGL(Flags) can perform an asynchronous
+         * compilation and linking. See @ref shaders-async for more
+         * information.
+         * @see @ref VertexColorGL(CompileState&&),
+         *      @ref compile(Flags, UnsignedInt)
+         */
+        static CompileState compile(Flags flags = {});
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Compile for a multi-draw scenario asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref VertexColorGL(Flags, UnsignedInt) can perform an
+         * asynchronous compilation and linking. See @ref shaders-async for
+         * more information.
+         * @see @ref VertexColorGL(CompileState&&), @ref compile(Flags)
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        static CompileState compile(Flags flags, UnsignedInt drawCount);
+        #endif
+
+        /**
          * @brief Constructor
          * @param flags     Flags
          *
@@ -216,6 +246,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
          * @ref VertexColorGL(Flags, UnsignedInt) with @p drawCount set to
          * @cpp 1 @ce.
+         * @see @ref compile(Flags)
          */
         explicit VertexColorGL(Flags flags = {});
 
@@ -235,6 +266,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * If @p flags don't contain @ref Flag::UniformBuffers, @p drawCount is
          * ignored and the constructor behaves the same as
          * @ref VertexColorGL(Flags).
+         * @see @ref compile(Flags, UnsignedInt)
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -252,6 +284,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         #endif
 
         /**
+         * @brief Finalize an asynchronous compilation
+         * @m_since_latest
+         *
+         * Takes an asynchronous compilation state returned by @ref compile()
+         * and forms a ready-to-use shader object. See @ref shaders-async for
+         * more information.
+         */
+        explicit VertexColorGL(CompileState&& state);
+
+        /**
          * @brief Construct without creating the underlying OpenGL object
          *
          * The constructed instance is equivalent to a moved-from state. Useful
@@ -264,20 +306,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit VertexColorGL(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
-
-        class CompileState;
-
-        explicit VertexColorGL(CompileState&& cs);
-
-        static CompileState compile(Flags flags
-        #ifndef MAGNUM_TARGET_GLES2
-        , UnsignedInt drawCount
-        #endif
-        );
-
-        #ifndef MAGNUM_TARGET_GLES2
-        static CompileState compile(Flags flags);
-        #endif
 
         /** @brief Copying is not allowed */
         VertexColorGL(const VertexColorGL<dimensions>&) = delete;
@@ -421,6 +449,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         #endif
 
     private:
+        /* Creates the GL shader program object but does nothing else.
+           Internal, used by compile(). */
         explicit VertexColorGL(NoInitT);
 
         /* Prevent accidentally calling irrelevant functions */
@@ -443,14 +473,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         #endif
 };
 
+/**
+@brief Asynchronous compilation state
+@m_since_latest
+
+Returned by @ref compile(). See @ref shaders-async for more information.
+*/
 template<UnsignedInt dimensions> class VertexColorGL<dimensions>::CompileState: public VertexColorGL<dimensions> {
-private:
+    /* Everything deliberately private except for the inheritance */
     friend class VertexColorGL;
 
     explicit CompileState(NoCreateT): VertexColorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(VertexColorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
-        VertexColorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+    explicit CompileState(VertexColorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): VertexColorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;
     GL::Version _version;

@@ -31,8 +31,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
-#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -388,13 +388,13 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    auto compileState = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::TextureTransformation);
-    CORRADE_COMPARE(compileState.flags(), DistanceFieldVectorGL2D::Flag::TextureTransformation);
+    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.flags(), DistanceFieldVectorGL2D::Flag::TextureTransformation);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    DistanceFieldVectorGL<dimensions> shader{std::move(compileState)};
+    DistanceFieldVectorGL<dimensions> shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), DistanceFieldVectorGL2D::Flag::TextureTransformation);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
@@ -451,24 +451,23 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUniformBuffersAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 4);
-    CORRADE_COMPARE(compileState.flags(), DistanceFieldVectorGL2D::Flag::UniformBuffers);
-    CORRADE_COMPARE(compileState.materialCount(), 16);
-    CORRADE_COMPARE(compileState.drawCount(), 4);
+    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 48);
+    CORRADE_COMPARE(state.flags(), DistanceFieldVectorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(state.materialCount(), 16);
+    CORRADE_COMPARE(state.drawCount(), 48);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    DistanceFieldVectorGL<dimensions> shader{std::move(compileState)};
+    DistanceFieldVectorGL<dimensions> shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), DistanceFieldVectorGL2D::Flag::UniformBuffers);
     CORRADE_COMPARE(shader.materialCount(), 16);
-    CORRADE_COMPARE(shader.drawCount(), 4);
+    CORRADE_COMPARE(shader.drawCount(), 48);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {

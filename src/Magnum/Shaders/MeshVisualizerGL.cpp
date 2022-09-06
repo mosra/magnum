@@ -139,10 +139,9 @@ void MeshVisualizerGLBase::assertExtensions(const FlagsBase flags) {
     #endif
 }
 
-GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs,
-    const FlagsBase flags
+GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs, const FlagsBase flags
     #ifndef MAGNUM_TARGET_GLES2
-    , UnsignedInt materialCount, UnsignedInt drawCount
+    , const UnsignedInt materialCount, UnsignedInt const drawCount
     #endif
 ) {
     GL::Context& context = GL::Context::current();
@@ -376,12 +375,12 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::bindObjectIdTexture(GL::Texture2DArr
 
 }
 
-MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags
+MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
 ) {
-    FlagsBase baseFlags = Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(flags));
+    const FlagsBase baseFlags = Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(flags));
     assertExtensions(baseFlags);
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -410,9 +409,9 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
-    #ifndef MAGNUM_TARGET_GLES2
-    , materialCount, drawCount
-    #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        , materialCount, drawCount
+        #endif
     );
     Containers::Optional<GL::Shader> geom;
 
@@ -472,7 +471,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags
 
     vert.submitCompile();
     frag.submitCompile();
-    if (geom) geom->submitCompile();
+    if(geom) geom->submitCompile();
 
     MeshVisualizerGL2D out{NoInit};
     out._flags = baseFlags;
@@ -482,7 +481,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags
     #endif
 
     out.attachShaders({vert, frag});
-    if (geom) out.attachShader(*geom);
+    if(geom) out.attachShader(*geom);
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -519,26 +518,24 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags
     return CompileState{std::move(out), std::move(vert), std::move(frag), std::move(geom), flags, version};
 }
 
-MeshVisualizerGL2D::MeshVisualizerGL2D(Flags flags) : MeshVisualizerGL2D{compile(flags)} {}
+MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): MeshVisualizerGL2D{compile(flags)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(Flags flags) {
+MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags) {
     return compile(flags, 1, 1);
 }
 
-MeshVisualizerGL2D::MeshVisualizerGL2D(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount)
-    : MeshVisualizerGL2D{compile(flags, materialCount, drawCount)} {}
+MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): MeshVisualizerGL2D{compile(flags, materialCount, drawCount)} {}
 #endif
 
-MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& cs)
-: MeshVisualizerGL2D{static_cast<MeshVisualizerGL2D&&>(std::move(cs))} {
-    if (id() == 0) return;
+MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D{static_cast<MeshVisualizerGL2D&&>(std::move(state))} {
+    if(!id()) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-    const GL::Version version = cs._version;
-    Flags flags = cs._flags;
+    const GL::Version version = state._version;
+    const Flags flags = state._flags;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
@@ -744,9 +741,9 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
-    #ifndef MAGNUM_TARGET_GLES2
-    , materialCount, drawCount
-    #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        , materialCount, drawCount
+        #endif
     );
     Containers::Optional<GL::Shader> geom;
 
@@ -840,7 +837,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
 
     vert.submitCompile();
     frag.submitCompile();
-    if (geom) geom->submitCompile();
+    if(geom) geom->submitCompile();
 
     MeshVisualizerGL3D out{NoInit};
     out._flags = baseFlags;
@@ -850,7 +847,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
     #endif
 
     out.attachShaders({vert, frag});
-    if (geom) out.attachShader(*geom);
+    if(geom) out.attachShader(*geom);
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -903,14 +900,14 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
     return CompileState{std::move(out), std::move(vert), std::move(frag), std::move(geom), flags, version};
 }
 
-MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& cs): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(cs))} {
-    if (id() == 0) return;
+MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(state))} {
+    if(!id()) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-    const GL::Version version = cs._version;
-    Flags flags = cs._flags;
+    const GL::Version version = state._version;
+    Flags flags = state._flags;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
@@ -1043,15 +1040,14 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& cs): MeshVisualizerGL3D{st
     static_cast<void>(version);
 }
 
-MeshVisualizerGL3D::MeshVisualizerGL3D(Flags flags) : MeshVisualizerGL3D{compile(flags)} {}
+MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): MeshVisualizerGL3D{compile(flags)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags) {
+MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Flags flags) {
     return compile(flags, 1, 1);
 }
 
-MeshVisualizerGL3D::MeshVisualizerGL3D(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
-    MeshVisualizerGL3D{compile(flags, materialCount, drawCount)} {}
+MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): MeshVisualizerGL3D{compile(flags, materialCount, drawCount)} {}
 #endif
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::setTransformationMatrix(const Matrix4& matrix) {

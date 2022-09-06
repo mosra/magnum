@@ -67,10 +67,10 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(Flags flags
-#ifndef MAGNUM_TARGET_GLES2
-, UnsignedInt materialCount, UnsignedInt drawCount
-#endif
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(const Flags flags
+    #ifndef MAGNUM_TARGET_GLES2
+    , const UnsignedInt materialCount, const UnsignedInt drawCount
+    #endif
 ) {
     #ifndef CORRADE_NO_ASSERT
     {
@@ -237,13 +237,13 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& cs): FlatGL{static_cast<FlatGL&&>(std::move(cs))} {
-    if (id() == 0) return;
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state): FlatGL{static_cast<FlatGL&&>(std::move(state))} {
+    if(!id()) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-    const GL::Version version = cs._version;
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))

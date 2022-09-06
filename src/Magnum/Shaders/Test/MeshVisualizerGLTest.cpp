@@ -31,8 +31,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
-#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -1416,13 +1416,13 @@ void MeshVisualizerGLTest::construct2D() {
 
 
 void MeshVisualizerGLTest::construct2DAsync() {
-    auto compileState = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
-    CORRADE_COMPARE(compileState.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(state.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL2D shader{std::move(compileState)};
+    MeshVisualizerGL2D shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
@@ -1521,15 +1521,15 @@ void MeshVisualizerGLTest::constructUniformBuffers2DAsync() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = MeshVisualizerGL2D::compile( MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 8, 55);
-    CORRADE_COMPARE(compileState.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
-    CORRADE_COMPARE(compileState.materialCount(), 8);
-    CORRADE_COMPARE(compileState.drawCount(), 55);
+    MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile( MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 8, 55);
+    CORRADE_COMPARE(state.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(state.materialCount(), 8);
+    CORRADE_COMPARE(state.drawCount(), 55);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL2D shader{std::move(compileState)};
+    MeshVisualizerGL2D shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(shader.materialCount(), 8);
     CORRADE_COMPARE(shader.drawCount(), 55);
@@ -1607,13 +1607,13 @@ void MeshVisualizerGLTest::construct3D() {
 }
 
 void MeshVisualizerGLTest::construct3DAsync() {
-    auto compileState = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
-    CORRADE_COMPARE(compileState.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(state.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL3D shader{std::move(compileState)};
+    MeshVisualizerGL3D shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
@@ -1711,18 +1711,18 @@ void MeshVisualizerGLTest::constructUniformBuffers3DAsync() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 6, 28);
-    CORRADE_COMPARE(compileState.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
-    CORRADE_COMPARE(compileState.materialCount(), 6);
-    CORRADE_COMPARE(compileState.drawCount(), 28);
+    MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 6, 28);
+    CORRADE_COMPARE(state.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(state.materialCount(), 6);
+    CORRADE_COMPARE(state.drawCount(), 28);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL3D shader{std::move(compileState)};
+    MeshVisualizerGL3D shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
-    CORRADE_COMPARE(compileState.materialCount(), 6);
-    CORRADE_COMPARE(compileState.drawCount(), 28);
+    CORRADE_COMPARE(state.materialCount(), 6);
+    CORRADE_COMPARE(state.drawCount(), 28);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {

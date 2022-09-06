@@ -31,8 +31,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
-#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -866,13 +866,14 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 
 template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
-    auto compileState = FlatGL<dimensions>::compile(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
-    CORRADE_COMPARE(compileState.flags(),  FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
 
-    while(!compileState.isLinkFinished())
+    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.flags(),  FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
+
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    FlatGL<dimensions> shader{std::move(compileState)};
+    FlatGL<dimensions> shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
 
     CORRADE_VERIFY(shader.id());
@@ -938,18 +939,18 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync()
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    auto compileState = FlatGL<dimensions>::compile(FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1, 1);
-    CORRADE_COMPARE(compileState.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
-    CORRADE_COMPARE(compileState.materialCount(), 1);
-    CORRADE_COMPARE(compileState.drawCount(), 1);
+    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 8, 48);
+    CORRADE_COMPARE(state.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
+    CORRADE_COMPARE(state.materialCount(), 8);
+    CORRADE_COMPARE(state.drawCount(), 48);
 
-    while(!compileState.isLinkFinished())
+    while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    FlatGL<dimensions> shader{std::move(compileState)};
+    FlatGL<dimensions> shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
-    CORRADE_COMPARE(shader.materialCount(), 1);
-    CORRADE_COMPARE(shader.drawCount(), 1);
+    CORRADE_COMPARE(shader.materialCount(), 8);
+    CORRADE_COMPARE(shader.drawCount(), 48);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

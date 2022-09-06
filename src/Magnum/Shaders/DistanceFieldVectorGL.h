@@ -121,6 +121,8 @@ example.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL: public GL::AbstractShaderProgram {
     public:
+        class CompileState;
+
         /**
          * @brief Vertex position
          *
@@ -219,6 +221,34 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         #endif
 
         /**
+         * @brief Compile asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref DistanceFieldVectorGL(Flags) can perform an
+         * asynchronous compilation and linking. See @ref shaders-async for
+         * more information.
+         * @see @ref DistanceFieldVectorGL(CompileState&&),
+         *      @ref compile(Flags, UnsignedInt, UnsignedInt)
+         */
+        static CompileState compile(Flags flags = {});
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Compile for a multi-draw scenario asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref DistanceFieldVectorGL(Flags, UnsignedInt, UnsignedInt)
+         * can perform an asynchronous compilation and linking. See
+         * @ref shaders-async for more information.
+         * @see @ref DistanceFieldVectorGL(CompileState&&), @ref compile(Flags)
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        static CompileState compile(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        #endif
+
+        /**
          * @brief Constructor
          * @param flags     Flags
          *
@@ -226,6 +256,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
          * @ref DistanceFieldVectorGL(Flags, UnsignedInt, UnsignedInt) with
          * @p materialCount and @p drawCount set to @cpp 1 @ce.
+         * @see @ref compile(Flags)
          */
         explicit DistanceFieldVectorGL(Flags flags = {});
 
@@ -251,6 +282,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * If @p flags don't contain @ref Flag::UniformBuffers,
          * @p materialCount and @p drawCount is ignored and the constructor
          * behaves the same as @ref DistanceFieldVectorGL(Flags).
+         * @see @ref compile(Flags, UnsignedInt, UnsignedInt)
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -268,6 +300,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         #endif
 
         /**
+         * @brief Finalize an asynchronous compilation
+         * @m_since_latest
+         *
+         * Takes an asynchronous compilation state returned by @ref compile()
+         * and forms a ready-to-use shader object. See @ref shaders-async for
+         * more information.
+         */
+        explicit DistanceFieldVectorGL(CompileState&& state);
+
+        /**
          * @brief Construct without creating the underlying OpenGL object
          *
          * The constructed instance is equivalent to a moved-from state. Useful
@@ -280,20 +322,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit DistanceFieldVectorGL(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
-
-        class CompileState;
-
-        explicit DistanceFieldVectorGL(CompileState&& cs);
-
-        static CompileState compile(Flags flags
-        #ifndef MAGNUM_TARGET_GLES2
-        , UnsignedInt materialCount, UnsignedInt drawCount
-        #endif
-        );
-
-        #ifndef MAGNUM_TARGET_GLES2
-        static CompileState compile(Flags flags);
-        #endif
 
         /** @brief Copying is not allowed */
         DistanceFieldVectorGL(const DistanceFieldVectorGL<dimensions>&) = delete;
@@ -617,6 +645,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         #endif
 
     private:
+        /* Creates the GL shader program object but does nothing else.
+           Internal, used by compile(). */
         explicit DistanceFieldVectorGL(NoInitT);
 
         /* Prevent accidentally calling irrelevant functions */
@@ -644,15 +674,19 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         #endif
 };
 
+/**
+@brief Asynchronous compilation state
+@m_since_latest
 
+Returned by @ref compile(). See @ref shaders-async for more information.
+*/
 template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::CompileState: public DistanceFieldVectorGL<dimensions> {
-private:
+    /* Everything deliberately private except for the inheritance */
     friend class DistanceFieldVectorGL;
 
     explicit CompileState(NoCreateT): DistanceFieldVectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(DistanceFieldVectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version):
-        DistanceFieldVectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+    explicit CompileState(DistanceFieldVectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): DistanceFieldVectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
 
     GL::Shader _vert, _frag;
     GL::Version _version;

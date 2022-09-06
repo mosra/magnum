@@ -142,13 +142,13 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& cs): VertexColorGL{static_cast<VertexColorGL&&>(std::move(cs))} {
-    if (id() == 0) return;
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& state): VertexColorGL{static_cast<VertexColorGL&&>(std::move(state))} {
+    if(!id()) return;
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink());
 
     const GL::Context& context = GL::Context::current();
-    const GL::Version version = cs._version;
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
@@ -190,15 +190,14 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     static_cast<void>(version);
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Flags flags): VertexColorGL{compile(flags)} {}
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags): VertexColorGL{compile(flags)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(Flags flags) {
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags) {
     return compile(flags, 1);
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Flags flags, UnsignedInt drawCount):
-    VertexColorGL{compile(flags, drawCount)} {}
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags, const UnsignedInt drawCount): VertexColorGL{compile(flags, drawCount)} {}
 #endif
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(NoInitT) {}

@@ -76,8 +76,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
         explicit MeshVisualizerGLBase(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
         static MAGNUM_SHADERS_LOCAL void assertExtensions(const FlagsBase flags);
-        static MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs,
-            const FlagsBase flags
+        static MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs, const FlagsBase flags
             #ifndef MAGNUM_TARGET_GLES2
             , UnsignedInt materialCount, UnsignedInt drawCount
             #endif
@@ -189,6 +188,8 @@ texture offset (or offset and layer).
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisualizerGLBase {
     public:
+        class CompileState;
+
         /**
          * @brief Vertex position
          *
@@ -447,6 +448,35 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         typedef Containers::EnumSet<Flag> Flags;
 
         /**
+         * @brief Compile asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref MeshVisualizerGL2D(Flags) can perform an
+         * asynchronous compilation and linking. See @ref shaders-async for
+         * more information.
+         * @see @ref MeshVisualizerGL2D(CompileState&&),
+         *      @ref compile(Flags, UnsignedInt, UnsignedInt)
+         */
+        /* No default value, consistently with MeshVisualizerGL2D(Flags) */
+        static CompileState compile(Flags flags);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Compile for a multi-draw scenario asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref MeshVisualizerGL2D(Flags, UnsignedInt, UnsignedInt)
+         * can perform an asynchronous compilation and linking. See
+         * @ref shaders-async for more information.
+         * @see @ref MeshVisualizerGL2D(CompileState&&), @ref compile(Flags)
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        static CompileState compile(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        #endif
+
+        /**
          * @brief Constructor
          * @param flags     Flags
          *
@@ -456,6 +486,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
          * @ref MeshVisualizerGL2D(Flags, UnsignedInt, UnsignedInt) with
          * @p materialCount and @p drawCount set to @cpp 1 @ce.
+         * @see @ref compile(Flags)
          */
         explicit MeshVisualizerGL2D(Flags flags);
 
@@ -481,6 +512,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * If @p flags don't contain @ref Flag::UniformBuffers,
          * @p materialCount and @p drawCount is ignored and the constructor
          * behaves the same as @ref MeshVisualizerGL2D(Flags).
+         * @see @ref compile(Flags, UnsignedInt, UnsignedInt)
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -497,6 +529,16 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         #endif
 
         /**
+         * @brief Finalize an asynchronous compilation
+         * @m_since_latest
+         *
+         * Takes an asynchronous compilation state returned by @ref compile()
+         * and forms a ready-to-use shader object. See @ref shaders-async for
+         * more information.
+         */
+        explicit MeshVisualizerGL2D(CompileState&& state);
+
+        /**
          * @brief Construct without creating the underlying OpenGL object
          *
          * The constructed instance is equivalent to a moved-from state. Useful
@@ -509,20 +551,6 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit MeshVisualizerGL2D(NoCreateT) noexcept: Implementation::MeshVisualizerGLBase{NoCreate} {}
-
-        class CompileState;
-
-        explicit MeshVisualizerGL2D(CompileState&& cs);
-
-        static CompileState compile(Flags flags
-        #ifndef MAGNUM_TARGET_GLES2
-        , UnsignedInt materialCount, UnsignedInt drawCount
-        #endif
-        );
-
-        #ifndef MAGNUM_TARGET_GLES2
-        static CompileState compile(Flags flags);
-        #endif
 
         /** @brief Copying is not allowed */
         MeshVisualizerGL2D(const MeshVisualizerGL2D&) = delete;
@@ -881,19 +909,26 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         #endif
 
     private:
-        explicit MeshVisualizerGL2D(NoInitT) : Implementation::MeshVisualizerGLBase{NoInit} {}
+        /* Creates the GL shader program object but does nothing else.
+           Internal, used by compile(). */
+        explicit MeshVisualizerGL2D(NoInitT): Implementation::MeshVisualizerGLBase{NoInit} {}
 
         Int _transformationProjectionMatrixUniform{9};
 };
 
+/**
+@brief Asynchronous compilation state
+@m_since_latest
+
+Returned by @ref compile(). See @ref shaders-async for more information.
+*/
 class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
-private:
+    /* Everything deliberately private except for the inheritance */
     friend class MeshVisualizerGL2D;
 
     explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version):
-        MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
+    explicit CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version): MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
 
     GL::Shader _vert, _frag;
     Containers::Optional<GL::Shader> _geom;
@@ -1139,6 +1174,8 @@ similar for all shaders, see @ref shaders-usage-multidraw for an example.
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisualizerGLBase {
     public:
+        class CompileState;
+
         /**
          * @brief Vertex position
          *
@@ -1654,6 +1691,35 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         typedef Containers::EnumSet<Flag> Flags;
 
         /**
+         * @brief Compile asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref MeshVisualizerGL3D(Flags) can perform an
+         * asynchronous compilation and linking. See @ref shaders-async for
+         * more information.
+         * @see @ref MeshVisualizerGL3D(CompileState&&),
+         *      @ref compile(Flags, UnsignedInt, UnsignedInt)
+         */
+        /* No default value, consistently with MeshVisualizerGL3D(Flags) */
+        static CompileState compile(Flags flags);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Compile for a multi-draw scenario asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref MeshVisualizerGL3D(Flags, UnsignedInt, UnsignedInt)
+         * can perform an asynchronous compilation and linking. See
+         * @ref shaders-async for more information.
+         * @see @ref MeshVisualizerGL3D(CompileState&&), @ref compile(Flags)
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        static CompileState compile(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        #endif
+
+        /**
          * @brief Constructor
          * @param flags     Flags
          *
@@ -1666,6 +1732,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
          * @ref MeshVisualizerGL3D(Flags, UnsignedInt, UnsignedInt) with
          * @p materialCount and @p drawCount set to @cpp 1 @ce.
+         * @see @ref compile(Flags)
          */
         explicit MeshVisualizerGL3D(Flags flags);
 
@@ -1702,8 +1769,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @ref MeshVisualizerDrawUniform3D::materialId.
          *
          * If @p flags don't contain @ref Flag::UniformBuffers,
-         * @p materialCount and @p drawCount is ignored and the constructor
-         * behaves the same as @ref MeshVisualizerGL3D(Flags).
+         * @p materialCount and @p drawCount is ignored and the constructo
+         * @see @ref compile(Flags, UnsignedInt, UnsignedInt)
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -1734,20 +1801,15 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          */
         explicit MeshVisualizerGL3D(NoCreateT) noexcept: Implementation::MeshVisualizerGLBase{NoCreate} {}
 
-        class CompileState;
-
-        explicit MeshVisualizerGL3D(CompileState&& cs);
-
-        static CompileState compile(Flags flags
-        #ifndef MAGNUM_TARGET_GLES2
-        , UnsignedInt materialCount, UnsignedInt drawCount
-        #endif
-        );
-
-        #ifndef MAGNUM_TARGET_GLES2
-        static CompileState compile(Flags flags);
-        #endif
-
+        /**
+         * @brief Finalize an asynchronous compilation
+         * @m_since_latest
+         *
+         * Takes an asynchronous compilation state returned by @ref compile()
+         * and forms a ready-to-use shader object. See @ref shaders-async for
+         * more information.
+         */
+        explicit MeshVisualizerGL3D(CompileState&& state);
 
         /** @brief Copying is not allowed */
         MeshVisualizerGL3D(const MeshVisualizerGL3D&) = delete;
@@ -2377,7 +2439,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         #endif
 
     private:
-        explicit MeshVisualizerGL3D(NoInitT) : Implementation::MeshVisualizerGLBase{NoInit} {}
+        /* Creates the GL shader program object but does nothing else.
+           Internal, used by compile(). */
+        explicit MeshVisualizerGL3D(NoInitT): Implementation::MeshVisualizerGLBase{NoInit} {}
 
         Int _transformationMatrixUniform{9},
             _projectionMatrixUniform{10};
@@ -2388,21 +2452,25 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         #endif
 };
 
-class MeshVisualizerGL3D::CompileState : public MeshVisualizerGL3D {
-private:
+/**
+@brief Asynchronous compilation state
+@m_since_latest
+
+Returned by @ref compile(). See @ref shaders-async for more information.
+*/
+class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
+    /* Everything deliberately private except for the inheritance */
     friend class MeshVisualizerGL3D;
 
-    explicit CompileState(NoCreateT) : MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+    explicit CompileState(NoCreateT): MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    CompileState(MeshVisualizerGL3D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version) :
-        MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
+    explicit CompileState(MeshVisualizerGL3D&& shader, GL::Shader&& vert, GL::Shader&& frag, Containers::Optional<GL::Shader>&& geom, Flags flags, GL::Version version): MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{std::move(geom)}, _flags{flags}, _version{version} {}
 
     GL::Shader _vert, _frag;
     Containers::Optional<GL::Shader> _geom;
     Flags _flags;
     GL::Version _version;
 };
-
 
 /** @debugoperatorclassenum{MeshVisualizerGL2D,MeshVisualizerGL2D::Flag} */
 MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, MeshVisualizerGL2D::Flag value);

@@ -341,6 +341,27 @@ shader
 /* [shaders-meshvisualizer] */
 }
 
+{
+/* [shaders-async] */
+Shaders::FlatGL3D::CompileState flatState =
+    Shaders::FlatGL3D::compile();
+Shaders::FlatGL3D::CompileState flatTexturedState =
+    Shaders::FlatGL3D::compile(Shaders::FlatGL3D::Flag::Textured);
+Shaders::MeshVisualizerGL3D::CompileState meshVisualizerState =
+    Shaders::MeshVisualizerGL3D::compile(DOXYGEN_ELLIPSIS(Shaders::MeshVisualizerGL3D::Flag::Wireframe));
+
+while(!flatState.isLinkFinished() ||
+      !flatTexturedState.isLinkFinished() ||
+      !meshVisualizerState.isLinkFinished()) {
+    // Do other work ...
+}
+
+Shaders::FlatGL3D flat{std::move(flatState)};
+Shaders::FlatGL3D flatTextured{std::move(flatTexturedState)};
+Shaders::MeshVisualizerGL3D meshVisualizer{std::move(meshVisualizerState)};
+/* [shaders-async] */
+}
+
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
    on GCC 4.8 in the [60] array */
 #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
