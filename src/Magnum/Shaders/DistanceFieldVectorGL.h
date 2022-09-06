@@ -272,6 +272,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *      @ref TextureTransformationUniform buffer bound with
          *      @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer()
          *      and @ref bindTextureTransformationBuffer()
+         * @m_since_latest
          *
          * If @p flags contains @ref Flag::UniformBuffers, @p materialCount and
          * @p drawCount describe the uniform buffer sizes as these are required

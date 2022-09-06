@@ -500,6 +500,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          *      / @ref MeshVisualizerMaterialUniform buffer bound with
          *      @ref bindTransformationProjectionBuffer() and
          *      @ref bindDrawBuffer()
+         * @m_since_latest
          *
          * At least @ref Flag::Wireframe is expected to be enabled.
          *
@@ -1756,6 +1757,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          *      @ref MeshVisualizerMaterialUniform buffer bound with
          *      @ref bindProjectionBuffer(), @ref bindTransformationBuffer()
          *      and @ref bindDrawBuffer()
+         * @m_since_latest
          *
          * At least @ref Flag::Wireframe or one of @ref Flag::TangentDirection,
          * @ref Flag::BitangentFromTangentDirection,

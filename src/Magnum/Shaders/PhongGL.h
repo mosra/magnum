@@ -810,6 +810,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *      @ref TextureTransformationUniform buffer bound with
          *      @ref bindProjectionBuffer(), @ref bindTransformationBuffer(),
          *      @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer()
+         * @m_since_latest
          *
          * If @p flags contains @ref Flag::UniformBuffers, @p lightCount,
          * @p materialCount and @p drawCount describe the uniform buffer sizes

@@ -257,6 +257,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * @param drawCount     Size of a @ref TransformationProjectionUniform2D
          *      / @ref TransformationProjectionUniform3D buffer bound with
          *      @ref bindTransformationProjectionBuffer()
+         * @m_since_latest
          *
          * If @p flags contains @ref Flag::UniformBuffers, @p drawCount
          * describes the uniform buffer sizes as these are required to have a
