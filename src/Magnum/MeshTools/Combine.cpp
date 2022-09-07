@@ -189,12 +189,11 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(meshIndexType),
         "MeshTools::combineFaceAttributes(): vertex mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(meshIndexType)),
         (Trade::MeshData{MeshPrimitive{}, 0}));
-    const UnsignedInt meshIndexSize = meshIndexTypeSize(mesh.indexType());
+    const UnsignedInt meshIndexSize = meshIndexTypeSize(meshIndexType);
     UnsignedInt faceIndexSize;
     if(faceAttributes.isIndexed()) {
-        const MeshIndexType faceIndexType = faceAttributes.indexType();
-        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(faceIndexType),
-            "MeshTools::combineFaceAttributes(): face mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(faceIndexType)),
+        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(faceAttributes.indexType()),
+            "MeshTools::combineFaceAttributes(): face mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(faceAttributes.indexType())),
             (Trade::MeshData{MeshPrimitive{}, 0}));
         faceIndexSize = meshIndexTypeSize(faceAttributes.indexType());
     } else faceIndexSize = 4;
