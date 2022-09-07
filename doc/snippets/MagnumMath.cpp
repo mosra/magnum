@@ -994,8 +994,8 @@ static_cast<void>(bClamped);
 using namespace Math::Literals;
 
 Half a = 3.14159_h;
-Debug{} << a;                   // Prints 3.14159
-Debug{} << Float(a);            // Prints 3.14159
+Debug{} << a;                   // Prints 3.141
+Debug{} << Float(a);            // Prints 3.14062
 Debug{} << UnsignedShort(a);    // Prints 25675
 /* [Half-usage] */
 }
@@ -1004,7 +1004,7 @@ Debug{} << UnsignedShort(a);    // Prints 25675
 /* [Half-usage-vector] */
 Vector3h a{3.14159_h, -1.4142_h, 1.618_h};
 Vector3 b{a};                   // converts to 32-bit floats
-Debug{} << a;                   // prints {3.14159, -1.4142, 1.618}
+Debug{} << a;                   // prints {3.141, -1.414, 1.618}
 Debug{} << Vector3us{a};        // prints {16968, 48552, 15993}
 /* [Half-usage-vector] */
 }
