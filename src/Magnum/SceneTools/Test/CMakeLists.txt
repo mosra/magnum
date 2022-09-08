@@ -27,7 +27,33 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/SceneTools/Test")
 
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(SCENETOOLS_TEST_DIR ".")
+else()
+    set(SCENETOOLS_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsConvertToSingleFun___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
+
+corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
+    LIBRARIES MagnumSceneTools
+    FILES
+        SceneConverterTestFiles/info-animations.txt
+        SceneConverterTestFiles/info-images.txt
+        SceneConverterTestFiles/info-lights.txt
+        SceneConverterTestFiles/info-materials.txt
+        SceneConverterTestFiles/info-meshes-bounds.txt
+        SceneConverterTestFiles/info-meshes.txt
+        SceneConverterTestFiles/info-objects.txt
+        SceneConverterTestFiles/info-references.txt
+        SceneConverterTestFiles/info-scenes-objects.txt
+        SceneConverterTestFiles/info-scenes.txt
+        SceneConverterTestFiles/info-skins.txt
+        SceneConverterTestFiles/info-textures.txt)
+target_include_directories(SceneToolsSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

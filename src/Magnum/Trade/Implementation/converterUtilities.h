@@ -28,13 +28,17 @@
 #include <chrono>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Utility/Format.h>
 
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
 namespace Magnum { namespace Trade { namespace Implementation {
 
-/* Used only in executables where we don't want it to be exported */
+/* Used only in executables where we don't want it to be exported -- in
+   particular magnum-imageconverter, magnum-sceneconverter and their tests */
 namespace {
 
 struct Duration {
@@ -75,7 +79,7 @@ struct ImageInfo {
 Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, std::chrono::high_resolution_clock::duration& importTime) {
     Containers::Array<ImageInfo> infos;
     for(UnsignedInt i = 0; i != importer.image1DCount(); ++i) {
-        const std::string name = importer.image1DName(i);
+        const Containers::String name = importer.image1DName(i);
         const UnsignedInt levelCount = importer.image1DLevelCount(i);
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
@@ -97,11 +101,11 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
                 image->data().size(),
                 image->dataFlags(),
                 ImageInfoFlags{image->flags()},
-                j ? "" : importer.image1DName(i));
+                j ? "" : name);
         }
     }
     for(UnsignedInt i = 0; i != importer.image2DCount(); ++i) {
-        const std::string name = importer.image2DName(i);
+        const Containers::String name = importer.image2DName(i);
         const UnsignedInt levelCount = importer.image2DLevelCount(i);
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
@@ -127,7 +131,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
         }
     }
     for(UnsignedInt i = 0; i != importer.image3DCount(); ++i) {
-        const std::string name = importer.image3DName(i);
+        const Containers::String name = importer.image3DName(i);
         const UnsignedInt levelCount = importer.image3DLevelCount(i);
 
         for(UnsignedInt j = 0; j != levelCount; ++j) {
@@ -154,6 +158,73 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
     }
 
     return infos;
+}
+
+void printImageInfo(const Debug::Flags useColor, const Containers::ArrayView<const ImageInfo> imageInfos, const Containers::ArrayView<const UnsignedInt> image1DReferenceCount, const Containers::ArrayView<const UnsignedInt> image2DReferenceCount, const Containers::ArrayView<const UnsignedInt> image3DReferenceCount) {
+    std::size_t totalImageDataSize = 0;
+    for(const Trade::Implementation::ImageInfo& info: imageInfos) {
+        Debug d{useColor};
+        if(info.level == 0) {
+            d << Debug::boldColor(Debug::Color::Default);
+            if(info.size.z()) d << "3D image";
+            else if(info.size.y()) d << "2D image";
+            else d << "1D image";
+            d << info.image << Debug::resetColor;
+
+            /* Print reference count only if there actually are any (i.e., the
+               arrays are non-empty) otherwise this information is useless */
+            Containers::Optional<UnsignedInt> count;
+            if(info.size.z() && image3DReferenceCount) {
+                count = image3DReferenceCount[info.image];
+            } else if(info.size.y() && image2DReferenceCount) {
+                count = image2DReferenceCount[info.image];
+            } else if(image1DReferenceCount) {
+                count = image1DReferenceCount[info.image];
+            }
+            if(count) {
+                if(!*count) d << Debug::color(Debug::Color::Red);
+                d << "(referenced by" << *count << "textures)";
+                if(!*count) d << Debug::resetColor;
+            }
+
+            d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
+                << Debug::resetColor;
+            if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
+                << info.name << Debug::resetColor;
+            d << Debug::newline;
+        }
+        d << "  Level" << info.level << Debug::nospace << ":";
+        if(info.flags.one) {
+            d << Debug::packed << Debug::color(Debug::Color::Cyan);
+            if(info.size.z()) d << info.flags.three;
+            else if(info.size.y()) d << info.flags.two;
+            else d << info.flags.one;
+            d << Debug::resetColor;
+        }
+        d << Debug::packed;
+        if(info.size.z()) d << info.size;
+        else if(info.size.y()) d << info.size.xy();
+        /* Kinda unnecessary, but makes the output more consistent if also 1D
+           size is in {}s */
+        else d << Math::Vector<1, Int>(info.size.x());
+        d << Debug::color(Debug::Color::Blue) << "@" << Debug::resetColor;
+        d << Debug::packed;
+        /* Compressed formats are printed yellow. That kinda conflicts with
+           custom fields / attributes elsewhere, but is significant enough to
+           have it highlighted. */
+        if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
+        else d << Debug::color(Debug::Color::Cyan) << info.format;
+        d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
+        if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+            d << Debug::nospace << "," << Debug::packed
+                << Debug::color(Debug::Color::Green) << info.dataFlags
+                << Debug::resetColor;
+        d << Debug::nospace << ")";
+
+        totalImageDataSize += info.dataSize;
+    }
+    if(!imageInfos.isEmpty())
+        Debug{} << "Total image data size:" << Utility::format("{:.1f}", totalImageDataSize/1024.0f) << "kB";
 }
 
 }

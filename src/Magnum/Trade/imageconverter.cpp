@@ -595,47 +595,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 else
                     useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
 
-                std::size_t totalImageDataSize = 0;
-                for(const Trade::Implementation::ImageInfo& info: infos) {
-                    Debug d{useColor};
-                    if(info.level == 0) {
-                        d << Debug::boldColor(Debug::Color::Default);
-                        if(info.size.z()) d << "3D image";
-                        else if(info.size.y()) d << "2D image";
-                        else d << "1D image";
-                        d << info.image << Debug::nospace << ":"
-                            << Debug::resetColor;
-                        if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
-                            << info.name << Debug::resetColor;
-                        d << Debug::newline;
-                    }
-                    d << "  Level" << info.level << Debug::nospace << ":";
-                    if(info.flags.one) {
-                        d << Debug::packed << Debug::color(Debug::Color::Cyan);
-                        if(info.size.z()) d << info.flags.three;
-                        else if(info.size.y()) d << info.flags.two;
-                        else d << info.flags.one;
-                        d << Debug::resetColor;
-                    }
-                    d << Debug::packed;
-                    if(info.size.z()) d << info.size;
-                    else if(info.size.y()) d << info.size.xy();
-                    else d << Math::Vector<1, Int>(info.size.x());
-                    d << Debug::color(Debug::Color::Blue) << "@" << Debug::resetColor;
-                    d << Debug::packed;
-                    if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
-                    else d << Debug::color(Debug::Color::Cyan) << info.format;
-                    d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
-                    if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
-                        d << Debug::nospace << "," << Debug::packed
-                            << Debug::color(Debug::Color::Green)
-                            << info.dataFlags << Debug::resetColor;
-                    d << Debug::nospace << ")";
-
-                    totalImageDataSize += info.dataSize;
-                }
-                if(!infos.isEmpty())
-                    Debug{} << "Total image data size:" << Utility::format("{:.1f}", totalImageDataSize/1024.0f) << "kB";
+                Trade::Implementation::printImageInfo(useColor, infos, nullptr, nullptr, nullptr);
 
                 if(args.isSet("profile")) {
                     Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";

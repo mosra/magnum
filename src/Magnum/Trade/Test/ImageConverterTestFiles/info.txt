@@ -1,0 +1,23 @@
+1D image 0:
+  Level 0: {1024} @ Astc10x10RGBAF (4.0 kB)
+1D image 1:
+  Level 0: {16} @ RGBA8Snorm (0.1 kB)
+  Level 1: {8} @ RGBA8Snorm (0.0 kB)
+1D image 2: Third 1D image just so there aren't two
+  Level 0: {4} @ Depth16Unorm (0.0 kB)
+2D image 0: A very nice mipmapped 2D image
+  Level 0: {256, 128} @ RG16F (128.0 kB)
+  Level 1: {128, 64} @ RG16F (32.0 kB)
+  Level 2: {64, 32} @ RG16F (8.0 kB)
+2D image 1:
+  Level 0: Array {4, 8} @ PvrtcRGB2bppUnorm (0.0 kB)
+3D image 0:
+  Level 0: Array|CubeMap {16, 16, 12} @ R8Unorm (3.0 kB)
+3D image 1: Volume kills!
+  Level 0: {16, 16, 16} @ R8Unorm (4.0 kB)
+  Level 1: {8, 8, 6} @ R8Unorm (2.0 kB)
+3D image 2:
+  Level 0: Array {4, 1, 1} @ Bc1RGBSrgb (0.0 kB)
+3D image 3:
+  Level 0: Array {1, 4, 1} @ R32F (0.0 kB, ExternallyOwned|Mutable)
+Total image data size: 181.2 kB

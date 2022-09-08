@@ -54,6 +54,13 @@ corrade_add_test(TradeAnimationDataTest AnimationDataTest.cpp LIBRARIES MagnumTr
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeDataTest DataTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(TradeFlatMaterialDataTest FlatMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
+
+corrade_add_test(TradeImageConverterTest ImageConverterTest.cpp
+    LIBRARIES MagnumTrade
+    FILES
+        ImageConverterTestFiles/info.txt)
+target_include_directories(TradeImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)

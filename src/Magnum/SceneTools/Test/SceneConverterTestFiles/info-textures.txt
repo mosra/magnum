@@ -1,0 +1,8 @@
+Texture 0:
+  Type: Texture1D, image 666
+  Minification, mipmap and magnification: Nearest, Nearest, Linear
+  Wrapping: {Repeat, Repeat, Repeat}
+Texture 1: Name!
+  Type: Texture2DArray, image 3
+  Minification, mipmap and magnification: Linear, Linear, Nearest
+  Wrapping: {MirroredRepeat, ClampToEdge, ClampToEdge}

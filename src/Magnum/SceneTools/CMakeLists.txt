@@ -44,7 +44,8 @@ set(MagnumSceneTools_HEADERS
 
 set(MagnumSceneTools_PRIVATE_HEADERS
     Implementation/combine.h
-    Implementation/convertToSingleFunctionObjects.h)
+    Implementation/convertToSingleFunctionObjects.h
+    Implementation/sceneConverterUtilities.h)
 
 ## Objects shared between main and test library
 #add_library(MagnumSceneToolsObjects OBJECT

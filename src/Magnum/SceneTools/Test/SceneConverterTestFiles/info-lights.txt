@@ -1,0 +1,8 @@
+Light 0:
+  Type: Spot, 55° - 85°
+  Color: {0.203922, 0.341176, 1} * 15
+  Attenuation: {1.2, 0.3, 0.04}
+  Range: 100
+Light 1: Directional light with always-implicit attenuation and range
+  Type: Directional
+  Color: {1, 0.341176, 0.203922} * 5
