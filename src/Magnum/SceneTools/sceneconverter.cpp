@@ -122,8 +122,8 @@ magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
     [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
-    [--info-lights] [--info-materials] [--info-meshes] [--info-objects]
-    [--info-scenes] [--info-skins] [--info-textures] [--info]
+    [--info-lights] [--info-cameras] [--info-materials] [--info-meshes]
+    [--info-objects] [--info-scenes] [--info-skins] [--info-textures] [--info]
     [--color on|4bit|off|auto] [--bounds] [-v|--verbose] [--profile] [--] input
     output
 @endcode
@@ -161,6 +161,7 @@ Arguments:
     exit
 -   `--info-images` --- print into about images in the input file and exit
 -   `--info-lights` --- print into about lights in the input file and exit
+-   `--info-cameras` --- print into about cameras in the input file and exit
 -   `--info-materials` --- print into about materials in the input file and
     exit
 -   `--info-meshes` --- print into about meshes in the input file and exit
@@ -218,6 +219,7 @@ bool isInfoRequested(const Utility::Arguments& args) {
     return args.isSet("info-animations") ||
            args.isSet("info-images") ||
            args.isSet("info-lights") ||
+           args.isSet("info-cameras") ||
            args.isSet("info-materials") ||
            args.isSet("info-meshes") ||
            args.isSet("info-objects") ||
@@ -250,6 +252,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("info-animations").setHelp("info-animations", "print info about animations in the input file and exit")
         .addBooleanOption("info-images").setHelp("info-images", "print info about images in the input file and exit")
         .addBooleanOption("info-lights").setHelp("info-lights", "print info about images in the input file and exit")
+        .addBooleanOption("info-cameras").setHelp("info-cameras", "print info about cameras in the input file and exit")
         .addBooleanOption("info-materials").setHelp("info-materials", "print info about materials in the input file and exit")
         .addBooleanOption("info-meshes").setHelp("info-meshes", "print info about meshes in the input file and exit")
         .addBooleanOption("info-objects").setHelp("info-objects", "print info about objects in the input file and exit")

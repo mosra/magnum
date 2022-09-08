@@ -5,6 +5,7 @@ Scene 0:
     Mesh @ UnsignedInt, 4 entries
     MeshMaterial @ Int, 4 entries
     Light @ UnsignedInt, 4 entries
+    Camera @ UnsignedInt, 4 entries
     Skin @ UnsignedInt, 4 entries
 Scene 1:
   Bound: 4 objects @ UnsignedInt (0.0 kB, {})
@@ -14,9 +15,9 @@ Scene 1:
     Skin @ UnsignedInt, 3 entries
 Total scene data size: 0.1 kB
 Object 0 (referenced by 1 scenes):
-  Fields: Mesh, MeshMaterial, Light, Skin
+  Fields: Mesh, MeshMaterial, Light, Camera, Skin
 Object 1 (referenced by 2 scenes):
-  Fields: Mesh[2], MeshMaterial[2], Light[2], Skin[2], Mesh, Skin
+  Fields: Mesh[2], MeshMaterial[2], Light[2], Camera[2], Skin[2], Mesh, Skin
 Object 2 (referenced by 0 scenes): Not referenced
 Object 3 (referenced by 1 scenes):
   Fields: Mesh, Skin
@@ -41,6 +42,18 @@ Light 1 (referenced by 0 objects): Not referenced
 Light 2 (referenced by 1 objects):
   Type: Directional
   Color: {0.203922, 0.341176, 1}
+Camera 0 (referenced by 0 objects): Not referenced
+  Type: Orthographic3D
+  Size: {2, 3}, -1 - 0.5
+  Aspect ratio: 0.666667
+Camera 1 (referenced by 2 objects):
+  Type: Orthographic3D
+  Size: {2, 2}, 0 - 1
+  Aspect ratio: 1
+Camera 2 (referenced by 1 objects):
+  Type: Orthographic2D
+  Size: {2, 2}
+  Aspect ratio: 1
 Material 0 (referenced by 2 objects):
   Type: {}
   Base layer:

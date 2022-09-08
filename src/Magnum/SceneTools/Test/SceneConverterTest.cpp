@@ -49,6 +49,7 @@ struct SceneConverterTest: TestSuite::Tester {
     void infoImplementationAnimations();
     void infoImplementationSkins();
     void infoImplementationLights();
+    void infoImplementationCameras();
     void infoImplementationMaterials();
     void infoImplementationMeshes();
     void infoImplementationMeshesBounds();
@@ -92,6 +93,7 @@ SceneConverterTest::SceneConverterTest() {
     addInstancedTests({&SceneConverterTest::infoImplementationAnimations,
                        &SceneConverterTest::infoImplementationSkins,
                        &SceneConverterTest::infoImplementationLights,
+                       &SceneConverterTest::infoImplementationCameras,
                        &SceneConverterTest::infoImplementationMaterials,
                        &SceneConverterTest::infoImplementationMeshes},
         Containers::arraySize(InfoImplementationOneOrAllData));
@@ -112,6 +114,7 @@ SceneConverterTest::SceneConverterTest() {
              .addBooleanOption("info-animations")
              .addBooleanOption("info-skins")
              .addBooleanOption("info-lights")
+             .addBooleanOption("info-cameras")
              .addBooleanOption("info-materials")
              .addBooleanOption("info-meshes")
              .addBooleanOption("info-textures")
@@ -431,6 +434,65 @@ void SceneConverterTest::infoImplementationLights() {
     CORRADE_VERIFY(Implementation::printInfo(Debug::Flag::DisableColors, false, _infoArgs, importer, time) == false);
     CORRADE_COMPARE_AS(out.str(),
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/info-lights.txt"),
+        TestSuite::Compare::StringToFile);
+}
+
+void SceneConverterTest::infoImplementationCameras() {
+    auto&& data = InfoImplementationOneOrAllData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct Importer: Trade::AbstractImporter {
+        Trade::ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doCameraCount() const override { return 3; }
+        Containers::String doCameraName(UnsignedInt id) override {
+            return id == 0 ? "Orthographic 2D" : "";
+        }
+        Containers::Optional<Trade::CameraData> doCamera(UnsignedInt id) override {
+            /* First 2D ortho camera, where near/far will get omited */
+            if(id == 0) return Trade::CameraData{
+                Trade::CameraType::Orthographic2D,
+                {5.0f, 6.0f},
+                0.0f, 0.0f
+            };
+
+            /* 3D ortho camera */
+            if(id == 1) return Trade::CameraData{
+                Trade::CameraType::Orthographic3D,
+                {2.0f, 3.0f},
+                -1.0f, 0.5f
+            };
+
+            /* Third a perspective camera, specified with size, but printed
+               with FoV */
+            if(id == 2) return Trade::CameraData{
+                Trade::CameraType::Perspective3D,
+                35.0_degf, 4.0f/3.0f, 0.01f, 100.0f
+            };
+
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+    } importer;
+
+    const char* argv[]{"", data.oneOrAll ? "--info-cameras" : "--info"};
+    CORRADE_VERIFY(_infoArgs.tryParse(Containers::arraySize(argv), argv));
+
+    std::chrono::high_resolution_clock::duration time;
+
+    /* Print to visually verify coloring */
+    if(data.printVisualCheck) {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, Debug::isTty(), _infoArgs, importer, time);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    CORRADE_VERIFY(Implementation::printInfo(Debug::Flag::DisableColors, false, _infoArgs, importer, time) == false);
+    CORRADE_COMPARE_AS(out.str(),
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/info-cameras.txt"),
         TestSuite::Compare::StringToFile);
 }
 
@@ -783,6 +845,9 @@ void SceneConverterTest::infoImplementationReferenceCount() {
                 Trade::SceneFieldData{Trade::SceneField::Light,
                     Containers::arrayView(sceneData3D->mapping),
                     Containers::arrayView(sceneData3D->lights)},
+                Trade::SceneFieldData{Trade::SceneField::Camera,
+                    Containers::arrayView(sceneData3D->mapping),
+                    Containers::arrayView(sceneData3D->cameras)},
                 Trade::SceneFieldData{Trade::SceneField::Skin,
                     Containers::arrayView(sceneData3D->mapping),
                     Containers::arrayView(sceneData3D->skins)},
@@ -862,6 +927,29 @@ void SceneConverterTest::infoImplementationReferenceCount() {
                 Trade::LightData::Type::Directional,
                 0x3457ff_rgbf,
                 1.0f
+            };
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+
+        UnsignedInt doCameraCount() const override { return 3; }
+        Containers::String doCameraName(UnsignedInt id) override {
+            return id == 0 ? "Not referenced" : "";
+        }
+        Containers::Optional<Trade::CameraData> doCamera(UnsignedInt id) override {
+            if(id == 0) return Trade::CameraData{
+                Trade::CameraType::Orthographic3D,
+                {2.0f, 3.0f},
+                -1.0f, 0.5f
+            };
+            if(id == 1) return Trade::CameraData{
+                Trade::CameraType::Orthographic3D,
+                {2.0f, 2.0f},
+                0.0f, 1.0f
+            };
+            if(id == 2) return Trade::CameraData{
+                Trade::CameraType::Orthographic2D,
+                {2.0f, 2.0f},
+                0.0f, 0.0f
             };
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -985,12 +1073,14 @@ void SceneConverterTest::infoImplementationReferenceCount() {
             UnsignedInt meshes[4];
             Int materials[4];
             UnsignedInt lights[4];
+            UnsignedInt cameras[4];
             UnsignedInt skins[4];
         } sceneData3D[1]{{
             {0, 1, 1, 25},
             {2, 0, 2, 67},
             {0, 1, 23, 0},
             {0, 17, 0, 2},
+            {166, 1, 2, 1},
             {1, 1, 22, 2}
         }};
 
@@ -1066,6 +1156,12 @@ void SceneConverterTest::infoImplementationError() {
             return {};
         }
 
+        UnsignedInt doCameraCount() const override { return 2; }
+        Containers::Optional<Trade::CameraData> doCamera(UnsignedInt id) override {
+            Error{} << "Camera" << id << "error!";
+            return {};
+        }
+
         UnsignedInt doMaterialCount() const override { return 2; }
         Containers::Optional<Trade::MaterialData> doMaterial(UnsignedInt id) override {
             Error{} << "Material" << id << "error!";
@@ -1114,6 +1210,8 @@ void SceneConverterTest::infoImplementationError() {
         "3D skin 1 error!\n"
         "Light 0 error!\n"
         "Light 1 error!\n"
+        "Camera 0 error!\n"
+        "Camera 1 error!\n"
         "Material 0 error!\n"
         "Material 1 error!\n"
         "Mesh 0 error!\n"

@@ -45,6 +45,7 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
     LIBRARIES MagnumSceneTools
     FILES
         SceneConverterTestFiles/info-animations.txt
+        SceneConverterTestFiles/info-cameras.txt
         SceneConverterTestFiles/info-images.txt
         SceneConverterTestFiles/info-lights.txt
         SceneConverterTestFiles/info-materials.txt

@@ -33,6 +33,7 @@
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Trade/AnimationData.h"
+#include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -84,6 +85,12 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     struct LightInfo {
         UnsignedInt light;
         Trade::LightData data{{}, {}, {}};
+        Containers::String name;
+    };
+
+    struct CameraInfo {
+        UnsignedInt camera;
+        Trade::CameraData data{{}, {}, {}, {}};
         Containers::String name;
     };
 
@@ -176,12 +183,14 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     std::unordered_map<UnsignedInt, Containers::String> sceneFieldNames;
     Containers::Array<UnsignedInt> materialReferenceCount;
     Containers::Array<UnsignedInt> lightReferenceCount;
+    Containers::Array<UnsignedInt> cameraReferenceCount;
     Containers::Array<UnsignedInt> meshReferenceCount;
     Containers::Array<UnsignedInt> skin2DReferenceCount;
     Containers::Array<UnsignedInt> skin3DReferenceCount;
     if((args.isSet("info") || args.isSet("info-scenes")) && importer.sceneCount()) {
         materialReferenceCount = Containers::Array<UnsignedInt>{importer.materialCount()};
         lightReferenceCount = Containers::Array<UnsignedInt>{importer.lightCount()};
+        cameraReferenceCount = Containers::Array<UnsignedInt>{importer.cameraCount()};
         meshReferenceCount = Containers::Array<UnsignedInt>{importer.meshCount()};
         skin2DReferenceCount = Containers::Array<UnsignedInt>{importer.skin2DCount()};
         skin3DReferenceCount = Containers::Array<UnsignedInt>{importer.skin3DCount()};
@@ -220,6 +229,11 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                 if(name == Trade::SceneField::Light) for(const Containers::Pair<UnsignedInt, UnsignedInt>& light: scene->lightsAsArray()) {
                     if(light.second() < lightReferenceCount.size())
                         ++lightReferenceCount[light.second()];
+                }
+
+                if(name == Trade::SceneField::Camera) for(const Containers::Pair<UnsignedInt, UnsignedInt>& camera: scene->camerasAsArray()) {
+                    if(camera.second() < cameraReferenceCount.size())
+                        ++cameraReferenceCount[camera.second()];
                 }
 
                 arrayAppend(info.fields, InPlaceInit,
@@ -337,6 +351,26 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         info.data = *std::move(light);
 
         arrayAppend(lightInfos, std::move(info));
+    }
+
+    /* Camera properties */
+    Containers::Array<CameraInfo> cameraInfos;
+    if(args.isSet("info") || args.isSet("info-cameras")) for(UnsignedInt i = 0; i != importer.cameraCount(); ++i) {
+        Containers::Optional<Trade::CameraData> camera;
+        {
+            Trade::Implementation::Duration d{importTime};
+            if(!(camera = importer.camera(i))) {
+                error = true;
+                continue;
+            }
+        }
+
+        CameraInfo info{};
+        info.camera = i;
+        info.name = importer.cameraName(i);
+        info.data = *std::move(camera);
+
+        arrayAppend(cameraInfos, std::move(info));
     }
 
     /* Material properties, together with how much is each texture shared
@@ -720,6 +754,41 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         if(info.data.range() != Constants::inf())
             d << Debug::newline << "  Range:" << Debug::packed
                 << info.data.range();
+    }
+
+    for(const CameraInfo& info: cameraInfos) {
+        Debug d{useColor};
+        d << Debug::boldColor(Debug::Color::Default) << "Camera" << info.camera << Debug::resetColor;
+
+        /* Print reference count only if there actually are scenes and they
+           were parsed, otherwise this information is useless */
+        if(cameraReferenceCount) {
+            const UnsignedInt count = cameraReferenceCount[info.camera];
+            if(!count) d << Debug::color(Debug::Color::Red);
+            d << "(referenced by" << count << "objects)";
+            if(!count) d << Debug::resetColor;
+        }
+
+        d << Debug::boldColor(Debug::Color::Default) << Debug::nospace << ":"
+            << Debug::resetColor;
+        if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
+            << info.name << Debug::resetColor;
+
+        d << Debug::newline << "  Type:" << Debug::packed
+            << Debug::color(Debug::Color::Cyan)
+            << info.data.type() << Debug::resetColor << Debug::newline;
+        /* Print orthographic cameras with size, perspective with FoV */
+        if(info.data.type() == Trade::CameraType::Orthographic2D ||
+           info.data.type() == Trade::CameraType::Orthographic3D) {
+            d << "  Size:" << Debug::packed << info.data.size();
+        } else if(info.data.type() == Trade::CameraType::Perspective3D) {
+            d << "  FoV:" << Debug::packed << Deg(info.data.fov())
+                << Debug::nospace << "°";
+        }
+        /* Near/far is implicitly 0 for 2D */
+        if(info.data.type() != Trade::CameraType::Orthographic2D)
+            d << Debug::nospace << "," << info.data.near() << "-" << info.data.far();
+        d << Debug::newline << "  Aspect ratio:" << info.data.aspectRatio();
     }
 
     for(const MaterialInfo& info: materialInfos) {
