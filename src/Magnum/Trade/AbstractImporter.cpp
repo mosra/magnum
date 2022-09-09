@@ -429,6 +429,8 @@ Containers::Optional<AnimationData> AbstractImporter::animation(const UnsignedIn
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
     CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animation(): index" << id << "out of range for" << doAnimationCount() << "entries", {});
     Containers::Optional<AnimationData> animation = doAnimation(id);
+    /** @todo maybe this should also disallow custom interpolators? since thise
+        would be dangling on plugin unload */
     CORRADE_ASSERT(!animation ||
         ((!animation->_data.deleter() || animation->_data.deleter() == static_cast<void(*)(char*, std::size_t)>(Implementation::nonOwnedArrayDeleter) || animation->_data.deleter() == ArrayAllocator<char>::deleter) &&
         (!animation->_tracks.deleter() || animation->_tracks.deleter() == static_cast<void(*)(AnimationTrackData*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),

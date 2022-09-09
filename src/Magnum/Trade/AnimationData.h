@@ -280,6 +280,9 @@ class AnimationTrackData {
          * @param target        Track target
          * @param view          Type-erased @ref Animation::TrackView instance
          */
+        /** @todo stop taking TrackViewStorage and instead directly take the
+            key/value views, interpolator/interpolation and extrapolation --
+            it's just 6 overloads and makes usage much better */
         explicit AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTargetType targetType, UnsignedLong target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{resultType}, _targetType{targetType}, _target{target}, _view{view} {}
 
         /** @overload

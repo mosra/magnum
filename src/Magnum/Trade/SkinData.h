@@ -90,6 +90,8 @@ template<UnsignedInt dimensions> class SkinData {
         /** @brief Move assignment */
         SkinData<dimensions>& operator=(SkinData<dimensions>&& other) noexcept;
 
+        /** @todo expose DataFlags (so users can know if the data are externally owned, at least) */
+
         /**
          * @brief Joint IDs
          *

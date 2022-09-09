@@ -121,6 +121,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @brief Light type
          *
          * @see @ref type()
+         * @todo move this to LightType outside of the class for consistency
          */
         enum class Type: UnsignedByte {
             /* Zero reserved for an invalid value */
