@@ -213,7 +213,7 @@ cmake_dependent_option(MAGNUM_TARGET_HEADLESS "Build command-line utilities for 
 cmake_dependent_option(MAGNUM_TARGET_GL "Build libraries with OpenGL interoperability" ON "MAGNUM_WITH_GL" OFF)
 
 # EGL context and windowless EGL application, available everywhere
-cmake_dependent_option(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES OR NOT MAGNUM_WITH_GL_INFO;NOT TARGET_HEADLESS" ON)
+cmake_dependent_option(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES OR NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_TARGET_HEADLESS" ON)
 option(MAGNUM_WITH_EGLCONTEXT "Build EglContext library" OFF)
 
 # Vulkan, everywhere except Emscripten
