@@ -526,12 +526,18 @@ WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other) noexcep
     _sharedContext{other._sharedContext},
     #endif
     _display{other._display}, _context{other._context}
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    , _surface{other._surface}
+    #endif
 {
     #ifndef MAGNUM_TARGET_WEBGL
     other._sharedContext = false;
     #endif
     other._display = {};
     other._context = {};
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    other._surface = {};
+    #endif
 }
 
 WindowlessEglContext::~WindowlessEglContext() {
@@ -570,6 +576,9 @@ WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext&& oth
     #endif
     swap(other._display, _display);
     swap(other._context, _context);
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    swap(other._surface, _surface);
+    #endif
     return *this;
 }
 
