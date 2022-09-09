@@ -131,7 +131,7 @@ Defined if the engine is built with OpenGL interoperability enabled --- extra
 APIs in various libraries interacting with the @ref Magnum::GL "GL" library.
 Enabled by default in case the @ref Magnum::GL "GL" library is built.
 @see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
-    @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building, @ref cmake
+    @ref MAGNUM_TARGET_EGL, @ref building, @ref cmake
 */
 #define MAGNUM_TARGET_GL
 /* (enabled by default) */
@@ -141,7 +141,7 @@ Enabled by default in case the @ref Magnum::GL "GL" library is built.
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
 @see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
-    @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building, @ref cmake
+    @ref MAGNUM_TARGET_EGL, @ref building, @ref cmake
 */
 #define MAGNUM_TARGET_GLES
 #undef MAGNUM_TARGET_GLES
@@ -151,7 +151,7 @@ Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
 
 Defined if the engine is built for OpenGL ES 2.0. Implies also
 @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES3, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building,
+@see @ref MAGNUM_TARGET_GLES3, @ref MAGNUM_TARGET_EGL, @ref building,
     @ref cmake
 */
 #define MAGNUM_TARGET_GLES2
@@ -162,22 +162,11 @@ Defined if the engine is built for OpenGL ES 2.0. Implies also
 
 Defined if the engine is built for OpenGL ES 3.0. Implies also
 @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building,
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_EGL, @ref building,
     @ref cmake
 */
 #define MAGNUM_TARGET_GLES3
 #undef MAGNUM_TARGET_GLES3
-
-/**
-@brief Desktop emulation of OpenGL ES target
-
-Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0 emulated
-within standard desktop OpenGL. Implies also @ref MAGNUM_TARGET_GLES.
-@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3, @ref building,
-    @ref cmake
-*/
-#define MAGNUM_TARGET_DESKTOP_GLES
-#undef MAGNUM_TARGET_DESKTOP_GLES
 
 /**
 @brief WebGL target
@@ -194,17 +183,46 @@ which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES and
 #undef MAGNUM_TARGET_WEBGL
 
 /**
-@brief Headless target
+@brief EGL target
+@m_since_latest
 
-Defined if the engine is built for use on a headless machine (without any
-graphical desktop environment). Basically it means that EGL with no display
-attachment is being used everywhere instead of platform-specific toolkits like
-CGL, GLX or WGL. Note that this might not be supported on all platforms, see
-@ref Magnum::Platform::WindowlessEglApplication "Platform::WindowlessEglApplication"
-for more information.
+Defined if the engine is built for EGL instead of a platform-specific OpenGL
+support library like CGL, EAGL, GLX or WGL. When enabled,
+@relativeref{Magnum,Platform::Sdl2Application} and
+@relativeref{Magnum,Platform::GlfwApplication}
+will create the context using EGL, and command-line utilities like
+@ref magnum-gl-info "magnum-gl-info" or
+@ref magnum-distancefieldconverter "magnum-distancefieldconverter" as well as
+the @relativeref{Magnum,GL::OpenGLTester} library will use
+@relativeref{Magnum,Platform::WindowlessEglApplication}. Defined implicitly on
+@ref CORRADE_TARGET_IOS "iOS", @ref CORRADE_TARGET_ANDROID "Android",
+@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and
+@ref CORRADE_TARGET_WINDOWS_RT "Windows RT".
+*/
+#define MAGNUM_TARGET_EGL
+#undef MAGNUM_TARGET_EGL
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Headless target
+@m_deprecated_since_latest Use @ref MAGNUM_TARGET_EGL instead.
+
+Alias to @ref MAGNUM_TARGET_EGL, unless on iOS, Android, Emscripten or Windows
+RT.
 */
 #define MAGNUM_TARGET_HEADLESS
 #undef MAGNUM_TARGET_HEADLESS
+
+/**
+@brief OpenGL ES target on GLX / WGL
+@m_deprecated_since_latest Use @ref MAGNUM_TARGET_EGL instead.
+
+Defined if @ref MAGNUM_TARGET_GLES is set but @ref MAGNUM_TARGET_EGL isn't,
+unless on iOS, Android, Emscripten or Windows RT.
+*/
+#define MAGNUM_TARGET_DESKTOP_GLES
+#undef MAGNUM_TARGET_DESKTOP_GLES
+#endif
 
 /**
 @brief Vulkan interoperability

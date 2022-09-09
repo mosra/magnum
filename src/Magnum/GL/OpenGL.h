@@ -46,7 +46,7 @@
     #endif
 
 /* Special case for desktop GLES on Windows (still links to the old opengl32.dll) */
-#elif defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_TARGET_DESKTOP_GLES)
+#elif defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_EGL)
     #ifdef MAGNUM_TARGET_GLES2
         #include "MagnumExternal/OpenGL/GLES2/flextGLWindowsDesktop.h"
     #else

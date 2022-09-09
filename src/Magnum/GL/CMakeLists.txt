@@ -214,7 +214,7 @@ elseif(MAGNUM_BUILD_STATIC_PIC)
     set_target_properties(MagnumGL PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumGL PUBLIC Magnum)
-if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+if(NOT MAGNUM_TARGET_GLES OR (MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_EGL AND NOT CORRADE_TARGET_IOS))
     # If the GLVND library (CMake 3.11+) was found, link to the imported
     # target. Otherwise (and also on all systems except Linux) link to the
     # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
@@ -297,7 +297,7 @@ if(MAGNUM_BUILD_TESTS)
     endif()
     target_link_libraries(MagnumGLTestLib PUBLIC
         Magnum)
-    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+    if(NOT MAGNUM_TARGET_GLES OR (MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_EGL AND NOT CORRADE_TARGET_IOS))
         # If the GLVND library (CMake 3.11+) was found, link to the imported
         # target. Otherwise (and also on all systems except Linux) link to the
         # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
@@ -331,7 +331,7 @@ if(MAGNUM_BUILD_TESTS)
         # Windows only and elsewhere I just link the same way as with
         # MagnumOpenGLTester.
         if(CORRADE_TARGET_WINDOWS)
-            if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
+            if(MAGNUM_TARGET_EGL)
                 # Otherwise it complains that EGL::EGL does not exist here
                 find_package(EGL)
             endif()

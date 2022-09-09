@@ -344,9 +344,8 @@ CORRADE_ENUMSET_OPERATORS(WindowlessGlxContext::Configuration::Flags)
 
 @m_keywords{WindowlessApplication GLX}
 
-Application for offscreen rendering using @ref WindowlessGlxContext. This
-application library is available on desktop OpenGL and
-@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux.
+Application for offscreen rendering using @ref WindowlessGlxContext. Available
+on desktop OpenGL and OpenGL ES using GLX on Linux.
 
 @section Platform-WindowlessGlxApplication-bootstrap Bootstrap application
 

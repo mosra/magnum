@@ -43,8 +43,7 @@ namespace Magnum { namespace Platform {
 @m_keywords{Application}
 
 Application using pure X11 and GLX. Supports keyboard and mouse handling.
-Available on desktop OpenGL and
-@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux.
+Available on desktop OpenGL and OpenGL ES using GLX on Linux.
 
 @section Platform-GlxApplication-bootstrap Bootstrap application
 

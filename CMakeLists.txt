@@ -146,27 +146,17 @@ if(NOT DEFINED _MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS)
     endforeach()
 endif()
 
-# If targeting iOS, Android, Emscripten or Windows RT, set explicit OpenGL ES
-# support
-if(NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_WINDOWS_RT)
-    option(MAGNUM_TARGET_GLES "Build for OpenGL ES / WebGL" OFF)
-else()
-    set(MAGNUM_TARGET_GLES ON)
-endif()
-
-cmake_dependent_option(MAGNUM_TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "MAGNUM_TARGET_GLES" OFF)
-cmake_dependent_option(MAGNUM_TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "MAGNUM_TARGET_GLES" OFF)
-
 # Magnum GL Info (currently only using GLX/CGL/EGL on *nix, WGL/EGL on Windows
 # and EGL on Emscripten)
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS OR CORRADE_TARGET_EMSCRIPTEN)
     option(MAGNUM_WITH_GL_INFO "Build magnum-gl-info utility" OFF)
 endif()
 
-# Desktop-only utilities
+# Desktop-only utilities. Not guaranteed to build on GLES, but showing the
+# option everywhere for simplicity.
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
-    cmake_dependent_option(MAGNUM_WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT MAGNUM_TARGET_GLES" OFF)
-    cmake_dependent_option(MAGNUM_WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT MAGNUM_TARGET_GLES" OFF)
+    option(MAGNUM_WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF)
+    option(MAGNUM_WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF)
 endif()
 
 # API-independent utilities
@@ -208,18 +198,49 @@ cmake_dependent_option(MAGNUM_WITH_TRADE "Build Trade library" ON "NOT MAGNUM_WI
 cmake_dependent_option(MAGNUM_WITH_GL "Build GL library" ON "NOT MAGNUM_WITH_SHADERS;NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_ANDROIDAPPLICATION;NOT MAGNUM_WITH_WINDOWLESSIOSAPPLICATION;NOT MAGNUM_WITH_WINDOWLESSCGLAPPLICATION;NOT MAGNUM_WITH_WINDOWLESSGLXAPPLICATION;NOT MAGNUM_WITH_CGLCONTEXT;NOT MAGNUM_WITH_GLXAPPLICATION;NOT MAGNUM_WITH_GLXCONTEXT;NOT MAGNUM_WITH_XEGLAPPLICATION;NOT MAGNUM_WITH_WINDOWLESSWGLAPPLICATION;NOT MAGNUM_WITH_WGLCONTEXT;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
 option(MAGNUM_WITH_PRIMITIVES "Build Primitives library" ON)
 
-cmake_dependent_option(MAGNUM_TARGET_HEADLESS "Build command-line utilities for use on a headless machines" OFF "MAGNUM_WITH_GL" OFF)
 cmake_dependent_option(MAGNUM_TARGET_GL "Build libraries with OpenGL interoperability" ON "MAGNUM_WITH_GL" OFF)
 
-# EGL context and windowless EGL application, available everywhere
-cmake_dependent_option(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES OR NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_TARGET_HEADLESS" ON)
-option(MAGNUM_WITH_EGLCONTEXT "Build EglContext library" OFF)
+# If targeting iOS, Android, Emscripten or Windows RT, implicitly enable GLES.
+# Otherwise default to desktop GL.
+if(CORRADE_TARGET_IOS OR CORRADE_TARGET_ANDROID OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_WINDOWS_RT)
+    set(MAGNUM_TARGET_GLES ON)
+elseif(MAGNUM_WITH_GL)
+    cmake_dependent_option(MAGNUM_TARGET_GLES "Build for OpenGL ES / WebGL" OFF "MAGNUM_WITH_GL" OFF)
+endif()
+
+# If targeting Android, Emscripten or Windows RT, implicitly enable EGL.
+# Otherwise enable EGL by default only if targeting GLES and not on iOS (where
+# it's EAGL instead)
+if(CORRADE_TARGET_ANDROID OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_WINDOWS_RT)
+    set(MAGNUM_TARGET_EGL ON)
+else()
+    if(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_IOS)
+        set(_MAGNUM_TARGET_EGL_DEFAULT ON)
+    else()
+        set(_MAGNUM_TARGET_EGL_DEFAULT OFF)
+    endif()
+    cmake_dependent_option(MAGNUM_TARGET_EGL "Build for EGL instead of EAGL / CGL / GLX / WGL" ${_MAGNUM_TARGET_EGL_DEFAULT} "MAGNUM_WITH_GL" OFF)
+endif()
+
+cmake_dependent_option(MAGNUM_TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "MAGNUM_TARGET_GLES" OFF)
 
 # Vulkan, everywhere except Emscripten
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
     cmake_dependent_option(MAGNUM_WITH_VK "Build Vk library" OFF "NOT MAGNUM_WITH_VK_INFO" ON)
     cmake_dependent_option(MAGNUM_TARGET_VK "Build libraries with Vulkan interoperability" ON "MAGNUM_WITH_VK" OFF)
 endif()
+
+# EGL context and windowless EGL application, available everywhere. If
+# targeting EGL and not on Windows, it's implied by the CLI tools, otherwise
+# it's independent.
+if(MAGNUM_TARGET_EGL AND NOT CORRADE_TARGET_WINDOWS)
+    cmake_dependent_option(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER;NOT MAGNUM_WITH_FONTCONVERTER" ON)
+else()
+    # TODO when CMake 3.22 can be relied on, clean this up to use a proper
+    # condition instead
+    cmake_dependent_option(MAGNUM_WITH_WINDWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "ON" OFF)
+endif()
+option(MAGNUM_WITH_EGLCONTEXT "Build EglContext library" OFF)
 
 # Android-specific application libraries
 if(CORRADE_TARGET_ANDROID)
@@ -234,25 +255,42 @@ elseif(CORRADE_TARGET_IOS)
     option(MAGNUM_WITH_WINDOWLESSIOSAPPLICATION "Build WindowlessIosApplication library" OFF)
 
 # macOS-specific application libraries
-elseif(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
-    cmake_dependent_option(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
+elseif(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_EGL)
+    # WindowlessCglApplication implied by the CLI tools unless targeting EGL
+    if(NOT MAGNUM_TARGET_EGL)
+        cmake_dependent_option(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
+    else()
+        # TODO when CMake 3.22 can be relied on, clean this up to use a proper
+        # condition instead
+        cmake_dependent_option(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "ON" OFF)
+    endif()
     option(MAGNUM_WITH_CGLCONTEXT "Build CglContext library" OFF)
 
 # X11 + GLX/EGL-specific application libraries
 elseif(CORRADE_TARGET_UNIX)
     option(MAGNUM_WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
-    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+    # WindowlessGlxApplication implied by the CLI tools unless targeting EGL
+    if(NOT MAGNUM_TARGET_EGL)
         cmake_dependent_option(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
-        option(MAGNUM_WITH_GLXCONTEXT "Build GlxContext library" OFF)
+    else()
+        # TODO when CMake 3.22 can be relied on, clean this up to use a proper
+        # condition instead
+        cmake_dependent_option(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "ON" OFF)
     endif()
+    option(MAGNUM_WITH_GLXCONTEXT "Build GlxContext library" OFF)
     option(MAGNUM_WITH_XEGLAPPLICATION "Build XEglApplication library" OFF)
 
 # Windows-specific application libraries
 elseif(CORRADE_TARGET_WINDOWS)
-    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+    # WindowlessWglApplication implied by the CLI tools unless targeting EGL
+    if(NOT MAGNUM_TARGET_EGL)
         cmake_dependent_option(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION "Build WindowlessWglApplication library" OFF "NOT MAGNUM_WITH_GL_INFO;NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_DISTANCEFIELDCONVERTER" ON)
-        option(MAGNUM_WITH_WGLCONTEXT "Build WglContext library" OFF)
+    else()
+        # TODO when CMake 3.22 can be relied on, clean this up to use a proper
+        # condition instead
+        cmake_dependent_option(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION "Build WindowlessWglApplication library" OFF "ON" OFF)
     endif()
+    option(MAGNUM_WITH_WGLCONTEXT "Build WglContext library" OFF)
 endif()
 
 # Platform-independent (almost) application libraries
@@ -264,18 +302,6 @@ if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_
 endif()
 
 option(MAGNUM_BUILD_DEPRECATED "Include deprecated API in the build" ON)
-
-# BUILD_MULTITHREADED got moved to Corrade itself. In case we're building with
-# deprecated features enabled, print a warning in case it's set but Corrade
-# reports a different value. We can't print a warning in case it's set because
-# that would cause false positives when both Corrade and Magnum are subprojects
-# (and thus this option is visible to both). Otherwise it's silent --- for
-# non-deprecated builds CMake will at most warn about "variable being unused".
-if(MAGNUM_BUILD_DEPRECATED)
-    if(DEFINED BUILD_MULTITHREADED AND ((NOT CORRADE_BUILD_MULTITHREADED AND BUILD_MULTITHREADED) OR (CORRADE_BUILD_MULTITHREADED AND NOT BUILD_MULTITHREADED)))
-        message(DEPRECATION "BUILD_MULTITHREADED (set to ${BUILD_MULTITHREADED}) is now ignored — you need to set it when building Corrade instead (there it's ${CORRADE_BUILD_MULTITHREADED} now)")
-    endif()
-endif()
 
 set(MAGNUM_DEPLOY_PREFIX "."
     CACHE STRING "Prefix where to put final application executables")
@@ -386,6 +412,9 @@ if(_MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS AND MAGNUM_BUILD_DEPRECATED)
                 set(WITH_WINDOWLESSCGLAPPLICATION ON)
             endif()
         elseif(CORRADE_TARGET_UNIX)
+            # Checking the old deprecated options here, checking
+            # MAGNUM_TARGET_EGL wouldn't make sense as that's an option the
+            # old code definitely won't use.
             if((NOT TARGET_GLES AND NOT TARGET_HEADLESS) OR TARGET_DESKTOP_GLES)
                 if(NOT DEFINED WITH_WINDOWLESSGLXAPPLICATION)
                     set(WITH_WINDOWLESSGLXAPPLICATION ON)
@@ -454,6 +483,45 @@ if(_MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS AND MAGNUM_BUILD_DEPRECATED)
     endif()
 endif()
 
+# Handle other deprecated options. For non-deprecated builds CMake will at most
+# warn about "variable being unused". Done after the MAGNUM_ prefix backwards
+# compatibility above to pick up also the old names, i.e. TARGET_HEADLESS ->
+# MAGNUM_TARGET_EGL.
+if(MAGNUM_BUILD_DEPRECATED)
+    # BUILD_MULTITHREADED got moved to Corrade itself. Print a warning in case
+    # it's set but Corrade reports a different value. We can't print a warning
+    # in case it's set because that would cause false positives when both
+    # Corrade and Magnum are subprojects (and thus this option is visible to
+    # both).
+    if(DEFINED BUILD_MULTITHREADED AND ((NOT CORRADE_BUILD_MULTITHREADED AND BUILD_MULTITHREADED) OR (CORRADE_BUILD_MULTITHREADED AND NOT BUILD_MULTITHREADED)))
+        message(DEPRECATION "BUILD_MULTITHREADED (set to ${BUILD_MULTITHREADED}) is now ignored — you need to set it when building Corrade instead (there it's ${CORRADE_BUILD_MULTITHREADED} now)")
+    endif()
+
+    # The following two options were desktop-only, so don't handle any
+    # backwards compatibility on mobile / web platforms
+    if(NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_WINDOWS_RT)
+        # MAGNUM_TARGET_HEADLESS is now MAGNUM_TARGET_EGL. Print a warning in
+        # case we're on desktop GL (where it was meant to be used) and the two
+        # are set to a different value, and sync them.
+        if(NOT MAGNUM_TARGET_GLES AND DEFINED MAGNUM_TARGET_HEADLESS AND ((NOT MAGNUM_TARGET_EGL AND MAGNUM_TARGET_HEADLESS) OR (MAGNUM_TARGET_EGL AND NOT MAGNUM_TARGET_HEADLESS)))
+            message(DEPRECATION "MAGNUM_TARGET_HEADLESS is deprecated, use MAGNUM_TARGET_EGL instead")
+            set(MAGNUM_TARGET_EGL ${MAGNUM_TARGET_HEADLESS})
+        endif()
+
+        # MAGNUM_TARGET_DESKTOP_GLES is now an inverse of MAGNUM_TARGET_EGL.
+        # Print a warning in case we're on GLES (where it was meant to be used)
+        # and the two are set to a different value, and sync them.
+        if(MAGNUM_TARGET_GLES AND DEFINED MAGNUM_TARGET_DESKTOP_GLES AND ((MAGNUM_TARGET_EGL AND MAGNUM_TARGET_DESKTOP_GLES) OR (NOT MAGNUM_TARGET_EGL AND NOT MAGNUM_TARGET_DESKTOP_GLES)))
+            message(DEPRECATION "MAGNUM_TARGET_DESKTOP_GLES is deprecated, use MAGNUM_TARGET_EGL instead")
+            if(MAGNUM_TARGET_DESKTOP_GLES)
+                set(MAGNUM_TARGET_EGL OFF)
+            else()
+                set(MAGNUM_TARGET_EGL ON)
+            endif()
+        endif()
+    endif()
+endif()
+
 # Dynamic linking is meaningless on Emscripten and too inconvenient on Android
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(MAGNUM_BUILD_STATIC ON)
@@ -465,7 +533,7 @@ endif()
 
 # Check dependencies
 if(MAGNUM_WITH_GL)
-    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+    if(NOT MAGNUM_TARGET_GLES OR (MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_EGL AND NOT CORRADE_TARGET_IOS))
         # OpenGL library preference. Prefer to use GLVND, since that's the
         # better approach nowadays, but allow the users to override it from
         # outside in case it is broken for some reason (Nvidia drivers in
@@ -487,7 +555,7 @@ else()
     # consistency
     set(MAGNUM_TARGET_GLES OFF)
     set(MAGNUM_TARGET_GLES2 OFF)
-    set(MAGNUM_TARGET_DESKTOP_GLES OFF)
+    set(MAGNUM_TARGET_EGL OFF)
 endif()
 
 if(NOT MAGNUM_WITH_VK)
@@ -523,7 +591,7 @@ if(MAGNUM_BUILD_TESTS)
 endif()
 
 if(MAGNUM_WITH_OPENGLTESTER)
-    if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    if(MAGNUM_TARGET_EGL)
         set(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)
@@ -533,21 +601,11 @@ if(MAGNUM_WITH_OPENGLTESTER)
         set(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX)
-        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            set(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION ON)
-            set(OPENGLTESTER_APPLICATION MagnumWindowlessEglApplication)
-        else()
-            set(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION ON)
-            set(OPENGLTESTER_APPLICATION MagnumWindowlessGlxApplication)
-        endif()
+        set(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION ON)
+        set(OPENGLTESTER_APPLICATION MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS)
-        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            set(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION ON)
-            set(OPENGLTESTER_APPLICATION MagnumWindowlessEglApplication)
-        else()
-            set(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION ON)
-            set(OPENGLTESTER_APPLICATION MagnumWindowlessWglApplication)
-        endif()
+        set(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION ON)
+        set(OPENGLTESTER_APPLICATION MagnumWindowlessWglApplication)
     else()
         # Assuming this gets hit only if MAGNUM_BUILD_GL_TESTS are enabled
         message(FATAL_ERROR "Cannot run tests for OpenGL code on this platform. Set MAGNUM_BUILD_GL_TESTS to OFF to skip building them.")
