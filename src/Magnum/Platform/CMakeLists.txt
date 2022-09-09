@@ -106,7 +106,8 @@ if(MAGNUM_TARGET_GL)
         if((MAGNUM_TARGET_EGL AND NOT MAGNUM_TARGET_WEBGL) OR CORRADE_TARGET_IOS)
             set(NEED_EGLCONTEXT 1)
             set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumEglContextObjects>)
-            # We're linking to EGL explicitly, no need to bother with GLVND there
+            find_package(EGL REQUIRED)
+            set(MagnumSomeContext_LIBRARY EGL::EGL)
         elseif(CORRADE_TARGET_APPLE)
             set(NEED_CGLCONTEXT 1)
             set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
@@ -260,12 +261,6 @@ if(MAGNUM_WITH_GLFWAPPLICATION)
             ${MagnumSomeContext_LIBRARY})
     endif()
 
-    # Link also EGL library, if desired (and not on WebGL)
-    if(MAGNUM_TARGET_EGL AND NOT MAGNUM_TARGET_WEBGL)
-        find_package(EGL REQUIRED)
-        target_link_libraries(MagnumGlfwApplication PUBLIC EGL::EGL)
-    endif()
-
     install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlfwApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -330,12 +325,6 @@ if(MAGNUM_WITH_SDL2APPLICATION)
             MagnumGL
             # need to link to GLX explicitly if using GLVND (CMake 3.11+)
             ${MagnumSomeContext_LIBRARY})
-    endif()
-
-    # Link also EGL library, if desired (and not on WebGL)
-    if(MAGNUM_TARGET_EGL AND NOT MAGNUM_TARGET_WEBGL)
-        find_package(EGL REQUIRED)
-        target_link_libraries(MagnumSdl2Application PUBLIC EGL::EGL)
     endif()
 
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
