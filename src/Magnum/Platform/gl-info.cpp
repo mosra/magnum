@@ -72,7 +72,7 @@
 #endif
 #elif defined(CORRADE_TARGET_WINDOWS)
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#include "Magnum/Platform/WindowlessEglApplication.h"
 #else
 #include "Magnum/Platform/WindowlessWglApplication.h"
 #endif
@@ -241,8 +241,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug{} << "Used application: Platform::WindowlessGlxApplication";
     #elif defined(MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN)
     Debug{} << "Used application: Platform::WindowlessWglApplication";
-    #elif defined(MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN)
-    Debug{} << "Used application: Platform::WindowlessWindowsEglApplication";
     #else
     #error no windowless application available on this platform
     #endif

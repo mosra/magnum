@@ -546,9 +546,6 @@ going to build any of the @ref example-index "examples", you'll need it.
 -   `MAGNUM_WITH_WINDOWLESSWGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWglApplication "WindowlessWglApplication" library.
     Requires `MAGNUM_TARGET_GL` to be enabled.
--   `MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- Build the
-    @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
-    library. Requires `MAGNUM_TARGET_GL` to be enabled.
 
 None of the context libraries is built by default. Similarly to the application
 libraries, they are always built as static. You need them only if you chose to

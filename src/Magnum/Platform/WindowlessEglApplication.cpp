@@ -39,6 +39,14 @@
 
 #include "Implementation/Egl.h"
 
+/* ANGLE's EGL on Windows needs an actual window */
+/** @todo investigate if this is still needed */
+#ifdef CORRADE_TARGET_WINDOWS
+#define WIN32_LEAN_AND_MEAN 1
+#define VC_EXTRALEAN
+#include <windows.h>
+#endif
+
 /* None of this is in the Emscripten emulation layer, so no need to include
    that there */
 #ifndef MAGNUM_TARGET_WEBGL
@@ -252,10 +260,44 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             }
             #endif
 
+            /* ANGLE's EGL on Windows needs to get a display from an actual
+               window. Elsewhere EGL_DEFAULT_DISPLAY is fine. */
+            /** @todo investigate if this is still needed */
+            #ifdef CORRADE_TARGET_WINDOWS
+            /* Register the window class (if not yet done) */
+            WNDCLASSW wc;
+            if(!GetClassInfoW(GetModuleHandleW(nullptr), L"Magnum Windowless Application", &wc)) {
+                wc = WNDCLASSW{
+                    0,
+                    DefWindowProcW,
+                    0,
+                    0,
+                    GetModuleHandleW(nullptr),
+                    nullptr,
+                    nullptr,
+                    HBRUSH(COLOR_BACKGROUND),
+                    nullptr,
+                    L"Magnum Windowless Application"
+                };
+
+                if(!RegisterClassW(&wc)) {
+                    Error() << "Platform::WindowlessWglContext: cannot create window class:" << GetLastError();
+                    return;
+                }
+            }
+
+            /* Create the window */
+            _window = CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
+                WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
+
+            /* Initialize */
+            _display = eglGetDisplay(GetDC(_window));
+            #else
             if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
                 Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get default EGL display:" << Implementation::eglErrorString(eglGetError());
                 return;
             }
+            #endif
         }
 
         if(!eglInitialize(_display, nullptr, nullptr)) {
@@ -489,7 +531,14 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         return;
     }
 
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifdef CORRADE_TARGET_WINDOWS
+    /* ANGLE's EGL on Windows needs has an actual window, and so it also needs
+       a surface */
+    /** @todo investigate if this is still needed */
+    if(!(_surface = eglCreateWindowSurface(_display, config, _window, nullptr)))
+        Error() << "Platform::WindowlessEglContext: cannot create window surface:" << Implementation::eglErrorString(eglGetError());
+
+    #elif defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     /* Android Emulator can run with a SwiftShader GPU and thus needs some of
        the SwiftShader context creation workarounds. However, it's impossible
        to detect, as EGL_VERSION is always "1.4 Android META-EGL" and
@@ -525,17 +574,23 @@ WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other) noexcep
     #ifndef MAGNUM_TARGET_WEBGL
     _sharedContext{other._sharedContext},
     #endif
+    #ifdef CORRADE_TARGET_WINDOWS
+    _window{other._window},
+    #endif
     _display{other._display}, _context{other._context}
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    #if defined(CORRADE_TARGET_WINDOWS) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL))
     , _surface{other._surface}
     #endif
 {
     #ifndef MAGNUM_TARGET_WEBGL
     other._sharedContext = false;
     #endif
+    #ifdef CORRADE_TARGET_WINDOWS
+    other._window = {};
+    #endif
     other._display = {};
     other._context = {};
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    #if defined(CORRADE_TARGET_WINDOWS) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL))
     other._surface = {};
     #endif
 }
@@ -554,7 +609,7 @@ WindowlessEglContext::~WindowlessEglContext() {
         eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
         eglDestroyContext(_display, _context);
     }
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    #if defined(CORRADE_TARGET_WINDOWS) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL))
     if(_surface) eglDestroySurface(_display, _surface);
     #endif
 
@@ -567,6 +622,10 @@ WindowlessEglContext::~WindowlessEglContext() {
         !_sharedContext &&
         #endif
         _display) eglTerminate(_display);
+
+    #ifdef CORRADE_TARGET_WINDOWS
+    if(_window) DestroyWindow(_window);
+    #endif
 }
 
 WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext&& other) noexcept {
@@ -576,8 +635,11 @@ WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext&& oth
     #endif
     swap(other._display, _display);
     swap(other._context, _context);
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    #if defined(CORRADE_TARGET_WINDOWS) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL))
     swap(other._surface, _surface);
+    #endif
+    #ifdef CORRADE_TARGET_WINDOWS
+    swap(other._window, _window);
     #endif
     return *this;
 }

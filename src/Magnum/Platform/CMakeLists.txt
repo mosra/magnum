@@ -623,44 +623,6 @@ if(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION)
     add_library(Magnum::WindowlessWglApplication ALIAS MagnumWindowlessWglApplication)
 endif()
 
-# Windowless Windows/EGL application
-if(MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
-    if(NOT MAGNUM_TARGET_GL)
-        message(SEND_ERROR "WindowlessWindowsEglApplication is available only if MAGNUM_TARGET_GL is enabled")
-    endif()
-
-    set(NEED_EGLCONTEXT 1)
-
-    set(MagnumWindowlessWindowsEglApplication_SRCS
-        WindowlessWindowsEglApplication.cpp
-        Implementation/Egl.cpp
-        $<TARGET_OBJECTS:MagnumEglContextObjects>)
-    set(MagnumWindowlessWindowsEglApplication_HEADERS
-        WindowlessWindowsEglApplication.h)
-    set(MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS
-        Implementation/Egl.h)
-
-    add_library(MagnumWindowlessWindowsEglApplication STATIC
-        ${MagnumWindowlessWindowsEglApplication_SRCS}
-        ${MagnumWindowlessWindowsEglApplication_HEADERS}
-        ${MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS})
-    set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES
-        DEBUG_POSTFIX "-d")
-    if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
-        set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    endif()
-    target_link_libraries(MagnumWindowlessWindowsEglApplication PUBLIC MagnumGL EGL::EGL)
-
-    install(FILES ${MagnumWindowlessWindowsEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumWindowlessWindowsEglApplication
-        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-
-    # Magnum WindowlessWindowsEglApplication target alias for superprojects
-    add_library(Magnum::WindowlessWindowsEglApplication ALIAS MagnumWindowlessWindowsEglApplication)
-endif()
-
 # Windowless CGL application
 if(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION)
     if(NOT MAGNUM_TARGET_GL)
@@ -955,7 +917,7 @@ if(MAGNUM_WITH_GL_INFO)
         endif()
     elseif(CORRADE_TARGET_WINDOWS)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessWindowsEglApplication)
+            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessEglApplication)
         else()
             target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessWglApplication)
         endif()

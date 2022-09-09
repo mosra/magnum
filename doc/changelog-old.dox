@@ -744,7 +744,7 @@ a high-level overview.
     [mosra/magnum-bootstrap#6](https://github.com/mosra/magnum-bootstrap/pull/6))
 -   Text input support in @ref Platform::Sdl2Application and
     @ref Platform::GlfwApplication (see [mosra/magnum#129](https://github.com/mosra/magnum/issues/129))
--   Added @ref Platform::WindowlessWindowsEglApplication and
+-   Added @cpp Platform::WindowlessWindowsEglApplication @ce and
     @ref Platform::WindowlessIosApplication for ANGLE and iOS
 -   New @ref Platform::WindowlessEglApplication that works on headless NVidia,
     Mesa drivers and Emscripten (see [mosra/magnum#133](https://github.com/mosra/magnum/pull/133))

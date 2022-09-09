@@ -78,7 +78,6 @@
 #  WindowlessGlxApplication     - Windowless GLX application
 #  WindowlessIosApplication     - Windowless iOS application
 #  WindowlessWglApplication     - Windowless WGL application
-#  WindowlessWindowsEglApplication - Windowless Windows/EGL application
 #  CglContext                   - CGL context
 #  EglContext                   - EGL context
 #  GlxContext                   - GLX context
@@ -395,7 +394,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE)
     list(APPEND _MAGNUM_LIBRARY_COMPONENTS GlxApplication XEglApplication WindowlessGlxApplication GlxContext)
 endif()
 if(CORRADE_TARGET_WINDOWS)
-    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessWglApplication WglContext WindowlessWindowsEglApplication)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessWglApplication WglContext)
 endif()
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
     list(APPEND _MAGNUM_EXECUTABLE_COMPONENTS fontconverter distancefieldconverter)
@@ -439,10 +438,10 @@ elseif(CORRADE_TARGET_UNIX)
         list(APPEND _MAGNUM_OpenGLTester_DEPENDENCIES WindowlessGlxApplication)
     endif()
 elseif(CORRADE_TARGET_WINDOWS)
-    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
-        list(APPEND _MAGNUM_OpenGLTester_DEPENDENCIES WindowlessWglApplication)
+    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
+        list(APPEND _MAGNUM_OpenGLTester_DEPENDENCIES WindowlessEglApplication)
     else()
-        list(APPEND _MAGNUM_OpenGLTester_DEPENDENCIES WindowlessWindowsEglApplication)
+        list(APPEND _MAGNUM_OpenGLTester_DEPENDENCIES WindowlessWglApplication)
     endif()
 endif()
 
@@ -492,7 +491,6 @@ set(_MAGNUM_WindowlessEglApplication_DEPENDENCIES GL)
 set(_MAGNUM_WindowlessGlxApplication_DEPENDENCIES GL)
 set(_MAGNUM_WindowlessIosApplication_DEPENDENCIES GL)
 set(_MAGNUM_WindowlessWglApplication_DEPENDENCIES GL)
-set(_MAGNUM_WindowlessWindowsEglApplication_DEPENDENCIES GL)
 set(_MAGNUM_XEglApplication_DEPENDENCIES GL)
 set(_MAGNUM_CglContext_DEPENDENCIES GL)
 set(_MAGNUM_EglContext_DEPENDENCIES GL)
@@ -798,12 +796,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES EGL::EGL ${_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY})
 
             # Windowless WGL application has no additional dependencies
-
-            # Windowless Windows/EGL application dependencies
-            elseif(_component STREQUAL WindowlessWindowsEglApplication)
-                find_package(EGL)
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES EGL::EGL)
 
             # X/EGL application dependencies
             elseif(_component STREQUAL XEglApplication)

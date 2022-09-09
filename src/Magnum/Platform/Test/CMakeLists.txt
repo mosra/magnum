@@ -176,8 +176,3 @@ if(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION)
     add_executable(PlatformWindowlessWglApplicationTest WindowlessWglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessWglApplicationTest PRIVATE MagnumWindowlessWglApplication)
 endif()
-
-if(MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
-    add_executable(PlatformWindowlessWindowsEglApplicationTest WindowlessWindowsEglApplicationTest.cpp)
-    target_link_libraries(PlatformWindowlessWindowsEglApplicationTest PRIVATE MagnumWindowlessWindowsEglApplication)
-endif()

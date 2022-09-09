@@ -205,8 +205,7 @@ See also:
 -   Implemented @relativeref{Platform::WindowlessEglApplication,Configuration::Flag::NoError}
     in @ref Platform::WindowlessEglApplication,
     @ref Platform::WindowlessGlxApplication,
-    @ref Platform::WindowlessWglApplication,
-    @ref Platform::WindowlessWindowsEglApplication and
+    @ref Platform::WindowlessWglApplication and
     @ref Platform::Sdl2Application
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
@@ -1084,6 +1083,12 @@ See also:
     @ref Math::RectangularMatrix::data() are no longer @cpp constexpr @ce in
     order to make them return a reference to a fixed-size array instead of a
     pointer, which was deemed a more useful property.
+-   @cpp Platform::WindowlessWindowsEglApplication @ce is now merged into
+    @ref Platform::WindowlessEglApplication. Since its use case was rather rare
+    (windowless applications on ANGLE on Windows) and it wasn't even built in
+    any packages, it's completely removed without providing any backwards
+    compatibility --- switch to @ref Platform::WindowlessEglApplication
+    instead.
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
@@ -1372,7 +1377,8 @@ Released 2020-06-27, tagged as
     @ref Platform::WindowlessEglApplication,
     @ref Platform::WindowlessGlxApplication,
     @ref Platform::WindowlessWglApplication and
-    @ref Platform::WindowlessWindowsEglApplication (see [mosra/magnum#433](https://github.com/mosra/magnum/pull/433)
+    @cpp Platform::WindowlessWindowsEglApplication @ce (see
+    [mosra/magnum#433](https://github.com/mosra/magnum/pull/433)
     and [mosra/magnum#437](https://github.com/mosra/magnum/pull/437))
 -   CUDA device selection in @ref Platform::WindowlessEglApplication (see
     [mosra/magnum#449](https://github.com/mosra/magnum/pull/449))

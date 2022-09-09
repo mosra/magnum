@@ -50,10 +50,10 @@
 #include "Magnum/Platform/WindowlessGlxApplication.h"
 #endif
 #elif defined(CORRADE_TARGET_WINDOWS)
-#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessWglApplication.h"
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
+#include "Magnum/Platform/WindowlessEglApplication.h"
 #else
-#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#include "Magnum/Platform/WindowlessWglApplication.h"
 #endif
 #else
 #error cannot run OpenGL tests on this platform
