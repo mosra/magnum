@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -447,7 +448,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())};
 
     const Int dimensions = args.value<Int>("dimensions");
     /** @todo make them array options as well? */
@@ -921,7 +922,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnyImageConverter. All converters except the last one are

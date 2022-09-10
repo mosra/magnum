@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -158,12 +159,12 @@ int FontConverter::exec() {
     /* Font converter dependencies */
     PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     /* Load font */
     PluginManager::Manager<Text::AbstractFont> fontManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Text::AbstractFont::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Text::AbstractFont::pluginSearchPaths().back()).second())};
     Containers::Pointer<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
@@ -171,7 +172,7 @@ int FontConverter::exec() {
        (MagnumFontConverter needs TgaImageConverter, for example) */
     PluginManager::Manager<Text::AbstractFontConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Text::AbstractFontConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Text::AbstractFontConverter::pluginSearchPaths().back()).second())};
     converterManager.registerExternalManager(imageConverterManager);
 
     /* Load font converter */
