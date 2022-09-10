@@ -3,6 +3,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
 #               2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2022 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -64,3 +65,5 @@ add_subdirectory(MagnumPlugins)
 
 # Magnum include dir for superprojects
 set(MAGNUM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
+
+add_subdirectory(debuggers)
