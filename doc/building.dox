@@ -674,7 +674,8 @@ Options controlling the build:
     update your code whenever there's a breaking API change. It's however
     recommended to have this option disabled when deploying a final application
     as it can result in smaller binaries.
--   Additional options are inherited from the @ref CORRADE_BUILD_MULTITHREADED
+-   Additional options are inherited from the @ref CORRADE_BUILD_MULTITHREADED,
+    @ref CORRADE_BUILD_CPU_RUNTIME_DISPATCH and @ref CORRADE_CPU_USE_IFUNC
     options specified when building Corrade.
 
 The features used can be conveniently detected in depending projects both in
