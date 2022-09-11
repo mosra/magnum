@@ -53,7 +53,11 @@ corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp
 corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 
 corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
-    LIBRARIES MagnumSceneTools
+    LIBRARIES
+        MagnumSceneTools
+        # Link the same static plugins as for the magnum-sceneconverter
+        # executable so plugin existence checks are consistent between the two
+        ${MAGNUM_SCENECONVERTER_STATIC_PLUGINS}
     FILES
         SceneConverterTestFiles/broken-mesh.obj
         SceneConverterTestFiles/broken-scene.gltf
