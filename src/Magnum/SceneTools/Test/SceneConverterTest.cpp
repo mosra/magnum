@@ -26,6 +26,8 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/File.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/TestSuite/Compare/StringToFile.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -34,6 +36,7 @@
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Trade/AbstractSceneConverter.h"
 
 #include "Magnum/SceneTools/Implementation/sceneConverterUtilities.h"
 
@@ -59,9 +62,16 @@ struct SceneConverterTest: TestSuite::Tester {
     void infoImplementationReferenceCount();
     void infoImplementationError();
 
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    void info();
+    void convert();
+    void error();
+    #endif
+
     Utility::Arguments _infoArgs;
 };
 
+using namespace Containers::Literals;
 using namespace Math::Literals;
 
 const struct {
@@ -83,6 +93,299 @@ const struct {
     {"", true, true},
     {"--info", false, false},
 };
+
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+const struct {
+    const char* name;
+    Containers::Array<Containers::String> args;
+    const char* expected;
+} InfoData[]{
+    {"", Containers::array<Containers::String>({}),
+        "info.txt"},
+    {"map", Containers::array<Containers::String>({
+        "--map"}),
+        /** @todo change to something else once we have a plugin that can
+            zero-copy pass the imported data */
+        "info.txt"},
+    {"ignored output file", Containers::array<Containers::String>({
+        "whatever.ply"}),
+        "info-ignored-output.txt"},
+};
+
+const struct {
+    const char* name;
+    Containers::Array<Containers::String> args;
+    const char* requiresImporter;
+    const char* requiresConverter;
+    const char* expected;
+    Containers::String message;
+} ConvertData[]{
+    {"one mesh", Containers::array<Containers::String>({
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"one mesh, explicit importer and converter", Containers::array<Containers::String>({
+        "-I", "ObjImporter", "-C", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"one mesh, map", Containers::array<Containers::String>({
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"one mesh, options", Containers::array<Containers::String>({
+        /* It's silly, but since we have option propagation tested in
+           AnySceneImporter / AnySceneConverter .cpp already, it's enough to
+           just verify the (nonexistent) options arrive there */
+        "-i", "nonexistentOption=13", "-c", "nonexistentConverterOption=26",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Trade::AnySceneImporter::openFile(): option nonexistentOption not recognized by ObjImporter\n"
+        "Trade::AnySceneConverter::convertToFile(): option nonexistentConverterOption not recognized by StanfordSceneConverter\n"},
+    {"one mesh, options, explicit importer and converter", Containers::array<Containers::String>({
+        /* Same here, since we have option propagation tested in
+           Magnum/Test/ConverterUtilitiesTest.cpp already, to verify it's
+           getting called we can just supply nonexistent options */
+        "-i", "nonexistentOption=13", "-c", "nonexistentConverterOption=26",
+        "-I", "ObjImporter", "-C", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Option nonexistentOption not recognized by ObjImporter\n"
+        "Option nonexistentConverterOption not recognized by StanfordSceneConverter\n"},
+    {"concatenate meshes without a scene", Containers::array<Containers::String>({
+        "--concatenate-meshes",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/two-triangles.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad-duplicates.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad-duplicates.ply",
+        {}},
+    {"concatenate meshes with a scene", Containers::array<Containers::String>({
+        "--concatenate-meshes",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/two-triangles-transformed.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad-duplicates.ply")}),
+        "GltfImporter", "StanfordSceneConverter",
+        "quad-duplicates.ply",
+        {}},
+    {"filter attributes", Containers::array<Containers::String>({
+        /* Only 0 gets picked from here, others ignored */
+        "--only-attributes", "17,0,25-36",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-normals-texcoords.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"remove duplicates", Containers::array<Containers::String>({
+        "--remove-duplicates",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"remove duplicates, verbose", Containers::array<Containers::String>({
+        /* Forcing the importer and converter to avoid AnySceneImporter /
+           AnySceneConverter delegation messages */
+        "--remove-duplicates", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Duplicate removal: 6 -> 4 vertices\n"},
+    {"remove duplicates fuzzy", Containers::array<Containers::String>({
+        "--remove-duplicates-fuzzy 1.0e-1",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates-fuzzy.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"remove duplicates fuzzy, verbose", Containers::array<Containers::String>({
+        /* Forcing the importer and converter to avoid AnySceneImporter /
+           AnySceneConverter delegation messages */
+        "--remove-duplicates-fuzzy 1.0e-1", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates-fuzzy.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Fuzzy duplicate removal: 6 -> 4 vertices\n"},
+    {"one mesh, two converters", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"one mesh, two converters, explicit last", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter", "-C", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        {}},
+    {"one mesh, two converters, verbose", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter", "-v",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        /** @todo this is a no-op, use some other converter that tests also
+            that the resulting mesh is actually passed further */
+        "Trade::AnySceneImporter::openFile(): using ObjImporter\n"
+        "Trade::MeshOptimizerSceneConverter::convert(): processing stats:\n"
+        "  vertex cache:\n"
+        "    4 -> 4 transformed vertices\n"
+        "    1 -> 1 executed warps\n"
+        "    ACMR 2 -> 2\n"
+        "    ATVR 1 -> 1\n"
+        "  vertex fetch:\n"
+        "    64 -> 64 bytes fetched\n"
+        "    overfetch 1.33333 -> 1.33333\n"
+        "  overdraw:\n"
+        "    65536 -> 65536 shaded pixels\n"
+        "    65536 -> 65536 covered pixels\n"
+        "    overdraw 1 -> 1\n"
+        "Trade::AnySceneConverter::convertToFile(): using StanfordSceneConverter\n"},
+    {"one mesh, two converters, explicit last, verbose", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter", "-C", "StanfordSceneConverter", "-v",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        /* As the importers and converters are specified explicitly, there's
+           no messages from AnySceneConverter, OTOH as we have more than one -C
+           option the verbose output includes a progress info */
+        "Trade::AnySceneImporter::openFile(): using ObjImporter\n"
+        "Processing (1/2) with MeshOptimizerSceneConverter...\n"
+        "Trade::MeshOptimizerSceneConverter::convert(): processing stats:\n"
+        "  vertex cache:\n"
+        "    4 -> 4 transformed vertices\n"
+        "    1 -> 1 executed warps\n"
+        "    ACMR 2 -> 2\n"
+        "    ATVR 1 -> 1\n"
+        "  vertex fetch:\n"
+        "    64 -> 64 bytes fetched\n"
+        "    overfetch 1.33333 -> 1.33333\n"
+        "  overdraw:\n"
+        "    65536 -> 65536 shaded pixels\n"
+        "    65536 -> 65536 covered pixels\n"
+        "    overdraw 1 -> 1\n"
+        "Saving output (2/2) with StanfordSceneConverter...\n"},
+    {"one mesh, two converters, options for the first only", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter",
+        "-c", "nonexistentMeshOptimizerOption=yes",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"},
+    {"one mesh, two converters, explicit last, options for the first only", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter",
+        "-c", "nonexistentMeshOptimizerOption=yes",
+        "-C", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"},
+    {"one mesh, two converters, options for both", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter",
+        "-c", "nonexistentMeshOptimizerOption=yes",
+        "-c", "nonexistentAnyConverterOption=no",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
+        "Trade::AnySceneConverter::convertToFile(): option nonexistentAnyConverterOption not recognized by StanfordSceneConverter\n"},
+    {"one mesh, two converters, explicit last, options for both", Containers::array<Containers::String>({
+        "-C", "MeshOptimizerSceneConverter",
+        "-c", "nonexistentMeshOptimizerOption=yes",
+        "-C", "StanfordSceneConverter",
+        "-c", "nonexistentStanfordConverterOption=no",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply",
+        "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
+        "Option nonexistentStanfordConverterOption not recognized by StanfordSceneConverter\n"},
+};
+
+const struct {
+    const char* name;
+    Containers::Array<Containers::String> args;
+    const char* requiresImporter;
+    const char* requiresConverter;
+    Containers::String message;
+} ErrorData[]{
+    {"missing output argument", Containers::array<Containers::String>({
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}),
+        nullptr, nullptr,
+        /* The output should be optional only for --info, required otherwise.
+           No need to test anything else as that's handled by Utility::Arguments
+           already. Testing just a prefix of the message. */
+        "Missing command-line argument output\nUsage:\n  "},
+    {"can't load importer plugin", Containers::array<Containers::String>({
+        /* Override also the plugin directory for consistent output */
+        "--plugin-dir", "nonexistent", "-I", "NonexistentImporter", "whatever.obj", Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        nullptr, nullptr,
+        "PluginManager::Manager::load(): plugin NonexistentImporter is not static and was not found in nonexistent/importers\n"
+        "Available importer plugins: "},
+    {"can't open a file", Containers::array<Containers::String>({
+        "noexistent.ffs", Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "AnySceneImporter", nullptr,
+        "Trade::AnySceneImporter::openFile(): cannot determine the format of noexistent.ffs\n"
+        "Cannot open file noexistent.ffs\n"},
+    {"can't map a file", Containers::array<Containers::String>({
+        "noexistent.ffs", "--map", Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "AnySceneImporter", nullptr,
+        "Utility::Path::mapRead(): can't open noexistent.ffs: error 2 (No such file or directory)\n"
+        "Cannot memory-map file noexistent.ffs\n"},
+    {"no meshes found", Containers::array<Containers::String>({
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/empty.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "GltfImporter", nullptr,
+        Utility::format("No meshes found in {}\n", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/empty.gltf"))},
+    {"can't import a mesh", Containers::array<Containers::String>({
+        "-I", "ObjImporter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/broken-mesh.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "ObjImporter", nullptr,
+        "Trade::ObjImporter::mesh(): wrong index count for point\n"
+        "Cannot import the mesh\n"},
+    {"can't import a mesh for concatenation", Containers::array<Containers::String>({
+        "-I", "ObjImporter", "--concatenate-meshes", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/broken-mesh.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "ObjImporter", nullptr,
+        "Trade::ObjImporter::mesh(): wrong index count for point\n"
+        "Cannot import mesh 0\n"},
+    {"can't import a scene for concatenation", Containers::array<Containers::String>({
+        /** @todo change to an OBJ once ObjImporter imports materials (and thus
+            scenes) */
+        "--concatenate-meshes", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/broken-scene.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "GltfImporter", nullptr,
+        "Trade::GltfImporter::scene(): mesh index 1 in node 0 out of range for 1 meshes\n"
+        "Cannot import scene 0 for mesh concatenation\n"},
+    {"invalid attribute filter", Containers::array<Containers::String>({
+        "-I", "ObjImporter", "--only-attributes", "LOLNEIN", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "ObjImporter", nullptr,
+        "Utility::parseNumberSequence(): unrecognized character L in LOLNEIN\n"},
+    {"can't load converter plugin", Containers::array<Containers::String>({
+        /* Override also the plugin directory for consistent output, however
+           then the importer plugin has to be loaded through an absolute file
+           path (unless using static plugins) */
+        "--plugin-dir", "nonexistent", "-I",
+            #ifndef MAGNUM_BUILD_STATIC
+            Utility::Path::join(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR, "ObjImporter" + Trade::AbstractImporter::pluginSuffix()),
+            #else
+            "ObjImporter",
+            #endif
+        "-C", "NonexistentSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "ObjImporter", nullptr,
+        /* Just a prefix */
+        "PluginManager::Manager::load(): plugin NonexistentSceneConverter is not static and was not found in nonexistent/sceneconverters\n"
+        "Available converter plugins: "},
+    {"file coversion failed", Containers::array<Containers::String>({
+        "-I", "ObjImporter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.fbx")}),
+        "ObjImporter", "AnySceneConverter",
+        Utility::format("Trade::AnySceneConverter::convertToFile(): cannot determine the format of {0}\n"
+        "Cannot save file {0}\n", Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.fbx"))},
+    {"mesh coversion failed", Containers::array<Containers::String>({
+        "-I", "ObjImporter", "-C", "MeshOptimizerSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "ObjImporter", "MeshOptimizerSceneConverter",
+        "Trade::MeshOptimizerSceneConverter::convert(): expected a triangle mesh, got MeshPrimitive::Points\n"
+        "MeshOptimizerSceneConverter cannot convert the mesh\n"},
+    {"plugin doesn't support mesh conversion", Containers::array<Containers::String>({
+        /* Pass the same plugin twice, which means the first instance should
+           get used for a mesh-to-mesh conversion */
+        "-I", "ObjImporter", "-C", "StanfordSceneConverter", "-C", "StanfordSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "StanfordSceneConverter doesn't support mesh conversion, only Trade::SceneConverterFeature::ConvertMeshToData\n"},
+};
+#endif
 
 SceneConverterTest::SceneConverterTest() {
     addTests({&SceneConverterTest::infoImplementationEmpty});
@@ -107,6 +410,17 @@ SceneConverterTest::SceneConverterTest() {
     addTests({&SceneConverterTest::infoImplementationReferenceCount,
               &SceneConverterTest::infoImplementationError});
 
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    addInstancedTests({&SceneConverterTest::info},
+        Containers::arraySize(InfoData));
+
+    addInstancedTests({&SceneConverterTest::convert},
+        Containers::arraySize(ConvertData));
+
+    addInstancedTests({&SceneConverterTest::error},
+        Containers::arraySize(ErrorData));
+    #endif
+
     /* A subset of arguments needed by the info printing code */
     _infoArgs.addBooleanOption("info")
              .addBooleanOption("info-scenes")
@@ -120,6 +434,9 @@ SceneConverterTest::SceneConverterTest() {
              .addBooleanOption("info-textures")
              .addBooleanOption("info-images")
              .addBooleanOption("bounds");
+
+    /* Create output dir, if doesn't already exist */
+    Utility::Path::make(Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles"));
 }
 
 void SceneConverterTest::infoImplementationEmpty() {
@@ -1223,6 +1540,146 @@ void SceneConverterTest::infoImplementationError() {
         /* ... and it should print all info output after the errors */
         "Object 0: A name\n");
 }
+
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+namespace {
+
+#ifdef SCENECONVERTER_EXECUTABLE_FILENAME
+/** @todo take a StringIterable once it exists */
+Containers::Pair<bool, Containers::String> call(Containers::ArrayView<const Containers::String> arguments) {
+    /* Create a string view array for the arguments, implicitly pass the
+       application name and plugin directory override */
+    /** @todo drop once StringIterable exists */
+    Containers::Array<Containers::StringView> argumentViews{ValueInit, arguments.size() + 3};
+    argumentViews[0] = ""_s;
+    argumentViews[1] = "--plugin-dir"_s;
+    argumentViews[2] = MAGNUM_PLUGINS_INSTALL_DIR;
+    for(std::size_t i = 0; i != arguments.size(); ++i)
+        argumentViews[i + 3] = arguments[i];
+
+    const Containers::String outputFilename = Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/output.txt");
+    /** @todo clean up once Utility::System::execute() with output redirection
+        exists */
+    const bool success = std::system(Utility::format("{} {} > {} 2>&1",
+        SCENECONVERTER_EXECUTABLE_FILENAME,
+        " "_s.join(argumentViews), /** @todo handle space escaping here? */
+        outputFilename
+    ).data()) == 0;
+
+    const Containers::Optional<Containers::String> output = Utility::Path::readString(outputFilename);
+    CORRADE_VERIFY(output);
+
+    return {success, std::move(*output)};
+}
+#endif
+
+}
+
+void SceneConverterTest::info() {
+    auto&& data = InfoData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef SCENECONVERTER_EXECUTABLE_FILENAME
+    #ifdef CORRADE_TARGET_UNIX
+    CORRADE_SKIP("magnum-sceneconverter not built, can't test");
+    #else
+    CORRADE_SKIP("Executable testing implemented only on Unix platforms");
+    #endif
+    #else
+    /* Check if required plugins can be loaded. Catches also ABI and interface
+       mismatch errors. */
+    PluginManager::Manager<Trade::AbstractImporter> importerManager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    if(!(importerManager.load("ObjImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("ObjImporter plugin can't be loaded.");
+
+    Containers::Array<Containers::String> args{InPlaceInit,
+        {"-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}};
+    arrayAppend(args, arrayView(data.args)); /** @todo FFS fix the casts */
+
+    CORRADE_VERIFY(true); /* capture correct function name */
+
+    Containers::Pair<bool, Containers::String> output = call(args);
+    CORRADE_COMPARE_AS(output.second(),
+        Utility::Path::join({SCENETOOLS_TEST_DIR, "SceneConverterTestFiles", data.expected}),
+        TestSuite::Compare::StringToFile);
+    CORRADE_VERIFY(output.first());
+    #endif
+}
+
+void SceneConverterTest::convert() {
+    auto&& data = ConvertData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef SCENECONVERTER_EXECUTABLE_FILENAME
+    #ifdef CORRADE_TARGET_UNIX
+    CORRADE_SKIP("magnum-sceneconverter not built, can't test");
+    #else
+    CORRADE_SKIP("Executable testing implemented only on Unix platforms");
+    #endif
+    #else
+    /* Check if required plugins can be loaded. Catches also ABI and interface
+       mismatch errors. */
+    PluginManager::Manager<Trade::AbstractImporter> importerManager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    if(data.requiresImporter && !(importerManager.load(data.requiresImporter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresImporter << "plugin can't be loaded.");
+    if(data.requiresConverter && !(converterManager.load(data.requiresConverter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresConverter << "plugin can't be loaded.");
+    /* AnySceneImporter & AnySceneConverter are required implicitly for
+       simplicity */
+    if(!(importerManager.load("AnySceneImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnySceneImporter plugin can't be loaded.");
+    if(!(converterManager.load("AnySceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnySceneConverter plugin can't be loaded.");
+
+    CORRADE_VERIFY(true); /* capture correct function name */
+
+    Containers::Pair<bool, Containers::String> output = call(data.args);
+    CORRADE_COMPARE(output.second(), data.message);
+    CORRADE_VERIFY(output.first());
+
+    CORRADE_COMPARE_AS(Utility::Path::join({SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles", data.expected}),
+        Utility::Path::join({SCENETOOLS_TEST_DIR, "SceneConverterTestFiles", data.expected}),
+        TestSuite::Compare::File);
+    #endif
+}
+
+void SceneConverterTest::error() {
+    auto&& data = ErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef SCENECONVERTER_EXECUTABLE_FILENAME
+    #ifdef CORRADE_TARGET_UNIX
+    CORRADE_SKIP("magnum-sceneconverter not built, can't test");
+    #else
+    CORRADE_SKIP("Executable testing implemented only on Unix platforms");
+    #endif
+    #else
+    /* Check if required plugins can be loaded. Catches also ABI and interface
+       mismatch errors. */
+    PluginManager::Manager<Trade::AbstractImporter> importerManager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    if(data.requiresImporter && !(importerManager.load(data.requiresImporter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresImporter << "plugin can't be loaded.");
+    if(data.requiresConverter && !(converterManager.load(data.requiresConverter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresConverter << "plugin can't be loaded.");
+
+    CORRADE_VERIFY(true); /* capture correct function name */
+
+    Containers::Pair<bool, Containers::String> output = call(data.args);
+    /* If the message ends with a \n, assume it's the whole message. Otherwise
+       it's just a prefix. */
+    if(data.message.hasSuffix('\n'))
+        CORRADE_COMPARE(output.second(), data.message);
+    else
+        CORRADE_COMPARE_AS(output.second(),
+        data.message,
+        TestSuite::Compare::StringHasPrefix);
+    /* It should return a non-zero code */
+    CORRADE_VERIFY(!output.first());
+    #endif
+}
+#endif
 
 }}}}
 

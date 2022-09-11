@@ -510,7 +510,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
         if(i + 1 >= converterCount && (converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile)) {
             /* No verbose output for just one converter */
             if(converterCount > 1 && args.isSet("verbose"))
-                Debug{} << "Saving output with" << converterName << Debug::nospace << "...";
+                Debug{} << "Saving output (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
 
             Trade::Implementation::Duration d{conversionTime};
             if(!converter->convertToFile(*mesh, args.value("output"))) {

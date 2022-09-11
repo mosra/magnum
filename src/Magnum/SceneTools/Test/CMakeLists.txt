@@ -29,12 +29,23 @@ set(CMAKE_FOLDER "Magnum/SceneTools/Test")
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(SCENETOOLS_TEST_DIR ".")
+    set(SCENETOOLS_TEST_OUTPUT_DIR "write")
 else()
     set(SCENETOOLS_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    set(SCENETOOLS_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
+# Executable testing is implemented on Unix platforms only at the moment, so
+# don't even provide the filename elsewhere.
+if(MAGNUM_WITH_SCENECONVERTER AND CORRADE_TARGET_UNIX)
+    set(SCENECONVERTER_EXECUTABLE_FILENAME $<TARGET_FILE:magnum-sceneconverter>)
+endif()
+
+# First replace ${} variables, then $<> generator expressions
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+    INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsConvertToSingleFun___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
@@ -44,6 +55,9 @@ corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp L
 corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
     LIBRARIES MagnumSceneTools
     FILES
+        SceneConverterTestFiles/broken-mesh.obj
+        SceneConverterTestFiles/broken-scene.gltf
+        SceneConverterTestFiles/empty.gltf
         SceneConverterTestFiles/info-animations.txt
         SceneConverterTestFiles/info-cameras.txt
         SceneConverterTestFiles/info-images.txt
@@ -56,5 +70,18 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
         SceneConverterTestFiles/info-scenes-objects.txt
         SceneConverterTestFiles/info-scenes.txt
         SceneConverterTestFiles/info-skins.txt
-        SceneConverterTestFiles/info-textures.txt)
-target_include_directories(SceneToolsSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        SceneConverterTestFiles/info-textures.txt
+        SceneConverterTestFiles/point.obj
+        SceneConverterTestFiles/quad-duplicates-fuzzy.obj
+        SceneConverterTestFiles/quad-duplicates.obj
+        SceneConverterTestFiles/quad-duplicates.ply
+        SceneConverterTestFiles/quad-normals-texcoords.obj
+        SceneConverterTestFiles/quad.obj
+        SceneConverterTestFiles/quad.ply
+        SceneConverterTestFiles/two-triangles-transformed.bin
+        SceneConverterTestFiles/two-triangles-transformed.gltf
+        SceneConverterTestFiles/two-triangles.obj)
+target_include_directories(SceneToolsSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+if(MAGNUM_WITH_SCENECONVERTER AND CORRADE_TARGET_UNIX)
+    add_dependencies(SceneToolsSceneConverterTest magnum-sceneconverter)
+endif()
