@@ -381,6 +381,11 @@ jobs:
       # STUPID yml interprets unquoted ON as a boolean
       # https://stackoverflow.com/questions/53648244/specifying-the-string-value-yes-in-a-yaml-property
       BUILD_STATIC: "ON"
+      # Testing magnum-sceneconverter and other utilities requires the plugins
+      # to be either installed or static. Tests are however deliberately run
+      # before install, so the static builds are the only case where the
+      # utilities get thoroughly tested.
+      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::ObjImporter
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
@@ -514,6 +519,9 @@ jobs:
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
+      # Same comment as with the linux-static build -- these are the only jobs
+      # that test command-line tools thoroughly
+      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::ObjImporter
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
       PLATFORM_GL_API: CGL
