@@ -189,7 +189,7 @@ cmake_dependent_option(MAGNUM_WITH_AUDIO "Build Audio library" OFF "NOT MAGNUM_W
 option(MAGNUM_WITH_DEBUGTOOLS "Build DebugTools library" ON)
 cmake_dependent_option(MAGNUM_WITH_MESHTOOLS "Build MeshTools library" ON "NOT MAGNUM_WITH_OBJIMPORTER;NOT MAGNUM_WITH_SCENECONVERTER" ON)
 option(MAGNUM_WITH_SCENEGRAPH "Build SceneGraph library" ON)
-cmake_dependent_option(MAGNUM_WITH_SCENETOOLS "Build SceneTools library" ON "NOT WITH_SCENECONVERTER" ON)
+cmake_dependent_option(MAGNUM_WITH_SCENETOOLS "Build SceneTools library" ON "NOT MAGNUM_WITH_SCENECONVERTER" ON)
 option(MAGNUM_WITH_SHADERS "Build Shaders library" ON)
 cmake_dependent_option(MAGNUM_WITH_SHADERTOOLS "Build ShaderTools library" ON "NOT MAGNUM_WITH_SHADERCONVERTER" ON)
 cmake_dependent_option(MAGNUM_WITH_TEXT "Build Text library" ON "NOT MAGNUM_WITH_FONTCONVERTER;NOT MAGNUM_WITH_MAGNUMFONT;NOT MAGNUM_WITH_MAGNUMFONTCONVERTER" ON)
