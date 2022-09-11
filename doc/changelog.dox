@@ -672,6 +672,13 @@ See also:
     [mosra/magnum#570](https://github.com/mosra/magnum/pull/570).
 -   Fixed wrong `.gitattributes` option for LF line endings in MSYS PKGBUILDs
     (see [mosra/magnum#574](https://github.com/mosra/magnum/issues/574))
+-   Added `MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_FONTCONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_IMAGECONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_SCENECONVERTER_STATIC_PLUGINS` and
+    `MAGNUM_SHADERCONVERTER_STATIC_PLUGINS` CMake options for linking static
+    plugins to the command-line utilities. See @ref building-features for more
+    information.
 
 @subsection changelog-latest-bugfixes Bug fixes
 

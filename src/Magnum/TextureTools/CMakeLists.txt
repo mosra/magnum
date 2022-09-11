@@ -27,6 +27,18 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/TextureTools")
 
+# Somehow, due to MagnumTradeObjects having target_include_directories() with
+# $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>,
+# if MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS is non-empty then CMake fails
+# with
+#
+#   Target "Corrade::PluginManager" not found.
+#
+# unless the find_package() is here. Not sure why, probably some bug in CMake
+# dependency handling? Changing target_include_directories() to PRIVATE doesn't
+# help, removing it altogether helps.
+find_package(Corrade REQUIRED PluginManager)
+
 set(MagnumTextureTools_GracefulAssert_SRCS
     Atlas.cpp)
 
@@ -84,7 +96,8 @@ if(MAGNUM_WITH_DISTANCEFIELDCONVERTER)
     target_link_libraries(magnum-distancefieldconverter PRIVATE
         Magnum
         MagnumTextureTools
-        MagnumTrade)
+        MagnumTrade
+        ${MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS})
     if(MAGNUM_TARGET_EGL)
         target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)

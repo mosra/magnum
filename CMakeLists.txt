@@ -157,12 +157,19 @@ endif()
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
     option(MAGNUM_WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF)
     option(MAGNUM_WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF)
+
+    set(MAGNUM_FONTCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-fontconverter utility")
+    set(MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-distancefieldconverter utility")
 endif()
 
 # API-independent utilities
 option(MAGNUM_WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
 option(MAGNUM_WITH_SCENECONVERTER "Build magnum-sceneconverter utility" OFF)
 option(MAGNUM_WITH_SHADERCONVERTER "Build magnum-shaderconverter utility" OFF)
+
+set(MAGNUM_IMAGECONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-imageconverter utility")
+set(MAGNUM_SCENECONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-sceneconverter utility")
+set(MAGNUM_SHADERCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-shaderconverter utility")
 
 # Magnum AL Info
 option(MAGNUM_WITH_AL_INFO "Build magnum-al-info utility" OFF)

@@ -116,7 +116,8 @@ if(MAGNUM_WITH_FONTCONVERTER)
     target_link_libraries(magnum-fontconverter PRIVATE
         Magnum
         MagnumText
-        MagnumTrade)
+        MagnumTrade
+        ${MAGNUM_FONTCONVERTER_STATIC_PLUGINS})
     if(MAGNUM_TARGET_EGL)
         target_link_libraries(magnum-fontconverter PRIVATE MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)
