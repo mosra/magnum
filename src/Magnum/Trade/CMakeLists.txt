@@ -160,7 +160,8 @@ if(MAGNUM_WITH_IMAGECONVERTER)
         MagnumTrade
         # BasisImageConverter uses these, and linking pthread to just the
         # plugin doesn't work. See its documentation for details.
-        Threads::Threads)
+        Threads::Threads
+        ${MAGNUM_IMAGECONVERTER_STATIC_PLUGINS})
 
     install(TARGETS magnum-imageconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

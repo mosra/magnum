@@ -83,7 +83,7 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
         CORRADE_ASSERT(size.product() && size.x() == size.y() && (size & (size - Vector2i{1})).isZero(),
             "TextureTools::atlasArrayPowerOfTwo(): expected size" << i << "to be a non-zero power-of-two square, got" << Debug::packed << size, {});
 
-        sortedSizes[i].xy() = sizes[i];
+        sortedSizes[i].xy() = size;
         sortedSizes[i].z() = i;
     }
 

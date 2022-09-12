@@ -1,0 +1,28 @@
+Material 0:
+  Type: PbrMetallicRoughness
+  Base layer:
+    BaseColor @ Vector4: {0.231373, 0.823529, 0.403922, 0.6}
+    DoubleSided @ Bool: true
+    EmissiveColor @ Vector3: {0.054902, 0.619608, 0.792157}
+    RoughnessTexture @ UnsignedInt: 67
+    RoughnessTextureMatrix @ Matrix3x3: {1, 0, 0.25,
+ 0, 1, 0.75,
+ 0, 0, 1}
+    RoughnessTextureSwizzle @ TextureSwizzle: B
+    deadBeef @ Pointer: 0xdeadbeef
+    notAColour3 @ Vector3: {0.2, 0.3, 0.4}
+    notAColour4 @ Vector4: {0.1, 0.2, 0.3, 0.4}
+    reflectionAngle @ Deg: 35
+    undeadBeef @ MutablePointer: 0xbeefbeef
+Material 1: Lots o' laierz
+  Type: Phong|PbrClearCoat
+  Base layer:
+    DiffuseColor @ Vector4: {0.780392, 0.811765, 0.184314, 0.6}
+  Layer 1: ClearCoat
+    LayerFactor @ Float: 0.5
+    LayerFactorTexture @ UnsignedInt: 3
+  Layer 2: anEmptyLayer
+  Layer 3:
+    LayerFactor @ Float: 0.25
+    LayerFactorTexture @ UnsignedInt: 2
+    yes @ String: a string

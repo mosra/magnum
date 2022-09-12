@@ -95,7 +95,9 @@ struct AbstractFontTest: TestSuite::Tester {
     void createGlyphCacheNoFont();
 
     void debugFeature();
+    void debugFeaturePacked();
     void debugFeatures();
+    void debugFeaturesPacked();
 };
 
 AbstractFontTest::AbstractFontTest() {
@@ -150,7 +152,9 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::createGlyphCacheNoFont,
 
               &AbstractFontTest::debugFeature,
-              &AbstractFontTest::debugFeatures});
+              &AbstractFontTest::debugFeaturePacked,
+              &AbstractFontTest::debugFeatures,
+              &AbstractFontTest::debugFeaturesPacked});
 }
 
 void AbstractFontTest::construct() {
@@ -1154,11 +1158,25 @@ void AbstractFontTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "Text::FontFeature::OpenData Text::FontFeature(0xf0)\n");
 }
 
+void AbstractFontTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << FontFeature::OpenData << Debug::packed << FontFeature(0xf0) << FontFeature::FileCallback;
+    CORRADE_COMPARE(out.str(), "OpenData 0xf0 Text::FontFeature::FileCallback\n");
+}
+
 void AbstractFontTest::debugFeatures() {
     std::ostringstream out;
 
     Debug{&out} << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << FontFeatures{};
     CORRADE_COMPARE(out.str(), "Text::FontFeature::OpenData|Text::FontFeature::PreparedGlyphCache Text::FontFeatures{}\n");
+}
+
+void AbstractFontTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << Debug::packed << FontFeatures{} << FontFeature::FileCallback;
+    CORRADE_COMPARE(out.str(), "OpenData|PreparedGlyphCache {} Text::FontFeature::FileCallback\n");
 }
 
 }}}}

@@ -1304,6 +1304,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @m_since_latest
          *
          * Upper bound on object mapping indices of all fields in the scene.
+         * Note that an object can have a certain field associated with
+         * it multiple times with different values (for example an object
+         * having multiple meshes), and thus a field size can be larger than
+         * @ref mappingBound() --- see @ref fieldSizeBound() for an upper
+         * bound for all field sizes.
          * @see @ref fieldCount(), @ref fieldSize()
          */
         UnsignedLong mappingBound() const { return _mappingBound; }
@@ -1319,6 +1324,18 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * multiple meshes).
          */
         UnsignedInt fieldCount() const { return _fields.size(); }
+
+        /**
+         * @brief Field size bound
+         * @m_since_latest
+         *
+         * A maximum of all @ref fieldSize() or @cpp 0 @ce for a scene with no
+         * fields. Note that an object can have a certain field associated with
+         * it multiple times with different values (for example an object
+         * having multiple meshes), and thus a field size can be larger than
+         * @ref mappingBound().
+         */
+        std::size_t fieldSizeBound() const;
 
         /**
          * @brief Raw field metadata
@@ -1488,7 +1505,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Whether the scene has given field
          * @m_since_latest
          *
-         * @see @ref is2D(), @ref is3D()
+         * @see @ref is2D(), @ref is3D(), @ref findFieldId()
          */
         bool hasField(SceneField name) const;
 

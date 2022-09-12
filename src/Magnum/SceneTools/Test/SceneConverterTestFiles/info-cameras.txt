@@ -1,0 +1,12 @@
+Camera 0: Orthographic 2D
+  Type: Orthographic2D
+  Size: {5, 6}
+  Aspect ratio: 0.833333
+Camera 1:
+  Type: Orthographic3D
+  Size: {2, 3}, -1 - 0.5
+  Aspect ratio: 0.666667
+Camera 2:
+  Type: Perspective3D
+  FoV: 35°, 0.01 - 100
+  Aspect ratio: 1.33333

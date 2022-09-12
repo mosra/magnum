@@ -26,7 +26,6 @@
 #include "AnyImageConverter.h"
 
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /* for PluginManager */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
@@ -55,12 +54,7 @@ ImageConverterFeatures AnyImageConverter::doFeatures() const {
         ImageConverterFeature::ConvertCompressed1DToFile|
         ImageConverterFeature::ConvertCompressed2DToFile|
         ImageConverterFeature::ConvertCompressed3DToFile|
-        ImageConverterFeature::ConvertLevels1DToFile|
-        ImageConverterFeature::ConvertLevels2DToFile|
-        ImageConverterFeature::ConvertLevels3DToFile|
-        ImageConverterFeature::ConvertCompressedLevels1DToFile|
-        ImageConverterFeature::ConvertCompressedLevels2DToFile|
-        ImageConverterFeature::ConvertCompressedLevels3DToFile;
+        ImageConverterFeature::Levels;
 }
 
 bool AnyImageConverter::doConvertToFile(const ImageView1D& image, const Containers::StringView filename) {
@@ -627,4 +621,4 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageConverter, Magnum::Trade::AnyImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.2")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.3")

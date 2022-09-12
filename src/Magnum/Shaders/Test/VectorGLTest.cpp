@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -32,6 +33,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -83,8 +85,10 @@ struct VectorGLTest: GL::OpenGLTester {
     explicit VectorGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffers();
+    template<UnsignedInt dimensions> void constructUniformBuffersAsync();
     #endif
 
     template<UnsignedInt dimensions> void constructMove();
@@ -247,11 +251,19 @@ VectorGLTest::VectorGLTest() {
         &VectorGLTest::construct<3>},
         Containers::arraySize(ConstructData));
 
+    addTests<VectorGLTest>({
+        &VectorGLTest::constructAsync<2>,
+        &VectorGLTest::constructAsync<3>});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<VectorGLTest>({
         &VectorGLTest::constructUniformBuffers<2>,
         &VectorGLTest::constructUniformBuffers<3>},
         Containers::arraySize(ConstructUniformBuffersData));
+
+    addTests<VectorGLTest>({
+        &VectorGLTest::constructUniformBuffersAsync<2>,
+        &VectorGLTest::constructUniformBuffersAsync<3>});
     #endif
 
     addTests<VectorGLTest>({
@@ -370,6 +382,30 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+template<UnsignedInt dimensions> void VectorGLTest::constructAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.flags(), VectorGL2D::Flag::TextureTransformation);
+
+    while(!state.isLinkFinished())
+        Utility::System::sleep(100);
+
+    VectorGL<dimensions> shader{std::move(state)};
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::TextureTransformation);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
@@ -398,6 +434,38 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
     VectorGL<dimensions> shader{data.flags, data.materialCount, data.drawCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 15, 42);
+    CORRADE_COMPARE(state.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.materialCount(), 15);
+    CORRADE_COMPARE(state.drawCount(), 42);
+
+    while(!state.isLinkFinished())
+        Utility::System::sleep(100);
+
+    VectorGL<dimensions> shader{std::move(state)};
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(shader.materialCount(), 15);
+    CORRADE_COMPARE(shader.drawCount(), 42);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

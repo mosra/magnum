@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Arguments is std::string-free */
 #include <Corrade/Utility/Path.h>
@@ -42,24 +43,16 @@
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
 
-#ifdef MAGNUM_TARGET_HEADLESS
+#ifdef MAGNUM_TARGET_EGL
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
-#elif defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+#elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessEglApplication.h"
-#else
 #include "Magnum/Platform/WindowlessGlxApplication.h"
-#endif
 #elif defined(CORRADE_TARGET_WINDOWS)
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
-#else
 #include "Magnum/Platform/WindowlessWglApplication.h"
-#endif
 #else
 #error no windowless application available on this platform
 #endif
@@ -164,14 +157,14 @@ int DistanceFieldConverter::exec() {
     /* Load importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())};
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) return 1;
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
     Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 

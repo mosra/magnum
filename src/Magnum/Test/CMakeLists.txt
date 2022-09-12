@@ -27,6 +27,9 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/Test")
 
+find_package(Corrade REQUIRED PluginManager)
+
+corrade_add_test(ConverterUtilitiesTest ConverterUtilitiesTest.cpp LIBRARIES Magnum Corrade::PluginManager)
 corrade_add_test(FileCallbackTest FileCallbackTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(ImageFlagsTest ImageFlagsTest.cpp LIBRARIES Magnum)

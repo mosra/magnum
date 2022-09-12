@@ -584,14 +584,14 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
            checked against a map and only custom fields are checked in an
            O(n^2) way with the assumption there isn't many of them (and that
            they'll gradually become builtin). */
-        if(!isSceneFieldCustom(_fields[i]._name)) {
-            CORRADE_INTERNAL_ASSERT(UnsignedInt(_fields[i]._name) < fieldsPresent.Size);
-            CORRADE_ASSERT(!fieldsPresent[UnsignedInt(_fields[i]._name)],
-                "Trade::SceneData: duplicate field" << _fields[i]._name, );
-            fieldsPresent.set(UnsignedInt(_fields[i]._name), true);
+        if(!isSceneFieldCustom(field._name)) {
+            CORRADE_INTERNAL_ASSERT(UnsignedInt(field._name) < fieldsPresent.Size);
+            CORRADE_ASSERT(!fieldsPresent[UnsignedInt(field._name)],
+                "Trade::SceneData: duplicate field" << field._name, );
+            fieldsPresent.set(UnsignedInt(field._name), true);
         } else for(std::size_t j = 0; j != i; ++j) {
-            CORRADE_ASSERT(_fields[j]._name != _fields[i]._name,
-                "Trade::SceneData: duplicate field" << _fields[i]._name, );
+            CORRADE_ASSERT(_fields[j]._name != field._name,
+                "Trade::SceneData: duplicate field" << field._name, );
         }
 
         /* Check that both the mapping and field view fits into the provided
@@ -634,21 +634,21 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
         /* Remember TRS and mesh/material fields to figure out whether the
            scene is 2D or 3D and check their object mapping consistency outside
            of the loop below */
-        if(_fields[i]._name == SceneField::Transformation) {
+        if(field._name == SceneField::Transformation) {
             transformationField = i;
-        } else if(_fields[i]._name == SceneField::Translation) {
+        } else if(field._name == SceneField::Translation) {
             translationField = i;
-        } else if(_fields[i]._name == SceneField::Rotation) {
+        } else if(field._name == SceneField::Rotation) {
             rotationField = i;
-        } else if(_fields[i]._name == SceneField::Scaling) {
+        } else if(field._name == SceneField::Scaling) {
             scalingField = i;
         }
         #ifndef CORRADE_NO_ASSERT
-        else if(_fields[i]._name == SceneField::Mesh) {
+        else if(field._name == SceneField::Mesh) {
             meshField = i;
-        } else if(_fields[i]._name == SceneField::MeshMaterial) {
+        } else if(field._name == SceneField::MeshMaterial) {
             meshMaterialField = i;
-        } else if(_fields[i]._name == SceneField::Skin) {
+        } else if(field._name == SceneField::Skin) {
             skinField = i;
         }
         #endif
@@ -849,6 +849,13 @@ Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal
 
 Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal(const SceneFieldData& field) const {
     return fieldDataFieldViewInternal(field, 0, field._size);
+}
+
+std::size_t SceneData::fieldSizeBound() const {
+    std::size_t out = 0;
+    for(const SceneFieldData& i: _fields)
+        out = Math::max(out, std::size_t(i._size));
+    return out;
 }
 
 SceneFieldData SceneData::fieldData(const UnsignedInt id) const {

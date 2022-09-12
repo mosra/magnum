@@ -24,11 +24,14 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/System.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -68,8 +71,12 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void createMultipleOutputsIndexed();
     #endif
+    void createAsync();
 
     void linkFailure();
+    void linkFailureAsync();
+    void linkFailureAsyncShaderList();
+
     void uniformNotFound();
 
     void uniform();
@@ -103,12 +110,15 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               #endif
 
               &AbstractShaderProgramGLTest::create,
+              &AbstractShaderProgramGLTest::createAsync,
               &AbstractShaderProgramGLTest::createMultipleOutputs,
               #ifndef MAGNUM_TARGET_GLES
               &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
               #endif
 
               &AbstractShaderProgramGLTest::linkFailure,
+              &AbstractShaderProgramGLTest::linkFailureAsync,
+              &AbstractShaderProgramGLTest::linkFailureAsyncShaderList,
               &AbstractShaderProgramGLTest::uniformNotFound,
 
               &AbstractShaderProgramGLTest::uniform,
@@ -205,6 +215,8 @@ struct MyPublicShader: AbstractShaderProgram {
     using AbstractShaderProgram::bindFragmentDataLocation;
     #endif
     using AbstractShaderProgram::link;
+    using AbstractShaderProgram::submitLink;
+    using AbstractShaderProgram::checkLink;
     using AbstractShaderProgram::uniformLocation;
     #ifndef MAGNUM_TARGET_GLES2
     using AbstractShaderProgram::uniformBlockIndex;
@@ -257,6 +269,80 @@ void AbstractShaderProgramGLTest::create() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
+
+    // Some drivers need a bit of time to update this result
+    Utility::System::sleep(200);
+    CORRADE_VERIFY(program.isLinkFinished());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(valid);
+    }
+
+    const Int matrixUniform = program.uniformLocation("matrix");
+    const Int multiplierUniform = program.uniformLocation("multiplier");
+    const Int colorUniform = program.uniformLocation("color");
+    const Int additionsUniform = program.uniformLocation("additions");
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_VERIFY(matrixUniform >= 0);
+    CORRADE_VERIFY(multiplierUniform >= 0);
+    CORRADE_VERIFY(colorUniform >= 0);
+    CORRADE_VERIFY(additionsUniform >= 0);
+}
+
+void AbstractShaderProgramGLTest::createAsync() {
+    Utility::Resource rs("AbstractShaderProgramGLTest");
+
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Vertex);
+    vert.addSource(rs.getString("MyShader.vert"));
+    const bool vertCompiled = vert.compile();
+
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Fragment);
+    frag.addSource(rs.getString("MyShader.frag"));
+    const bool fragCompiled = frag.compile();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_VERIFY(vertCompiled);
+    CORRADE_VERIFY(fragCompiled);
+
+    MyPublicShader program;
+    program.attachShaders({vert, frag});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    program.bindAttributeLocation(0, "position");
+    program.submitLink();
+
+    while(!program.isLinkFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(program.checkLink({vert, frag}));
+    CORRADE_VERIFY(program.isLinkFinished());
+    const bool valid = program.validate().first;
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -402,6 +488,7 @@ void AbstractShaderProgramGLTest::linkFailure() {
         , Shader::Type::Fragment);
     shader.addSource("[fu] bleh error #:! stuff\n");
 
+    /* The compilation should fail */
     {
         Error redirectError{nullptr};
         CORRADE_VERIFY(!shader.compile());
@@ -409,7 +496,125 @@ void AbstractShaderProgramGLTest::linkFailure() {
 
     MyPublicShader program;
     program.attachShaders({shader});
-    CORRADE_VERIFY(!program.link());
+
+    /* And thus linking as well, saying something like "error: linking with
+       uncompiled/unspecialized shader" */
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!program.link());
+    }
+
+    Utility::System::sleep(200);
+    CORRADE_VERIFY(program.isLinkFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
+}
+
+void AbstractShaderProgramGLTest::linkFailureAsync() {
+    Shader shader(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Fragment);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    /* The compilation should fail */
+    {
+        Error redirectError{nullptr};
+        CORRADE_VERIFY(!shader.compile());
+    }
+
+    MyPublicShader program;
+    program.attachShaders({shader});
+
+    /* The link submission should not print anything ... */
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        program.submitLink();
+    }
+
+    while(!program.isLinkFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(out.str().empty());
+
+    /* ... only the final check should. In this case it's "error: linking with
+       uncompiled/unspecialized shader" as well, but if the shaders would be
+       supplied like in linkFailureAsyncShaderList() below, it'd print the
+       shader failure instead. */
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!program.checkLink({}));
+    }
+    CORRADE_VERIFY(program.isLinkFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
+}
+
+void AbstractShaderProgramGLTest::linkFailureAsyncShaderList() {
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Vertex);
+    vert.addSource("void main() {}\n");
+
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Fragment);
+    frag.addSource("[fu] bleh error #:! stuff\n");
+
+    vert.submitCompile();
+    frag.submitCompile();
+
+    MyPublicShader program;
+    program.attachShaders({vert, frag});
+
+    /* The link submission should not print anything ... */
+    {
+        std::ostringstream out;
+        Error redirectError{&out};
+        program.submitLink();
+        CORRADE_VERIFY(out.str().empty());
+    }
+
+    /* ... only the final check should. Vertex shader should be fine, but
+       fragment should fail. */
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!program.checkLink({vert, frag}));
+    }
+    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
+
+    /* The linker error (which would most probably say something like "error:
+       linking with uncompiled/unspecialized shader") should not be even
+       printed */
+    CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
+        TestSuite::Compare::StringNotContains);
 }
 
 void AbstractShaderProgramGLTest::uniformNotFound() {
@@ -447,7 +652,8 @@ void AbstractShaderProgramGLTest::uniformNotFound() {
         #endif
         );
 
-    CORRADE_VERIFY(Shader::compile({vert, frag}));
+    CORRADE_VERIFY(vert.compile() && frag.compile());
+
     program.attachShaders({vert, frag});
     CORRADE_VERIFY(program.link());
 
@@ -497,10 +703,10 @@ MyShader::MyShader() {
         Version::GLES200
         #endif
         , Shader::Type::Fragment);
-    vert.addSource(rs.getString("MyShader.vert"));
-    frag.addSource(rs.getString("MyShader.frag"));
-
-    Shader::compile({vert, frag});
+    vert.addSource(rs.getString("MyShader.vert"))
+        .compile();
+    frag.addSource(rs.getString("MyShader.frag"))
+        .compile();
 
     attachShaders({vert, frag});
 
@@ -581,10 +787,10 @@ MyDoubleShader::MyDoubleShader() {
 
     Shader vert(Version::GL320, Shader::Type::Vertex);
     Shader frag(Version::GL320, Shader::Type::Fragment);
-    vert.addSource(rs.getString("MyDoubleShader.vert"));
-    frag.addSource(rs.getString("MyDoubleShader.frag"));
-
-    Shader::compile({vert, frag});
+    vert.addSource(rs.getString("MyDoubleShader.vert"))
+        .compile();
+    frag.addSource(rs.getString("MyDoubleShader.frag"))
+        .compile();
 
     attachShaders({vert, frag});
 
@@ -743,8 +949,8 @@ void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
     vert.addSource("void main() { gl_Position = vec4(0.0); }");
     frag.addSource("out lowp vec4 color;\n"
                    "void main() { color = vec4(1.0); }");
+    CORRADE_VERIFY(vert.compile() && frag.compile());
 
-    CORRADE_VERIFY(Shader::compile({vert, frag}));
     program.attachShaders({vert, frag});
     CORRADE_VERIFY(program.link());
 
@@ -784,10 +990,11 @@ UniformBlockShader::UniformBlockShader() {
         Version::GLES300
         #endif
         , Shader::Type::Fragment);
-    vert.addSource(rs.getString("UniformBlockShader.vert"));
-    frag.addSource(rs.getString("UniformBlockShader.frag"));
+    vert.addSource(rs.getString("UniformBlockShader.vert"))
+        .compile();
+    frag.addSource(rs.getString("UniformBlockShader.frag"))
+        .compile();
 
-    Shader::compile({vert, frag});
     attachShaders({vert, frag});
 
     link();

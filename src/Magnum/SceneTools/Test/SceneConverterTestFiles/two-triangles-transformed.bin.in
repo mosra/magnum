@@ -1,0 +1,15 @@
+# Like two-triangles.obj, but the second triangle moved 10 units on Y. Convert
+# with magnum-plugins/src/MagnumPlugins/GltfImporter/Test/in2bin.py.
+
+type = "3f3f3f 3f3f3f"
+input = [
+    -1,  1, 0,
+    -1, -1, 0,
+     1, -1, 0,
+
+    -1, 11, 0,
+     1,  9, 0,
+     1, 11, 0
+]
+
+# kate: hl python

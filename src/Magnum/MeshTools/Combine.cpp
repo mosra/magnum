@@ -26,8 +26,7 @@
 #include "Combine.h"
 
 #include <numeric>
-#include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Functions.h"
@@ -44,20 +43,20 @@ Trade::MeshData combineIndexedImplementation(
     #ifndef CORRADE_NO_ASSERT
     const char* assertPrefix,
     #endif
-    const MeshPrimitive primitive, Containers::Array<char>& combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> data)
+    const MeshPrimitive primitive, Containers::Array<char>& combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::Iterable<const Trade::MeshData> data)
 {
     /* Calculate attribute count and vertex stride */
     UnsignedInt attributeCount = 0;
     UnsignedInt vertexStride = 0;
     for(std::size_t i = 0; i != data.size(); ++i) {
-        attributeCount += data[i]->attributeCount();
-        for(UnsignedInt j = 0; j != data[i]->attributeCount(); ++j) {
-            const VertexFormat format = data[i]->attributeFormat(j);
+        attributeCount += data[i].attributeCount();
+        for(UnsignedInt j = 0; j != data[i].attributeCount(); ++j) {
+            const VertexFormat format = data[i].attributeFormat(j);
             CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
                 assertPrefix << "attribute" << j << "of mesh" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
                 (Trade::MeshData{MeshPrimitive::Points, 0}));
 
-            vertexStride += vertexFormatSize(format)*Math::max(data[i]->attributeArraySize(j), UnsignedShort{1});
+            vertexStride += vertexFormatSize(format)*Math::max(data[i].attributeArraySize(j), UnsignedShort{1});
         }
     }
 
@@ -111,7 +110,7 @@ Trade::MeshData combineIndexedImplementation(
 
 }
 
-Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> data) {
+Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData> data) {
     CORRADE_ASSERT(!data.isEmpty(),
         "MeshTools::combineIndexedAttributes(): no meshes passed",
         (Trade::MeshData{MeshPrimitive{}, 0}));
@@ -124,21 +123,21 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
     UnsignedInt indexCount{};
     UnsignedInt indexStride = 0;
     for(std::size_t i = 0; i != data.size(); ++i) {
-        CORRADE_ASSERT(data[i]->isIndexed(),
+        CORRADE_ASSERT(data[i].isIndexed(),
             "MeshTools::combineIndexedAttributes(): data" << i << "is not indexed",
             (Trade::MeshData{MeshPrimitive{}, 0}));
-        const MeshIndexType indexType = data[i]->indexType();
+        const MeshIndexType indexType = data[i].indexType();
         CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(indexType),
             "MeshTools::combineIndexedAttributes(): data" << i << "has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(indexType)),
             (Trade::MeshData{MeshPrimitive{}, 0}));
         if(i == 0) {
-            primitive = data[i]->primitive();
-            indexCount = data[i]->indexCount();
+            primitive = data[i].primitive();
+            indexCount = data[i].indexCount();
         } else {
-            CORRADE_ASSERT(data[i]->primitive() == primitive,
-                "MeshTools::combineIndexedAttributes(): data" << i << "is" << data[i]->primitive() << "but expected" << primitive, (Trade::MeshData{MeshPrimitive{}, 0}));
-            CORRADE_ASSERT(data[i]->indexCount() == indexCount,
-                "MeshTools::combineIndexedAttributes(): data" << i << "has" << data[i]->indexCount() << "indices but expected" << indexCount, (Trade::MeshData{MeshPrimitive{}, 0}));
+            CORRADE_ASSERT(data[i].primitive() == primitive,
+                "MeshTools::combineIndexedAttributes(): data" << i << "is" << data[i].primitive() << "but expected" << primitive, (Trade::MeshData{MeshPrimitive{}, 0}));
+            CORRADE_ASSERT(data[i].indexCount() == indexCount,
+                "MeshTools::combineIndexedAttributes(): data" << i << "has" << data[i].indexCount() << "indices but expected" << indexCount, (Trade::MeshData{MeshPrimitive{}, 0}));
         }
         indexStride += meshIndexTypeSize(indexType);
     }
@@ -171,10 +170,6 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
         primitive, combinedIndices, indexCount, indexStride, data);
 }
 
-Trade::MeshData combineIndexedAttributes(std::initializer_list<Containers::Reference<const Trade::MeshData>> data) {
-    return combineIndexedAttributes(Containers::arrayView(data));
-}
-
 Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::MeshData& faceAttributes) {
     CORRADE_ASSERT(mesh.isIndexed(),
         "MeshTools::combineFaceAttributes(): vertex mesh is not indexed",
@@ -194,12 +189,11 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(meshIndexType),
         "MeshTools::combineFaceAttributes(): vertex mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(meshIndexType)),
         (Trade::MeshData{MeshPrimitive{}, 0}));
-    const UnsignedInt meshIndexSize = meshIndexTypeSize(mesh.indexType());
+    const UnsignedInt meshIndexSize = meshIndexTypeSize(meshIndexType);
     UnsignedInt faceIndexSize;
     if(faceAttributes.isIndexed()) {
-        const MeshIndexType faceIndexType = faceAttributes.indexType();
-        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(faceIndexType),
-            "MeshTools::combineFaceAttributes(): face mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(faceIndexType)),
+        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(faceAttributes.indexType()),
+            "MeshTools::combineFaceAttributes(): face mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(faceAttributes.indexType())),
             (Trade::MeshData{MeshPrimitive{}, 0}));
         faceIndexSize = meshIndexTypeSize(faceAttributes.indexType());
     } else faceIndexSize = 4;
@@ -236,10 +230,9 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
         #ifndef CORRADE_NO_ASSERT
         "MeshTools::combineFaceAttributes():",
         #endif
-        mesh.primitive(), combinedIndices, meshIndexCount, indexStride,
-        Containers::arrayView<const Containers::Reference<const Trade::MeshData>>({
+        mesh.primitive(), combinedIndices, meshIndexCount, indexStride, {
             mesh, faceAttributes
-        }));
+        });
 }
 
 Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttributeData> faceAttributes) {

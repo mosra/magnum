@@ -25,6 +25,7 @@
 
 #include <tuple> /* for std::tie() :( */
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 
@@ -89,6 +90,226 @@
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
+
+#ifndef MAGNUM_TARGET_GLES
+struct MyShader: GL::AbstractShaderProgram {
+/* [AbstractShaderProgram-input-attributes] */
+typedef GL::Attribute<0, Vector3> Position;
+typedef GL::Attribute<1, Vector3> Normal;
+typedef GL::Attribute<2, Vector2> TextureCoordinates;
+/* [AbstractShaderProgram-input-attributes] */
+
+/* [AbstractShaderProgram-output-attributes] */
+enum: UnsignedInt {
+    ColorOutput = 0,
+    NormalOutput = 1
+};
+/* [AbstractShaderProgram-output-attributes] */
+
+#if !defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+/* [AbstractShaderProgram-return-hide-irrelevant] */
+public:
+    MyShader& draw(GL::Mesh& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::Mesh&& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::MeshView& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    MyShader& draw(GL::MeshView&& mesh) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
+    }
+    /* Omit these if the shader is not ready for multidraw */
+    MyShader& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
+    }
+    MyShader& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
+    }
+    MyShader& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
+        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
+    }
+
+private:
+    using GL::AbstractShaderProgram::drawTransformFeedback;
+    using GL::AbstractShaderProgram::dispatchCompute;
+/* [AbstractShaderProgram-return-hide-irrelevant] */
+public:
+#endif
+
+/* [AbstractShaderProgram-constructor] */
+explicit MyShader() {
+    /* Load shader sources */
+    GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
+    GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
+    vert.addFile("MyShader.vert");
+    frag.addFile("MyShader.frag");
+
+    /* Compile them */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
+
+    /* Attach the shaders */
+    attachShaders({vert, frag});
+
+    /* Link the program together */
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+}
+/* [AbstractShaderProgram-constructor] */
+
+/* [AbstractShaderProgram-uniforms] */
+MyShader& setProjectionMatrix(const Matrix4& matrix) {
+    setUniform(0, matrix);
+    return *this;
+}
+MyShader& setTransformationMatrix(const Matrix4& matrix) {
+    setUniform(1, matrix);
+    return *this;
+}
+MyShader& setNormalMatrix(const Matrix3x3& matrix) {
+    setUniform(2, matrix);
+    return *this;
+}
+/* [AbstractShaderProgram-uniforms] */
+
+/* [AbstractShaderProgram-textures] */
+MyShader& bindDiffuseTexture(GL::Texture2D& texture) {
+    texture.bind(0);
+    return *this;
+}
+MyShader& bindSpecularTexture(GL::Texture2D& texture) {
+    texture.bind(1);
+    return *this;
+}
+/* [AbstractShaderProgram-textures] */
+
+/* [AbstractShaderProgram-xfb] */
+MyShader& setTransformFeedback(GL::TransformFeedback& feedback,
+    GL::Buffer& positions, GL::Buffer& data)
+{
+    feedback.attachBuffers(0, {&positions, &data});
+    return *this;
+}
+MyShader& setTransformFeedback(GL::TransformFeedback& feedback, Int totalCount,
+    GL::Buffer& positions, GLintptr positionsOffset, GL::Buffer& data,
+    GLintptr dataOffset)
+{
+    feedback.attachBuffers(0, {
+        std::make_tuple(&positions, positionsOffset, totalCount*sizeof(Vector3)),
+        std::make_tuple(&data, dataOffset, totalCount*sizeof(Vector2ui))
+    });
+    return *this;
+}
+/* [AbstractShaderProgram-xfb] */
+
+void foo() {
+{
+GL::Version version{};
+/* [portability-shaders-bind] */
+if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version)) {
+    bindAttributeLocation(Position::Location, "position");
+    // ...
+}
+/* [portability-shaders-bind] */
+}
+
+/* [AbstractShaderProgram-binding] */
+// Shaders attached...
+
+bindAttributeLocation(Position::Location, "position");
+bindAttributeLocation(Normal::Location, "normal");
+bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+
+bindFragmentDataLocation(ColorOutput, "color");
+bindFragmentDataLocation(NormalOutput, "normal");
+
+// Link...
+/* [AbstractShaderProgram-binding] */
+
+/* [AbstractShaderProgram-uniform-location] */
+Int projectionMatrixUniform = uniformLocation("projectionMatrix");
+Int transformationMatrixUniform = uniformLocation("transformationMatrix");
+Int normalMatrixUniform = uniformLocation("normalMatrix");
+/* [AbstractShaderProgram-uniform-location] */
+static_cast<void>(projectionMatrixUniform);
+static_cast<void>(transformationMatrixUniform);
+static_cast<void>(normalMatrixUniform);
+
+/* [AbstractShaderProgram-uniform-block-binding] */
+setUniformBlockBinding(uniformBlockIndex("matrices"), 0);
+setUniformBlockBinding(uniformBlockIndex("material"), 1);
+/* [AbstractShaderProgram-uniform-block-binding] */
+
+/* [AbstractShaderProgram-texture-uniforms] */
+setUniform(uniformLocation("diffuseTexture"), 0);
+setUniform(uniformLocation("specularTexture"), 1);
+/* [AbstractShaderProgram-texture-uniforms] */
+
+/* [AbstractShaderProgram-xfb-outputs] */
+setTransformFeedbackOutputs({
+        // Buffer 0
+        "position", "gl_SkipComponents1", "normal", "gl_SkipComponents1",
+        // Buffer 1
+        "gl_NextBuffer", "velocity"
+    }, TransformFeedbackBufferMode::InterleavedAttributes);
+/* [AbstractShaderProgram-xfb-outputs] */
+}
+};
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+namespace Foo {
+
+struct MyShader: GL::AbstractShaderProgram {
+    class CompileState;
+
+    MyShader(NoInitT);
+    MyShader(CompileState&&);
+    MyShader(int);
+
+    static CompileState compile(int);
+};
+
+/* [AbstractShaderProgram-async] */
+class MyShader::CompileState: public MyShader {
+    friend MyShader;
+
+    explicit CompileState(MyShader&& shader, GL::Shader&& vert, GL::Shader&& frag):
+        MyShader{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)} {}
+
+    GL::Shader _vert, _frag;
+};
+
+MyShader::CompileState MyShader::compile(DOXYGEN_ELLIPSIS(int)) {
+    GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
+    GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
+    DOXYGEN_ELLIPSIS()
+    vert.submitCompile();
+    frag.submitCompile();
+
+    MyShader out{NoInit};
+    DOXYGEN_ELLIPSIS()
+    out.attachShaders({vert, frag});
+    out.submitLink();
+
+    return CompileState{std::move(out), std::move(vert), std::move(frag)};
+}
+
+MyShader::MyShader(NoInitT) {}
+
+MyShader::MyShader(CompileState&& state):
+    MyShader{static_cast<MyShader&&>(std::move(state))}
+{
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({state._vert, state._frag}));
+    DOXYGEN_ELLIPSIS()
+}
+
+MyShader::MyShader(DOXYGEN_ELLIPSIS(int a)): MyShader{compile(DOXYGEN_ELLIPSIS(a))} {}
+/* [AbstractShaderProgram-async] */
+
+}
+#endif
 
 int main() {
 
@@ -250,185 +471,34 @@ vert.addFile("MyShader.vert");
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-struct MyShader: GL::AbstractShaderProgram {
-/* [AbstractShaderProgram-input-attributes] */
-typedef GL::Attribute<0, Vector3> Position;
-typedef GL::Attribute<1, Vector3> Normal;
-typedef GL::Attribute<2, Vector2> TextureCoordinates;
-/* [AbstractShaderProgram-input-attributes] */
-
-/* [AbstractShaderProgram-output-attributes] */
-enum: UnsignedInt {
-    ColorOutput = 0,
-    NormalOutput = 1
-};
-/* [AbstractShaderProgram-output-attributes] */
-
-#if !defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-/* [AbstractShaderProgram-return-hide-irrelevant] */
-public:
-    MyShader& draw(GL::Mesh& mesh) {
-        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
-    }
-    MyShader& draw(GL::Mesh&& mesh) {
-        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
-    }
-    MyShader& draw(GL::MeshView& mesh) {
-        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
-    }
-    MyShader& draw(GL::MeshView&& mesh) {
-        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh));
-    }
-    /* Omit these if the shader is not ready for multidraw */
-    MyShader& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
-        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
-    }
-    MyShader& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
-        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
-    }
-    MyShader& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
-        return static_cast<MyShader&>(GL::AbstractShaderProgram::draw(meshes));
-    }
-
-private:
-    using GL::AbstractShaderProgram::drawTransformFeedback;
-    using GL::AbstractShaderProgram::dispatchCompute;
-/* [AbstractShaderProgram-return-hide-irrelevant] */
-public:
-#endif
-
-/* [AbstractShaderProgram-constructor] */
-explicit MyShader() {
-    /* Load shader sources */
-    GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
-    GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
-    vert.addFile("MyShader.vert");
-    frag.addFile("MyShader.frag");
-
-    /* Invoke parallel compilation for best performance */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
-
-    /* Attach the shaders */
-    attachShaders({vert, frag});
-
-    /* Link the program together */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
-}
-/* [AbstractShaderProgram-constructor] */
-
-/* [AbstractShaderProgram-uniforms] */
-MyShader& setProjectionMatrix(const Matrix4& matrix) {
-    setUniform(0, matrix);
-    return *this;
-}
-MyShader& setTransformationMatrix(const Matrix4& matrix) {
-    setUniform(1, matrix);
-    return *this;
-}
-MyShader& setNormalMatrix(const Matrix3x3& matrix) {
-    setUniform(2, matrix);
-    return *this;
-}
-/* [AbstractShaderProgram-uniforms] */
-
-/* [AbstractShaderProgram-textures] */
-MyShader& bindDiffuseTexture(GL::Texture2D& texture) {
-    texture.bind(0);
-    return *this;
-}
-MyShader& bindSpecularTexture(GL::Texture2D& texture) {
-    texture.bind(1);
-    return *this;
-}
-/* [AbstractShaderProgram-textures] */
-
-/* [AbstractShaderProgram-xfb] */
-MyShader& setTransformFeedback(GL::TransformFeedback& feedback,
-    GL::Buffer& positions, GL::Buffer& data)
 {
-    feedback.attachBuffers(0, {&positions, &data});
-    return *this;
-}
-MyShader& setTransformFeedback(GL::TransformFeedback& feedback, Int totalCount,
-    GL::Buffer& positions, GLintptr positionsOffset, GL::Buffer& data,
-    GLintptr dataOffset)
-{
-    feedback.attachBuffers(0, {
-        std::make_tuple(&positions, positionsOffset, totalCount*sizeof(Vector3)),
-        std::make_tuple(&data, dataOffset, totalCount*sizeof(Vector2ui))
-    });
-    return *this;
-}
-/* [AbstractShaderProgram-xfb] */
-
-void foo() {
-{
-GL::Version version{};
-/* [portability-shaders-bind] */
-if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version)) {
-    bindAttributeLocation(Position::Location, "position");
-    // ...
-}
-/* [portability-shaders-bind] */
-}
-
-/* [AbstractShaderProgram-binding] */
-// Shaders attached...
-
-bindAttributeLocation(Position::Location, "position");
-bindAttributeLocation(Normal::Location, "normal");
-bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
-
-bindFragmentDataLocation(ColorOutput, "color");
-bindFragmentDataLocation(NormalOutput, "normal");
-
-// Link...
-/* [AbstractShaderProgram-binding] */
-
-/* [AbstractShaderProgram-uniform-location] */
-Int projectionMatrixUniform = uniformLocation("projectionMatrix");
-Int transformationMatrixUniform = uniformLocation("transformationMatrix");
-Int normalMatrixUniform = uniformLocation("normalMatrix");
-/* [AbstractShaderProgram-uniform-location] */
-static_cast<void>(projectionMatrixUniform);
-static_cast<void>(transformationMatrixUniform);
-static_cast<void>(normalMatrixUniform);
-
-/* [AbstractShaderProgram-uniform-block-binding] */
-setUniformBlockBinding(uniformBlockIndex("matrices"), 0);
-setUniformBlockBinding(uniformBlockIndex("material"), 1);
-/* [AbstractShaderProgram-uniform-block-binding] */
-
-/* [AbstractShaderProgram-texture-uniforms] */
-setUniform(uniformLocation("diffuseTexture"), 0);
-setUniform(uniformLocation("specularTexture"), 1);
-/* [AbstractShaderProgram-texture-uniforms] */
-
-/* [AbstractShaderProgram-xfb-outputs] */
-setTransformFeedbackOutputs({
-        // Buffer 0
-        "position", "gl_SkipComponents1", "normal", "gl_SkipComponents1",
-        // Buffer 1
-        "gl_NextBuffer", "velocity"
-    }, TransformFeedbackBufferMode::InterleavedAttributes);
-/* [AbstractShaderProgram-xfb-outputs] */
-}
-};
-#endif
-
-#ifndef MAGNUM_TARGET_GLES
-{
-MyShader shader;
 GL::Mesh mesh;
 Matrix4 transformation, projection;
 GL::Texture2D diffuseTexture, specularTexture;
 /* [AbstractShaderProgram-rendering] */
+MyShader shader;
 shader.setTransformationMatrix(transformation)
     .setProjectionMatrix(projection)
     .bindDiffuseTexture(diffuseTexture)
     .bindSpecularTexture(specularTexture)
     .draw(mesh);
 /* [AbstractShaderProgram-rendering] */
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+{
+using Foo::MyShader;
+/* [AbstractShaderProgram-async-usage] */
+MyShader::CompileState state = MyShader::compile(DOXYGEN_ELLIPSIS(0));
+// Other shaders to compile....
+
+while(!state.isLinkFinished()) {
+    // Do other work...
+}
+
+MyShader shader{std::move(state)};
+/* [AbstractShaderProgram-async-usage] */
 }
 #endif
 

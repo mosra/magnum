@@ -139,9 +139,8 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
         stride = 0;
         minOffset = 0;
         for(UnsignedInt i = 0, max = data.attributeCount(); i != max; ++i) {
-            const VertexFormat format = data.attributeFormat(i);
-            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-                "MeshTools::interleavedLayout(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(data.attributeFormat(i)),
+                "MeshTools::interleavedLayout(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(data.attributeFormat(i))), {});
             stride += attributeSize(data, i);
         }
     }
@@ -149,12 +148,12 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
     /* Add the extra attributes and explicit padding */
     std::size_t extraAttributeCount = 0;
     for(std::size_t i = 0; i != extra.size(); ++i) {
-        if(extra[i].format() == VertexFormat{}) {
+        const VertexFormat format = extra[i].format();
+        if(format == VertexFormat{}) {
             CORRADE_ASSERT(extra[i].stride() > 0 || stride >= std::size_t(-extra[i].stride()),
                 "MeshTools::interleavedLayout(): negative padding" << extra[i].stride() << "in extra attribute" << i << "too large for stride" << stride, {});
             stride += extra[i].stride();
         } else {
-            const VertexFormat format = extra[i].format();
             CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
                 "MeshTools::interleavedLayout(): extra attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
             stride += attributeSize(extra[i]);

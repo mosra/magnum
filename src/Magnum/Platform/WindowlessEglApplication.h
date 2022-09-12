@@ -162,9 +162,14 @@ class WindowlessEglContext {
         #ifndef MAGNUM_TARGET_WEBGL
         bool _sharedContext = false;
         #endif
+        #ifdef CORRADE_TARGET_WINDOWS
+        /* It's a HWND, which is HANDLE, which is PVOID, which is void*. FFS
+           Windows you're really mad with the typedefs. */
+        void* _window{};
+        #endif
         EGLDisplay _display{};
         EGLContext _context{};
-        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        #if defined(CORRADE_TARGET_WINDOWS) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL))
         /* Needed only by SwiftShader, using EGL_NO_SURFACE everywhere else */
         EGLSurface _surface = EGL_NO_SURFACE;
         #endif

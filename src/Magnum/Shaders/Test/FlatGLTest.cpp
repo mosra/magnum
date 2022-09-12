@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -32,6 +33,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -83,8 +85,10 @@ struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffers();
+    template<UnsignedInt dimensions> void constructUniformBuffersAsync();
     #endif
 
     template<UnsignedInt dimensions> void constructMove();
@@ -600,11 +604,19 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::construct<3>},
         Containers::arraySize(ConstructData));
 
+    addTests<FlatGLTest>({
+        &FlatGLTest::constructAsync<2>,
+        &FlatGLTest::constructAsync<3>});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::constructUniformBuffers<2>,
         &FlatGLTest::constructUniformBuffers<3>},
         Containers::arraySize(ConstructUniformBuffersData));
+
+    addTests<FlatGLTest>({
+        &FlatGLTest::constructUniformBuffersAsync<2>,
+        &FlatGLTest::constructUniformBuffersAsync<3>});
     #endif
 
     addTests<FlatGLTest>({
@@ -853,6 +865,29 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.flags(),  FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
+
+    while(!state.isLinkFinished())
+        Utility::System::sleep(100);
+
+    FlatGL<dimensions> shader{std::move(state)};
+    CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
+
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
@@ -896,6 +931,38 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 8, 48);
+    CORRADE_COMPARE(state.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
+    CORRADE_COMPARE(state.materialCount(), 8);
+    CORRADE_COMPARE(state.drawCount(), 48);
+
+    while(!state.isLinkFinished())
+        Utility::System::sleep(100);
+
+    FlatGL<dimensions> shader{std::move(state)};
+    CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
+    CORRADE_COMPARE(shader.materialCount(), 8);
+    CORRADE_COMPARE(shader.drawCount(), 48);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #endif
 
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {

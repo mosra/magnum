@@ -110,9 +110,11 @@ See also:
 -   Recognizing @webgl_extension{EXT,float_blend} and
     @webgl_extension{WEBGL,debug_shaders} WebGL extensions, no implementation
     done yet
--   Recognizing @gl_extension{KHR,parallel_shader_compile} GL, GLES and
-    @webgl_extension{KHR,parallel_shader_compile} WebGL extensions, no
-    implementation done yet
+-   Implemented @ref GL-AbstractShaderProgram-async "Async shader compilation and linking"
+    including the @gl_extension{KHR,parallel_shader_compile} GL, GLES and
+    @webgl_extension{KHR,parallel_shader_compile} WebGL extension (see
+    [mosra/magnum#534](https://github.com/mosra/magnum/issues/534) and
+    [mosra/magnum#576](https://github.com/mosra/magnum/pull/576))
 -   Recognizing ANGLE GLES and WebGL base vertex, base instance and multi-draw
     extensions and using them in @ref GL::AbstractShaderProgram::draw(Mesh&)
     and @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>):
@@ -203,8 +205,7 @@ See also:
 -   Implemented @relativeref{Platform::WindowlessEglApplication,Configuration::Flag::NoError}
     in @ref Platform::WindowlessEglApplication,
     @ref Platform::WindowlessGlxApplication,
-    @ref Platform::WindowlessWglApplication,
-    @ref Platform::WindowlessWindowsEglApplication and
+    @ref Platform::WindowlessWglApplication and
     @ref Platform::Sdl2Application
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
@@ -229,6 +230,10 @@ See also:
     OpenGL ES 3.0+ and WebGL 2.0, including multi-draw functionality for
     massive driver overhead reduction. The @ref shaders overview page was
     updated with an introduction the new features.
+-   All builtin shaders now have opt-in capability of
+    @ref shaders-async "async compilation and linking" (see
+    [mosra/magnum534](https://github.com/mosra/magnum/issues/534) and
+    [mosra/magnum#576](https://github.com/mosra/magnum/pull/576))
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support texture arrays,
     available also in multi-draw and instanced scenarios
 -   @ref Shaders::FlatGL and @ref Shaders::PhongGL now support object ID
@@ -285,6 +290,10 @@ See also:
 -   New @ref Trade::SkinData class and @ref Trade::AbstractImporter::skin2D() /
     @ref Trade::AbstractImporter::skin3D() family of APIs for skin import, as
     well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
+-   The @ref Trade::AbstractSceneConverter plugin interface gained support for
+    batch conversion of whole scenes --- meshes, hierarchies, materials,
+    textures, animations and other data; @relativeref{Trade,AnySceneConverter}
+    is updated to support batch conversion as well
 -   1D and 3D image support in @ref Trade::AbstractImageConverter
 -   @ref Trade::LightData got extended to support light attenuation and range
     parameters as well and spot light inner and outer angle
@@ -341,6 +350,9 @@ See also:
 -   @ref Image, @ref CompressedImage, @ref ImageView, @ref CompressedImageView
     as well as @ref Trade::ImageData are now able to annotate array, cube map
     and cube map array images using @ref ImageFlags
+-   Removed unnecessary @ref std::string usage from certain
+    @relativeref{Corrade,Utility::ConfigurationValue} specializations (see
+    [mosra/magnum#582](https://github.com/mosra/magnum/pull/582))
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
@@ -399,6 +411,7 @@ See also:
     complement @relativeref{GL::Framebuffer::InvalidationAttachment,Depth} and
     @relativeref{GL::Framebuffer::InvalidationAttachment,Stencil} (see
     [mosra/magnum#554](https://github.com/mosra/magnum/pull/554))
+-   Added @ref GL::Shader::wrap() and @relativeref{GL::Shader,release()}
 
 @subsubsection changelog-latest-changes-math Math library
 
@@ -428,7 +441,7 @@ See also:
 
 -   @ref MeshTools::interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
     @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) and
-    @ref MeshTools::concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags)
+    @ref MeshTools::concatenate(Containers::Iterable<const Trade::MeshData>, InterleaveFlags)
     optionally take a @ref MeshTools::InterleaveFlags parameter affecting the
     output, in particular whether to preserve the original interleaved layout.
 
@@ -436,9 +449,11 @@ See also:
 
 -   Added a @ref Platform::GlfwApplication::setWindowIcon() overload taking a
     @ref Corrade::Containers::ArrayView in addition to @ref std::initializer_list
--   @ref Platform::GlfwApplication now defaults to EGL on
-    @ref MAGNUM_TARGET_DESKTOP_GLES "non-desktop"
-    @ref MAGNUM_TARGET_GLES "GLES builds" (see [mosra/magnum#470](https://github.com/mosra/magnum/pull/470))
+-   @ref Platform::GlfwApplication now properly uses
+    @ref MAGNUM_TARGET_EGL "EGL" on @ref MAGNUM_TARGET_GLES "GLES builds" (see
+    [mosra/magnum#470](https://github.com/mosra/magnum/pull/470))
+-   @ref Platform::GlfwApplication and @ref Platform::Sdl2Application can now
+    work with EGL on desktop GL as well if @ref MAGNUM_TARGET_EGL is enabled
 -   On Emscripten, @ref Platform::EmscriptenApplication used an internal
     allocation function, which changed signature in 2.0.5 and caused runtime
     failures when `-s ASSERTIONS` was enabled. A public stable API is now used
@@ -481,10 +496,10 @@ See also:
 -   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",
     showing data ranges of known attributes
 -   @ref magnum-sceneconverter "magnum-sceneconverter" now has separate
-    `--info-animations`, `--info-images`, `--info-lights`, `--info-materials`,
-    `--info-meshes`, `--info-skins` and `--info-textures` for printing
-    information just about particular data type, with `--info` being a shortcut
-    for all specified together
+    `--info-animations`, `--info-images`, `--info-lights`, `--info-cameras`,
+    `--info-materials`, `--info-meshes`, `--info-skins` and `--info-textures`
+    for printing information just about particular data type, with `--info`
+    being a shortcut for all specified together
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
@@ -520,6 +535,10 @@ See also:
     @relativeref{Trade::AbstractImageConverter,doConvertToData()}, for example
     when the implementation only neeeds to do a format detection based on file
     extension
+-   New @ref Trade::AbstractImageConverter::extension() and
+    @relativeref{Trade::AbstractImageConverter,mimeType()} interfaces to get
+    a file extension and MIME type corresponding to a file format produced by
+    a particular plugin.
 -   Recognizing BMP and TIFF file header magic in @relativeref{Trade,AnyImageImporter}
 -   Recognizing ASTC and WebP files and data in
     @relativeref{Trade,AnyImageImporter}
@@ -528,6 +547,7 @@ See also:
     [mosra/magnum#529](https://github.com/mosra/magnum/pull/529))
 -   Recognizing KTX2 for (compressed) 1D/2D/3D and multi-level 1D/2D/3D images
     in @relativeref{Trade,AnyImageConverter}
+-   Recognizing glTF files in @relativeref{Trade,AnySceneConverter}
 -   Recognizing 3MF files in @relativeref{Trade,AnySceneImporter}
 -   Recognizing OpenVBD files in @relativeref{Trade,AnyImageImporter} and
     @relativeref{Trade,AnyImageConverter}
@@ -652,6 +672,13 @@ See also:
     [mosra/magnum#570](https://github.com/mosra/magnum/pull/570).
 -   Fixed wrong `.gitattributes` option for LF line endings in MSYS PKGBUILDs
     (see [mosra/magnum#574](https://github.com/mosra/magnum/issues/574))
+-   Added `MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_FONTCONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_IMAGECONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_SCENECONVERTER_STATIC_PLUGINS` and
+    `MAGNUM_SHADERCONVERTER_STATIC_PLUGINS` CMake options for linking static
+    plugins to the command-line utilities. See @ref building-features for more
+    information.
 
 @subsection changelog-latest-bugfixes Bug fixes
 
@@ -750,6 +777,13 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   The (mutually exclusive) @ref MAGNUM_TARGET_HEADLESS and
+    @ref MAGNUM_TARGET_DESKTOP_GLES options, CMake variables and preprocessor
+    variables are deprecated in favor of @ref MAGNUM_TARGET_EGL. It's enabled
+    by default on GLES and disabled by default on desktop GL --- disabling it
+    on GLES will force creation of a GLES context using the GLX / WGL libraries
+    (if available); enabling it on desktop GL will allow running windowless
+    applications on headless machines.
 -   All @ref building-features "CMake build options" are now prefixed with
     `MAGNUM_`. For backwards compatibility, unless @ref MAGNUM_BUILD_DEPRECATED
     is disabled and unless a prefixed option is already set during the initial
@@ -803,6 +837,16 @@ See also:
     @ref DebugTools::FrameProfilerGL. The new name plays better with IDE
     autocompletion and makes the GL-specific class appear next to the
     API-independent base in alphabetically sorted lists.
+-   List-taking @cpp GL::Shader::compile() @ce and
+    @cpp GL::AbstractShaderProgram::link() @ce functions are deprecated in
+    favor of new @ref GL::Shader::submitCompile(),
+    @relativeref{GL::Shader,checkCompile()},
+    @ref GL::AbstractShaderProgram::submitLink() and
+    @relativeref{GL::AbstractShaderProgram,checkLink()} APIs. These were
+    originally meant to make use of parallel shader compilation, but in
+    practice that meant compiling at most two or three shaders at once. The new
+    API allows for much larger parallelism as well as an ability to query
+    completion status.
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,
@@ -1055,6 +1099,12 @@ See also:
     @ref Math::RectangularMatrix::data() are no longer @cpp constexpr @ce in
     order to make them return a reference to a fixed-size array instead of a
     pointer, which was deemed a more useful property.
+-   @cpp Platform::WindowlessWindowsEglApplication @ce is now merged into
+    @ref Platform::WindowlessEglApplication. Since its use case was rather rare
+    (windowless applications on ANGLE on Windows) and it wasn't even built in
+    any packages, it's completely removed without providing any backwards
+    compatibility --- switch to @ref Platform::WindowlessEglApplication
+    instead.
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
@@ -1343,7 +1393,8 @@ Released 2020-06-27, tagged as
     @ref Platform::WindowlessEglApplication,
     @ref Platform::WindowlessGlxApplication,
     @ref Platform::WindowlessWglApplication and
-    @ref Platform::WindowlessWindowsEglApplication (see [mosra/magnum#433](https://github.com/mosra/magnum/pull/433)
+    @cpp Platform::WindowlessWindowsEglApplication @ce (see
+    [mosra/magnum#433](https://github.com/mosra/magnum/pull/433)
     and [mosra/magnum#437](https://github.com/mosra/magnum/pull/437))
 -   CUDA device selection in @ref Platform::WindowlessEglApplication (see
     [mosra/magnum#449](https://github.com/mosra/magnum/pull/449))
@@ -2389,7 +2440,7 @@ Released 2019-10-24, tagged as
     @ref Platform::Sdl2Application::exitEvent() "exitEvent()"
 -   On OpenGL ES builds, @ref Platform::Sdl2Application now tells SDL whether
     to use a system GL driver or a dedicated GLES driver based on whether
-    @ref MAGNUM_TARGET_DESKTOP_GLES is defined. This allows for a smoother
+    @cpp MAGNUM_TARGET_DESKTOP_GLES @ce is defined. This allows for a smoother
     experience for example when using ANGLE on Windows. See
     @ref Platform-Sdl2Application-usage-gles for more information.
 -   Replaced uses of `Pointer_stringify()` in @ref Platform::Sdl2Application

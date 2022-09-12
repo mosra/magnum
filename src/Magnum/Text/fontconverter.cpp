@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -34,24 +35,16 @@
 #include "Magnum/Text/DistanceFieldGlyphCache.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 
-#ifdef MAGNUM_TARGET_HEADLESS
+#ifdef MAGNUM_TARGET_EGL
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessEglApplication.h"
-#else
 #include "Magnum/Platform/WindowlessGlxApplication.h"
-#endif
 #elif defined(CORRADE_TARGET_WINDOWS)
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
-#else
 #include "Magnum/Platform/WindowlessWglApplication.h"
-#endif
 #else
 #error no windowless application available on this platform
 #endif
@@ -166,12 +159,12 @@ int FontConverter::exec() {
     /* Font converter dependencies */
     PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     /* Load font */
     PluginManager::Manager<Text::AbstractFont> fontManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Text::AbstractFont::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Text::AbstractFont::pluginSearchPaths().back()).second())};
     Containers::Pointer<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
@@ -179,7 +172,7 @@ int FontConverter::exec() {
        (MagnumFontConverter needs TgaImageConverter, for example) */
     PluginManager::Manager<Text::AbstractFontConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Text::AbstractFontConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Text::AbstractFontConverter::pluginSearchPaths().back()).second())};
     converterManager.registerExternalManager(imageConverterManager);
 
     /* Load font converter */

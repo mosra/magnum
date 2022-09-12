@@ -77,7 +77,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         explicit DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, UnsignedInt radius);
 
         /**
-         * @brief Set distance field cache image
+         * @brief Set a distance field cache image
          *
          * Uploads already computed distance field image to given offset in
          * distance field texture.

@@ -189,7 +189,9 @@ struct AbstractConverterTest: TestSuite::Tester {
     void setInputFileCallbackLinkFilesToDataAsDataFailed();
 
     void debugFeature();
+    void debugFeaturePacked();
     void debugFeatures();
+    void debugFeaturesPacked();
     void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
@@ -339,7 +341,9 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed,
 
               &AbstractConverterTest::debugFeature,
+              &AbstractConverterTest::debugFeaturePacked,
               &AbstractConverterTest::debugFeatures,
+              &AbstractConverterTest::debugFeaturesPacked,
               &AbstractConverterTest::debugFeaturesSupersets,
               &AbstractConverterTest::debugFlag,
               &AbstractConverterTest::debugFlags,
@@ -3533,11 +3537,25 @@ void AbstractConverterTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ConvertData ShaderTools::ConverterFeature(0xf0)\n");
 }
 
+void AbstractConverterTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ConverterFeature::ConvertData << Debug::packed << ConverterFeature(0xf0) << ConverterFeature::ValidateFile;
+    CORRADE_COMPARE(out.str(), "ConvertData 0xf0 ShaderTools::ConverterFeature::ValidateFile\n");
+}
+
 void AbstractConverterTest::debugFeatures() {
     std::ostringstream out;
 
     Debug{&out} << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << ConverterFeatures{};
     CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFeature::ValidateData|ShaderTools::ConverterFeature::ConvertFile ShaderTools::ConverterFeatures{}\n");
+}
+
+void AbstractConverterTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ConverterFeature::ValidateData|ConverterFeature::ConvertFile) << Debug::packed << ConverterFeatures{} << ConverterFeature::InputFileCallback;
+    CORRADE_COMPARE(out.str(), "ValidateData|ConvertFile {} ShaderTools::ConverterFeature::InputFileCallback\n");
 }
 
 void AbstractConverterTest::debugFeaturesSupersets() {

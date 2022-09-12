@@ -37,24 +37,16 @@
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/TimeQuery.h"
 
-#if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(CORRADE_TARGET_ANDROID)
+#ifdef MAGNUM_TARGET_EGL
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
-#elif defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+#elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessEglApplication.h"
-#else
 #include "Magnum/Platform/WindowlessGlxApplication.h"
-#endif
 #elif defined(CORRADE_TARGET_WINDOWS)
-#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
-#else
-#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
-#endif
 #else
 #error cannot run OpenGL tests on this platform
 #endif
@@ -98,7 +90,7 @@ See @ref building, @ref cmake and @ref testsuite for more information.
 
 Implicitly, running the test executables requires presence of a GPU with OpenGL
 drivers. In addition, on desktop, unless Magnum is built with
-`MAGNUM_TARGET_HEADLESS`, OpenGL context creation requires a graphical desktop
+@ref MAGNUM_TARGET_EGL, OpenGL context creation requires a graphical desktop
 to be running. On embedded systems (and @ref CORRADE_TARGET_IOS "iOS",
 @ref CORRADE_TARGET_ANDROID "Android" in particular) running the tests has no
 special requirements. On Emscripten the tests have to be running in a browser,

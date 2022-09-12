@@ -121,6 +121,10 @@ extension and a corresponding plugin is loaded. After that, flags set via
 the concrete implementation, with a warning emitted in case given option is not
 present in the default configuration of the target plugin.
 
+The @ref extension() and @ref mimeType() functions can't be implemented as
+they depend on the plugin chosen inside @ref convertToFile(). Both return an
+empty string.
+
 The output of the @ref convertToFile() function called on the concrete
 implementation is then proxied back.
 */

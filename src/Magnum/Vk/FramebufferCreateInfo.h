@@ -94,6 +94,10 @@ class MAGNUM_VK_EXPORT FramebufferCreateInfo {
          * -    `attachmentCount` and `pAttachments` to a copy of
          *      @p attachments
          * -    `width`, `height` and `layers` to @p size
+         *
+         * @todo switch to Iterable<ImageView&> once Iterable supports
+         *      references so people can pass a whole array of images without
+         *      having to build a temporary list of references
          */
         explicit FramebufferCreateInfo(VkRenderPass renderPass, Containers::ArrayView<const Containers::Reference<ImageView>> attachments, const Vector3i& size, Flags flags = {});
 

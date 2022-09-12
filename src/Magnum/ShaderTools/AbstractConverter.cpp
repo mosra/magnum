@@ -733,11 +733,14 @@ Containers::Optional<Containers::Array<char>> AbstractConverter::doLinkFilesToDa
 }
 
 Debug& operator<<(Debug& debug, const ConverterFeature value) {
-    debug << "ShaderTools::ConverterFeature" << Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "ShaderTools::ConverterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case ConverterFeature::v: return debug << "::" #v;
+        #define _c(v) case ConverterFeature::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(ValidateData)
         _c(ValidateFile)
         _c(ConvertData)
@@ -752,11 +755,11 @@ Debug& operator<<(Debug& debug, const ConverterFeature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
 Debug& operator<<(Debug& debug, const ConverterFeatures value) {
-    return Containers::enumSetDebugOutput(debug, value, "ShaderTools::ConverterFeatures{}", {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "ShaderTools::ConverterFeatures{}", {
         ConverterFeature::ValidateData,
         /* Implied by ValidateData, has to be after */
         ConverterFeature::ValidateFile,

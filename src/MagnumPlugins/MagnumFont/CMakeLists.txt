@@ -52,6 +52,8 @@ endif()
 target_link_libraries(MagnumFont PUBLIC Magnum MagnumText MagnumTrade)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFont PUBLIC TgaImporter)
+elseif(MAGNUM_MAGNUMFONT_BUILD_STATIC)
+    target_link_libraries(MagnumFont INTERFACE TgaImporter)
 endif()
 
 install(FILES MagnumFont.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h

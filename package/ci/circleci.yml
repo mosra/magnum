@@ -67,6 +67,10 @@ commands:
           if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov curl"; fi
           sudo apt install -y ninja-build gcc cmake $LCOV_PACKAGES << parameters.extra >>
 
+  # TODO this might get resolved with 1.11.1:
+  #   https://github.com/ninja-build/ninja/pull/1827
+  #   https://github.com/ninja-build/ninja/pull/2174
+  # But wouldn't it build too slow then? Heh
   cap-ninja-jobs:
     parameters:
       count:
@@ -271,7 +275,7 @@ jobs:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     # In this case it gets stuck even with 24 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
-    # TODO: revisit when we get rid of more STL
+    # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
         count: 20
     - install-gcc-4_8
@@ -310,7 +314,7 @@ jobs:
     # It crashes with the default setting. Only on GCC, usually when the huge
     # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
     # get involved.
-    # TODO: revisit when we get rid of more STL
+    # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs
     - install-gcc-4_8
     - install-swiftshader-vulkan:
@@ -331,11 +335,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
-    # get involved.
-    # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    # In this case it gets stuck even with 24 jobs. Only on GCC, usually when
+    # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TODO: revisit when we get rid of more STL / deprecated includes
+    - cap-ninja-jobs:
+        count: 20
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
@@ -357,11 +361,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
-    # It crashes with the default setting. Only on GCC, usually when the huge
-    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
-    # get involved.
-    # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    # In this case it gets stuck even with 20 jobs. Only on GCC, usually when
+    # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TODO: revisit when we get rid of more STL / deprecated includes
+    - cap-ninja-jobs:
+        count: 16
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
@@ -377,6 +381,11 @@ jobs:
       # STUPID yml interprets unquoted ON as a boolean
       # https://stackoverflow.com/questions/53648244/specifying-the-string-value-yes-in-a-yaml-property
       BUILD_STATIC: "ON"
+      # Testing magnum-sceneconverter and other utilities requires the plugins
+      # to be either installed or static. Tests are however deliberately run
+      # before install, so the static builds are the only case where the
+      # utilities get thoroughly tested.
+      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::ObjImporter
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
@@ -385,7 +394,7 @@ jobs:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     # 24 is not enough, unlike the other GCC-based builds
-    # TODO: revisit when we get rid of more STL
+    # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
         count: 20
     - install-gcc-4_8
@@ -510,6 +519,9 @@ jobs:
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
+      # Same comment as with the linux-static build -- these are the only jobs
+      # that test command-line tools thoroughly
+      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::ObjImporter
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
       PLATFORM_GL_API: CGL

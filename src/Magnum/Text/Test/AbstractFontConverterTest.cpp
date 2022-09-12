@@ -95,7 +95,9 @@ struct AbstractFontConverterTest: TestSuite::Tester {
     void importGlyphCacheFromFileAsSingleDataNotFound();
 
     void debugFeature();
+    void debugFeaturePacked();
     void debugFeatures();
+    void debugFeaturesPacked();
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {
@@ -149,7 +151,9 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
               &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound,
 
               &AbstractFontConverterTest::debugFeature,
-              &AbstractFontConverterTest::debugFeatures});
+              &AbstractFontConverterTest::debugFeaturePacked,
+              &AbstractFontConverterTest::debugFeatures,
+              &AbstractFontConverterTest::debugFeaturesPacked});
 
     /* Create testing dir */
     Utility::Path::make(TEXT_TEST_OUTPUT_DIR);
@@ -1019,11 +1023,25 @@ void AbstractFontConverterTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "Text::FontConverterFeature::ExportFont Text::FontConverterFeature(0xf0)\n");
 }
 
+void AbstractFontConverterTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << FontConverterFeature::ExportFont << Debug::packed << FontConverterFeature(0xf0) << FontConverterFeature::ImportGlyphCache;
+    CORRADE_COMPARE(out.str(), "ExportFont 0xf0 Text::FontConverterFeature::ImportGlyphCache\n");
+}
+
 void AbstractFontConverterTest::debugFeatures() {
     std::ostringstream out;
 
     Debug{&out} << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << FontConverterFeatures{};
     CORRADE_COMPARE(out.str(), "Text::FontConverterFeature::ExportFont|Text::FontConverterFeature::ImportGlyphCache Text::FontConverterFeatures{}\n");
+}
+
+void AbstractFontConverterTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << Debug::packed << FontConverterFeatures{} << FontConverterFeature::ExportGlyphCache;
+    CORRADE_COMPARE(out.str(), "ExportFont|ImportGlyphCache {} Text::FontConverterFeature::ExportGlyphCache\n");
 }
 
 }}}}

@@ -24,7 +24,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -102,7 +102,7 @@ void main() {
 }
             )");
 
-            CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
             attachShaders({vert, frag});
 

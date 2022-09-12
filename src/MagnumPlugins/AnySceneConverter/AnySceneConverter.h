@@ -30,6 +30,8 @@
  * @m_since{2020,06}
  */
 
+#include <Corrade/Containers/Pointer.h>
+
 #include "Magnum/Trade/AbstractSceneConverter.h"
 #include "MagnumPlugins/AnySceneConverter/configure.h"
 
@@ -58,6 +60,8 @@ namespace Magnum { namespace Trade {
 Detects file type based on file extension, loads corresponding plugin and then
 tries to convert the file with it. Supported formats:
 
+-   glTF (`*.gltf`, `*.glb`), converted with @ref GltfSceneConverter or any
+    other plugin that provides it
 -   Stanford (`*.ply`), converted with @ref StanfordSceneConverter or any other
     plugin that provides it
 
@@ -96,14 +100,20 @@ information.
 
 @section Trade-AnySceneConverter-proxy Interface proxying and option propagation
 
-On a call to @ref convertToFile(), a target file format is detected from the
-extension and a corresponding plugin is loaded. After that, flags set via
-@ref setFlags() and options set through @ref configuration() are propagated to
-the concrete implementation, with a warning emitted in case given option is not
-present in the default configuration of the target plugin.
+On a call to @ref convertToFile() or @ref beginFile(), a target file format is
+detected from the extension and a corresponding plugin is loaded. After that,
+flags set via @ref setFlags() and options set through @ref configuration() are
+propagated to the concrete implementation. A warning is emitted in case an
+option set is not present in the default configuration of the target plugin.
 
-The output of the @ref convertToFile() function called on the concrete
-implementation is then proxied back.
+The @ref features() initially report just
+@ref SceneConverterFeature::ConvertMeshToFile and @relativeref{SceneConverterFeature,ConvertMultipleToFile} --- i.e., not
+advertising support for any actual data types. These are included only once
+@ref beginFile() is called, taken from the concrete plugin implementation.
+
+Calls to the @ref endFile(), @ref add() and related functions are then proxied
+to the concrete implementation. The @ref abort() function aborts and destroys
+the internally instantiated plugin; @ref isConverting() works as usual.
 */
 class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneConverter {
     public:
@@ -118,6 +128,39 @@ class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneCon
     private:
         MAGNUM_ANYSCENECONVERTER_LOCAL SceneConverterFeatures doFeatures() const override;
         MAGNUM_ANYSCENECONVERTER_LOCAL bool doConvertToFile(const MeshData& mesh, Containers::StringView filename) override;
+
+        void doAbort() override;
+        bool doBeginFile(Containers::StringView filename) override;
+        bool doEndFile(Containers::StringView filename) override;
+
+        bool doAdd(UnsignedInt id, const SceneData& scene, Containers::StringView name) override;
+        void doSetSceneFieldName(UnsignedInt field, Containers::StringView name) override;
+        void doSetObjectName(UnsignedLong object, Containers::StringView name) override;
+        void doSetDefaultScene(UnsignedInt id) override;
+
+        bool doAdd(UnsignedInt id, const AnimationData& animation, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const LightData& light, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const CameraData& camera, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const SkinData2D& skin, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const SkinData3D& skin, Containers::StringView name) override;
+
+        bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData> meshLevels, Containers::StringView name) override;
+        void doSetMeshAttributeName(UnsignedShort attribute, Containers::StringView name) override;
+
+        bool doAdd(UnsignedInt id, const MaterialData& material, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const TextureData& texture, Containers::StringView name) override;
+
+        bool doAdd(UnsignedInt id, const ImageData1D& image, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override;
+
+        bool doAdd(UnsignedInt id, const ImageData2D& image, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override;
+
+        bool doAdd(UnsignedInt id, const ImageData3D& image, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override;
+
+        Containers::Pointer<AbstractSceneConverter> _converter;
 };
 
 }}

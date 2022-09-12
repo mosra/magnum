@@ -461,15 +461,10 @@ available for desktop OpenGL only, see @ref requires-gl.
 -   `MAGNUM_TARGET_GLES2` --- Target OpenGL ES 2.0 instead of 3.0 and later.
     Available only when `MAGNUM_WITH_GL` is enabled. Currently enabled by
     default when `MAGNUM_TARGET_GLES` is set.
--   `MAGNUM_TARGET_DESKTOP_GLES` --- Target OpenGL ES on desktop, i.e. use
-    OpenGL ES emulation in desktop OpenGL drivers. Available on Linux and
-    Windows, though might not be supported by all drivers. Available only when
-    `MAGNUM_WITH_GL` is enabled.
--   `MAGNUM_TARGET_HEADLESS` --- Build command-line utilities for use on a
-    headless machine. Basically it means that EGL with no display attachment is
-    being used everywhere instead of platform-specific toolkits like CGL, GLX
-    or WGL. Supported mainly on OpenGL ES drivers. Available only when
-    `MAGNUM_WITH_GL` is enabled.
+-   `MAGNUM_TARGET_EGL` --- Target EGL instead of a platform-specific OpenGL
+    support library like CGL, EAGL, GLX or WGL. Enabled implicitly on Android,
+    Emscripten and Windows RT, enabled by default when `MAGNUM_TARGET_GLES` is
+    set unless on iOS. Available only when `MAGNUM_WITH_GL` is enabled.
 -   `MAGNUM_TARGET_VK` --- Build libraries with Vulkan interoperability
     enabled. Enabled by default when `MAGNUM_WITH_VK` is enabled. Disabling
     this will cause libraries to not depend on the @ref Vk library, but doesn't
@@ -546,9 +541,6 @@ going to build any of the @ref example-index "examples", you'll need it.
 -   `MAGNUM_WITH_WINDOWLESSWGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWglApplication "WindowlessWglApplication" library.
     Requires `MAGNUM_TARGET_GL` to be enabled.
--   `MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- Build the
-    @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
-    library. Requires `MAGNUM_TARGET_GL` to be enabled.
 
 None of the context libraries is built by default. Similarly to the application
 libraries, they are always built as static. You need them only if you chose to
@@ -682,7 +674,24 @@ Options controlling the build:
     update your code whenever there's a breaking API change. It's however
     recommended to have this option disabled when deploying a final application
     as it can result in smaller binaries.
--   Additional options are inherited from the @ref CORRADE_BUILD_MULTITHREADED
+-   `MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_FONTCONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_IMAGECONVERTER_STATIC_PLUGINS`,
+    `MAGNUM_SCENECONVERTER_STATIC_PLUGINS` and
+    `MAGNUM_SHADERCONVERTER_STATIC_PLUGINS` --- Static plugins to link to the
+    @ref magnum-distancefieldconverter "magnum-distancefieldconverter",
+    @ref magnum-fontconverter "magnum-fontconverter",
+    @ref magnum-imageconverter "magnum-imageconverter",
+    @ref magnum-sceneconverter "magnum-sceneconverter" and
+    @ref magnum-shaderconverter "magnum-shaderconverter" utilities,
+    respectively. Intended for use in scenarios where both
+    `MAGNUM_BUILD_STATIC` and `MAGNUM_BUILD_PLUGINS_STATIC` is enabled, in
+    which case these executables don't have a possibility to load dynamic
+    plugins from a filesystem. Plugins from the Magnum Plugins repository
+    (and elsewhere) can be linked if it's added as a CMake subproject. Expects
+    a semicolon-separated list of existing CMake targets, for example `Magnum::AnyImageImporter;MagnumPlugins::StbImageImporter`.
+-   Additional options are inherited from the @ref CORRADE_BUILD_MULTITHREADED,
+    @ref CORRADE_BUILD_CPU_RUNTIME_DISPATCH and @ref CORRADE_CPU_USE_IFUNC
     options specified when building Corrade.
 
 The features used can be conveniently detected in depending projects both in
@@ -739,6 +748,9 @@ compatibility if `MAGNUM_BUILD_DEPRECATED` isn't disabled.
     this was used to handle that case. Nowadays please use NDK r19 and newer,
     with the unified sysroot layout. Defaults to ``.``. If a relative path is
     used, it's relative to `CMAKE_INSTALL_PREFIX`.
+-   `MAGNUM_TARGET_HEADLESS` --- Alias to `MAGNUM_TARGET_EGL`.
+-   `MAGNUM_TARGET_DESKTOP_GLES` --- Inverse of `MAGNUM_TARGET_EGL` if
+    `MAGNUM_TARGET_GLES` is enabled.
 
 Various plugin interfaces search for plugins in locations and order documented
 in @ref Corrade::PluginManager::implicitPluginSearchPaths(),

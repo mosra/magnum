@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -38,6 +39,7 @@
 #include "Magnum/GL/GL.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
 /* For label() / setLabel(), which used to be a std::string. Not ideal for the
    return type, but at least something. */
 #include <Corrade/Containers/StringStl.h>
@@ -507,19 +509,39 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         static Int maxCombinedUniformComponents(Type type);
         #endif
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Compile multiple shaders simultaneously
+         * @m_deprecated_since_latest Originally meant to batch multiple
+         *      compile operations together in a way that allowed the driver to
+         *      perform the compilation in multiple threads. Superseded by
+         *      @ref submitCompile() and @ref checkCompile(), use either those
+         *      or the zero-argument @ref compile() instead. See
+         *      @ref GL-AbstractShaderProgram-async for more information.
          *
-         * Returns @cpp false @ce if compilation of any shader failed,
-         * @cpp true @ce if everything succeeded. Compiler messages (if any)
-         * are printed to error output. The operation is batched in a way that
-         * allows the driver to perform multiple compilations simultaneously
-         * (i.e. in multiple threads).
-         * @see @fn_gl_keyword{ShaderSource}, @fn_gl_keyword{CompileShader},
-         *      @fn_gl_keyword{GetShader} with @def_gl{COMPILE_STATUS} and
-         *      @def_gl{INFO_LOG_LENGTH}, @fn_gl_keyword{GetShaderInfoLog}
+         * Calls @ref submitCompile() on all shaders first, then
+         * @ref checkCompile(). Returns @cpp false @ce if compilation of any
+         * shader failed, @cpp true @ce if everything succeeded.
          */
-        static bool compile(std::initializer_list<Containers::Reference<Shader>> shaders);
+        static CORRADE_DEPRECATED("use either submitCompile() and checkCompile() or the zero-argument compile() instead") bool compile(std::initializer_list<Containers::Reference<Shader>> shaders);
+        #endif
+
+        /**
+         * @brief Wrap existing OpenGL shader object
+         * @param type          Shader type
+         * @param id            OpenGL shader ID
+         * @param flags         Object creation flags
+         * @m_since_latest
+         *
+         * The @p id is expected to be of an existing OpenGL shader object.
+         * Unlike a shader created using a constructor, the OpenGL object is by
+         * default not deleted on destruction, use @p flags for different
+         * behavior.
+         * @see @ref release()
+         */
+        static Shader wrap(Type type, GLuint id, ObjectFlags flags = {}) {
+            return Shader{type, id, flags};
+        }
 
         /**
          * @brief Constructor
@@ -530,7 +552,8 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * corresponding to @p version parameter at the beginning. If
          * @ref Version::None is specified, (not) adding the @glsl #version @ce
          * directive is left to the user.
-         * @see @fn_gl_keyword{CreateShader}
+         * @see @ref Shader(NoCreateT), @ref wrap(),
+         *      @fn_gl_keyword{CreateShader}
          */
         explicit Shader(Version version, Type type);
 
@@ -559,7 +582,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL shader.
-         * @see @fn_gl_keyword{DeleteShader}
+         * @see @ref wrap(), @ref release(), @fn_gl_keyword{DeleteShader}
          */
         ~Shader();
 
@@ -571,6 +594,18 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 
         /** @brief OpenGL shader ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release the underlying OpenGL object
+         * @m_since_latest
+         *
+         * Releases ownership of the OpenGL shader object and returns its ID so
+         * it's not deleted on destruction. The internal state is then
+         * equivalent to a moved-from state.
+         * @see @ref wrap()
+         */
+        /* MinGW complains loudly if the declaration doesn't also have inline */
+        inline GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -634,16 +669,80 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Shader& addFile(const std::string& filename);
 
         /**
-         * @brief Compile shader
+         * @brief Compile the shader
          *
-         * Compiles single shader. Prefer to compile multiple shaders at once
-         * using @ref compile(std::initializer_list<Containers::Reference<Shader>>)
-         * for improved performance, see its documentation for more
-         * information.
+         * Calls @ref submitCompile(), immediately followed by
+         * @ref checkCompile(), passing back its return value. See
+         * documentation of those two functions for details.
          */
         bool compile();
 
+        /**
+         * @brief Submit the shader for compilation
+         * @m_since_latest
+         *
+         * You can call @ref isCompileFinished() or @ref checkCompile() after,
+         * but it's recommended to instead immediately call
+         * @ref AbstractShaderProgram::attachShader() and
+         * @relativeref{AbstractShaderProgram,submitLink()}, then optionally
+         * continue with @relativeref{AbstractShaderProgram,isLinkFinished()}
+         * and pass all input shaders to
+         * @relativeref{AbstractShaderProgram,checkLink()} on the final program
+         * --- if compilation would fail, subsequent linking will as well, and
+         * @relativeref{AbstractShaderProgram,checkLink()} will print the
+         * compilation error if linking failed due to that. See
+         * @ref GL-AbstractShaderProgram-async for more information.
+         * @see @fn_gl_keyword{ShaderSource}, @fn_gl_keyword{CompileShader}
+         */
+        void submitCompile();
+
+        /**
+         * @brief Check shader compilation status and await completion
+         * @m_since_latest
+         *
+         * Has to be called only if @ref submitCompile() was called before.
+         * It's however recommended to instead immediately call
+         * @ref AbstractShaderProgram::attachShader() and
+         * @relativeref{AbstractShaderProgram,submitLink()}, then optionally
+         * continue with @relativeref{AbstractShaderProgram,isLinkFinished()}
+         * and pass all input shaders to
+         * @relativeref{AbstractShaderProgram,checkLink()} on the final program
+         * --- if compilation would fail, subsequent linking will as well, and
+         * @relativeref{AbstractShaderProgram,checkLink()} will print the
+         * compilation error if linking failed due to that. See
+         * @ref GL-AbstractShaderProgram-async for more information.
+         * @see @fn_gl_keyword{GetShader} with @def_gl{COMPILE_STATUS} and
+         *      @def_gl{INFO_LOG_LENGTH}, @fn_gl_keyword{GetShaderInfoLog}
+         */
+        bool checkCompile();
+
+        /**
+         * @brief Whether a @ref submitCompile() operation has finished
+         * @m_since_latest
+         *
+         * Has to be called only if @ref submitCompile() was called before, and
+         * before @ref checkCompile(). If returns @cpp false @ce, a subsequent
+         * @ref checkCompile() call will block until the compilation is
+         * finished. If @gl_extension{KHR,parallel_shader_compile} is not
+         * available, the function always returns @cpp true @ce --- i.e., as if
+         * the compilation was done synchronously.
+         *
+         * It's however recommended to wait only for the final link to finish,
+         * and not for particular compilations --- i.e., right after
+         * @ref submitCompile() continue with
+         * @ref AbstractShaderProgram::attachShader() and
+         * @relativeref{AbstractShaderProgram,submitLink()}, and then check
+         * with @relativeref{AbstractShaderProgram,isLinkFinished()} on the
+         * final program. See @ref GL-AbstractShaderProgram-async for more
+         * information.
+         * @see @fn_gl_keyword{GetProgram} with
+         *      @def_gl_extension{COMPLETION_STATUS,KHR,parallel_shader_compile}
+         */
+        bool isCompileFinished();
+
     private:
+        explicit Shader(Type type, GLuint id, ObjectFlags flags) noexcept;
+
         void MAGNUM_GL_LOCAL addSourceImplementationDefault(std::string source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
         void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(std::string source);
@@ -654,8 +753,11 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
         #endif
 
+        MAGNUM_GL_LOCAL static void APIENTRY completionStatusImplementationFallback(GLuint, GLenum, GLint*);
+
         Type _type;
         GLuint _id;
+        ObjectFlags _flags;
 
         std::vector<std::string> _sources;
 };
@@ -663,7 +765,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 /** @debugoperatorclassenum{Shader,Shader::Type} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Shader::Type value);
 
-inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._id), _sources(std::move(other._sources)) {
+inline Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _flags{other._flags}, _sources{std::move(other._sources)} {
     other._id = 0;
 }
 
@@ -671,8 +773,15 @@ inline Shader& Shader::operator=(Shader&& other) noexcept {
     using std::swap;
     swap(_type, other._type);
     swap(_id, other._id);
+    swap(_flags, other._flags);
     swap(_sources, other._sources);
     return *this;
+}
+
+inline GLuint Shader::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 }}

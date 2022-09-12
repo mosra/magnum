@@ -1,0 +1,5 @@
+Mesh 0:
+  Level 0: 1 vertices @ Points (0.0 kB)
+    Position @ Vector3, offset 0, stride 12
+    1 indices @ UnsignedInt, offset 0, stride 4 (0.0 kB)
+Total mesh data size: 0.0 kB

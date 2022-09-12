@@ -29,6 +29,7 @@
 #include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 
@@ -40,11 +41,22 @@
 
 namespace Magnum { namespace Trade {
 
+using namespace Containers::Literals;
+
 TgaImageConverter::TgaImageConverter() = default;
 
 TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImageConverter{manager, plugin} {}
 
 ImageConverterFeatures TgaImageConverter::doFeatures() const { return ImageConverterFeature::Convert2DToData; }
+
+Containers::String TgaImageConverter::doExtension() const { return "tga"_s; }
+
+Containers::String TgaImageConverter::doMimeType() const {
+    /* https://en.wikipedia.org/wiki/Truevision_TGA says there's no registered
+       MIME type. It probably never will be. Using `file --mime-type` on a TGA
+       file returns image/x-tga, so using that here as well. */
+    return "image/x-tga"_s;
+}
 
 Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData(const ImageView2D& image) {
     /* Warn about lost metadata */
@@ -98,4 +110,4 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
 }}
 
 CORRADE_PLUGIN_REGISTER(TgaImageConverter, Magnum::Trade::TgaImageConverter,
-    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.2")
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.3.3")

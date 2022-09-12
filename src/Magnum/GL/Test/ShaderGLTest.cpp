@@ -23,8 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Shader is <string>-free */
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/System.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/GL/Context.h"
@@ -46,6 +49,7 @@ struct ShaderGLTest: OpenGLTester {
     void construct();
     void constructNoVersion();
     void constructMove();
+    void wrap();
 
     #ifndef MAGNUM_TARGET_WEBGL
     void label();
@@ -55,6 +59,9 @@ struct ShaderGLTest: OpenGLTester {
     void addSourceNoVersion();
     void addFile();
     void compile();
+    void compileAsync();
+    void compileFailure();
+    void compileFailureAsync();
     void compileUtf8();
     void compileNoVersion();
 };
@@ -63,6 +70,7 @@ ShaderGLTest::ShaderGLTest() {
     addTests({&ShaderGLTest::construct,
               &ShaderGLTest::constructNoVersion,
               &ShaderGLTest::constructMove,
+              &ShaderGLTest::wrap,
 
               #ifndef MAGNUM_TARGET_WEBGL
               &ShaderGLTest::label,
@@ -72,6 +80,9 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
               &ShaderGLTest::compile,
+              &ShaderGLTest::compileAsync,
+              &ShaderGLTest::compileFailure,
+              &ShaderGLTest::compileFailureAsync,
               &ShaderGLTest::compileUtf8,
               &ShaderGLTest::compileNoVersion});
 }
@@ -149,6 +160,20 @@ void ShaderGLTest::constructMove() {
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Shader>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Shader>::value);
+}
+
+void ShaderGLTest::wrap() {
+    GLuint id = glCreateShader(GL_FRAGMENT_SHADER);
+
+    /* Releasing won't delete anything */
+    {
+        auto shader = Shader::wrap(Shader::Type::Fragment, id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(shader.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Shader::wrap(Shader::Type::Fragment, id);
+    glDeleteShader(id);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -276,11 +301,97 @@ void ShaderGLTest::compile() {
 
     Shader shader(v, Shader::Type::Fragment);
     shader.addSource("void main() {}\n");
-    CORRADE_VERIFY(shader.compile());
 
-    Shader shader2(v, Shader::Type::Fragment);
-    shader2.addSource("[fu] bleh error #:! stuff\n");
-    CORRADE_VERIFY(!shader2.compile());
+    CORRADE_VERIFY(shader.compile());
+    CORRADE_VERIFY(shader.isCompileFinished());
+}
+
+void ShaderGLTest::compileAsync() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Fragment);
+    shader.addSource("void main() {}\n");
+    shader.submitCompile();
+
+    while(!shader.isCompileFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(shader.checkCompile());
+    CORRADE_VERIFY(shader.isCompileFinished());
+}
+
+void ShaderGLTest::compileFailure() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Vertex);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!shader.compile());
+    }
+    CORRADE_VERIFY(shader.isCompileFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of vertex shader failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
+}
+
+void ShaderGLTest::compileFailureAsync() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Fragment);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    /* The compile submission should not print anything ... */
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        shader.submitCompile();
+    }
+
+    while(!shader.isCompileFinished())
+        Utility::System::sleep(100);
+
+    CORRADE_VERIFY(out.str().empty());
+
+    /* ... only the final check should */
+    {
+        Error redirectError{&out};
+        CORRADE_VERIFY(!shader.checkCompile());
+    }
+    CORRADE_VERIFY(shader.isCompileFinished());
+    CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
+        TestSuite::Compare::StringHasPrefix);
 }
 
 void ShaderGLTest::compileUtf8() {

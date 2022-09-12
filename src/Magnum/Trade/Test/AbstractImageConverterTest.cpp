@@ -56,6 +56,10 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void thingNotSupported();
 
+    void extensionMimeType();
+    void extensionMimeTypeNotImplemented();
+    void extensionMimeTypeCustomDeleter();
+
     void convert1D();
     void convert2D();
     void convert3D();
@@ -292,7 +296,13 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void convertCompressed3DToFileThroughLevels();
 
     void debugFeature();
+    void debugFeaturePacked();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void debugFeatureDeprecated();
+    void debugFeatureDeprecatedPacked();
+    #endif
     void debugFeatures();
+    void debugFeaturesPacked();
     void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
@@ -306,6 +316,10 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::setFlagsNotImplemented,
 
               &AbstractImageConverterTest::thingNotSupported,
+
+              &AbstractImageConverterTest::extensionMimeType,
+              &AbstractImageConverterTest::extensionMimeTypeNotImplemented,
+              &AbstractImageConverterTest::extensionMimeTypeCustomDeleter,
 
               &AbstractImageConverterTest::convert1D,
               &AbstractImageConverterTest::convert2D,
@@ -524,7 +538,13 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::convertCompressed3DToFileThroughLevels,
 
               &AbstractImageConverterTest::debugFeature,
+              &AbstractImageConverterTest::debugFeaturePacked,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImageConverterTest::debugFeatureDeprecated,
+              &AbstractImageConverterTest::debugFeatureDeprecatedPacked,
+              #endif
               &AbstractImageConverterTest::debugFeatures,
+              &AbstractImageConverterTest::debugFeaturesPacked,
               &AbstractImageConverterTest::debugFeaturesSupersets,
               &AbstractImageConverterTest::debugFlag,
               &AbstractImageConverterTest::debugFlags});
@@ -599,6 +619,8 @@ void AbstractImageConverterTest::thingNotSupported() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    converter.extension();
+    converter.mimeType();
     converter.convert(ImageView1D{PixelFormat::R8Unorm, 0, nullptr});
     converter.convert(ImageView2D{PixelFormat::R8Unorm, {}, nullptr});
     converter.convert(ImageView3D{PixelFormat::R8Unorm, {}, nullptr});
@@ -630,6 +652,8 @@ void AbstractImageConverterTest::thingNotSupported() {
     converter.convertToFile({CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     converter.convertToFile({CompressedImageView3D{CompressedPixelFormat::Bc1RGBAUnorm, {}, nullptr}}, Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
     CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImageConverter::extension(): file conversion not supported\n"
+        "Trade::AbstractImageConverter::mimeType(): file conversion not supported\n"
         "Trade::AbstractImageConverter::convert(): 1D image conversion not supported\n"
         "Trade::AbstractImageConverter::convert(): 2D image conversion not supported\n"
         "Trade::AbstractImageConverter::convert(): 3D image conversion not supported\n"
@@ -660,6 +684,54 @@ void AbstractImageConverterTest::thingNotSupported() {
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 1D image conversion not supported\n"
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 2D image conversion not supported\n"
         "Trade::AbstractImageConverter::convertToFile(): multi-level compressed 3D image conversion not supported\n");
+}
+
+void AbstractImageConverterTest::extensionMimeType() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData;
+        }
+        Containers::String doExtension() const override { return "yello"; }
+        Containers::String doMimeType() const override { return "yel/low"; }
+    } converter;
+
+    CORRADE_COMPARE(converter.extension(), "yello");
+    CORRADE_COMPARE(converter.mimeType(), "yel/low");
+}
+
+void AbstractImageConverterTest::extensionMimeTypeNotImplemented() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile;
+        }
+    } converter;
+
+    CORRADE_COMPARE(converter.extension(), "");
+    CORRADE_COMPARE(converter.mimeType(), "");
+}
+
+void AbstractImageConverterTest::extensionMimeTypeCustomDeleter() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData;
+        }
+        Containers::String doExtension() const override {
+            return Containers::String{"yello", 5, [](char*, std::size_t) {}};
+        }
+        Containers::String doMimeType() const override {
+            return Containers::String{"yel/low", 7, [](char*, std::size_t) {}};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.extension();
+    converter.mimeType();
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImageConverter::extension(): implementation is not allowed to use a custom String deleter\n"
+        "Trade::AbstractImageConverter::mimeType(): implementation is not allowed to use a custom String deleter\n");
 }
 
 void AbstractImageConverterTest::convert1D() {
@@ -1706,7 +1778,10 @@ void AbstractImageConverterTest::convertImageData3DToData() {
 
 void AbstractImageConverterTest::convertLevels1DToData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -1725,7 +1800,10 @@ void AbstractImageConverterTest::convertLevels1DToData() {
 
 void AbstractImageConverterTest::convertLevels2DToData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -1744,7 +1822,10 @@ void AbstractImageConverterTest::convertLevels2DToData() {
 
 void AbstractImageConverterTest::convertLevels3DToData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -1764,7 +1845,8 @@ void AbstractImageConverterTest::convertLevels3DToData() {
 void AbstractImageConverterTest::convertLevels1DToDataFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertLevels1DToData;
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
             return {};
@@ -1783,7 +1865,8 @@ void AbstractImageConverterTest::convertLevels1DToDataFailed() {
 void AbstractImageConverterTest::convertLevels2DToDataFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertLevels2DToData;
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
             return {};
@@ -1802,7 +1885,8 @@ void AbstractImageConverterTest::convertLevels2DToDataFailed() {
 void AbstractImageConverterTest::convertLevels3DToDataFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertLevels3DToData;
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
             return {};
@@ -1822,7 +1906,10 @@ void AbstractImageConverterTest::convertLevels1DToDataInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -1835,7 +1922,10 @@ void AbstractImageConverterTest::convertLevels2DToDataNoLevels() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -1848,7 +1938,10 @@ void AbstractImageConverterTest::convertLevels2DToDataZeroSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -1865,7 +1958,10 @@ void AbstractImageConverterTest::convertLevels2DToDataNullptr() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -1882,7 +1978,10 @@ void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -1900,7 +1999,10 @@ void AbstractImageConverterTest::convertLevels2DToDataInconsistentFormatExtra() 
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -1918,7 +2020,10 @@ void AbstractImageConverterTest::convertLevels2DToDataInconsistentFlags() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -1936,7 +2041,10 @@ void AbstractImageConverterTest::convertLevels3DToDataInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -1949,7 +2057,10 @@ void AbstractImageConverterTest::convertLevels1DToDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[4]{};
@@ -1963,7 +2074,10 @@ void AbstractImageConverterTest::convertLevels2DToDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[4]{};
@@ -1977,7 +2091,10 @@ void AbstractImageConverterTest::convertLevels3DToDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[4]{};
@@ -1991,7 +2108,10 @@ void AbstractImageConverterTest::convertLevels1DToDataCustomDeleter() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
         }
@@ -2008,7 +2128,10 @@ void AbstractImageConverterTest::convertLevels2DToDataCustomDeleter() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
         }
@@ -2025,7 +2148,10 @@ void AbstractImageConverterTest::convertLevels3DToDataCustomDeleter() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
         }
@@ -2040,7 +2166,10 @@ void AbstractImageConverterTest::convertLevels3DToDataCustomDeleter() {
 
 void AbstractImageConverterTest::convertCompressedLevels1DToData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2059,7 +2188,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToData() {
 
 void AbstractImageConverterTest::convertCompressedLevels2DToData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2078,7 +2210,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToData() {
 
 void AbstractImageConverterTest::convertCompressedLevels3DToData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2098,7 +2233,8 @@ void AbstractImageConverterTest::convertCompressedLevels3DToData() {
 void AbstractImageConverterTest::convertCompressedLevels1DToDataFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertCompressedLevels1DToData;
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
             return {};
@@ -2117,7 +2253,8 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataFailed() {
 void AbstractImageConverterTest::convertCompressedLevels2DToDataFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertCompressedLevels2DToData;
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
             return {};
@@ -2136,7 +2273,8 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataFailed() {
 void AbstractImageConverterTest::convertCompressedLevels3DToDataFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertCompressedLevels3DToData;
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
         }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
             return {};
@@ -2156,7 +2294,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -2169,7 +2310,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataNoLevels() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -2182,7 +2326,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataZeroSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -2199,7 +2346,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataNullptr() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -2216,7 +2366,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentForm
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -2234,7 +2387,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataInconsistentFlag
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[16]{};
@@ -2252,7 +2408,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -2265,7 +2424,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataNotImplemented()
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[8]{};
@@ -2279,7 +2441,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataNotImplemented()
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[8]{};
@@ -2293,7 +2458,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataNotImplemented()
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[8]{};
@@ -2307,7 +2475,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToDataCustomDeleter() 
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
         }
@@ -2324,7 +2495,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToDataCustomDeleter() 
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
         }
@@ -2341,7 +2515,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataCustomDeleter() 
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
         }
@@ -2356,7 +2533,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToDataCustomDeleter() 
 
 void AbstractImageConverterTest::convert1DToDataThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2370,7 +2550,10 @@ void AbstractImageConverterTest::convert1DToDataThroughLevels() {
 
 void AbstractImageConverterTest::convert2DToDataThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2384,7 +2567,10 @@ void AbstractImageConverterTest::convert2DToDataThroughLevels() {
 
 void AbstractImageConverterTest::convert3DToDataThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2398,7 +2584,10 @@ void AbstractImageConverterTest::convert3DToDataThroughLevels() {
 
 void AbstractImageConverterTest::convertCompressed1DToDataThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2412,7 +2601,10 @@ void AbstractImageConverterTest::convertCompressed1DToDataThroughLevels() {
 
 void AbstractImageConverterTest::convertCompressed2DToDataThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -2426,7 +2618,10 @@ void AbstractImageConverterTest::convertCompressed2DToDataThroughLevels() {
 
 void AbstractImageConverterTest::convertCompressed3DToDataThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D> imageLevels) override {
             return Containers::Array<char>{nullptr, std::size_t(imageLevels[0].size().product()*imageLevels.size())};
         }
@@ -3250,7 +3445,10 @@ void AbstractImageConverterTest::convertImageData3DToFile() {
 
 void AbstractImageConverterTest::convertLevels1DToFile() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const ImageView1D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size()[0]), char(imageLevels.size())}));
@@ -3274,7 +3472,10 @@ void AbstractImageConverterTest::convertLevels1DToFile() {
 
 void AbstractImageConverterTest::convertLevels2DToFile() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const ImageView2D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())}));
@@ -3298,7 +3499,10 @@ void AbstractImageConverterTest::convertLevels2DToFile() {
 
 void AbstractImageConverterTest::convertLevels3DToFile() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const ImageView3D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())}));
@@ -3323,7 +3527,8 @@ void AbstractImageConverterTest::convertLevels3DToFile() {
 void AbstractImageConverterTest::convertLevels1DToFileFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertLevels1DToFile;
+            return ImageConverterFeature::Convert1DToFile|
+                   ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const ImageView1D>, Containers::StringView) override {
             return {};
@@ -3342,7 +3547,8 @@ void AbstractImageConverterTest::convertLevels1DToFileFailed() {
 void AbstractImageConverterTest::convertLevels2DToFileFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertLevels2DToFile;
+            return ImageConverterFeature::Convert2DToFile|
+                   ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const ImageView2D>, Containers::StringView) override {
             return {};
@@ -3361,7 +3567,8 @@ void AbstractImageConverterTest::convertLevels2DToFileFailed() {
 void AbstractImageConverterTest::convertLevels3DToFileFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertLevels3DToFile;
+            return ImageConverterFeature::Convert3DToFile|
+                   ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const ImageView3D>, Containers::StringView) override {
             return {};
@@ -3379,7 +3586,10 @@ void AbstractImageConverterTest::convertLevels3DToFileFailed() {
 
 void AbstractImageConverterTest::convertLevels1DToFileThroughData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size()[0]), char(imageLevels.size())});
@@ -3405,7 +3615,10 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughData() {
 
 void AbstractImageConverterTest::convertLevels2DToFileThroughData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())});
@@ -3430,7 +3643,10 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughData() {
 
 void AbstractImageConverterTest::convertLevels3DToFileThroughData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())});
@@ -3455,7 +3671,10 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughData() {
 
 void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
             return {};
@@ -3480,7 +3699,10 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataFailed() {
 
 void AbstractImageConverterTest::convertLevels2DToFileThroughDataFailed() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
             return {};
@@ -3505,7 +3727,10 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataFailed() {
 
 void AbstractImageConverterTest::convertLevels3DToFileThroughDataFailed() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
             return {};
@@ -3530,7 +3755,10 @@ void AbstractImageConverterTest::convertLevels3DToFileThroughDataFailed() {
 
 void AbstractImageConverterTest::convertLevels1DToFileThroughDataNotWritable() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToData|
+                   ImageConverterFeature::Levels;
+        }
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView1D>) override {
             return Containers::array({'\x00'});
         };
@@ -3547,7 +3775,10 @@ void AbstractImageConverterTest::convertLevels1DToFileThroughDataNotWritable() {
 
 void AbstractImageConverterTest::convertLevels2DToFileThroughDataNotWritable() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView2D>) override {
             return Containers::array({'\x00'});
@@ -3565,7 +3796,10 @@ void AbstractImageConverterTest::convertLevels2DToFileThroughDataNotWritable() {
 
 void AbstractImageConverterTest::convertLevels3DToFileThroughDataNotWritable() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const ImageView3D>) override {
             return Containers::array({'\x00'});
@@ -3585,7 +3819,10 @@ void AbstractImageConverterTest::convertLevels1DToFileInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -3598,7 +3835,10 @@ void AbstractImageConverterTest::convertLevels2DToFileInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -3611,7 +3851,10 @@ void AbstractImageConverterTest::convertLevels3DToFileInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -3624,7 +3867,10 @@ void AbstractImageConverterTest::convertLevels1DToFileNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[4]{};
@@ -3638,7 +3884,10 @@ void AbstractImageConverterTest::convertLevels2DToFileNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[4]{};
@@ -3652,7 +3901,10 @@ void AbstractImageConverterTest::convertLevels3DToFileNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[4]{};
@@ -3664,7 +3916,10 @@ void AbstractImageConverterTest::convertLevels3DToFileNotImplemented() {
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFile() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size()[0]), char(imageLevels.size())}));
@@ -3687,7 +3942,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFile() {
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFile() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())}));
@@ -3710,7 +3968,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFile() {
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFile() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())}));
@@ -3734,7 +3995,8 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFile() {
 void AbstractImageConverterTest::convertCompressedLevels1DToFileFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertCompressedLevels1DToFile;
+            return ImageConverterFeature::ConvertCompressed1DToFile|
+                   ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D>, Containers::StringView) override {
             return {};
@@ -3753,7 +4015,8 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileFailed() {
 void AbstractImageConverterTest::convertCompressedLevels2DToFileFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertCompressedLevels2DToFile;
+            return ImageConverterFeature::ConvertCompressed2DToFile|
+                   ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D>, Containers::StringView) override {
             return {};
@@ -3772,7 +4035,8 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileFailed() {
 void AbstractImageConverterTest::convertCompressedLevels3DToFileFailed() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override {
-            return ImageConverterFeature::ConvertCompressedLevels3DToFile;
+            return ImageConverterFeature::ConvertCompressed3DToFile|
+                   ImageConverterFeature::Levels;
         }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D>, Containers::StringView) override {
             return {};
@@ -3790,7 +4054,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileFailed() {
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size()[0]), char(imageLevels.size())});
@@ -3815,7 +4082,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughData() {
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())});
@@ -3840,7 +4110,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughData() {
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D> imageLevels) override {
             return Containers::array({char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())});
@@ -3865,7 +4138,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughData() {
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFailed() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
             return {};
@@ -3890,7 +4166,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataFaile
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataFailed() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
             return {};
@@ -3915,7 +4194,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataFaile
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFailed() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
             return {};
@@ -3940,7 +4222,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataFaile
 
 void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataNotWritable() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView1D>) override {
             return Containers::array({'\x00'});
@@ -3958,7 +4243,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileThroughDataNotWr
 
 void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataNotWritable() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView2D>) override {
             return Containers::array({'\x00'});
@@ -3976,7 +4264,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileThroughDataNotWr
 
 void AbstractImageConverterTest::convertCompressedLevels3DToFileThroughDataNotWritable() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToData; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToData|
+                   ImageConverterFeature::Levels;
+        }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(Containers::ArrayView<const CompressedImageView3D>) override {
             return Containers::array({'\x00'});
@@ -3996,7 +4287,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -4009,7 +4303,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -4022,7 +4319,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileInvalidImage() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     std::ostringstream out;
@@ -4035,7 +4335,10 @@ void AbstractImageConverterTest::convertCompressedLevels1DToFileNotImplemented()
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[8]{};
@@ -4049,7 +4352,10 @@ void AbstractImageConverterTest::convertCompressedLevels2DToFileNotImplemented()
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[8]{};
@@ -4063,7 +4369,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileNotImplemented()
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToFile|
+                   ImageConverterFeature::Levels;
+        }
     } converter;
 
     const char data[8]{};
@@ -4075,7 +4384,10 @@ void AbstractImageConverterTest::convertCompressedLevels3DToFileNotImplemented()
 
 void AbstractImageConverterTest::convert1DToFileThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert1DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const ImageView1D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size()[0]), char(imageLevels.size())}));
@@ -4094,7 +4406,10 @@ void AbstractImageConverterTest::convert1DToFileThroughLevels() {
 
 void AbstractImageConverterTest::convert2DToFileThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert2DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const ImageView2D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())}));
@@ -4113,7 +4428,10 @@ void AbstractImageConverterTest::convert2DToFileThroughLevels() {
 
 void AbstractImageConverterTest::convert3DToFileThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::Convert3DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const ImageView3D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())}));
@@ -4132,7 +4450,10 @@ void AbstractImageConverterTest::convert3DToFileThroughLevels() {
 
 void AbstractImageConverterTest::convertCompressed1DToFileThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels1DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed1DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView1D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size()[0]), char(imageLevels.size())}));
@@ -4151,7 +4472,10 @@ void AbstractImageConverterTest::convertCompressed1DToFileThroughLevels() {
 
 void AbstractImageConverterTest::convertCompressed2DToFileThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels2DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed2DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView2D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels.size())}));
@@ -4170,7 +4494,10 @@ void AbstractImageConverterTest::convertCompressed2DToFileThroughLevels() {
 
 void AbstractImageConverterTest::convertCompressed3DToFileThroughLevels() {
     struct: AbstractImageConverter {
-        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedLevels3DToFile; }
+        ImageConverterFeatures doFeatures() const override {
+            return ImageConverterFeature::ConvertCompressed3DToFile|
+                   ImageConverterFeature::Levels;
+        }
         bool doConvertToFile(Containers::ArrayView<const CompressedImageView3D> imageLevels, Containers::StringView filename) override {
             return Utility::Path::write(filename, Containers::arrayView(
                 {char(imageLevels[0].size().x()), char(imageLevels[0].size().y()), char(imageLevels[0].size().z()), char(imageLevels.size())}));
@@ -4194,11 +4521,46 @@ void AbstractImageConverterTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressed2D Trade::ImageConverterFeature(0xdeadbeef)\n");
 }
 
+void AbstractImageConverterTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressed2D << Debug::packed << ImageConverterFeature(0xdeadbeef) << ImageConverterFeature::Convert3D;
+    CORRADE_COMPARE(out.str(), "ConvertCompressed2D 0xdeadbeef Trade::ImageConverterFeature::Convert3D\n");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImageConverterTest::debugFeatureDeprecated() {
+    std::ostringstream out;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Debug{&out} << ImageConverterFeature::ConvertCompressedLevels1DToData << ImageConverterFeature::ConvertLevels3DToFile;
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressed1DToData|Trade::ImageConverterFeature::Levels Trade::ImageConverterFeature::Convert3DToFile|Trade::ImageConverterFeature::Levels\n");
+}
+
+void AbstractImageConverterTest::debugFeatureDeprecatedPacked() {
+    std::ostringstream out;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImageConverterFeature::ConvertCompressedLevels1DToData << Debug::packed << ImageConverterFeature::ConvertLevels3DToFile << ImageConverterFeature::Convert1D;
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.str(), "ConvertCompressed1DToData|Levels Convert3DToFile|Levels Trade::ImageConverterFeature::Convert1D\n");
+}
+#endif
+
 void AbstractImageConverterTest::debugFeatures() {
     std::ostringstream out;
 
     Debug{&out} << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << ImageConverterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::Convert2DToData|Trade::ImageConverterFeature::ConvertCompressed2DToFile Trade::ImageConverterFeatures{}\n");
+}
+
+void AbstractImageConverterTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ImageConverterFeature::Convert2DToData|ImageConverterFeature::ConvertCompressed2DToFile) << Debug::packed << ImageConverterFeatures{} << ImageConverterFeature::Convert1D;
+    CORRADE_COMPARE(out.str(), "Convert2DToData|ConvertCompressed2DToFile {} Trade::ImageConverterFeature::Convert1D\n");
 }
 
 void AbstractImageConverterTest::debugFeaturesSupersets() {
@@ -4215,34 +4577,6 @@ void AbstractImageConverterTest::debugFeaturesSupersets() {
         std::ostringstream out;
         Debug{&out} << (ImageConverterFeature::ConvertCompressed1DToData|ImageConverterFeature::ConvertCompressed1DToFile);
         CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressed1DToData\n");
-
-    /* ConvertLevels*DToData is a superset of ConvertLevels*DToFile, so only
-       one should be printed */
-    } {
-        std::ostringstream out;
-        Debug{&out} << (ImageConverterFeature::ConvertLevels2DToData|ImageConverterFeature::ConvertLevels2DToFile);
-        CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertLevels2DToData\n");
-
-    /* ConvertLevels*DToData is *also* a superset of Convert*DToData, so only
-       one should be printed */
-    } {
-        std::ostringstream out;
-        Debug{&out} << (ImageConverterFeature::ConvertLevels3DToData|ImageConverterFeature::Convert3DToData);
-        CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertLevels3DToData\n");
-
-    /* ConvertCompressedLevels*DToData is a superset of
-       ConvertCompressedLevels*DToFile, so only one should be printed */
-    } {
-        std::ostringstream out;
-        Debug{&out} << (ImageConverterFeature::ConvertCompressedLevels1DToData|ImageConverterFeature::ConvertCompressedLevels1DToFile);
-        CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressedLevels1DToData\n");
-
-    /* ConvertCompressedLevels*DToData is *also* a superset of
-       ConvertCompressed*DToData, so only one should be printed */
-    } {
-        std::ostringstream out;
-        Debug{&out} << (ImageConverterFeature::ConvertCompressedLevels3DToData|ImageConverterFeature::ConvertCompressed3DToData);
-        CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertCompressedLevels3DToData\n");
     }
 }
 

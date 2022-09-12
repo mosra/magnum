@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -42,6 +43,9 @@
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+/* For attachShaders(), which used to take a std::initializer_list<Reference> */
+#include <Corrade/Containers/Iterable.h>
 /* For label() / setLabel(), which used to be a std::string */
 #include <Corrade/Containers/StringStl.h>
 #endif
@@ -421,6 +425,74 @@ See also @ref Attribute::DataType enum for additional type options.
     @ref Magnum::Matrix3x2 "Matrix3x2", @ref Magnum::Matrix2x4 "Matrix2x4",
     @ref Magnum::Matrix4x2 "Matrix4x2", @ref Magnum::Matrix3x4 "Matrix3x4" and
     @ref Magnum::Matrix4x3 "Matrix4x3") are not available in WebGL 1.0.
+
+@section GL-AbstractShaderProgram-async Asynchronous shader compilation and linking
+
+The workflow described @ref GL-AbstractShaderProgram-subclassing "at the very top"
+compiles and links the shader directly in a constructor. While that's fine for
+many use cases, with heavier shaders, many shader combinations or on
+platforms that translate GLSL to other APIs such as HLSL or MSL, the
+compilation and linking can take a significant portion of application startup
+time.
+
+To mitigate this problem, nowadays drivers implement *asynchronous compilation*
+--- when shader compilation or linking is requested, the driver offloads the
+work to separate worker threads, and serializes it back to the application
+thread only once the application wants to retrieve the result of the operation.
+Which means, the ideal way to spread the operation over more CPU cores is to
+first submit compilation & linking of several shaders at once and only then ask
+for operation result. That allows the driver to perform compilation/linking of
+multiple shaders at once. Furthermore, the
+@gl_extension{KHR,parallel_shader_compile} extension adds a possibility to
+query whether the operation was finished for a particular shader. That allows
+the application to schedule other work in the meantime.
+
+Async compilation and linking can be implemented by using
+@ref Shader::submitCompile() and @ref submitLink(), followed by
+@ref checkLink() (which optionally delegates to @ref Shader::checkCompile()),
+instead of @ref Shader::compile() and @ref link(). Calling the submit functions
+will trigger a (potentially async) compilation and linking, calling the check
+functions will check the operation result, potentially stalling if the async
+operation isn't finished yet.
+
+The @ref Shader::isCompileFinished() and
+@ref isLinkFinished() APIs then provide a way to query if the submitted
+operation finished. If @gl_extension{KHR,parallel_shader_compile} is not
+available, those two implicitly return @cpp true @ce, thus effectively causing
+a stall if the operation isn't yet done at the time you call
+@ref Shader::checkCompile() / @ref checkLink() --- but compared to the linear
+workflow you still get the benefits from submitting multiple operations at
+once.
+
+A common way to equip an @ref AbstractShaderProgram subclass with async
+creation capability while keeping also the simple constructor is the following:
+
+1.  An internal @ref NoInit constructor for the subclass is added, which only
+    creates the @ref AbstractShaderProgram base but does nothing else.
+2.  A @cpp CompileState @ce inner class is defined as a subclass of
+    @cpp MyShader @ce. Besides that it holds all temporary state needed to
+    finish the construction --- in particular all @ref Shader instances.
+3.  A @cpp static CompileState compile(…) @ce function does everything until
+    and including linking as the original constructor did, except that it calls
+    @ref Shader::submitCompile() and @ref submitLink() instead of
+    @ref Shader::compile() and @ref link(), and returns a populated
+    @cpp CompileState @ce instance.
+4.  A @cpp MyShader(CompileState&&) @ce constructor then takes over the base
+    of @cpp CompileState @ce by delegating it into the move constructor. Then
+    it calls @ref checkLink(), passing all input shaders to it for a complete
+    context in case of an error, and finally performs any remaining post-link
+    steps such as uniform setup.
+5.  The original @cpp MyShader(…) @ce constructor now only passes the result of
+    @cpp compile() @ce to @cpp MyShader(CompileState&&) @ce.
+
+@snippet MagnumGL.cpp AbstractShaderProgram-async
+
+Usage-wise, it can look for example like below, with the last line waiting for
+linking to finish and making the shader ready to use. On drivers that don't
+perform any async compilation this will behave the same as if the construction
+was done the usual way.
+
+@snippet MagnumGL.cpp AbstractShaderProgram-async-usage
 
 @section GL-AbstractShaderProgram-performance-optimization Performance optimizations
 
@@ -1258,21 +1330,40 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         AbstractShaderProgram& dispatchCompute(const Vector3ui& workgroupCount);
         #endif
 
-    protected:
         /**
-         * @brief Link the shader
+         * @brief Whether a @ref submitLink() operation has finished
+         * @m_since_latest
          *
-         * Returns @cpp false @ce if linking of any shader failed, @cpp true @ce
-         * if everything succeeded. Linker message (if any) is printed to error
-         * output. All attached shaders must be compiled with
-         * @ref Shader::compile() before linking. The operation is batched in a
-         * way that allows the driver to link multiple shaders simultaneously
-         * (i.e. in multiple threads).
-         * @see @fn_gl_keyword{LinkProgram}, @fn_gl_keyword{GetProgram} with
-         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
-         *      @fn_gl_keyword{GetProgramInfoLog}
+         * Has to be called only if @ref submitLink() was called before, and
+         * before @ref checkLink(). If returns @cpp false @ce, a subsequent
+         * @ref checkLink() call will block until the linking is finished. If
+         * @gl_extension{KHR,parallel_shader_compile} is not available, the
+         * function always returns @cpp true @ce --- i.e., as if the linking
+         * was done synchronously. See @ref GL-AbstractShaderProgram-async for
+         * more information.
+         * @see @ref Shader::isCompileFinished(),
+         *      @fn_gl_keyword{GetProgram} with
+         *      @def_gl_extension{COMPLETION_STATUS,KHR,parallel_shader_compile}
          */
-        static bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
+        bool isLinkFinished();
+
+    protected:
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Link multiple shaders simultaenously
+         * @m_deprecated_since_latest Originally meant to batch multiple link
+         *      operations together in a way that allowed the driver to perform
+         *      the linking in multiple threads. Superseded by @ref submitLink()
+         *      and @ref checkLink(), use either those or the zero-argument
+         *      @ref link() instead. See @ref GL-AbstractShaderProgram-async
+         *      for more information.
+         *
+         * Calls @ref submitLink() on all shaders first, then @ref checkLink().
+         * Returns @cpp false @ce if linking of any shader failed, @cpp true @ce
+         * if everything succeeded.
+         */
+        static CORRADE_DEPRECATED("use either submitLink() and checkLink() or the zero-argument link() instead") bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
+        #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
@@ -1325,7 +1416,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * than one shader at once. Other than that there is no other
          * (performance) difference when using this function.
          */
-        void attachShaders(std::initializer_list<Containers::Reference<Shader>> shaders);
+        void attachShaders(Containers::Iterable<Shader> shaders);
 
         /**
          * @brief Bind an attribute to given location
@@ -1446,12 +1537,55 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Link the shader
          *
-         * Links single shader. If possible, prefer to link multiple shaders
-         * at once using @ref link(std::initializer_list<Containers::Reference<AbstractShaderProgram>>)
-         * for improved performance, see its documentation for more
-         * information.
+         * Calls @ref submitLink(), immediately followed by @ref checkLink(),
+         * passing back its return value. See documentation of those two
+         * functions for details.
+         * @see @ref Shader::compile()
          */
         bool link();
+
+        /**
+         * @brief Submit the shader for linking
+         * @m_since_latest
+         *
+         * The attached shaders must be at least submitted for compilation
+         * with @ref Shader::submitCompile() or @ref Shader::compile() before
+         * linking. Call @ref isLinkFinished() or @ref checkLink() after, see
+         * @ref GL-AbstractShaderProgram-async for more information.
+         * @see @fn_gl_keyword{LinkProgram}
+         */
+        void submitLink();
+
+        /**
+         * @brief Check shader linking status and await completion
+         * @m_since_latest
+         *
+         * Has to be called only if @ref submitLink() was called before.
+         *
+         * If @p shaders are not empty, first calls @ref Shader::checkCompile()
+         * on each. If a compilation failure is reached, returns @cpp false @ce
+         * without even checking link status. To have error messages with full
+         * context in case of a failed shader compilation or linking, an
+         * application is encouraged to pass all input @ref Shader instances to
+         * this function or, if not possible, explicitly call
+         * @ref Shader::checkCompile() on each.
+         *
+         * Then, link status is checked and a message (if any) is printed
+         * Returns @cpp false @ce if linking failed, @cpp true @ce on success.
+         * If linking failed, it first goes through @p shaders and calls
+         * @ref Shader::checkCompile() on each until a failure is reached. If
+         * no compilation failed, a linker message is printed to error output.
+         * The function will stall until a (potentially async) linking
+         * operation finishes, you can use @ref isLinkFinished() to check the
+         * status instead. See @ref GL-AbstractShaderProgram-async for more
+         * information.
+         * @see @ref Shader::checkCompile(), @fn_gl_keyword{GetProgram} with
+         *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
+         *      @fn_gl_keyword{GetProgramInfoLog}
+         */
+        /* No default argument is provided in order to *really* encourage apps
+           to pass the shaders here */
+        bool checkLink(Containers::Iterable<Shader> shaders);
 
         /**
          * @brief Get uniform location
@@ -1667,6 +1801,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
         static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(std::string& message);
         #endif
+
+        MAGNUM_GL_LOCAL static void APIENTRY completionStatusImplementationFallback(GLuint, GLenum, GLint*);
 
         MAGNUM_GL_LOCAL static void use(GLuint id);
         void use();

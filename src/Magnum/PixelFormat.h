@@ -30,7 +30,6 @@
  */
 
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -2491,14 +2490,14 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::PixelFormat> {
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::PixelFormat value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::PixelFormat value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum value as string
      *
      * If the value is invalid, returns a zero (invalid) format.
      */
-    static Magnum::PixelFormat fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::PixelFormat fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 
 /**
@@ -2513,14 +2512,14 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::CompressedPixelFormat
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::CompressedPixelFormat value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::CompressedPixelFormat value, ConfigurationValueFlags);
 
     /**
      * @brief Read enum value as string
      *
      * If the value is invalid, returns a zero (invalid) format.
      */
-    static Magnum::CompressedPixelFormat fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::CompressedPixelFormat fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 
 }}

@@ -27,9 +27,9 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "MagnumExternal/OpenGL")
 
-# Desktop GLES on Windows still links to opengl32.dll so we have a special
+# Non-EGL GLES on Windows still links to opengl32.dll so we have a special
 # function loading code that queries everything above OpenGL 1.1
-if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
+if(CORRADE_TARGET_WINDOWS AND NOT MAGNUM_TARGET_EGL)
     set(MagnumOpenGL_HEADERS flextGLWindowsDesktop.h)
     set(MagnumOpenGL_SRCS flextGLWindowsDesktop.cpp)
 

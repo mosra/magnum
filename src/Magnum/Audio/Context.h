@@ -565,7 +565,7 @@ Example usage:
 #define MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(extension)                  \
     do {                                                                    \
         if(!Magnum::Audio::Context::current().isExtensionSupported<extension>()) { \
-            Corrade::Utility::Error() << "Magnum: required OpenAL extension" << extension::string() << "is not supported"; \
+            Corrade::Utility::Error{} << "Magnum::Audio: required OpenAL extension" << extension::string() << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
     } while(0)

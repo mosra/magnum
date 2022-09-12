@@ -359,7 +359,7 @@ see documentation of a particular converter for more information.)")
     /* Set up a converter manager */
     PluginManager::Manager<ShaderTools::AbstractConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), ShaderTools::AbstractConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(ShaderTools::AbstractConverter::pluginSearchPaths().back()).second())};
 
     /* Data passed from one converter to another in case there's more than one */
     Containers::Array<char> data;

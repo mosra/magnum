@@ -110,12 +110,12 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         ~TgaImporter();
 
     private:
-        ImporterFeatures MAGNUM_TGAIMPORTER_LOCAL doFeatures() const override;
-        bool MAGNUM_TGAIMPORTER_LOCAL doIsOpened() const override;
-        void MAGNUM_TGAIMPORTER_LOCAL doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override;
-        void MAGNUM_TGAIMPORTER_LOCAL doClose() override;
-        UnsignedInt MAGNUM_TGAIMPORTER_LOCAL doImage2DCount() const override;
-        Containers::Optional<ImageData2D> MAGNUM_TGAIMPORTER_LOCAL doImage2D(UnsignedInt id, UnsignedInt level) override;
+        MAGNUM_TGAIMPORTER_LOCAL ImporterFeatures doFeatures() const override;
+        MAGNUM_TGAIMPORTER_LOCAL bool doIsOpened() const override;
+        MAGNUM_TGAIMPORTER_LOCAL void doOpenData(Containers::Array<char>&& data, DataFlags dataFlags) override;
+        MAGNUM_TGAIMPORTER_LOCAL void doClose() override;
+        MAGNUM_TGAIMPORTER_LOCAL UnsignedInt doImage2DCount() const override;
+        MAGNUM_TGAIMPORTER_LOCAL Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override;
 
         Containers::Array<char> _in;
 };

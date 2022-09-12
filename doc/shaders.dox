@@ -287,6 +287,34 @@ While the primary use case of texture arrays is with uniform buffers and
 multidraw, they work in the classic uniform workflow as well --- use
 @relativeref{Shaders::PhongGL,setTextureLayer()} there instead.
 
+@section shaders-async Async shader compilation and linking
+
+By default, shaders are compiled and linked directly in their constructor.
+While that's convenient and easy to use, applications using heavier shaders,
+many shader combinations or running on platforms that translate GLSL to other
+APIs such as HLSL or MSL, may spend a significant portion of their startup
+time just on shader compilation and linking.
+
+To mitigate this problem, shaders can be compiled in an asynchronous way.
+Depending on the driver and system, this can mean that for example eight
+shaders get compiled at the same time in eight parallel threads, instead of
+sequentially one after another. To achieve such parallelism, the construction
+needs to be broken into two parts --- first submitting compilation of all
+shaders using @ref Shaders::FlatGL::compile() "Shaders::*GL::compile()",
+forming temporary @ref Shaders::FlatGL::CompileState "Shaders::*GL::CompileState"
+instances, then possibly doing other work until it's completed, and finally
+constructing final shader instances out of the temporary state:
+
+@snippet MagnumShaders-gl.cpp shaders-async
+
+The above code will work correctly also on drivers that implement async
+compilation partially or not at all --- there
+@ref GL::AbstractShaderProgram::isLinkFinished() will implicitly return
+@cpp true @ce, and the final construction will stall if it happens before a
+(potentially async) compilation is finished. See also the
+@ref GL-AbstractShaderProgram-async "GL::AbstractShaderProgram documentation"
+for more information.
+
 @section shaders-generic Generic vertex attributes and framebuffer attachments
 
 Many shaders share the same vertex attribute definitions, such as positions,

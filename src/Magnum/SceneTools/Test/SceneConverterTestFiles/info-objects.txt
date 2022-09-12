@@ -1,0 +1,5 @@
+Object 0: Parent-less mesh
+Object 2: Two meshes, shared among two scenes
+Object 4: Two custom arrays
+Object 6: Only in the second scene, but no fields, thus same as unreferenced
+Object 8: Not in any scene

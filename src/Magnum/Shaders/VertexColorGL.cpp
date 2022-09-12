@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,12 +27,11 @@
 #include "VertexColorGL.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
-#include "Magnum/GL/Shader.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -57,19 +57,14 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt drawCount
     #endif
-):
-    _flags{flags}
-    #ifndef MAGNUM_TARGET_GLES2
-    , _drawCount{drawCount}
-    #endif
-{
+) {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
-        "Shaders::VertexColorGL: draw count can't be zero", );
+        "Shaders::VertexColorGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -121,9 +116,16 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("VertexColor.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    vert.submitCompile();
+    frag.submitCompile();
 
-    attachShaders({vert, frag});
+    VertexColorGL<dimensions> out{NoInit};
+    out._flags = flags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._drawCount = drawCount;
+    #endif
+
+    out.attachShaders({vert, frag});
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -131,19 +133,34 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
-        bindAttributeLocation(Color3::Location, "color"); /* Color4 is the same */
+        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Color3::Location, "color"); /* Color4 is the same */
     }
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    out.submitLink();
+
+    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
+}
+
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& state): VertexColorGL{static_cast<VertexColorGL&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
+    if(!id()) return;
+    #endif
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
+
+    const GL::Context& context = GL::Context::current();
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
@@ -153,7 +170,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     }
 
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers
+    if(_flags >= Flag::UniformBuffers
         #ifndef MAGNUM_TARGET_GLES
         && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version)
         #endif
@@ -165,7 +182,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
     } else
     #endif
@@ -173,11 +190,22 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const 
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags): VertexColorGL{compile(flags)} {}
+
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags): VertexColorGL{flags, 1} {}
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags) {
+    return compile(flags, 1);
+}
+
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags, const UnsignedInt drawCount): VertexColorGL{compile(flags, drawCount)} {}
 #endif
+
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(NoInitT) {}
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>& VertexColorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2

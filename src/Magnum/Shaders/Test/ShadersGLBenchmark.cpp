@@ -94,6 +94,8 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct ShadersGLBenchmark: GL::OpenGLTester {
     explicit ShadersGLBenchmark();
 
+    /** @todo async vs sync setup? could be useful especially on WebGL & ANGLE */
+
     void renderSetup();
     void renderTeardown();
 

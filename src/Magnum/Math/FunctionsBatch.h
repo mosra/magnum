@@ -40,9 +40,9 @@ namespace Implementation {
 
 /** @todo Utility/Algorithms.h has a similar (but different) variant of this,
     maybe turn that into some public utility once we have one more use case? */
-template<class T, class View = decltype(Corrade::Containers::Implementation::ErasedArrayViewConverter<typename std::remove_reference<T&&>::type>::from(std::declval<T&&>()))> static auto stridedArrayViewTypeFor(T&&) -> typename View::Type;
-template<class T> static T stridedArrayViewTypeFor(const Corrade::Containers::ArrayView<T>&);
-template<class T> static T stridedArrayViewTypeFor(const Corrade::Containers::StridedArrayView1D<T>&);
+template<class T, class View = decltype(Corrade::Containers::Implementation::ErasedArrayViewConverter<typename std::remove_reference<T&&>::type>::from(std::declval<T&&>()))> static auto stridedArrayViewTypeFor(T&&) -> typename std::remove_const<typename View::Type>::type;
+template<class T> static typename std::remove_const<T>::type stridedArrayViewTypeFor(const Corrade::Containers::ArrayView<T>&);
+template<class T> static typename std::remove_const<T>::type stridedArrayViewTypeFor(const Corrade::Containers::StridedArrayView1D<T>&);
 
 }
 

@@ -27,6 +27,17 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/SceneTools")
 
+# Somehow, due to MagnumTradeObjects having target_include_directories() with
+# $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>,
+# if MAGNUM_SCENECONVERTER_STATIC_PLUGINS is non-empty then CMake fails with
+#
+#   Target "Corrade::PluginManager" not found.
+#
+# unless the find_package() is here. Not sure why, probably some bug in CMake
+# dependency handling? Changing target_include_directories() to PRIVATE doesn't
+# help, removing it altogether helps.
+find_package(Corrade REQUIRED PluginManager)
+
 # Files shared between main library and unit test library
 set(MagnumSceneTools_SRCS )
 
@@ -44,7 +55,8 @@ set(MagnumSceneTools_HEADERS
 
 set(MagnumSceneTools_PRIVATE_HEADERS
     Implementation/combine.h
-    Implementation/convertToSingleFunctionObjects.h)
+    Implementation/convertToSingleFunctionObjects.h
+    Implementation/sceneConverterUtilities.h)
 
 ## Objects shared between main and test library
 #add_library(MagnumSceneToolsObjects OBJECT
@@ -87,7 +99,8 @@ if(MAGNUM_WITH_SCENECONVERTER)
         Magnum
         MagnumMeshTools
         MagnumSceneTools
-        MagnumTrade)
+        MagnumTrade
+        ${MAGNUM_SCENECONVERTER_STATIC_PLUGINS})
 
     install(TARGETS magnum-sceneconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

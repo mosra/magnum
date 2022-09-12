@@ -1367,6 +1367,7 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.mappingBound(), 8);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldCount(), 4);
+    CORRADE_COMPARE(scene.fieldSizeBound(), 5);
     CORRADE_COMPARE(scene.importerState(), &importerState);
 
     /* is2D() / is3D() exhaustively tested in transformations*DAsArray[TRS]()
@@ -1608,6 +1609,7 @@ void SceneDataTest::constructZeroFields() {
     CORRADE_COMPARE(scene.mappingBound(), 37563);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldCount(), 0);
+    CORRADE_COMPARE(scene.fieldSizeBound(), 0);
     CORRADE_VERIFY(!scene.is2D());
     CORRADE_VERIFY(!scene.is3D());
 }
@@ -1626,6 +1628,7 @@ void SceneDataTest::constructZeroObjects() {
     CORRADE_COMPARE(scene.mappingBound(), 0);
     CORRADE_COMPARE(scene.mappingType(), SceneMappingType::UnsignedInt);
     CORRADE_COMPARE(scene.fieldCount(), 2);
+    CORRADE_COMPARE(scene.fieldSizeBound(), 0);
 
     /* Field property access by name */
     CORRADE_COMPARE(scene.fieldType(SceneField::Mesh), SceneFieldType::UnsignedShort);

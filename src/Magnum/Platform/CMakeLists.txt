@@ -98,24 +98,30 @@ install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR
 if(MAGNUM_TARGET_GL)
     # Decide about platform-specific context for cross-platform toolkits
     if(MAGNUM_WITH_GLFWAPPLICATION OR MAGNUM_WITH_SDL2APPLICATION)
-        if(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
-            set(NEED_CGLCONTEXT 1)
-            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
-        elseif(CORRADE_TARGET_WINDOWS AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
-            set(NEED_WGLCONTEXT 1)
-            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumWglContextObjects>)
-        elseif(CORRADE_TARGET_UNIX AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
-            set(NEED_GLXCONTEXT 1)
-            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
-        elseif(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
+        # On WebGL windowless apps don't use anything from EGL, only windowless
+        # do. On iOS it's EAGL, which isn't really EGL (and thus
+        # MAGNUM_TARGET_EGL isn't set), but we handle it inside EglContext as
+        # well. TODO make EaglContext for iOS to prepare for true EGL (such as
+        # with ANGLE or Zink)
+        if((MAGNUM_TARGET_EGL AND NOT MAGNUM_TARGET_WEBGL) OR CORRADE_TARGET_IOS)
             set(NEED_EGLCONTEXT 1)
             set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumEglContextObjects>)
-            # We're linking to EGL explicitly, no need to bother with GLVND there
+            find_package(EGL REQUIRED)
+            set(MagnumSomeContext_LIBRARY EGL::EGL)
+        elseif(CORRADE_TARGET_APPLE)
+            set(NEED_CGLCONTEXT 1)
+            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
+        elseif(CORRADE_TARGET_WINDOWS)
+            set(NEED_WGLCONTEXT 1)
+            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumWglContextObjects>)
+        elseif(CORRADE_TARGET_UNIX)
+            set(NEED_GLXCONTEXT 1)
+            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
         endif()
     endif()
 
     # This is needed also by [Windowless]GlxApplication
-    if((MAGNUM_WITH_GLXAPPLICATION OR MAGNUM_WITH_WINDOWLESSGLXAPPLICATION OR MAGNUM_WITH_GLFWAPPLICATION OR MAGNUM_WITH_SDL2APPLICATION) AND CORRADE_TARGET_UNIX AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
+    if((MAGNUM_WITH_GLXAPPLICATION OR MAGNUM_WITH_WINDOWLESSGLXAPPLICATION OR MAGNUM_WITH_GLFWAPPLICATION OR MAGNUM_WITH_SDL2APPLICATION) AND CORRADE_TARGET_UNIX AND NOT MAGNUM_TARGET_EGL)
         # If the GLVND library (CMake 3.11+) was found and linked to, we need
         # to link to GLX explicitly. Otherwise (and also on all systems except
         # Linux) the transitive dependency to classic GL lib from MagnumGL is
@@ -255,12 +261,6 @@ if(MAGNUM_WITH_GLFWAPPLICATION)
             ${MagnumSomeContext_LIBRARY})
     endif()
 
-    # Link also EGL library, if on ES (and not on WebGL)
-    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
-        find_package(EGL REQUIRED)
-        target_link_libraries(MagnumGlfwApplication PUBLIC EGL::EGL)
-    endif()
-
     install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlfwApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -325,12 +325,6 @@ if(MAGNUM_WITH_SDL2APPLICATION)
             MagnumGL
             # need to link to GLX explicitly if using GLVND (CMake 3.11+)
             ${MagnumSomeContext_LIBRARY})
-    endif()
-
-    # Link also EGL library, if on ES (and not on WebGL)
-    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
-        find_package(EGL REQUIRED)
-        target_link_libraries(MagnumSdl2Application PUBLIC EGL::EGL)
     endif()
 
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -623,44 +617,6 @@ if(MAGNUM_WITH_WINDOWLESSWGLAPPLICATION)
     add_library(Magnum::WindowlessWglApplication ALIAS MagnumWindowlessWglApplication)
 endif()
 
-# Windowless Windows/EGL application
-if(MAGNUM_WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
-    if(NOT MAGNUM_TARGET_GL)
-        message(SEND_ERROR "WindowlessWindowsEglApplication is available only if MAGNUM_TARGET_GL is enabled")
-    endif()
-
-    set(NEED_EGLCONTEXT 1)
-
-    set(MagnumWindowlessWindowsEglApplication_SRCS
-        WindowlessWindowsEglApplication.cpp
-        Implementation/Egl.cpp
-        $<TARGET_OBJECTS:MagnumEglContextObjects>)
-    set(MagnumWindowlessWindowsEglApplication_HEADERS
-        WindowlessWindowsEglApplication.h)
-    set(MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS
-        Implementation/Egl.h)
-
-    add_library(MagnumWindowlessWindowsEglApplication STATIC
-        ${MagnumWindowlessWindowsEglApplication_SRCS}
-        ${MagnumWindowlessWindowsEglApplication_HEADERS}
-        ${MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS})
-    set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES
-        DEBUG_POSTFIX "-d")
-    if(NOT MAGNUM_BUILD_STATIC OR MAGNUM_BUILD_STATIC_PIC)
-        set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    endif()
-    target_link_libraries(MagnumWindowlessWindowsEglApplication PUBLIC MagnumGL EGL::EGL)
-
-    install(FILES ${MagnumWindowlessWindowsEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumWindowlessWindowsEglApplication
-        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-
-    # Magnum WindowlessWindowsEglApplication target alias for superprojects
-    add_library(Magnum::WindowlessWindowsEglApplication ALIAS MagnumWindowlessWindowsEglApplication)
-endif()
-
 # Windowless CGL application
 if(MAGNUM_WITH_WINDOWLESSCGLAPPLICATION)
     if(NOT MAGNUM_TARGET_GL)
@@ -769,7 +725,7 @@ endif()
 if(NOT MAGNUM_TARGET_GLES)
     list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GL/flextGLPlatform.cpp)
 elseif(MAGNUM_TARGET_GLES AND MAGNUM_TARGET_GLES2)
-    if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
+    if(CORRADE_TARGET_WINDOWS AND NOT MAGNUM_TARGET_EGL)
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES2/flextGLPlatformWindowsDesktop.cpp)
     elseif(CORRADE_TARGET_IOS)
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES2/flextGLPlatformIOS.cpp)
@@ -777,7 +733,7 @@ elseif(MAGNUM_TARGET_GLES AND MAGNUM_TARGET_GLES2)
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES2/flextGLPlatform.cpp)
     endif()
 elseif(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
-    if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
+    if(CORRADE_TARGET_WINDOWS AND NOT MAGNUM_TARGET_EGL)
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES3/flextGLPlatformWindowsDesktop.cpp)
     elseif(CORRADE_TARGET_IOS)
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES3/flextGLPlatformIOS.cpp)
@@ -941,24 +897,16 @@ if(MAGNUM_WITH_GL_INFO)
 
     add_executable(magnum-gl-info gl-info.cpp)
     target_link_libraries(magnum-gl-info PRIVATE MagnumGL)
-    if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    if(MAGNUM_TARGET_EGL)
         target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)
         target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessIosApplication)
-    elseif(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
+    elseif(CORRADE_TARGET_APPLE)
         target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX)
-        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessEglApplication)
-        else()
-            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessGlxApplication)
-        endif()
+        target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS)
-        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessWindowsEglApplication)
-        else()
-            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessWglApplication)
-        endif()
+        target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessWglApplication)
     else()
         message(FATAL_ERROR "magnum-gl-info is not available on this platform. Set MAGNUM_WITH_GL_INFO to OFF to skip building it.")
     endif()

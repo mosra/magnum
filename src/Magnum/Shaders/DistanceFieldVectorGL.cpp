@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,7 +27,7 @@
 #include "DistanceFieldVectorGL.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
@@ -63,22 +64,16 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags
+template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::CompileState DistanceFieldVectorGL<dimensions>::compile(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
-):
-    _flags{flags}
-    #ifndef MAGNUM_TARGET_GLES2
-    , _materialCount{materialCount},
-    _drawCount{drawCount}
-    #endif
-{
+) {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
-        "Shaders::DistanceFieldVectorGL: material count can't be zero", );
+        "Shaders::DistanceFieldVectorGL: material count can't be zero", CompileState{NoCreate});
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
-        "Shaders::DistanceFieldVectorGL: draw count can't be zero", );
+        "Shaders::DistanceFieldVectorGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -142,9 +137,17 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("DistanceFieldVector.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    vert.submitCompile();
+    frag.submitCompile();
 
-    attachShaders({vert, frag});
+    DistanceFieldVectorGL<dimensions> out{NoInit};
+    out._flags = flags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._materialCount = materialCount;
+    out._drawCount = drawCount;
+    #endif
+
+    out.attachShaders({vert, frag});
 
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -152,25 +155,39 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
-        bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
     }
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    out.submitLink();
+    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(CompileState&& state): DistanceFieldVectorGL{static_cast<DistanceFieldVectorGL&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
+    if(!id()) return;
+    #endif
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
+
+    const GL::Context& context = GL::Context::current();
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix");
             _colorUniform = uniformLocation("color");
             _outlineColorUniform = uniformLocation("outlineColor");
@@ -185,11 +202,11 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     {
         setUniform(uniformLocation("vectorTexture"), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
         }
         #endif
@@ -198,13 +215,13 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
     } else
     #endif
     {
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
-        if(flags & Flag::TextureTransformation)
+        if(_flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
         setColor(Color4{1.0f});
         /* Outline color is zero by default */
@@ -212,10 +229,22 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
         setSmoothness(0.04f);
     }
     #endif
+
+    static_cast<void>(context);
+    static_cast<void>(version);
 }
 
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(NoInitT) {}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags): DistanceFieldVectorGL{compile(flags)} {}
+
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags): DistanceFieldVectorGL{flags, 1, 1} {}
+template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::CompileState DistanceFieldVectorGL<dimensions>::compile(const Flags flags) {
+    return compile(flags, 1, 1);
+}
+
+template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
+    DistanceFieldVectorGL{compile(flags, materialCount, drawCount)} {}
 #endif
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {

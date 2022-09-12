@@ -27,6 +27,18 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/TextureTools")
 
+# Somehow, due to MagnumTradeObjects having target_include_directories() with
+# $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>,
+# if MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS is non-empty then CMake fails
+# with
+#
+#   Target "Corrade::PluginManager" not found.
+#
+# unless the find_package() is here. Not sure why, probably some bug in CMake
+# dependency handling? Changing target_include_directories() to PRIVATE doesn't
+# help, removing it altogether helps.
+find_package(Corrade REQUIRED PluginManager)
+
 set(MagnumTextureTools_GracefulAssert_SRCS
     Atlas.cpp)
 
@@ -84,25 +96,18 @@ if(MAGNUM_WITH_DISTANCEFIELDCONVERTER)
     target_link_libraries(magnum-distancefieldconverter PRIVATE
         Magnum
         MagnumTextureTools
-        MagnumTrade)
-    if(MAGNUM_TARGET_HEADLESS)
+        MagnumTrade
+        ${MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS})
+    if(MAGNUM_TARGET_EGL)
         target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)
         target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessIosApplication)
-    elseif(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
+    elseif(CORRADE_TARGET_APPLE)
         target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX)
-        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessEglApplication)
-        else()
-            target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessGlxApplication)
-        endif()
+        target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS)
-        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessWindowsEglApplication)
-        else()
-            target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessWglApplication)
-        endif()
+        target_link_libraries(magnum-distancefieldconverter PRIVATE MagnumWindowlessWglApplication)
     else()
         message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set MAGNUM_WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
     endif()

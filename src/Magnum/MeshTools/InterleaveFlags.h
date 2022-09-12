@@ -43,7 +43,7 @@ namespace Magnum { namespace MeshTools {
 @see @ref InterleaveFlags,
     @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
     @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
-    @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags)
+    @ref concatenate(Containers::Iterable<const Trade::MeshData>, InterleaveFlags)
 */
 enum class InterleaveFlag: UnsignedInt {
     /**
@@ -72,7 +72,7 @@ enum class InterleaveFlag: UnsignedInt {
      *
      * Has no effect when passed to @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleavedLayout()"
      * as that function doesn't preserve the index buffer. Has no effect when
-     * passed to @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags) "concatenate()"
+     * passed to @ref concatenate(Containers::Iterable<const Trade::MeshData>, InterleaveFlags) "concatenate()"
      * as that function allocates a new combined index buffer anyway.
      * @see @ref isMeshIndexTypeImplementationSpecific()
      */
@@ -85,7 +85,7 @@ enum class InterleaveFlag: UnsignedInt {
 
 @see @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
     @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
-    @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>, InterleaveFlags)
+    @ref concatenate(Containers::Iterable<const Trade::MeshData>, InterleaveFlags)
 */
 typedef Containers::EnumSet<InterleaveFlag> InterleaveFlags;
 

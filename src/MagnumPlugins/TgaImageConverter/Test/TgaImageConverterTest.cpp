@@ -27,7 +27,7 @@
 #include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
@@ -142,6 +142,9 @@ void TgaImageConverterTest::rgb() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    CORRADE_COMPARE(converter->extension(), "tga");
+    CORRADE_COMPARE(converter->mimeType(), "image/x-tga");
+
     converter->setFlags(data.flags);
 
     std::ostringstream out;

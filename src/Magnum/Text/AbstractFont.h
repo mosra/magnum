@@ -312,7 +312,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         bool isOpened() const { return doIsOpened(); }
 
         /**
-         * @brief Open font from raw data
+         * @brief Open raw data
          * @param data          File data
          * @param size          Font size
          *
@@ -339,7 +339,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         #endif
 
         /**
-         * @brief Open font from file
+         * @brief Open a file
          * @param filename      Font file
          * @param size          Font size
          *
@@ -349,7 +349,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          */
         bool openFile(const std::string& filename, Float size);
 
-        /** @brief Close font */
+        /** @brief Close currently opened file */
         void close();
 
         /**
@@ -592,11 +592,11 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
         /** @brief Moving is not allowed */
         AbstractLayouter& operator=(const AbstractLayouter&&) = delete;
 
-        /** @brief Count of glyphs in laid out text */
+        /** @brief Count of glyphs in the laid out text */
         UnsignedInt glyphCount() const { return _glyphCount; }
 
         /**
-         * @brief Render glyph
+         * @brief Render a glyph
          * @param i                 Glyph index
          * @param cursorPosition    Cursor position
          * @param rectangle         Bounding rectangle

@@ -20,12 +20,16 @@ set -ev
 # AppVeyor ships Perl on its own and since we fetch our own lcov anyway, the
 # MSYS insanity is not needed for ANYTHING AT ALL, in fact.
 
-wget https://github.com/linux-test-project/lcov/archive/v1.15.tar.gz
-tar -xzf v1.15.tar.gz
+# Important: 1.13 is the only version that actually works. 1.15 doesn't, tries
+# to find the original source files in build/.../CMakeFiles/src/Magnum and
+# results in a zero-byte coverage being happily uploaded, with no error message
+# produced whatsoever. How nice.
+wget https://github.com/linux-test-project/lcov/archive/v1.13.tar.gz
+tar -xzf v1.13.tar.gz
 
 # Keep in sync with PKBUILD-coverage and circleci.yml, please
-lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --directory . --capture --output-file coverage.info > /dev/null
-lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
-lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
-lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
-lcov-1.15/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null
+lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --directory . --capture --output-file coverage.info > /dev/null
+lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
+lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
+lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
+lcov-1.13/bin/lcov --gcov-tool /c/mingw-w64/x86_64-7.2.0-posix-seh-rt_v5-rev1/mingw64/bin/gcov --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null

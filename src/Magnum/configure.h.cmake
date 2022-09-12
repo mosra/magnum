@@ -32,16 +32,34 @@
 #cmakedefine MAGNUM_TARGET_GLES
 #cmakedefine MAGNUM_TARGET_GLES2
 #cmakedefine MAGNUM_TARGET_GLES3
-#cmakedefine MAGNUM_TARGET_DESKTOP_GLES
 #cmakedefine MAGNUM_TARGET_WEBGL
-#cmakedefine MAGNUM_TARGET_HEADLESS
+#cmakedefine MAGNUM_TARGET_EGL
 #cmakedefine MAGNUM_TARGET_VK
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "Corrade/configure.h"
 #ifdef CORRADE_BUILD_MULTITHREADED
-/* For compatibility only, to be removed at some point */
-#define MAGNUM_BUILD_MULTITHREADED
+/* For compatibility only, to be removed at some point. Deliberate double space
+   after the #define to avoid being unconditionally matched by older FindMagnum
+   modules. */
+#define  MAGNUM_BUILD_MULTITHREADED
+#endif
+/* The following applies only to desktop platforms */
+#if !defined(CORRADE_TARGET_IOS) && !defined(CORRADE_TARGET_ANDROID) && !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_WINDOWS_RT)
+/* MAGNUM_TARGET_HEADLESS used to be an option defined on desktop GL only, not
+   on ES; MAGNUM_TARGET_EGL is defined implicitly also on all platforms that
+   use EGL exclusively. Deliberate double space after the #define to avoid
+   being unconditionally matched by older FindMagnum modules. */
+#if !defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_EGL)
+#define  MAGNUM_TARGET_HEADLESS
+#endif
+/* MAGNUM_TARGET_DESKTOP_GLES used to do the opposite of
+   MAGNUM_TARGET_HEADLESS, i.e. force GLX/WGL instead of EGL on GLES builds.
+   Deliberate double space after the #define to avoid being unconditionally
+   matched by older FindMagnum modules. */
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_EGL)
+#define  MAGNUM_TARGET_DESKTOP_GLES
+#endif
 #endif
 #endif
 

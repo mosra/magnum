@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,7 +27,7 @@
 #include "FlatGL.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
-#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
@@ -68,16 +69,11 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(const Flags flags
     #ifndef MAGNUM_TARGET_GLES2
     , const UnsignedInt materialCount, const UnsignedInt drawCount
     #endif
-):
-    _flags{flags}
-    #ifndef MAGNUM_TARGET_GLES2
-    , _materialCount{materialCount}, _drawCount{drawCount}
-    #endif
-{
+) {
     #ifndef CORRADE_NO_ASSERT
     {
         const bool textureTransformationNotEnabledOrTextured = !(flags & Flag::TextureTransformation) || flags & Flag::Textured
@@ -86,22 +82,22 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
             #endif
             ;
         CORRADE_ASSERT(textureTransformationNotEnabledOrTextured,
-            "Shaders::FlatGL: texture transformation enabled but the shader is not textured", );
+            "Shaders::FlatGL: texture transformation enabled but the shader is not textured", CompileState{NoCreate});
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
-        "Shaders::FlatGL: material count can't be zero", );
+        "Shaders::FlatGL: material count can't be zero", CompileState{NoCreate});
     CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
-        "Shaders::FlatGL: draw count can't be zero", );
+        "Shaders::FlatGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_ASSERT(!(flags & Flag::TextureArrays) || flags & Flag::Textured || flags >= Flag::ObjectIdTexture,
-        "Shaders::FlatGL: texture arrays enabled but the shader is not textured", );
+        "Shaders::FlatGL: texture arrays enabled but the shader is not textured", CompileState{NoCreate});
     CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
-        "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", );
+        "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -195,9 +191,17 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("Flat.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
+    vert.submitCompile();
+    frag.submitCompile();
 
-    attachShaders({vert, frag});
+    FlatGL<dimensions> out{NoInit};
+    out._flags = flags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._materialCount = materialCount;
+    out._drawCount = drawCount;
+    #endif
+
+    out.attachShaders({vert, frag});
 
     /* ES3 has this done in the shader directly and doesn't even provide
        bindFragmentDataLocation() */
@@ -206,53 +210,68 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Position::Location, "position");
         if(flags & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
             || flags >= Flag::ObjectIdTexture
             #endif
         )
-            bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         if(flags & Flag::VertexColor)
-            bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
+            out.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & Flag::ObjectId) {
-            bindFragmentDataLocation(ColorOutput, "color");
-            bindFragmentDataLocation(ObjectIdOutput, "objectId");
+            out.bindFragmentDataLocation(ColorOutput, "color");
+            out.bindFragmentDataLocation(ObjectIdOutput, "objectId");
         }
         if(flags >= Flag::InstancedObjectId)
-            bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
         if(flags & Flag::InstancedTransformation)
-            bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
         if(flags >= Flag::InstancedTextureOffset)
-            bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
     }
     #endif
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    out.submitLink();
+
+    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state): FlatGL{static_cast<FlatGL&&>(std::move(state))} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* When graceful assertions fire from within compile(), we get a NoCreate'd
+       CompileState. Exiting makes it possible to test the assert. */
+    if(!id()) return;
+    #endif
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
+
+    const GL::Context& context = GL::Context::current();
+    const GL::Version version = state._version;
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix");
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & Flag::TextureArrays)
+            if(_flags & Flag::TextureArrays)
                 _textureLayerUniform = uniformLocation("textureLayer");
             #endif
             _colorUniform = uniformLocation("color");
-            if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
+            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
+            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
             #endif
         }
     }
@@ -261,13 +280,13 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
-        if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
+        if(_flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
-        if(flags >= Flag::UniformBuffers) {
+        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
+        if(_flags >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
-            if(flags & Flag::TextureTransformation)
+            if(_flags & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
         }
@@ -277,25 +296,37 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
     } else
     #endif
     {
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
-        if(flags & Flag::TextureTransformation)
+        if(_flags & Flag::TextureTransformation)
             setTextureMatrix(Matrix3{Math::IdentityInit});
         /* Texture layer is zero by default */
         setColor(Magnum::Color4{1.0f});
-        if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+        if(_flags & Flag::AlphaMask) setAlphaMask(0.5f);
         /* Object ID is zero by default */
     }
     #endif
+
+    static_cast<void>(version);
+    static_cast<void>(context);
 }
 
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags): FlatGL{compile(flags)} {}
+
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): FlatGL{flags, 1, 1} {}
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(Flags flags) {
+    return compile(flags, 1, 1);
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
+    FlatGL{compile(flags, materialCount, drawCount)} {}
 #endif
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT) {}
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2

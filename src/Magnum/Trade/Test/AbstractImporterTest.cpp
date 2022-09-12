@@ -373,7 +373,9 @@ struct AbstractImporterTest: TestSuite::Tester {
     void importerStateNoFile();
 
     void debugFeature();
+    void debugFeaturePacked();
     void debugFeatures();
+    void debugFeaturesPacked();
     void debugFlag();
     void debugFlags();
 };
@@ -699,7 +701,9 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::importerStateNoFile,
 
               &AbstractImporterTest::debugFeature,
+              &AbstractImporterTest::debugFeaturePacked,
               &AbstractImporterTest::debugFeatures,
+              &AbstractImporterTest::debugFeaturesPacked,
               &AbstractImporterTest::debugFlag,
               &AbstractImporterTest::debugFlags});
 }
@@ -7695,11 +7699,25 @@ void AbstractImporterTest::debugFeature() {
     CORRADE_COMPARE(out.str(), "Trade::ImporterFeature::OpenData Trade::ImporterFeature(0xf0)\n");
 }
 
+void AbstractImporterTest::debugFeaturePacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << ImporterFeature::OpenData << Debug::packed << ImporterFeature(0xf0) << ImporterFeature::FileCallback;
+    CORRADE_COMPARE(out.str(), "OpenData 0xf0 Trade::ImporterFeature::FileCallback\n");
+}
+
 void AbstractImporterTest::debugFeatures() {
     std::ostringstream out;
 
     Debug{&out} << (ImporterFeature::OpenData|ImporterFeature::OpenState) << ImporterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::ImporterFeature::OpenData|Trade::ImporterFeature::OpenState Trade::ImporterFeatures{}\n");
+}
+
+void AbstractImporterTest::debugFeaturesPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (ImporterFeature::OpenData|ImporterFeature::OpenState) << Debug::packed << ImporterFeatures{} << ImporterFeature::FileCallback;
+    CORRADE_COMPARE(out.str(), "OpenData|OpenState {} Trade::ImporterFeature::FileCallback\n");
 }
 
 void AbstractImporterTest::debugFlag() {

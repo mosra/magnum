@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -33,6 +34,7 @@
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Shaders/GenericGL.h"
+#include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
@@ -201,6 +203,8 @@ all shaders, see @ref shaders-usage-multidraw for an example.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::AbstractShaderProgram {
     public:
+        class CompileState;
+
         /**
          * @brief Vertex position
          *
@@ -541,6 +545,34 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         #endif
 
         /**
+         * @brief Compile asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref FlatGL(Flags) can perform an asynchronous
+         * compilation and linking. See @ref shaders-async for more
+         * information.
+         * @see @ref FlatGL(CompileState&&),
+         *      @ref compile(Flags, UnsignedInt, UnsignedInt)
+         */
+        static CompileState compile(Flags flags = {});
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Compile for a multi-draw scenario asynchronously
+         * @m_since_latest
+         *
+         * Compared to @ref FlatGL(Flags, UnsignedInt, UnsignedInt) can perform
+         * an asynchronous compilation and linking. See @ref shaders-async for
+         * more information.
+         * @see @ref FlatGL(CompileState&&), @ref compile(Flags)
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        static CompileState compile(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        #endif
+
+        /**
          * @brief Constructor
          * @param flags     Flags
          *
@@ -548,6 +580,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
          * @ref FlatGL(Flags, UnsignedInt, UnsignedInt) with @p materialCount
          * and @p drawCount set to @cpp 1 @ce.
+         * @see @ref compile(Flags)
          */
         explicit FlatGL(Flags flags = {});
 
@@ -562,6 +595,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          *      / @ref TextureTransformationUniform buffer bound with
          *      @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer()
          *      and @ref bindTextureTransformationBuffer()
+         * @m_since_latest
          *
          * If @p flags contains @ref Flag::UniformBuffers, @p materialCount and
          * @p drawCount describe the uniform buffer sizes as these are required
@@ -572,6 +606,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * If @p flags don't contain @ref Flag::UniformBuffers,
          * @p materialCount and @p drawCount is ignored and the constructor
          * behaves the same as @ref FlatGL(Flags).
+         * @see @ref compile(Flags, UnsignedInt, UnsignedInt)
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -587,6 +622,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
             whole Configuration class? */
         explicit FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
         #endif
+
+        /**
+         * @brief Finalize an asynchronous compilation
+         * @m_since_latest
+         *
+         * Takes an asynchronous compilation state returned by @ref compile()
+         * and forms a ready-to-use shader object. See @ref shaders-async for
+         * more information.
+         */
+        explicit FlatGL(CompileState&& state);
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -1011,6 +1056,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         #endif
 
     private:
+        /* Creates the GL shader program object but does nothing else.
+           Internal, used by compile(). */
+        explicit FlatGL(NoInitT);
+
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
         using GL::AbstractShaderProgram::drawTransformFeedback;
@@ -1036,6 +1085,24 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
            so it can alias them */
         Int _drawOffsetUniform{0};
         #endif
+};
+
+/**
+@brief Asynchronous compilation state
+@m_since_latest
+
+Returned by @ref compile(). See @ref shaders-async for more information.
+*/
+template<UnsignedInt dimensions> class FlatGL<dimensions>::CompileState: public FlatGL<dimensions> {
+    /* Everything deliberately private except for the inheritance */
+    friend class FlatGL;
+
+    explicit CompileState(NoCreateT): FlatGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
+
+    explicit CompileState(FlatGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): FlatGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+
+    Implementation::GLShaderWrapper _vert, _frag;
+    GL::Version _version;
 };
 
 /**

@@ -217,7 +217,6 @@ Platform namespace is split into more components:
 -   `WindowlessGlxApplication` --- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WindowlessIosApplication` --- @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
 -   `WindowlessWglApplication` --- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
--   `WindowlessWindowsEglApplication` --- @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
 
 For manual context creation (without application wrappers) there are also
 platform-specific context libraries (see @ref platform-custom for more
@@ -328,11 +327,9 @@ are also available as preprocessor variables if including
 -   `MAGNUM_TARGET_GLES` --- Defined if compiled for OpenGL ES
 -   `MAGNUM_TARGET_GLES2` --- Defined if compiled for OpenGL ES 2.0
 -   `MAGNUM_TARGET_GLES3` --- Defined if compiled for OpenGL ES 3.0
--   `MAGNUM_TARGET_DESKTOP_GLES` --- Defined if compiled with OpenGL ES
-    emulation on desktop OpenGL
 -   `MAGNUM_TARGET_WEBGL` --- Defined if compiled for WebGL
--   `MAGNUM_TARGET_HEADLESS` --- Defined if compiled for headless machines. See
-    @ref MAGNUM_TARGET_HEADLESS documentation for more information.
+-   `MAGNUM_TARGET_EGL` --- Defined if compiled for EGL instead of a
+    platform-specific OpenGL support library such as CGL, EAGL, GLX or WGL.
 -   `MAGNUM_TARGET_VK` --- Defined if compiled with Vulkan interoperability
     enabled
 
@@ -342,6 +339,10 @@ release:
 
 -   `MAGNUM_BUILD_MULTITHREADED` --- Alias to `CORRADE_BUILD_MULTITHREADED`.
     Use @ref CORRADE_BUILD_MULTITHREADED instead.
+-   `MAGNUM_TARGET_HEADLESS` --- Alias to `MAGNUM_TARGET_EGL`, unless on iOS,
+    Android, Emscripten or Windows RT. Use @ref MAGNUM_TARGET_EGL instead.
+-   `MAGNUM_TARGET_DESKTOP_GLES` --- Defined if compiled for OpenGL ES but
+    GLX / WGL is used instead of EGL. Use @ref MAGNUM_TARGET_EGL instead.
 
 Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.

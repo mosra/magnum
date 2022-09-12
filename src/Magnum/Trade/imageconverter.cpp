@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -447,7 +448,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())};
 
     const Int dimensions = args.value<Int>("dimensions");
     /** @todo make them array options as well? */
@@ -595,47 +596,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 else
                     useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
 
-                std::size_t totalImageDataSize = 0;
-                for(const Trade::Implementation::ImageInfo& info: infos) {
-                    Debug d{useColor};
-                    if(info.level == 0) {
-                        d << Debug::boldColor(Debug::Color::White);
-                        if(info.size.z()) d << "3D image";
-                        else if(info.size.y()) d << "2D image";
-                        else d << "1D image";
-                        d << info.image << Debug::nospace << ":"
-                            << Debug::resetColor;
-                        if(info.name) d << Debug::boldColor(Debug::Color::Yellow)
-                            << info.name << Debug::resetColor;
-                        d << Debug::newline;
-                    }
-                    d << "  Level" << info.level << Debug::nospace << ":";
-                    if(info.flags.one) {
-                        d << Debug::packed << Debug::color(Debug::Color::Cyan);
-                        if(info.size.z()) d << info.flags.three;
-                        else if(info.size.y()) d << info.flags.two;
-                        else d << info.flags.one;
-                        d << Debug::resetColor;
-                    }
-                    d << Debug::packed;
-                    if(info.size.z()) d << info.size;
-                    else if(info.size.y()) d << info.size.xy();
-                    else d << Math::Vector<1, Int>(info.size.x());
-                    d << Debug::color(Debug::Color::Blue) << "@" << Debug::resetColor;
-                    d << Debug::packed;
-                    if(info.compressed) d << Debug::color(Debug::Color::Yellow) << info.compressedFormat;
-                    else d << Debug::color(Debug::Color::Cyan) << info.format;
-                    d << Debug::resetColor << "(" << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
-                    if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
-                        d << Debug::nospace << "," << Debug::packed
-                            << Debug::color(Debug::Color::Green)
-                            << info.dataFlags << Debug::resetColor;
-                    d << Debug::nospace << ")";
-
-                    totalImageDataSize += info.dataSize;
-                }
-                if(!infos.isEmpty())
-                    Debug{} << "Total image data size:" << Utility::format("{:.1f}", totalImageDataSize/1024.0f) << "kB";
+                Trade::Implementation::printImageInfo(useColor, infos, nullptr, nullptr, nullptr);
 
                 if(args.isSet("profile")) {
                     Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
@@ -961,7 +922,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
 
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnyImageConverter. All converters except the last one are
@@ -1021,10 +982,8 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                         Trade::ImageConverterFeature::ConvertCompressed3DToFile :
                         Trade::ImageConverterFeature::Convert3DToFile;
                 } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-                /** @todo use a sane flag once the feature enum is ... sane */
-                constexpr Trade::ImageConverterFeatures ImageConverterFeatureLevels =
-                    Trade::ImageConverterFeature::ConvertLevels1DToFile & ~Trade::ImageConverterFeature::Convert1DToFile;
-                if(outputIsMultiLevel) expectedFeatures |= ImageConverterFeatureLevels;
+                if(outputIsMultiLevel)
+                    expectedFeatures |= Trade::ImageConverterFeature::Levels;
                 if(!(converter->features() >= expectedFeatures)) {
                     Error err;
                     err << converterName << "doesn't support";

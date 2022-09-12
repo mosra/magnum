@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,10 +27,12 @@
 #include "AbstractShaderProgram.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
+#include <Corrade/Containers/StringStl.h> /** @todo remove once <string>-free */
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -533,7 +536,7 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
     glAttachShader(_id, shader.id());
 }
 
-void AbstractShaderProgram::attachShaders(std::initializer_list<Containers::Reference<Shader>> shaders) {
+void AbstractShaderProgram::attachShaders(Containers::Iterable<Shader> shaders) {
     for(Shader& s: shaders) attachShader(s);
 }
 
@@ -583,53 +586,73 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
 #endif
 #endif
 
-bool AbstractShaderProgram::link() { return link({*this}); }
+bool AbstractShaderProgram::link() {
+    submitLink();
+    return checkLink({});
+}
 
-bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
-    bool allSuccess = true;
+void AbstractShaderProgram::submitLink() {
+    glLinkProgram(_id);
+}
 
-    /* Invoke (possibly parallel) linking on all shaders */
-    for(AbstractShaderProgram& shader: shaders) glLinkProgram(shader._id);
+bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader> shaders) {
+    /* If any compilation failed, abort without even checking the link status.
+       The checkCompile() API is called always, to print also compilation
+       warnings even in case everything still manages to link well. */
+    for(Shader& shader: shaders)
+        if(!shader.checkCompile()) return false;
 
-    /* After linking phase, check status of all shaders */
-    Int i = 1;
-    for(AbstractShaderProgram& shader: shaders) {
-        GLint success, logLength;
-        glGetProgramiv(shader._id, GL_LINK_STATUS, &success);
-        glGetProgramiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
+    GLint success, logLength;
+    glGetProgramiv(_id, GL_LINK_STATUS, &success);
+    glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
 
-        /* Error or warning message. The string is returned null-terminated,
-           strip the \0 at the end afterwards. */
-        std::string message(logLength, '\n');
-        if(message.size() > 1)
-            glGetProgramInfoLog(shader._id, message.size(), nullptr, &message[0]);
-        message.resize(Math::max(logLength, 1)-1);
+    /* Error or warning message. The string is returned null-terminated,
+       strip the \0 at the end afterwards. */
+    std::string message(logLength, '\n');
+    if(message.size() > 1)
+        glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
+    message.resize(Math::max(logLength, 1)-1);
 
-        /* Some drivers are chatty and can't keep shut when there's nothing to
-           be said, handle that as well. */
-        Context::current().state().shaderProgram.cleanLogImplementation(message);
+    /* Some drivers are chatty and can't keep shut when there's nothing to
+       be said, handle that as well. */
+    Context::current().state().shaderProgram.cleanLogImplementation(message);
 
-        /* Show error log */
-        if(!success) {
-            Error out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) out << "of shader" << i;
-            out << "failed with the following message:" << Debug::newline << message;
+    /* Usually the driver messages contain a newline at the end. But sometimes
+       not, such as in case of a program link error due to shaders not being
+       compiled yet on Mesa; sometimes there's two newlines, sometimes just a
+       newline and nothing else etc. Because trying do this in driver-specific
+       workarounds would involve an impossible task of checking all possible
+       error messages on every possible driver, just trim all whitespace around
+       the message always and let Debug add its own newline. */
+    const Containers::StringView messageTrimmed = Containers::StringView{message}.trimmed();
 
-        /* Or just warnings, if any */
-        } else if(!message.empty()) {
-            Warning out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) out << "of shader" << i;
-            out << "succeeded with the following message:" << Debug::newline << message;
-        }
+    /* Show error log */
+    if(!success) {
+        Error{} << "GL::AbstractShaderProgram::link(): linking failed with the following message:"
+            << Debug::newline << messageTrimmed;
 
-        /* Success of all depends on each of them */
-        allSuccess = allSuccess && success;
-        ++i;
+    /* Or just warnings, if any */
+    } else if(messageTrimmed) {
+        Warning{} << "GL::AbstractShaderProgram::link(): linking succeeded with the following message:"
+            << Debug::newline << messageTrimmed;
     }
 
+    return success;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
+    for(AbstractShaderProgram& shader: shaders) shader.submitLink();
+    bool allSuccess = true;
+    for(AbstractShaderProgram& shader: shaders) allSuccess = allSuccess && shader.checkLink({});
     return allSuccess;
+}
+#endif
+
+bool AbstractShaderProgram::isLinkFinished() {
+    GLint success;
+    Context::current().state().shaderProgram.completionStatusImplementation(_id, GL_COMPLETION_STATUS_KHR, &success);
+    return success == GL_TRUE;
 }
 
 void AbstractShaderProgram::cleanLogImplementationNoOp(std::string&) {}
@@ -645,6 +668,10 @@ void AbstractShaderProgram::cleanLogImplementationAngle(std::string& message) {
     if(message == "\n") message = {};
 }
 #endif
+
+void AbstractShaderProgram::completionStatusImplementationFallback(GLuint, GLenum, GLint* value) {
+    *value = GL_TRUE;
+}
 
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
     const GLint location = glGetUniformLocation(_id, name);

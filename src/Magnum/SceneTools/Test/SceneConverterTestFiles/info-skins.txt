@@ -1,0 +1,10 @@
+2D skin 0:
+  5 joints
+2D skin 1: Second 2D skin, external data
+  15 joints
+3D skin 0: First 3D skin, external data
+  12 joints
+3D skin 1:
+  2 joints
+3D skin 2:
+  1 joints

@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -45,13 +46,21 @@ struct AnySceneConverterTest: TestSuite::Tester {
     explicit AnySceneConverterTest();
 
     void convert();
-    void detect();
+    void convertBeginEnd();
 
-    void unknown();
+    void detectConvert();
+    void detectBeginEnd();
 
-    void propagateFlags();
-    void propagateConfiguration();
-    void propagateConfigurationUnknown();
+    void unknownConvert();
+    void unknownBeginEnd();
+
+    void propagateFlagsConvert();
+    void propagateFlagsBeginEnd();
+
+    void propagateConfigurationConvert();
+    void propagateConfigurationBeginEnd();
+    void propagateConfigurationUnknownConvert();
+    void propagateConfigurationUnknownBeginEnd();
     /* configuration propagation fully tested in AnySceneImporter, as there the
        plugins have configuration subgroups as well */
 
@@ -63,23 +72,46 @@ constexpr struct {
     const char* name;
     const char* filename;
     const char* plugin;
-} DetectData[]{
+} DetectConvertData[]{
+    {"glTF", "khronos.gltf", "GltfSceneConverter"},
+    {"glTF binary", "khronos.glb", "GltfSceneConverter"},
+    {"Stanford PLY", "bunny.ply", "StanfordSceneConverter"},
+    /* Have at least one test case with uppercase */
+    {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordSceneConverter"}
+};
+
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectBeginEndData[]{
+    {"glTF", "khronos.gltf", "GltfSceneConverter"},
+    {"glTF binary", "khronos.glb", "GltfSceneConverter"},
     {"Stanford PLY", "bunny.ply", "StanfordSceneConverter"},
     /* Have at least one test case with uppercase */
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordSceneConverter"}
 };
 
 AnySceneConverterTest::AnySceneConverterTest() {
-    addTests({&AnySceneConverterTest::convert});
+    addTests({&AnySceneConverterTest::convert,
+              &AnySceneConverterTest::convertBeginEnd});
 
-    addInstancedTests({&AnySceneConverterTest::detect},
-        Containers::arraySize(DetectData));
+    addInstancedTests({&AnySceneConverterTest::detectConvert},
+        Containers::arraySize(DetectConvertData));
 
-    addTests({&AnySceneConverterTest::unknown,
+    addInstancedTests({&AnySceneConverterTest::detectBeginEnd},
+        Containers::arraySize(DetectBeginEndData));
 
-              &AnySceneConverterTest::propagateFlags,
-              &AnySceneConverterTest::propagateConfiguration,
-              &AnySceneConverterTest::propagateConfigurationUnknown});
+    addTests({&AnySceneConverterTest::unknownConvert,
+              &AnySceneConverterTest::unknownBeginEnd,
+
+              &AnySceneConverterTest::propagateFlagsConvert,
+              &AnySceneConverterTest::propagateFlagsBeginEnd,
+
+              &AnySceneConverterTest::propagateConfigurationConvert,
+              &AnySceneConverterTest::propagateConfigurationBeginEnd,
+              &AnySceneConverterTest::propagateConfigurationUnknownConvert,
+              &AnySceneConverterTest::propagateConfigurationUnknownBeginEnd});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -121,8 +153,41 @@ void AnySceneConverterTest::convert() {
     CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
 }
 
-void AnySceneConverterTest::detect() {
-    auto&& data = DetectData[testCaseInstanceId()];
+void AnySceneConverterTest::convertBeginEnd() {
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    const Vector3 positions[] {
+        {-0.5f, -0.5f, 0.0f},
+        { 0.5f, -0.5f, 0.0f},
+        { 0.0f,  0.5f, 0.0f}
+    };
+    const Trade::MeshData mesh{MeshPrimitive::Triangles, {}, positions, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+    CORRADE_VERIFY(converter->beginFile(filename));
+    CORRADE_COMPARE(converter->add(mesh), 0);
+    CORRADE_VERIFY(converter->endFile());
+
+    /* This file is reused in AnySceneImporter tests, so it's worth to save it
+       here */
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
+}
+
+void AnySceneConverterTest::detectConvert() {
+    auto&& data = DetectConvertData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
@@ -130,27 +195,59 @@ void AnySceneConverterTest::detect() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, data.filename));
-    /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n", data.plugin));
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnySceneConverter::convertToFile(): cannot load the {0} plugin\n",
+        data.plugin));
     #endif
 }
 
-void AnySceneConverterTest::unknown() {
-    std::ostringstream output;
-    Error redirectError{&output};
+void AnySceneConverterTest::detectBeginEnd() {
+    auto&& data = DetectConvertData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
-    CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, "mesh.obj"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->beginFile(data.filename));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\n"
+        "Trade::AnySceneConverter::beginFile(): cannot load the {0} plugin\n",
+        data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "PluginManager::Manager::load(): plugin {0} was not found\n"
+        "Trade::AnySceneConverter::beginFile(): cannot load the {0} plugin\n", data.plugin));
+    #endif
 }
 
-void AnySceneConverterTest::propagateFlags() {
+void AnySceneConverterTest::unknownConvert() {
+    Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertToFile(MeshData{MeshPrimitive::Triangles, 0}, "mesh.obj"));
+    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): cannot determine the format of mesh.obj\n");
+}
+
+void AnySceneConverterTest::unknownBeginEnd() {
+    Containers::Pointer<AbstractSceneConverter> converter = _manager.instantiate("AnySceneConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->beginFile("mesh.obj"));
+    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::beginFile(): cannot determine the format of mesh.obj\n");
+}
+
+void AnySceneConverterTest::propagateFlagsConvert() {
     PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
     #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -188,7 +285,47 @@ void AnySceneConverterTest::propagateFlags() {
     CORRADE_SKIP("No plugin with verbose output available to test flag propagation.");
 }
 
-void AnySceneConverterTest::propagateConfiguration() {
+void AnySceneConverterTest::propagateFlagsBeginEnd() {
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+
+    const Vector3 positions[] {
+        {-0.5f, -0.5f, 0.0f},
+        { 0.5f, -0.5f, 0.0f},
+        { 0.0f,  0.5f, 0.0f}
+    };
+    const Trade::MeshData mesh{MeshPrimitive::Triangles, {}, positions, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+    converter->setFlags(SceneConverterFlag::Verbose);
+
+    std::ostringstream out;
+    {
+        Debug redirectOutput{&out};
+        CORRADE_VERIFY(converter->beginFile(filename));
+    }
+    CORRADE_VERIFY(converter->add(mesh));
+    CORRADE_VERIFY(converter->endFile());
+    CORRADE_VERIFY(Utility::Path::exists(filename));
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnySceneConverter::beginFile(): using StanfordSceneConverter\n");
+
+    /* We tested AnySceneConverter's verbose output, but can't actually test
+       the flag propagation in any way yet */
+    CORRADE_SKIP("No plugin with verbose output available to test flag propagation.");
+}
+
+void AnySceneConverterTest::propagateConfigurationConvert() {
     PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
     #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -221,7 +358,42 @@ void AnySceneConverterTest::propagateConfiguration() {
     CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENECONVERTER_TEST_DIR, "objectid.ply"), TestSuite::Compare::File);
 }
 
-void AnySceneConverterTest::propagateConfigurationUnknown() {
+void AnySceneConverterTest::propagateConfigurationBeginEnd() {
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+
+    const struct Data {
+        Vector3 position;
+        UnsignedInt objectId;
+    } data[] {
+        {{-0.5f, -0.5f, 0.0f}, 4678},
+        {{ 0.5f, -0.5f, 0.0f}, 3232},
+        {{ 0.0f,  0.5f, 0.0f}, 1536}
+    };
+    const Trade::MeshData mesh{MeshPrimitive::Triangles, {}, data, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(data).slice(&Data::position)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, Containers::stridedArrayView(data).slice(&Data::objectId)},
+    }};
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+    converter->configuration().setValue("objectIdAttribute", "OID");
+    CORRADE_VERIFY(converter->beginFile(filename));
+    CORRADE_VERIFY(converter->add(mesh));
+    CORRADE_VERIFY(converter->endFile());
+    /* Compare to an expected output to ensure the custom attribute name was
+       used */
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENECONVERTER_TEST_DIR, "objectid.ply"), TestSuite::Compare::File);
+}
+
+void AnySceneConverterTest::propagateConfigurationUnknownConvert() {
     PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
     #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -247,6 +419,38 @@ void AnySceneConverterTest::propagateConfigurationUnknown() {
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(mesh, Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply")));
     CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
+}
+
+void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("StanfordSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
+
+    const Vector3 positions[] {
+        {-0.5f, -0.5f, 0.0f},
+        { 0.5f, -0.5f, 0.0f},
+        { 0.0f,  0.5f, 0.0f}
+    };
+    const Trade::MeshData mesh{MeshPrimitive::Triangles, {}, positions, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+    converter->configuration().setValue("noSuchOption", "isHere");
+
+    std::ostringstream out;
+    {
+        Warning redirectWarning{&out};
+        CORRADE_VERIFY(converter->beginFile(Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply")));
+    }
+    CORRADE_VERIFY(converter->add(mesh));
+    CORRADE_VERIFY(converter->endFile());
+    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::beginFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
 }
 
 }}}}

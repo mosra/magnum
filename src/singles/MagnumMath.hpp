@@ -15,6 +15,19 @@
     -   GitHub project page — https://github.com/mosra/magnum
     -   GitHub Singles repository — https://github.com/mosra/magnum-singles
 
+    The library has a separate non-inline implementation part, enable it *just
+    once* like this:
+
+        #define MAGNUM_MATH_IMPLEMENTATION
+        #include <MagnumMath.hpp>
+
+    If you need the deinlined symbols to be exported from a shared library,
+    `#define MAGNUM_EXPORT` as appropriate. In addition, contents of the
+    GlmIntegration and EigenIntegration libraries are included as well ---
+    opt-in by specifying either `#define MAGNUM_MATH_GLM_INTEGRATION` or
+    `#define MAGNUM_MATH_EIGEN_INTEGRATION` before including the file.
+    Including it multiple times with different macros defined works as well.
+
     v2020.06-0-gfac6f4da2 (2020-06-27)
     -   Various fixes for Clang-CL compatibility
     -   Expanding the APIs to work with Half and long double types

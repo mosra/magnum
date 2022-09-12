@@ -35,6 +35,13 @@
 #include "Magnum/MeshTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* combineIndexedAttributes() used to take an ArrayView<Reference<MeshData>>,
+   now it's through the Iterable class. Include it explicitly until people
+   learn to include it themselves. */
+#include <Corrade/Containers/Iterable.h>
+#endif
+
 namespace Magnum { namespace MeshTools {
 
 /**
@@ -88,13 +95,7 @@ implementation-specific format.
 @see @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> data);
-
-/**
- * @overload
- * @m_since{2020,06}
- */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(std::initializer_list<Containers::Reference<const Trade::MeshData>> data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData> data);
 
 /**
 @brief Combine per-face attributes into an existing mesh

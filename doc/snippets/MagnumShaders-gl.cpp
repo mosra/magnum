@@ -284,7 +284,7 @@ ImageView2D coneDiffuse{DOXYGEN_ELLIPSIS({}, {})}, cubeDiffuse{DOXYGEN_ELLIPSIS(
 GL::Texture2DArray diffuseTexture;
 diffuseTexture
     DOXYGEN_ELLIPSIS()
-    /* Assuming all iamges have the same format and size */
+    /* Assuming all images have the same format and size */
     .setStorage(1, GL::textureFormat(coneDiffuse.format()),
         {coneDiffuse.size(), 3})
     .setSubImage(0, {}, coneDiffuse)
@@ -339,6 +339,27 @@ shader
     .setProjectionMatrix(projectionMatrix)
     .draw(mesh);
 /* [shaders-meshvisualizer] */
+}
+
+{
+/* [shaders-async] */
+Shaders::FlatGL3D::CompileState flatState =
+    Shaders::FlatGL3D::compile();
+Shaders::FlatGL3D::CompileState flatTexturedState =
+    Shaders::FlatGL3D::compile(Shaders::FlatGL3D::Flag::Textured);
+Shaders::MeshVisualizerGL3D::CompileState meshVisualizerState =
+    Shaders::MeshVisualizerGL3D::compile(DOXYGEN_ELLIPSIS(Shaders::MeshVisualizerGL3D::Flag::Wireframe));
+
+while(!flatState.isLinkFinished() ||
+      !flatTexturedState.isLinkFinished() ||
+      !meshVisualizerState.isLinkFinished()) {
+    // Do other work ...
+}
+
+Shaders::FlatGL3D flat{std::move(flatState)};
+Shaders::FlatGL3D flatTextured{std::move(flatTexturedState)};
+Shaders::MeshVisualizerGL3D meshVisualizer{std::move(meshVisualizerState)};
+/* [shaders-async] */
 }
 
 /* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271

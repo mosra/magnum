@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,7 +27,9 @@
 #include "Shader.h"
 
 #include <Corrade/Containers/Array.h>
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Reference.h>
+#endif
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
@@ -642,7 +645,7 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
 }
 #endif
 
-Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
+Shader::Shader(const Version version, const Type type): _type{type}, _flags{ObjectFlag::DeleteOnDestruction|ObjectFlag::Created} {
     _id = glCreateShader(GLenum(_type));
 
     switch(version) {
@@ -675,9 +678,11 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
     CORRADE_ASSERT_UNREACHABLE("GL::Shader::Shader(): unsupported version" << version, );
 }
 
+Shader::Shader(const Type type, const GLuint id, ObjectFlags flags) noexcept: _type{type}, _id{id}, _flags{flags} {}
+
 Shader::~Shader() {
-    /* Moved out, nothing to do */
-    if(!_id) return;
+    /* Moved out or not deleting on destruction, nothing to do */
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     glDeleteShader(_id);
 }
@@ -747,74 +752,83 @@ Shader& Shader::addFile(const std::string& filename) {
     return *this;
 }
 
-bool Shader::compile() { return compile({*this}); }
+bool Shader::compile() {
+    submitCompile();
+    return checkCompile();
+}
 
-bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
-    bool allSuccess = true;
+void Shader::submitCompile() {
+    CORRADE_ASSERT(_sources.size() > 1, "GL::Shader::compile(): no files added", );
 
-    /* Allocate large enough array for source pointers and sizes (to avoid
-       reallocating it for each of them) */
-    std::size_t maxSourceCount = 0;
-    for(Shader& shader: shaders) {
-        CORRADE_ASSERT(shader._sources.size() > 1, "GL::Shader::compile(): no files added", false);
-        maxSourceCount = Math::max(shader._sources.size(), maxSourceCount);
-    }
     /** @todo ArrayTuple/VLAs */
-    Containers::Array<const GLchar*> pointers(maxSourceCount);
-    Containers::Array<GLint> sizes(maxSourceCount);
+    Containers::Array<const GLchar*> pointers(_sources.size());
+    Containers::Array<GLint> sizes(_sources.size());
 
     /* Upload sources of all shaders */
-    for(Shader& shader: shaders) {
-        for(std::size_t i = 0; i != shader._sources.size(); ++i) {
-            pointers[i] = static_cast<const GLchar*>(shader._sources[i].data());
-            sizes[i] = shader._sources[i].size();
-        }
-
-        glShaderSource(shader._id, shader._sources.size(), pointers, sizes);
+    for(std::size_t i = 0; i != _sources.size(); ++i) {
+        pointers[i] = static_cast<const GLchar*>(_sources[i].data());
+        sizes[i] = _sources[i].size();
     }
 
+    glShaderSource(_id, _sources.size(), pointers, sizes);
+    glCompileShader(_id);
+}
+
+bool Shader::checkCompile() {
+    GLint success, logLength;
+    glGetShaderiv(_id, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &logLength);
+
+    /* Error or warning message. The string is returned null-terminated,
+       strip the \0 at the end afterwards. */
+    std::string message(logLength, '\0');
+    if(message.size() > 1)
+        glGetShaderInfoLog(_id, message.size(), nullptr, &message[0]);
+    message.resize(Math::max(logLength, 1)-1);
+
+    /* Some drivers are chatty and can't keep shut when there's nothing to
+       be said, handle that as well. */
+    Context::current().state().shader.cleanLogImplementation(message);
+
+    /* Usually the driver messages contain a newline at the end. But sometimes
+       not, such as in case of a program link error due to shaders not being
+       compiled yet on Mesa; sometimes there's two newlines, sometimes just a
+       newline and nothing else etc. Because trying do this in driver-specific
+       workarounds would involve an impossible task of checking all possible
+       error messages on every possible driver, just trim all whitespace around
+       the message always and let Debug add its own newline. */
+    const Containers::StringView messageTrimmed = Containers::StringView{message}.trimmed();
+
+    /* Show error log */
+    if(!success) {
+        Error{} << "GL::Shader::compile(): compilation of" << shaderName(_type)
+            << "shader failed with the following message:" << Debug::newline
+            << messageTrimmed;
+
+    /* Or just warnings, if any */
+    } else if(messageTrimmed) {
+        Warning{} << "GL::Shader::compile(): compilation of" << shaderName(_type)
+            << "shader succeeded with the following message:" << Debug::newline
+            << messageTrimmed;
+    }
+
+    return success;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
     /* Invoke (possibly parallel) compilation on all shaders */
-    for(Shader& shader: shaders) glCompileShader(shader._id);
-
-    /* After compilation phase, check status of all shaders */
-    Int i = 1;
-    for(Shader& shader: shaders) {
-        GLint success, logLength;
-        glGetShaderiv(shader._id, GL_COMPILE_STATUS, &success);
-        glGetShaderiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
-
-        /* Error or warning message. The string is returned null-terminated,
-           strip the \0 at the end afterwards. */
-        std::string message(logLength, '\0');
-        if(message.size() > 1)
-            glGetShaderInfoLog(shader._id, message.size(), nullptr, &message[0]);
-        message.resize(Math::max(logLength, 1)-1);
-
-        /* Some drivers are chatty and can't keep shut when there's nothing to
-           be said, handle that as well. */
-        Context::current().state().shader.cleanLogImplementation(message);
-
-        /* Show error log */
-        if(!success) {
-            Error out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
-            if(shaders.size() != 1) out << i;
-            out << "failed with the following message:" << Debug::newline << message;
-
-        /* Or just warnings, if any */
-        } else if(!message.empty()) {
-            Warning out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "GL::Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
-            if(shaders.size() != 1) out << i;
-            out << "succeeded with the following message:" << Debug::newline << message;
-        }
-
-        /* Success of all depends on each of them */
-        allSuccess = allSuccess && success;
-        ++i;
-    }
-
+    for(Shader& shader: shaders) shader.submitCompile();
+    bool allSuccess = true;
+    for(Shader& shader: shaders) allSuccess = allSuccess && shader.checkCompile();
     return allSuccess;
+}
+#endif
+
+bool Shader::isCompileFinished() {
+    GLint success;
+    Context::current().state().shader.completionStatusImplementation(_id, GL_COMPLETION_STATUS_KHR, &success);
+    return success == GL_TRUE;
 }
 
 void Shader::cleanLogImplementationNoOp(std::string&) {}
@@ -824,6 +838,10 @@ void Shader::cleanLogImplementationIntelWindows(std::string& message) {
     if(message == "No errors.\n") message = {};
 }
 #endif
+
+void Shader::completionStatusImplementationFallback(GLuint, GLenum, GLint* value) {
+    *value = GL_TRUE;
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {

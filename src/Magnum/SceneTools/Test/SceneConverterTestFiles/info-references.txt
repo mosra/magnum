@@ -1,0 +1,111 @@
+Scene 0:
+  Bound: 2 objects @ UnsignedInt (0.1 kB, {})
+  Fields:
+    Transformation @ Matrix4x4, 0 entries
+    Mesh @ UnsignedInt, 4 entries
+    MeshMaterial @ Int, 4 entries
+    Light @ UnsignedInt, 4 entries
+    Camera @ UnsignedInt, 4 entries
+    Skin @ UnsignedInt, 4 entries
+Scene 1:
+  Bound: 4 objects @ UnsignedInt (0.0 kB, {})
+  Fields:
+    Transformation @ Matrix3x3, 0 entries
+    Mesh @ UnsignedInt, 3 entries
+    Skin @ UnsignedInt, 3 entries
+Total scene data size: 0.1 kB
+Object 0 (referenced by 1 scenes):
+  Fields: Mesh, MeshMaterial, Light, Camera, Skin
+Object 1 (referenced by 2 scenes):
+  Fields: Mesh[2], MeshMaterial[2], Light[2], Camera[2], Skin[2], Mesh, Skin
+Object 2 (referenced by 0 scenes): Not referenced
+Object 3 (referenced by 1 scenes):
+  Fields: Mesh, Skin
+2D skin 0 (referenced by 1 objects):
+  2 joints
+2D skin 1 (referenced by 1 objects):
+  3 joints
+2D skin 2 (referenced by 0 objects): Not referenced
+  1 joints
+3D skin 0 (referenced by 0 objects): Not referenced
+  2 joints
+3D skin 1 (referenced by 2 objects):
+  1 joints
+3D skin 2 (referenced by 1 objects):
+  3 joints
+Light 0 (referenced by 2 objects):
+  Type: Directional
+  Color: {0.341176, 1, 0.203922} * 5
+Light 1 (referenced by 0 objects): Not referenced
+  Type: Ambient
+  Color: {1, 0.341176, 0.203922} * 0.1
+Light 2 (referenced by 1 objects):
+  Type: Directional
+  Color: {0.203922, 0.341176, 1}
+Camera 0 (referenced by 0 objects): Not referenced
+  Type: Orthographic3D
+  Size: {2, 3}, -1 - 0.5
+  Aspect ratio: 0.666667
+Camera 1 (referenced by 2 objects):
+  Type: Orthographic3D
+  Size: {2, 2}, 0 - 1
+  Aspect ratio: 1
+Camera 2 (referenced by 1 objects):
+  Type: Orthographic2D
+  Size: {2, 2}
+  Aspect ratio: 1
+Material 0 (referenced by 2 objects):
+  Type: {}
+  Base layer:
+    BaseColorTexture @ UnsignedInt: 2
+    DiffuseTexture @ UnsignedInt: 2
+Material 1 (referenced by 1 objects):
+  Type: {}
+  Base layer:
+    EmissiveTexture @ UnsignedInt: 4
+    NormalTexture @ UnsignedInt: 17
+    lookupTexture @ UnsignedInt: 0
+    volumeTexture @ UnsignedInt: 3
+Material 2 (referenced by 0 objects): Not referenced
+  Type: {}
+  Base layer:
+Mesh 0 (referenced by 2 objects):
+  Level 0: 5 vertices @ Points (0.0 kB)
+Mesh 1 (referenced by 0 objects): Not referenced
+  Level 0: 4 vertices @ Lines (0.0 kB)
+Mesh 2 (referenced by 3 objects):
+  Level 0: 4 vertices @ TriangleFan (0.0 kB)
+Total mesh data size: 0.0 kB
+Texture 0 (referenced by 1 material attributes):
+  Type: Texture1D, image 1
+  Minification, mipmap and magnification: Nearest, Nearest, Linear
+  Wrapping: {Repeat, Repeat, Repeat}
+Texture 1 (referenced by 0 material attributes): Not referenced
+  Type: Texture1DArray, image 225
+  Minification, mipmap and magnification: Nearest, Nearest, Linear
+  Wrapping: {Repeat, Repeat, Repeat}
+Texture 2 (referenced by 2 material attributes):
+  Type: Texture2D, image 0
+  Minification, mipmap and magnification: Nearest, Nearest, Linear
+  Wrapping: {Repeat, Repeat, Repeat}
+Texture 3 (referenced by 1 material attributes):
+  Type: Texture3D, image 1
+  Minification, mipmap and magnification: Nearest, Nearest, Linear
+  Wrapping: {Repeat, Repeat, Repeat}
+Texture 4 (referenced by 1 material attributes):
+  Type: Texture2D, image 0
+  Minification, mipmap and magnification: Nearest, Nearest, Linear
+  Wrapping: {Repeat, Repeat, Repeat}
+1D image 0 (referenced by 0 textures): Not referenced
+  Level 0: {1} @ RGBA8I (0.0 kB)
+1D image 1 (referenced by 1 textures):
+  Level 0: {4} @ R8I (0.0 kB)
+2D image 0 (referenced by 2 textures):
+  Level 0: {1, 2} @ RGBA8I (0.0 kB)
+2D image 1 (referenced by 0 textures): Not referenced
+  Level 0: {4, 1} @ R8I (0.0 kB)
+3D image 0 (referenced by 0 textures): Not referenced
+  Level 0: {1, 2, 1} @ RGBA8I (0.0 kB)
+3D image 1 (referenced by 1 textures):
+  Level 0: {4, 1, 1} @ R8I (0.0 kB)
+Total image data size: 0.0 kB

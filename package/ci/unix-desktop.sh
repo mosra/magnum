@@ -65,6 +65,7 @@ cmake .. \
     -DMAGNUM_BUILD_DEPRECATED=$BUILD_DEPRECATED \
     -DMAGNUM_BUILD_STATIC=$BUILD_STATIC \
     -DMAGNUM_BUILD_PLUGINS_STATIC=$BUILD_STATIC \
+    $EXTRA_OPTS \
     -G Ninja
 ninja $NINJA_JOBS
 ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$(pwd)/../package/ci/leaksanitizer.conf" TSAN_OPTIONS="color=always" CORRADE_TEST_COLOR=ON ctest -V -E "GLTest|GLBenchmark|VkTest"

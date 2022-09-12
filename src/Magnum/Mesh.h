@@ -30,7 +30,6 @@
  */
 
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -365,14 +364,14 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::MeshPrimitive value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::MeshPrimitive value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum value as string
      *
      * If the value is invalid, returns a zero (invalid) primitive.
      */
-    static Magnum::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::MeshPrimitive fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 
 /** @configurationvalue{Magnum::MeshIndexType} */
@@ -384,14 +383,14 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshIndexType> {
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::MeshIndexType value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::MeshIndexType value, ConfigurationValueFlags);
 
     /**
      * @brief Read enum value as string
      *
      * If the value is invalid, returns a zero (invalid) type.
      */
-    static Magnum::MeshIndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::MeshIndexType fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 
 }}

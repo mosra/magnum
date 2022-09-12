@@ -91,7 +91,8 @@ if(MAGNUM_WITH_SHADERCONVERTER)
     add_executable(magnum-shaderconverter shaderconverter.cpp)
     target_link_libraries(magnum-shaderconverter PRIVATE
         Magnum
-        MagnumShaderTools)
+        MagnumShaderTools
+        ${MAGNUM_SHADERCONVERTER_STATIC_PLUGINS})
 
     install(TARGETS magnum-shaderconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

@@ -42,7 +42,9 @@ set(MagnumShaders_GracefulAssert_SRCS
     MeshVisualizerGL.cpp
     PhongGL.cpp
     VectorGL.cpp
-    VertexColorGL.cpp)
+    VertexColorGL.cpp
+
+    glShaderWrapper.cpp)
 
 set(MagnumShaders_HEADERS
     DistanceFieldVector.h
@@ -60,6 +62,7 @@ set(MagnumShaders_HEADERS
     VectorGL.h
     VertexColorGL.h
 
+    glShaderWrapper.h
     visibility.h)
 
 if(MAGNUM_BUILD_DEPRECATED)

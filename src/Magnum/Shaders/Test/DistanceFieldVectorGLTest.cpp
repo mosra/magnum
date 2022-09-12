@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -32,6 +33,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/System.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -84,8 +86,10 @@ struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     explicit DistanceFieldVectorGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffers();
+    template<UnsignedInt dimensions> void constructUniformBuffersAsync();
     #endif
 
     template<UnsignedInt dimensions> void constructMove();
@@ -251,11 +255,19 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
         &DistanceFieldVectorGLTest::construct<3>},
         Containers::arraySize(ConstructData));
 
+    addTests<DistanceFieldVectorGLTest>({
+        &DistanceFieldVectorGLTest::constructAsync<2>,
+        &DistanceFieldVectorGLTest::constructAsync<3>});
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests<DistanceFieldVectorGLTest>({
         &DistanceFieldVectorGLTest::constructUniformBuffers<2>,
         &DistanceFieldVectorGLTest::constructUniformBuffers<3>},
         Containers::arraySize(ConstructUniformBuffersData));
+
+    addTests<DistanceFieldVectorGLTest>({
+        &DistanceFieldVectorGLTest::constructUniformBuffersAsync<2>,
+        &DistanceFieldVectorGLTest::constructUniformBuffersAsync<3>});
     #endif
 
     addTests<DistanceFieldVectorGLTest>({
@@ -374,6 +386,29 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::TextureTransformation);
+    CORRADE_COMPARE(state.flags(), DistanceFieldVectorGL2D::Flag::TextureTransformation);
+
+    while(!state.isLinkFinished())
+        Utility::System::sleep(100);
+
+    DistanceFieldVectorGL<dimensions> shader{std::move(state)};
+    CORRADE_COMPARE(shader.flags(), DistanceFieldVectorGL2D::Flag::TextureTransformation);
+    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUniformBuffers() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
@@ -403,6 +438,38 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUniformBuffersAsync() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 48);
+    CORRADE_COMPARE(state.flags(), DistanceFieldVectorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(state.materialCount(), 16);
+    CORRADE_COMPARE(state.drawCount(), 48);
+
+    while(!state.isLinkFinished())
+        Utility::System::sleep(100);
+
+    DistanceFieldVectorGL<dimensions> shader{std::move(state)};
+    CORRADE_COMPARE(shader.flags(), DistanceFieldVectorGL2D::Flag::UniformBuffers);
+    CORRADE_COMPARE(shader.materialCount(), 16);
+    CORRADE_COMPARE(shader.drawCount(), 48);
+    CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)

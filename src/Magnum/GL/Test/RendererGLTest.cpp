@@ -23,9 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/Reference.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Path.h>
 
@@ -203,7 +203,7 @@ void RendererGLTest::pointCoord() {
                     color = vec4(gl_PointCoord.x, gl_PointCoord.y, 0.0, 1.0);
                 })GLSL");
 
-            CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
             attachShaders({vert, frag});
 

@@ -24,6 +24,7 @@
 */
 
 #include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/TestSuite/Tester.h>
 
@@ -44,6 +45,8 @@ struct FunctionsBatchTest: Corrade::TestSuite::Tester {
 
     void nanIgnoring();
     void nanIgnoringVector();
+
+    void constIterable();
 };
 
 using namespace Literals;
@@ -62,7 +65,9 @@ FunctionsBatchTest::FunctionsBatchTest() {
               &FunctionsBatchTest::minmax,
 
               &FunctionsBatchTest::nanIgnoring,
-              &FunctionsBatchTest::nanIgnoringVector});
+              &FunctionsBatchTest::nanIgnoringVector,
+
+              &FunctionsBatchTest::constIterable});
 }
 
 void FunctionsBatchTest::isInf() {
@@ -282,6 +287,20 @@ void FunctionsBatchTest::nanIgnoringVector() {
     CORRADE_COMPARE(Math::minmax(allNan).first[1], Constants::nan());
     CORRADE_COMPARE(Math::minmax(allNan).second[0], Constants::nan());
     CORRADE_COMPARE(Math::minmax(allNan).second[1], Constants::nan());
+}
+
+void FunctionsBatchTest::constIterable() {
+    const Vector2 data[]{{5, -3}, {-2, 14}, {9, -5}};
+
+    /* It shouldn't try to operate with a const type (such as trying to to
+       assign to `std::pair<std::size_t, const Vector2>`) internally, instead
+       it should remove the const */
+    CORRADE_COMPARE(Math::min(Corrade::Containers::arrayView(data)),
+        (Vector2{-2, -5}));
+    CORRADE_COMPARE(Math::max(Corrade::Containers::stridedArrayView(data)),
+        (Vector2{9, 14}));
+    CORRADE_COMPARE(Math::minmax(Corrade::Containers::Array<const Vector2>{data, 3, [](const Vector2*, std::size_t){}}),
+        std::make_pair(Vector2{-2, -5}, Vector2{9, 14}));
 }
 
 }}}}

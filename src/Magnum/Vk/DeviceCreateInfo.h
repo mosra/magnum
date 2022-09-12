@@ -320,6 +320,9 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * @see @ref DeviceProperties::pickQueueFamily()
          * @todoc link to addQueues(QueueFlags) once doxygen finally GROWS UP
          *      and can link to &-qualified functions FFS
+         * @todo switch to Iterable<Queue&> once Iterable supports references
+         *      so people can pass a whole array of queues without having to
+         *      build a temporary list of references
          */
         DeviceCreateInfo& addQueues(UnsignedInt family, Containers::ArrayView<const Float> priorities, Containers::ArrayView<const Containers::Reference<Queue>> output) &;
         /** @overload */

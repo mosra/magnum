@@ -1,0 +1,3 @@
+1D image 0:
+  Level 0: {1024} @ R32F (4.0 kB)
+Total image data size: 4.0 kB
