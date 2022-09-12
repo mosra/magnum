@@ -156,20 +156,31 @@ endif()
 # option everywhere for simplicity.
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
     option(MAGNUM_WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF)
-    option(MAGNUM_WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF)
+    if(MAGNUM_WITH_FONTCONVERTER AND MAGNUM_BUILD_STATIC AND MAGNUM_BUILD_PLUGINS_STATIC)
+        set(MAGNUM_FONTCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-fontconverter utility")
+    endif()
 
-    set(MAGNUM_FONTCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-fontconverter utility")
-    set(MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-distancefieldconverter utility")
+    option(MAGNUM_WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF)
+    if(MAGNUM_WITH_DISTANCEFIELDCONVERTER AND MAGNUM_BUILD_STATIC AND MAGNUM_BUILD_PLUGINS_STATIC)
+        set(MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-distancefieldconverter utility")
+    endif()
 endif()
 
 # API-independent utilities
 option(MAGNUM_WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
-option(MAGNUM_WITH_SCENECONVERTER "Build magnum-sceneconverter utility" OFF)
-option(MAGNUM_WITH_SHADERCONVERTER "Build magnum-shaderconverter utility" OFF)
+if(MAGNUM_WITH_IMAGECONVERTER AND MAGNUM_BUILD_STATIC AND MAGNUM_BUILD_PLUGINS_STATIC)
+    set(MAGNUM_IMAGECONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-imageconverter utility")
+endif()
 
-set(MAGNUM_IMAGECONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-imageconverter utility")
-set(MAGNUM_SCENECONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-sceneconverter utility")
-set(MAGNUM_SHADERCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-shaderconverter utility")
+option(MAGNUM_WITH_SCENECONVERTER "Build magnum-sceneconverter utility" OFF)
+if(MAGNUM_WITH_SCENECONVERTER AND MAGNUM_BUILD_STATIC AND MAGNUM_BUILD_PLUGINS_STATIC)
+    set(MAGNUM_SCENECONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-sceneconverter utility")
+endif()
+
+option(MAGNUM_WITH_SHADERCONVERTER "Build magnum-shaderconverter utility" OFF)
+if(MAGNUM_WITH_SHADERCONVERTER AND MAGNUM_BUILD_STATIC AND MAGNUM_BUILD_PLUGINS_STATIC)
+    set(MAGNUM_SHADERCONVERTER_STATIC_PLUGINS "" CACHE STRING "Static plugins to link to the magnum-shaderconverter utility")
+endif()
 
 # Magnum AL Info
 option(MAGNUM_WITH_AL_INFO "Build magnum-al-info utility" OFF)
