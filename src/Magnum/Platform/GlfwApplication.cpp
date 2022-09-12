@@ -724,6 +724,15 @@ int GlfwApplication::exec() {
     return _exitCode;
 }
 
+bool GlfwApplication::mainLoopDrawEventIteration() {
+    if(_flags & Flag::Redraw) {
+        _flags &= ~Flag::Redraw;
+        drawEvent();
+        return true;
+    }
+    return false;
+}
+
 bool GlfwApplication::mainLoopIteration() {
     /* If exit was requested directly in the constructor, exit immediately
        without calling anything else */
@@ -756,11 +765,10 @@ bool GlfwApplication::mainLoopIteration() {
     /* If redrawing, poll for events immediately after drawEvent() (which could
        be setting the Redraw flag again, thus doing constant redraw). If not,
        avoid spinning the CPU by waiting for the next input event. */
-    if(_flags & Flag::Redraw) {
-        _flags &= ~Flag::Redraw;
-        drawEvent();
+    if (mainLoopDrawEventIteration())
         glfwPollEvents();
-    } else glfwWaitEvents();
+    else 
+        glfwWaitEvents();
 
     return !glfwWindowShouldClose(_window);
 }

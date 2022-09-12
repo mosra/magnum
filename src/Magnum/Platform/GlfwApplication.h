@@ -263,12 +263,23 @@ class GlfwApplication {
          *      should exit, @cpp true @ce otherwise
          * @m_since{2020,06}
          *
+         * Calls @ref mainLoopDrawEventIteration(), @ref glfwPollEvents() and/or
+         * @ref glfwWaitEvents() managing the delays between them.
          * Called internally from @ref exec(). If you want to have better
          * control over how the main loop behaves, you can call this function
+         * (or the sub mainLoopDrawEventIteration with the glfw events functions such as glfwPollEvents / glfwWaitEvents)
          * yourself from your own `main()` function instead of it being called
          * automatically from @ref exec() / @ref MAGNUM_GLFWAPPLICATION_MAIN().
          */
         bool mainLoopIteration();
+
+        /**
+         * @brief Calls @ref drawEvent() if @ref Flag::Redraw is set and unset it.
+         * @return @cpp true @ce if @ref drawEvent() was called, @cpp false @ce otherwise
+         * 
+         * Called internally from @ref mainLoopIteration().
+         */
+        bool mainLoopDrawEventIteration();
 
         /**
          * @brief Exit application
