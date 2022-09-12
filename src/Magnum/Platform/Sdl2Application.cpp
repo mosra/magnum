@@ -985,14 +985,6 @@ bool Sdl2Application::mainLoopEventIteration() {
     return !(_flags & Flag::Exit);
 }
 
-bool Sdl2Application::mainLoopTickEventIteration() {
-    if(!(_flags & Flag::NoTickEvent)) {
-        tickEvent();
-        return true;
-    }
-    return false;
-}
-
 bool Sdl2Application::mainLoopDrawEventIteration() {
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
@@ -1021,8 +1013,8 @@ bool Sdl2Application::mainLoopIteration() {
     if (!mainLoopEventIteration())
         return false;
 
-    /* call tickEvent() if implemented */
-    mainLoopTickEventIteration();
+    /* Tick event */
+    if(!(_flags & Flag::NoTickEvent)) tickEvent();
 
     /* drawEvent() was called */
     if (mainLoopDrawEventIteration()) {
