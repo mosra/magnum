@@ -33,6 +33,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Unicode.h>
+#include <Corrade/Utility/System.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -56,9 +57,10 @@ static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane
 enum class GlfwApplication::Flag: UnsignedByte {
     Redraw = 1 << 0,
     TextInputActive = 1 << 1,
-    Exit = 1 << 2,
+    NoTickEvent = 1 << 2,
+    Exit = 1 << 3,
     #ifdef CORRADE_TARGET_APPLE
-    HiDpiWarningPrinted = 1 << 3
+    HiDpiWarningPrinted = 1 << 4
     #endif
 };
 
@@ -75,7 +77,7 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration
 #endif
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
-    _flags{Flag::Redraw}
+    _minimalLoopPeriod{0}, _flags{Flag::Redraw}
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
@@ -762,15 +764,36 @@ bool GlfwApplication::mainLoopIteration() {
     */
     if(glfwGetWindowUserPointer(_window) != this) setupCallbacks();
 
-    /* If redrawing, poll for events immediately after drawEvent() (which could
-       be setting the Redraw flag again, thus doing constant redraw). If not,
-       avoid spinning the CPU by waiting for the next input event. */
-    if (mainLoopDrawEventIteration())
-        glfwPollEvents();
-    else 
-        glfwWaitEvents();
+    const UnsignedInt timeBefore = _minimalLoopPeriod ? glfwGetTime() : 0;
 
-    return !glfwWindowShouldClose(_window);
+    glfwPollEvents();
+
+    /* Tick event */
+    if(!(_flags & Flag::NoTickEvent)) tickEvent();
+
+    /* drawEvent() was called */
+    if (mainLoopDrawEventIteration()) {
+        /* delay to prevent CPU hogging (if set) */
+        if(!(_minimalLoopPeriod) {
+            const UnsignedInt loopTime = glfwGetTime() - timeBefore;
+            if(loopTime < _minimalLoopPeriod)
+                Utility::System::sleep(_minimalLoopPeriod - loopTime);
+        }
+        return !glfwWindowShouldClose(_window);
+    }
+
+    /* If not drawing anything, delay to prevent CPU hogging (if set) */
+    if(_minimalLoopPeriod) {
+        const UnsignedInt loopTime = glfwGetTime() - timeBefore;
+        if(loopTime < _minimalLoopPeriod)
+            Utility::System::sleep(_minimalLoopPeriod - loopTime);
+    }
+        
+    /* Then, if the tick event doesn't need to be called periodically, wait
+    indefinitely for next input event */
+    if(_flags & Flag::NoTickEvent) glfwWaitEvents();
+
+    return !(flags & Flag::Exit || glfwWindowShouldClose(_window));
 }
 
 void GlfwApplication::exit(int exitCode) {
@@ -869,6 +892,12 @@ auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
 
 void GlfwApplication::exitEvent(ExitEvent& event) {
     event.setAccepted();
+}
+
+void GlfwApplication::tickEvent() {
+    /* If this got called, the tick event is not implemented by user and thus
+       we don't need to call it ever again */
+    _flags |= Flag::NoTickEvent;
 }
 
 void GlfwApplication::viewportEvent(ViewportEvent&) {}
