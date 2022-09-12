@@ -774,7 +774,7 @@ bool GlfwApplication::mainLoopIteration() {
     /* drawEvent() was called */
     if (mainLoopDrawEventIteration()) {
         /* delay to prevent CPU hogging (if set) */
-        if(!(_minimalLoopPeriod) {
+        if (!_minimalLoopPeriod) {
             const UnsignedInt loopTime = glfwGetTime() - timeBefore;
             if(loopTime < _minimalLoopPeriod)
                 Utility::System::sleep(_minimalLoopPeriod - loopTime);
@@ -793,7 +793,7 @@ bool GlfwApplication::mainLoopIteration() {
     indefinitely for next input event */
     if(_flags & Flag::NoTickEvent) glfwWaitEvents();
 
-    return !(flags & Flag::Exit || glfwWindowShouldClose(_window));
+    return !(_flags & Flag::Exit || glfwWindowShouldClose(_window));
 }
 
 void GlfwApplication::exit(int exitCode) {
