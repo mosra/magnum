@@ -139,11 +139,7 @@ int AbstractXApplication::exec() {
     return _exitCode;
 }
 
-bool AbstractXApplication::mainLoopIteration() {
-    /* If exit was requested directly in the constructor, exit immediately
-       without calling anything else */
-    if(_flags & Flag::Exit) return false;
-
+bool AbstractXApplication::mainLoopEventIteration() {
     XEvent event;
 
     /* Closed window */
@@ -184,11 +180,29 @@ bool AbstractXApplication::mainLoopIteration() {
             } break;
         }
     }
+}
 
+bool AbstractXApplication::mainLoopDrawEventIteration() {
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
         drawEvent();
-    } else Utility::System::sleep(5);
+        return true;
+    }
+    return false;  
+}
+
+bool AbstractXApplication::mainLoopIteration() {
+    /* If exit was requested directly in the constructor, exit immediately
+       without calling anything else */
+    if(_flags & Flag::Exit) return false;
+
+    /* exit was requested in the event loop */
+    if (!mainLoopEventIteration())
+        return false;
+
+    /* If not drawing anything, delay to prevent CPU hogging */
+    if (!mainLoopDraweventIteration())
+        Utility::System::sleep(5);
 
     return !(_flags & Flag::Exit);
 }
