@@ -149,8 +149,8 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
     #endif
-    /* Available since 2.0.12, use EGL if MAGNUM_TARGET_HEADLESS is enabled */
-    #if defined(MAGNUM_TARGET_HEADLESS) && defined(SDL_HINT_VIDEO_X11_FORCE_EGL)
+    /* Available since 2.0.12, use EGL if desired */
+    #if defined(MAGNUM_TARGET_EGL) && defined(SDL_HINT_VIDEO_X11_FORCE_EGL)
     SDL_SetHint(SDL_HINT_VIDEO_X11_FORCE_EGL, "1");
     #endif
 
