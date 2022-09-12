@@ -118,10 +118,7 @@ if(MAGNUM_TARGET_GL)
             set(NEED_GLXCONTEXT 1)
             set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
         endif()
-    endif()
 
-    # This is needed also by [Windowless]GlxApplication
-    if((MAGNUM_WITH_GLXAPPLICATION OR MAGNUM_WITH_WINDOWLESSGLXAPPLICATION OR MAGNUM_WITH_GLFWAPPLICATION OR MAGNUM_WITH_SDL2APPLICATION) AND CORRADE_TARGET_UNIX AND NOT MAGNUM_TARGET_EGL)
         # If the GLVND library (CMake 3.11+) was found and linked to, we need
         # to link to GLX explicitly. Otherwise (and also on all systems except
         # Linux) the transitive dependency to classic GL lib from MagnumGL is
@@ -129,7 +126,7 @@ if(MAGNUM_TARGET_GL)
         # if GLVND is *not* found. WTF. Also can't just check for
         # OPENGL_opengl_LIBRARY because that's set even if OpenGL_GL_PREFERENCE
         # is explicitly set to LEGACY.
-        if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
+        if(CORRADE_TARGET_UNIX AND NOT MAGNUM_TARGET_EGL AND OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
             set(MagnumSomeContext_LIBRARY OpenGL::GLX)
         endif()
     endif()
@@ -257,7 +254,6 @@ if(MAGNUM_WITH_GLFWAPPLICATION)
     if(MAGNUM_TARGET_GL)
         target_link_libraries(MagnumGlfwApplication PUBLIC
             MagnumGL
-            # need to link to GLX explicitly if using GLVND (CMake 3.11+)
             ${MagnumSomeContext_LIBRARY})
     endif()
 
@@ -323,7 +319,6 @@ if(MAGNUM_WITH_SDL2APPLICATION)
     if(MAGNUM_TARGET_GL)
         target_link_libraries(MagnumSdl2Application PUBLIC
             MagnumGL
-            # need to link to GLX explicitly if using GLVND (CMake 3.11+)
             ${MagnumSomeContext_LIBRARY})
     endif()
 
@@ -399,9 +394,16 @@ if(MAGNUM_WITH_GLXAPPLICATION)
     target_include_directories(MagnumGlxApplication PUBLIC ${X11_INCLUDE_DIR})
     target_link_libraries(MagnumGlxApplication PUBLIC
         MagnumGL
-        ${X11_LIBRARIES}
-        # need to link to GLX explicitly if using GLVND (CMake 3.11+)
-        ${MagnumSomeContext_LIBRARY})
+        ${X11_LIBRARIES})
+    # If the GLVND library (CMake 3.11+) was found and linked to, we need to
+    # link to GLX explicitly. Otherwise (and also on all systems except Linux)
+    # the transitive dependency to classic GL lib from MagnumGL is enough.
+    # Can't use OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+    # *not* found. WTF. Also can't just check for OPENGL_opengl_LIBRARY because
+    # that's set even if OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
+    if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
+        target_link_libraries(MagnumGlxApplication PUBLIC OpenGL::GLX)
+    endif()
 
     install(FILES ${MagnumGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlxApplication
@@ -528,9 +530,16 @@ if(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION)
     target_include_directories(MagnumWindowlessGlxApplication PUBLIC ${X11_INCLUDE_DIR})
     target_link_libraries(MagnumWindowlessGlxApplication PUBLIC
         MagnumGL
-        ${X11_LIBRARIES}
-        # need to link to GLX explicitly if using GLVND (CMake 3.11+)
-        ${MagnumSomeContext_LIBRARY})
+        ${X11_LIBRARIES})
+    # If the GLVND library (CMake 3.11+) was found and linked to, we need to
+    # link to GLX explicitly. Otherwise (and also on all systems except Linux)
+    # the transitive dependency to classic GL lib from MagnumGL is enough.
+    # Can't use OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+    # *not* found. WTF. Also can't just check for OPENGL_opengl_LIBRARY because
+    # that's set even if OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
+    if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
+        target_link_libraries(MagnumWindowlessGlxApplication PUBLIC OpenGL::GLX)
+    endif()
 
     install(FILES ${MagnumWindowlessGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessGlxApplication
@@ -844,8 +853,17 @@ if(NEED_GLXCONTEXT OR MAGNUM_WITH_GLXCONTEXT)
         target_include_directories(MagnumGlxContext PUBLIC ${X11_INCLUDE_DIR})
         target_link_libraries(MagnumGlxContext PUBLIC
             MagnumGL
-            ${X11_LIBRARIES}
-            ${MagnumSomeContext_LIBRARY})
+            ${X11_LIBRARIES})
+        # If the GLVND library (CMake 3.11+) was found and linked to, we need
+        # to link to GLX explicitly. Otherwise (and also on all systems except
+        # Linux) the transitive dependency to classic GL lib from MagnumGL is
+        # enough. Can't use OpenGL_OpenGL_FOUND, because that one is set also
+        # if GLVND is *not* found. WTF. Also can't just check for
+        # OPENGL_opengl_LIBRARY because that's set even if OpenGL_GL_PREFERENCE
+        # is explicitly set to LEGACY.
+        if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
+            target_link_libraries(MagnumGlxContext PUBLIC OpenGL::GLX)
+        endif()
 
         install(TARGETS MagnumGlxContext
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
