@@ -766,7 +766,12 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      WebGL 1.0, see particular @ref Target values for version
          *      requirements.
          */
-        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void bind(Target target, UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+
+        /** @overload */
+        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+            return bind(target, firstIndex, Containers::arrayView(buffers));
+        }
 
         /**
          * @brief Bind buffers to given range of indexed targets
@@ -796,7 +801,12 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      WebGL 1.0, see particular @ref Target values for version
          *      requirements.
          */
-        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers);
+        static void bind(Target target, UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers);
+
+        /** @overload */
+        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers) {
+            return bind(target, firstIndex, Containers::arrayView(buffers));
+        }
 
         /**
          * @brief Copy one buffer to another
@@ -1002,7 +1012,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref bind(Target, UnsignedInt, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>>),
+         * @see @ref bind(Target, UnsignedInt, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>>),
          *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
          *      @ref maxUniformBindings(), @ref shaderStorageOffsetAlignment(),
          *      @ref uniformOffsetAlignment(), @ref TransformFeedback::attachBuffer(),
@@ -1028,7 +1038,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref bind(Target, UnsignedInt, std::initializer_list<Buffer*>),
+         * @see @ref bind(Target, UnsignedInt, Containers::ArrayView<Buffer* const>),
          *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
          *      @ref maxUniformBindings(), @ref TransformFeedback::attachBuffer(),
          *      @fn_gl_keyword{BindBufferBase}
