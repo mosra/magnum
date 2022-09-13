@@ -102,19 +102,35 @@ ShaderProgramState::ShaderProgramState(Context& context, Containers::StaticArray
         uniform2fvImplementation = glProgramUniform2fv;
         uniform3fvImplementation = glProgramUniform3fv;
         uniform4fvImplementation = glProgramUniform4fv;
+        uniform1fImplementation = glProgramUniform1f;
+        uniform2fImplementation = glProgramUniform2f;
+        uniform3fImplementation = glProgramUniform3f;
+        uniform4fImplementation = glProgramUniform4f;
         uniform1ivImplementation = glProgramUniform1iv;
         uniform2ivImplementation = glProgramUniform2iv;
         uniform3ivImplementation = glProgramUniform3iv;
         uniform4ivImplementation = glProgramUniform4iv;
+        uniform1iImplementation = glProgramUniform1i;
+        uniform2iImplementation = glProgramUniform2i;
+        uniform3iImplementation = glProgramUniform3i;
+        uniform4iImplementation = glProgramUniform4i;
         uniform1uivImplementation = glProgramUniform1uiv;
         uniform2uivImplementation = glProgramUniform2uiv;
         uniform3uivImplementation = glProgramUniform3uiv;
         uniform4uivImplementation = glProgramUniform4uiv;
+        uniform1uiImplementation = glProgramUniform1ui;
+        uniform2uiImplementation = glProgramUniform2ui;
+        uniform3uiImplementation = glProgramUniform3ui;
+        uniform4uiImplementation = glProgramUniform4ui;
         #ifndef MAGNUM_TARGET_GLES
         uniform1dvImplementation = glProgramUniform1dv;
         uniform2dvImplementation = glProgramUniform2dv;
         uniform3dvImplementation = glProgramUniform3dv;
         uniform4dvImplementation = glProgramUniform4dv;
+        uniform1dImplementation = glProgramUniform1d;
+        uniform2dImplementation = glProgramUniform2d;
+        uniform3dImplementation = glProgramUniform3d;
+        uniform4dImplementation = glProgramUniform4d;
         #endif
 
         uniformMatrix2fvImplementation = glProgramUniformMatrix2fv;
@@ -149,15 +165,27 @@ ShaderProgramState::ShaderProgramState(Context& context, Containers::StaticArray
         uniform2fvImplementation = glProgramUniform2fvEXT;
         uniform3fvImplementation = glProgramUniform3fvEXT;
         uniform4fvImplementation = glProgramUniform4fvEXT;
+        uniform1fImplementation = glProgramUniform1fEXT;
+        uniform2fImplementation = glProgramUniform2fEXT;
+        uniform3fImplementation = glProgramUniform3fEXT;
+        uniform4fImplementation = glProgramUniform4fEXT;
         uniform1ivImplementation = glProgramUniform1ivEXT;
         uniform2ivImplementation = glProgramUniform2ivEXT;
         uniform3ivImplementation = glProgramUniform3ivEXT;
         uniform4ivImplementation = glProgramUniform4ivEXT;
+        uniform1iImplementation = glProgramUniform1iEXT;
+        uniform2iImplementation = glProgramUniform2iEXT;
+        uniform3iImplementation = glProgramUniform3iEXT;
+        uniform4iImplementation = glProgramUniform4iEXT;
         #ifndef MAGNUM_TARGET_GLES2
         uniform1uivImplementation = glProgramUniform1uivEXT;
         uniform2uivImplementation = glProgramUniform2uivEXT;
         uniform3uivImplementation = glProgramUniform3uivEXT;
         uniform4uivImplementation = glProgramUniform4uivEXT;
+        uniform1uiImplementation = glProgramUniform1uiEXT;
+        uniform2uiImplementation = glProgramUniform2uiEXT;
+        uniform3uiImplementation = glProgramUniform3uiEXT;
+        uniform4uiImplementation = glProgramUniform4uiEXT;
         #endif
 
         uniformMatrix2fvImplementation = glProgramUniformMatrix2fvEXT;
@@ -178,21 +206,37 @@ ShaderProgramState::ShaderProgramState(Context& context, Containers::StaticArray
         uniform2fvImplementation = &AbstractShaderProgram::uniform2fvImplementationDefault;
         uniform3fvImplementation = &AbstractShaderProgram::uniform3fvImplementationDefault;
         uniform4fvImplementation = &AbstractShaderProgram::uniform4fvImplementationDefault;
+        uniform1fImplementation = &AbstractShaderProgram::uniform1fImplementationDefault;
+        uniform2fImplementation = &AbstractShaderProgram::uniform2fImplementationDefault;
+        uniform3fImplementation = &AbstractShaderProgram::uniform3fImplementationDefault;
+        uniform4fImplementation = &AbstractShaderProgram::uniform4fImplementationDefault;
         uniform1ivImplementation = &AbstractShaderProgram::uniform1ivImplementationDefault;
         uniform2ivImplementation = &AbstractShaderProgram::uniform2ivImplementationDefault;
         uniform3ivImplementation = &AbstractShaderProgram::uniform3ivImplementationDefault;
         uniform4ivImplementation = &AbstractShaderProgram::uniform4ivImplementationDefault;
+        uniform1iImplementation = &AbstractShaderProgram::uniform1iImplementationDefault;
+        uniform2iImplementation = &AbstractShaderProgram::uniform2iImplementationDefault;
+        uniform3iImplementation = &AbstractShaderProgram::uniform3iImplementationDefault;
+        uniform4iImplementation = &AbstractShaderProgram::uniform4iImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES2
         uniform1uivImplementation = &AbstractShaderProgram::uniform1uivImplementationDefault;
         uniform2uivImplementation = &AbstractShaderProgram::uniform2uivImplementationDefault;
         uniform3uivImplementation = &AbstractShaderProgram::uniform3uivImplementationDefault;
         uniform4uivImplementation = &AbstractShaderProgram::uniform4uivImplementationDefault;
+        uniform1uiImplementation = &AbstractShaderProgram::uniform1uiImplementationDefault;
+        uniform2uiImplementation = &AbstractShaderProgram::uniform2uiImplementationDefault;
+        uniform3uiImplementation = &AbstractShaderProgram::uniform3uiImplementationDefault;
+        uniform4uiImplementation = &AbstractShaderProgram::uniform4uiImplementationDefault;
         #endif
         #ifndef MAGNUM_TARGET_GLES
         uniform1dvImplementation = &AbstractShaderProgram::uniform1dvImplementationDefault;
         uniform2dvImplementation = &AbstractShaderProgram::uniform2dvImplementationDefault;
         uniform3dvImplementation = &AbstractShaderProgram::uniform3dvImplementationDefault;
         uniform4dvImplementation = &AbstractShaderProgram::uniform4dvImplementationDefault;
+        uniform1dImplementation = &AbstractShaderProgram::uniform1dImplementationDefault;
+        uniform2dImplementation = &AbstractShaderProgram::uniform2dImplementationDefault;
+        uniform3dImplementation = &AbstractShaderProgram::uniform3dImplementationDefault;
+        uniform4dImplementation = &AbstractShaderProgram::uniform4dImplementationDefault;
         #endif
 
         uniformMatrix2fvImplementation = &AbstractShaderProgram::uniformMatrix2fvImplementationDefault;

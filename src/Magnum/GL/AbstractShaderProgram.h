@@ -1635,6 +1635,10 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         }
         #endif
 
+        template<std::size_t cols, std::size_t rows, class T> void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
+            setUniform(location, {&value, 1});
+        }
+
         /**
          * @brief Set uniform value
          * @param location      Uniform location
@@ -1645,31 +1649,42 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * information.
          * @see @ref uniformLocation()
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class T> inline void setUniform(Int location, const T& value);
-        #else
-        void setUniform(Int location, Float value) {
-            setUniform(location, {&value, 1});
-        }
-        void setUniform(Int location, Int value) {
-            setUniform(location, {&value, 1});
-        }
+        void setUniform(Int location, Float value);
+        void setUniform(Int location, const Math::Vector<2, Float>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<3, Float>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<4, Float>& value); /**< @overload */
+
+        /**
+         * @copydoc setUniform(Int, Float)
+         */
+        void setUniform(Int location, Int value);
+        void setUniform(Int location, const Math::Vector<2, Int>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<3, Int>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<4, Int>& value); /**< @overload */
+
         #ifndef MAGNUM_TARGET_GLES2
-        void setUniform(Int location, UnsignedInt value) {
-            setUniform(location, {&value, 1});
-        }
+        /**
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
+         * @requires_webgl20 Only signed integers are available in WebGL 1.0.
+         */
+        void setUniform(Int location, UnsignedInt value);
+        void setUniform(Int location, const Math::Vector<2, UnsignedInt>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<3, UnsignedInt>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<4, UnsignedInt>& value); /**< @overload */
         #endif
+
         #ifndef MAGNUM_TARGET_GLES
-        void setUniform(Int location, Double value) {
-            setUniform(location, {&value, 1});
-        }
-        #endif
-        template<std::size_t size, class T> void setUniform(Int location, const Math::Vector<size, T>& value) {
-            setUniform(location, {&value, 1});
-        }
-        template<std::size_t cols, std::size_t rows, class T> void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
-            setUniform(location, {&value, 1});
-        }
+        /**
+         * @copydoc setUniform(Int, Float)
+         * @requires_gl40 Extension @gl_extension{ARB,gpu_shader_fp64}
+         * @requires_gl Only floats are available in OpenGL ES or WebGL.
+         */
+        void setUniform(Int location, Double value);
+        void setUniform(Int location, const Math::Vector<2, Double>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<3, Double>& value); /**< @overload */
+        void setUniform(Int location, const Math::Vector<4, Double>& value); /**< @overload */
         #endif
 
         /**
@@ -1816,21 +1831,37 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         MAGNUM_GL_LOCAL static void APIENTRY uniform2fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform3fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform4fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1fImplementationDefault(GLuint id, GLint location, GLfloat v0);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2fImplementationDefault(GLuint id, GLint location, GLfloat v0, GLfloat v1);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3fImplementationDefault(GLuint id, GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4fImplementationDefault(GLuint id, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
         MAGNUM_GL_LOCAL static void APIENTRY uniform1ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform2ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform3ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform4ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1iImplementationDefault(GLuint id, GLint location, GLint v0);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2iImplementationDefault(GLuint id, GLint location, GLint v0, GLint v1);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3iImplementationDefault(GLuint id, GLint location, GLint v0, GLint v1, GLint v2);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4iImplementationDefault(GLuint id, GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
         #ifndef MAGNUM_TARGET_GLES2
         MAGNUM_GL_LOCAL static void APIENTRY uniform1uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform2uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform3uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform4uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1uiImplementationDefault(GLuint id, GLint location, GLuint v0);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2uiImplementationDefault(GLuint id, GLint location, GLuint v0, GLuint v1);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3uiImplementationDefault(GLuint id, GLint location, GLuint v0, GLuint v1, GLuint v2);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4uiImplementationDefault(GLuint id, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
         #endif
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_GL_LOCAL static void APIENTRY uniform1dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform2dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform3dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
         MAGNUM_GL_LOCAL static void APIENTRY uniform4dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1dImplementationDefault(GLuint id, GLint location, GLdouble v0);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2dImplementationDefault(GLuint id, GLint location, GLdouble v0, GLdouble v1);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3dImplementationDefault(GLuint id, GLint location, GLdouble v0, GLdouble v1, GLdouble v2);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4dImplementationDefault(GLuint id, GLint location, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3);
         #endif
 
         MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);

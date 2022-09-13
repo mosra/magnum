@@ -689,6 +689,282 @@ UnsignedInt AbstractShaderProgram::uniformBlockIndexInternal(const Containers::A
 }
 #endif
 
+void AbstractShaderProgram::setUniform(const Int location, Float value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform1fImplementation
+    #else
+    uniform1fImplementationDefault
+    #endif
+        (_id, location, value);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform1fImplementationDefault(const GLuint id, const GLint location, GLfloat v0) {
+    use(id);
+    glUniform1f(location, v0);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<2, Float>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform2fImplementation
+    #else
+    uniform2fImplementationDefault
+    #endif
+        (_id, location, value[0], value[1]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform2fImplementationDefault(const GLuint id, const GLint location, GLfloat v0, GLfloat v1) {
+    use(id);
+    glUniform2f(location, v0, v1);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<3, Float>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform3fImplementation
+    #else
+    uniform3fImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform3fImplementationDefault(const GLuint id, const GLint location, GLfloat v0, GLfloat v1, GLfloat v2) {
+    use(id);
+    glUniform3f(location, v0, v1, v2);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<4, Float>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform4fImplementation
+    #else
+    uniform4fImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2], value[3]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform4fImplementationDefault(const GLuint id, const GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) {
+    use(id);
+    glUniform4f(location, v0, v1, v2, v3);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, Int value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform1iImplementation
+    #else
+    uniform1iImplementationDefault
+    #endif
+        (_id, location, value);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform1iImplementationDefault(const GLuint id, const GLint location, GLint v0) {
+    use(id);
+    glUniform1i(location, v0);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<2, Int>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform2iImplementation
+    #else
+    uniform2iImplementationDefault
+    #endif
+        (_id, location, value[0], value[1]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform2iImplementationDefault(const GLuint id, const GLint location, GLint v0, GLint v1) {
+    use(id);
+    glUniform2i(location, v0, v1);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<3, Int>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform3iImplementation
+    #else
+    uniform3iImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform3iImplementationDefault(const GLuint id, const GLint location, GLint v0, GLint v1, GLint v2) {
+    use(id);
+    glUniform3i(location, v0, v1, v2);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<4, Int>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform4iImplementation
+    #else
+    uniform4iImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2], value[3]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform4iImplementationDefault(const GLuint id, const GLint location, GLint v0, GLint v1, GLint v2, GLint v3) {
+    use(id);
+    glUniform4i(location, v0, v1, v2, v3);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractShaderProgram::setUniform(const Int location, UnsignedInt value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform1uiImplementation
+    #else
+    uniform1uiImplementationDefault
+    #endif
+        (_id, location, value);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform1uiImplementationDefault(const GLuint id, const GLint location, GLuint v0) {
+    use(id);
+    glUniform1ui(location, v0);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<2, UnsignedInt>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform2uiImplementation
+    #else
+    uniform2uiImplementationDefault
+    #endif
+        (_id, location, value[0], value[1]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform2uiImplementationDefault(const GLuint id, const GLint location, GLuint v0, GLuint v1) {
+    use(id);
+    glUniform2ui(location, v0, v1);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<3, UnsignedInt>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform3uiImplementation
+    #else
+    uniform3uiImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform3uiImplementationDefault(const GLuint id, const GLint location, GLuint v0, GLuint v1, GLuint v2) {
+    use(id);
+    glUniform3ui(location, v0, v1, v2);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<4, UnsignedInt>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform4uiImplementation
+    #else
+    uniform4uiImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2], value[3]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform4uiImplementationDefault(const GLuint id, const GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) {
+    use(id);
+    glUniform4ui(location, v0, v1, v2, v3);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractShaderProgram::setUniform(const Int location, Double value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform1dImplementation
+    #else
+    uniform1dImplementationDefault
+    #endif
+        (_id, location, value);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform1dImplementationDefault(const GLuint id, const GLint location, GLdouble v0) {
+    use(id);
+    glUniform1d(location, v0);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<2, Double>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform2dImplementation
+    #else
+    uniform2dImplementationDefault
+    #endif
+        (_id, location, value[0], value[1]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform2dImplementationDefault(const GLuint id, const GLint location, GLdouble v0, GLdouble v1) {
+    use(id);
+    glUniform2d(location, v0, v1);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<3, Double>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform3dImplementation
+    #else
+    uniform3dImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform3dImplementationDefault(const GLuint id, const GLint location, GLdouble v0, GLdouble v1, GLdouble v2) {
+    use(id);
+    glUniform3d(location, v0, v1, v2);
+}
+
+void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<4, Double>& value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform4dImplementation
+    #else
+    uniform4dImplementationDefault
+    #endif
+        (_id, location, value[0], value[1], value[2], value[3]);
+}
+
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
+void AbstractShaderProgram::uniform4dImplementationDefault(const GLuint id, const GLint location, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
+    use(id);
+    glUniform4d(location, v0, v1, v2, v3);
+}
+#endif
+
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Float> values) {
     #ifndef MAGNUM_TARGET_WEBGL
     Context::current().state().shaderProgram.uniform1fvImplementation

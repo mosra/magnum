@@ -56,21 +56,37 @@ struct ShaderProgramState {
     void(APIENTRY *uniform2fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
     void(APIENTRY *uniform3fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
     void(APIENTRY *uniform4fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
+    void(APIENTRY *uniform1fImplementation)(GLuint, GLint, GLfloat);
+    void(APIENTRY *uniform2fImplementation)(GLuint, GLint, GLfloat, GLfloat);
+    void(APIENTRY *uniform3fImplementation)(GLuint, GLint, GLfloat, GLfloat, GLfloat);
+    void(APIENTRY *uniform4fImplementation)(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
     void(APIENTRY *uniform1ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
     void(APIENTRY *uniform2ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
     void(APIENTRY *uniform3ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
     void(APIENTRY *uniform4ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
+    void(APIENTRY *uniform1iImplementation)(GLuint, GLint, GLint);
+    void(APIENTRY *uniform2iImplementation)(GLuint, GLint, GLint, GLint);
+    void(APIENTRY *uniform3iImplementation)(GLuint, GLint, GLint, GLint, GLint);
+    void(APIENTRY *uniform4iImplementation)(GLuint, GLint, GLint, GLint, GLint, GLint);
     #ifndef MAGNUM_TARGET_GLES2
     void(APIENTRY *uniform1uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
     void(APIENTRY *uniform2uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
     void(APIENTRY *uniform3uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
     void(APIENTRY *uniform4uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
+    void(APIENTRY *uniform1uiImplementation)(GLuint, GLint, GLuint);
+    void(APIENTRY *uniform2uiImplementation)(GLuint, GLint, GLuint, GLuint);
+    void(APIENTRY *uniform3uiImplementation)(GLuint, GLint, GLuint, GLuint, GLuint);
+    void(APIENTRY *uniform4uiImplementation)(GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void(APIENTRY *uniform1dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
     void(APIENTRY *uniform2dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
     void(APIENTRY *uniform3dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
     void(APIENTRY *uniform4dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
+    void(APIENTRY *uniform1dImplementation)(GLuint, GLint, GLdouble);
+    void(APIENTRY *uniform2dImplementation)(GLuint, GLint, GLdouble, GLdouble);
+    void(APIENTRY *uniform3dImplementation)(GLuint, GLint, GLdouble, GLdouble, GLdouble);
+    void(APIENTRY *uniform4dImplementation)(GLuint, GLint, GLdouble, GLdouble, GLdouble, GLdouble);
     #endif
 
     void(APIENTRY *uniformMatrix2fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
