@@ -207,27 +207,23 @@ void TransformFeedback::attachImplementationDSA(const GLuint index, Buffer& buff
 }
 #endif
 
-/** @todoc const std::initializer_list makes Doxygen grumpy */
-TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, buffers);
     return *this;
 }
 
-/** @todoc const std::initializer_list makes Doxygen grumpy */
-TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers) {
+TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     (this->*Context::current().state().transformFeedback.attachBasesImplementation)(firstIndex, buffers);
     return *this;
 }
 
-/** @todoc const std::initializer_list makes Doxygen grumpy */
-void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayView makes Doxygen grumpy */
-void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         Buffer* buffer;
         GLintptr offset;
@@ -239,15 +235,13 @@ void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, std::in
 }
 #endif
 
-/** @todoc const Containers::ArrayView makes Doxygen grumpy */
-void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, std::initializer_list<Buffer*> buffers) {
+void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayView makes Doxygen grumpy */
-void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, std::initializer_list<Buffer*> buffers) {
+void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i)
         glTransformFeedbackBufferBase(_id, firstIndex + i, *(buffers.begin() + i) ? (*(buffers.begin() + i))->id() : 0);
 }

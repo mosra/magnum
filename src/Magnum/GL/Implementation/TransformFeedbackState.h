@@ -63,8 +63,8 @@ struct TransformFeedbackState {
     void(TransformFeedback::*createImplementation)();
     void(TransformFeedback::*attachRangeImplementation)(GLuint, Buffer&, GLintptr, GLsizeiptr);
     void(TransformFeedback::*attachBaseImplementation)(GLuint, Buffer&);
-    void(TransformFeedback::*attachRangesImplementation)(GLuint, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>>);
-    void(TransformFeedback::*attachBasesImplementation)(GLuint, std::initializer_list<Buffer*>);
+    void(TransformFeedback::*attachRangesImplementation)(GLuint, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>>);
+    void(TransformFeedback::*attachBasesImplementation)(GLuint, Containers::ArrayView<Buffer* const>);
 };
 
 }}}

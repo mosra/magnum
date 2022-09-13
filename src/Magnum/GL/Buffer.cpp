@@ -151,13 +151,11 @@ void Buffer::unbind(const Target target, const UnsignedInt firstIndex, const std
     Context::current().state().buffer.bindBasesImplementation(target, firstIndex, {nullptr, count});
 }
 
-/** @todoc const std::initializer_list makes Doxygen grumpy */
-void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void Buffer::bind(const Target target, const UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     Context::current().state().buffer.bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
 
-/** @todoc const std::initializer_list makes Doxygen grumpy */
-void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers) {
+void Buffer::bind(const Target target, const UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     Context::current().state().buffer.bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
 
@@ -406,7 +404,6 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
 }
 #endif
 
-/** @todoc const Containers::ArrayView makes Doxygen grumpy */
 void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers && std::get<0>(buffers[i]))
@@ -416,7 +413,6 @@ void Buffer::bindImplementationFallback(const Target target, const GLuint firstI
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayView makes Doxygen grumpy */
 void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     /** @todo use ArrayTuple */
     Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
