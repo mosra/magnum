@@ -24,9 +24,9 @@
 */
 
 #include <array>
-#include <tuple>
 #include <vector>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/GL/Buffer.h"
@@ -254,10 +254,9 @@ void BufferGLTest::bindRange() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /** @todo C++14: get rid of std::make_tuple */
     Buffer::bind(Buffer::Target::Uniform, 7, {
-        std::make_tuple(&buffer, 256, 13), {},
-        std::make_tuple(&buffer, 768, 64)});
+        {&buffer, 256, 13}, {},
+        {&buffer, 768, 64}});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

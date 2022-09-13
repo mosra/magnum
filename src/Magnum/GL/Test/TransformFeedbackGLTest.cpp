@@ -23,8 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <tuple>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Triple.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -489,8 +490,8 @@ void TransformFeedbackGLTest::attachRanges() {
 
     TransformFeedback feedback;
     feedback.attachBuffers(0, {
-        std::make_tuple(&output1, 256, 2*sizeof(Vector2)),
-        std::make_tuple(&output2, 512, 2*sizeof(Float))
+        {&output1, 256, 2*sizeof(Vector2)},
+        {&output2, 512, 2*sizeof(Float)}
     });
 
     MAGNUM_VERIFY_NO_GL_ERROR();

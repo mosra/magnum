@@ -31,10 +31,10 @@
  */
 
 #include <cstddef>
+#include <utility>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -766,12 +766,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      WebGL 1.0, see particular @ref Target values for version
          *      requirements.
          */
-        static void bind(Target target, UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void bind(Target target, UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
         /** @overload */
-        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-            return bind(target, firstIndex, Containers::arrayView(buffers));
-        }
+        static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
         /**
          * @brief Bind buffers to given range of indexed targets
@@ -1012,7 +1010,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref bind(Target, UnsignedInt, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>>),
+         * @see @ref bind(Target, UnsignedInt, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>>),
          *      @ref maxAtomicCounterBindings(), @ref maxShaderStorageBindings(),
          *      @ref maxUniformBindings(), @ref shaderStorageOffsetAlignment(),
          *      @ref uniformOffsetAlignment(), @ref TransformFeedback::attachBuffer(),
@@ -1337,9 +1335,9 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         static void MAGNUM_GL_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #endif
 
-        static void MAGNUM_GL_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_GL_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_GL_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_GL_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         #endif
 
         static void MAGNUM_GL_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);

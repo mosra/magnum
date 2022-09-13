@@ -26,10 +26,10 @@
 #include "TransformFeedback.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#include <tuple>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -207,8 +207,13 @@ void TransformFeedback::attachImplementationDSA(const GLuint index, Buffer& buff
 }
 #endif
 
-TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, buffers);
+    return *this;
+}
+
+TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+    (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, Containers::arrayView(buffers));
     return *this;
 }
 
@@ -217,20 +222,16 @@ TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex
     return *this;
 }
 
-void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
-        Buffer* buffer;
-        GLintptr offset;
-        GLsizeiptr size;
-        std::tie(buffer, offset, size) = *(buffers.begin() + i);
-
-        glTransformFeedbackBufferRange(_id, firstIndex + i, buffer ? buffer->id() : 0, offset, size);
+        Buffer* buffer = buffers[i].first();
+        glTransformFeedbackBufferRange(_id, firstIndex + i, buffer ? buffer->id() : 0, buffers[i].second(), buffers[i].third());
     }
 }
 #endif

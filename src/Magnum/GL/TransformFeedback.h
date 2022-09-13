@@ -31,8 +31,8 @@
  */
 #endif
 
+#include <utility>
 #include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -340,12 +340,10 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          *      eventually @fn_gl{BindTransformFeedback} and
          *      @fn_gl_keyword{BindBuffersRange} or @fn_gl_keyword{BindBufferRange}
          */
-        TransformFeedback& attachBuffers(UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        TransformFeedback& attachBuffers(UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
         /** @overload */
-        TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-            return attachBuffers(firstIndex, Containers::arrayView(buffers));
-        }
+        TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
         /**
          * @brief Attach buffers
@@ -439,10 +437,10 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
         void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint index, Buffer& buffer);
         #endif
 
-        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #endif
 

@@ -27,6 +27,7 @@
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Image.h"
@@ -196,8 +197,8 @@ MyShader& setTransformFeedback(GL::TransformFeedback& feedback, Int totalCount,
     GLintptr dataOffset)
 {
     feedback.attachBuffers(0, {
-        std::make_tuple(&positions, positionsOffset, totalCount*sizeof(Vector3)),
-        std::make_tuple(&data, dataOffset, totalCount*sizeof(Vector2ui))
+        {&positions, positionsOffset, GLsizeiptr(totalCount*sizeof(Vector3))},
+        {&data, dataOffset, GLsizeiptr(totalCount*sizeof(Vector2ui))}
     });
     return *this;
 }
