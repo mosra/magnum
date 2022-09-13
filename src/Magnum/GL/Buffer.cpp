@@ -26,8 +26,11 @@
 
 #include "Buffer.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <tuple>
+#endif
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Triple.h>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
@@ -151,9 +154,24 @@ void Buffer::unbind(const Target target, const UnsignedInt firstIndex, const std
     Context::current().state().buffer.bindBasesImplementation(target, firstIndex, {nullptr, count});
 }
 
-void Buffer::bind(const Target target, const UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void Buffer::bind(const Target target, const UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     Context::current().state().buffer.bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
+
+void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+    Context::current().state().buffer.bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+    Containers::Array<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> copy{NoInit, buffers.size()};
+    for(std::size_t i = 0, max = buffers.size(); i != max; ++i) {
+        const auto& t = *(buffers.begin() + i);
+        copy[i] = {std::get<0>(t), std::get<1>(t), std::get<2>(t)};
+    }
+    bind(target, firstIndex, copy);
+}
+#endif
 
 void Buffer::bind(const Target target, const UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     Context::current().state().buffer.bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
@@ -404,24 +422,25 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
 }
 #endif
 
-void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
-        if(buffers && std::get<0>(buffers[i]))
-            std::get<0>(buffers[i])->bind(target, firstIndex + i, std::get<1>(buffers[i]), std::get<2>(buffers[i]));
+        if(buffers && buffers[i].first())
+            buffers[i].first()->bind(target, firstIndex + i, buffers[i].second(), buffers[i].third());
         else unbind(target, firstIndex + i);
     }
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     /** @todo use ArrayTuple */
     Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
     Containers::Array<GLintptr> offsetsSizes{buffers ? buffers.size()*2 : 0};
     if(buffers) for(std::size_t i = 0; i != buffers.size(); ++i) {
-        if(std::get<0>(buffers[i])) {
-            std::get<0>(buffers[i])->createIfNotAlready();
-            ids[i] = std::get<0>(buffers[i])->_id;
-            std::tie(std::ignore, offsetsSizes[i], offsetsSizes[buffers.size() + i]) = buffers[i];
+        if(buffers[i].first()) {
+            buffers[i].first()->createIfNotAlready();
+            ids[i] = buffers[i].first()->_id;
+            offsetsSizes[i] = buffers[i].second();
+            offsetsSizes[buffers.size() + i] = buffers[i].third();
         } else {
             ids[i] = 0;
             offsetsSizes[i] = 0;

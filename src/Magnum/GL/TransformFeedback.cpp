@@ -26,10 +26,13 @@
 #include "TransformFeedback.h"
 
 #ifndef MAGNUM_TARGET_GLES2
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <tuple>
+#endif
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -207,30 +210,42 @@ void TransformFeedback::attachImplementationDSA(const GLuint index, Buffer& buff
 }
 #endif
 
-TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, buffers);
     return *this;
 }
+
+TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+    (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, Containers::arrayView(buffers));
+    return *this;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+TransformFeedback& TransformFeedback::attachBuffers(UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+    Containers::Array<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> copy{NoInit, buffers.size()};
+    for(std::size_t i = 0, max = buffers.size(); i != max; ++i) {
+        const auto& t = *(buffers.begin() + i);
+        copy[i] = {std::get<0>(t), std::get<1>(t), std::get<2>(t)};
+    }
+    return attachBuffers(firstIndex, copy);
+}
+#endif
 
 TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     (this->*Context::current().state().transformFeedback.attachBasesImplementation)(firstIndex, buffers);
     return *this;
 }
 
-void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
-        Buffer* buffer;
-        GLintptr offset;
-        GLsizeiptr size;
-        std::tie(buffer, offset, size) = *(buffers.begin() + i);
-
-        glTransformFeedbackBufferRange(_id, firstIndex + i, buffer ? buffer->id() : 0, offset, size);
+        Buffer* buffer = buffers[i].first();
+        glTransformFeedbackBufferRange(_id, firstIndex + i, buffer ? buffer->id() : 0, buffers[i].second(), buffers[i].third());
     }
 }
 #endif

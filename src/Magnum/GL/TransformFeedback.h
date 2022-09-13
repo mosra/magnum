@@ -31,8 +31,8 @@
  */
 #endif
 
+#include <utility>
 #include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -42,6 +42,8 @@
 /* For label() / setLabel(), which used to be a std::string. Not ideal for the
    return type, but at least something. */
 #include <Corrade/Containers/StringStl.h>
+/* For deprecated bind(..., std::initializer_list<std::tuple>) */
+#include <Corrade/Utility/StlForwardTuple.h>
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -340,12 +342,18 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          *      eventually @fn_gl{BindTransformFeedback} and
          *      @fn_gl_keyword{BindBuffersRange} or @fn_gl_keyword{BindBufferRange}
          */
-        TransformFeedback& attachBuffers(UnsignedInt firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        TransformFeedback& attachBuffers(UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
         /** @overload */
-        TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-            return attachBuffers(firstIndex, Containers::arrayView(buffers));
-        }
+        TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @m_deprecated_since_latest Use @ref attachBuffers(UnsignedInt, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>>)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use the Containers::Triple overload instead") TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        #endif
 
         /**
          * @brief Attach buffers
@@ -439,10 +447,10 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
         void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint index, Buffer& buffer);
         #endif
 
-        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #endif
 
