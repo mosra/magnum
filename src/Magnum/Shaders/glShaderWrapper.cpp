@@ -44,8 +44,8 @@ GLShaderWrapper& GLShaderWrapper::operator=(GLShaderWrapper&& other) noexcept {
 
 GLShaderWrapper::~GLShaderWrapper() {
     /* Convert itself to a temporary GL::Shader, triggering deletion in its
-       destructor */
-    if(id) GL::Shader{std::move(*this)};
+       destructor. Cast to void to avoid warnings about an unused result. */
+    if(id) static_cast<void>(GL::Shader{std::move(*this)});
 }
 
 GLShaderWrapper::operator GL::Shader() & noexcept {
