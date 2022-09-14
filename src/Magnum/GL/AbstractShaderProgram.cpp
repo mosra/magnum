@@ -905,60 +905,33 @@ void AbstractShaderProgram::setUniform(const Int location, Double value) {
         (_id, location, value);
 }
 
-#ifdef MAGNUM_TARGET_WEBGL
-inline
-#endif
 void AbstractShaderProgram::uniform1dImplementationDefault(const GLuint id, const GLint location, GLdouble v0) {
     use(id);
     glUniform1d(location, v0);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<2, Double>& value) {
-    #ifndef MAGNUM_TARGET_WEBGL
-    Context::current().state().shaderProgram.uniform2dImplementation
-    #else
-    uniform2dImplementationDefault
-    #endif
-        (_id, location, value[0], value[1]);
+    Context::current().state().shaderProgram.uniform2dImplementation(_id, location, value[0], value[1]);
 }
 
-#ifdef MAGNUM_TARGET_WEBGL
-inline
-#endif
 void AbstractShaderProgram::uniform2dImplementationDefault(const GLuint id, const GLint location, GLdouble v0, GLdouble v1) {
     use(id);
     glUniform2d(location, v0, v1);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<3, Double>& value) {
-    #ifndef MAGNUM_TARGET_WEBGL
-    Context::current().state().shaderProgram.uniform3dImplementation
-    #else
-    uniform3dImplementationDefault
-    #endif
-        (_id, location, value[0], value[1], value[2]);
+    Context::current().state().shaderProgram.uniform3dImplementation(_id, location, value[0], value[1], value[2]);
 }
 
-#ifdef MAGNUM_TARGET_WEBGL
-inline
-#endif
 void AbstractShaderProgram::uniform3dImplementationDefault(const GLuint id, const GLint location, GLdouble v0, GLdouble v1, GLdouble v2) {
     use(id);
     glUniform3d(location, v0, v1, v2);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Math::Vector<4, Double>& value) {
-    #ifndef MAGNUM_TARGET_WEBGL
-    Context::current().state().shaderProgram.uniform4dImplementation
-    #else
-    uniform4dImplementationDefault
-    #endif
-        (_id, location, value[0], value[1], value[2], value[3]);
+    Context::current().state().shaderProgram.uniform4dImplementation(_id, location, value[0], value[1], value[2], value[3]);
 }
 
-#ifdef MAGNUM_TARGET_WEBGL
-inline
-#endif
 void AbstractShaderProgram::uniform4dImplementationDefault(const GLuint id, const GLint location, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) {
     use(id);
     glUniform4d(location, v0, v1, v2, v3);
