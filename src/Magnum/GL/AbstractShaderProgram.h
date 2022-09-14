@@ -5,7 +5,8 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © Vladislav Oleshko <vladislav.oleshko@gmail.com>
+    Copyright © 2022 Vladislav Oleshko <vladislav.oleshko@gmail.com>
+    Copyright @ 2022 Hugo Amiard <hugo.amiard@wonderlandengine.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -1635,19 +1636,18 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         }
         #endif
 
-        template<std::size_t cols, std::size_t rows, class T> void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
-            setUniform(location, {&value, 1});
-        }
-
         /**
-         * @brief Set uniform value
+         * @brief Set a float uniform value
          * @param location      Uniform location
          * @param value         Value
          *
-         * Convenience alternative for setting one value, see
-         * @ref setUniform(Int, Containers::ArrayView<const Float>) for more
-         * information.
-         * @see @ref uniformLocation()
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Containers::ArrayView<const Float>),
+         *      @ref uniformLocation(), @fn_gl{UseProgram},
+         *      @fn_gl_keyword{Uniform} or @fn_gl_keyword{ProgramUniform}
          */
         void setUniform(Int location, Float value);
         void setUniform(Int location, const Math::Vector<2, Float>& value); /**< @overload */
@@ -1655,16 +1655,36 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         void setUniform(Int location, const Math::Vector<4, Float>& value); /**< @overload */
 
         /**
-         * @copydoc setUniform(Int, Float)
+         * @brief Set an integer uniform value
+         * @param location      Uniform location
+         * @param value         Value
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Containers::ArrayView<const Int>),
+         *      @ref uniformLocation(), @fn_gl{UseProgram},
+         *      @fn_gl_keyword{Uniform} or @fn_gl_keyword{ProgramUniform}
          */
-        void setUniform(Int location, Int value);
+        void setUniform(Int location, Int value); /**< @overload */
         void setUniform(Int location, const Math::Vector<2, Int>& value); /**< @overload */
         void setUniform(Int location, const Math::Vector<3, Int>& value); /**< @overload */
         void setUniform(Int location, const Math::Vector<4, Int>& value); /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copydoc setUniform(Int, Float)
+         * @brief Set an unsigned integer uniform value
+         * @param location      Uniform location
+         * @param value         Value
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Containers::ArrayView<const UnsignedInt>),
+         *      @ref uniformLocation(), @fn_gl{UseProgram},
+         *      @fn_gl_keyword{Uniform} or @fn_gl_keyword{ProgramUniform}
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          * @requires_webgl20 Only signed integers are available in WebGL 1.0.
@@ -1677,7 +1697,17 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc setUniform(Int, Float)
+         * @brief Set a double uniform value
+         * @param location      Uniform location
+         * @param value         Value
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Containers::ArrayView<const Double>),
+         *      @ref uniformLocation(), @fn_gl{UseProgram},
+         *      @fn_gl_keyword{Uniform} or @fn_gl_keyword{ProgramUniform}
          * @requires_gl40 Extension @gl_extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES or WebGL.
          */
@@ -1688,7 +1718,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
         /**
-         * @brief Set uniform values
+         * @brief Set float uniform values
          * @param location      Uniform location
          * @param values        Values
          *
@@ -1696,7 +1726,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
          * extension nor OpenGL ES 3.1 is available, the shader is marked for
          * use before the operation.
-         * @see @ref setUniform(Int, const T&), @ref uniformLocation(),
+         * @see @ref setUniform(Int, Float), @ref uniformLocation(),
          *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
          *      @fn_gl_keyword{ProgramUniform}
          */
@@ -1705,7 +1735,19 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<3, Float>> values); /**< @overload */
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<4, Float>> values); /**< @overload */
 
-        /** @copydoc setUniform(Int, Containers::ArrayView<const Float>) */
+        /**
+         * @brief Set integer uniform values
+         * @param location      Uniform location
+         * @param values        Values
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Int), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
+         *      @fn_gl_keyword{ProgramUniform}
+         */
         void setUniform(Int location, Containers::ArrayView<const Int> values);
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, Int>> values); /**< @overload */
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<3, Int>> values); /**< @overload */
@@ -1713,7 +1755,17 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
+         * @brief Set unsigned integer uniform values
+         * @param location      Uniform location
+         * @param values        Values
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, UnsignedInt), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
+         *      @fn_gl_keyword{ProgramUniform}
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          * @requires_webgl20 Only signed integers are available in WebGL 1.0.
@@ -1726,7 +1778,17 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
+         * @brief Set double uniform values
+         * @param location      Uniform location
+         * @param values        Values
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Double), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
+         *      @fn_gl_keyword{ProgramUniform}
          * @requires_gl40 Extension @gl_extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES or WebGL.
          */
@@ -1736,14 +1798,58 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<4, Double>> values); /**< @overload */
         #endif
 
-        /** @copydoc setUniform(Int, Containers::ArrayView<const Float>) */
+        /**
+         * @brief Set a float matrix uniform value
+         * @param location      Uniform location
+         * @param value         Value
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Float), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
+         *      @fn_gl_keyword{ProgramUniform}
+         * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
+         * @requires_webgl20 Only square matrices are available in WebGL 1.0.
+         * @requires_gl40 Extension @gl_extension{ARB,gpu_shader_fp64} for
+         *      doubles.
+         * @requires_gl Only floats are available in OpenGL ES or WebGL.
+         */
+        template<std::size_t cols, std::size_t rows, class T> void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
+            setUniform(location, {&value, 1});
+        }
+
+        /**
+         * @brief Set float matrix uniform values
+         * @param location      Uniform location
+         * @param values        Values
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Float), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
+         *      @fn_gl_keyword{ProgramUniform}
+         */
         void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<2, 2, Float>> values);
         void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<3, 3, Float>> values); /**< @overload */
         void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 4, Float>> values); /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
+         * @brief Set rectangular float matrix uniform values
+         * @param location      Uniform location
+         * @param values        Values
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Float), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
+         *      @fn_gl_keyword{ProgramUniform}
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          * @requires_webgl20 Only square matrices are available in WebGL 1.0.
          */
@@ -1757,7 +1863,17 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
+         * @brief Set double matrix uniform values
+         * @param location      Uniform location
+         * @param values        Values
+         *
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
+         * @see @ref setUniform(Int, Float), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
+         *      @fn_gl_keyword{ProgramUniform}
          * @requires_gl40 Extension @gl_extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES or WebGL.
          */

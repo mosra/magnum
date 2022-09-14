@@ -374,6 +374,11 @@ See also:
     prior to every draw, however with the new multidraw workflows that's no
     longer the case and the inability to chain draw calls proved to be
     annoying.
+-   Single-value @ref GL::AbstractShaderProgram::setUniform() calls now go
+    directly instead of through the pointer variant of @fn_gl{Uniform} APIs,
+    leading to less garbage generated on WebGL and circumventing certain driver
+    bugs (see [mosra/magnum#591](https://github.com/mosra/magnum/issues/591)
+    and [mosra/magnum#592](https://github.com/mosra/magnum/pull/592))
 -   Added an @ref GL::AbstractShaderProgram::setTransformFeedbackOutputs()
     overload taking a @relativeref{Corrade,Containers::ArrayView} instead of
     a @ref std::initializer_list
