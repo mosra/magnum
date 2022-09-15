@@ -196,10 +196,9 @@ MyShader& setTransformFeedback(GL::TransformFeedback& feedback, Int totalCount,
     GL::Buffer& positions, GLintptr positionsOffset, GL::Buffer& data,
     GLintptr dataOffset)
 {
-    using BufferOffset = Containers::Triple<GL::Buffer*, GLintptr, GLsizeiptr>;
     feedback.attachBuffers(0, {
-        BufferOffset{&positions, positionsOffset, (GLsizeiptr)totalCount*sizeof(Vector3)},
-        BufferOffset{&data, dataOffset, (GLsizeiptr)totalCount*sizeof(Vector2ui)}
+        {&positions, positionsOffset, GLsizeiptr(totalCount*sizeof(Vector3))},
+        {&data, dataOffset, GLsizeiptr(totalCount*sizeof(Vector2ui))}
     });
     return *this;
 }

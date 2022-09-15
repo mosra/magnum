@@ -254,10 +254,9 @@ void BufferGLTest::bindRange() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    using BufferOffset = Containers::Triple<Buffer*, GLintptr, GLsizeiptr>;
     Buffer::bind(Buffer::Target::Uniform, 7, {
-        BufferOffset{&buffer, 256, 13}, {},
-        BufferOffset{&buffer, 768, 64}});
+        {&buffer, 256, 13}, {},
+        {&buffer, 768, 64}});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

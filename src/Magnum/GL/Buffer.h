@@ -44,8 +44,6 @@
 /* For label() / setLabel(), which used to be a std::string. Not ideal for the
    return type, but at least something. */
 #include <Corrade/Containers/StringStl.h>
-/* For deprecated bind(..., std::initializer_list<std::tuple>) */
-#include <Corrade/Utility/StlForwardTuple.h>
 #endif
 
 namespace Magnum { namespace GL {
@@ -772,14 +770,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 
         /** @overload */
         static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @m_deprecated_since_latest Use @ref bind(Target, UnsignedInt, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>>)
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use the Containers::Triple overload instead") void bind(Target target, UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
-        #endif
 
         /**
          * @brief Bind buffers to given range of indexed targets

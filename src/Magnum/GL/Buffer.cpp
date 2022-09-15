@@ -26,9 +26,6 @@
 
 #include "Buffer.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple>
-#endif
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Triple.h>
 #ifndef MAGNUM_TARGET_WEBGL
@@ -161,17 +158,6 @@ void Buffer::bind(const Target target, const UnsignedInt firstIndex, Containers:
 void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     Context::current().state().buffer.bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-    Containers::Array<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> copy{NoInit, buffers.size()};
-    for(std::size_t i = 0, max = buffers.size(); i != max; ++i) {
-        const auto& t = *(buffers.begin() + i);
-        copy[i] = {std::get<0>(t), std::get<1>(t), std::get<2>(t)};
-    }
-    bind(target, firstIndex, copy);
-}
-#endif
 
 void Buffer::bind(const Target target, const UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     Context::current().state().buffer.bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});

@@ -489,10 +489,9 @@ void TransformFeedbackGLTest::attachRanges() {
         .setCount(2);
 
     TransformFeedback feedback;
-    using BufferOffset = Containers::Triple<Buffer*, GLintptr, GLsizeiptr>;
     feedback.attachBuffers(0, {
-        BufferOffset{&output1, 256, 2*sizeof(Vector2)},
-        BufferOffset{&output2, 512, 2*sizeof(Float)}
+        {&output1, 256, 2*sizeof(Vector2)},
+        {&output2, 512, 2*sizeof(Float)}
     });
 
     MAGNUM_VERIFY_NO_GL_ERROR();

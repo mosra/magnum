@@ -26,9 +26,6 @@
 #include "TransformFeedback.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple>
-#endif
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
@@ -219,17 +216,6 @@ TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex
     (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, Containers::arrayView(buffers));
     return *this;
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-TransformFeedback& TransformFeedback::attachBuffers(UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-    Containers::Array<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> copy{NoInit, buffers.size()};
-    for(std::size_t i = 0, max = buffers.size(); i != max; ++i) {
-        const auto& t = *(buffers.begin() + i);
-        copy[i] = {std::get<0>(t), std::get<1>(t), std::get<2>(t)};
-    }
-    return attachBuffers(firstIndex, copy);
-}
-#endif
 
 TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     (this->*Context::current().state().transformFeedback.attachBasesImplementation)(firstIndex, buffers);
