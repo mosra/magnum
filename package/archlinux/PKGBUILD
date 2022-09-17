@@ -8,7 +8,7 @@ url="https://magnum.graphics"
 license=('MIT')
 depends=('corrade' 'openal' 'sdl2' 'glfw' 'vulkan-icd-loader')
 makedepends=('cmake' 'ninja')
-checkdepends=('swiftshader')
+checkdepends=('vulkan-swrast')
 options=('!strip')
 provides=('magnum-git')
 
@@ -75,7 +75,7 @@ check() {
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object" ctest --output-on-failure -j9 -R GLTest
     MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest --output-on-failure -j9 -R GLTest
 
-    # Run all Vulkan tests with SwiftShader as well
+    # Run all Vulkan tests with llvmpipe as well
     # Keep in sync with PKGBUILD-coverage, PKGBUILD-release and
     # package/ci/unix-desktop-vulkan.sh
     MAGNUM_DEVICE=cpu ctest --output-on-failure -j9 -R VkTest
