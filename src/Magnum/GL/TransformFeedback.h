@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright @ 2022 Hugo Amiard <hugo.amiard@wonderlandengine.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -321,6 +322,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
         /**
          * @brief Attach ranges of buffers
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
          * Attches first buffer in the list to @p firstIndex, second to
          * `firstIndex + 1` etc. Second parameter is offset, third is size. If
@@ -332,7 +334,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is bound (if not already)
          * and the operation is then done equivalently to
-         * @ref Buffer::bind(Buffer::Target, UnsignedInt, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>>).
+         * @ref Buffer::bind(Buffer::Target, UnsignedInt, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>>).
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -342,12 +344,16 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          */
         TransformFeedback& attachBuffers(UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
         /**
          * @brief Attach buffers
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
          * Attches first buffer in the list to @p firstIndex, second to
          * `firstIndex + 1` etc. If any buffer is @cpp nullptr @ce, given index

@@ -303,8 +303,8 @@ layout(binding = 1) uniform sampler2D specularTexture;
 
 If you don't have the required version/extension, declare the uniforms without
 the `binding` qualifier and set the texture binding unit using
-@ref setUniform(Int, const T&) "setUniform(Int, Int)". Note that additional
-syntax changes may be needed for GLSL ES.
+@ref setUniform(Int, Int). Note that additional syntax changes may be needed
+for GLSL ES.
 
 @code{.glsl}
 uniform sampler2D diffuseTexture;
@@ -315,13 +315,11 @@ uniform sampler2D specularTexture;
 
 @see @ref Shader::maxTextureImageUnits(), @ref maxImageUnits()
 @requires_gl42 Extension @gl_extension{ARB,shading_language_420pack} for explicit
-    texture binding unit instead of using
-    @ref setUniform(Int, const T&) "setUniform(Int, Int)".
+    texture binding unit instead of using @ref setUniform(Int, Int).
 @requires_gles31 Explicit texture binding unit is not supported in OpenGL ES
-    3.0 and older. Use @ref setUniform(Int, const T&) "setUniform(Int, Int)"
-    instead.
+    3.0 and older. Use @ref setUniform(Int, Int) instead.
 @requires_gles Explicit texture binding unit is not supported in WebGL. Use
-    @ref setUniform(Int, const T&) "setUniform(Int, Int)" instead.
+    @ref setUniform(Int, Int) instead.
 
 @subsection GL-AbstractShaderProgram-transform-feedback Specifying transform feedback binding points
 

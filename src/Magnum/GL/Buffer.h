@@ -6,6 +6,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2022 Pablo Escobar <mail@rvrs.in>
+    Copyright @ 2022 Hugo Amiard <hugo.amiard@wonderlandengine.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -735,6 +736,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 
         /**
          * @brief Bind ranges of buffers to given range of indexed targets
+         * @m_since_latest
          *
          * Binds first buffer in the list to @p firstIndex, second to
          * @cpp firstIndex + 1 @ce etc. Second parameter is offset, third is
@@ -768,11 +770,15 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          */
         static void bind(Target target, UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
-        /** @overload */
+        /**
+         * @overload
+         * @m_since_latest
+         */
         static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
         /**
          * @brief Bind buffers to given range of indexed targets
+         * @m_since_latest
          *
          * Binds first buffer in the list to @p firstIndex, second to
          * @cpp firstIndex + 1 @ce etc. If any buffer is @cpp nullptr @ce,
