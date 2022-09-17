@@ -152,7 +152,7 @@ template<UnsignedInt dimensions, class T> class Range {
             _min{minmax.first}, _max{minmax.second} {}
 
         /** @overload */
-        /** @todo std::pair constructors are not constexpr in C++11, make it so in C++14 */
+        /** @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
         #endif
@@ -420,7 +420,7 @@ template<class T> class Range2D: public Range<2, T> {
          *
          * @snippet MagnumMath.cpp Range-construct-minmax2D
          *
-         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14
+         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair
          */
         /*implicit*/ Range2D(const std::pair<Vector2<T>, Vector2<T>>& minmax) noexcept: Range<2, T>{minmax.first, minmax.second} {}
 
@@ -574,7 +574,7 @@ template<class T> class Range3D: public Range<3, T> {
          *
          * @snippet MagnumMath.cpp Range-construct-minmax3D
          *
-         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14
+         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair
          */
         /*implicit*/ Range3D(const std::pair<Vector3<T>, Vector3<T>>& minmax) noexcept: Range<3, T>{minmax.first, minmax.second} {}
 
