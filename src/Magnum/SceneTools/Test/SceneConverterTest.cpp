@@ -1594,7 +1594,7 @@ void SceneConverterTest::info() {
 
     Containers::Array<Containers::String> args{InPlaceInit,
         {"-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}};
-    arrayAppend(args, arrayView(data.args)); /** @todo FFS fix the casts */
+    arrayAppend(args, data.args);
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
