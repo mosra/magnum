@@ -59,6 +59,9 @@ See also:
     typedefs for half-float angles and ranges
 -   New @ref Range1Dui, @ref Range2Dui and @ref Range3Dui typedefs for unsigned
     integer ranges
+-   Added pretty-printers for GDB. See @ref debuggers and
+    [mosra/magnum#589](https://github.com/mosra/magnum/pull/589) for more
+    information.
 
 @subsubsection changelog-latest-new-debugtools DebugTools library
 

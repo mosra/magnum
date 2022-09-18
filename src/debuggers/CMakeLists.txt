@@ -24,5 +24,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-install(DIRECTORY gdb
-    DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/debuggers)
+# TODO: same TODOs as in corrade/src/debuggers/CMakeLists.txt apply here
+if(NOT CORRADE_TARGET_MSVC AND NOT CORRADE_TARGET_EMSCRIPTEN)
+    install(DIRECTORY gdb DESTINATION ${MAGNUM_DATA_INSTALL_DIR}/debuggers)
+endif()

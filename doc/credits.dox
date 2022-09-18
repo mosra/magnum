@@ -140,7 +140,8 @@ Are the below lists missing your name or something's wrong?
     algorithm bugfixes
 -   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
     MSYS2 packages, additions to @ref Audio, @ref Platform::Sdl2Application and
-    @ref Platform::GlfwApplication, [base-wxwidgets](https://github.com/mosra/magnum-bootstrap/tree/base-wxwidgets)
+    @ref Platform::GlfwApplication, GDB pretty-printers,
+    [base-wxwidgets](https://github.com/mosra/magnum-bootstrap/tree/base-wxwidgets)
     bootstrap project
 -   **Hans Loeblich** ([\@thehans](https://github.com/thehans)) ---
     improvements to Debian package building experience

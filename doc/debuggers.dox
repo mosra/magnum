@@ -1,0 +1,69 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2022 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page debuggers Debugger support
+@brief Pretty-printers for Magnum types and other debugging aids
+@m_since_latest
+
+@section debuggers-gdb-pretty-printers GDB pretty printers
+
+The [src/debuggers/gdb](https://github.com/mosra/magnum/tree/master/src/debuggers/gdb)
+directory contains [GDB pretty printers](https://sourceware.org/gdb/onlinedocs/gdb/Pretty-Printing.html)
+for important types in the @ref Magnum and @ref Animation namespace and most
+@ref Math classes. Contents of this directory are also copied into
+@cb{.sh} ${CMAKE_PREFIX_PATH}/share/magnum/debuggers/gdb @ce during
+installation, where the prefix is usually `/usr` or `/usr/local`.
+
+Easiest is to auto-load them on startup, by putting the following snippet into
+the user-specific `~/.gdbinit` or `~/.config/gdb/gdbinit` file:
+
+@code{.py}
+python
+import sys
+# Adapt this path to the actual install location (or Magnum's src/ directory).
+# Not pointing to the debuggers subdirectory here because it could conflict
+# with the built-in GDB module.
+sys.path.insert(0, '/usr/share')
+from magnum.debuggers.gdb import register_magnum_printers
+register_magnum_printers(gdb.current_objfile())
+end
+@endcode
+
+In case of MSYS2/MinGW, when running outside of the MSYS2 shell, you may need
+to put the file into @cb{.bat} %USERPROFILE%/.config/gdb/gdbinit @ce instead of
+@cb{.sh} $HOME/.gdbinit @ce.
+
+Alternatively, it's possible to load the scripts manually using GDB commands
+(basically, pasting contents the above snippet) or by executing a GDB script
+file using the @m_class{m-doc-external} [source](https://sourceware.org/gdb/onlinedocs/gdb/Command-Files.html#Command-Files)
+command. See also corresponding [GDB docs](https://sourceware.org/gdb/onlinedocs/gdb.html#Initialization-Files)
+and [CLion docs](https://www.jetbrains.com/help/clion/configuring-debugger-options.html#gdbinit-lldbinit)
+for more information.
+
+See also @ref corrade-debuggers-gdb-pretty-printers "Corrade GDB pretty printers".
+*/
+}

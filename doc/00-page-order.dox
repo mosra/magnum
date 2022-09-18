@@ -30,6 +30,7 @@
 @page getting-started Getting started
 @page features Feature guide
 @page platforms Platform-specific guides
+@page debuggers Debugger support
 @page example-index Examples
 @page tips Tips and tricks
 @page utilities Utilities
