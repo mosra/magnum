@@ -66,19 +66,19 @@ check() {
     export CORRADE_TEST_COLOR=ON
 
     for config in Debug Release; do
-        ctest -C $config --output-on-failure -j9
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" ctest -C $config --output-on-failure -j9 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest -C $config --output-on-failure -j9 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" ctest -C $config --output-on-failure -j9 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" ctest -C $config --output-on-failure -j9 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object" ctest -C $config --output-on-failure -j9 -R GLTest
+        ctest -C $config --output-on-failure -j
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" ctest -C $config --output-on-failure -j -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest -C $config --output-on-failure -j -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" ctest -C $config --output-on-failure -j -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" ctest -C $config --output-on-failure -j -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object" ctest -C $config --output-on-failure -j -R GLTest
         MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest -C $config --output-on-failure -j -R GLTest
 
         # Run all Vulkan tests with llvmpipe as well
         # Keep in sync with PKGBUILD-coverage and package/ci/unix-desktop-vulkan.sh
         MAGNUM_DEVICE=cpu ctest -C $config --output-on-failure -j9 -R VkTest
         for device in "" cpu; do
-            MAGNUM_DEVICE=$device MAGNUM_VULKAN_VERSION=1.0 ctest -C $config --output-on-failure -j9 -R VkTest
+            MAGNUM_DEVICE=$device MAGNUM_VULKAN_VERSION=1.0 ctest -C $config --output-on-failure -j -R VkTest
             MAGNUM_DEVICE=$device MAGNUM_DISABLE_EXTENSIONS="VK_KHR_get_physical_device_properties2 VK_KHR_get_memory_requirements2 VK_KHR_bind_memory2 VK_KHR_create_renderpass2 VK_KHR_copy_commands2 VK_KHR_maintenance1 VK_KHR_multiview VK_KHR_maintenance2" MAGNUM_VULKAN_VERSION=1.0 ctest -C $config --output-on-failure -j -R VkTest
         done
     done
