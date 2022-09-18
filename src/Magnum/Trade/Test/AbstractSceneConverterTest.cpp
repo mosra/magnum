@@ -33,6 +33,8 @@
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
@@ -59,6 +61,14 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AbstractSceneConverterTest: TestSuite::Tester {
     explicit AbstractSceneConverterTest();
+
+    void sceneContentsForImporterNone();
+    void sceneContentsForImporterAll();
+    void sceneContentsForImporterNotOpened();
+
+    void sceneContentsForConverterNone();
+    void sceneContentsForConverterSingleMesh();
+    void sceneContentsForConverterAll();
 
     void featuresNone();
 
@@ -274,6 +284,21 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void addImage2DThroughLevels();
     void addImage3DThroughLevels();
 
+    void addImporterContents();
+    void addImporterContentsCustomSceneFields();
+    void addImporterContentsCustomMeshAttributes();
+    void addImporterContentsImportFail();
+    void addImporterContentsConversionFail();
+    void addImporterContentsNotConverting();
+    void addImporterContentsNotOpened();
+    void addImporterContentsNotSupported();
+    void addImporterContentsNotSupportedLevels();
+    void addImporterContentsNotSupportedUncompressedImage();
+    void addImporterContentsNotSupportedCompressedImage();
+
+    void addSupportedImporterContents();
+    void addSupportedImporterContentsLevels();
+
     void debugFeature();
     void debugFeaturePacked();
     void debugFeatures();
@@ -281,12 +306,217 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void debugFeaturesSupersets();
     void debugFlag();
     void debugFlags();
+    void debugContent();
+    void debugContentPacked();
+    void debugContents();
+    void debugContentsPacked();
 };
 
 using namespace Containers::Literals;
 
+const struct {
+    const char* name;
+    SceneContents contents;
+    const char* expected;
+} AddImporterContentsData[]{
+    {"scenes", SceneContent::Scenes,
+        "Adding scene 0 named  with 0x5ce00000\n"
+        "Adding scene 1 named  with 0x5ce00001\n"
+        "Setting default scene to 1\n"},
+    {"scenes + names", SceneContent::Scenes|SceneContent::Names,
+        "Setting object 0 name to Object 0\n"
+        "Setting object 1 name to Object 1\n"
+        "Setting object 2 name to Object 2\n"
+        "Adding scene 0 named Scene 0 with 0x5ce00000\n"
+        "Adding scene 1 named Scene 1 with 0x5ce00001\n"
+        "Setting default scene to 1\n"},
+    {"animations", SceneContent::Animations,
+        "Adding animation 0 named  with 0x40100000\n"
+        "Adding animation 1 named  with 0x40100001\n"},
+    {"animations + names", SceneContent::Animations|SceneContent::Names,
+        "Adding animation 0 named Animation 0 with 0x40100000\n"
+        "Adding animation 1 named Animation 1 with 0x40100001\n"},
+    {"lights", SceneContent::Lights,
+        "Adding light 0 named  with 0x11600000\n"
+        "Adding light 1 named  with 0x11600001\n"},
+    {"lights + names", SceneContent::Lights|SceneContent::Names,
+        "Adding light 0 named Light 0 with 0x11600000\n"
+        "Adding light 1 named Light 1 with 0x11600001\n"},
+    {"cameras", SceneContent::Cameras,
+        "Adding camera 0 named  with 0xca0e0000\n"
+        "Adding camera 1 named  with 0xca0e0001\n"},
+    {"cameras + names", SceneContent::Cameras|SceneContent::Names,
+        "Adding camera 0 named Camera 0 with 0xca0e0000\n"
+        "Adding camera 1 named Camera 1 with 0xca0e0001\n"},
+    {"2D skins", SceneContent::Skins2D,
+        "Adding 2D skin 0 named  with 0x50102d00\n"
+        "Adding 2D skin 1 named  with 0x50102d01\n"},
+    {"2D skins + names", SceneContent::Skins2D|SceneContent::Names,
+        "Adding 2D skin 0 named 2D skin 0 with 0x50102d00\n"
+        "Adding 2D skin 1 named 2D skin 1 with 0x50102d01\n"},
+    {"3D skins", SceneContent::Skins3D,
+        "Adding 3D skin 0 named  with 0x50103d00\n"
+        "Adding 3D skin 1 named  with 0x50103d01\n"},
+    {"3D skins + names", SceneContent::Skins3D|SceneContent::Names,
+        "Adding 3D skin 0 named 3D skin 0 with 0x50103d00\n"
+        "Adding 3D skin 1 named 3D skin 1 with 0x50103d01\n"},
+    {"meshes", SceneContent::Meshes,
+        "Adding mesh 0 named  with 0xe500000\n"
+        "Adding mesh 1 named  with 0xe500001\n"},
+    {"meshes + names", SceneContent::Meshes|SceneContent::Names,
+        "Adding mesh 0 named Mesh 0 with 0xe500000\n"
+        "Adding mesh 1 named Mesh 1 with 0xe500001\n"},
+    {"meshes + levels", SceneContent::Meshes|SceneContent::MeshLevels,
+        "Adding mesh 0 named  with 0xe500000\n"
+        "Adding mesh 1 level 0 named  with 0xe500001\n"
+        "Adding mesh 1 level 1 named  with 0xe500011\n"
+        "Adding mesh 1 level 2 named  with 0xe500021\n"},
+    {"meshes + levels + names", SceneContent::Meshes|SceneContent::MeshLevels|SceneContent::Names,
+        "Adding mesh 0 named Mesh 0 with 0xe500000\n"
+        "Adding mesh 1 level 0 named Mesh 1 with 0xe500001\n"
+        "Adding mesh 1 level 1 named Mesh 1 with 0xe500011\n"
+        "Adding mesh 1 level 2 named Mesh 1 with 0xe500021\n"},
+    {"materials", SceneContent::Materials,
+        "Adding material 0 named  with 0xa7e0000\n"
+        "Adding material 1 named  with 0xa7e0001\n"},
+    {"materials + names", SceneContent::Materials|SceneContent::Names,
+        "Adding material 0 named Material 0 with 0xa7e0000\n"
+        "Adding material 1 named Material 1 with 0xa7e0001\n"},
+    {"textures", SceneContent::Textures,
+        "Adding texture 0 named  with 0x7e070000\n"
+        "Adding texture 1 named  with 0x7e070001\n"},
+    {"textures + names", SceneContent::Textures|SceneContent::Names,
+        "Adding texture 0 named Texture 0 with 0x7e070000\n"
+        "Adding texture 1 named Texture 1 with 0x7e070001\n"},
+    {"1D images", SceneContent::Images1D,
+        "Adding 1D image 0 named  with 0x10a91d00\n"
+        "Adding 1D image 1 named  with 0x10a91d01\n"},
+    {"1D images + names", SceneContent::Images1D|SceneContent::Names,
+        "Adding 1D image 0 named 1D image 0 with 0x10a91d00\n"
+        "Adding 1D image 1 named 1D image 1 with 0x10a91d01\n"},
+    {"1D images + levels", SceneContent::Images1D|SceneContent::ImageLevels,
+        "Adding 1D image 0 named  with 0x10a91d00\n"
+        "Adding 1D image 1 level 0 named  with 0x10a91d01\n"
+        "Adding 1D image 1 level 1 named  with 0x10a91d11\n"
+        "Adding 1D image 1 level 2 named  with 0x10a91d21\n"
+        "Adding 1D image 1 level 3 named  with 0x10a91d31\n"},
+    {"1D images + levels + names", SceneContent::Images1D|SceneContent::ImageLevels|SceneContent::Names,
+        "Adding 1D image 0 named 1D image 0 with 0x10a91d00\n"
+        "Adding 1D image 1 level 0 named 1D image 1 with 0x10a91d01\n"
+        "Adding 1D image 1 level 1 named 1D image 1 with 0x10a91d11\n"
+        "Adding 1D image 1 level 2 named 1D image 1 with 0x10a91d21\n"
+        "Adding 1D image 1 level 3 named 1D image 1 with 0x10a91d31\n"},
+    {"2D images", SceneContent::Images2D,
+        "Adding 2D image 0 named  with 0x10a92d00\n"
+        "Adding 2D image 1 named  with 0x10a92d01\n"},
+    {"2D images + names", SceneContent::Images2D|SceneContent::Names,
+        "Adding 2D image 0 named 2D image 0 with 0x10a92d00\n"
+        "Adding 2D image 1 named 2D image 1 with 0x10a92d01\n"},
+    {"2D images + levels", SceneContent::Images2D|SceneContent::ImageLevels,
+        "Adding 2D image 0 level 0 named  with 0x10a92d00\n"
+        "Adding 2D image 0 level 1 named  with 0x10a92d10\n"
+        "Adding 2D image 0 level 2 named  with 0x10a92d20\n"
+        "Adding 2D image 1 named  with 0x10a92d01\n"},
+    {"2D images + names", SceneContent::Images2D|SceneContent::ImageLevels|SceneContent::Names,
+        "Adding 2D image 0 level 0 named 2D image 0 with 0x10a92d00\n"
+        "Adding 2D image 0 level 1 named 2D image 0 with 0x10a92d10\n"
+        "Adding 2D image 0 level 2 named 2D image 0 with 0x10a92d20\n"
+        "Adding 2D image 1 named 2D image 1 with 0x10a92d01\n"},
+    {"3D images", SceneContent::Images3D,
+        "Adding 3D image 0 named  with 0x10a93d00\n"
+        "Adding 3D image 1 named  with 0x10a93d01\n"},
+    {"3D images + names", SceneContent::Images3D|SceneContent::Names,
+        "Adding 3D image 0 named 3D image 0 with 0x10a93d00\n"
+        "Adding 3D image 1 named 3D image 1 with 0x10a93d01\n"},
+    {"3D images + levels", SceneContent::Images3D|SceneContent::ImageLevels,
+        "Adding 3D image 0 named  with 0x10a93d00\n"
+        "Adding 3D image 1 level 0 named  with 0x10a93d01\n"
+        "Adding 3D image 1 level 1 named  with 0x10a93d11\n"},
+    {"3D images + names", SceneContent::Images3D|SceneContent::ImageLevels|SceneContent::Names,
+        "Adding 3D image 0 named 3D image 0 with 0x10a93d00\n"
+        "Adding 3D image 1 level 0 named 3D image 1 with 0x10a93d01\n"
+        "Adding 3D image 1 level 1 named 3D image 1 with 0x10a93d11\n"},
+    {"names only", SceneContent::Names,
+        "" /* Nothing */},
+};
+
+const struct {
+    const char* name;
+    SceneContents contents;
+} AddImporterContentsFailData[]{
+    {"scene", SceneContent::Scenes},
+    {"animation", SceneContent::Animations},
+    {"light", SceneContent::Lights},
+    {"camera", SceneContent::Cameras},
+    {"2D skin", SceneContent::Skins2D},
+    {"3D skin", SceneContent::Skins3D},
+    {"mesh", SceneContent::Meshes},
+    {"mesh levels", SceneContent::Meshes|SceneContent::MeshLevels},
+    {"material", SceneContent::Materials},
+    {"texture", SceneContent::Textures},
+    {"1D image", SceneContent::Images1D},
+    {"1D image levels", SceneContent::Images1D|SceneContent::ImageLevels},
+    {"2D image", SceneContent::Images2D},
+    {"2D image levels", SceneContent::Images2D|SceneContent::ImageLevels},
+    {"3D image", SceneContent::Images3D},
+    {"3D image levels", SceneContent::Images3D|SceneContent::ImageLevels},
+};
+
+const struct {
+    const char* name;
+    const char* except;
+    SceneConverterFeatures exceptFeatures;
+    SceneContents exceptContents;
+    SceneContents wantExceptContents;
+} AddSupportedImporterContentsData[]{
+    {"except scenes", "2 scenes",
+        SceneConverterFeature::AddScenes, SceneContent::Scenes, {}},
+    {"except animations", "3 animations",
+        SceneConverterFeature::AddAnimations, SceneContent::Animations, {}},
+    {"except lights", "4 lights",
+        SceneConverterFeature::AddLights, SceneContent::Lights, {}},
+    {"except cameras", "5 cameras",
+        SceneConverterFeature::AddCameras, SceneContent::Cameras, {}},
+    {"except 2D skins", "6 2D skins",
+        SceneConverterFeature::AddSkins2D, SceneContent::Skins2D, {}},
+    {"except 3D skins", "7 3D skins",
+        SceneConverterFeature::AddSkins3D, SceneContent::Skins3D, {}},
+    {"except meshes", "8 meshes",
+        SceneConverterFeature::AddMeshes, SceneContent::Meshes, {}},
+    {"except materials", "9 materials",
+        SceneConverterFeature::AddMaterials, SceneContent::Materials, {}},
+    {"except textures", "10 textures",
+        SceneConverterFeature::AddTextures, SceneContent::Textures, {}},
+    {"except 1D images", "11 1D images",
+        SceneConverterFeature::AddImages1D, SceneContent::Images1D, {}},
+    {"except 2D images", "12 2D images",
+        SceneConverterFeature::AddImages2D, SceneContent::Images2D, {}},
+    {"except 3D images", "13 3D images",
+        SceneConverterFeature::AddImages3D, SceneContent::Images3D, {}},
+    /* Should only warn about materials not supported by the converter, not
+       meshes because we don't want them anyway */
+    {"except materials and meshes, without meshes", "9 materials",
+        SceneConverterFeature::AddMaterials|SceneConverterFeature::AddMeshes,
+        SceneContent::Materials|SceneContent::Meshes,
+        SceneContent::Meshes},
+    /* Should only warn about materials not supported by the converter, nothing
+       about meshes (which are available in the importer always but not
+       passed to the converter) */
+    {"except materials, without meshes", "9 materials",
+        SceneConverterFeature::AddMaterials, SceneContent::Materials,
+        SceneContent::Meshes},
+};
+
 AbstractSceneConverterTest::AbstractSceneConverterTest() {
-    addTests({&AbstractSceneConverterTest::featuresNone,
+    addTests({&AbstractSceneConverterTest::sceneContentsForImporterNone,
+              &AbstractSceneConverterTest::sceneContentsForImporterAll,
+              &AbstractSceneConverterTest::sceneContentsForImporterNotOpened,
+
+              &AbstractSceneConverterTest::sceneContentsForConverterNone,
+              &AbstractSceneConverterTest::sceneContentsForConverterSingleMesh,
+              &AbstractSceneConverterTest::sceneContentsForConverterAll,
+
+              &AbstractSceneConverterTest::featuresNone,
 
               &AbstractSceneConverterTest::setFlags,
               &AbstractSceneConverterTest::setFlagsNotImplemented,
@@ -487,7 +717,30 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 
               &AbstractSceneConverterTest::addImage1DThroughLevels,
               &AbstractSceneConverterTest::addImage2DThroughLevels,
-              &AbstractSceneConverterTest::addImage3DThroughLevels,
+              &AbstractSceneConverterTest::addImage3DThroughLevels});
+
+    addInstancedTests({&AbstractSceneConverterTest::addImporterContents},
+        Containers::arraySize(AddImporterContentsData));
+
+    addTests({&AbstractSceneConverterTest::addImporterContentsCustomSceneFields,
+              &AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes});
+
+    addInstancedTests({&AbstractSceneConverterTest::addImporterContentsImportFail},
+        Containers::arraySize(AddImporterContentsFailData));
+
+    addInstancedTests({&AbstractSceneConverterTest::addImporterContentsConversionFail},
+        Containers::arraySize(AddImporterContentsFailData));
+
+    addTests({&AbstractSceneConverterTest::addImporterContentsNotConverting,
+              &AbstractSceneConverterTest::addImporterContentsNotOpened,
+              &AbstractSceneConverterTest::addImporterContentsNotSupported,              &AbstractSceneConverterTest::addImporterContentsNotSupportedLevels,
+              &AbstractSceneConverterTest::addImporterContentsNotSupportedUncompressedImage,
+              &AbstractSceneConverterTest::addImporterContentsNotSupportedCompressedImage});
+
+    addInstancedTests({&AbstractSceneConverterTest::addSupportedImporterContents},
+        Containers::arraySize(AddSupportedImporterContentsData));
+
+    addTests({&AbstractSceneConverterTest::addSupportedImporterContentsLevels,
 
               &AbstractSceneConverterTest::debugFeature,
               &AbstractSceneConverterTest::debugFeaturePacked,
@@ -495,10 +748,139 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::debugFeaturesPacked,
               &AbstractSceneConverterTest::debugFeaturesSupersets,
               &AbstractSceneConverterTest::debugFlag,
-              &AbstractSceneConverterTest::debugFlags});
+              &AbstractSceneConverterTest::debugFlags,
+              &AbstractSceneConverterTest::debugContent,
+              &AbstractSceneConverterTest::debugContentPacked,
+              &AbstractSceneConverterTest::debugContents,
+              &AbstractSceneConverterTest::debugContentsPacked});
 
     /* Create testing dir */
     Utility::Path::make(TRADE_TEST_OUTPUT_DIR);
+}
+
+void AbstractSceneConverterTest::sceneContentsForImporterNone() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(sceneContentsFor(importer), SceneContent::Names);
+}
+
+void AbstractSceneConverterTest::sceneContentsForImporterAll() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 1; }
+        UnsignedInt doAnimationCount() const override { return 1; }
+        UnsignedInt doLightCount() const override { return 1; }
+        UnsignedInt doCameraCount() const override { return 1; }
+        UnsignedInt doSkin2DCount() const override { return 1; }
+        UnsignedInt doSkin3DCount() const override { return 1; }
+        UnsignedInt doMeshCount() const override { return 1; }
+        UnsignedInt doMeshLevelCount(UnsignedInt) override { return 17; }
+        UnsignedInt doMaterialCount() const override { return 1; }
+        UnsignedInt doTextureCount() const override { return 1; }
+        UnsignedInt doImage1DCount() const override { return 1; }
+        UnsignedInt doImage1DLevelCount(UnsignedInt) override { return 17; }
+        UnsignedInt doImage2DCount() const override { return 1; }
+        UnsignedInt doImage2DLevelCount(UnsignedInt) override { return 17; }
+        UnsignedInt doImage3DCount() const override { return 1; }
+        UnsignedInt doImage3DLevelCount(UnsignedInt) override { return 17; }
+    } importer;
+
+    CORRADE_COMPARE(sceneContentsFor(importer),
+        SceneContent::Scenes|
+        SceneContent::Animations|
+        SceneContent::Lights|
+        SceneContent::Cameras|
+        SceneContent::Skins2D|
+        SceneContent::Skins3D|
+        SceneContent::Meshes|
+        SceneContent::Materials|
+        SceneContent::Textures|
+        SceneContent::Images1D|
+        SceneContent::Images2D|
+        SceneContent::Images3D|
+        /* No mesh or image levels, even though reported */
+        SceneContent::Names);
+}
+
+void AbstractSceneConverterTest::sceneContentsForImporterNotOpened() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    sceneContentsFor(importer);
+    CORRADE_COMPARE(out.str(), "Trade::sceneContentsFor(): the importer is not opened\n");
+}
+
+void AbstractSceneConverterTest::sceneContentsForConverterNone() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshInPlace;
+        }
+    } converter;
+
+    CORRADE_COMPARE(sceneContentsFor(converter), SceneContent::Names);
+}
+
+void AbstractSceneConverterTest::sceneContentsForConverterSingleMesh() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMeshToFile;
+        }
+    } converter;
+
+    CORRADE_COMPARE(sceneContentsFor(converter), SceneContent::Meshes|SceneContent::Names);
+}
+
+void AbstractSceneConverterTest::sceneContentsForConverterAll() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return
+                SceneConverterFeature::AddScenes|
+                SceneConverterFeature::AddAnimations|
+                SceneConverterFeature::AddLights|
+                SceneConverterFeature::AddCameras|
+                SceneConverterFeature::AddSkins2D|
+                SceneConverterFeature::AddSkins3D|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::AddMaterials|
+                SceneConverterFeature::AddTextures|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D|
+                SceneConverterFeature::MeshLevels|
+                SceneConverterFeature::ImageLevels;
+        }
+    } converter;
+
+    CORRADE_COMPARE(sceneContentsFor(converter),
+        SceneContent::Scenes|
+        SceneContent::Animations|
+        SceneContent::Lights|
+        SceneContent::Cameras|
+        SceneContent::Skins2D|
+        SceneContent::Skins3D|
+        SceneContent::Meshes|
+        SceneContent::Materials|
+        SceneContent::Textures|
+        SceneContent::Images1D|
+        SceneContent::Images2D|
+        SceneContent::Images3D|
+        SceneContent::MeshLevels|
+        SceneContent::ImageLevels|
+        SceneContent::Names);
 }
 
 void AbstractSceneConverterTest::featuresNone() {
@@ -5371,6 +5753,1557 @@ void AbstractSceneConverterTest::addImage3DThroughLevels() {
     CORRADE_COMPARE(converter.image3DCount(), 1);
 }
 
+void AbstractSceneConverterTest::addImporterContents() {
+    auto&& data = AddImporterContentsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneContents contents): contents{contents} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedLong doObjectCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 3;
+        }
+        Containers::String doObjectName(UnsignedLong id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Object {}", id);
+        }
+
+        UnsignedInt doSceneCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Int doDefaultScene() const override {
+            CORRADE_VERIFY(contents & SceneContent::Scenes);
+            return 1;
+        }
+        Containers::String doSceneName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Scene {}", id);
+        }
+        Containers::Optional<SceneData> doScene(UnsignedInt id) override {
+            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}, reinterpret_cast<const void*>(0x5ce00000 + id)};
+        }
+
+        UnsignedInt doAnimationCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Containers::String doAnimationName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Animation {}", id);
+        }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override {
+            return AnimationData{nullptr, {}, reinterpret_cast<const void*>(0x40100000 + id)};
+        }
+
+        UnsignedInt doLightCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Containers::String doLightName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Light {}", id);
+        }
+        Containers::Optional<LightData> doLight(UnsignedInt id) override {
+            return LightData{LightData::Type::Point, {}, {}, reinterpret_cast<const void*>(0x11600000 + id)};
+        }
+
+        UnsignedInt doCameraCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Containers::String doCameraName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Camera {}", id);
+        }
+        Containers::Optional<CameraData> doCamera(UnsignedInt id) override {
+            return CameraData{CameraType::Orthographic2D, {}, 0.0f, 0.0f, reinterpret_cast<const void*>(0xca0e0000 + id)};
+        }
+
+        UnsignedInt doSkin2DCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Containers::String doSkin2DName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("2D skin {}", id);
+        }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt id) override {
+            return SkinData2D{{}, {}, reinterpret_cast<const void*>(0x50102d00 + id)};
+        }
+
+        UnsignedInt doSkin3DCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Containers::String doSkin3DName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("3D skin {}", id);
+        }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id) override {
+            return SkinData3D{{}, {}, reinterpret_cast<const void*>(0x50103d00 + id)};
+        }
+
+        UnsignedInt doMeshCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        UnsignedInt doMeshLevelCount(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::MeshLevels);
+            return id == 1 ? 3 : 1;
+        }
+        Containers::String doMeshName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Mesh {}", id);
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
+            return MeshData{{}, 0, reinterpret_cast<const void*>(0x0e500000 + id + level*16)};
+        }
+
+        UnsignedInt doMaterialCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Containers::String doMaterialName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Material {}", id);
+        }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt id) override {
+            return MaterialData{{}, {}, reinterpret_cast<const void*>(0x0a7e0000 + id)};
+        }
+
+        UnsignedInt doTextureCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        Containers::String doTextureName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("Texture {}", id);
+        }
+        Containers::Optional<TextureData> doTexture(UnsignedInt id) override {
+            return TextureData{TextureType::Texture1D, SamplerFilter::Nearest, SamplerFilter::Nearest, SamplerMipmap::Nearest, SamplerWrapping::ClampToEdge, 0, reinterpret_cast<const void*>(0x7e070000 + id)};
+        }
+
+        UnsignedInt doImage1DCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        UnsignedInt doImage1DLevelCount(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::ImageLevels);
+            return id == 1 ? 4 : 1;
+        }
+        Containers::String doImage1DName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("1D image {}", id);
+        }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
+            return ImageData1D{PixelFormat::RGBA8Unorm, 1, {}, "yes", {}, reinterpret_cast<const void*>(0x10a91d00 + id + level*16)};
+        }
+
+        UnsignedInt doImage2DCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        UnsignedInt doImage2DLevelCount(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::ImageLevels);
+            return id == 0 ? 3 : 1;
+        }
+        Containers::String doImage2DName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("2D image {}", id);
+        }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, {}, "yes", {}, reinterpret_cast<const void*>(0x10a92d00 + id + level*16)};
+        }
+
+        UnsignedInt doImage3DCount() const override {
+            /* Counts are queried unconditionally in an assert, so can't
+               really check anything here. Returning 0 would be
+               counterproductive, the addImporterContentsImportFail() case
+               tests that the right *Count() gets called. */
+            return 2;
+        }
+        UnsignedInt doImage3DLevelCount(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::ImageLevels);
+            return id == 1 ? 2 : 1;
+        }
+        Containers::String doImage3DName(UnsignedInt id) override {
+            CORRADE_VERIFY(contents & SceneContent::Names);
+            return Utility::format("3D image {}", id);
+        }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
+            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, {}, "yes", {}, reinterpret_cast<const void*>(0x10a93d00 + id + level*16)};
+        }
+
+        SceneContents contents;
+    } importer{data.contents};
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return
+                SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddScenes|
+                SceneConverterFeature::AddAnimations|
+                SceneConverterFeature::AddLights|
+                SceneConverterFeature::AddCameras|
+                SceneConverterFeature::AddSkins2D|
+                SceneConverterFeature::AddSkins3D|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::AddMaterials|
+                SceneConverterFeature::AddTextures|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D|
+                SceneConverterFeature::MeshLevels|
+                SceneConverterFeature::ImageLevels;
+        }
+
+        bool doBeginData() override { return true; }
+
+        void doSetObjectName(UnsignedLong id, Containers::StringView name) override {
+            Debug{} << "Setting object" << id << "name to" << name;
+        }
+        bool doAdd(UnsignedInt id, const SceneData& data, Containers::StringView name) override {
+            Debug{} << "Adding scene" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        void doSetDefaultScene(UnsignedInt id) override {
+            Debug{} << "Setting default scene to" << id;
+        }
+
+        bool doAdd(UnsignedInt id, const AnimationData& data, Containers::StringView name) override {
+            Debug{} << "Adding animation" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const LightData& data, Containers::StringView name) override {
+            Debug{} << "Adding light" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const CameraData& data, Containers::StringView name) override {
+            Debug{} << "Adding camera" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const SkinData2D& data, Containers::StringView name) override {
+            Debug{} << "Adding 2D skin" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const SkinData3D& data, Containers::StringView name) override {
+            Debug{} << "Adding 3D skin" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const MeshData& data, Containers::StringView name) override {
+            Debug{} << "Adding mesh" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData> levels, Containers::StringView name) override {
+            for(std::size_t i = 0; i != levels.size(); ++i)
+                Debug{} << "Adding mesh" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const MaterialData& data, Containers::StringView name) override {
+            Debug{} << "Adding material" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const TextureData& data, Containers::StringView name) override {
+            Debug{} << "Adding texture" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const ImageData1D& data, Containers::StringView name) override {
+            Debug{} << "Adding 1D image" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D> levels, Containers::StringView name) override {
+            for(std::size_t i = 0; i != levels.size(); ++i)
+                Debug{} << "Adding 1D image" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const ImageData2D& data, Containers::StringView name) override {
+            Debug{} << "Adding 2D image" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D> levels, Containers::StringView name) override {
+            for(std::size_t i = 0; i != levels.size(); ++i)
+                Debug{} << "Adding 2D image" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const ImageData3D& data, Containers::StringView name) override {
+            Debug{} << "Adding 3D image" << id << "named" << name << "with" << data.importerState();
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> levels, Containers::StringView name) override {
+            for(std::size_t i = 0; i != levels.size(); ++i)
+                Debug{} << "Adding 3D image" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
+            return true;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    CORRADE_VERIFY(converter.addImporterContents(importer, data.contents));
+    CORRADE_COMPARE(out.str(), data.expected);
+}
+
+void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override {
+            return 3;
+        }
+        Containers::Optional<SceneData> doScene(UnsignedInt id) override {
+            if(id == 1 || id == 2)
+                return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {
+                    SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr},
+                    SceneFieldData{sceneFieldCustom(34977), SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector2b, nullptr},
+                    SceneFieldData{SceneField::Scaling, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Vector3, nullptr},
+                    SceneFieldData{sceneFieldCustom(5266), SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Pointer, nullptr},
+                }};
+            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
+        }
+        Containers::String doSceneFieldName(UnsignedInt name) override {
+            if(name == 34977) return "OffsetSmall";
+            if(name == 5266) return "ValueData";
+            CORRADE_FAIL_IF(true, "This should not be reached");
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return
+                SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddScenes;
+        }
+
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
+            Debug{} << "Adding scene";
+            return true;
+        }
+        void doSetSceneFieldName(UnsignedInt field, Containers::StringView name) override {
+            Debug{} << "Setting field" << field << "name to" << name;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    CORRADE_VERIFY(converter.addImporterContents(importer));
+    /* No error message, the importer is expected to print that on its own */
+    CORRADE_COMPARE(out.str(),
+        "Adding scene\n"
+        /** @todo cache the names to avoid querying repeatedly */
+        "Setting field 34977 name to OffsetSmall\n"
+        "Setting field 5266 name to ValueData\n"
+        "Adding scene\n"
+        "Setting field 34977 name to OffsetSmall\n"
+        "Setting field 5266 name to ValueData\n"
+        "Adding scene\n");
+}
+
+void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override {
+            return 2;
+        }
+        UnsignedInt doMeshLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
+            if(id == 1 && (level == 2 || level == 3))
+                return MeshData{MeshPrimitive::Triangles, nullptr, {
+                    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr},
+                    MeshAttributeData{meshAttributeCustom(31977), VertexFormat::Vector2b, nullptr},
+                    MeshAttributeData{MeshAttribute::Normal, VertexFormat::Vector3, nullptr},
+                    MeshAttributeData{meshAttributeCustom(5266), VertexFormat::ByteNormalized, nullptr},
+                }};
+            return MeshData{MeshPrimitive::Points, 0};
+        }
+        Containers::String doMeshAttributeName(UnsignedShort name) override {
+            if(name == 31977) return "OffsetSmall";
+            if(name == 5266) return "ValueData";
+            CORRADE_FAIL_IF(true, "This should not be reached");
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return
+                SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::MeshLevels;
+        }
+
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
+            Debug{} << "Adding mesh levels";
+            return true;
+        }
+        void doSetMeshAttributeName(UnsignedShort attribute, Containers::StringView name) override {
+            Debug{} << "Setting attribute" << attribute << "name to" << name;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    CORRADE_VERIFY(converter.addImporterContents(importer));
+    /* No error message, the importer is expected to print that on its own */
+    CORRADE_COMPARE(out.str(),
+        "Adding mesh levels\n"
+        /** @todo cache the names to avoid querying repeatedly */
+        "Setting attribute 31977 name to OffsetSmall\n"
+        "Setting attribute 5266 name to ValueData\n"
+        "Setting attribute 31977 name to OffsetSmall\n"
+        "Setting attribute 5266 name to ValueData\n"
+        "Adding mesh levels\n");
+}
+
+void AbstractSceneConverterTest::addImporterContentsImportFail() {
+    auto&& data = AddImporterContentsFailData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct Importer: AbstractImporter {
+        explicit Importer(SceneContents contents): contents{contents} {}
+
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override {
+            return contents & SceneContent::Scenes ? 4 : 0;
+        }
+        Containers::Optional<SceneData> doScene(UnsignedInt id) override {
+            if(id == 2) return {};
+            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
+        }
+
+        UnsignedInt doAnimationCount() const override {
+            return contents & SceneContent::Animations ? 4 : 0;
+        }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override {
+            if(id == 2) return {};
+            return AnimationData{nullptr, {}};
+        }
+
+        UnsignedInt doLightCount() const override {
+            return contents & SceneContent::Lights ? 4 : 0;
+        }
+        Containers::Optional<LightData> doLight(UnsignedInt id) override {
+            if(id == 2) return {};
+            return LightData{LightData::Type::Point, {}, {}};
+        }
+
+        UnsignedInt doCameraCount() const override {
+            return contents & SceneContent::Cameras ? 4 : 0;
+        }
+        Containers::Optional<CameraData> doCamera(UnsignedInt id) override {
+            if(id == 2) return {};
+            return CameraData{CameraType::Orthographic2D, {}, 0.0f, 0.0f};
+        }
+
+        UnsignedInt doSkin2DCount() const override {
+            return contents & SceneContent::Skins2D ? 4 : 0;
+        }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt id) override {
+            if(id == 2) return {};
+            return SkinData2D{{}, {}};
+        }
+
+        UnsignedInt doSkin3DCount() const override {
+            return contents & SceneContent::Skins3D ? 4 : 0;
+        }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id) override {
+            if(id == 2) return {};
+            return SkinData3D{{}, {}};
+        }
+
+        UnsignedInt doMeshCount() const override {
+            return contents & SceneContent::Meshes ? 4 : 0;
+        }
+        UnsignedInt doMeshLevelCount(UnsignedInt) override {
+            return contents & SceneContent::MeshLevels ? 5 : 1;
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
+            if(id == 2) {
+                if(contents & SceneContent::MeshLevels) {
+                    if(level == 3) return {};
+                } else return {};
+            }
+
+            return MeshData{{}, 0};
+        }
+
+        UnsignedInt doMaterialCount() const override {
+            return contents & SceneContent::Materials ? 4 : 0;
+        }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt id) override {
+            if(id == 2) return {};
+            return MaterialData{{}, {}};
+        }
+
+        UnsignedInt doTextureCount() const override {
+            return contents & SceneContent::Textures ? 4 : 0;
+        }
+        Containers::Optional<TextureData> doTexture(UnsignedInt id) override {
+            if(id == 2) return {};
+            return TextureData{TextureType::Texture1D, SamplerFilter::Nearest, SamplerFilter::Nearest, SamplerMipmap::Nearest, SamplerWrapping::ClampToEdge, 0};
+        }
+
+        UnsignedInt doImage1DCount() const override {
+            return contents & SceneContent::Images1D ? 4 : 0;
+        }
+        UnsignedInt doImage1DLevelCount(UnsignedInt) override {
+            return contents & SceneContent::ImageLevels ? 5 : 1;
+        }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
+            if(id == 2) {
+                if(contents & SceneContent::ImageLevels) {
+                    if(level == 3) return {};
+                } else return {};
+            }
+
+            return ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage2DCount() const override {
+            return contents & SceneContent::Images2D ? 4 : 0;
+        }
+        UnsignedInt doImage2DLevelCount(UnsignedInt) override {
+            return contents & SceneContent::ImageLevels ? 5 : 1;
+        }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
+            if(id == 2) {
+                if(contents & SceneContent::ImageLevels) {
+                    if(level == 3) return {};
+                } else return {};
+            }
+
+            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage3DCount() const override {
+            return contents & SceneContent::Images3D ? 4 : 0;
+        }
+        UnsignedInt doImage3DLevelCount(UnsignedInt) override {
+            return contents & SceneContent::ImageLevels ? 5 : 1;
+        }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
+            if(id == 2) {
+                if(contents & SceneContent::ImageLevels) {
+                    if(level == 3) return {};
+                } else return {};
+            }
+
+            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, "yes"};
+        }
+
+        SceneContents contents;
+    } importer{data.contents};
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return
+                SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddScenes|
+                SceneConverterFeature::AddAnimations|
+                SceneConverterFeature::AddLights|
+                SceneConverterFeature::AddCameras|
+                SceneConverterFeature::AddSkins2D|
+                SceneConverterFeature::AddSkins3D|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::AddMaterials|
+                SceneConverterFeature::AddTextures|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D|
+                SceneConverterFeature::MeshLevels|
+                SceneConverterFeature::ImageLevels;
+        }
+
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
+            Debug{} << "Adding scene";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt, const AnimationData&, Containers::StringView) override {
+            Debug{} << "Adding animation";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const LightData&, Containers::StringView) override {
+            Debug{} << "Adding light";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const CameraData&, Containers::StringView) override {
+            Debug{} << "Adding camera";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const SkinData2D&, Containers::StringView) override {
+            Debug{} << "Adding 2D skin";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const SkinData3D&, Containers::StringView) override {
+            Debug{} << "Adding 3D skin";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            Debug{} << "Adding mesh";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
+            Debug{} << "Adding mesh levels";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt, const MaterialData&, Containers::StringView) override {
+            Debug{} << "Adding material";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const TextureData&, Containers::StringView) override {
+            Debug{} << "Adding texture";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt, const ImageData1D&, Containers::StringView) override {
+            Debug{} << "Adding 1D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
+            Debug{} << "Adding 1D image levels";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt, const ImageData2D&, Containers::StringView) override {
+            Debug{} << "Adding 2D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
+            Debug{} << "Adding 2D image levels";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const ImageData3D&, Containers::StringView) override {
+            Debug{} << "Adding 3D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
+            Debug{} << "Adding 3D image levels";
+            return true;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addImporterContents(importer, data.contents));
+    /* No error message, the importer is expected to print that on its own */
+    CORRADE_COMPARE(out.str(), Utility::format(
+        "Adding {0}\n"
+        "Adding {0}\n", data.name));
+}
+
+void AbstractSceneConverterTest::addImporterContentsConversionFail() {
+    auto&& data = AddImporterContentsFailData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override {
+            return 4;
+        }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
+        }
+
+        UnsignedInt doAnimationCount() const override {
+            return 4;
+        }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
+            return AnimationData{nullptr, {}};
+        }
+
+        UnsignedInt doLightCount() const override {
+            return 4;
+        }
+        Containers::Optional<LightData> doLight(UnsignedInt) override {
+            return LightData{LightData::Type::Point, {}, {}};
+        }
+
+        UnsignedInt doCameraCount() const override {
+            return 4;
+        }
+        Containers::Optional<CameraData> doCamera(UnsignedInt) override {
+            return CameraData{CameraType::Orthographic2D, {}, 0.0f, 0.0f};
+        }
+
+        UnsignedInt doSkin2DCount() const override {
+            return 4;
+        }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
+            return SkinData2D{{}, {}};
+        }
+
+        UnsignedInt doSkin3DCount() const override {
+            return 4;
+        }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
+            return SkinData3D{{}, {}};
+        }
+
+        UnsignedInt doMeshCount() const override {
+            return 4;
+        }
+        UnsignedInt doMeshLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
+            return MeshData{{}, 0};
+        }
+
+        UnsignedInt doMaterialCount() const override {
+            return 4;
+        }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            return MaterialData{{}, {}};
+        }
+
+        UnsignedInt doTextureCount() const override {
+            return 4;
+        }
+        Containers::Optional<TextureData> doTexture(UnsignedInt) override {
+            return TextureData{TextureType::Texture1D, SamplerFilter::Nearest, SamplerFilter::Nearest, SamplerMipmap::Nearest, SamplerWrapping::ClampToEdge, 0};
+        }
+
+        UnsignedInt doImage1DCount() const override {
+            return 4;
+        }
+        UnsignedInt doImage1DLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
+            return ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage2DCount() const override {
+            return 4;
+        }
+        UnsignedInt doImage2DLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage3DCount() const override {
+            return 4;
+        }
+        UnsignedInt doImage3DLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
+            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, "yes"};
+        }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return
+                SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddScenes|
+                SceneConverterFeature::AddAnimations|
+                SceneConverterFeature::AddLights|
+                SceneConverterFeature::AddCameras|
+                SceneConverterFeature::AddSkins2D|
+                SceneConverterFeature::AddSkins3D|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::AddMaterials|
+                SceneConverterFeature::AddTextures|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D|
+                SceneConverterFeature::MeshLevels|
+                SceneConverterFeature::ImageLevels;
+        }
+
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt id, const SceneData&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding scene";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const AnimationData&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding animation";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const LightData&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding light";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const CameraData&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding camera";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const SkinData2D&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 2D skin";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const SkinData3D&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 3D skin";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const MeshData&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding mesh";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData>, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding mesh levels";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const MaterialData&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding material";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const TextureData&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding texture";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const ImageData1D&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 1D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 1D image levels";
+            return true;
+        }
+
+        bool doAdd(UnsignedInt id, const ImageData2D&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 2D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 2D image levels";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, const ImageData3D&, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 3D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
+            if(id == 2) return false;
+
+            Debug{} << "Adding 3D image levels";
+            return true;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addImporterContents(importer, data.contents));
+    /* No error message, the importer is expected to print that on its own */
+    CORRADE_COMPARE(out.str(), Utility::format(
+        "Adding {0}\n"
+        "Adding {0}\n", data.name));
+}
+
+void AbstractSceneConverterTest::addImporterContentsNotConverting() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addImporterContents(importer, {}));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addImporterContents(): no conversion in progress\n");
+}
+
+void AbstractSceneConverterTest::addImporterContentsNotOpened() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData;
+        }
+        bool doBeginData() override { return true; }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addImporterContents(importer));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addImporterContents(): the importer is not opened\n");
+}
+
+void AbstractSceneConverterTest::addImporterContentsNotSupported() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doCameraCount() const override { return 2; }
+        UnsignedInt doLightCount() const override { return 4; }
+        UnsignedInt doMeshCount() const override { return 3; }
+        UnsignedInt doMaterialCount() const override { return 3; }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddCameras|
+                SceneConverterFeature::AddMaterials;
+        }
+        bool doBeginData() override { return true; }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Scenes (which are not present in the input) should not be part of the
+       error, materials are in the input and supported, meshes and lights are
+       in the input but not supported so these should be printed */
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Scenes|SceneContent::Cameras|SceneContent::Meshes|SceneContent::Lights));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addImporterContents(): unsupported contents Lights|Meshes\n");
+}
+
+void AbstractSceneConverterTest::addImporterContentsNotSupportedLevels() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 4; }
+        UnsignedInt doMeshLevelCount(UnsignedInt id) override {
+            return id == 2 ? 5 : 1;
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
+            return MeshData{{}, 0};
+        }
+
+        UnsignedInt doImage1DCount() const override { return 4; }
+        UnsignedInt doImage1DLevelCount(UnsignedInt id) override {
+            return id == 2 ? 2 : 1;
+        }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
+            return ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage2DCount() const override { return 4; }
+        UnsignedInt doImage2DLevelCount(UnsignedInt id) override {
+            return id == 2 ? 3 : 1;
+        }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage3DCount() const override { return 4; }
+        UnsignedInt doImage3DLevelCount(UnsignedInt id) override {
+            return id == 2 ? 4 : 1;
+        }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
+            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, "yes"};
+        }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D;
+        }
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            Debug{} << "Adding mesh";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const ImageData1D&, Containers::StringView) override {
+            Debug{} << "Adding 1D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const ImageData2D&, Containers::StringView) override {
+            Debug{} << "Adding 2D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, const ImageData3D&, Containers::StringView) override {
+            Debug{} << "Adding 3D image";
+            return true;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Meshes|SceneContent::MeshLevels));
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images1D|SceneContent::ImageLevels));
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images2D|SceneContent::ImageLevels));
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images3D|SceneContent::ImageLevels));
+    CORRADE_COMPARE(out.str(),
+        "Adding mesh\n"
+        "Adding mesh\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): mesh 2 contains 5 levels but the converter doesn't support Trade::SceneConverterFeature::MeshLevels\n"
+        "Adding 1D image\n"
+        "Adding 1D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 1D image 2 contains 2 levels but the converter doesn't support Trade::SceneConverterFeature::ImageLevels\n"
+        "Adding 2D image\n"
+        "Adding 2D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 2D image 2 contains 3 levels but the converter doesn't support Trade::SceneConverterFeature::ImageLevels\n"
+        "Adding 3D image\n"
+        "Adding 3D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 3D image 2 contains 4 levels but the converter doesn't support Trade::SceneConverterFeature::ImageLevels\n");
+}
+
+void AbstractSceneConverterTest::addImporterContentsNotSupportedUncompressedImage() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage1DCount() const override { return 4; }
+        UnsignedInt doImage1DLevelCount(UnsignedInt) override { return 3; }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
+            return id == 2 && level == 1 ?
+                ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, "yes"} :
+                ImageData1D{CompressedPixelFormat::Bc1RGBUnorm, 1, DataFlags{}, "hello!!"};
+        }
+
+        UnsignedInt doImage2DCount() const override { return 5; }
+        UnsignedInt doImage2DLevelCount(UnsignedInt) override { return 4; }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
+            return id == 3 && level == 2 ?
+                ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, "yes"} :
+                ImageData2D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1}, DataFlags{}, "hello!!"};
+        }
+
+        UnsignedInt doImage3DCount() const override { return 6; }
+        UnsignedInt doImage3DLevelCount(UnsignedInt) override { return 5; }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
+            return id == 4 && level == 3 ?
+                ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, "yes"} :
+                ImageData3D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1, 1}, DataFlags{}, "hello!!"};
+        }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddCompressedImages1D|
+                SceneConverterFeature::AddCompressedImages2D|
+                SceneConverterFeature::AddCompressedImages3D|
+                SceneConverterFeature::ImageLevels;
+        }
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData1D>, Containers::StringView) override {
+            Debug{} << "Added 1D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData2D>, Containers::StringView) override {
+            Debug{} << "Added 2D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData3D>, Containers::StringView) override {
+            Debug{} << "Added 3D image";
+            return true;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images1D|SceneContent::ImageLevels));
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images2D|SceneContent::ImageLevels));
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images3D|SceneContent::ImageLevels));
+    CORRADE_COMPARE(out.str(),
+        "Added 1D image\n"
+        "Added 1D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 1D image 2 level 1 is uncompressed but the converter doesn't support Trade::SceneConverterFeature::AddImages1D\n"
+        "Added 2D image\n"
+        "Added 2D image\n"
+        "Added 2D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 2D image 3 level 2 is uncompressed but the converter doesn't support Trade::SceneConverterFeature::AddImages2D\n"
+        "Added 3D image\n"
+        "Added 3D image\n"
+        "Added 3D image\n"
+        "Added 3D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 3D image 4 level 3 is uncompressed but the converter doesn't support Trade::SceneConverterFeature::AddImages3D\n");
+}
+
+void AbstractSceneConverterTest::addImporterContentsNotSupportedCompressedImage() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage1DCount() const override { return 4; }
+        UnsignedInt doImage1DLevelCount(UnsignedInt) override { return 3; }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
+            return id == 2 && level == 1 ?
+                ImageData1D{CompressedPixelFormat::Bc1RGBUnorm, 1, DataFlags{}, "hello!!"} :
+                ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage2DCount() const override { return 5; }
+        UnsignedInt doImage2DLevelCount(UnsignedInt) override { return 4; }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
+            return id == 3 && level == 2 ?
+                ImageData2D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1}, DataFlags{}, "hello!!"} :
+                ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage3DCount() const override { return 6; }
+        UnsignedInt doImage3DLevelCount(UnsignedInt) override { return 5; }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
+            return id == 4 && level == 3 ?
+                ImageData3D{CompressedPixelFormat::Bc1RGBUnorm, {1, 1, 1}, DataFlags{}, "hello!!"} :
+                ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, "yes"};
+        }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D|
+                SceneConverterFeature::ImageLevels;
+        }
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData1D>, Containers::StringView) override {
+            Debug{} << "Added 1D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData2D>, Containers::StringView) override {
+            Debug{} << "Added 2D image";
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData3D>, Containers::StringView) override {
+            Debug{} << "Added 3D image";
+            return true;
+        }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images1D|SceneContent::ImageLevels));
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images2D|SceneContent::ImageLevels));
+    CORRADE_VERIFY(!converter.addImporterContents(importer, SceneContent::Images3D|SceneContent::ImageLevels));
+    CORRADE_COMPARE(out.str(),
+        "Added 1D image\n"
+        "Added 1D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 1D image 2 level 1 is compressed but the converter doesn't support Trade::SceneConverterFeature::AddCompressedImages1D\n"
+        "Added 2D image\n"
+        "Added 2D image\n"
+        "Added 2D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 2D image 3 level 2 is compressed but the converter doesn't support Trade::SceneConverterFeature::AddCompressedImages2D\n"
+        "Added 3D image\n"
+        "Added 3D image\n"
+        "Added 3D image\n"
+        "Added 3D image\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): 3D image 4 level 3 is compressed but the converter doesn't support Trade::SceneConverterFeature::AddCompressedImages3D\n");
+}
+
+void AbstractSceneConverterTest::addSupportedImporterContents() {
+    auto&& data = AddSupportedImporterContentsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSceneCount() const override { return 2; }
+        Containers::Optional<SceneData> doScene(UnsignedInt) override {
+            return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
+        }
+
+        UnsignedInt doAnimationCount() const override { return 3; }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
+            return AnimationData{nullptr, {}};
+        }
+
+        UnsignedInt doLightCount() const override { return 4; }
+        Containers::Optional<LightData> doLight(UnsignedInt) override {
+            return LightData{LightData::Type::Point, {}, {}};
+        }
+
+        UnsignedInt doCameraCount() const override { return 5; }
+        Containers::Optional<CameraData> doCamera(UnsignedInt) override {
+            return CameraData{CameraType::Orthographic2D, {}, 0.0f, 0.0f};
+        }
+
+        UnsignedInt doSkin2DCount() const override { return 6; }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
+            return SkinData2D{{}, {}};
+        }
+
+        UnsignedInt doSkin3DCount() const override { return 7; }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
+            return SkinData3D{{}, {}};
+        }
+
+        UnsignedInt doMeshCount() const override { return 8; }
+        UnsignedInt doMeshLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
+            return MeshData{{}, 0};
+        }
+
+        UnsignedInt doMaterialCount() const override { return 9; }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            return MaterialData{{}, {}};
+        }
+
+        UnsignedInt doTextureCount() const override { return 10; }
+        Containers::Optional<TextureData> doTexture(UnsignedInt) override {
+            return TextureData{TextureType::Texture1D, SamplerFilter::Nearest, SamplerFilter::Nearest, SamplerMipmap::Nearest, SamplerWrapping::ClampToEdge, 0};
+        }
+
+        UnsignedInt doImage1DCount() const override { return 11; }
+        UnsignedInt doImage1DLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
+            return ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage2DCount() const override { return 12; }
+        UnsignedInt doImage2DLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage3DCount() const override { return 13; }
+        UnsignedInt doImage3DLevelCount(UnsignedInt) override {
+            return 5;
+        }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
+            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, "yes"};
+        }
+    } importer;
+
+    struct Converter: AbstractSceneConverter {
+        explicit Converter(SceneConverterFeatures except): except{except} {}
+
+        SceneConverterFeatures doFeatures() const override {
+            return ~except &
+               (SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddScenes|
+                SceneConverterFeature::AddAnimations|
+                SceneConverterFeature::AddLights|
+                SceneConverterFeature::AddCameras|
+                SceneConverterFeature::AddSkins2D|
+                SceneConverterFeature::AddSkins3D|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::AddMaterials|
+                SceneConverterFeature::AddTextures|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D|
+                SceneConverterFeature::MeshLevels|
+                SceneConverterFeature::ImageLevels);
+        }
+
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, const SceneData&, Containers::StringView) override {
+            return true;
+        }
+
+        bool doAdd(UnsignedInt, const AnimationData&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const LightData&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const CameraData&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const SkinData2D&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const SkinData3D&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const MaterialData&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const TextureData&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
+            return true;
+        }
+
+        SceneConverterFeatures except;
+    } converter{data.exceptFeatures};
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter.addSupportedImporterContents(importer, ~data.wantExceptContents));
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring {} not supported by the converter\n", data.except));
+
+    /* All data except the one unsupported should be added */
+    const SceneContents expectedConvertedExceptContents = data.exceptContents| data.wantExceptContents;
+    CORRADE_COMPARE(converter.sceneCount(),
+        expectedConvertedExceptContents & SceneContent::Scenes ? 0 : importer.sceneCount());
+    CORRADE_COMPARE(converter.animationCount(),
+        expectedConvertedExceptContents & SceneContent::Animations ? 0 : importer.animationCount());
+    CORRADE_COMPARE(converter.lightCount(),
+        expectedConvertedExceptContents & SceneContent::Lights ? 0 : importer.lightCount());
+    CORRADE_COMPARE(converter.cameraCount(),
+        expectedConvertedExceptContents & SceneContent::Cameras ? 0 : importer.cameraCount());
+    CORRADE_COMPARE(converter.skin2DCount(),
+        expectedConvertedExceptContents & SceneContent::Skins2D ? 0 : importer.skin2DCount());
+    CORRADE_COMPARE(converter.skin3DCount(),
+        expectedConvertedExceptContents & SceneContent::Skins3D ? 0 : importer.skin3DCount());
+    CORRADE_COMPARE(converter.meshCount(),
+        expectedConvertedExceptContents & SceneContent::Meshes ? 0 : importer.meshCount());
+    CORRADE_COMPARE(converter.materialCount(),
+        expectedConvertedExceptContents & SceneContent::Materials ? 0 : importer.materialCount());
+    CORRADE_COMPARE(converter.textureCount(),
+        expectedConvertedExceptContents & SceneContent::Textures ? 0 : importer.textureCount());
+    CORRADE_COMPARE(converter.image1DCount(),
+        expectedConvertedExceptContents & SceneContent::Images1D ? 0 : importer.image1DCount());
+    CORRADE_COMPARE(converter.image2DCount(),
+        expectedConvertedExceptContents & SceneContent::Images2D ? 0 : importer.image2DCount());
+    CORRADE_COMPARE(converter.image3DCount(),
+        expectedConvertedExceptContents & SceneContent::Images3D ? 0 : importer.image3DCount());
+}
+
+void AbstractSceneConverterTest::addSupportedImporterContentsLevels() {
+    /* Similar to addImporterContentsNotSupportedLevels(), but not failing */
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 4; }
+        UnsignedInt doMeshLevelCount(UnsignedInt id) override {
+            return id == 2 ? 5 : 1;
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
+            return MeshData{{}, 0};
+        }
+
+        UnsignedInt doImage1DCount() const override { return 5; }
+        UnsignedInt doImage1DLevelCount(UnsignedInt id) override {
+            return id == 3 ? 6 : 1;
+        }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
+            return ImageData1D{PixelFormat::RGBA8Unorm, 1, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage2DCount() const override { return 6; }
+        UnsignedInt doImage2DLevelCount(UnsignedInt id) override {
+            return id == 4 ? 7 : 1;
+        }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, {1, 1}, DataFlags{}, "yes"};
+        }
+
+        UnsignedInt doImage3DCount() const override { return 7; }
+        UnsignedInt doImage3DLevelCount(UnsignedInt id) override {
+            return id == 5 ? 8 : 1;
+        }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
+            return ImageData3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, DataFlags{}, "yes"};
+        }
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return
+                SceneConverterFeature::ConvertMultipleToData|
+                SceneConverterFeature::AddMeshes|
+                SceneConverterFeature::AddImages1D|
+                SceneConverterFeature::AddImages2D|
+                SceneConverterFeature::AddImages3D;
+        }
+
+        bool doBeginData() override { return true; }
+
+        bool doAdd(UnsignedInt, const MeshData&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const ImageData1D&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const ImageData2D&, Containers::StringView) override {
+            return true;
+        }
+        bool doAdd(UnsignedInt, const ImageData3D&, Containers::StringView) override {
+            return true;
+        }
+
+        SceneConverterFeatures except;
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter.addSupportedImporterContents(importer));
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra 4 levels of mesh 2 not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra 5 levels of 1D image 3 not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra 6 levels of 2D image 4 not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra 7 levels of 3D image 5 not supported by the converter\n");
+
+    /* All data should be added, just not the extra levels */
+    CORRADE_COMPARE(converter.meshCount(), importer.meshCount());
+    CORRADE_COMPARE(converter.image1DCount(), importer.image1DCount());
+    CORRADE_COMPARE(converter.image2DCount(), importer.image2DCount());
+    CORRADE_COMPARE(converter.image3DCount(), importer.image3DCount());
+}
+
 void AbstractSceneConverterTest::debugFeature() {
     std::ostringstream out;
 
@@ -5428,6 +7361,34 @@ void AbstractSceneConverterTest::debugFlags() {
 
     Debug{&out} << (SceneConverterFlag::Verbose|SceneConverterFlag(0xf0)) << SceneConverterFlags{};
     CORRADE_COMPARE(out.str(), "Trade::SceneConverterFlag::Verbose|Trade::SceneConverterFlag(0xf0) Trade::SceneConverterFlags{}\n");
+}
+
+void AbstractSceneConverterTest::debugContent() {
+    std::ostringstream out;
+
+    Debug{&out} << SceneContent::Skins3D << SceneContent(0xdeaddead);
+    CORRADE_COMPARE(out.str(), "Trade::SceneContent::Skins3D Trade::SceneContent(0xdeaddead)\n");
+}
+
+void AbstractSceneConverterTest::debugContentPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << SceneContent::Animations << Debug::packed << SceneContent(0xdeaddead) << SceneContent::Cameras;
+    CORRADE_COMPARE(out.str(), "Animations 0xdeaddead Trade::SceneContent::Cameras\n");
+}
+
+void AbstractSceneConverterTest::debugContents() {
+    std::ostringstream out;
+
+    Debug{&out} << (SceneContent::Animations|SceneContent::MeshLevels) << SceneConverterFeatures{};
+    CORRADE_COMPARE(out.str(), "Trade::SceneContent::Animations|Trade::SceneContent::MeshLevels Trade::SceneConverterFeatures{}\n");
+}
+
+void AbstractSceneConverterTest::debugContentsPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (SceneContent::Animations|SceneContent::MeshLevels) << Debug::packed << SceneConverterFeatures{} << SceneContent::Lights;
+    CORRADE_COMPARE(out.str(), "Animations|MeshLevels {} Trade::SceneContent::Lights\n");
 }
 
 }}}}

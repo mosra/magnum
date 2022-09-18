@@ -322,6 +322,213 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlag value);
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlags value);
 
+/**
+@brief Scene content
+@m_since_latest
+
+Content to be taken from an @ref AbstractImporter and passed to an
+@ref AbstractSceneConverter in @ref AbstractSceneConverter::addImporterContents()
+and @relativeref{AbstractSceneConverter,addSupportedImporterContents()}.
+@see @ref SceneContents, @ref sceneContentsFor(AbstractImporter&),
+    @ref sceneContentsFor(AbstractSceneConverter&)
+*/
+enum class SceneContent: UnsignedInt {
+    /** @todo needs to be taken by addScene(), addMaterial() and addTexture()
+        as well */
+
+    /**
+     * Scenes. Passes @ref SceneData from @ref AbstractImporter::scene() to
+     * @ref AbstractSceneConverter::add(const SceneData&, Containers::StringView); @ref AbstractImporter::defaultScene() to
+     * @ref AbstractSceneConverter::setDefaultScene(); and for all custom
+     * fields, @ref AbstractImporter::sceneFieldName() to
+     * @ref AbstractSceneConverter::setSceneFieldName().
+     */
+    Scenes = 1 << 0,
+
+    /**
+     * Animations. Passes @ref AnimationData from @ref AbstractImporter::animation()
+     * to @ref AbstractSceneConverter::add(const AnimationData&, Containers::StringView)
+     */
+    Animations = 1 << 1,
+
+    /**
+     * Lights. Passes @ref LightData from @ref AbstractImporter::light() to
+     * @ref AbstractSceneConverter::add(const LightData&, Containers::StringView).
+     */
+    Lights = 1 << 2,
+
+    /**
+     * Cameras. Passes @ref SceneData from @ref AbstractImporter::camera() to
+     * @ref AbstractSceneConverter::add(const CameraData&, Containers::StringView).
+     */
+    Cameras = 1 << 3,
+
+    /**
+     * 2D skins. Passes @ref SkinData2D from @ref AbstractImporter::skin2D() to
+     * @ref AbstractSceneConverter::add(const SkinData2D&, Containers::StringView).
+     */
+    Skins2D = 1 << 4,
+
+    /**
+     * 3D skins. Passes @ref SkinData3D from @ref AbstractImporter::skin2D() to
+     * @ref AbstractSceneConverter::add(const SkinData3D&, Containers::StringView).
+     */
+    Skins3D = 1 << 5,
+
+    /**
+     * Meshes. Passes @ref MeshData from @ref AbstractImporter::mesh(),
+     * to @ref AbstractSceneConverter::add(const MeshData&, Containers::StringView); and for all custom attributes,
+     * @ref AbstractImporter::meshAttributeName() to
+     * @ref AbstractSceneConverter::setMeshAttributeName().
+     * @see @ref SceneContent::MeshLevels
+     */
+    Meshes = 1 << 6,
+
+    /**
+     * Materials. Passes @ref MaterialData from @ref AbstractImporter::material()
+     * to @ref AbstractSceneConverter::add(const MaterialData&, Containers::StringView).
+     */
+    Materials = 1 << 7,
+
+    /**
+     * Textures. Passes @ref TextureData from @ref AbstractImporter::texture()
+     * to @ref AbstractSceneConverter::add(const TextureData&, Containers::StringView).
+     */
+    Textures = 1 << 8,
+
+    /**
+     * 1D images. Passes @ref ImageData1D from @ref AbstractImporter::image1D()
+     * to @ref AbstractSceneConverter::add(const ImageData1D&, Containers::StringView). If the image is compressed and only
+     * @ref SceneConverterFeature::AddImages1D is supported or the image is
+     * uncompressed and only @ref SceneConverterFeature::AddCompressedImages1D
+     * is supported, results in an error.
+     * @see @ref ImageData::isCompressed(), @ref SceneContent::ImageLevels
+     */
+    Images1D = 1 << 9,
+
+    /**
+     * 2D images. Passes @ref ImageData2D from @ref AbstractImporter::image2D()
+     * to @ref AbstractSceneConverter::add(const ImageData2D&, Containers::StringView). If the image is compressed and only
+     * @ref SceneConverterFeature::AddImages2D is supported or the image is
+     * uncompressed and only @ref SceneConverterFeature::AddCompressedImages2D
+     * is supported, results in an error.
+     * @see @ref ImageData::isCompressed(), @ref SceneContent::ImageLevels
+     */
+    Images2D = 1 << 10,
+
+    /**
+     * 3D images. Passes @ref ImageData3D from @ref AbstractImporter::image3D()
+     * to @ref AbstractSceneConverter::add(const ImageData3D&, Containers::StringView). If the image is compressed and only
+     * @ref SceneConverterFeature::AddImages3D is supported or the image is
+     * uncompressed and only @ref SceneConverterFeature::AddCompressedImages3D
+     * is supported, results in an error.
+     * @see @ref ImageData::isCompressed(), @ref SceneContent::ImageLevels
+     */
+    Images3D = 1 << 11,
+
+    /**
+     * Multiple mesh levels. For every mesh gathers @ref MeshData from all
+     * @ref AbstractImporter::meshLevelCount() and passes them to
+     * @ref AbstractSceneConverter::add(Containers::Iterable<const MeshData>, Containers::StringView)
+     * instead of passing just the first level to
+     * @ref AbstractSceneConverter::add(const MeshData&, Containers::StringView).
+     * @see @ref SceneContent::Meshes
+     */
+    MeshLevels = 1 << 12,
+
+    /**
+     * Multiple image levels. For every image gathers @ref ImageData1D /
+     * @ref ImageData2D / @ref ImageData3D from all
+     * @ref AbstractImporter::image1DLevelCount() /
+     * @relativeref{AbstractImporter,image2DLevelCount()} /
+     * @relativeref{AbstractImporter,image3DLevelCount()} and passes them to
+     * @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData1D>, Containers::StringView) /
+     * @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData2D>, Containers::StringView) "add(Containers::Iterable<const ImageData2D>, Containers::StringView)" /
+     * @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData3D>, Containers::StringView) "add(Containers::Iterable<const ImageData3D>, Containers::StringView)"
+     * instead of just passing the first level to
+     *
+     * @ref AbstractSceneConverter::add(const ImageData1D&, Containers::StringView) /
+     * @ref AbstractSceneConverter::add(const ImageData2D&, Containers::StringView) "add(const ImageData2D&, Containers::StringView)" /
+     * @ref AbstractSceneConverter::add(const ImageData2D&, Containers::StringView) "add(const ImageData2D&, Containers::StringView)".
+     * @see @ref SceneContent::Images1D, @relativeref{SceneContent,Images2D},
+     *      @relativeref{SceneContent,Images3D},
+     */
+    ImageLevels = 1 << 13,
+
+    /**
+     * Data names. For every supported data queries also
+     * @ref AbstractImporter::sceneName(),
+     * @relativeref{AbstractImporter,objectName()},
+     * @relativeref{AbstractImporter,animationName()},
+     * @relativeref{AbstractImporter,lightName()},
+     * @relativeref{AbstractImporter,cameraName()},
+     * @relativeref{AbstractImporter,skin2DName()},
+     * @relativeref{AbstractImporter,skin3DName()},
+     * @relativeref{AbstractImporter,meshName()},
+     * @relativeref{AbstractImporter,materialName()},
+     * @relativeref{AbstractImporter,textureName()},
+     * @relativeref{AbstractImporter,image1DName()},
+     * @relativeref{AbstractImporter,image2DName()} or
+     * @relativeref{AbstractImporter,image3DName()} and passes them to the
+     * converter. @ref AbstractImporter::sceneFieldName() and
+     * @relativeref{AbstractImporter,meshAttributeName()} are however passed
+     * always to avoid information loss.
+     */
+    Names = 1 << 14
+};
+
+/**
+@brief Scene contents
+@m_since_latest
+
+Content to be taken from an @ref AbstractImporter and passed to an
+@ref AbstractSceneConverter in @ref AbstractSceneConverter::addImporterContents()
+and @relativeref{AbstractSceneConverter,addSupportedImporterContents()}.
+@see @ref sceneContentsFor(AbstractImporter&),
+    @ref sceneContentsFor(AbstractSceneConverter&)
+*/
+typedef Containers::EnumSet<SceneContent> SceneContents;
+
+CORRADE_ENUMSET_OPERATORS(SceneContents)
+
+/**
+@debugoperatorenum{SceneContent}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneContent value);
+
+/**
+@debugoperatorenum{SceneContents}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneContents value);
+
+/**
+@brief Scene contents for an importer
+@m_since_latest
+
+Returns contents exposed by given importer, i.e. all for which the importer
+returns a non-zero count. Expects that the importer is opened.
+@ref SceneContent::Names is present always. As querying level count usually
+involves parsing additional files and thus may be time- and memory-consuming
+operation, @ref SceneContent::MeshLevels and
+@relativeref{SceneContent,ImageLevels} is never present.
+@see @ref sceneContentsFor(AbstractSceneConverter&),
+    @ref AbstractImporter::isOpened()
+*/
+MAGNUM_TRADE_EXPORT SceneContents sceneContentsFor(const AbstractImporter& importer);
+
+/**
+@brief Scene contents supported by a converter
+@m_since_latest
+
+Returns contents supported by given converter, as exposed via
+@ref AbstractSceneConverter::features(). @ref SceneContent::Names is present
+always.
+@see @ref sceneContentsFor(AbstractImporter&)
+*/
+MAGNUM_TRADE_EXPORT SceneContents sceneContentsFor(const AbstractSceneConverter& converter);
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 namespace Implementation {
     /* Could be a concrete type as it's always only char, but that would mean
@@ -1738,6 +1945,73 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView3D> imageLevels);
         #endif
 
+        /**
+         * @brief Add importer contents
+         * @m_since_latest
+         *
+         * Adds all @p contents from the @p importer as described in particular
+         * @ref SceneContent value documentation. If any data causes a
+         * conversion error, the function immediately returns @cpp false @ce,
+         * leaving the conversion in an in-progress state, same as any other
+         * `add*()` function.
+         *
+         * Expects that a conversion is currently in progress and @p importer
+         * is opened. The union of @p contents and
+         * @ref sceneContentsFor(AbstractImporter&) for @p importer is expected
+         * to be a subset of @ref sceneContentsFor(AbstractSceneConverter&) for
+         * this converter --- i.e., there shouldn't be any data that the
+         * converter doesn't support. Any @p contents that are not in
+         * @ref sceneContentsFor(AbstractImporter&) for @p importer are
+         * ignored. If you want to add just contents supported by the coverter
+         * and ignore the rest with a warning, use
+         * @ref addSupportedImporterContents() instead.
+         *
+         * Additionally, if @p contents contains @ref SceneContent::MeshLevels
+         * / @relativeref{SceneContent,ImageLevels}, the importer has
+         * multi-level meshes / images, but @ref SceneConverterFeature::MeshLevels
+         * / @relativeref{SceneConverterFeature,ImageLevels} is not supported,
+         * the function prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp false @ce. Similarly, if @p contents contains
+         * @ref SceneContent::Images1D /
+         * @relativeref{SceneContent,Images2D} /
+         * @relativeref{SceneContent,Images3D}, the importer has compressed
+         * images, but @ref SceneConverterFeature::AddCompressedImages1D /
+         * @relativeref{SceneConverterFeature,AddCompressedImages2D} /
+         * @relativeref{SceneConverterFeature,AddCompressedImages3D} isn't
+         * supported (or, conversely, the importer has uncompressed images but
+         * @ref SceneConverterFeature::AddImages1D /
+         * @relativeref{SceneConverterFeature,AddImages2D} /
+         * @relativeref{SceneConverterFeature,AddImages3D} isn't supported),
+         * the function prints a message to @relativeref{Magnum,Error} and
+         * returns @cpp false @ce. These cause a runtime error instead of an
+         * assertion because checking the prerequisites upfront could be
+         * prohibitively expensive due to having to load and parse image and
+         * other data more than once.
+         * @see @ref isConverting(), @ref AbstractImporter::isOpened()
+         */
+        bool addImporterContents(AbstractImporter& importer, SceneContents contents = ~SceneContents{});
+
+        /**
+         * @brief Add supported importer contents
+         * @m_since_latest
+         *
+         * Compared to @ref addImporterContents(), data not supported by the
+         * converter (i.e., @p contents that are in
+         * @ref sceneContentsFor(AbstractImporter&) for @p importer but are not
+         * in @ref sceneContentsFor(AbstractSceneConverter&) for the
+         * converter) are ignored with a message printed to
+         * @relativeref{Magnum,Warning}.
+         *
+         * In case of @ref SceneContent::MeshLevels /
+         * @relativeref{SceneContent,ImageLevels}, if the converter doesn't
+         * support @ref SceneConverterFeature::MeshLevels /
+         * @relativeref{SceneConverterFeature,ImageLevels}, only the base level
+         * is added. The only case that still causes a failure is if the
+         * importer contains compressed images but converter supports only
+         * uncompressed and vice versa, same as with @ref addImporterContents().
+         */
+        bool addSupportedImporterContents(AbstractImporter& importer, SceneContents contents = ~SceneContents{});
+
     protected:
         /**
          * @brief Implementation for @ref convertToFile(const MeshData&, Containers::StringView)
@@ -2107,6 +2381,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref ImageData3D instances.
          */
         virtual bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name);
+
+        /* Called from addImporterContents() and addSupportedImporterContents() */
+        MAGNUM_TRADE_LOCAL bool addImporterContentsInternal(AbstractImporter& importer, SceneContents contents, bool noLevelsIfUnsupported);
 
         SceneConverterFlags _flags;
         Containers::Pointer<State> _state;

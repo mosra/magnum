@@ -39,9 +39,15 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ArrayAllocator.h"
+#include "Magnum/Trade/AnimationData.h"
+#include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/SkinData.h"
+#include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* needed by deprecated convertToFile() that takes a std::string */
@@ -61,6 +67,79 @@ template class MAGNUM_TRADE_EXPORT Manager<Magnum::Trade::AbstractSceneConverter
 namespace Magnum { namespace Trade {
 
 using namespace Containers::Literals;
+
+SceneContents sceneContentsFor(const AbstractImporter& importer) {
+    CORRADE_ASSERT(importer.isOpened(),
+        "Trade::sceneContentsFor(): the importer is not opened", {});
+
+    SceneContents contents = SceneContent::Names;
+    if(importer.sceneCount())
+        contents |= SceneContent::Scenes;
+    if(importer.animationCount())
+        contents |= SceneContent::Animations;
+    if(importer.lightCount())
+        contents |= SceneContent::Lights;
+    if(importer.cameraCount())
+        contents |= SceneContent::Cameras;
+    if(importer.skin2DCount())
+        contents |= SceneContent::Skins2D;
+    if(importer.skin3DCount())
+        contents |= SceneContent::Skins3D;
+    if(importer.meshCount())
+        contents |= SceneContent::Meshes;
+    if(importer.materialCount())
+        contents |= SceneContent::Materials;
+    if(importer.textureCount())
+        contents |= SceneContent::Textures;
+    if(importer.image1DCount())
+        contents |= SceneContent::Images1D;
+    if(importer.image2DCount())
+        contents |= SceneContent::Images2D;
+    if(importer.image3DCount())
+        contents |= SceneContent::Images3D;
+    return contents;
+}
+
+SceneContents sceneContentsFor(const AbstractSceneConverter& converter) {
+    const SceneConverterFeatures features = converter.features();
+    SceneContents contents = SceneContent::Names;
+    if(features & SceneConverterFeature::AddScenes)
+        contents |= SceneContent::Scenes;
+    if(features & SceneConverterFeature::AddAnimations)
+        contents |= SceneContent::Animations;
+    if(features & SceneConverterFeature::AddLights)
+        contents |= SceneContent::Lights;
+    if(features & SceneConverterFeature::AddCameras)
+        contents |= SceneContent::Cameras;
+    if(features & SceneConverterFeature::AddSkins2D)
+        contents |= SceneContent::Skins2D;
+    if(features & SceneConverterFeature::AddSkins3D)
+        contents |= SceneContent::Skins3D;
+    if(features & (SceneConverterFeature::AddMeshes|
+                   SceneConverterFeature::ConvertMesh|
+                   SceneConverterFeature::ConvertMeshToFile|
+                   SceneConverterFeature::ConvertMeshToData))
+        contents |= SceneContent::Meshes;
+    if(features & SceneConverterFeature::AddMaterials)
+        contents |= SceneContent::Materials;
+    if(features & SceneConverterFeature::AddTextures)
+        contents |= SceneContent::Textures;
+    if(features & (SceneConverterFeature::AddImages1D|
+                   SceneConverterFeature::AddCompressedImages1D))
+        contents |= SceneContent::Images1D;
+    if(features & (SceneConverterFeature::AddImages2D|
+                   SceneConverterFeature::AddCompressedImages2D))
+        contents |= SceneContent::Images2D;
+    if(features & (SceneConverterFeature::AddImages3D|
+                   SceneConverterFeature::AddCompressedImages3D))
+        contents |= SceneContent::Images3D;
+    if(features & SceneConverterFeature::MeshLevels)
+        contents |= SceneContent::MeshLevels;
+    if(features & SceneConverterFeature::ImageLevels)
+        contents |= SceneContent::ImageLevels;
+
+    return contents;
+}
 
 /* Gets allocated in begin*() and deallocated in end*() or abort(). The direct
    conversion functions such as convert(const MeshData&) don't directly need
@@ -1186,6 +1265,371 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(imageLevels, {});
 }
 
+bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& importer, const SceneContents contents, const bool noLevelsIfUnsupported) {
+    CORRADE_ASSERT(isConverting(),
+        "Trade::AbstractSceneConverter::addImporterContents(): no conversion in progress", {});
+    CORRADE_ASSERT(importer.isOpened(),
+        "Trade::AbstractSceneConverter::addImporterContents(): the importer is not opened", {});
+    const SceneContents contentsPresentExceptLevels = contents & sceneContentsFor(importer);
+    const SceneContents contentsSupported = sceneContentsFor(*this);
+    CORRADE_ASSERT(!(contentsPresentExceptLevels & ~contentsSupported),
+        "Trade::AbstractSceneConverter::addImporterContents(): unsupported contents" << Debug::packed << (contentsPresentExceptLevels & ~contentsSupported), {});
+
+    /* These are in dependency order -- i.e., images between textures that
+       reference them or scenes before animations that reference them. The
+       actual bound checks (if any) are left on concrete implementations. */
+
+    if(contents & SceneContent::Meshes) {
+        Containers::Array<Trade::MeshData> levels;
+        for(UnsignedInt i = 0, iMax = importer.meshCount(); i != iMax; ++i) {
+            UnsignedInt levelCount = contents & SceneContent::MeshLevels ? importer.meshLevelCount(i) : 1;
+            if(levelCount != 1 && !(contentsSupported & SceneContent::MeshLevels)) {
+                if(noLevelsIfUnsupported) {
+                    Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra" << levelCount - 1 << "levels of mesh" << i << "not supported by the converter";
+                    levelCount = 1;
+                /* Not an assert because having to check this in advance could
+                   be prohibitively expensive */
+                } else {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): mesh" << i << "contains" << levelCount << "levels but the converter doesn't support" << SceneConverterFeature::MeshLevels;
+                    return false;
+                }
+            }
+
+            arrayReserve(levels, levelCount);
+            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            for(UnsignedInt j = 0; j != levelCount; ++j) {
+                Containers::Optional<Trade::MeshData> mesh = importer.mesh(i, j);
+                if(!mesh) return false;
+
+                /* Propagate custom attribute names, skip ones that are empty.
+                   Compared to data names this is done always to avoid
+                   information loss. */
+                for(UnsignedInt j = 0; j != mesh->attributeCount(); ++j) {
+                    /** @todo have some kind of a map to not have to query the
+                        same custom attribute again for each mesh */
+                    const Trade::MeshAttribute name = mesh->attributeName(j);
+                    if(!isMeshAttributeCustom(name)) continue;
+                    if(const Containers::String nameString = importer.meshAttributeName(name)) {
+                        setMeshAttributeName(name, nameString);
+                    }
+                }
+
+                arrayAppend(levels, *std::move(mesh));
+            }
+
+            const Containers::String name = contents & SceneContent::Names ? importer.meshName(i) : Containers::String{};
+            if(levelCount != 1) {
+                if(!add(levels, name))
+                    return false;
+            } else {
+                if(!add(levels[0], name))
+                    return false;
+            }
+        }
+    }
+
+    if(contents & SceneContent::Images1D) {
+        Containers::Array<Trade::ImageData1D> levels;
+        for(UnsignedInt i = 0, iMax = importer.image1DCount(); i != iMax; ++i) {
+            UnsignedInt levelCount = contents & SceneContent::ImageLevels ? importer.image1DLevelCount(i) : 1;
+            if(levelCount != 1 && !(contentsSupported & SceneContent::ImageLevels)) {
+                if(noLevelsIfUnsupported) {
+                    Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra" << levelCount - 1 << "levels of 1D image" << i << "not supported by the converter";
+                    levelCount = 1;
+                /* Not an assert because having to check this in advance could
+                   be prohibitively expensive (decoding an arbitrary amount of
+                   images twice...) */
+                } else {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 1D image" << i << "contains" << levelCount << "levels but the converter doesn't support" << SceneConverterFeature::ImageLevels;
+                    return false;
+                }
+            }
+
+            arrayReserve(levels, levelCount);
+            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            for(UnsignedInt j = 0; j != levelCount; ++j) {
+                Containers::Optional<Trade::ImageData1D> image = importer.image1D(i, j);
+                if(!image) return false;
+
+                if(image->isCompressed() && !(features() & SceneConverterFeature::AddCompressedImages1D)) {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 1D image" << i << "level" << j << "is compressed but the converter doesn't support" << SceneConverterFeature::AddCompressedImages1D;
+                    return false;
+                }
+
+                if(!image->isCompressed() && !(features() & SceneConverterFeature::AddImages1D)) {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 1D image" << i << "level" << j << "is uncompressed but the converter doesn't support" << SceneConverterFeature::AddImages1D;
+                    return false;
+                }
+
+                arrayAppend(levels, *std::move(image));
+            }
+
+            const Containers::String name = contents & SceneContent::Names ? importer.image1DName(i) : Containers::String{};
+            if(levelCount != 1) {
+                if(!add(levels, name))
+                    return false;
+            } else {
+                if(!add(levels[0], name))
+                    return false;
+            }
+        }
+    }
+
+    if(contents & SceneContent::Images2D) {
+        Containers::Array<Trade::ImageData2D> levels;
+        for(UnsignedInt i = 0, iMax = importer.image2DCount(); i != iMax; ++i) {
+            UnsignedInt levelCount = contents & SceneContent::ImageLevels ? importer.image2DLevelCount(i) : 1;
+            if(levelCount != 1 && !(contentsSupported & SceneContent::ImageLevels)) {
+                if(noLevelsIfUnsupported) {
+                    Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra" << levelCount - 1 << "levels of 2D image" << i << "not supported by the converter";
+                    levelCount = 1;
+                /* Not an assert because having to check this in advance could
+                   be prohibitively expensive (decoding an arbitrary amount of
+                   images twice...) */
+                } else {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 2D image" << i << "contains" << levelCount << "levels but the converter doesn't support" << SceneConverterFeature::ImageLevels;
+                    return false;
+                }
+            }
+
+            arrayReserve(levels, levelCount);
+            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            for(UnsignedInt j = 0; j != levelCount; ++j) {
+                Containers::Optional<Trade::ImageData2D> image = importer.image2D(i, j);
+                if(!image) return false;
+
+                if(image->isCompressed() && !(features() & SceneConverterFeature::AddCompressedImages2D)) {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 2D image" << i << "level" << j << "is compressed but the converter doesn't support" << SceneConverterFeature::AddCompressedImages2D;
+                    return false;
+                }
+
+                if(!image->isCompressed() && !(features() & SceneConverterFeature::AddImages2D)) {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 2D image" << i << "level" << j << "is uncompressed but the converter doesn't support" << SceneConverterFeature::AddImages2D;
+                    return false;
+                }
+
+                arrayAppend(levels, *std::move(image));
+            }
+
+            const Containers::String name = contents & SceneContent::Names ? importer.image2DName(i) : Containers::String{};
+            if(levelCount != 1) {
+                if(!add(levels, name))
+                    return false;
+            } else {
+                if(!add(levels[0], name))
+                    return false;
+            }
+        }
+    }
+
+    if(contents & SceneContent::Images3D) {
+        Containers::Array<Trade::ImageData3D> levels;
+        for(UnsignedInt i = 0, iMax = importer.image3DCount(); i != iMax; ++i) {
+            UnsignedInt levelCount = contents & SceneContent::ImageLevels ? importer.image3DLevelCount(i) : 1;
+            if(levelCount != 1 && !(contentsSupported & SceneContent::ImageLevels)) {
+                if(noLevelsIfUnsupported) {
+                    Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring extra" << levelCount - 1 << "levels of 3D image" << i << "not supported by the converter";
+                    levelCount = 1;
+                /* Not an assert because having to check this in advance could
+                   be prohibitively expensive (decoding an arbitrary amount of
+                   images twice...) */
+                } else {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 3D image" << i << "contains" << levelCount << "levels but the converter doesn't support" << SceneConverterFeature::ImageLevels;
+                    return false;
+                }
+            }
+
+            arrayReserve(levels, levelCount);
+            arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
+            for(UnsignedInt j = 0; j != levelCount; ++j) {
+                Containers::Optional<Trade::ImageData3D> image = importer.image3D(i, j);
+                if(!image) return false;
+
+                if(image->isCompressed() && !(features() & SceneConverterFeature::AddCompressedImages3D)) {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 3D image" << i << "level" << j << "is compressed but the converter doesn't support" << SceneConverterFeature::AddCompressedImages3D;
+                    return false;
+                }
+
+                if(!image->isCompressed() && !(features() & SceneConverterFeature::AddImages3D)) {
+                    Error{} << "Trade::AbstractSceneConverter::addImporterContents(): 3D image" << i << "level" << j << "is uncompressed but the converter doesn't support" << SceneConverterFeature::AddImages3D;
+                    return false;
+                }
+
+                arrayAppend(levels, *std::move(image));
+            }
+
+            const Containers::String name = contents & SceneContent::Names ? importer.image3DName(i) : Containers::String{};
+            if(levelCount != 1) {
+                if(!add(levels, name))
+                    return false;
+            } else {
+                if(!add(levels[0], name))
+                    return false;
+            }
+        }
+    }
+
+    if(contents & SceneContent::Textures) {
+        for(UnsignedInt i = 0, iMax = importer.textureCount(); i != iMax; ++i) {
+            const Containers::Optional<Trade::TextureData> texture = importer.texture(i);
+            if(!texture || !add(*texture, contents & SceneContent::Names ? importer.textureName(i) : Containers::String{}))
+                return false;
+        }
+    }
+
+    if(contents & SceneContent::Materials) {
+        for(UnsignedInt i = 0, iMax = importer.materialCount(); i != iMax; ++i) {
+            const Containers::Optional<Trade::MaterialData> material = importer.material(i);
+            if(!material || !add(*material, contents & SceneContent::Names ? importer.materialName(i) : Containers::String{}))
+                return false;
+        }
+    }
+
+    if(contents & SceneContent::Lights) {
+        for(UnsignedInt i = 0, iMax = importer.lightCount(); i != iMax; ++i) {
+            const Containers::Optional<Trade::LightData> light = importer.light(i);
+            if(!light || !add(*light, contents & SceneContent::Names ? importer.lightName(i) : Containers::String{}))
+                return false;
+        }
+    }
+
+    if(contents & SceneContent::Cameras) {
+        for(UnsignedInt i = 0, iMax = importer.cameraCount(); i != iMax; ++i) {
+            const Containers::Optional<Trade::CameraData> camera = importer.camera(i);
+            if(!camera || !add(*camera, contents & SceneContent::Names ? importer.cameraName(i) : Containers::String{}))
+                return false;
+        }
+    }
+
+    if(contents & SceneContent::Scenes) {
+        /* Propagate object names, skip ones that are empty */
+        if(contents & SceneContent::Names) for(UnsignedLong i = 0, iMax = importer.objectCount(); i != iMax; ++i) {
+            if(const Containers::String name = importer.objectName(i))
+                setObjectName(i, name);
+        }
+
+        for(UnsignedInt i = 0, iMax = importer.sceneCount(); i != iMax; ++i) {
+            Containers::Optional<Trade::SceneData> scene = importer.scene(i);
+            if(!scene) return false;
+
+            /* Propagate custom field names, skip ones that are empty. Compared
+               to data names this is done always to avoid information loss. */
+            for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
+                /** @todo have some kind of a map to not have to query the same
+                    field again for each scene */
+                const Trade::SceneField name = scene->fieldName(j);
+                if(!isSceneFieldCustom(name)) continue;
+                if(const Containers::String nameString = importer.sceneFieldName(name)) {
+                    setSceneFieldName(name, nameString);
+                }
+            }
+
+            if(!scene || !add(*scene, contents & SceneContent::Names ? importer.sceneName(i) : Containers::String{}))
+                return false;
+        }
+
+        const Int defaultScene = importer.defaultScene();
+        if(defaultScene != -1)
+            setDefaultScene(defaultScene);
+    }
+
+    if(contents & SceneContent::Skins2D) {
+        for(UnsignedInt i = 0, iMax = importer.skin2DCount(); i != iMax; ++i) {
+            const Containers::Optional<Trade::SkinData2D> skin = importer.skin2D(i);
+            if(!skin || !add(*skin, contents & SceneContent::Names ? importer.skin2DName(i) : Containers::String{}))
+                return false;
+        }
+    }
+
+    if(contents & SceneContent::Skins3D) {
+        for(UnsignedInt i = 0, iMax = importer.skin3DCount(); i != iMax; ++i) {
+            const Containers::Optional<Trade::SkinData3D> skin = importer.skin3D(i);
+            if(!skin || !add(*skin, contents & SceneContent::Names ? importer.skin3DName(i) : Containers::String{}))
+                return false;
+        }
+    }
+
+    if(contents & SceneContent::Animations) {
+        for(UnsignedInt i = 0, iMax = importer.animationCount(); i != iMax; ++i) {
+            const Containers::Optional<Trade::AnimationData> animation = importer.animation(i);
+            if(!animation || !add(*animation, contents & SceneContent::Names ? importer.animationName(i) : Containers::String{}))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+
+bool AbstractSceneConverter::addImporterContents(AbstractImporter& importer, const SceneContents contents) {
+    return addImporterContentsInternal(importer, contents, false);
+}
+
+bool AbstractSceneConverter::addSupportedImporterContents(AbstractImporter& importer, const SceneContents contents) {
+    /* To avoid accidental differences in handling SceneConverterFeatures in
+       sceneContentsFor(const AbstractSceneConverter&) and here, this branches
+       on SceneContents instead of SceneConverterFeatures */
+    const SceneContents wantedButUnsupported = contents & ~sceneContentsFor(*this);
+
+    /* To avoid needlessly querying fooCount() several times (which might be
+       expensive in certain unfortunate cases), this basically unwraps the
+       contents of sceneContentsFor(const AbstractImporter&) and adds warnings
+       there */
+    SceneContents used = contents;
+    UnsignedInt count;
+    if((wantedButUnsupported & SceneContent::Scenes) && (count = importer.sceneCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "scenes not supported by the converter";
+        used &= ~SceneContent::Scenes;
+    }
+    if((wantedButUnsupported & SceneContent::Animations) && (count = importer.animationCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "animations not supported by the converter";
+        used &= ~SceneContent::Animations;
+    }
+    if((wantedButUnsupported & SceneContent::Lights) && (count = importer.lightCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "lights not supported by the converter";
+        used &= ~SceneContent::Lights;
+    }
+    if((wantedButUnsupported & SceneContent::Cameras) && (count = importer.cameraCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "cameras not supported by the converter";
+        used &= ~SceneContent::Cameras;
+    }
+    if((wantedButUnsupported & SceneContent::Skins2D) && (count = importer.skin2DCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "2D skins not supported by the converter";
+        used &= ~SceneContent::Skins2D;
+    }
+    if((wantedButUnsupported & SceneContent::Skins3D) && (count = importer.skin3DCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "3D skins not supported by the converter";
+        used &= ~SceneContent::Skins3D;
+    }
+    if((wantedButUnsupported & SceneContent::Meshes) && (count = importer.meshCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "meshes not supported by the converter";
+        used &= ~SceneContent::Meshes;
+    }
+    if((wantedButUnsupported & SceneContent::Materials) && (count = importer.materialCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "materials not supported by the converter";
+        used &= ~SceneContent::Materials;
+    }
+    if((wantedButUnsupported & SceneContent::Textures) && (count = importer.textureCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "textures not supported by the converter";
+        used &= ~SceneContent::Textures;
+    }
+    if((wantedButUnsupported & SceneContent::Images1D) && (count = importer.image1DCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "1D images not supported by the converter";
+        used &= ~SceneContent::Images1D;
+    }
+    if((wantedButUnsupported & SceneContent::Images2D) && (count = importer.image2DCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "2D images not supported by the converter";
+        used &= ~SceneContent::Images2D;
+    }
+    if((wantedButUnsupported & SceneContent::Images3D) && (count = importer.image3DCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "3D images not supported by the converter";
+        used &= ~SceneContent::Images3D;
+    }
+
+    /* MeshLevels and ImageLevels handled inside */
+    return addImporterContentsInternal(importer, used, true);
+}
+
 Debug& operator<<(Debug& debug, const SceneConverterFeature value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
@@ -1273,6 +1717,56 @@ Debug& operator<<(Debug& debug, const SceneConverterFlag value) {
 Debug& operator<<(Debug& debug, const SceneConverterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::SceneConverterFlags{}", {
         SceneConverterFlag::Verbose});
+}
+
+Debug& operator<<(Debug& debug, const SceneContent value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::SceneContent" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case SceneContent::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(Scenes)
+        _c(Animations)
+        _c(Lights)
+        _c(Cameras)
+        _c(Skins2D)
+        _c(Skins3D)
+        _c(Meshes)
+        _c(Materials)
+        _c(Textures)
+        _c(Images1D)
+        _c(Images2D)
+        _c(Images3D)
+        _c(MeshLevels)
+        _c(ImageLevels)
+        _c(Names)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const SceneContents value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::SceneContents{}", {
+        SceneContent::Scenes,
+        SceneContent::Animations,
+        SceneContent::Lights,
+        SceneContent::Cameras,
+        SceneContent::Skins2D,
+        SceneContent::Skins3D,
+        SceneContent::Meshes,
+        SceneContent::Materials,
+        SceneContent::Textures,
+        SceneContent::Images1D,
+        SceneContent::Images2D,
+        SceneContent::Images3D,
+        SceneContent::MeshLevels,
+        SceneContent::ImageLevels,
+        SceneContent::Names});
 }
 
 }}
