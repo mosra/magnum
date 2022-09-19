@@ -444,8 +444,8 @@ the first mesh.)")
     std::chrono::high_resolution_clock::duration conversionTime{};
 
     /* Filter mesh attributes, if requested */
-    if(!args.value("only-mesh-attributes").empty()) {
-        const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(args.value<Containers::StringView>("only-mesh-attributes"), 0, mesh->attributeCount());
+    if(const Containers::StringView onlyMeshAttributes = args.value<Containers::StringView>("only-mesh-attributes")) {
+        const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(onlyMeshAttributes, 0, mesh->attributeCount());
         if(!only) return 2;
 
         /** @todo use MeshTools::filterOnlyAttributes() once it has a rvalue
@@ -476,7 +476,7 @@ the first mesh.)")
 
     /* Remove duplicate vertices with fuzzy comparison, if requested */
     /** @todo accept two values for float and double fuzzy comparison */
-    if(!args.value("remove-duplicate-vertices-fuzzy").empty()) {
+    if(args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy")) {
         const UnsignedInt beforeVertexCount = mesh->vertexCount();
         {
             Trade::Implementation::Duration d{conversionTime};
