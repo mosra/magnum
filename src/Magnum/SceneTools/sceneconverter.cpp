@@ -26,7 +26,6 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
-#include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Arguments is std::string-free */
@@ -427,15 +426,10 @@ the first mesh.)")
         }
 
         /* Concatenate all meshes together */
-        /** @todo some better way than having to create a whole new array of
-            references with the nasty NoInit, yet keeping the flexibility? */
-        Containers::Array<Containers::Reference<const Trade::MeshData>> meshReferences{NoInit, meshes.size()};
-        for(std::size_t i = 0; i != meshes.size(); ++i)
-            meshReferences[i] = meshes[i];
         /** @todo this will assert if the meshes have incompatible primitives
             (such as some triangles, some lines), or if they have
             loops/strips/fans -- handle that explicitly */
-        mesh = MeshTools::concatenate(meshReferences);
+        mesh = MeshTools::concatenate(meshes);
 
     /* Otherwise import just one */
     } else {
