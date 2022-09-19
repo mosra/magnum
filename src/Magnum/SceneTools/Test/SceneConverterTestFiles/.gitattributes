@@ -1,0 +1,11 @@
+# You have to add the following to your .git/config or global
+# ~/.gitconfig to make the binary diffs work (without the comment
+# character, of course):
+#
+# [diff "hex"]
+#     textconv = hexdump -v -C
+#     binary = true
+#
+
+*.bin binary diff=hex
+*.ply binary diff=hex
