@@ -397,10 +397,16 @@ the first mesh.)")
 
     /* Concatenate input meshes, if requested */
     if(args.isSet("concatenate-meshes")) {
-        Containers::Array<Containers::Optional<Trade::MeshData>> meshes{importer->meshCount()};
-        for(std::size_t i = 0; i != meshes.size(); ++i) if(!(meshes[i] = importer->mesh(i))) {
-            Error{} << "Cannot import mesh" << i;
-            return 1;
+        Containers::Array<Trade::MeshData> meshes;
+        arrayReserve(meshes, importer->meshCount());
+        for(std::size_t i = 0, iMax = importer->meshCount(); i != iMax; ++i) {
+            Containers::Optional<Trade::MeshData> meshToConcatenate = importer->mesh(i);
+            if(!meshToConcatenate) {
+                Error{} << "Cannot import mesh" << i;
+                return 1;
+            }
+
+            arrayAppend(meshes, *std::move(meshToConcatenate));
         }
 
         /* If there's a scene, use it to flatten mesh hierarchy. If not, assume
@@ -414,9 +420,9 @@ the first mesh.)")
             }
 
             /** @todo once there are 2D scenes, check the scene is 3D */
-            Containers::Array<Containers::Optional<Trade::MeshData>> flattenedMeshes;
+            Containers::Array<Trade::MeshData> flattenedMeshes;
             for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation: SceneTools::flattenMeshHierarchy3D(*scene))
-                arrayAppend(flattenedMeshes, MeshTools::transform3D(*meshes[meshTransformation.first()], meshTransformation.third()));
+                arrayAppend(flattenedMeshes, MeshTools::transform3D(meshes[meshTransformation.first()], meshTransformation.third()));
             meshes = std::move(flattenedMeshes);
         }
 
@@ -425,7 +431,7 @@ the first mesh.)")
             references with the nasty NoInit, yet keeping the flexibility? */
         Containers::Array<Containers::Reference<const Trade::MeshData>> meshReferences{NoInit, meshes.size()};
         for(std::size_t i = 0; i != meshes.size(); ++i)
-            meshReferences[i] = *meshes[i];
+            meshReferences[i] = meshes[i];
         /** @todo this will assert if the meshes have incompatible primitives
             (such as some triangles, some lines), or if they have
             loops/strips/fans -- handle that explicitly */
