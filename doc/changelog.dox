@@ -1135,6 +1135,12 @@ See also:
     made both @cpp nullptr @ce even before the object/feature destructors were
     called and so it's assumed no code relied on such behavior, nevertheless
     it's a subtle change worth mentioning.
+-   @ref magnum-sceneconverter "magnum-sceneconverter" options
+    `--level`, `--only-attributes`, `--remove-duplicates` and
+    `--remove-duplicates-fuzzy` were renamed to `--mesh-level`,
+    `--only-mesh-attributes`, `--remove-duplicate-vertices` and
+    `--remove-duplicate-vertices-fuzzy`, respectively, to make it clear they
+    affect meshes and not other scene content
 -   Due to the rework of @ref Shaders::PhongGL to support directional and
     attenuated point lights, the original behavior of unattenuated point lights
     isn't available anymore. For backwards compatibility, light positions

@@ -117,15 +117,15 @@ magnum-sceneconverter chair.obj -C MeshOptimizerSceneConverter \
 @code{.sh}
 magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [-C|--converter PLUGIN]... [--plugin-dir DIR] [--map]
-    [--only-attributes N1,N2-N3…] [--remove-duplicates]
-    [--remove-duplicates-fuzzy EPSILON]
+    [--only-mesh-attributes N1,N2-N3…] [--remove-duplicate-vertices]
+    [--remove-duplicate-vertices-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
-    [--level LEVEL] [--concatenate-meshes] [--info-animations] [--info-images]
-    [--info-lights] [--info-cameras] [--info-materials] [--info-meshes]
-    [--info-objects] [--info-scenes] [--info-skins] [--info-textures] [--info]
-    [--color on|4bit|off|auto] [--bounds] [-v|--verbose] [--profile] [--] input
-    output
+    [-c|--converter-options key=val,key2=val2,…]... [--mesh ID]
+    [--mesh-level INDEX] [--concatenate-meshes] [--info-animations]
+    [--info-images] [--info-lights] [--info-cameras] [--info-materials]
+    [--info-meshes] [--info-objects] [--info-scenes] [--info-skins]
+    [--info-textures] [--info] [--color on|4bit|off|auto] [--bounds]
+    [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -139,21 +139,21 @@ Arguments:
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `--map` --- memory-map the input for zero-copy import (works only for
     standalone files)
--   `--only-attributes N1,N2-N3…` --- include only attributes of given IDs in
-    the output. See @ref Utility::String::parseNumberSequence() for syntax
-    description.
--   `--remove-duplicates` --- remove duplicate vertices using
+-   `--only-mesh-attributes N1,N2-N3…` --- include only mesh attributes of
+    given IDs in the output. See @ref Utility::String::parseNumberSequence()
+    for syntax description.
+-   `--remove-duplicate-vertices` --- remove duplicate vertices using
     @ref MeshTools::removeDuplicates(const Trade::MeshData&) after import
--   `--remove-duplicates-fuzzy EPSILON` --- remove duplicate vertices using
-    @ref MeshTools::removeDuplicatesFuzzy(const Trade::MeshData&, Float, Double)
+-   `--remove-duplicate-vertices-fuzzy EPSILON` --- remove duplicate vertices
+    using @ref MeshTools::removeDuplicatesFuzzy(const Trade::MeshData&, Float, Double)
     after import
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter(s)
--   `--mesh MESH` --- mesh to import (default: `0`), ignored if
+-   `--mesh ID` --- mesh to import (default: `0`), ignored if
     `--concatenate-meshes` is specified
--   `--level LEVEL` --- mesh level to import (default: `0`), ignored if
+-   `--mesh-level INDEX` --- mesh level to import (default: `0`), ignored if
     `--concatenate-meshes` is specified
 -   `--concatenate-meshes` -- flatten mesh hierarchy and concatenate them all
     together @m_class{m-label m-warning} **experimental**
@@ -204,8 +204,8 @@ If `--concatenate-meshes` is given, all meshes of the input file are
 concatenated into a single mesh using @ref MeshTools::concatenate(), with the
 scene hierarchy transformation baked in using
 @ref SceneTools::flattenMeshHierarchy3D(). Only attributes that are present in
-the first mesh are taken, if `--only-attributes` is specified as well, the IDs
-reference attributes of the first mesh.
+the first mesh are taken, if `--only-mesh-attributes` is specified as well, the
+IDs reference attributes of the first mesh.
 */
 
 }
@@ -241,13 +241,13 @@ int main(int argc, char** argv) {
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
         #endif
-        .addOption("only-attributes").setHelp("only-attributes", "include only attributes of given IDs in the output", "N1,N2-N3…")
-        .addBooleanOption("remove-duplicates").setHelp("remove-duplicates", "remove duplicate vertices in the mesh after import")
-        .addOption("remove-duplicates-fuzzy").setHelp("remove-duplicates-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
+        .addOption("only-mesh-attributes").setHelp("only-mesh-attributes", "include only mesh attributes of given IDs in the output", "N1,N2-N3…")
+        .addBooleanOption("remove-duplicate-vertices").setHelp("remove-duplicate-vertices", "remove duplicate vertices in the mesh after import")
+        .addOption("remove-duplicate-vertices-fuzzy").setHelp("remove-duplicate-vertices-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
-        .addOption("mesh", "0").setHelp("mesh", "mesh to import, ignored if --concatenate-meshes is specified")
-        .addOption("level", "0").setHelp("level", "mesh level to import, ignored if --concatenate-meshes is specified")
+        .addOption("mesh", "0").setHelp("mesh", "mesh to import, ignored if --concatenate-meshes is specified", "ID")
+        .addOption("mesh-level", "0").setHelp("mesh-level", "mesh level to import, ignored if --concatenate-meshes is specified", "INDEX")
         .addBooleanOption("concatenate-meshes").setHelp("concatenate-meshes", "flatten mesh hierarchy and concatenate them all together")
         .addBooleanOption("info-animations").setHelp("info-animations", "print info about animations in the input file and exit")
         .addBooleanOption("info-images").setHelp("info-images", "print info about images in the input file and exit")
@@ -296,8 +296,9 @@ used.
 
 If --concatenate-meshes is given, all meshes of the input file are concatenated
 into a single mesh, with the scene hierarchy transformation baked in. Only
-attributes that are present in the first mesh are taken, if --only-attributes
-is specified as well, the IDs reference attributes of the first mesh.)")
+attributes that are present in the first mesh are taken, if
+--only-mesh-attributes is specified as well, the IDs reference attributes of
+the first mesh.)")
         .parse(argc, argv);
 
     /* Colored output. Enable only if a TTY. */
@@ -433,7 +434,7 @@ is specified as well, the IDs reference attributes of the first mesh.)")
     /* Otherwise import just one */
     } else {
         Trade::Implementation::Duration d{importTime};
-        if(!(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("level")))) {
+        if(!(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("mesh-level")))) {
             Error{} << "Cannot import the mesh";
             return 4;
         }
@@ -442,9 +443,9 @@ is specified as well, the IDs reference attributes of the first mesh.)")
     /* Wow, C++, you suck. This implicitly initializes to random shit?! */
     std::chrono::high_resolution_clock::duration conversionTime{};
 
-    /* Filter attributes, if requested */
-    if(!args.value("only-attributes").empty()) {
-        const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(args.value<Containers::StringView>("only-attributes"), 0, mesh->attributeCount());
+    /* Filter mesh attributes, if requested */
+    if(!args.value("only-mesh-attributes").empty()) {
+        const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(args.value<Containers::StringView>("only-mesh-attributes"), 0, mesh->attributeCount());
         if(!only) return 2;
 
         /** @todo use MeshTools::filterOnlyAttributes() once it has a rvalue
@@ -462,8 +463,8 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             vertexCount};
     }
 
-    /* Remove duplicates, if requested */
-    if(args.isSet("remove-duplicates")) {
+    /* Remove duplicate vertices, if requested */
+    if(args.isSet("remove-duplicate-vertices")) {
         const UnsignedInt beforeVertexCount = mesh->vertexCount();
         {
             Trade::Implementation::Duration d{conversionTime};
@@ -473,13 +474,13 @@ is specified as well, the IDs reference attributes of the first mesh.)")
             Debug{} << "Duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
     }
 
-    /* Remove duplicates with fuzzy comparison, if requested */
+    /* Remove duplicate vertices with fuzzy comparison, if requested */
     /** @todo accept two values for float and double fuzzy comparison */
-    if(!args.value("remove-duplicates-fuzzy").empty()) {
+    if(!args.value("remove-duplicate-vertices-fuzzy").empty()) {
         const UnsignedInt beforeVertexCount = mesh->vertexCount();
         {
             Trade::Implementation::Duration d{conversionTime};
-            mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicates-fuzzy"));
+            mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicate-vertices-fuzzy"));
         }
         if(args.isSet("verbose"))
             Debug{} << "Fuzzy duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";

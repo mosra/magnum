@@ -169,37 +169,37 @@ const struct {
         "GltfImporter", "StanfordSceneConverter",
         "quad-duplicates.ply",
         {}},
-    {"filter attributes", Containers::array<Containers::String>({
+    {"filter mesh attributes", Containers::array<Containers::String>({
         /* Only 0 gets picked from here, others ignored */
-        "--only-attributes", "17,0,25-36",
+        "--only-mesh-attributes", "17,0,25-36",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-normals-texcoords.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
         "quad.ply",
         {}},
-    {"remove duplicates", Containers::array<Containers::String>({
-        "--remove-duplicates",
+    {"remove duplicate vertices", Containers::array<Containers::String>({
+        "--remove-duplicate-vertices",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
         "quad.ply",
         {}},
-    {"remove duplicates, verbose", Containers::array<Containers::String>({
+    {"remove duplicate vertices, verbose", Containers::array<Containers::String>({
         /* Forcing the importer and converter to avoid AnySceneImporter /
            AnySceneConverter delegation messages */
-        "--remove-duplicates", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
+        "--remove-duplicate-vertices", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
         "quad.ply",
         "Duplicate removal: 6 -> 4 vertices\n"},
-    {"remove duplicates fuzzy", Containers::array<Containers::String>({
-        "--remove-duplicates-fuzzy 1.0e-1",
+    {"remove duplicate vertices fuzzy", Containers::array<Containers::String>({
+        "--remove-duplicate-vertices-fuzzy", "1.0e-1",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates-fuzzy.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
         "quad.ply",
         {}},
-    {"remove duplicates fuzzy, verbose", Containers::array<Containers::String>({
+    {"remove duplicate vertices fuzzy, verbose", Containers::array<Containers::String>({
         /* Forcing the importer and converter to avoid AnySceneImporter /
            AnySceneConverter delegation messages */
-        "--remove-duplicates-fuzzy 1.0e-1", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
+        "--remove-duplicate-vertices-fuzzy 1.0e-1", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates-fuzzy.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
         "quad.ply",
@@ -350,7 +350,7 @@ const struct {
         "Trade::GltfImporter::scene(): mesh index 1 in node 0 out of range for 1 meshes\n"
         "Cannot import scene 0 for mesh concatenation\n"},
     {"invalid attribute filter", Containers::array<Containers::String>({
-        "-I", "ObjImporter", "--only-attributes", "LOLNEIN", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
+        "-I", "ObjImporter", "--only-mesh-attributes", "LOLNEIN", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", nullptr,
         "Utility::parseNumberSequence(): unrecognized character L in LOLNEIN\n"},
     {"can't load converter plugin", Containers::array<Containers::String>({
