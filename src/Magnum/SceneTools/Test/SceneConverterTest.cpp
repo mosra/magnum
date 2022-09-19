@@ -212,24 +212,26 @@ const struct {
         "Fuzzy duplicate removal: 6 -> 4 vertices\n"},
     {"one mesh, two converters", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
-        "quad.ply", nullptr,
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
+        "quad.gltf", "quad.bin",
         {}},
     {"one mesh, two converters, explicit last", Containers::array<Containers::String>({
-        "-C", "MeshOptimizerSceneConverter", "-C", "StanfordSceneConverter",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
-        "quad.ply", nullptr,
+        "-C", "MeshOptimizerSceneConverter", "-C", "GltfSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
+        "quad.gltf", "quad.bin",
         {}},
     {"one mesh, two converters, verbose", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter", "-v",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
-        "quad.ply", nullptr,
-        /** @todo this is a no-op, use some other converter that tests also
-            that the resulting mesh is actually passed further */
-        "Trade::AnySceneImporter::openFile(): using ObjImporter\n"
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
+        "quad.gltf", "quad.bin",
+        /* While this looks like a no-op in the output, it converts a
+           triangle strip to indexed triangles, which verifies that the output
+           of MeshOptimizerSceneConverter got actually passed further and not
+           discarded */
+        "Trade::AnySceneImporter::openFile(): using GltfImporter\n"
         "Trade::MeshOptimizerSceneConverter::convert(): processing stats:\n"
         "  vertex cache:\n"
         "    4 -> 4 transformed vertices\n"
@@ -243,16 +245,16 @@ const struct {
         "    65536 -> 65536 shaded pixels\n"
         "    65536 -> 65536 covered pixels\n"
         "    overdraw 1 -> 1\n"
-        "Trade::AnySceneConverter::convertToFile(): using StanfordSceneConverter\n"},
+        "Trade::AnySceneConverter::convertToFile(): using GltfSceneConverter\n"},
     {"one mesh, two converters, explicit last, verbose", Containers::array<Containers::String>({
-        "-C", "MeshOptimizerSceneConverter", "-C", "StanfordSceneConverter", "-v",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
-        "quad.ply", nullptr,
+        "-C", "MeshOptimizerSceneConverter", "-C", "GltfSceneConverter", "-v",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
+        "quad.gltf", "quad.bin",
         /* As the importers and converters are specified explicitly, there's
            no messages from AnySceneConverter, OTOH as we have more than one -C
            option the verbose output includes a progress info */
-        "Trade::AnySceneImporter::openFile(): using ObjImporter\n"
+        "Trade::AnySceneImporter::openFile(): using GltfImporter\n"
         "Processing (1/2) with MeshOptimizerSceneConverter...\n"
         "Trade::MeshOptimizerSceneConverter::convert(): processing stats:\n"
         "  vertex cache:\n"
@@ -267,38 +269,38 @@ const struct {
         "    65536 -> 65536 shaded pixels\n"
         "    65536 -> 65536 covered pixels\n"
         "    overdraw 1 -> 1\n"
-        "Saving output (2/2) with StanfordSceneConverter...\n"},
+        "Saving output (2/2) with GltfSceneConverter...\n"},
     {"one mesh, two converters, options for the first only", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
         "-c", "nonexistentMeshOptimizerOption=yes",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "GltfImporter", "GltfSceneConverter",
         "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"},
     {"one mesh, two converters, explicit last, options for the first only", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
         "-c", "nonexistentMeshOptimizerOption=yes",
         "-C", "StanfordSceneConverter",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "GltfImporter", "GltfSceneConverter",
         "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"},
     {"one mesh, two converters, options for both", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
         "-c", "nonexistentMeshOptimizerOption=yes",
         "-c", "nonexistentAnyConverterOption=no",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
         "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
-        "Trade::AnySceneConverter::convertToFile(): option nonexistentAnyConverterOption not recognized by StanfordSceneConverter\n"},
+        "Trade::AnySceneConverter::convertToFile(): option nonexistentAnyConverterOption not recognized by GltfSceneConverter\n"},
     {"one mesh, two converters, explicit last, options for both", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
         "-c", "nonexistentMeshOptimizerOption=yes",
         "-C", "StanfordSceneConverter",
         "-c", "nonexistentStanfordConverterOption=no",
-        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
-        "ObjImporter", "StanfordSceneConverter",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
         "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
         "Option nonexistentStanfordConverterOption not recognized by StanfordSceneConverter\n"},
