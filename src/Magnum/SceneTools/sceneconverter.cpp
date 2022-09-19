@@ -326,7 +326,7 @@ the first mesh.)")
     }
 
     /* Generic checks */
-    if(!args.value<Containers::StringView>("output").isEmpty()) {
+    if(args.value<Containers::StringView>("output")) {
         /* Not an error in this case, it should be possible to just append
            --info* to existing command line without having to remove anything.
            But print a warning at least, it could also be a mistyped option. */
