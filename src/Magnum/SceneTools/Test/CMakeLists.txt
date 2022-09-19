@@ -80,6 +80,8 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
         SceneConverterTestFiles/quad-duplicates.obj
         SceneConverterTestFiles/quad-duplicates.ply
         SceneConverterTestFiles/quad-normals-texcoords.obj
+        SceneConverterTestFiles/quad.bin
+        SceneConverterTestFiles/quad.gltf
         SceneConverterTestFiles/quad.obj
         SceneConverterTestFiles/quad.ply
         SceneConverterTestFiles/two-triangles-transformed.bin

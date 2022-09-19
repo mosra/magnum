@@ -518,7 +518,7 @@ the first mesh.)")
 
         /* This is the last --converter (or the implicit AnySceneConverter at
            the end), output to a file and exit the loop */
-        if(i + 1 >= converterCount && (converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile)) {
+        if(i + 1 >= converterCount && ((converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile) || converter->features() >= (Trade::SceneConverterFeature::ConvertMultipleToFile|Trade::SceneConverterFeature::AddMeshes))) {
             /* No verbose output for just one converter */
             if(converterCount > 1 && args.isSet("verbose"))
                 Debug{} << "Saving output (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";

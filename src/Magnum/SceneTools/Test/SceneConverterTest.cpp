@@ -118,23 +118,29 @@ const struct {
     const char* requiresImporter;
     const char* requiresConverter;
     const char* expected;
+    const char* expected2;
     Containers::String message;
 } ConvertData[]{
     {"one mesh", Containers::array<Containers::String>({
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
+        {}},
+    {"one mesh, whole scene converter", Containers::array<Containers::String>({
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
+        "ObjImporter", "GltfSceneConverter",
+        "quad.gltf", "quad.bin",
         {}},
     {"one mesh, explicit importer and converter", Containers::array<Containers::String>({
         "-I", "ObjImporter", "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         {}},
     {"one mesh, map", Containers::array<Containers::String>({
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         {}},
     {"one mesh, options", Containers::array<Containers::String>({
         /* It's silly, but since we have option propagation tested in
@@ -143,7 +149,7 @@ const struct {
         "-i", "nonexistentOption=13", "-c", "nonexistentConverterOption=26",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Trade::AnySceneImporter::openFile(): option nonexistentOption not recognized by ObjImporter\n"
         "Trade::AnySceneConverter::convertToFile(): option nonexistentConverterOption not recognized by StanfordSceneConverter\n"},
     {"one mesh, options, explicit importer and converter", Containers::array<Containers::String>({
@@ -154,33 +160,33 @@ const struct {
         "-I", "ObjImporter", "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Option nonexistentOption not recognized by ObjImporter\n"
         "Option nonexistentConverterOption not recognized by StanfordSceneConverter\n"},
     {"concatenate meshes without a scene", Containers::array<Containers::String>({
         "--concatenate-meshes",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/two-triangles.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad-duplicates.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad-duplicates.ply",
+        "quad-duplicates.ply", nullptr,
         {}},
     {"concatenate meshes with a scene", Containers::array<Containers::String>({
         "--concatenate-meshes",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/two-triangles-transformed.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad-duplicates.ply")}),
         "GltfImporter", "StanfordSceneConverter",
-        "quad-duplicates.ply",
+        "quad-duplicates.ply", nullptr,
         {}},
     {"filter mesh attributes", Containers::array<Containers::String>({
         /* Only 0 gets picked from here, others ignored */
         "--only-mesh-attributes", "17,0,25-36",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-normals-texcoords.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         {}},
     {"remove duplicate vertices", Containers::array<Containers::String>({
         "--remove-duplicate-vertices",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         {}},
     {"remove duplicate vertices, verbose", Containers::array<Containers::String>({
         /* Forcing the importer and converter to avoid AnySceneImporter /
@@ -188,13 +194,13 @@ const struct {
         "--remove-duplicate-vertices", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Duplicate removal: 6 -> 4 vertices\n"},
     {"remove duplicate vertices fuzzy", Containers::array<Containers::String>({
         "--remove-duplicate-vertices-fuzzy", "1.0e-1",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates-fuzzy.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         {}},
     {"remove duplicate vertices fuzzy, verbose", Containers::array<Containers::String>({
         /* Forcing the importer and converter to avoid AnySceneImporter /
@@ -202,25 +208,25 @@ const struct {
         "--remove-duplicate-vertices-fuzzy 1.0e-1", "-v", "-I", "ObjImporter", "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates-fuzzy.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Fuzzy duplicate removal: 6 -> 4 vertices\n"},
     {"one mesh, two converters", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         {}},
     {"one mesh, two converters, explicit last", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter", "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         {}},
     {"one mesh, two converters, verbose", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter", "-v",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         /** @todo this is a no-op, use some other converter that tests also
             that the resulting mesh is actually passed further */
         "Trade::AnySceneImporter::openFile(): using ObjImporter\n"
@@ -242,7 +248,7 @@ const struct {
         "-C", "MeshOptimizerSceneConverter", "-C", "StanfordSceneConverter", "-v",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         /* As the importers and converters are specified explicitly, there's
            no messages from AnySceneConverter, OTOH as we have more than one -C
            option the verbose output includes a progress info */
@@ -267,7 +273,7 @@ const struct {
         "-c", "nonexistentMeshOptimizerOption=yes",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"},
     {"one mesh, two converters, explicit last, options for the first only", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
@@ -275,7 +281,7 @@ const struct {
         "-C", "StanfordSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"},
     {"one mesh, two converters, options for both", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
@@ -283,7 +289,7 @@ const struct {
         "-c", "nonexistentAnyConverterOption=no",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
         "Trade::AnySceneConverter::convertToFile(): option nonexistentAnyConverterOption not recognized by StanfordSceneConverter\n"},
     {"one mesh, two converters, explicit last, options for both", Containers::array<Containers::String>({
@@ -293,7 +299,7 @@ const struct {
         "-c", "nonexistentStanfordConverterOption=no",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "quad.ply",
+        "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
         "Option nonexistentStanfordConverterOption not recognized by StanfordSceneConverter\n"},
 };
@@ -1640,6 +1646,9 @@ void SceneConverterTest::convert() {
 
     CORRADE_COMPARE_AS(Utility::Path::join({SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles", data.expected}),
         Utility::Path::join({SCENETOOLS_TEST_DIR, "SceneConverterTestFiles", data.expected}),
+        TestSuite::Compare::File);
+    if(data.expected2) CORRADE_COMPARE_AS(Utility::Path::join({SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles", data.expected2}),
+        Utility::Path::join({SCENETOOLS_TEST_DIR, "SceneConverterTestFiles", data.expected2}),
         TestSuite::Compare::File);
     #endif
 }
