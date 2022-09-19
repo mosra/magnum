@@ -392,6 +392,9 @@ the first mesh.)")
         return 1;
     }
 
+    /* Wow, C++, you suck. This implicitly initializes to random shit?! */
+    std::chrono::high_resolution_clock::duration conversionTime{};
+
     Containers::Optional<Trade::MeshData> mesh;
 
     /* Concatenate input meshes, if requested */
@@ -399,6 +402,7 @@ the first mesh.)")
         Containers::Array<Trade::MeshData> meshes;
         arrayReserve(meshes, importer->meshCount());
         for(std::size_t i = 0, iMax = importer->meshCount(); i != iMax; ++i) {
+            Trade::Implementation::Duration d{importTime};
             Containers::Optional<Trade::MeshData> meshToConcatenate = importer->mesh(i);
             if(!meshToConcatenate) {
                 Error{} << "Cannot import mesh" << i;
@@ -413,23 +417,32 @@ the first mesh.)")
         /** @todo make it possible to choose the scene */
         if(importer->defaultScene() != -1) {
             Containers::Optional<Trade::SceneData> scene;
-            if(!(scene = importer->scene(importer->defaultScene()))) {
-                Error{} << "Cannot import scene" << importer->defaultScene() << "for mesh concatenation";
-                return 1;
+            {
+                Trade::Implementation::Duration d{importTime};
+                if(!(scene = importer->scene(importer->defaultScene()))) {
+                    Error{} << "Cannot import scene" << importer->defaultScene() << "for mesh concatenation";
+                    return 1;
+                }
             }
 
-            /** @todo once there are 2D scenes, check the scene is 3D */
             Containers::Array<Trade::MeshData> flattenedMeshes;
-            for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation: SceneTools::flattenMeshHierarchy3D(*scene))
-                arrayAppend(flattenedMeshes, MeshTools::transform3D(meshes[meshTransformation.first()], meshTransformation.third()));
+            {
+                Trade::Implementation::Duration d{conversionTime};
+                /** @todo once there are 2D scenes, check the scene is 3D */
+                for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation: SceneTools::flattenMeshHierarchy3D(*scene))
+                    arrayAppend(flattenedMeshes, MeshTools::transform3D(meshes[meshTransformation.first()], meshTransformation.third()));
+            }
             meshes = std::move(flattenedMeshes);
         }
 
         /* Concatenate all meshes together */
-        /** @todo this will assert if the meshes have incompatible primitives
-            (such as some triangles, some lines), or if they have
-            loops/strips/fans -- handle that explicitly */
-        mesh = MeshTools::concatenate(meshes);
+        {
+            Trade::Implementation::Duration d{conversionTime};
+            /** @todo this will assert if the meshes have incompatible primitives
+                (such as some triangles, some lines), or if they have
+                loops/strips/fans -- handle that explicitly */
+            mesh = MeshTools::concatenate(meshes);
+        }
 
     /* Otherwise import just one */
     } else {
@@ -439,9 +452,6 @@ the first mesh.)")
             return 4;
         }
     }
-
-    /* Wow, C++, you suck. This implicitly initializes to random shit?! */
-    std::chrono::high_resolution_clock::duration conversionTime{};
 
     /* Filter mesh attributes, if requested */
     if(const Containers::StringView onlyMeshAttributes = args.value<Containers::StringView>("only-mesh-attributes")) {
