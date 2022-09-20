@@ -1,0 +1,58 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "extensionsUsed": [
+    "KHR_texture_ktx"
+  ],
+  "extensionsRequired": [
+    "KHR_texture_ktx"
+  ],
+  "buffers": [
+    {
+      "uri": "images-3d-1x1x1.bin",
+      "byteLength": 510
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 255
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 255,
+      "byteLength": 255
+    }
+  ],
+  "textures": [
+    {
+      "extensions": {
+        "KHR_texture_ktx": {
+          "source": 0,
+          "layer": 0
+        }
+      }
+    },
+    {
+      "extensions": {
+        "KHR_texture_ktx": {
+          "source": 1,
+          "layer": 0
+        }
+      }
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/ktx2",
+      "bufferView": 0,
+      "name": "A large blue image"
+    },
+    {
+      "mimeType": "image/ktx2",
+      "bufferView": 1
+    }
+  ]
+}

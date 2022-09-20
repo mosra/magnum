@@ -59,9 +59,22 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
         # executable so plugin existence checks are consistent between the two
         ${MAGNUM_SCENECONVERTER_STATIC_PLUGINS}
     FILES
+        SceneConverterTestFiles/blue4x4.png
+        # magnum-imageconverter --layers blue4x4.png --array blue4x4x1.ktx2 -c writerName=
+        SceneConverterTestFiles/blue4x4x1.ktx2
+        SceneConverterTestFiles/broken-image-2d.gltf
+        SceneConverterTestFiles/broken-image-3d.gltf
         SceneConverterTestFiles/broken-mesh.obj
         SceneConverterTestFiles/broken-scene.gltf
+        SceneConverterTestFiles/dxt1.dds
         SceneConverterTestFiles/empty.gltf
+        SceneConverterTestFiles/image-dds.gltf
+        SceneConverterTestFiles/images-2d.gltf
+        SceneConverterTestFiles/images-2d-1x1.bin
+        SceneConverterTestFiles/images-2d-1x1.gltf
+        SceneConverterTestFiles/images-3d.gltf
+        SceneConverterTestFiles/images-3d-1x1x1.bin
+        SceneConverterTestFiles/images-3d-1x1x1.gltf
         SceneConverterTestFiles/info-animations.txt
         SceneConverterTestFiles/info-cameras.txt
         SceneConverterTestFiles/info-images.txt
@@ -90,6 +103,9 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
         SceneConverterTestFiles/quad.gltf
         SceneConverterTestFiles/quad.obj
         SceneConverterTestFiles/quad.ply
+        SceneConverterTestFiles/red2x2.png
+        # magnum-imageconverter --layers red2x2.png --array red2x2x1.ktx2 -c writerName=
+        SceneConverterTestFiles/red2x2x1.ktx2
         SceneConverterTestFiles/two-quads-duplicates-fuzzy.bin
         SceneConverterTestFiles/two-quads-duplicates-fuzzy.gltf
         SceneConverterTestFiles/two-quads-duplicates.bin

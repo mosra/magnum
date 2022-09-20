@@ -1,0 +1,13 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "extensionsUsed": [
+    "MSFT_texture_dds"
+  ],
+  "images": [
+    {
+      "uri": "dxt1.dds"
+    }
+  ]
+}

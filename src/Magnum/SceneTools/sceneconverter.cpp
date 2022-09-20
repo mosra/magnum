@@ -117,11 +117,13 @@ magnum-sceneconverter chair.obj -C MeshOptimizerSceneConverter \
 
 @code{.sh}
 magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
-    [-C|--converter PLUGIN]... [-M|--mesh-converter PLUGIN]...
-    [--plugin-dir DIR] [--map] [--only-mesh-attributes N1,N2-N3…]
-    [--remove-duplicate-vertices] [--remove-duplicate-vertices-fuzzy EPSILON]
+    [-C|--converter PLUGIN]... [-P|--image-converter PLUGIN]...
+    [-M|--mesh-converter PLUGIN]... [--plugin-dir DIR] [--map]
+    [--only-mesh-attributes N1,N2-N3…] [--remove-duplicate-vertices]
+    [--remove-duplicate-vertices-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]...
+    [-p|--image-converter-options key=val,key2=val2,…]...
     [-m|--mesh-converter-options key=val,key2=val2,…]...
     [--mesh ID] [--mesh-level INDEX] [--concatenate-meshes] [--info-animations]
     [--info-images] [--info-lights] [--info-cameras] [--info-materials]
@@ -138,6 +140,8 @@ Arguments:
 -   `-I`, `--importer PLUGIN` --- scene importer plugin (default:
     @ref Trade::AnySceneImporter "AnySceneImporter")
 -   `-C`, `--converter PLUGIN` --- scene converter plugin(s)
+-   `-P`, `--image-converter PLUGIN` --- converter plugin(s) to apply to each
+    image in the scene
 -   `-M`, `--mesh-converter PLUGIN` --- converter plugin(s) to apply to each
     mesh in the scene
 -   `--plugin-dir DIR` --- override base plugin dir
@@ -156,6 +160,8 @@ Arguments:
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to scene converter(s)
+-   `-p`, `--image-converter-options key=val,key2=val2,…` --- configuration
+    options to pass to image converter(s)
 -   `-m`, `--mesh-converter-options key=val,key2=val2,…` --- configuration
     options to pass to mesh converter(s)
 -   `--mesh ID` --- convert just a single mesh instead of the whole scene
@@ -206,10 +212,12 @@ converter doesn't support conversion to a file,
 @relativeref{Trade,AnySceneConverter} is used to save its output. If no `-C` is
 specified, @relativeref{Trade,AnySceneConverter} is used.
 
-Similarly, the `-M` option (and correspondingly also `-m`) can be specified
-multiple times in order to chain more mesh converters together. All mesh
-converters in the chain have to support the ConvertMesh feature. If no `-M` is
-specified, the imported meshes are passed directly to the scene converter.
+Similarly, the `-P` / `-M` options (and correspondingly also `-p` / `-m`) can
+be specified multiple times in order to chain more image / mesh converters
+together. All image converters in the chain have to support the ConvertImage*D
+feature for given image dimensions, all mesh converters in the chain have to
+support the ConvertMesh feature. If no `-P` / `-M` is specified, the imported
+images / meshes are passed directly to the scene converter.
 
 The `--remove-duplicate-vertices` operations are performed before passing them
 to any converter.
@@ -244,6 +252,62 @@ bool isInfoRequested(const Utility::Arguments& args) {
            args.isSet("info");
 }
 
+template<UnsignedInt dimensions> bool runImageConverters(PluginManager::Manager<Trade::AbstractImageConverter>& imageConverterManager, const Utility::Arguments& args, const UnsignedInt i, Containers::Optional<Trade::ImageData<dimensions>>& image) {
+    for(std::size_t j = 0, imageConverterCount = args.arrayValueCount("image-converter"); j != imageConverterCount; ++j) {
+        const Containers::StringView imageConverterName = args.arrayValue<Containers::StringView>("image-converter", j);
+        if(args.isSet("verbose")) {
+            Debug d;
+            d << "Processing" << dimensions << Debug::nospace << "D image" << i;
+            if(imageConverterCount > 1)
+                d << "(" << Debug::nospace << (j+1) << Debug::nospace << "/" << Debug::nospace << imageConverterCount << Debug::nospace << ")";
+            d << "with" << imageConverterName << Debug::nospace << "...";
+        }
+
+        Containers::Pointer<Trade::AbstractImageConverter> imageConverter = imageConverterManager.loadAndInstantiate(imageConverterName);
+        if(!imageConverter) {
+            Debug{} << "Available image converter plugins:" << ", "_s.join(imageConverterManager.aliasList());
+            return false;
+        }
+
+        /* Set options, if passed. The AnyImageConverter check makes no
+            sense here, is just there because the helper wants it */
+        if(args.isSet("verbose")) imageConverter->addFlags(Trade::ImageConverterFlag::Verbose);
+        if(j < args.arrayValueCount("image-converter-options"))
+            Implementation::setOptions(*imageConverter, "AnyImageConverter", args.arrayValue("image-converter-options", j));
+
+        Trade::ImageConverterFeatures expectedFeatures;
+        if(dimensions == 2) {
+            expectedFeatures = image->isCompressed() ?
+                Trade::ImageConverterFeature::ConvertCompressed2D :
+                Trade::ImageConverterFeature::Convert2D;
+        } else if(dimensions == 3) {
+            expectedFeatures = image->isCompressed() ?
+                Trade::ImageConverterFeature::ConvertCompressed3D :
+                Trade::ImageConverterFeature::Convert3D;
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        /** @todo level-related features, once testable */
+        if(!(imageConverter->features() >= expectedFeatures)) {
+            Error err;
+            err << imageConverterName << "doesn't support";
+            /** @todo level-related message, once testable */
+            if(image->isCompressed())
+                err << "compressed";
+            err << dimensions << Debug::nospace << "D image conversion, only" << Debug::packed << imageConverter->features();
+            return false;
+        }
+
+        /** @todo handle image levels here, once GltfSceneConverter is capable
+            of converting them (which needs AbstractImageConverter to be
+            reworked around ImageData) */
+        if(!(image = imageConverter->convert(*image))) {
+            Error{} << "Cannot process" << dimensions << Debug::nospace << "D image" << i << "with" << imageConverterName;
+            return false;
+        }
+    }
+
+    return true;
+}
+
 }
 
 int main(int argc, char** argv) {
@@ -252,6 +316,7 @@ int main(int argc, char** argv) {
         .addArgument("output").setHelp("output", "output file; ignored if --info is present")
         .addOption('I', "importer", "AnySceneImporter").setHelp("importer", "scene importer plugin", "PLUGIN")
         .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)", "PLUGIN")
+        .addArrayOption('P', "image-converter").setHelp("image-converter", "converter plugin(s) to apply to each image in the scene", "PLUGIN")
         .addArrayOption('M', "mesh-converter").setHelp("mesh-converter", "converter plugin(s) to apply to each mesh in the scene", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
@@ -262,6 +327,7 @@ int main(int argc, char** argv) {
         .addOption("remove-duplicate-vertices-fuzzy").setHelp("remove-duplicate-vertices-fuzzy", "remove duplicate vertices with fuzzy comparison in all meshes after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
+        .addArrayOption('p', "image-converter-options").setHelp("image-converter-options", "configuration options to pass to the image converter(s)", "key=val,key2=val2,…")
         .addArrayOption('m', "mesh-converter-options").setHelp("mesh-converter-options", "configuration options to pass to the mesh converter(s)", "key=val,key2=val2,…")
         .addOption("mesh").setHelp("mesh", "convert just a single mesh instead of the whole scene, ignored if --concatenate-meshes is specified", "ID")
         .addOption("mesh-level").setHelp("mesh-level", "level to select for single-mesh conversion", "index")
@@ -311,10 +377,12 @@ ConvertMeshToFile. If the last converter doesn't support conversion to a file,
 AnySceneConverter is used to save its output. If no -C is specified,
 AnySceneConverter is used.
 
-Similarly, the -M option (and correspondingly also -m) can be specified
-multiple times in order to chain more mesh converters together. All mesh
-converters in the chain have to support the ConvertMesh feature. If no -M is
-specified, the imported meshes are passed directly to the scene converter.
+Similarly, the -P / -M options (and correspondingly also -p / -m) can be
+specified multiple times in order to chain more image / mesh converters
+together. All image converters in the chain have to support the ConvertImage*D
+feature for given image dimensions, all mesh converters in the chain have to
+support the ConvertMesh feature. If no -P / -M is specified, the imported
+images / meshes are passed directly to the scene converter.
 
 The --remove-duplicate-vertices operations are performed on meshes before
 passing them to any converter.
@@ -593,6 +661,59 @@ well, the IDs reference attributes of the first mesh.)")
             *previousImporter);
     }
 
+    /* Operations to perform on all images in the importer. If there are any,
+       images are supplied manually to the converter from the array below. */
+    Containers::Array<Trade::ImageData2D> images2D;
+    Containers::Array<Trade::ImageData3D> images3D;
+    if(args.arrayValueCount("image-converter")) {
+        /** @todo implement once there's any file format capable of storing
+            these */
+        if(importer->image1DCount()) {
+            Error{} << "Sorry, 1D image conversion is not implemented yet";
+            return 1;
+        }
+
+        for(UnsignedInt i = 0; i != importer->image2DCount(); ++i) {
+            Containers::Optional<Trade::ImageData2D> image;
+            {
+                /** @todo handle image levels once GltfSceneConverter can save
+                    them (which needs AbstractImageConverter to be reworked
+                    around ImageData) -- there could be an image2DOffsets
+                    array saying which subrange is levels for which image */
+                Trade::Implementation::Duration d{importConversionTime};
+                if(!(image = importer->image2D(i))) {
+                    Error{} << "Cannot import 2D image" << i;
+                    return 1;
+                }
+            }
+
+            if(!runImageConverters(imageConverterManager, args, i, image))
+                return 1;
+
+            arrayAppend(images2D, *std::move(image));
+        }
+
+        for(UnsignedInt i = 0; i != importer->image3DCount(); ++i) {
+            Containers::Optional<Trade::ImageData3D> image;
+            {
+                /** @todo handle image levels once GltfSceneConverter can save
+                    them (which needs AbstractImageConverter to be reworked
+                    around ImageData) -- there could be an image2DOffsets
+                    array saying which subrange is levels for which image */
+                Trade::Implementation::Duration d{importConversionTime};
+                if(!(image = importer->image3D(i))) {
+                    Error{} << "Cannot import 3D image" << i;
+                    return 1;
+                }
+            }
+
+            if(!runImageConverters(imageConverterManager, args, i, image))
+                return 1;
+
+            arrayAppend(images3D, *std::move(image));
+        }
+    }
+
     /* Operations to perform on all meshes in the importer. If there are any,
        meshes are supplied manually to the converter from the array below. */
     Containers::Array<Trade::MeshData> meshes;
@@ -750,6 +871,57 @@ well, the IDs reference attributes of the first mesh.)")
             converters receive this for SceneData, MaterialData and TextureData
             as well */
         Trade::SceneContents contents = ~Trade::SceneContents{};
+
+        /* If there are any loose images from previous conversion steps, add
+           them directly, and clear the array so the next iteration (if any)
+           takes them from the importer instead */
+        /** @todo 1D images, once there's any format that supports them */
+        if(images2D) {
+            if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Images2D)) {
+                Warning{} << "Ignoring" << images2D.size() << "2D images not supported by the converter";
+            } else for(UnsignedInt i = 0; i != images2D.size(); ++i) {
+                Trade::Implementation::Duration d{conversionTime};
+                if(!converter->add(images2D[i], contents & Trade::SceneContent::Names ? importer->image2DName(i) : Containers::String{})) {
+                    Error{} << "Cannot add 2D image" << i;
+                    return 1;
+                }
+            }
+
+            /* Ensure the images are not added by addSupportedImporterContents()
+               below. Do this also in case the converter actually doesn't
+               support image addition, as it would otherwise cause two warnings
+               about the same thing being printed. */
+            contents &= ~Trade::SceneContent::Images2D;
+
+            /* Delete the list to avoid adding them again for the next
+               converter (at which point they would be stale) */
+            /** @todo this line is untested, needs first an importer->importer
+                converter supporting images */
+            images2D = {};
+        }
+        if(images3D) {
+            if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Images3D)) {
+                Warning{} << "Ignoring" << images3D.size() << "3D images not supported by the converter";
+            } else for(UnsignedInt i = 0; i != images3D.size(); ++i) {
+                Trade::Implementation::Duration d{conversionTime};
+                if(!converter->add(images3D[i], contents & Trade::SceneContent::Names ? importer->image3DName(i) : Containers::String{})) {
+                    Error{} << "Cannot add 3D image" << i;
+                    return 1;
+                }
+            }
+
+            /* Ensure the images are not added by addSupportedImporterContents()
+               below. Do this also in case the converter actually doesn't
+               support image addition, as it would otherwise cause two warnings
+               about the same thing being printed. */
+            contents &= ~Trade::SceneContent::Images3D;
+
+            /* Delete the list to avoid adding them again for the next
+               converter (at which point they would be stale) */
+            /** @todo this line is untested, needs first an importer->importer
+                converter supporting images */
+            images3D = {};
+        }
 
         /* If there are any loose meshes from previous conversion steps, add
            them directly, and clear the array so the next iteration (if any)
