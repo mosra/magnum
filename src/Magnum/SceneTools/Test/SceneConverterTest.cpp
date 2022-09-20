@@ -304,6 +304,33 @@ const struct {
         "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
         "Option nonexistentStanfordConverterOption not recognized by StanfordSceneConverter\n"},
+    {"one mesh, remove duplicate vertices, two converters, verbose", Containers::array<Containers::String>({
+        "--remove-duplicate-vertices",
+        "-C", "MeshOptimizerSceneConverter", "-v",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
+        "ObjImporter", "StanfordSceneConverter",
+        "quad.ply", nullptr,
+        "Trade::AnySceneImporter::openFile(): using ObjImporter\n"
+        "Duplicate removal: 6 -> 4 vertices\n"
+        /** @todo this only verifies that the result of duplicate removal is
+            properly passed to MeshOptimizer, but not that the MeshOptimizer
+            output is properly passed to StanfordSceneConverter -- needs to
+            wait until there's a plugin which can verify that with a small
+            data amount */
+        "Trade::MeshOptimizerSceneConverter::convert(): processing stats:\n"
+        "  vertex cache:\n"
+        "    4 -> 4 transformed vertices\n"
+        "    1 -> 1 executed warps\n"
+        "    ACMR 2 -> 2\n"
+        "    ATVR 1 -> 1\n"
+        "  vertex fetch:\n"
+        "    64 -> 64 bytes fetched\n"
+        "    overfetch 1.33333 -> 1.33333\n"
+        "  overdraw:\n"
+        "    65536 -> 65536 shaded pixels\n"
+        "    65536 -> 65536 covered pixels\n"
+        "    overdraw 1 -> 1\n"
+        "Trade::AnySceneConverter::convertToFile(): using StanfordSceneConverter\n"},
 };
 
 const struct {
