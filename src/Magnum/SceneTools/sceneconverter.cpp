@@ -513,25 +513,59 @@ the first mesh.)")
                 vertexCount};
         }
 
-        /* Create an importer instance that contains just the single mesh for
-           further step, without any other data. Simpler than having to
-           special-case the single-mesh case in all following steps. */
+        /* Create an importer instance that contains just the single mesh and
+           related metadata for further steps, without anything else */
+        /** @todo might be useful to have this split out of the file and tested
+            directly if the complexity grows even further */
         struct SingleMeshImporter: Trade::AbstractImporter {
-            explicit SingleMeshImporter(Trade::MeshData&& mesh): mesh{std::move(mesh)} {}
+            explicit SingleMeshImporter(Trade::MeshData&& mesh_, Containers::String&& name, Trade::AbstractImporter& original): mesh{std::move(mesh_)}, name{std::move(name)} {
+                for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
+                    const Trade::MeshAttribute name = mesh.attributeName(i);
+                    if(!isMeshAttributeCustom(name)) continue;
+                    /* Appending even empty ones so we don't have to
+                       special-case "not found" in doMeshAttributeName() */
+                    arrayAppend(attributeNames, InPlaceInit, meshAttributeCustom(name), original.meshAttributeName(name));
+                }
+            }
 
             Trade::ImporterFeatures doFeatures() const override { return {}; } /* LCOV_EXCL_LINE */
             bool doIsOpened() const override { return true; }
             void doClose() override {} /* LCOV_EXCL_LINE */
 
             UnsignedInt doMeshCount() const override { return 1; }
+            Containers::String doMeshName(UnsignedInt) override {
+                return name;
+            }
+            Containers::String doMeshAttributeName(UnsignedShort name) override {
+                for(const Containers::Pair<UnsignedShort, Containers::String>& i: attributeNames)
+                    if(i.first() == name) return i.second();
+                /* All custom attributes, including the unnamed, are in the
+                   attributeNames array and both our attribute name propagation
+                   here and addSupportedImporterContents() call
+                   meshAttributeName() only with attributes present in the
+                   actual mesh, so this should never be reached */
+                CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            }
             Containers::Optional<Trade::MeshData> doMesh(UnsignedInt, UnsignedInt) override {
                 return MeshTools::reference(mesh);
             }
 
             Trade::MeshData mesh;
+            Containers::String name;
+            Containers::Array<Containers::Pair<UnsignedShort, Containers::String>> attributeNames;
         };
 
-        importer.emplace<SingleMeshImporter>(*std::move(mesh));
+        /* Save the previous importer so we can pass it to the constructor in
+           emplace(), otherwise the constructor would access a deleted pointer */
+        /** @todo would it make sense for emplace() to first construct and only
+            then delete so I wouldn't need to juggle the previous value
+            manually? */
+        Containers::Pointer<Trade::AbstractImporter> previousImporter = std::move(importer);
+        importer.emplace<SingleMeshImporter>(*std::move(mesh),
+            /* Propagate the name only in case of a single mesh, for
+               concatenation it wouldn't make sense */
+            args.value<Containers::StringView>("mesh") ? previousImporter->meshName(args.value<UnsignedInt>("mesh")) : Containers::String{},
+            *previousImporter);
     }
 
     /* Operations to perform on all meshes in the importer. If there are any,
@@ -658,7 +692,28 @@ the first mesh.)")
                 Warning{} << "Ignoring" << meshes.size() << "meshes not supported by the converter";
             } else for(UnsignedInt i = 0; i != meshes.size(); ++i) {
                 Trade::Implementation::Duration d{conversionTime};
-                if(!converter->add(meshes[i])) {
+
+                const Trade::MeshData& mesh = meshes[i];
+
+                /* Propagate custom attribute names, skip ones that are empty.
+                   Compared to data names this is done always to avoid
+                   information loss. */
+                for(UnsignedInt j = 0; j != mesh.attributeCount(); ++j) {
+                    /** @todo have some kind of a map to not have to query the
+                        same custom attribute again for each mesh */
+                    const Trade::MeshAttribute name = mesh.attributeName(j);
+                    if(!isMeshAttributeCustom(name)) continue;
+                    /* The expectation here is that the meshes are coming from
+                       the importer instance. If --mesh or --concatenate-meshes
+                       was used, the original importer is replaced a new one
+                       containing just one mesh, so in that case it works
+                       too. */
+                    if(const Containers::String nameString = importer->meshAttributeName(name)) {
+                        converter->setMeshAttributeName(name, nameString);
+                    }
+                }
+
+                if(!converter->add(mesh, contents & Trade::SceneContent::Names ? importer->meshName(i) : Containers::String{})) {
                     Error{} << "Cannot add mesh" << i;
                     return 1;
                 }

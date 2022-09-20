@@ -390,6 +390,30 @@ const struct {
         "    65536 -> 65536 covered pixels\n"
         "    overdraw 1 -> 1\n"
         "Trade::AnySceneConverter::beginFile(): using StanfordSceneConverter\n"},
+    {"implicit custom-processed mesh with a name and custom attributes", Containers::array<Containers::String>({
+        /* Removing the generator identifier to have the file closer to the
+           original */
+        "--remove-duplicate-vertices", "-c", "generator=",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-name-custom-attributes-duplicates.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad-name-custom-attributes.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
+        /* The output should be mostly the same, except that there's now only 4
+           vertices instead of 6. The code that adds meshes manually instead of
+           using addSupportedImporterContents() should take care of propagating
+           mesh names and custom attributes as well. */
+        "quad-name-custom-attributes.gltf", "quad-name-custom-attributes.bin",
+        {}},
+    {"selected custom-processed mesh with a name and custom attributes", Containers::array<Containers::String>({
+        /* Removing the generator identifier to have the file closer to the
+           original */
+        "--mesh", "0", "--remove-duplicate-vertices", "-c", "generator=",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-name-custom-attributes-duplicates.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad-name-custom-attributes.gltf")}),
+        "GltfImporter", "GltfSceneConverter",
+        /* The output should be mostly the same, except that there's now only 4
+           vertices instead of 6. The code that adds meshes manually instead of
+           using addSupportedImporterContents() should take care of propagating
+           mesh names and custom attributes as well. */
+        "quad-name-custom-attributes.gltf", "quad-name-custom-attributes.bin",
+        {}},
 };
 
 const struct {

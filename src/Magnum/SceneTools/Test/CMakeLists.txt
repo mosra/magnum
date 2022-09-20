@@ -79,6 +79,10 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
         SceneConverterTestFiles/quad-duplicates-fuzzy.obj
         SceneConverterTestFiles/quad-duplicates.obj
         SceneConverterTestFiles/quad-duplicates.ply
+        SceneConverterTestFiles/quad-name-custom-attributes-duplicates.bin
+        SceneConverterTestFiles/quad-name-custom-attributes-duplicates.gltf
+        SceneConverterTestFiles/quad-name-custom-attributes.bin
+        SceneConverterTestFiles/quad-name-custom-attributes.gltf
         SceneConverterTestFiles/quad-normals-texcoords.obj
         SceneConverterTestFiles/quad-strip.bin
         SceneConverterTestFiles/quad-strip.gltf
