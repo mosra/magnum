@@ -422,7 +422,7 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::end() {
 
     if(features() & SceneConverterFeature::ConvertMesh) {
         if(_state->meshCount != 1) {
-            Error{} << "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh";
+            Error{} << "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh, got" << _state->meshCount;
             return {};
         }
 
@@ -512,7 +512,7 @@ Containers::Optional<Containers::Array<char>> AbstractSceneConverter::endData() 
 
     } else if(features() >= SceneConverterFeature::ConvertMeshToData) {
         if(_state->meshCount != 1) {
-            Error{} << "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh";
+            Error{} << "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh, got" << _state->meshCount;
             return {};
         }
 

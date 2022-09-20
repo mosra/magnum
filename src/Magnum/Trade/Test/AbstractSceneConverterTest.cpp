@@ -3455,7 +3455,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.end());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh\n");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshZeroMeshes() {
@@ -3471,7 +3471,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshZeroMeshes() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.end());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh\n");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::end(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshTwoMeshes() {
@@ -3574,7 +3574,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endData());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh\n");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataZeroMeshes() {
@@ -3590,7 +3590,7 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataZeroMeshes() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter.endData());
     CORRADE_VERIFY(!converter.isConverting());
-    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh\n");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::endData(): the converter requires exactly one mesh, got 0\n");
 }
 
 void AbstractSceneConverterTest::addMeshThroughConvertMeshToDataTwoMeshes() {
