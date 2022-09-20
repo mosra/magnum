@@ -33,11 +33,13 @@
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/Reference.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/SceneTools/FlattenMeshHierarchy.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
 
 #include "Magnum/Implementation/converterUtilities.h"
@@ -142,18 +144,17 @@ Arguments:
     given IDs in the output. See @ref Utility::String::parseNumberSequence()
     for syntax description.
 -   `--remove-duplicate-vertices` --- remove duplicate vertices using
-    @ref MeshTools::removeDuplicates(const Trade::MeshData&) after import
+    @ref MeshTools::removeDuplicates(const Trade::MeshData&) in all meshes
+    after import
 -   `--remove-duplicate-vertices-fuzzy EPSILON` --- remove duplicate vertices
     using @ref MeshTools::removeDuplicatesFuzzy(const Trade::MeshData&, Float, Double)
-    after import
+    in all meshes after import
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter(s)
--   `--mesh ID` --- mesh to import (default: `0`), ignored if
-    `--concatenate-meshes` is specified
--   `--mesh-level INDEX` --- mesh level to import (default: `0`), ignored if
-    `--concatenate-meshes` is specified
+-   `--mesh ID` --- convert just a single mesh instead of the whole scene
+-   `--mesh-level LEVEL` --- level to select for single-mesh conversion
 -   `--concatenate-meshes` -- flatten mesh hierarchy and concatenate them all
     together @m_class{m-label m-warning} **experimental**
 -   `--info-animations` --- print into about animations in the input file and
@@ -241,12 +242,12 @@ int main(int argc, char** argv) {
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
         #endif
         .addOption("only-mesh-attributes").setHelp("only-mesh-attributes", "include only mesh attributes of given IDs in the output", "N1,N2-N3…")
-        .addBooleanOption("remove-duplicate-vertices").setHelp("remove-duplicate-vertices", "remove duplicate vertices in the mesh after import")
-        .addOption("remove-duplicate-vertices-fuzzy").setHelp("remove-duplicate-vertices-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
+        .addBooleanOption("remove-duplicate-vertices").setHelp("remove-duplicate-vertices", "remove duplicate vertices in all meshes after import")
+        .addOption("remove-duplicate-vertices-fuzzy").setHelp("remove-duplicate-vertices-fuzzy", "remove duplicate vertices with fuzzy comparison in all meshes after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
-        .addOption("mesh", "0").setHelp("mesh", "mesh to import, ignored if --concatenate-meshes is specified", "ID")
-        .addOption("mesh-level", "0").setHelp("mesh-level", "mesh level to import, ignored if --concatenate-meshes is specified", "INDEX")
+        .addOption("mesh").setHelp("mesh", "convert just a single mesh instead of the whole scene, ignored if --concatenate-meshes is specified", "ID")
+        .addOption("mesh-level").setHelp("mesh-level", "level to select for single-mesh conversion", "index")
         .addBooleanOption("concatenate-meshes").setHelp("concatenate-meshes", "flatten mesh hierarchy and concatenate them all together")
         .addBooleanOption("info-animations").setHelp("info-animations", "print info about animations in the input file and exit")
         .addBooleanOption("info-images").setHelp("info-images", "print info about images in the input file and exit")
@@ -333,16 +334,38 @@ the first mesh.)")
         if(isInfoRequested(args))
             Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
     }
+    if(args.isSet("concatenate-meshes") && args.value<Containers::StringView>("mesh")) {
+        Error{} << "The --mesh and --concatenate-meshes options are mutually exclusive";
+        return 1;
+    }
+    if(args.value<Containers::StringView>("mesh-level") && !args.value<Containers::StringView>("mesh")) {
+        Error{} << "The --mesh-level option can only be used with --mesh";
+        return 1;
+    }
+    /** @todo remove this once only-attributes can work with attribute names
+        and thus for more meshes */
+    if(args.value<Containers::StringView>("only-mesh-attributes") && !args.value<Containers::StringView>("mesh") && !args.isSet("concatenate-meshes")) {
+        Error{} << "The --only-mesh-attributes option can only be used with --mesh or --concatenate-meshes";
+        return 1;
+    }
 
     /* Importer manager */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())};
 
-    /* Scene converter manager */
+    /* Image converter manager for potential dependencies. Needs to be
+       constructed before the scene converter manager for proper destruction
+       order. */
+    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+
+    /* Scene converter manager, register the image converter manager with it */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractSceneConverter::pluginSearchPaths().back()).second())};
+    converterManager.registerExternalManager(imageConverterManager);
 
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) {
@@ -354,14 +377,19 @@ the first mesh.)")
     if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
     Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
 
-    /* Wow, C++, you suck. This implicitly initializes to random shit?! */
-    std::chrono::high_resolution_clock::duration importTime{};
+    /* Wow, C++, you suck. This implicitly initializes to random shit?!
+
+       Also, because of addSupportedImporterContents() it's not really possible
+       to distinguish between time spent importing and time spent converting.
+       So it's lumped into a single variable. Steps that are really just
+       conversion are measured separately. */
+    std::chrono::high_resolution_clock::duration importConversionTime{};
 
     /* Open the file or map it if requested */
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
     Containers::Optional<Containers::Array<const char, Utility::Path::MapDeleter>> mapped;
     if(args.isSet("map")) {
-        Trade::Implementation::Duration d{importTime};
+        Trade::Implementation::Duration d{importConversionTime};
         if(!(mapped = Utility::Path::mapRead(args.value("input"))) || !importer->openMemory(*mapped)) {
             Error() << "Cannot memory-map file" << args.value("input");
             return 3;
@@ -369,7 +397,7 @@ the first mesh.)")
     } else
     #endif
     {
-        Trade::Implementation::Duration d{importTime};
+        Trade::Implementation::Duration d{importConversionTime};
         if(!importer->openFile(args.value("input"))) {
             Error() << "Cannot open file" << args.value("input");
             return 3;
@@ -378,122 +406,180 @@ the first mesh.)")
 
     /* Print file info, if requested */
     if(isInfoRequested(args)) {
-        const bool error = SceneTools::Implementation::printInfo(useColor, useColor24, args, *importer, importTime);
+        const bool error = SceneTools::Implementation::printInfo(useColor, useColor24, args, *importer, importConversionTime);
 
         if(args.isSet("profile")) {
-            Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
+            Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importConversionTime).count())/1.0e3f << "seconds";
         }
 
         return error ? 1 : 0;
     }
 
-    if(!importer->meshCount()) {
-        Error{} << "No meshes found in" << args.value("input");
-        return 1;
-    }
-
     /* Wow, C++, you suck. This implicitly initializes to random shit?! */
     std::chrono::high_resolution_clock::duration conversionTime{};
 
-    Containers::Optional<Trade::MeshData> mesh;
+    /* Take a single mesh or concatenate all meshes together, if requested.
+       After that, the importer is changed to one that contains just a single
+       mesh... */
+    bool singleMesh = false;
+    if(args.isSet("concatenate-meshes") || args.value<Containers::StringView>("mesh")) {
+        singleMesh = true;
+        /* ... and subsequent conversion deals with just meshes, throwing away
+           materials and everything else (if present). */
 
-    /* Concatenate input meshes, if requested */
-    if(args.isSet("concatenate-meshes")) {
-        Containers::Array<Trade::MeshData> meshes;
-        arrayReserve(meshes, importer->meshCount());
-        for(std::size_t i = 0, iMax = importer->meshCount(); i != iMax; ++i) {
-            Trade::Implementation::Duration d{importTime};
-            Containers::Optional<Trade::MeshData> meshToConcatenate = importer->mesh(i);
-            if(!meshToConcatenate) {
-                Error{} << "Cannot import mesh" << i;
+        Containers::Optional<Trade::MeshData> mesh;
+
+        /* Concatenate all meshes together */
+        if(args.isSet("concatenate-meshes")) {
+            if(!importer->meshCount()) {
+                Error{} << "No meshes found in" << args.value("input");
                 return 1;
             }
 
-            arrayAppend(meshes, *std::move(meshToConcatenate));
+            Containers::Array<Trade::MeshData> meshes;
+            arrayReserve(meshes, importer->meshCount());
+            /** @todo handle mesh levels here, once any plugin is capable of
+                importing them */
+            for(std::size_t i = 0, iMax = importer->meshCount(); i != iMax; ++i) {
+                Trade::Implementation::Duration d{importConversionTime};
+                Containers::Optional<Trade::MeshData> meshToConcatenate = importer->mesh(i);
+                if(!meshToConcatenate) {
+                    Error{} << "Cannot import mesh" << i;
+                    return 1;
+                }
+
+                arrayAppend(meshes, *std::move(meshToConcatenate));
+            }
+
+            /* If there's a scene, use it to flatten mesh hierarchy. If not,
+               assume all meshes are in the root. */
+            /** @todo make it possible to choose the scene */
+            if(importer->defaultScene() != -1) {
+                Containers::Optional<Trade::SceneData> scene;
+                {
+                    Trade::Implementation::Duration d{importConversionTime};
+                    if(!(scene = importer->scene(importer->defaultScene()))) {
+                        Error{} << "Cannot import scene" << importer->defaultScene() << "for mesh concatenation";
+                        return 1;
+                    }
+                }
+
+                Containers::Array<Trade::MeshData> flattenedMeshes;
+                {
+                    Trade::Implementation::Duration d{conversionTime};
+                    /** @todo once there are 2D scenes, check the scene is 3D */
+                    for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation: SceneTools::flattenMeshHierarchy3D(*scene))
+                        arrayAppend(flattenedMeshes, MeshTools::transform3D(meshes[meshTransformation.first()], meshTransformation.third()));
+                }
+                meshes = std::move(flattenedMeshes);
+            }
+
+            {
+                Trade::Implementation::Duration d{conversionTime};
+                /** @todo this will assert if the meshes have incompatible primitives
+                    (such as some triangles, some lines), or if they have
+                    loops/strips/fans -- handle that explicitly */
+                mesh = MeshTools::concatenate(meshes);
+            }
+
+        /* Otherwise import just one */
+        } else {
+            Trade::Implementation::Duration d{importConversionTime};
+            if(!(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("mesh-level")))) {
+                Error{} << "Cannot import the mesh";
+                return 4;
+            }
         }
 
-        /* If there's a scene, use it to flatten mesh hierarchy. If not, assume
-           all meshes are in the root. */
-        /** @todo make it possible to choose the scene */
-        if(importer->defaultScene() != -1) {
-            Containers::Optional<Trade::SceneData> scene;
+        /* Filter mesh attributes, if requested */
+        /** @todo move outside of the --mesh / --concatenate-meshes branch once
+            it's possible to filter attributes by name */
+        if(Containers::StringView onlyAttributes = args.value<Containers::StringView>("only-mesh-attributes")) {
+            const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(onlyAttributes, 0, mesh->attributeCount());
+            if(!only) return 2;
+
+            /** @todo use MeshTools::filterOnlyAttributes() once it has a
+                rvalue overload that transfers ownership */
+            Containers::Array<Trade::MeshAttributeData> attributes;
+            arrayReserve(attributes, only->size());
+            for(UnsignedInt i: *only)
+                arrayAppend(attributes, mesh->attributeData(i));
+
+            const Trade::MeshIndexData indices{mesh->indices()};
+            const UnsignedInt vertexCount = mesh->vertexCount();
+            mesh = Trade::MeshData{mesh->primitive(),
+                mesh->releaseIndexData(), indices,
+                mesh->releaseVertexData(), std::move(attributes),
+                vertexCount};
+        }
+
+        /* Create an importer instance that contains just the single mesh for
+           further step, without any other data. Simpler than having to
+           special-case the single-mesh case in all following steps. */
+        struct SingleMeshImporter: Trade::AbstractImporter {
+            explicit SingleMeshImporter(Trade::MeshData&& mesh): mesh{std::move(mesh)} {}
+
+            Trade::ImporterFeatures doFeatures() const override { return {}; } /* LCOV_EXCL_LINE */
+            bool doIsOpened() const override { return true; }
+            void doClose() override {} /* LCOV_EXCL_LINE */
+
+            UnsignedInt doMeshCount() const override { return 1; }
+            Containers::Optional<Trade::MeshData> doMesh(UnsignedInt, UnsignedInt) override {
+                return MeshTools::reference(mesh);
+            }
+
+            Trade::MeshData mesh;
+        };
+
+        importer.emplace<SingleMeshImporter>(*std::move(mesh));
+    }
+
+    /* Operations to perform on all meshes in the importer. If there are any,
+       meshes are supplied manually to the converter from the array below. */
+    Containers::Array<Trade::MeshData> meshes;
+    if(args.isSet("remove-duplicate-vertices") ||
+       args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy"))
+    {
+        for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
+            Containers::Optional<Trade::MeshData> mesh;
             {
-                Trade::Implementation::Duration d{importTime};
-                if(!(scene = importer->scene(importer->defaultScene()))) {
-                    Error{} << "Cannot import scene" << importer->defaultScene() << "for mesh concatenation";
+                /** @todo handle mesh levels here, once any plugin is capable
+                    of importing them */
+                Trade::Implementation::Duration d{importConversionTime};
+                if(!(mesh = importer->mesh(i))) {
+                    Error{} << "Cannot import mesh" << i;
                     return 1;
                 }
             }
 
-            Containers::Array<Trade::MeshData> flattenedMeshes;
-            {
+            const UnsignedInt beforeVertexCount = mesh->vertexCount();
+            const bool fuzzy = !!args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy");
+
+            /** @todo accept two values for float and double fuzzy comparison,
+                or maybe also different for positions, normals and texcoords?
+                ugh... */
+            if(fuzzy) {
                 Trade::Implementation::Duration d{conversionTime};
-                /** @todo once there are 2D scenes, check the scene is 3D */
-                for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation: SceneTools::flattenMeshHierarchy3D(*scene))
-                    arrayAppend(flattenedMeshes, MeshTools::transform3D(meshes[meshTransformation.first()], meshTransformation.third()));
+                mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicate-vertices-fuzzy"));
+            } else {
+                Trade::Implementation::Duration d{conversionTime};
+                mesh = MeshTools::removeDuplicates(*std::move(mesh));
             }
-            meshes = std::move(flattenedMeshes);
+
+            if(args.isSet("verbose")) {
+                Debug d;
+                /* Mesh index 0 would be confusing in case of
+                    --concatenate-meshes and plain wrong with --mesh, so
+                    don't even print it */
+                if(singleMesh)
+                    d << (fuzzy ? "Fuzzy duplicate removal:" : "Duplicate removal:");
+                else
+                    d << "Mesh" << i << (fuzzy ? "fuzzy duplicate removal:" : "duplicate removal:");
+                d << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
+            }
+
+            arrayAppend(meshes, *std::move(mesh));
         }
-
-        /* Concatenate all meshes together */
-        {
-            Trade::Implementation::Duration d{conversionTime};
-            /** @todo this will assert if the meshes have incompatible primitives
-                (such as some triangles, some lines), or if they have
-                loops/strips/fans -- handle that explicitly */
-            mesh = MeshTools::concatenate(meshes);
-        }
-
-    /* Otherwise import just one */
-    } else {
-        Trade::Implementation::Duration d{importTime};
-        if(!(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("mesh-level")))) {
-            Error{} << "Cannot import the mesh";
-            return 4;
-        }
-    }
-
-    /* Filter mesh attributes, if requested */
-    if(const Containers::StringView onlyMeshAttributes = args.value<Containers::StringView>("only-mesh-attributes")) {
-        const Containers::Optional<Containers::Array<UnsignedInt>> only = Utility::String::parseNumberSequence(onlyMeshAttributes, 0, mesh->attributeCount());
-        if(!only) return 2;
-
-        /** @todo use MeshTools::filterOnlyAttributes() once it has a rvalue
-            overload that transfers ownership */
-        Containers::Array<Trade::MeshAttributeData> attributes;
-        arrayReserve(attributes, only->size());
-        for(UnsignedInt i: *only)
-            arrayAppend(attributes, mesh->attributeData(i));
-
-        const Trade::MeshIndexData indices{mesh->indices()};
-        const UnsignedInt vertexCount = mesh->vertexCount();
-        mesh = Trade::MeshData{mesh->primitive(),
-            mesh->releaseIndexData(), indices,
-            mesh->releaseVertexData(), std::move(attributes),
-            vertexCount};
-    }
-
-    /* Remove duplicate vertices, if requested */
-    if(args.isSet("remove-duplicate-vertices")) {
-        const UnsignedInt beforeVertexCount = mesh->vertexCount();
-        {
-            Trade::Implementation::Duration d{conversionTime};
-            mesh = MeshTools::removeDuplicates(*std::move(mesh));
-        }
-        if(args.isSet("verbose"))
-            Debug{} << "Duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
-    }
-
-    /* Remove duplicate vertices with fuzzy comparison, if requested */
-    /** @todo accept two values for float and double fuzzy comparison */
-    if(args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy")) {
-        const UnsignedInt beforeVertexCount = mesh->vertexCount();
-        {
-            Trade::Implementation::Duration d{conversionTime};
-            mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicate-vertices-fuzzy"));
-        }
-        if(args.isSet("verbose"))
-            Debug{} << "Fuzzy duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
     }
 
     /* Assume there's always one passed --converter option less, and the last
@@ -516,43 +602,118 @@ the first mesh.)")
         if(i < args.arrayValueCount("converter-options"))
             Implementation::setOptions(*converter, "AnySceneConverter", args.arrayValue("converter-options", i));
 
-        /* This is the last --converter (or the implicit AnySceneConverter at
-           the end), output to a file and exit the loop */
-        if(i + 1 >= converterCount && ((converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile) || converter->features() >= (Trade::SceneConverterFeature::ConvertMultipleToFile|Trade::SceneConverterFeature::AddMeshes))) {
-            /* No verbose output for just one converter */
-            if(converterCount > 1 && args.isSet("verbose"))
-                Debug{} << "Saving output (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
+        /* Decide if this is the last converter, capable of saving to a file */
+        const bool isLastConverter = i + 1 >= converterCount && (converter->features() & (Trade::SceneConverterFeature::ConvertMeshToFile|Trade::SceneConverterFeature::ConvertMultipleToFile));
 
+        /* No verbose output for just one converter */
+        if(converterCount > 1 && args.isSet("verbose")) {
+            if(isLastConverter) {
+                Debug{} << "Saving output (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
+            } else {
+                CORRADE_INTERNAL_ASSERT(i < converterCount);
+                Debug{} << "Processing (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
+            }
+        }
+
+        /* This is the last --converter (or the implicit AnySceneConverter at
+           the end), output to a file */
+        if(isLastConverter) {
+            {
+                Trade::Implementation::Duration d{conversionTime};
+                if(!converter->beginFile(args.value("output"))) {
+                    Error{} << "Cannot begin conversion of file" << args.value("output");
+                    return 1;
+                }
+            }
+
+        /* This is not the last converter, expect that it's capable of
+           converting to an importer instance (or a MeshData wrapped in an
+           importer instance) */
+        } else {
+            if(!(converter->features() & (Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMultiple))) {
+                Error{} << converterName << "doesn't support importer conversion, only" << converter->features();
+                return 6;
+            }
+
+            {
+                Trade::Implementation::Duration d{conversionTime};
+                if(!converter->begin()) {
+                    Error{} << "Cannot begin importer conversion";
+                    return 1;
+                }
+            }
+        }
+
+        /* Contents to convert, by default all of them */
+        /** @todo make it possible to filter this on the command line, once the
+            converters receive this for SceneData, MaterialData and TextureData
+            as well */
+        Trade::SceneContents contents = ~Trade::SceneContents{};
+
+        /* If there are any loose meshes from previous conversion steps, add
+           them directly instead, and clear the array so the next iteration (if
+           any) takes them from the importer instead */
+        if(meshes) {
+            if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Meshes)) {
+                Warning{} << "Ignoring" << meshes.size() << "meshes not supported by the converter";
+            } else for(UnsignedInt i = 0; i != meshes.size(); ++i) {
+                Trade::Implementation::Duration d{conversionTime};
+                if(!converter->add(meshes[i])) {
+                    Error{} << "Cannot add mesh" << i;
+                    return 1;
+                }
+            }
+
+            /* Ensure the meshes are not added by addSupportedImporterContents()
+               below. Do this also in case the converter actually doesn't
+               support mesh addition, as it would otherwise cause two warnings
+               about the same thing being printed. */
+            contents &= ~Trade::SceneContent::Meshes;
+
+            /* Delete the list to avoid adding them again for the next
+               converter (at which point they would be stale) */
+            /** @todo this line is untested, needs two chained conversion steps
+                that each change the output to verify the old meshes don't get
+                reused in the next step again */
+            meshes = {};
+        }
+
+        {
+            Trade::Implementation::Duration d{importConversionTime};
+            if(!converter->addSupportedImporterContents(*importer, contents)) {
+                Error{} << "Cannot add importer contents";
+                return 5;
+            }
+        }
+
+        /* This is the last --converter (or the implicit AnySceneConverter at
+           the end), end the file and exit the loop */
+        if(isLastConverter) {
             Trade::Implementation::Duration d{conversionTime};
-            if(!converter->convertToFile(*mesh, args.value("output"))) {
-                Error{} << "Cannot save file" << args.value("output");
+            if(!converter->endFile()) {
+                Error{} << "Cannot end conversion of file" << args.value("output");
                 return 5;
             }
 
             break;
 
-        /* This is not the last converter, expect that it's capable of
-           ConvertMesh */
+        /* This is not the last converter, save the resulting importer instance
+           for the next loop iteration. By design, the importer should not
+           depend on any data from the converter instance, only on the
+           converter plugin, so we should be fine replacing the converter with
+           a different one in the next iteration and keeping just the importer
+           returned from it. */
         } else {
-            CORRADE_INTERNAL_ASSERT(i < converterCount);
-            if(converterCount > 1 && args.isSet("verbose"))
-                Debug{} << "Processing (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
-
-            if(!(converter->features() & Trade::SceneConverterFeature::ConvertMesh)) {
-                Error{} << converterName << "doesn't support mesh conversion, only" << converter->features();
-                return 6;
-            }
-
             Trade::Implementation::Duration d{conversionTime};
-            if(!(mesh = converter->convert(*mesh))) {
-                Error{} << converterName << "cannot convert the mesh";
-                return 7;
+            if(!(importer = converter->end())) {
+                Error{} << "Cannot end importer conversion";
+                return 1;
             }
         }
     }
 
     if(args.isSet("profile")) {
-        Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds, conversion"
+        Debug{} << "Import and conversion took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importConversionTime).count())/1.0e3f << "seconds, conversion"
             << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(conversionTime).count())/1.0e3f << "seconds";
     }
 }

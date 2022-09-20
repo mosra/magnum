@@ -86,6 +86,12 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
         SceneConverterTestFiles/quad.gltf
         SceneConverterTestFiles/quad.obj
         SceneConverterTestFiles/quad.ply
+        SceneConverterTestFiles/two-quads-duplicates-fuzzy.bin
+        SceneConverterTestFiles/two-quads-duplicates-fuzzy.gltf
+        SceneConverterTestFiles/two-quads-duplicates.bin
+        SceneConverterTestFiles/two-quads-duplicates.gltf
+        SceneConverterTestFiles/two-quads.bin
+        SceneConverterTestFiles/two-quads.gltf
         SceneConverterTestFiles/two-triangles-transformed.bin
         SceneConverterTestFiles/two-triangles-transformed.gltf
         SceneConverterTestFiles/two-triangles.obj)

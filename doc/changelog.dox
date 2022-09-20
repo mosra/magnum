@@ -220,6 +220,8 @@ See also:
 -   New @ref SceneTools library that'll be a home for various whole-scene
     optimization algorithms such as hierarchy flattening, redundant node
     removal and such
+-   The @ref magnum-sceneconverter "magnum-sceneconverter" utility now supports
+    whole-scene conversion instead of operating just on single meshes
 -   The @ref magnum-sceneconverter "magnum-sceneconverter" utility gained an
     experimental `--concatenate-meshes` option, which will flatten the mesh
     hierarchy and concatenate all meshes together. Note that it doesn't
@@ -1141,6 +1143,14 @@ See also:
     `--only-mesh-attributes`, `--remove-duplicate-vertices` and
     `--remove-duplicate-vertices-fuzzy`, respectively, to make it clear they
     affect meshes and not other scene content
+-   The @ref magnum-sceneconverter "magnum-sceneconverter"
+    `--mesh-level` option now requires `--mesh` to be specified as well,
+    instead of being ignored if `--mesh` isn't present
+-   Because the @ref magnum-sceneconverter "magnum-sceneconverter"
+    `--only-mesh-attributes` option takes attribute IDs, it can only be used in
+    combination with `--mesh` or `--concatenate-meshes`. This restriction might
+    be eventually lifted again once it's possible to specify attributes by
+    name.
 -   Due to the rework of @ref Shaders::PhongGL to support directional and
     attenuated point lights, the original behavior of unattenuated point lights
     isn't available anymore. For backwards compatibility, light positions
