@@ -575,19 +575,11 @@ const struct {
         "ObjImporter", nullptr,
         "Utility::parseNumberSequence(): unrecognized character L in LOLNEIN\n"},
     {"can't load converter plugin", Containers::array<Containers::String>({
-        /* Override also the plugin directory for consistent output, however
-           then the importer plugin has to be loaded through an absolute file
-           path (unless using static plugins) */
-        "--plugin-dir", "nonexistent", "-I",
-            #ifndef MAGNUM_BUILD_STATIC
-            Utility::Path::join(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR, "ObjImporter" + Trade::AbstractImporter::pluginSuffix()),
-            #else
-            "ObjImporter",
-            #endif
         "-C", "NonexistentSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", nullptr,
-        "PluginManager::Manager::load(): plugin NonexistentSceneConverter is not static and was not found in nonexistent/sceneconverters\n"
-        "Available converter plugins: "}, /* Just a prefix */
+        Utility::format("PluginManager::Manager::load(): plugin NonexistentSceneConverter is not static and was not found in {}\n"
+        "Available converter plugins: ", /* Just a prefix */
+        MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR)},
     {"file coversion begin failed", Containers::array<Containers::String>({
         "-I", "ObjImporter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.fbx")}),
         "ObjImporter", "AnySceneConverter",
@@ -622,19 +614,11 @@ const struct {
         "ObjImporter", "StanfordSceneConverter",
         "StanfordSceneConverter doesn't support importer conversion, only ConvertMeshToData\n"},
     {"can't load mesh converter plugin", Containers::array<Containers::String>({
-        /* Override also the plugin directory for consistent output, however
-           then the importer plugin has to be loaded through an absolute file
-           path (unless using static plugins) */
-        "--plugin-dir", "nonexistent", "-I",
-            #ifndef MAGNUM_BUILD_STATIC
-            Utility::Path::join(MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR, "ObjImporter" + Trade::AbstractImporter::pluginSuffix()),
-            #else
-            "ObjImporter",
-            #endif
         "-M", "NonexistentSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", nullptr,
-        "PluginManager::Manager::load(): plugin NonexistentSceneConverter is not static and was not found in nonexistent/sceneconverters\n"
-        "Available mesh converter plugins: "}, /* Just a prefix */
+        Utility::format("PluginManager::Manager::load(): plugin NonexistentSceneConverter is not static and was not found in {}\n"
+        "Available mesh converter plugins: ", /* Just a prefix */
+        MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR)},
     {"plugin doesn't support mesh conversion", Containers::array<Containers::String>({
         "-I", "ObjImporter", "-M", "StanfordSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", "StanfordSceneConverter",
