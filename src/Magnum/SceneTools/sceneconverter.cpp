@@ -544,7 +544,7 @@ the first mesh.)")
                    here and addSupportedImporterContents() call
                    meshAttributeName() only with attributes present in the
                    actual mesh, so this should never be reached */
-                CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+                CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
             }
             Containers::Optional<Trade::MeshData> doMesh(UnsignedInt, UnsignedInt) override {
                 return MeshTools::reference(mesh);
