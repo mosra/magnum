@@ -203,11 +203,11 @@ It's possible to specify the `-C` option (and correspondingly also `-c`)
 multiple times in order to chain more converters together. All converters in
 the chain have to support the
 @ref Trade::SceneConverterFeature::ConvertMultiple or
-@relativeref{Trade::SceneCOnverterFeature,ConvertMesh} feature, the last
+@relativeref{Trade::SceneConverterFeature,ConvertMesh} feature, the last
 converter either @ref Trade::SceneConverterFeature::ConvertMultiple,
-@relativeref{Trade::SceneCOnverterFeature,ConvertMesh},
-@relativeref{Trade::SceneCOnverterFeature,ConvertMultipleToFile} or
-@relativeref{Trade::SceneCOnverterFeature,ConvertMeshToFile}. If the last
+@relativeref{Trade::SceneConverterFeature,ConvertMesh},
+@relativeref{Trade::SceneConverterFeature,ConvertMultipleToFile} or
+@relativeref{Trade::SceneConverterFeature,ConvertMeshToFile}. If the last
 converter doesn't support conversion to a file,
 @relativeref{Trade,AnySceneConverter} is used to save its output. If no `-C` is
 specified, @relativeref{Trade,AnySceneConverter} is used.

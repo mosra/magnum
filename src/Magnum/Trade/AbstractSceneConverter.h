@@ -329,8 +329,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlags value);
 Content to be taken from an @ref AbstractImporter and passed to an
 @ref AbstractSceneConverter in @ref AbstractSceneConverter::addImporterContents()
 and @relativeref{AbstractSceneConverter,addSupportedImporterContents()}.
-@see @ref SceneContents, @ref sceneContentsFor(AbstractImporter&),
-    @ref sceneContentsFor(AbstractSceneConverter&)
+@see @ref SceneContents, @ref sceneContentsFor(const AbstractImporter&),
+    @ref sceneContentsFor(const AbstractSceneConverter&)
 */
 enum class SceneContent: UnsignedInt {
     /** @todo needs to be taken by addScene(), addMaterial() and addTexture()
@@ -484,8 +484,8 @@ enum class SceneContent: UnsignedInt {
 Content to be taken from an @ref AbstractImporter and passed to an
 @ref AbstractSceneConverter in @ref AbstractSceneConverter::addImporterContents()
 and @relativeref{AbstractSceneConverter,addSupportedImporterContents()}.
-@see @ref sceneContentsFor(AbstractImporter&),
-    @ref sceneContentsFor(AbstractSceneConverter&)
+@see @ref sceneContentsFor(const AbstractImporter&),
+    @ref sceneContentsFor(const AbstractSceneConverter&)
 */
 typedef Containers::EnumSet<SceneContent> SceneContents;
 
@@ -513,7 +513,7 @@ returns a non-zero count. Expects that the importer is opened.
 involves parsing additional files and thus may be time- and memory-consuming
 operation, @ref SceneContent::MeshLevels and
 @relativeref{SceneContent,ImageLevels} is never present.
-@see @ref sceneContentsFor(AbstractSceneConverter&),
+@see @ref sceneContentsFor(const AbstractSceneConverter&),
     @ref AbstractImporter::isOpened()
 */
 MAGNUM_TRADE_EXPORT SceneContents sceneContentsFor(const AbstractImporter& importer);
@@ -525,7 +525,7 @@ MAGNUM_TRADE_EXPORT SceneContents sceneContentsFor(const AbstractImporter& impor
 Returns contents supported by given converter, as exposed via
 @ref AbstractSceneConverter::features(). @ref SceneContent::Names is present
 always.
-@see @ref sceneContentsFor(AbstractImporter&)
+@see @ref sceneContentsFor(const AbstractImporter&)
 */
 MAGNUM_TRADE_EXPORT SceneContents sceneContentsFor(const AbstractSceneConverter& converter);
 
@@ -1957,11 +1957,12 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Expects that a conversion is currently in progress and @p importer
          * is opened. The union of @p contents and
-         * @ref sceneContentsFor(AbstractImporter&) for @p importer is expected
-         * to be a subset of @ref sceneContentsFor(AbstractSceneConverter&) for
-         * this converter --- i.e., there shouldn't be any data that the
-         * converter doesn't support. Any @p contents that are not in
-         * @ref sceneContentsFor(AbstractImporter&) for @p importer are
+         * @ref sceneContentsFor(const AbstractImporter&) for @p importer is
+         * expected to be a subset of
+         * @ref sceneContentsFor(const AbstractSceneConverter&) for this
+         * converter --- i.e., there shouldn't be any data that the converter
+         * doesn't support. Any @p contents that are not in
+         * @ref sceneContentsFor(const AbstractImporter&) for @p importer are
          * ignored. If you want to add just contents supported by the coverter
          * and ignore the rest with a warning, use
          * @ref addSupportedImporterContents() instead.
@@ -1997,9 +1998,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Compared to @ref addImporterContents(), data not supported by the
          * converter (i.e., @p contents that are in
-         * @ref sceneContentsFor(AbstractImporter&) for @p importer but are not
-         * in @ref sceneContentsFor(AbstractSceneConverter&) for the
-         * converter) are ignored with a message printed to
+         * @ref sceneContentsFor(const AbstractImporter&) for @p importer but
+         * are not in @ref sceneContentsFor(const AbstractSceneConverter&) for
+         * the converter) are ignored with a message printed to
          * @relativeref{Magnum,Warning}.
          *
          * In case of @ref SceneContent::MeshLevels /
