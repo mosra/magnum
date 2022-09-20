@@ -117,12 +117,13 @@ magnum-sceneconverter chair.obj -C MeshOptimizerSceneConverter \
 
 @code{.sh}
 magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
-    [-C|--converter PLUGIN]... [--plugin-dir DIR] [--map]
-    [--only-mesh-attributes N1,N2-N3…] [--remove-duplicate-vertices]
-    [--remove-duplicate-vertices-fuzzy EPSILON]
+    [-C|--converter PLUGIN]... [-M|--mesh-converter PLUGIN]...
+    [--plugin-dir DIR] [--map] [--only-mesh-attributes N1,N2-N3…]
+    [--remove-duplicate-vertices] [--remove-duplicate-vertices-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…]... [--mesh ID]
-    [--mesh-level INDEX] [--concatenate-meshes] [--info-animations]
+    [-c|--converter-options key=val,key2=val2,…]...
+    [-m|--mesh-converter-options key=val,key2=val2,…]...
+    [--mesh ID] [--mesh-level INDEX] [--concatenate-meshes] [--info-animations]
     [--info-images] [--info-lights] [--info-cameras] [--info-materials]
     [--info-meshes] [--info-objects] [--info-scenes] [--info-skins]
     [--info-textures] [--info] [--color on|4bit|off|auto] [--bounds]
@@ -137,6 +138,8 @@ Arguments:
 -   `-I`, `--importer PLUGIN` --- scene importer plugin (default:
     @ref Trade::AnySceneImporter "AnySceneImporter")
 -   `-C`, `--converter PLUGIN` --- scene converter plugin(s)
+-   `-M`, `--mesh-converter PLUGIN` --- converter plugin(s) to apply to each
+    mesh in the scene
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `--map` --- memory-map the input for zero-copy import (works only for
     standalone files)
@@ -152,7 +155,9 @@ Arguments:
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
-    to pass to the converter(s)
+    to pass to scene converter(s)
+-   `-m`, `--mesh-converter-options key=val,key2=val2,…` --- configuration
+    options to pass to mesh converter(s)
 -   `--mesh ID` --- convert just a single mesh instead of the whole scene
 -   `--mesh-level LEVEL` --- level to select for single-mesh conversion
 -   `--concatenate-meshes` -- flatten mesh hierarchy and concatenate them all
@@ -183,29 +188,39 @@ and both `--info-*` options are specified, the output will also list reference
 count (for example, `--info-scenes` together with `--info-meshes` will print
 how many objects reference given mesh).
 
-The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
-accept a comma-separated list of key/value pairs to set in the importer /
-converter plugin configuration. If the `=` character is omitted, it's
-equivalent to saying `key=true`; configuration subgroups are delimited with
-`/`.
+The `-i`, `-c` and `-m` arguments accept a comma-separated list of key/value
+pairs to set in the importer / converter plugin configuration. If the `=`
+character is omitted, it's equivalent to saying `key=true`; configuration
+subgroups are delimited with `/`.
 
-It's possible to specify the `-C` / `--converter` option (and correspondingly
-also `-c` / `--converter-options`) multiple times in order to chain more
-converters together. All converters in the chain have to support the
-@ref Trade::SceneConverterFeature::ConvertMesh feature,
-the last converter either @ref Trade::SceneConverterFeature::ConvertMesh or
-@ref Trade::SceneConverterFeature::ConvertMeshToFile. If the last converter
-doesn't support conversion to a file,
-@ref Trade::AnySceneConverter "AnySceneConverter" is used to save its output;
-if no `-C` / `--converter` is specified,
-@ref Trade::AnySceneConverter "AnySceneConverter" is used.
+It's possible to specify the `-C` option (and correspondingly also `-c`)
+multiple times in order to chain more converters together. All converters in
+the chain have to support the
+@ref Trade::SceneConverterFeature::ConvertMultiple or
+@relativeref{Trade::SceneCOnverterFeature,ConvertMesh} feature, the last
+converter either @ref Trade::SceneConverterFeature::ConvertMultiple,
+@relativeref{Trade::SceneCOnverterFeature,ConvertMesh},
+@relativeref{Trade::SceneCOnverterFeature,ConvertMultipleToFile} or
+@relativeref{Trade::SceneCOnverterFeature,ConvertMeshToFile}. If the last
+converter doesn't support conversion to a file,
+@relativeref{Trade,AnySceneConverter} is used to save its output. If no `-C` is
+specified, @relativeref{Trade,AnySceneConverter} is used.
+
+Similarly, the `-M` option (and correspondingly also `-m`) can be specified
+multiple times in order to chain more mesh converters together. All mesh
+converters in the chain have to support the ConvertMesh feature. If no `-M` is
+specified, the imported meshes are passed directly to the scene converter.
+
+The `--remove-duplicate-vertices` operations are performed before passing them
+to any converter.
 
 If `--concatenate-meshes` is given, all meshes of the input file are
-concatenated into a single mesh using @ref MeshTools::concatenate(), with the
-scene hierarchy transformation baked in using
-@ref SceneTools::flattenMeshHierarchy3D(). Only attributes that are present in
-the first mesh are taken, if `--only-mesh-attributes` is specified as well, the
-IDs reference attributes of the first mesh.
+first concatenated into a single mesh using @ref MeshTools::concatenate(), with
+the scene hierarchy transformation baked in using
+@ref SceneTools::flattenMeshHierarchy3D(), and then passed through the
+remaining operations. Only attributes that are present in the first mesh are
+taken, if `--only-mesh-attributes` is specified as well, the IDs reference
+attributes of the first mesh.
 */
 
 }
@@ -237,6 +252,7 @@ int main(int argc, char** argv) {
         .addArgument("output").setHelp("output", "output file; ignored if --info is present")
         .addOption('I', "importer", "AnySceneImporter").setHelp("importer", "scene importer plugin", "PLUGIN")
         .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)", "PLUGIN")
+        .addArrayOption('M', "mesh-converter").setHelp("mesh-converter", "converter plugin(s) to apply to each mesh in the scene", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
@@ -246,6 +262,7 @@ int main(int argc, char** argv) {
         .addOption("remove-duplicate-vertices-fuzzy").setHelp("remove-duplicate-vertices-fuzzy", "remove duplicate vertices with fuzzy comparison in all meshes after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
+        .addArrayOption('m', "mesh-converter-options").setHelp("mesh-converter-options", "configuration options to pass to the mesh converter(s)", "key=val,key2=val2,…")
         .addOption("mesh").setHelp("mesh", "convert just a single mesh instead of the whole scene, ignored if --concatenate-meshes is specified", "ID")
         .addOption("mesh-level").setHelp("mesh-level", "level to select for single-mesh conversion", "index")
         .addBooleanOption("concatenate-meshes").setHelp("concatenate-meshes", "flatten mesh hierarchy and concatenate them all together")
@@ -281,24 +298,32 @@ and both --info-* options are specified, the output will also list reference
 count (for example, --info-scenes together with --info-meshes will print how
 many objects reference given mesh).
 
-The -i / --importer-options and -c / --converter-options arguments accept a
-comma-separated list of key/value pairs to set in the importer / converter
-plugin configuration. If the = character is omitted, it's equivalent to saying
-key=true; configuration subgroups are delimited with /.
+The -i, -c and -m arguments accept a comma-separated list of key/value
+pairs to set in the importer / converter plugin configuration. If the =
+character is omitted, it's equivalent to saying key=true; configuration
+subgroups are delimited with /.
 
-It's possible to specify the -C / --converter option (and correspondingly also
--c / --converter-options) multiple times in order to chain more converters
-together. All converters in the chain have to support the ConvertMesh feature,
-the last converter either ConvertMesh or ConvertMeshToFile. If the last
-converter doesn't support conversion to a file, AnySceneConverter is used to
-save its output; if no -C / --converter is specified, AnySceneConverter is
-used.
+It's possible to specify the -C option (and correspondingly also -c) multiple
+times in order to chain more scene converters together. All converters in the
+chain have to support the ConvertMultiple or ConvertMesh feature, the last
+converter either ConvertMultiple, ConvertMesh, ConvertMultipleToFile or
+ConvertMeshToFile. If the last converter doesn't support conversion to a file,
+AnySceneConverter is used to save its output. If no -C is specified,
+AnySceneConverter is used.
 
-If --concatenate-meshes is given, all meshes of the input file are concatenated
-into a single mesh, with the scene hierarchy transformation baked in. Only
-attributes that are present in the first mesh are taken, if
---only-mesh-attributes is specified as well, the IDs reference attributes of
-the first mesh.)")
+Similarly, the -M option (and correspondingly also -m) can be specified
+multiple times in order to chain more mesh converters together. All mesh
+converters in the chain have to support the ConvertMesh feature. If no -M is
+specified, the imported meshes are passed directly to the scene converter.
+
+The --remove-duplicate-vertices operations are performed on meshes before
+passing them to any converter.
+
+If --concatenate-meshes is given, all meshes of the input file are first
+concatenated into a single mesh, with the scene hierarchy transformation baked
+in, and then passed through the remaining operations. Only attributes that are
+present in the first mesh are taken, if --only-mesh-attributes is specified as
+well, the IDs reference attributes of the first mesh.)")
         .parse(argc, argv);
 
     /* Colored output. Enable only if a TTY. */
@@ -572,7 +597,8 @@ the first mesh.)")
        meshes are supplied manually to the converter from the array below. */
     Containers::Array<Trade::MeshData> meshes;
     if(args.isSet("remove-duplicate-vertices") ||
-       args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy"))
+       args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy") ||
+       args.arrayValueCount("mesh-converter"))
     {
         for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
             Containers::Optional<Trade::MeshData> mesh;
@@ -586,30 +612,71 @@ the first mesh.)")
                 }
             }
 
-            const UnsignedInt beforeVertexCount = mesh->vertexCount();
-            const bool fuzzy = !!args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy");
+            /* Duplicate removal */
+            if(args.isSet("remove-duplicate-vertices") ||
+               args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy"))
+            {
+                const UnsignedInt beforeVertexCount = mesh->vertexCount();
+                const bool fuzzy = !!args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy");
 
-            /** @todo accept two values for float and double fuzzy comparison,
-                or maybe also different for positions, normals and texcoords?
-                ugh... */
-            if(fuzzy) {
-                Trade::Implementation::Duration d{conversionTime};
-                mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicate-vertices-fuzzy"));
-            } else {
-                Trade::Implementation::Duration d{conversionTime};
-                mesh = MeshTools::removeDuplicates(*std::move(mesh));
+                /** @todo accept two values for float and double fuzzy
+                    comparison, or maybe also different for positions, normals
+                    and texcoords? ugh... */
+                if(fuzzy) {
+                    Trade::Implementation::Duration d{conversionTime};
+                    mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicate-vertices-fuzzy"));
+                } else {
+                    Trade::Implementation::Duration d{conversionTime};
+                    mesh = MeshTools::removeDuplicates(*std::move(mesh));
+                }
+
+                if(args.isSet("verbose")) {
+                    Debug d;
+                    /* Mesh index 0 would be confusing in case of
+                        --concatenate-meshes and plain wrong with --mesh, so
+                        don't even print it */
+                    if(singleMesh)
+                        d << (fuzzy ? "Fuzzy duplicate removal:" : "Duplicate removal:");
+                    else
+                        d << "Mesh" << i << (fuzzy ? "fuzzy duplicate removal:" : "duplicate removal:");
+                    d << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
+                }
             }
 
-            if(args.isSet("verbose")) {
-                Debug d;
-                /* Mesh index 0 would be confusing in case of
-                    --concatenate-meshes and plain wrong with --mesh, so
-                    don't even print it */
-                if(singleMesh)
-                    d << (fuzzy ? "Fuzzy duplicate removal:" : "Duplicate removal:");
-                else
-                    d << "Mesh" << i << (fuzzy ? "fuzzy duplicate removal:" : "duplicate removal:");
-                d << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
+            /* Arbitrary mesh converters */
+            for(std::size_t j = 0, meshConverterCount = args.arrayValueCount("mesh-converter"); j != meshConverterCount; ++j) {
+                const Containers::StringView meshConverterName = args.arrayValue<Containers::StringView>("mesh-converter", j);
+                if(args.isSet("verbose")) {
+                    Debug d;
+                    d << "Processing mesh" << i;
+                    if(meshConverterCount > 1)
+                        d << "(" << Debug::nospace << (j+1) << Debug::nospace << "/" << Debug::nospace << meshConverterCount << Debug::nospace << ")";
+                    d << "with" << meshConverterName << Debug::nospace << "...";
+                }
+
+                Containers::Pointer<Trade::AbstractSceneConverter> meshConverter = converterManager.loadAndInstantiate(meshConverterName);
+                if(!meshConverter) {
+                    Debug{} << "Available mesh converter plugins:" << ", "_s.join(converterManager.aliasList());
+                    return 2;
+                }
+
+                /* Set options, if passed. The AnySceneConverter check makes no
+                   sense here, is just there because the helper wants it */
+                if(args.isSet("verbose")) meshConverter->addFlags(Trade::SceneConverterFlag::Verbose);
+                if(j < args.arrayValueCount("mesh-converter-options"))
+                    Implementation::setOptions(*meshConverter, "AnySceneConverter", args.arrayValue("mesh-converter-options", j));
+
+                if(!(meshConverter->features() & (Trade::SceneConverterFeature::ConvertMesh))) {
+                    Error{} << meshConverterName << "doesn't support mesh conversion, only" << Debug::packed << meshConverter->features();
+                    return 1;
+                }
+
+                /** @todo handle mesh levels here, once any plugin is capable
+                    of converting them */
+                if(!(mesh = meshConverter->convert(*mesh))) {
+                    Error{} << "Cannot process mesh" << i << "with" << meshConverterName;
+                    return 1;
+                }
             }
 
             arrayAppend(meshes, *std::move(mesh));
