@@ -384,7 +384,7 @@ well, the IDs reference attributes of the first mesh.)")
        order. */
     PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths().back())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     /* Scene converter manager, register the image converter manager with it */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
