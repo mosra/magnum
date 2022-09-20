@@ -665,7 +665,7 @@ the first mesh.)")
            importer instance) */
         } else {
             if(!(converter->features() & (Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMultiple))) {
-                Error{} << converterName << "doesn't support importer conversion, only" << converter->features();
+                Error{} << converterName << "doesn't support importer conversion, only" << Debug::packed << converter->features();
                 return 6;
             }
 

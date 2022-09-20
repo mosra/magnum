@@ -537,7 +537,7 @@ const struct {
            get used for a mesh-to-mesh conversion */
         "-I", "ObjImporter", "-C", "StanfordSceneConverter", "-C", "StanfordSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", "StanfordSceneConverter",
-        "StanfordSceneConverter doesn't support importer conversion, only Trade::SceneConverterFeature::ConvertMeshToData\n"},
+        "StanfordSceneConverter doesn't support importer conversion, only ConvertMeshToData\n"},
 };
 #endif
 
