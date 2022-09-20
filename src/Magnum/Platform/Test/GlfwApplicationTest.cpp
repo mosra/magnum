@@ -96,6 +96,12 @@ struct GlfwApplicationTest: Platform::Application {
         }
     }
 
+    void keyReleaseEvent(KeyEvent& event) override {
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+        Debug{} << "key release event:" << int(event.key()) << event.keyName();
+        #endif
+    }
+
     void mouseMoveEvent(MouseMoveEvent& event) override {
         Debug{} << "mouse move event:" << event.position() << event.relativePosition() << UnsignedInt(event.buttons());
     }

@@ -140,6 +140,10 @@ struct Sdl2ApplicationTest: Platform::Application {
         }
     }
 
+    void keyReleaseEvent(KeyEvent& event) override {
+        Debug{} << "key release event:" << SDL_Keycode(event.key()) << event.keyName();
+    }
+
     void textInputEvent(TextInputEvent& event) override {
         Debug{} << "text input event:" << event.text();
     }
