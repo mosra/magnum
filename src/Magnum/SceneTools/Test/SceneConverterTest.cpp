@@ -586,9 +586,8 @@ const struct {
             #endif
         "-C", "NonexistentSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", nullptr,
-        /* Just a prefix */
         "PluginManager::Manager::load(): plugin NonexistentSceneConverter is not static and was not found in nonexistent/sceneconverters\n"
-        "Available converter plugins: "},
+        "Available converter plugins: "}, /* Just a prefix */
     {"file coversion begin failed", Containers::array<Containers::String>({
         "-I", "ObjImporter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.fbx")}),
         "ObjImporter", "AnySceneConverter",
@@ -634,9 +633,8 @@ const struct {
             #endif
         "-M", "NonexistentSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", nullptr,
-        /* Just a prefix */
         "PluginManager::Manager::load(): plugin NonexistentSceneConverter is not static and was not found in nonexistent/sceneconverters\n"
-        "Available mesh converter plugins: "},
+        "Available mesh converter plugins: "}, /* Just a prefix */
     {"plugin doesn't support mesh conversion", Containers::array<Containers::String>({
         "-I", "ObjImporter", "-M", "StanfordSceneConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")}),
         "ObjImporter", "StanfordSceneConverter",

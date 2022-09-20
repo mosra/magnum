@@ -752,8 +752,8 @@ well, the IDs reference attributes of the first mesh.)")
         Trade::SceneContents contents = ~Trade::SceneContents{};
 
         /* If there are any loose meshes from previous conversion steps, add
-           them directly instead, and clear the array so the next iteration (if
-           any) takes them from the importer instead */
+           them directly, and clear the array so the next iteration (if any)
+           takes them from the importer instead */
         if(meshes) {
             if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Meshes)) {
                 Warning{} << "Ignoring" << meshes.size() << "meshes not supported by the converter";
