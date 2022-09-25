@@ -35,6 +35,7 @@
 #include "Magnum/GL/Texture.h"
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once GL::Shader is <string>-free */
 #include <Corrade/Utility/Resource.h>
