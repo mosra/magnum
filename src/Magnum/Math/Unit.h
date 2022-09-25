@@ -98,6 +98,14 @@ template<template<class> class Derived, class T> class Unit {
             return !operator<(other);
         }
 
+        /**
+         * @brief Promotion
+         * @m_since_latest
+         *
+         * Returns the value as-is.
+         */
+        constexpr Unit<Derived, T> operator+() const { return *this; }
+
         /** @brief Negated value */
         constexpr Unit<Derived, T> operator-() const {
             return Unit<Derived, T>(-_value);

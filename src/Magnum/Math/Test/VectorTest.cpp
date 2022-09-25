@@ -76,7 +76,7 @@ struct VectorTest: Corrade::TestSuite::Tester {
 
     void data();
 
-    void negative();
+    void promotedNegated();
     void addSubtract();
     void multiplyDivide();
     void multiplyDivideIntegral();
@@ -151,7 +151,7 @@ VectorTest::VectorTest() {
 
               &VectorTest::data,
 
-              &VectorTest::negative,
+              &VectorTest::promotedNegated,
               &VectorTest::addSubtract,
               &VectorTest::multiplyDivide,
               &VectorTest::multiplyDivideIntegral,
@@ -392,8 +392,11 @@ void VectorTest::compareComponentWise() {
     CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) > Vector3(1.1f, -1.0f, 3.0f), BitVector3(0x4));
 }
 
-void VectorTest::negative() {
-    CORRADE_COMPARE(-Vector4(1.0f, -3.0f, 5.0f, -10.0f), Vector4(-1.0f, 3.0f, -5.0f, 10.0f));
+void VectorTest::promotedNegated() {
+    CORRADE_COMPARE(+Vector4(1.0f, -3.0f, 5.0f, -10.0f),
+                     Vector4(1.0f, -3.0f, 5.0f, -10.0f));
+    CORRADE_COMPARE(-Vector4(1.0f, -3.0f, 5.0f, -10.0f),
+                     Vector4(-1.0f, 3.0f, -5.0f, 10.0f));
 }
 
 void VectorTest::addSubtract() {
@@ -651,6 +654,7 @@ void VectorTest::subclassTypes() {
     /* Const operators */
     const Vec2 c;
     const Vec2 c2;
+    CORRADE_VERIFY(std::is_same<decltype(+c), Vec2>::value);
     CORRADE_VERIFY(std::is_same<decltype(-c), Vec2>::value);
     CORRADE_VERIFY(std::is_same<decltype(c + c), Vec2>::value);
     CORRADE_VERIFY(std::is_same<decltype(c*1.0f), Vec2>::value);
@@ -734,6 +738,7 @@ void VectorTest::subclass() {
     constexpr const Vec2 a{-2.0f, 5.0f};
     CORRADE_COMPARE(a[0], -2.0f);
 
+    CORRADE_COMPARE(+Vec2(-2.0f, 5.0f), Vec2(-2.0f, 5.0f));
     CORRADE_COMPARE(-Vec2(-2.0f, 5.0f), Vec2(2.0f, -5.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) + Vec2(1.0f, -3.0f), Vec2(-1.0f, 2.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) - Vec2(1.0f, -3.0f), Vec2(-3.0f, 8.0f));

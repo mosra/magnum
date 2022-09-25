@@ -179,6 +179,7 @@ See also:
     @ref Math::Intersection::pointCircle() /
     @relativeref{Math::Intersection,pointSphere()}, which are just wrappers
     over trivial code but easier to discover
+-   Added an unary @cpp operator+() @ce to all @ref Math classes
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 

@@ -72,8 +72,8 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void isNormalized();
     template<class T> void isNormalizedEpsilon();
 
+    void promotedNegated();
     void addSubtract();
-    void negated();
     void multiplyDivideScalar();
     void multiplyDivideVector();
     void multiply();
@@ -123,8 +123,8 @@ ComplexTest::ComplexTest() {
               &ComplexTest::isNormalizedEpsilon<Float>,
               &ComplexTest::isNormalizedEpsilon<Double>,
 
+              &ComplexTest::promotedNegated,
               &ComplexTest::addSubtract,
-              &ComplexTest::negated,
               &ComplexTest::multiplyDivideScalar,
               &ComplexTest::multiplyDivideVector,
               &ComplexTest::multiply,
@@ -324,6 +324,11 @@ template<class T> void ComplexTest::isNormalizedEpsilon() {
     CORRADE_VERIFY(!Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}.isNormalized());
 }
 
+void ComplexTest::promotedNegated() {
+    CORRADE_COMPARE(+Complex(2.5f, -7.4f), Complex(2.5f, -7.4f));
+    CORRADE_COMPARE(-Complex(2.5f, -7.4f), Complex(-2.5f, 7.4f));
+}
+
 void ComplexTest::addSubtract() {
     Complex a( 1.7f, -3.7f);
     Complex b(-3.6f,  0.2f);
@@ -331,10 +336,6 @@ void ComplexTest::addSubtract() {
 
     CORRADE_COMPARE(a + b, c);
     CORRADE_COMPARE(c - b, a);
-}
-
-void ComplexTest::negated() {
-    CORRADE_COMPARE(-Complex(2.5f, -7.4f), Complex(-2.5f, 7.4f));
 }
 
 void ComplexTest::multiplyDivideScalar() {

@@ -78,7 +78,7 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void compare();
     void compareComponentWise();
 
-    void negative();
+    void promotedNegated();
     void addSubtract();
     void multiplyDivide();
     void multiply();
@@ -139,7 +139,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::compare,
               &RectangularMatrixTest::compareComponentWise,
 
-              &RectangularMatrixTest::negative,
+              &RectangularMatrixTest::promotedNegated,
               &RectangularMatrixTest::addSubtract,
               &RectangularMatrixTest::multiplyDivide,
               &RectangularMatrixTest::multiply,
@@ -478,11 +478,12 @@ void RectangularMatrixTest::compareComponentWise() {
     CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) > Matrix3x1(1.1f, -1.0f, 3.0f), BitVector3(0x4));
 }
 
-void RectangularMatrixTest::negative() {
+void RectangularMatrixTest::promotedNegated() {
     Matrix2x2 matrix(Vector2(1.0f,  -3.0f),
                      Vector2(5.0f, -10.0f));
     Matrix2x2 negated(Vector2(-1.0f,  3.0f),
                       Vector2(-5.0f, 10.0f));
+    CORRADE_COMPARE(+matrix, matrix);
     CORRADE_COMPARE(-matrix, negated);
 }
 
@@ -676,6 +677,7 @@ void RectangularMatrixTest::subclassTypes() {
 
     /* Const operators */
     const Mat2x2 c;
+    CORRADE_VERIFY(std::is_same<decltype(+c), Mat2x2>::value);
     CORRADE_VERIFY(std::is_same<decltype(-c), Mat2x2>::value);
     CORRADE_VERIFY(std::is_same<decltype(c + c), Mat2x2>::value);
     CORRADE_VERIFY(std::is_same<decltype(c*1.0f), Mat2x2>::value);
@@ -718,6 +720,8 @@ void RectangularMatrixTest::subclass() {
     /* Constexpr constructor */
     constexpr Mat2x2 a(Vector2(1.0f, -3.0f),
                        Vector2(-3.0f, 1.0f));
+    CORRADE_COMPARE(+a, Mat2x2(Vector2(1.0f, -3.0f),
+                               Vector2(-3.0f, 1.0f)));
     CORRADE_COMPARE(-a, Mat2x2(Vector2(-1.0f, 3.0f),
                                Vector2(3.0f, -1.0f)));
 

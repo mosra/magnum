@@ -335,6 +335,14 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
+         * @brief Promotion
+         * @m_since_latest
+         *
+         * Returns the value as-is.
+         */
+        RectangularMatrix<cols, rows, T> operator+() const { return *this; }
+
+        /**
          * @brief Negated matrix
          *
          * The computation is done column-wise. @f[
@@ -732,6 +740,9 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
         return Math::RectangularMatrix<cols, rows, T>::fromDiagonal(diagonal); \
     }                                                                       \
                                                                             \
+    __VA_ARGS__ operator+() const {                                         \
+        return Math::RectangularMatrix<cols, rows, T>::operator+();         \
+    }                                                                       \
     __VA_ARGS__ operator-() const {                                         \
         return Math::RectangularMatrix<cols, rows, T>::operator-();         \
     }                                                                       \

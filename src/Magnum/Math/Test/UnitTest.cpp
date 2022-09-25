@@ -44,7 +44,7 @@ struct UnitTest: Corrade::TestSuite::Tester {
     void compare();
     void compareNaN();
 
-    void negated();
+    void promotedNegated();
     void addSubtract();
     void multiplyDivide();
 };
@@ -59,7 +59,7 @@ UnitTest::UnitTest() {
               &UnitTest::compare,
               &UnitTest::compareNaN,
 
-              &UnitTest::negated,
+              &UnitTest::promotedNegated,
               &UnitTest::addSubtract,
               &UnitTest::multiplyDivide});
 }
@@ -178,10 +178,12 @@ void UnitTest::compareNaN() {
     CORRADE_VERIFY(!(Sec{Constants::nan()} == Sec{Constants::nan()}));
 }
 
-void UnitTest::negated() {
+void UnitTest::promotedNegated() {
     constexpr Sec a(25.0f);
-    constexpr Sec b(-a);
-    CORRADE_COMPARE(b, Sec(-25.0f));
+    constexpr Sec b(+a);
+    constexpr Sec c(-a);
+    CORRADE_COMPARE(b, Sec(+25.0f));
+    CORRADE_COMPARE(c, Sec(-25.0f));
 }
 
 void UnitTest::addSubtract() {

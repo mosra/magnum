@@ -76,8 +76,8 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void axisAngle();
     void axisAngleNotNormalized();
 
+    void promotedNegated();
     void addSubtract();
-    void negated();
     void multiplyDivideScalar();
     void multiply();
 
@@ -156,8 +156,8 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::axisAngle,
               &QuaternionTest::axisAngleNotNormalized,
 
+              &QuaternionTest::promotedNegated,
               &QuaternionTest::addSubtract,
-              &QuaternionTest::negated,
               &QuaternionTest::multiplyDivideScalar,
               &QuaternionTest::multiply,
 
@@ -383,6 +383,13 @@ void QuaternionTest::axisAngleNotNormalized() {
         "Math::Quaternion::axis(): Quaternion({0.239242, -0.318989, 0}, 1.95985) is not normalized\n");
 }
 
+void QuaternionTest::promotedNegated() {
+    CORRADE_COMPARE(+Quaternion({1.0f, 2.0f, -3.0f}, -4.0f),
+                     Quaternion({1.0f, 2.0f, -3.0f}, -4.0f));
+    CORRADE_COMPARE(-Quaternion({1.0f, 2.0f, -3.0f}, -4.0f),
+                     Quaternion({-1.0f, -2.0f, 3.0f}, 4.0f));
+}
+
 void QuaternionTest::addSubtract() {
     Quaternion a({ 1.0f, 3.0f, -2.0f}, -4.0f);
     Quaternion b({-0.5f, 1.4f,  3.0f}, 12.0f);
@@ -390,10 +397,6 @@ void QuaternionTest::addSubtract() {
 
     CORRADE_COMPARE(a + b, c);
     CORRADE_COMPARE(c - b, a);
-}
-
-void QuaternionTest::negated() {
-    CORRADE_COMPARE(-Quaternion({1.0f, 2.0f, -3.0f}, -4.0f), Quaternion({-1.0f, -2.0f, 3.0f}, 4.0f));
 }
 
 void QuaternionTest::multiplyDivideScalar() {

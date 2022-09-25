@@ -466,6 +466,14 @@ template<class T> class Quaternion {
         Vector3<Rad<T>> toEuler() const;
 
         /**
+         * @brief Promotion
+         * @m_since_latest
+         *
+         * Returns the value as-is.
+         */
+        Quaternion<T> operator+() const { return *this; }
+
+        /**
          * @brief Negated quaternion
          *
          * @f[

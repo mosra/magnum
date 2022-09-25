@@ -289,6 +289,14 @@ template<class T> class Complex {
         }
 
         /**
+         * @brief Promotion
+         * @m_since_latest
+         *
+         * Returns the value as-is.
+         */
+        Complex<T> operator+() const { return *this; }
+
+        /**
          * @brief Add a complex number and assign
          *
          * The computation is done in-place. @f[

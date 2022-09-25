@@ -170,6 +170,14 @@ template<class T> class Dual {
         constexpr const T dual() const { return _dual; } /**< @overload */
 
         /**
+         * @brief Promotion
+         * @m_since_latest
+         *
+         * Returns the value as-is.
+         */
+        Dual<T> operator+() const { return *this; }
+
+        /**
          * @brief Add and assign dual number
          *
          * The computation is done in-place. @f[
@@ -306,6 +314,9 @@ template<class T, class U, class V = typename std::enable_if<!Implementation::Is
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying, Multiplicable) \
+    Type<T> operator+() const {                                             \
+        return Math::Dual<Underlying<T>>::operator+();                      \
+    }                                                                       \
     Type<T> operator-() const {                                             \
         return Math::Dual<Underlying<T>>::operator-();                      \
     }                                                                       \

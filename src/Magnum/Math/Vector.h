@@ -331,6 +331,14 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
+         * @brief Promotion
+         * @m_since_latest
+         *
+         * Returns the value as-is.
+         */
+        Vector<size, T> operator+() const { return *this; }
+
+        /**
          * @brief Negated vector
          *
          * Enabled only for signed types. @f[
@@ -1280,6 +1288,9 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
         return Math::Vector<size, T>::pad(a, value);                        \
     }                                                                       \
                                                                             \
+    Type<T> operator+() const {                                             \
+        return Math::Vector<size, T>::operator+();                          \
+    }                                                                       \
     template<class U = T> typename std::enable_if<std::is_signed<U>::value, Type<T>>::type \
     operator-() const {                                                     \
         return Math::Vector<size, T>::operator-();                          \
