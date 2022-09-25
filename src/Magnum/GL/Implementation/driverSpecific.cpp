@@ -31,6 +31,11 @@
 #include "Magnum/Math/Range.h"
 
 #if defined(MAGNUM_TARGET_WEBGL) && defined(CORRADE_TARGET_EMSCRIPTEN)
+/* Including any Emscripten header should also make __EMSCRIPTEN_major__ etc
+   macros available, independently of whether they're passed implicitly (before
+   version 3.1.23) or taken from a version header (after version 3.1.4).
+   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
+   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif

@@ -41,6 +41,16 @@
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
+/* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
+   3.1.4 moved them to a version header and version 3.1.23 dropped the
+   backwards compatibility. To work consistently on all versions, including the
+   header only if the version macros aren't present.
+   https://github.com/emscripten-core/emscripten/commit/f99af02045357d3d8b12e63793cef36dfde4530a
+   https://github.com/emscripten-core/emscripten/commit/f76ddc702e4956aeedb658c49790cc352f892e4c */
+#if defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(__EMSCRIPTEN_major__)
+#include <emscripten/version.h>
+#endif
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* For label() / setLabel(), which used to be a std::string. Not ideal for the
    return type, but at least something. */
