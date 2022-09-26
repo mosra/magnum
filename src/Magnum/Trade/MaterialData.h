@@ -1284,18 +1284,18 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
         > constexpr /*implicit*/ MaterialAttributeData(Containers::StringView name, const T& value) noexcept;
 
         /**
-         * @brief Construct with a string name and string value
+         * @brief Construct with a string name and a string value
          * @param name      Attribute name
          * @param value     Attribute value
          *
          * The combined length of @p name and @p value is expected to fit into
-         * 61 bytes. Type is set to @ref MaterialAttributeType::String.
+         * 60 bytes. Type is set to @ref MaterialAttributeType::String.
          *
          * This function is useful in @cpp constexpr @ce contexts and for
          * creating custom material attributes. For known attributes prefer to
-         * use @ref MaterialAttributeData(MaterialAttribute, const T&) if you
-         * don't need @cpp constexpr @ce, as it additionally checks that given
-         * attribute has the expected type.
+         * use @ref MaterialAttributeData(MaterialAttribute, Containers::StringView)
+         * if you don't need @cpp constexpr @ce, as it additionally checks that
+         * given attribute has the expected type.
          */
         constexpr /*implicit*/ MaterialAttributeData(Containers::StringView name, Containers::StringView value) noexcept;
 
@@ -1333,10 +1333,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * Compared to @ref MaterialAttributeData(Containers::StringView, Containers::StringView)
          * checks that the attribute is in expected type. The
          * @ref MaterialAttribute gets converted to a corresponding string
-         * name. Apart from the type check, the following two instances are
-         * equivalent:
-         *
-         * @snippet MagnumTrade.cpp MaterialAttributeData-name
+         * name.
          */
         /*implicit*/ MaterialAttributeData(MaterialAttribute name, Containers::StringView value) noexcept: MaterialAttributeData{name, MaterialAttributeType::String, &value} {}
 
@@ -1353,7 +1350,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          *
          * In case @p type is @ref MaterialAttributeType::String, @p value is
          * expected to point to a @ref Containers::StringView. The combined
-         * length of @p name and @p value strings is expected to fit into 61
+         * length of @p name and @p value strings is expected to fit into 60
          * bytes.
          */
         /*implicit*/ MaterialAttributeData(Containers::StringView name, MaterialAttributeType type, const void* value) noexcept;
@@ -1423,25 +1420,31 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
         /* Most of this is needed only for the constexpr constructor (yay C++),
            the actual data layout is
 
-            |------------- x B ------------|
+            |--------------------- x B -------------------|
 
-            +------+------- .. -----+------+
-            | type | name   ..   \0 | data |
-            | 1 B  |  (x - n - 2) B | n B  |
-            +------+------- .. -----+------+
+            +--------+------- .. -----+-------------------+
+            |  type  | name   ..   \0 |       data        |
+            |   1 B  |  (x - n - 2) B |        n B        |
+            +--------+------- .. -----+------------+------+
+            | String | name   ..   \0 | data .. \0 | size |
+            |   1 B  |  (x - n - 4) B |     n B    |  1 B |
+            +--------+------- .. -----+------------+------+
 
           where
 
            - `x` is Implementation::MaterialAttributeDataSize,
            - `type` is an 8-bit MaterialAttributeType,
            - `data` is of size matching `type`, at the offset of
-             `(x - materialAttributeTypeSize(type))` B,
-           - `name` is a null-terminated string filling the rest.
+             `(x - materialAttributeTypeSize(type))` B, or in case of strings
+             at offset `(x - string.size() - 2)` B, with one byte for storing
+             size and one null terminator,
+           - `name` is a null-terminated string filling the rest
 
           This way the name is always at the same offset to make binary search
           lookup fast and efficient, and data being at the end (instead of
           right after the null-terminated string) makes them accessible in O(1)
-          as well. */
+          as well. In case of string values, to achieve O(1) access, the size
+          is stored as the last byte and the string data is right before. */
         struct StringData {
             template<std::size_t ...sequence> constexpr explicit StringData(MaterialAttributeType type, Containers::StringView name, Containers::StringView value, Containers::Implementation::Sequence<sequence...>): type{type}, nameValue{(sequence < name.size() ? name[sequence] : (sequence - (Implementation::MaterialAttributeDataSize - value.size() - 3) < value.size() ? value[sequence - (Implementation::MaterialAttributeDataSize - value.size() - 3)] : '\0'))...}, size{UnsignedByte(value.size())} {}
             constexpr explicit StringData(MaterialAttributeType type, Containers::StringView name, Containers::StringView value): StringData{type, name, value, typename Containers::Implementation::GenerateSequence<Implementation::MaterialAttributeDataSize - 2>::Type{}} {}
