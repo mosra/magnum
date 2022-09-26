@@ -91,10 +91,10 @@ template<class T> inline bool pointSphere(const Vector3<T>& point, const Vector3
 
 /**
 @brief Intersection of two line segments in 2D
-@param p        Starting point of first line segment
-@param r        Direction of first line segment
-@param q        Starting point of second line segment
-@param s        Direction of second line segment
+@param p        Starting point of the first line segment
+@param r        Direction and length of the first line segment
+@param q        Starting point of the second line segment
+@param s        Direction and length of the second line segment
 
 Returns intersection point positions @f$ t @f$, @f$ u @f$ on both lines:
 
@@ -136,10 +136,10 @@ template<class T> inline std::pair<T, T> lineSegmentLineSegment(const Vector2<T>
 
 /**
 @brief Intersection of line segment and line in 2D
-@param p        Starting point of first line segment
-@param r        Direction of first line segment
-@param q        Starting point of second line
-@param s        Direction of second line
+@param p        Starting point of the first line segment
+@param r        Direction and length of first line segment
+@param q        Starting point of the second line
+@param s        Direction of the second line. Doesn't need to be normalized.
 
 Returns intersection point position @f$ t @f$ on the first line:
 
@@ -162,7 +162,7 @@ template<class T> inline T lineSegmentLine(const Vector2<T>& p, const Vector2<T>
 @brief Intersection of a plane and line
 @param plane            Plane equation
 @param p                Starting point of the line
-@param r                Direction of the line
+@param r                Direction of the line. Doesn't need to be normalized.
 
 Returns intersection point position @f$ t @f$ on the line:
 
