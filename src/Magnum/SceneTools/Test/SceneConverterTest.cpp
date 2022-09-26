@@ -1217,6 +1217,7 @@ void SceneConverterTest::infoImplementationMaterials() {
                 /* These shouldn't have a color swatch rendered */
                 {"notAColour4", Vector4{0.1f, 0.2f, 0.3f, 0.4f}},
                 {"notAColour3", Vector3{0.2f, 0.3f, 0.4f}},
+                {"data", Containers::ArrayView<const void>{"0123456789abcdef", 17}},
                 {"deadBeef", reinterpret_cast<const void*>(0xdeadbeef)},
                 {"undeadBeef", reinterpret_cast<void*>(0xbeefbeef)},
             }};

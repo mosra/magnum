@@ -902,6 +902,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                     case Trade::MaterialAttributeType::String:
                         d << info.data.attribute<Containers::StringView>(i, j);
                         break;
+                    case Trade::MaterialAttributeType::Buffer:
+                        d << info.data.attribute<Containers::ArrayView<const void>>(i, j).size() << "bytes";
+                        break;
                     case Trade::MaterialAttributeType::TextureSwizzle:
                         d << Debug::packed << info.data.attribute<Trade::MaterialTextureSwizzle>(i, j);
                         break;

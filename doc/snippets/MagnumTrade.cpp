@@ -533,12 +533,15 @@ Trade::MaterialData data{Trade::MaterialType::Phong, {}, attributes};
 {
 GL::Texture2D baseColorTexture;
 /* [MaterialData-populating-custom] */
+char sha1[20]{DOXYGEN_ELLIPSIS()};
+
 Trade::MaterialData data{Trade::MaterialType::PbrMetallicRoughness, {
     {Trade::MaterialAttribute::BaseColor, 0x3bd267ff_srgbaf},
     {Trade::MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
     {"baseColorTexturePointer", &baseColorTexture},
     {"highlightColor", 0x00ffff_srgbf},
-    {"name", "Canary Green Plastic, really ugly"}
+    {"name", "Canary Green Plastic, really ugly"},
+    {"hash", Containers::ArrayView<const void>{sha1}},
 }};
 
 // Retrieving the texture pointer

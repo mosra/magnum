@@ -156,7 +156,8 @@ std::size_t materialAttributeTypeSize(const MaterialAttributeType type) {
             return sizeof(void*);
 
         case MaterialAttributeType::String:
-            CORRADE_ASSERT_UNREACHABLE("Trade::materialAttributeTypeSize(): string size is unknown", {});
+        case MaterialAttributeType::Buffer:
+            CORRADE_ASSERT_UNREACHABLE("Trade::materialAttributeTypeSize(): string and buffer size is unknown", {});
     }
 
     CORRADE_ASSERT_UNREACHABLE("Trade::materialAttributeTypeSize(): invalid type" << type, {});
@@ -177,18 +178,33 @@ MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, 
         std::memcpy(_data.data + 1, name.data(), name.size());
         std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - stringValue.size() - 2, stringValue.data(), stringValue.size());
         _data.data[Implementation::MaterialAttributeDataSize - 1] = stringValue.size();
-        return;
-    }
 
-    /* The 2 extra bytes are for a null byte after the name and a type */
-    CORRADE_ASSERT(name.size() + size + 2 <= Implementation::MaterialAttributeDataSize,
-        "Trade::MaterialAttributeData: name" << name << "too long, expected at most" << Implementation::MaterialAttributeDataSize - size - 2 << "bytes for" << type << "but got" << name.size(), );
-    _data.type = type;
-    std::memcpy(_data.data + 1, name.data(), name.size());
-    std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - size, value, size);
+    /* Special handling for buffers. Similar to strings, except that the size
+       is stored right after the null-terminated name, and the value has no
+       null terminator. */
+    } else if(type == MaterialAttributeType::Buffer) {
+        const auto& bufferValue = *static_cast<const Containers::ArrayView<const void>*>(value);
+        /* The 3 extra bytes are for a null byte after the name, a type and a
+           value size */
+        CORRADE_ASSERT(name.size() + bufferValue.size() + 3 <= Implementation::MaterialAttributeDataSize,
+        "Trade::MaterialAttributeData: name" << name << "and a" << bufferValue.size() << Debug::nospace << "-byte value too long, expected at most" << Implementation::MaterialAttributeDataSize - 3 << "bytes in total but got" << name.size() + bufferValue.size(), );
+        _data.type = MaterialAttributeType::Buffer;
+        std::memcpy(_data.data + 1, name.data(), name.size());
+        _data.data[name.size() + 2] = bufferValue.size();
+        std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - bufferValue.size(), bufferValue.data(), bufferValue.size());
+
+    /* Fixed-size values */
+    } else {
+        /* The 2 extra bytes are for a null byte after the name and a type */
+        CORRADE_ASSERT(name.size() + size + 2 <= Implementation::MaterialAttributeDataSize,
+            "Trade::MaterialAttributeData: name" << name << "too long, expected at most" << Implementation::MaterialAttributeDataSize - size - 2 << "bytes for" << type << "but got" << name.size(), );
+        _data.type = type;
+        std::memcpy(_data.data + 1, name.data(), name.size());
+        std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - size, value, size);
+    }
 }
 
-MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const MaterialAttributeType type, const void* const value) noexcept: MaterialAttributeData{name, type, type == MaterialAttributeType::String ? ~std::size_t{} : materialAttributeTypeSize(type), value} {}
+MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const MaterialAttributeType type, const void* const value) noexcept: MaterialAttributeData{name, type, type == MaterialAttributeType::String || type == MaterialAttributeType::Buffer ? ~std::size_t{} : materialAttributeTypeSize(type), value} {}
 
 MaterialAttributeData::MaterialAttributeData(const MaterialAttribute name, const MaterialAttributeType type, const void* const value) noexcept {
     CORRADE_ASSERT(UnsignedInt(name) - 1 < Containers::arraySize(AttributeMap),
@@ -226,6 +242,15 @@ MaterialAttributeData::MaterialAttributeData(const MaterialLayer layerName) noex
 const void* MaterialAttributeData::value() const {
     if(_data.type == MaterialAttributeType::String)
         return _data.s.nameValue + Implementation::MaterialAttributeDataSize - _data.s.size - 3;
+    if(_data.type == MaterialAttributeType::Buffer) {
+        /* Using an internal StringView API because it's never slower than
+           memchr() */
+        /** @todo have an optimized aligned fixed-size variant? */
+        const char* const nameEnd = Containers::Implementation::stringFindCharacter(_data.data, Implementation::MaterialAttributeDataSize, '\0');
+        CORRADE_INTERNAL_ASSERT(nameEnd);
+        const std::size_t size = *(nameEnd + 1);
+        return _data.data + Implementation::MaterialAttributeDataSize - size;
+    }
     return _data.data + Implementation::MaterialAttributeDataSize - materialAttributeTypeSize(_data.type);
 }
 
@@ -236,6 +261,17 @@ template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialAttributeData::val
     CORRADE_ASSERT(_data.type == MaterialAttributeType::String,
         "Trade::MaterialAttributeData::value():" << (_data.data + 1) << "of" << _data.type << "can't be retrieved as a string", {});
     return {_data.s.nameValue + Implementation::MaterialAttributeDataSize - _data.s.size - 3, _data.s.size, Containers::StringViewFlag::NullTerminated};
+}
+template<> MAGNUM_TRADE_EXPORT Containers::ArrayView<const void> MaterialAttributeData::value<Containers::ArrayView<const void>>() const {
+    CORRADE_ASSERT(_data.type == MaterialAttributeType::Buffer,
+        "Trade::MaterialAttributeData::value():" << (_data.data + 1) << "of" << _data.type << "can't be retrieved as a buffer", {});
+    /* Using an internal StringView API because it's never slower than
+       memchr() */
+    /** @todo have an optimized aligned fixed-size variant? */
+    const char* const nameEnd = Containers::Implementation::stringFindCharacter(_data.data, Implementation::MaterialAttributeDataSize, '\0');
+    CORRADE_INTERNAL_ASSERT(nameEnd);
+    const std::size_t size = *(nameEnd + 1);
+    return {_data.data + Implementation::MaterialAttributeDataSize - size, size};
 }
 #endif
 
@@ -971,6 +1007,46 @@ template<> MAGNUM_TRADE_EXPORT Containers::MutableStringView MaterialData::mutab
         "Trade::MaterialData::mutableAttribute():" << (data._data.data + 1) << "of" << data._data.type << "can't be retrieved as a string", {});
     return {const_cast<char*>(data._data.s.nameValue) + Implementation::MaterialAttributeDataSize - data._data.s.size - 3, data._data.s.size, Containers::StringViewFlag::NullTerminated};
 }
+
+template<> MAGNUM_TRADE_EXPORT Containers::ArrayView<const void> MaterialData::attribute<Containers::ArrayView<const void>>(const UnsignedInt layer, const UnsignedInt id) const {
+    /* Can't delegate to attribute() returning const void* because that doesn't
+       include the size */
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
+    CORRADE_ASSERT(data._data.type == MaterialAttributeType::Buffer,
+        "Trade::MaterialData::attribute():" << (data._data.data + 1) << "of" << data._data.type << "can't be retrieved as a buffer", {});
+    /* Using an internal StringView API because it's never slower than
+       memchr() */
+    /** @todo have an optimized aligned fixed-size variant? */
+    const char* const nameEnd = Containers::Implementation::stringFindCharacter(data._data.data, Implementation::MaterialAttributeDataSize, '\0');
+    CORRADE_INTERNAL_ASSERT(nameEnd);
+    const std::size_t size = *(nameEnd + 1);
+    return {data._data.data + Implementation::MaterialAttributeDataSize - size, size};
+}
+
+template<> MAGNUM_TRADE_EXPORT Containers::ArrayView<void> MaterialData::mutableAttribute<Containers::ArrayView<void>>(const UnsignedInt layer, const UnsignedInt id) {
+    CORRADE_ASSERT(_attributeDataFlags & DataFlag::Mutable,
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable", {});
+    /* Can't delegate to mutableAttribute() returning void* because that
+       doesn't include the size */
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::mutableAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::mutableAttribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
+    CORRADE_ASSERT(data._data.type == MaterialAttributeType::Buffer,
+        "Trade::MaterialData::mutableAttribute():" << (data._data.data + 1) << "of" << data._data.type << "can't be retrieved as a buffer", {});
+    /* Using an internal StringView API because it's never slower than
+       memchr() */
+    /** @todo have an optimized aligned fixed-size variant? */
+    const char* const nameEnd = Containers::Implementation::stringFindCharacter(data._data.data, Implementation::MaterialAttributeDataSize, '\0');
+    CORRADE_INTERNAL_ASSERT(nameEnd);
+    const std::size_t size = *(nameEnd + 1);
+    return {const_cast<char*>(data._data.data) + Implementation::MaterialAttributeDataSize - size, size};
+}
 #endif
 
 const void* MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
@@ -1122,6 +1198,7 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
         _c(Pointer)
         _c(MutablePointer)
         _c(String)
+        _c(Buffer)
         _c(TextureSwizzle)
         #undef _c
         /* LCOV_EXCL_STOP */

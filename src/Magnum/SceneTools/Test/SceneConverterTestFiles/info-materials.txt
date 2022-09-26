@@ -9,6 +9,7 @@ Material 0:
  0, 1, 0.75,
  0, 0, 1}
     RoughnessTextureSwizzle @ TextureSwizzle: B
+    data @ Buffer: 17 bytes
     deadBeef @ Pointer: 0xdeadbeef
     notAColour3 @ Vector3: {0.2, 0.3, 0.4}
     notAColour4 @ Vector4: {0.1, 0.2, 0.3, 0.4}

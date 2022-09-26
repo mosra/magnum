@@ -28,6 +28,7 @@
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
@@ -68,7 +69,9 @@ struct MaterialDataTest: TestSuite::Tester {
     void constructAttributePointer();
     void constructAttributeMutablePointer();
     void constructAttributeStringNameStringValue();
+    void constructAttributeStringNameBufferValue();
     void constructAttributeNameStringValue();
+    void constructAttributeNameBufferValue();
     void constructAttributeTextureSwizzle();
     void constructAttributeLayer();
 
@@ -78,12 +81,16 @@ struct MaterialDataTest: TestSuite::Tester {
     void constructAttributeInvalidType();
     void constructAttributeEmptyName();
     void constructAttributeEmptyNameString();
+    void constructAttributeEmptyNameBuffer();
     void constructAttributeTooLarge();
     void constructAttributeTooLargeString();
+    void constructAttributeTooLargeBuffer();
     void constructAttributeTooLargeNameString();
+    void constructAttributeTooLargeNameBuffer();
     void constructAttributeWrongAccessType();
     void constructAttributeWrongAccessPointerType();
     void constructAttributeWrongAccessTypeString();
+    void constructAttributeWrongAccessTypeBuffer();
 
     void construct();
     void constructEmptyAttribute();
@@ -113,6 +120,7 @@ struct MaterialDataTest: TestSuite::Tester {
     void access();
     void accessPointer();
     void accessString();
+    void accessBuffer();
     void accessTextureSwizzle();
     void accessMutable();
     void accessOptional();
@@ -122,6 +130,7 @@ struct MaterialDataTest: TestSuite::Tester {
     void accessWrongType();
     void accessWrongPointerType();
     void accessWrongTypeString();
+    void accessWrongTypeBuffer();
 
     void accessLayers();
     void accessLayersDefaults();
@@ -224,7 +233,9 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructAttributePointer,
               &MaterialDataTest::constructAttributeMutablePointer,
               &MaterialDataTest::constructAttributeStringNameStringValue,
+              &MaterialDataTest::constructAttributeStringNameBufferValue,
               &MaterialDataTest::constructAttributeNameStringValue,
+              &MaterialDataTest::constructAttributeNameBufferValue,
               &MaterialDataTest::constructAttributeTextureSwizzle,
               &MaterialDataTest::constructAttributeLayer,
 
@@ -234,12 +245,16 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructAttributeInvalidType,
               &MaterialDataTest::constructAttributeEmptyName,
               &MaterialDataTest::constructAttributeEmptyNameString,
+              &MaterialDataTest::constructAttributeEmptyNameBuffer,
               &MaterialDataTest::constructAttributeTooLarge,
               &MaterialDataTest::constructAttributeTooLargeString,
+              &MaterialDataTest::constructAttributeTooLargeBuffer,
               &MaterialDataTest::constructAttributeTooLargeNameString,
+              &MaterialDataTest::constructAttributeTooLargeNameBuffer,
               &MaterialDataTest::constructAttributeWrongAccessType,
               &MaterialDataTest::constructAttributeWrongAccessPointerType,
               &MaterialDataTest::constructAttributeWrongAccessTypeString,
+              &MaterialDataTest::constructAttributeWrongAccessTypeBuffer,
 
               &MaterialDataTest::construct,
               &MaterialDataTest::constructEmptyAttribute});
@@ -272,6 +287,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::access,
               &MaterialDataTest::accessPointer,
               &MaterialDataTest::accessString,
+              &MaterialDataTest::accessBuffer,
               &MaterialDataTest::accessTextureSwizzle,
               &MaterialDataTest::accessMutable,
               &MaterialDataTest::accessOptional,
@@ -281,6 +297,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessWrongType,
               &MaterialDataTest::accessWrongPointerType,
               &MaterialDataTest::accessWrongTypeString,
+              &MaterialDataTest::accessWrongTypeBuffer,
 
               &MaterialDataTest::accessLayers,
               &MaterialDataTest::accessLayersDefaults,
@@ -395,10 +412,12 @@ void MaterialDataTest::attributeTypeSizeInvalid() {
     materialAttributeTypeSize(MaterialAttributeType(0x0));
     materialAttributeTypeSize(MaterialAttributeType(0xfe));
     materialAttributeTypeSize(MaterialAttributeType::String);
+    materialAttributeTypeSize(MaterialAttributeType::Buffer);
     CORRADE_COMPARE(out.str(),
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0x0)\n"
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0xfe)\n"
-        "Trade::materialAttributeTypeSize(): string size is unknown\n");
+        "Trade::materialAttributeTypeSize(): string and buffer size is unknown\n"
+        "Trade::materialAttributeTypeSize(): string and buffer size is unknown\n");
 }
 
 void MaterialDataTest::attributeMap() {
@@ -653,6 +672,42 @@ void MaterialDataTest::constructAttributeStringNameStringValue() {
     CORRADE_COMPARE(typeErased.value<Containers::StringView>()[typeErased.value<Containers::StringView>().size()], '\0');
 }
 
+void MaterialDataTest::constructAttributeStringNameBufferValue() {
+    /* Explicitly using a non-null-terminated view on input to check the null
+       byte isn't read by accident*/
+    MaterialAttributeData attribute{"name that's long", Containers::arrayView({0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f})};
+    CORRADE_COMPARE(attribute.name(), "name that's long");
+    CORRADE_COMPARE(attribute.name().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(attribute.name()[attribute.name().size()], '\0');
+    CORRADE_COMPARE(attribute.type(), MaterialAttributeType::Buffer);
+    /* The pointer should be aligned */
+    CORRADE_COMPARE_AS(attribute.value(), 4, TestSuite::Compare::Aligned);
+    CORRADE_COMPARE(static_cast<const Float*>(attribute.value())[5], 5.0f);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(attribute.value<Containers::ArrayView<const void>>()), Containers::arrayView({
+        0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f
+    }), TestSuite::Compare::Container);
+
+    /* Compared to a StringView attribute there's no constexpr variant of the
+       constructor */
+
+    /* Type-erased variant. The above overload delegates into this one so it's
+       testing the same code path, but keep it here for consistency with
+       the constructAttributeStringNameStringValue() case. */
+    const Float value[]{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
+    Containers::ArrayView<const void> view = value;
+    MaterialAttributeData typeErased{"name that's long", MaterialAttributeType::Buffer, &view};
+    CORRADE_COMPARE(typeErased.name(), "name that's long");
+    CORRADE_COMPARE(typeErased.name().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(typeErased.name()[typeErased.name().size()], '\0');
+    CORRADE_COMPARE(typeErased.type(), MaterialAttributeType::Buffer);
+    /* The pointer should be aligned */
+    CORRADE_COMPARE_AS(attribute.value(), 4, TestSuite::Compare::Aligned);
+    CORRADE_COMPARE(static_cast<const Float*>(attribute.value())[5], 5.0f);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(attribute.value<Containers::ArrayView<const void>>()), Containers::arrayView({
+        0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f
+    }), TestSuite::Compare::Container);
+}
+
 void MaterialDataTest::constructAttributeNameStringValue() {
     /* Explicitly using a non-null-terminated view on input to check the null
        byte isn't read by accident*/
@@ -678,6 +733,10 @@ void MaterialDataTest::constructAttributeNameStringValue() {
     CORRADE_COMPARE(typeErased.value<Containers::StringView>(), "a value\0that's long but still fits!"_s);
     CORRADE_COMPARE(typeErased.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(typeErased.value<Containers::StringView>()[typeErased.value<Containers::StringView>().size()], '\0');
+}
+
+void MaterialDataTest::constructAttributeNameBufferValue() {
+    CORRADE_SKIP("No builtin attributes with" << MaterialAttributeType::Buffer << "at the moment.");
 }
 
 void MaterialDataTest::constructAttributeTextureSwizzle() {
@@ -786,6 +845,19 @@ void MaterialDataTest::constructAttributeEmptyNameString() {
         "Trade::MaterialAttributeData: name is not allowed to be empty\n");
 }
 
+void MaterialDataTest::constructAttributeEmptyNameBuffer() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This has no reason to not be allowed */
+    MaterialAttributeData{"hello this buffer is empty", Containers::ArrayView<const void>{}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"", Containers::ArrayView<const void>{"E", 2}};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: name is not allowed to be empty\n");
+}
+
 void MaterialDataTest::constructAttributeTooLarge() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -821,6 +893,18 @@ void MaterialDataTest::constructAttributeTooLargeString() {
         "Trade::MaterialAttributeData: name attribute is long and value This is a problem, got a long piece of text! too long, expected at most 60 bytes in total but got 61\n");
 }
 
+void MaterialDataTest::constructAttributeTooLargeBuffer() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    int data[10]; /* 40 bytes */
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"attribute is very long", data};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: name attribute is very long and a 40-byte value too long, expected at most 61 bytes in total but got 62\n");
+}
+
 void MaterialDataTest::constructAttributeTooLargeNameString() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -829,6 +913,10 @@ void MaterialDataTest::constructAttributeTooLargeNameString() {
     MaterialAttributeData{MaterialAttribute::LayerName, "This is a problem, got a huge, yuuge value to store"};
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialAttributeData: name  LayerName and value This is a problem, got a huge, yuuge value to store too long, expected at most 60 bytes in total but got 61\n");
+}
+
+void MaterialDataTest::constructAttributeTooLargeNameBuffer() {
+    CORRADE_SKIP("No builtin attributes with" << MaterialAttributeType::Buffer << "at the moment.");
 }
 
 void MaterialDataTest::constructAttributeWrongAccessType() {
@@ -871,6 +959,15 @@ void MaterialDataTest::constructAttributeWrongAccessTypeString() {
     Error redirectError{&out};
     MaterialAttributeData{"thing3", Matrix4x3{}}.value<Containers::StringView>();
     CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): thing3 of Trade::MaterialAttributeType::Matrix4x3 can't be retrieved as a string\n");
+}
+
+void MaterialDataTest::constructAttributeWrongAccessTypeBuffer() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"thing3", Matrix4x3{}}.value<Containers::ArrayView<const void>>();
+    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): thing3 of Trade::MaterialAttributeType::Matrix4x3 can't be retrieved as a buffer\n");
 }
 
 void MaterialDataTest::construct() {
@@ -1765,6 +1862,20 @@ void MaterialDataTest::accessString() {
     CORRADE_COMPARE(data.attribute<Containers::StringView>(0)[data.attribute<Containers::StringView>(0).size()], '\0');
 }
 
+void MaterialDataTest::accessBuffer() {
+    MaterialData data{{}, {
+        {"name?", Containers::arrayView({0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f})}
+    }};
+    CORRADE_COMPARE(data.attributeType("name?"), MaterialAttributeType::Buffer);
+
+    /* The pointer should be aligned */
+    CORRADE_COMPARE_AS(data.attribute(0), 4, TestSuite::Compare::Aligned);
+    CORRADE_COMPARE(static_cast<const Float*>(data.attribute(0))[5], 5.0f);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(data.attribute<Containers::ArrayView<const void>>(0)), Containers::arrayView({
+        0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f
+    }), TestSuite::Compare::Container);
+}
+
 void MaterialDataTest::accessTextureSwizzle() {
     MaterialData data{{}, {
         {"normalSwizzle", MaterialTextureSwizzle::BA}
@@ -1782,6 +1893,8 @@ void MaterialDataTest::accessMutable() {
     MaterialData data{{}, {
         {MaterialAttribute::LayerName, "aye"_s},
         {MaterialAttribute::Roughness, 1.0f},
+        /** @todo test builtin buffer attribute once it exists */
+        {"data", Containers::arrayView({0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f})},
     }};
 
     *static_cast<Float*>(data.mutableAttribute(1)) *= 2.0f;
@@ -1799,6 +1912,16 @@ void MaterialDataTest::accessMutable() {
     ++data.mutableAttribute<Containers::MutableStringView>(MaterialAttribute::LayerName)[0];
     ++data.mutableAttribute<Containers::MutableStringView>(" LayerName")[0];
     CORRADE_COMPARE(data.attribute<Containers::StringView>(MaterialAttribute::LayerName), "gye"_s);
+
+    static_cast<Float*>(data.mutableAttribute(2))[1] *= 2.0f;
+    /** @todo test also builtin buffer attribute access once it exists */
+    static_cast<Float*>(data.mutableAttribute("data"))[2] *= 2.0f;
+    Containers::arrayCast<Float>(data.mutableAttribute<Containers::ArrayView<void>>(2))[3] *= 2.0f;
+    /** @todo test also builtin buffer attribute access once it exists */
+    Containers::arrayCast<Float>(data.mutableAttribute<Containers::ArrayView<void>>("data"))[4] *= 2.0f;
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(data.attribute<Containers::ArrayView<const void>>("data")), Containers::arrayView({
+        0.0f, 2.0f, 4.0f, 6.0f, 8.0f, 5.0f, 6.0f
+    }), TestSuite::Compare::Container);
 }
 
 void MaterialDataTest::accessOptional() {
@@ -1983,6 +2106,40 @@ void MaterialDataTest::accessWrongTypeString() {
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n");
+}
+
+void MaterialDataTest::accessWrongTypeBuffer() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    MaterialData data{{}, {
+        {"Shininess", 0.0f}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attribute<Containers::ArrayView<const void>>(0);
+    data.attribute<Containers::ArrayView<const void>>(MaterialAttribute::Shininess);
+    data.attribute<Containers::ArrayView<const void>>("Shininess");
+    data.mutableAttribute<Containers::ArrayView<void>>(0);
+    data.mutableAttribute<Containers::ArrayView<void>>(MaterialAttribute::Shininess);
+    data.mutableAttribute<Containers::ArrayView<void>>("Shininess");
+    data.tryAttribute<Containers::ArrayView<const void>>(MaterialAttribute::Shininess);
+    data.tryAttribute<Containers::ArrayView<const void>>("Shininess");
+    data.attributeOr(MaterialAttribute::Shininess, Containers::ArrayView<const void>{});
+    data.attributeOr("Shininess", Containers::ArrayView<const void>{});
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        /* tryAttribute() and attributeOr() delegate to attribute() so the
+           assert is the same */
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n");
 }
 
 void MaterialDataTest::accessLayers() {
@@ -2855,11 +3012,13 @@ void MaterialDataTest::accessMutableNotAllowed() {
     const MaterialAttributeData attributes[]{
         {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
         {MaterialAttribute::LayerName, "ClearCoat"},
-        {MaterialAttribute::Roughness, 0.5f}
+        {MaterialAttribute::Roughness, 0.5f},
+        /** @todo test builtin buffer attribute once it exists */
+        {"data", Containers::ArrayView<const void>{}},
     };
 
     const UnsignedInt layers[]{
-        1, 3
+        1, 4
     };
 
     MaterialData data{{}, {}, attributes, {}, layers};
@@ -2882,6 +3041,9 @@ void MaterialDataTest::accessMutableNotAllowed() {
     data.mutableAttribute<Containers::MutableStringView>(1, 0);
     data.mutableAttribute<Containers::MutableStringView>(1, " LayerName");
     data.mutableAttribute<Containers::MutableStringView>(1, MaterialAttribute::LayerName);
+    data.mutableAttribute<Containers::ArrayView<void>>(1, 2);
+    data.mutableAttribute<Containers::ArrayView<void>>(1, "data");
+    /** @todo test also builtin buffer attribute access once it exists */
 
     data.mutableAttribute("ClearCoat", 1);
     data.mutableAttribute("ClearCoat", "Roughness");
@@ -2892,6 +3054,9 @@ void MaterialDataTest::accessMutableNotAllowed() {
     data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 0);
     data.mutableAttribute<Containers::MutableStringView>("ClearCoat", " LayerName");
     data.mutableAttribute<Containers::MutableStringView>("ClearCoat", MaterialAttribute::LayerName);
+    data.mutableAttribute<Containers::ArrayView<void>>("ClearCoat", 2);
+    data.mutableAttribute<Containers::ArrayView<void>>("ClearCoat", "data");
+    /** @todo test also builtin buffer attribute access once it exists */
 
     data.mutableAttribute(MaterialLayer::ClearCoat, 1);
     data.mutableAttribute(MaterialLayer::ClearCoat, "Roughness");
@@ -2902,6 +3067,9 @@ void MaterialDataTest::accessMutableNotAllowed() {
     data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, 0);
     data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, " LayerName");
     data.mutableAttribute<Containers::MutableStringView>(MaterialLayer::ClearCoat, MaterialAttribute::LayerName);
+    data.mutableAttribute<Containers::ArrayView<void>>(MaterialLayer::ClearCoat, 2);
+    data.mutableAttribute<Containers::ArrayView<void>>(MaterialLayer::ClearCoat, "data");
+    /** @todo test also builtin buffer attribute access once it exists */
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
@@ -2918,13 +3086,6 @@ void MaterialDataTest::accessMutableNotAllowed() {
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
-
-        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
-        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
-        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
-        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
-        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
-        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
 
@@ -2933,6 +3094,19 @@ void MaterialDataTest::accessMutableNotAllowed() {
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
+        "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n"
         "Trade::MaterialData::mutableAttribute(): attribute data not mutable\n");
@@ -3047,7 +3221,9 @@ void MaterialDataTest::templateLayerAccessMutable() {
     MaterialLayerData<MaterialLayer::ClearCoat> data{{}, {
         {MaterialLayer::ClearCoat},
         {MaterialAttribute::Roughness, 1.0f},
-    }, {0, 2}};
+        /** @todo test builtin buffer attribute once it exists */
+        {"data", Containers::arrayView({0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f})},
+    }, {0, 3}};
 
     *static_cast<Float*>(data.mutableAttribute(1)) *= 2.0f;
     *static_cast<Float*>(data.mutableAttribute(MaterialAttribute::Roughness)) *= 2.0f;
@@ -3056,6 +3232,16 @@ void MaterialDataTest::templateLayerAccessMutable() {
     data.mutableAttribute<Float>(MaterialAttribute::Roughness) *= 2.0f;
     data.mutableAttribute<Float>("Roughness") *= 2.0f;
     CORRADE_COMPARE(data.attribute<Float>(MaterialAttribute::Roughness), 64.0f);
+
+    static_cast<Float*>(data.mutableAttribute(2))[1] *= 2.0f;
+    /** @todo test also builtin buffer attribute access once it exists */
+    static_cast<Float*>(data.mutableAttribute("data"))[2] *= 2.0f;
+    Containers::arrayCast<Float>(data.mutableAttribute<Containers::ArrayView<void>>(2))[3] *= 2.0f;
+    /** @todo test also builtin buffer attribute access once it exists */
+    Containers::arrayCast<Float>(data.mutableAttribute<Containers::ArrayView<void>>("data"))[4] *= 2.0f;
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(data.attribute<Containers::ArrayView<const void>>("data")), Containers::arrayView({
+        0.0f, 2.0f, 4.0f, 6.0f, 8.0f, 5.0f, 6.0f
+    }), TestSuite::Compare::Container);
 
     /* Resetting back so the layer name always stays the same so the next call
        can find it. Other than that, the result should be same as in

@@ -241,13 +241,13 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
          *
          * Same as calling @ref MaterialData::attribute() with @p layer.
          */
-        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(UnsignedInt id) {
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value || std::is_same<T, Containers::ArrayView<void>>::value, T, T&>::type mutableAttribute(UnsignedInt id) {
             return MaterialData::mutableAttribute<T>(layer, id);
         }
-        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(Containers::StringView name) {
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value || std::is_same<T, Containers::ArrayView<void>>::value, T, T&>::type mutableAttribute(Containers::StringView name) {
             return MaterialData::mutableAttribute<T>(layer, name);
         } /**< @overload */
-        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value, Containers::MutableStringView, T&>::type mutableAttribute(MaterialAttribute name) {
+        template<class T> typename std::conditional<std::is_same<T, Containers::MutableStringView>::value || std::is_same<T, Containers::ArrayView<void>>::value, T, T&>::type mutableAttribute(MaterialAttribute name) {
             return MaterialData::mutableAttribute<T>(layer, name);
         } /**< @overload */
 
