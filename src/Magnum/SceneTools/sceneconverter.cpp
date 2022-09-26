@@ -31,6 +31,7 @@
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Arguments is std::string-free */
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/String.h> /* parseNumberSequence() */
 
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Reference.h"

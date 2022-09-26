@@ -25,11 +25,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/Magnum.h"
 
@@ -38,14 +37,14 @@ namespace Magnum { namespace Implementation {
 /* Used only in executables where we don't want it to be exported */
 namespace {
 
-void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& anyPluginName, const std::string& options) {
-    for(const std::string& option: Utility::String::splitWithoutEmptyParts(options, ',')) {
-        auto keyValue = Utility::String::partition(option, '=');
-        Utility::String::trimInPlace(keyValue[0]);
-        Utility::String::trimInPlace(keyValue[2]);
+void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringView anyPluginName, const Containers::StringView options) {
+    for(const Containers::StringView option: options.splitWithoutEmptyParts(',')) {
+        auto keyValue = option.partition('=');
+        keyValue[0] = keyValue[0].trimmed();
+        keyValue[2] = keyValue[2].trimmed();
 
-        std::vector<std::string> keyParts = Utility::String::split(keyValue[0], '/');
-        CORRADE_INTERNAL_ASSERT(!keyParts.empty());
+        const Containers::Array<Containers::StringView> keyParts = keyValue[0].split('/');
+        CORRADE_INTERNAL_ASSERT(!keyParts.isEmpty());
         Utility::ConfigurationGroup* group = &plugin.configuration();
         bool groupNotRecognized = false;
         for(std::size_t i = 0; i != keyParts.size() - 1; ++i) {
@@ -72,10 +71,10 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& anyPlu
         /* If the option doesn't have an =, treat it as a boolean flag that's
            set to true. While there's no similar way to do an inverse, it's
            still nicer than causing a fatal error with those. */
-        if(keyValue[1].empty())
-            group->setValue(keyParts.back(), true);
-        else
+        if(keyValue[1])
             group->setValue(keyParts.back(), keyValue[2]);
+        else
+            group->setValue(keyParts.back(), true);
     }
 }
 
