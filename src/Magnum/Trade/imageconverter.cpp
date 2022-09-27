@@ -446,9 +446,13 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         return 1;
     }
 
+    /* Importer and converter manager */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())};
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
+        args.value("plugin-dir").empty() ? Containers::String{} :
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     const Int dimensions = args.value<Int>("dimensions");
     /** @todo make them array options as well? */
@@ -919,10 +923,6 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         outputImages1D.size() > 1 ||
         outputImages2D.size() > 1 ||
         outputImages3D.size() > 1;
-
-    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
-        args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnyImageConverter. All converters except the last one are
