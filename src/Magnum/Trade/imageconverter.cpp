@@ -400,6 +400,15 @@ support conversion to a file, AnyImageConverter is used to save its output; if
 no -C / --converter is specified, AnyImageConverter is used.)")
         .parse(argc, argv);
 
+    /* Colored output. Enable only if a TTY. */
+    Debug::Flags useColor;
+    if(args.value("color") == "on")
+        useColor = Debug::Flags{};
+    else if(args.value("color") == "off")
+        useColor = Debug::Flag::DisableColors;
+    else
+        useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
+
     /* Generic checks */
     if(args.value<Containers::StringView>("output")) {
         if(args.isSet("in-place")) {
@@ -590,15 +599,6 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 bool error = false;
                 Containers::Array<Trade::Implementation::ImageInfo> infos =
                     Trade::Implementation::imageInfo(*importer, error, importTime);
-
-                /* Colored output. Enable only if a TTY. */
-                Debug::Flags useColor;
-                if(args.value("color") == "on")
-                    useColor = Debug::Flags{};
-                else if(args.value("color") == "off")
-                    useColor = Debug::Flag::DisableColors;
-                else
-                    useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
 
                 Trade::Implementation::printImageInfo(useColor, infos, nullptr, nullptr, nullptr);
 
