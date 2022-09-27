@@ -1,0 +1,3 @@
+2D image 0:
+  Level 0: {2, 3} @ R8Unorm (0.0 kB)
+Total image data size: 0.0 kB

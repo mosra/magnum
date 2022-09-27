@@ -35,20 +35,29 @@ else()
     set(TRADE_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
+# Executable testing is implemented on Unix platforms only at the moment, so
+# don't even provide the filename elsewhere.
+if(MAGNUM_WITH_IMAGECONVERTER AND CORRADE_TARGET_UNIX)
+    set(IMAGECONVERTER_EXECUTABLE_FILENAME $<TARGET_FILE:magnum-imageconverter>)
+endif()
+
+# First replace ${} variables, then $<> generator expressions
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+    INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES MagnumTradeTestLib)
-target_include_directories(TradeAbstractImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(TradeAbstractImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
 corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp
     LIBRARIES MagnumTradeTestLib
     FILES file.bin)
-target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
 corrade_add_test(TradeAbstractSceneConverterTest AbstractSceneConverterTest.cpp
     LIBRARIES MagnumTradeTestLib)
-target_include_directories(TradeAbstractSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(TradeAbstractSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
 corrade_add_test(TradeAnimationDataTest AnimationDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES MagnumTradeTestLib)
@@ -59,7 +68,25 @@ corrade_add_test(TradeImageConverterImplementa___Test ImageConverterImplementati
     LIBRARIES MagnumTrade
     FILES
         ImageConverterImplementationTestFiles/info.txt)
-target_include_directories(TradeImageConverterImplementa___Test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(TradeImageConverterImplementa___Test PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+
+# Executable testing is implemented on Unix platforms only at the moment
+if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
+    corrade_add_test(TradeImageConverterTest ImageConverterTest.cpp
+        LIBRARIES
+            MagnumTrade
+            # Link the same static plugins as for the magnum-imageconverter
+            # executable so plugin existence checks are consistent between the two
+            ${MAGNUM_IMAGECONVERTER_STATIC_PLUGINS}
+        FILES
+            ImageConverterTestFiles/info-data.txt
+            ImageConverterTestFiles/info-data-ignored-output.txt
+            ImageConverterTestFiles/file.tga)
+    target_include_directories(TradeImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(MAGNUM_WITH_IMAGECONVERTER)
+        add_dependencies(TradeImageConverterTest magnum-imageconverter)
+    endif()
+endif()
 
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTradeTestLib)

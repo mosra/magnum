@@ -385,7 +385,7 @@ jobs:
       # to be either installed or static. Tests are however deliberately run
       # before install, so the static builds are the only case where the
       # utilities get thoroughly tested.
-      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::AnySceneConverter;Magnum::ObjImporter
+      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::AnySceneConverter;Magnum::ObjImporter -DMAGNUM_IMAGECONVERTER_STATIC_PLUGINS=Magnum::AnyImageImporter;Magnum::AnyImageConverter;Magnum::TgaImporter;Magnum::TgaImageConverter
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
