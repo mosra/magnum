@@ -75,6 +75,8 @@ corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
         SceneConverterTestFiles/images-3d.gltf
         SceneConverterTestFiles/images-3d-1x1x1.bin
         SceneConverterTestFiles/images-3d-1x1x1.gltf
+        SceneConverterTestFiles/info-data.txt
+        SceneConverterTestFiles/info-data-ignored-output.txt
         SceneConverterTestFiles/info-animations.txt
         SceneConverterTestFiles/info-cameras.txt
         SceneConverterTestFiles/info-images.txt

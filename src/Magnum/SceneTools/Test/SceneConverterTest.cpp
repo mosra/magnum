@@ -99,18 +99,23 @@ const struct {
 const struct {
     const char* name;
     Containers::Array<Containers::String> args;
+    const char* requiresImporter;
     const char* expected;
 } InfoData[]{
-    {"", Containers::array<Containers::String>({}),
-        "info.txt"},
-    {"map", Containers::array<Containers::String>({
-        "--map"}),
+    {"data", Containers::array<Containers::String>({
+        "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}),
+        "ObjImporter",
+        "info-data.txt"},
+    {"data, map", Containers::array<Containers::String>({
+        "--map", "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}),
+        "ObjImporter",
         /** @todo change to something else once we have a plugin that can
             zero-copy pass the imported data */
-        "info.txt"},
-    {"ignored output file", Containers::array<Containers::String>({
-        "whatever.ply"}),
-        "info-ignored-output.txt"},
+        "info-data.txt"},
+    {"data, ignored output file", Containers::array<Containers::String>({
+        "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), "whatever.ply"}),
+        "ObjImporter",
+        "info-data-ignored-output.txt"}
 };
 
 const struct {
@@ -1968,16 +1973,12 @@ void SceneConverterTest::info() {
     /* Check if required plugins can be loaded. Catches also ABI and interface
        mismatch errors. */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
-    if(!(importerManager.load("ObjImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("ObjImporter plugin can't be loaded.");
-
-    Containers::Array<Containers::String> args{InPlaceInit,
-        {"-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}};
-    arrayAppend(args, data.args);
+    if(data.requiresImporter && !(importerManager.load(data.requiresImporter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresImporter << "plugin can't be loaded.");
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
-    Containers::Pair<bool, Containers::String> output = call(args);
+    Containers::Pair<bool, Containers::String> output = call(data.args);
     CORRADE_COMPARE_AS(output.second(),
         Utility::Path::join({SCENETOOLS_TEST_DIR, "SceneConverterTestFiles", data.expected}),
         TestSuite::Compare::StringToFile);
