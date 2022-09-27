@@ -375,6 +375,8 @@ void ImageVkTest::cmdClearColorImageFloat() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
+    CORRADE_EXPECT_FAIL_IF(a.dedicatedMemory().size() != 4*4*4 && !device().properties().name().hasPrefix("SwiftShader"),
+        "The image doesn't have a tightly-packed memory, the following check won't work.");
     CORRADE_COMPARE_AS(Containers::arrayCast<const Color4ub>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView({
         0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba,
         0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba,
@@ -413,6 +415,8 @@ void ImageVkTest::cmdClearColorImageSignedIntegral() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
+    CORRADE_EXPECT_FAIL_IF(a.dedicatedMemory().size() != 4*4*4 && !device().properties().name().hasPrefix("SwiftShader"),
+        "The image doesn't have a tightly-packed memory, the following check won't work.");
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector4b>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView<Vector4b>({
         {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
         {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
@@ -451,6 +455,8 @@ void ImageVkTest::cmdClearColorImageUnsignedIntegral() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
+    CORRADE_EXPECT_FAIL_IF(a.dedicatedMemory().size() != 4*4*4 && !device().properties().name().hasPrefix("SwiftShader"),
+        "The image doesn't have a tightly-packed memory, the following check won't work.");
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector4ub>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView<Vector4ub>({
         {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
         {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
@@ -666,6 +672,8 @@ void ImageVkTest::cmdCopyImage2D() {
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
 
+    CORRADE_EXPECT_FAIL_IF(b.dedicatedMemory().size() != 8*5*4 && !device().properties().name().hasPrefix("SwiftShader"),
+        "The image doesn't have a tightly-packed memory, the following check won't work.");
     CORRADE_COMPARE(b.dedicatedMemory().mapRead().prefix(8*5*4),
         "--------------------------------"
         "----AaaaAaaaAaaaAaaa------------"
