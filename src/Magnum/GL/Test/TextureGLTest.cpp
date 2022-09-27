@@ -2480,6 +2480,8 @@ void TextureGLTest::subImage3DQueryBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
+    CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa,
+        "Mesa has this broken since 21.2, worked fine with 21.1.");
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).exceptPrefix(PixelStorage3DData[testCaseInstanceId()].offset),
         PixelStorage3DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
