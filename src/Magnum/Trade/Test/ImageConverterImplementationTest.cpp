@@ -27,6 +27,7 @@
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/StringToFile.h>
+#include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
@@ -39,13 +40,325 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct ImageConverterImplementationTest: TestSuite::Tester {
     explicit ImageConverterImplementationTest();
 
+    void pluginInfo();
+    void pluginInfoAliases();
+    void pluginConfigurationInfoEmpty();
+    void pluginConfigurationInfo();
+    void pluginConfigurationInfoDoxygenDelimiter();
+    void importerInfo();
+    void converterInfo();
+    void converterInfoExtensionMimeType();
+
     void info();
     void infoError();
+
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<Trade::AbstractImporter> _importerManager{"nonexistent"};
+    PluginManager::Manager<Trade::AbstractImageConverter> _converterManager{"nonexistent"};
 };
 
 ImageConverterImplementationTest::ImageConverterImplementationTest() {
-    addTests({&ImageConverterImplementationTest::info,
+    addTests({&ImageConverterImplementationTest::pluginInfo,
+              &ImageConverterImplementationTest::pluginInfoAliases,
+              &ImageConverterImplementationTest::pluginConfigurationInfoEmpty,
+              &ImageConverterImplementationTest::pluginConfigurationInfo,
+              &ImageConverterImplementationTest::pluginConfigurationInfoDoxygenDelimiter,
+              &ImageConverterImplementationTest::importerInfo,
+              &ImageConverterImplementationTest::converterInfo,
+              &ImageConverterImplementationTest::converterInfoExtensionMimeType,
+
+              &ImageConverterImplementationTest::info,
               &ImageConverterImplementationTest::infoError});
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_importerManager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_converterManager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    #ifdef TGAIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_converterManager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+}
+
+void ImageConverterImplementationTest::pluginInfo() {
+    /* Check if the required plugin can be loaded. Catches also ABI and
+       interface mismatch errors. */
+    if(!(_converterManager.load("AnyImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<Trade::AbstractImageConverter> converter = _converterManager.instantiate("AnyImageConverter");
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printPluginInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, *converter);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printPluginInfo(Debug::Flag::DisableColors, *converter);
+    CORRADE_COMPARE(out.str(),
+        "Plugin name: AnyImageConverter\n"
+        "Features:\n"
+        "  Convert1DToFile\n"
+        "  Convert2DToFile\n"
+        "  Convert3DToFile\n"
+        "  ConvertCompressed1DToFile\n"
+        "  ConvertCompressed2DToFile\n"
+        "  ConvertCompressed3DToFile\n"
+        "  Levels\n");
+}
+
+void ImageConverterImplementationTest::pluginInfoAliases() {
+    PluginManager::Manager<Trade::AbstractImporter> importerManager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+
+    /* Check if the required plugin can be loaded. Catches also ABI and
+       interface mismatch errors. */
+    if(!(importerManager.load("StbImageImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("StbImageImporter plugin can't be loaded.");
+
+    /* Loading under an alias to verify that it's highlighted. Make
+       StbImageImporter *the* plugin to load PPMs, so it's not replaced by e.g.
+       DevIlImageImporter. */
+    importerManager.setPreferredPlugins("PpmImporter", {"StbImageImporter"});
+    Containers::Pointer<Trade::AbstractImporter> importer = importerManager.instantiate("PpmImporter");
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printPluginInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, *importer);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printPluginInfo(Debug::Flag::DisableColors, *importer);
+    CORRADE_COMPARE(out.str(),
+        "Plugin name: StbImageImporter\n"
+        "Aliases:\n"
+        "  BmpImporter\n"
+        "  GifImporter\n"
+        "  HdrImporter\n"
+        "  JpegImporter\n"
+        "  PgmImporter\n"
+        "  PicImporter\n"
+        "  PngImporter\n"
+        "  PpmImporter\n"
+        "  PsdImporter\n"
+        "  TgaImporter\n"
+        "Features:\n"
+        "  OpenData\n");
+}
+
+void ImageConverterImplementationTest::pluginConfigurationInfoEmpty() {
+    struct: Trade::AbstractImporter {
+        Trade::ImporterFeatures doFeatures() const override {
+            return Trade::ImporterFeature::FileCallback|
+                   Trade::ImporterFeature::OpenState;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printPluginConfigurationInfo(Debug::Flag::DisableColors, importer);
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void ImageConverterImplementationTest::pluginConfigurationInfo() {
+    struct: Trade::AbstractImporter {
+        Trade::ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::stringstream in;
+    in << R"([configuration]
+# A comment
+; Another
+value=yes
+another=42
+# Empty lines should not have trailing whitespace
+
+[configuration/group]
+spaces="  YES  "
+newlines="""
+A
+ L
+  S
+   O
+"""
+
+[configuration/group/subgroup]
+subvalue=35
+
+# Another instance of the same group
+[configuration/group]
+true=false
+)";
+    Utility::Configuration conf{in};
+
+    importer.configuration() = Utility::ConfigurationGroup{*conf.group("configuration")};
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printPluginConfigurationInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, importer);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printPluginConfigurationInfo(Debug::Flag::DisableColors, importer);
+    CORRADE_COMPARE(out.str(),
+        "Configuration:\n"
+        "  # A comment\n"
+        "  ; Another\n"
+        "  value=yes\n"
+        "  another=42\n"
+        "  # Empty lines should not have trailing whitespace\n"
+        "\n"
+        "  [group]\n"
+        "  spaces=\"  YES  \"\n"
+        "  newlines=\"\"\"\n"
+        "  A\n"
+        "   L\n"
+        "    S\n"
+        "     O\n"
+        "  \"\"\"\n"
+        "\n"
+        "  [group/subgroup]\n"
+        "  subvalue=35\n"
+        "\n"
+        "  # Another instance of the same group\n"
+        "  [group]\n"
+        "  true=false\n");
+}
+
+void ImageConverterImplementationTest::pluginConfigurationInfoDoxygenDelimiter() {
+    struct: Trade::AbstractImporter {
+        Trade::ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::stringstream in;
+    in << R"(# [configuration_]
+[configuration]
+# A comment
+value=yes
+# [configuration_]
+privateValue=SECRET
+)";
+    Utility::Configuration conf{in};
+
+    importer.configuration() = Utility::ConfigurationGroup{*conf.group("configuration")};
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printPluginConfigurationInfo(Debug::Flag::DisableColors, importer);
+    CORRADE_COMPARE(out.str(),
+        "Configuration:\n"
+        "  # A comment\n"
+        "  value=yes\n");
+}
+
+void ImageConverterImplementationTest::importerInfo() {
+    /* Check if the required plugin can be loaded. Catches also ABI and
+       interface mismatch errors. */
+    if(!(_importerManager.load("AnyImageImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter plugin can't be loaded.");
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _importerManager.instantiate("AnyImageImporter");
+    /** @todo pick a plugin that has some actual configuration */
+    importer->configuration().setValue("something", "is there");
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printImporterInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, *importer);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printImporterInfo(Debug::Flag::DisableColors, *importer);
+    CORRADE_COMPARE(out.str(),
+        "Plugin name: AnyImageImporter\n"
+        "Features:\n"
+        "  OpenData\n"
+        "  FileCallback\n"
+        "Configuration:\n"
+        "  something=is there\n");
+}
+
+void ImageConverterImplementationTest::converterInfo() {
+    /* Check if the required plugin can be loaded. Catches also ABI and
+       interface mismatch errors. */
+    if(!(_converterManager.load("AnyImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<Trade::AbstractImageConverter> converter = _converterManager.instantiate("AnyImageConverter");
+    /** @todo pick a plugin that has some actual configuration */
+    converter->configuration().setValue("something", "is there");
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printImageConverterInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, *converter);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printImageConverterInfo(Debug::Flag::DisableColors, *converter);
+    CORRADE_COMPARE(out.str(),
+        "Plugin name: AnyImageConverter\n"
+        "Features:\n"
+        "  Convert1DToFile\n"
+        "  Convert2DToFile\n"
+        "  Convert3DToFile\n"
+        "  ConvertCompressed1DToFile\n"
+        "  ConvertCompressed2DToFile\n"
+        "  ConvertCompressed3DToFile\n"
+        "  Levels\n"
+        "Configuration:\n"
+        "  something=is there\n");
+}
+
+void ImageConverterImplementationTest::converterInfoExtensionMimeType() {
+    /* Check if the required plugin can be loaded. Catches also ABI and
+       interface mismatch errors. */
+    if(!(_converterManager.load("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<Trade::AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    /** @todo pick a plugin that has some actual configuration */
+    converter->configuration().setValue("something", "is there");
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printImageConverterInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, *converter);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printImageConverterInfo(Debug::Flag::DisableColors, *converter);
+    CORRADE_COMPARE(out.str(),
+        "Plugin name: TgaImageConverter\n"
+        "Features:\n"
+        "  Convert2DToData\n"
+        "File extension: tga\n"
+        "MIME type: image/x-tga\n"
+        "Configuration:\n"
+        "  something=is there\n");
 }
 
 void ImageConverterImplementationTest::info() {

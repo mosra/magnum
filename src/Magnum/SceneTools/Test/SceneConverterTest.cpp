@@ -57,21 +57,47 @@ const struct {
     const char* name;
     Containers::Array<Containers::String> args;
     const char* requiresImporter;
+    const char* requiresConverter;
+    const char* requiresImageConverter;
     const char* expected;
 } InfoData[]{
+    {"importer", Containers::array<Containers::String>({
+        "--info-importer", "-i", "someOption=yes"}),
+        "AnySceneImporter", nullptr, nullptr,
+        "info-importer.txt"},
+    {"converter", Containers::array<Containers::String>({
+        "-C", "AnySceneConverter", "--info-converter", "-c", "someOption=yes"}),
+        nullptr, "AnySceneConverter", nullptr,
+        "info-converter.txt"},
+    {"converter, implicit", Containers::array<Containers::String>({
+        "--info-converter", "-c", "someOption=yes"}),
+        nullptr, "AnySceneConverter", nullptr,
+        "info-converter.txt"},
+    {"image converter", Containers::array<Containers::String>({
+        "-P", "AnyImageConverter", "--info-image-converter", "-p", "someOption=yes"}),
+        nullptr, nullptr, "AnyImageConverter",
+        "info-image-converter.txt"},
+    {"image converter, implicit", Containers::array<Containers::String>({
+        "--info-image-converter", "-p", "someOption=yes"}),
+        nullptr, nullptr, "AnyImageConverter",
+        "info-image-converter.txt"},
+    {"importer, ignored input and output", Containers::array<Containers::String>({
+        "--info-importer", "input.obj", "output.ply"}),
+        "AnySceneImporter", nullptr, nullptr,
+        "info-importer-ignored-input-output.txt"},
     {"data", Containers::array<Containers::String>({
         "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}),
-        "ObjImporter",
+        "ObjImporter", nullptr, nullptr,
         "info-data.txt"},
     {"data, map", Containers::array<Containers::String>({
         "--map", "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}),
-        "ObjImporter",
+        "ObjImporter", nullptr, nullptr,
         /** @todo change to something else once we have a plugin that can
             zero-copy pass the imported data */
         "info-data.txt"},
     {"data, ignored output file", Containers::array<Containers::String>({
         "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), "whatever.ply"}),
-        "ObjImporter",
+        "ObjImporter", nullptr, nullptr,
         "info-data-ignored-output.txt"}
 };
 
@@ -783,8 +809,14 @@ void SceneConverterTest::info() {
     /* Check if required plugins can be loaded. Catches also ABI and interface
        mismatch errors. */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
     if(data.requiresImporter && !(importerManager.load(data.requiresImporter) & PluginManager::LoadState::Loaded))
         CORRADE_SKIP(data.requiresImporter << "plugin can't be loaded.");
+    if(data.requiresConverter && !(converterManager.load(data.requiresConverter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresConverter << "plugin can't be loaded.");
+    if(data.requiresImageConverter && !(imageConverterManager.load(data.requiresImageConverter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresImageConverter << "plugin can't be loaded.");
 
     CORRADE_VERIFY(true); /* capture correct function name */
 

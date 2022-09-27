@@ -40,6 +40,17 @@ endif()
 if(MAGNUM_WITH_IMAGECONVERTER AND CORRADE_TARGET_UNIX)
     set(IMAGECONVERTER_EXECUTABLE_FILENAME $<TARGET_FILE:magnum-imageconverter>)
 endif()
+if(NOT MAGNUM_BUILD_PLUGINS_STATIC)
+    if(MAGNUM_WITH_ANYIMAGEIMPORTER AND NOT MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC)
+        set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+    endif()
+    if(MAGNUM_WITH_ANYIMAGECONVERTER AND NOT MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC)
+        set(ANYIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageConverter>)
+    endif()
+    if(MAGNUM_WITH_TGAIMAGECONVERTER AND NOT MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC)
+        set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
+    endif()
+endif()
 
 # First replace ${} variables, then $<> generator expressions
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -69,6 +80,30 @@ corrade_add_test(TradeImageConverterImplementa___Test ImageConverterImplementati
     FILES
         ImageConverterImplementationTestFiles/info.txt)
 target_include_directories(TradeImageConverterImplementa___Test PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+    if(MAGNUM_BUILD_PLUGINS_STATIC OR MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC)
+        target_link_libraries(TradeImageConverterImplementa___Test PRIVATE AnyImageImporter)
+    else()
+        # So the plugins get properly built when building the test
+        add_dependencies(TradeImageConverterImplementa___Test AnyImageImporter)
+    endif()
+endif()
+if(MAGNUM_WITH_ANYIMAGECONVERTER)
+    if(MAGNUM_BUILD_PLUGINS_STATIC OR MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC)
+        target_link_libraries(TradeImageConverterImplementa___Test PRIVATE AnyImageConverter)
+    else()
+        # So the plugins get properly built when building the test
+        add_dependencies(TradeImageConverterImplementa___Test AnyImageConverter)
+    endif()
+endif()
+if(MAGNUM_WITH_TGAIMAGECONVERTER)
+    if(MAGNUM_BUILD_PLUGINS_STATIC OR MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC)
+        target_link_libraries(TradeImageConverterImplementa___Test PRIVATE TgaImageConverter)
+    else()
+        # So the plugins get properly built when building the test
+        add_dependencies(TradeImageConverterImplementa___Test TgaImageConverter)
+    endif()
+endif()
 
 # Executable testing is implemented on Unix platforms only at the moment
 if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
@@ -81,6 +116,9 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
         FILES
             ImageConverterTestFiles/info-data.txt
             ImageConverterTestFiles/info-data-ignored-output.txt
+            ImageConverterTestFiles/info-converter.txt
+            ImageConverterTestFiles/info-importer.txt
+            ImageConverterTestFiles/info-importer-ignored-input-output.txt
             ImageConverterTestFiles/file.tga)
     target_include_directories(TradeImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(MAGNUM_WITH_IMAGECONVERTER)

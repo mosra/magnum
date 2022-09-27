@@ -1,0 +1,5 @@
+Ignoring input file for --info: input.obj
+Ignoring output file for --info: output.ply
+Plugin name: AnySceneImporter
+Features:
+  FileCallback

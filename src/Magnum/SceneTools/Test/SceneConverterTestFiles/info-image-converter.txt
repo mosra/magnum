@@ -1,0 +1,11 @@
+Plugin name: AnyImageConverter
+Features:
+  Convert1DToFile
+  Convert2DToFile
+  Convert3DToFile
+  ConvertCompressed1DToFile
+  ConvertCompressed2DToFile
+  ConvertCompressed3DToFile
+  Levels
+Configuration:
+  someOption=yes

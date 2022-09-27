@@ -34,6 +34,7 @@
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 
 #include "configure.h"
 
@@ -51,21 +52,38 @@ const struct {
     const char* name;
     Containers::Array<Containers::String> args;
     const char* requiresImporter;
+    const char* requiresConverter;
     const char* expected;
 } InfoData[]{
+    {"importer", Containers::array<Containers::String>({
+        "--info-importer", "-i", "someOption=yes"}),
+        "AnyImageImporter", nullptr,
+        "info-importer.txt"},
+    {"converter", Containers::array<Containers::String>({
+        "-C", "AnyImageConverter", "--info-converter", "-c", "someOption=yes"}),
+        nullptr, "AnyImageConverter",
+        "info-converter.txt"},
+    {"converter, implicit", Containers::array<Containers::String>({
+        "--info-converter", "-c", "someOption=yes"}),
+        nullptr, "AnyImageConverter",
+        "info-converter.txt"},
+    {"importer, ignored input and output", Containers::array<Containers::String>({
+        "--info-importer", "a.png", "b.png", "out.jpg"}),
+        "AnySceneImporter", nullptr,
+        "info-importer-ignored-input-output.txt"},
     {"data", Containers::array<Containers::String>({
         "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga")}),
-        "TgaImporter",
+        "TgaImporter", nullptr,
         "info-data.txt"},
     {"data, map", Containers::array<Containers::String>({
         "--map", "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga")}),
-        "TgaImporter",
+        "TgaImporter", nullptr,
         /** @todo change to something else once we have a plugin that can
             zero-copy pass the imported data */
         "info-data.txt"},
     {"data, ignored output file", Containers::array<Containers::String>({
         "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga"), "whatever.png"}),
-        "TgaImporter",
+        "TgaImporter", nullptr,
         "info-data-ignored-output.txt"}
 };
 
@@ -122,8 +140,11 @@ void ImageConverterTest::info() {
     /* Check if required plugins can be loaded. Catches also ABI and interface
        mismatch errors. */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     if(data.requiresImporter && !(importerManager.load(data.requiresImporter) & PluginManager::LoadState::Loaded))
         CORRADE_SKIP(data.requiresImporter << "plugin can't be loaded.");
+    if(data.requiresConverter && !(converterManager.load(data.requiresConverter) & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP(data.requiresConverter << "plugin can't be loaded.");
 
     CORRADE_VERIFY(true); /* capture correct function name */
 

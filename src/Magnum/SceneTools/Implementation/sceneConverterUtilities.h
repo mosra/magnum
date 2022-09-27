@@ -33,6 +33,7 @@
 #include <Corrade/Utility/Arguments.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/LightData.h"
@@ -51,6 +52,11 @@ using namespace Containers::Literals;
 /* Used only in executables where we don't want it to be exported -- in
    particular magnum-sceneconverter and its tests */
 namespace {
+
+void printSceneConverterInfo(const Debug::Flags useColor, const Trade::AbstractSceneConverter& converter) {
+    Trade::Implementation::printPluginInfo(useColor, converter);
+    Trade::Implementation::printPluginConfigurationInfo(useColor, converter);
+}
 
 /** @todo const Array& doesn't work, minmax() would fail to match */
 template<class T> Containers::String calculateBounds(Containers::Array<T>&& attribute) {

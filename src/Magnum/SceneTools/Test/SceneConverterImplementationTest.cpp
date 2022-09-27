@@ -44,6 +44,11 @@ namespace Magnum { namespace SceneTools { namespace Test { namespace {
 struct SceneConverterImplementationTest: TestSuite::Tester {
     explicit SceneConverterImplementationTest();
 
+    /* printPluginInfo(), printPluginConfigurationInfo() and
+       printImporterInfo() tested thoroughly in
+       Trade/Test/ImageConverterImplementationTest.cpp already */
+    void converterInfo();
+
     void infoEmpty();
     void infoScenesObjects();
     void infoAnimations();
@@ -60,6 +65,9 @@ struct SceneConverterImplementationTest: TestSuite::Tester {
     void infoError();
 
     Utility::Arguments _infoArgs;
+
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<Trade::AbstractSceneConverter> _converterManager{"nonexistent"};
 };
 
 using namespace Containers::Literals;
@@ -86,7 +94,9 @@ const struct {
 };
 
 SceneConverterImplementationTest::SceneConverterImplementationTest() {
-    addTests({&SceneConverterImplementationTest::infoEmpty});
+    addTests({&SceneConverterImplementationTest::converterInfo,
+
+              &SceneConverterImplementationTest::infoEmpty});
 
     addInstancedTests({&SceneConverterImplementationTest::infoScenesObjects},
         Containers::arraySize(InfoScenesObjectsData));
@@ -121,6 +131,47 @@ SceneConverterImplementationTest::SceneConverterImplementationTest() {
              .addBooleanOption("info-textures")
              .addBooleanOption("info-images")
              .addBooleanOption("bounds");
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_converterManager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* To avoid warnings that printImageConverterInfo() / printImporterInfo()
+       is unused. Again, those are tested in ImageConverterImplementationTest
+       already. */
+    static_cast<void>(Trade::Implementation::printImageConverterInfo);
+    static_cast<void>(Trade::Implementation::printImporterInfo);
+}
+
+void SceneConverterImplementationTest::converterInfo() {
+    /* Check if the required plugin can be loaded. Catches also ABI and
+       interface mismatch errors. */
+    if(!(_converterManager.load("AnySceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnySceneConverter plugin can't be loaded.");
+
+    Containers::Pointer<Trade::AbstractSceneConverter> converter = _converterManager.instantiate("AnySceneConverter");
+    /** @todo pick a plugin that has some actual configuration */
+    converter->configuration().setValue("something", "is there");
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printSceneConverterInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, *converter);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printSceneConverterInfo(Debug::Flag::DisableColors, *converter);
+    CORRADE_COMPARE(out.str(),
+        "Plugin name: AnySceneConverter\n"
+        "Features:\n"
+        "  ConvertMeshToFile\n"
+        "  ConvertMultipleToFile\n"
+        "Configuration:\n"
+        "  something=is there\n");
 }
 
 void SceneConverterImplementationTest::infoEmpty() {

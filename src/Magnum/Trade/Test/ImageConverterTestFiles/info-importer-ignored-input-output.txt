@@ -1,0 +1,6 @@
+Ignoring input files for --info: a.png b.png
+Ignoring output file for --info: out.jpg
+Plugin name: AnyImageImporter
+Features:
+  OpenData
+  FileCallback

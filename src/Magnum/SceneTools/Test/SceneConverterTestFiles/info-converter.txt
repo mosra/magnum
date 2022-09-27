@@ -1,0 +1,6 @@
+Plugin name: AnySceneConverter
+Features:
+  ConvertMeshToFile
+  ConvertMultipleToFile
+Configuration:
+  someOption=yes

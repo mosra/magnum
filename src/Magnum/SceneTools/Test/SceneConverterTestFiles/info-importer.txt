@@ -1,0 +1,5 @@
+Plugin name: AnySceneImporter
+Features:
+  FileCallback
+Configuration:
+  someOption=yes

@@ -126,7 +126,8 @@ magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [-c|--converter-options key=val,key2=val2,…]...
     [-p|--image-converter-options key=val,key2=val2,…]...
     [-m|--mesh-converter-options key=val,key2=val2,…]...
-    [--mesh ID] [--mesh-level INDEX] [--concatenate-meshes] [--info-animations]
+    [--mesh ID] [--mesh-level INDEX] [--concatenate-meshes] [--info-importer]
+    [--info-converter] [--info-image-converter] [--info-animations]
     [--info-images] [--info-lights] [--info-cameras] [--info-materials]
     [--info-meshes] [--info-objects] [--info-scenes] [--info-skins]
     [--info-textures] [--info] [--color on|4bit|off|auto] [--bounds]
@@ -169,6 +170,11 @@ Arguments:
 -   `--mesh-level LEVEL` --- level to select for single-mesh conversion
 -   `--concatenate-meshes` -- flatten mesh hierarchy and concatenate them all
     together @m_class{m-label m-warning} **experimental**
+-   `--info-importer` --- print info about the importer plugin and exit
+-   `--info-converter` --- print info about the scene or mesh converter plugin
+    and exit
+-   `--info-image-converter` --- print info about the image converter plugin
+    and exit
 -   `--info-animations` --- print into about animations in the input file and
     exit
 -   `--info-images` --- print into about images in the input file and exit
@@ -182,18 +188,25 @@ Arguments:
 -   `--info-skins` --- print into about skins in the input file and exit
 -   `--info-textures` --- print into about textures in the input file and exit
 -   `--info` --- print info about everything in the input file and exit, same
-    as specifying all other `--info-*` options together
+    as specifying all other data-related `--info-*` options together
 -   `--color` --- colored output for `--info` (default: `auto`)
 -   `--bounds` --- show bounds of known attributes in `--info` output
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
 
-If any of the `--info-*` options are given, the utility will print information
-about given data present in the file. In this case no conversion is done and
-output file doesn't need to be specified. In case one data references another
-and both `--info-*` options are specified, the output will also list reference
-count (for example, `--info-scenes` together with `--info-meshes` will print
-how many objects reference given mesh).
+If any of the `--info-importer`, `--info-converter` or `--info-image-converter`
+options are given, the utility will print information about given plugin
+specified via the `-I`, `-C` or `-P` option, including its configuration
+options potentially overriden with `-i`, `-c` or `-p`. In this case no file is
+read and no conversion is done and neither the input nor the output file needs
+to be specified.
+
+If any of the other `--info-*` options are given, the utility will print
+information about given data. In this case the input file is read but no
+conversion is done and the output file doesn't need to be specified. In case
+one data references another and both `--info-*` options are specified, the
+output will also list reference count (for example, `--info-scenes` together
+with `--info-meshes` will print how many objects reference given mesh).
 
 The `-i`, `-c` and `-m` arguments accept a comma-separated list of key/value
 pairs to set in the importer / converter plugin configuration. If the `=`
@@ -239,7 +252,13 @@ using namespace Containers::Literals;
 
 namespace {
 
-bool isInfoRequested(const Utility::Arguments& args) {
+bool isPluginInfoRequested(const Utility::Arguments& args) {
+    return args.isSet("info-importer") ||
+           args.isSet("info-converter") ||
+           args.isSet("info-image-converter");
+}
+
+bool isDataInfoRequested(const Utility::Arguments& args) {
     return args.isSet("info-animations") ||
            args.isSet("info-images") ||
            args.isSet("info-lights") ||
@@ -333,6 +352,9 @@ int main(int argc, char** argv) {
         .addOption("mesh").setHelp("mesh", "convert just a single mesh instead of the whole scene, ignored if --concatenate-meshes is specified", "ID")
         .addOption("mesh-level").setHelp("mesh-level", "level to select for single-mesh conversion", "index")
         .addBooleanOption("concatenate-meshes").setHelp("concatenate-meshes", "flatten mesh hierarchy and concatenate them all together")
+        .addBooleanOption("info-importer").setHelp("info-importer", "print info about the importer plugin and exit")
+        .addBooleanOption("info-converter").setHelp("info-converter", "print info about the scene or mesh converter plugin and exit")
+        .addBooleanOption("info-image-converter").setHelp("info-image-converter", "print info about the image converter plugin and exit")
         .addBooleanOption("info-animations").setHelp("info-animations", "print info about animations in the input file and exit")
         .addBooleanOption("info-images").setHelp("info-images", "print info about images in the input file and exit")
         .addBooleanOption("info-lights").setHelp("info-lights", "print info about images in the input file and exit")
@@ -343,27 +365,39 @@ int main(int argc, char** argv) {
         .addBooleanOption("info-scenes").setHelp("info-scenes", "print info about scenes in the input file and exit")
         .addBooleanOption("info-skins").setHelp("info-skins", "print info about skins in the input file and exit")
         .addBooleanOption("info-textures").setHelp("info-textures", "print info about textures in the input file and exit")
-        .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other --info-* options together")
+        .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other data-related --info-* options together")
         .addOption("color", "auto").setHelp("color", "colored output for --info", "on|4bit|off|auto")
         .addBooleanOption("bounds").setHelp("bounds", "show bounds of known attributes in --info output")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
-            /* If --info is passed, we don't need the output argument */
+            /* If --info for plugins is passed, we don't need the input */
             if(error == Utility::Arguments::ParseError::MissingArgument &&
-                key == "output" && isInfoRequested(args)) return true;
+               key == "input" && isPluginInfoRequested(args))
+                return true;
+            /* If --info for plugins or data is passed, we don't need the
+               output argument */
+            if(error == Utility::Arguments::ParseError::MissingArgument &&
+                key == "output" && (isPluginInfoRequested(args) || isDataInfoRequested(args)))
+                return true;
 
             /* Handle all other errors as usual */
             return false;
         })
         .setGlobalHelp(R"(Converts scenes of different formats.
 
-If any of the --info-* options are given, the utility will print information
-about given data present in the file. In this case no conversion is done and
-output file doesn't need to be specified. In case one data references another
-and both --info-* options are specified, the output will also list reference
-count (for example, --info-scenes together with --info-meshes will print how
-many objects reference given mesh).
+If any of the --info-importer, --info-converter or --info-image-converter
+options are given, the utility will print information about given plugin
+specified via the -I, -C or -P option. In this case no file is read and no
+conversion is done and neither the input nor the output file needs to be
+specified.
+
+If any of the other --info-* options are given, the utility will print
+information about given data. In this case the input file is read but no
+conversion is done and the output file doesn't need to be specified. In case
+one data references another and both --info-* options are specified, the output
+will also list reference count (for example, --info-scenes together with
+--info-meshes will print how many objects reference given mesh).
 
 The -i, -c and -m arguments accept a comma-separated list of key/value
 pairs to set in the importer / converter plugin configuration. If the =
@@ -421,11 +455,17 @@ well, the IDs reference attributes of the first mesh.)")
     }
 
     /* Generic checks */
-    if(args.value<Containers::StringView>("output")) {
+    if(args.value<Containers::StringView>("input")) {
         /* Not an error in this case, it should be possible to just append
            --info* to existing command line without having to remove anything.
            But print a warning at least, it could also be a mistyped option. */
-        if(isInfoRequested(args))
+        if(isPluginInfoRequested(args))
+            Warning{} << "Ignoring input file for --info:" << args.value<Containers::StringView>("input");
+    }
+    if(args.value<Containers::StringView>("output")) {
+        /* Same as above, it should be possible to just append --info* to
+           existing command line */
+        if(isPluginInfoRequested(args) || isDataInfoRequested(args))
             Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
     }
     if(args.isSet("concatenate-meshes") && args.value<Containers::StringView>("mesh")) {
@@ -471,6 +511,40 @@ well, the IDs reference attributes of the first mesh.)")
     if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
     Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
 
+    /* Print plugin info, if requested */
+    if(args.isSet("info-importer")) {
+        Trade::Implementation::printImporterInfo(useColor, *importer);
+        return 0;
+    }
+    if(args.isSet("info-converter")) {
+        Containers::Pointer<Trade::AbstractSceneConverter> converter = converterManager.loadAndInstantiate(args.arrayValueCount("converter") ? args.arrayValue("converter", 0) : "AnySceneConverter");
+        if(!converter) {
+            Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
+            return 1;
+        }
+
+        /* Set options, if passed */
+        if(args.isSet("verbose")) converter->addFlags(Trade::SceneConverterFlag::Verbose);
+        if(args.arrayValueCount("converter-options"))
+            Implementation::setOptions(*converter, "AnySceneConverter", args.arrayValue("converter-options", 0));
+        SceneTools::Implementation::printSceneConverterInfo(useColor, *converter);
+        return 0;
+    }
+    if(args.isSet("info-image-converter")) {
+        Containers::Pointer<Trade::AbstractImageConverter> converter = imageConverterManager.loadAndInstantiate(args.arrayValueCount("image-converter") ? args.arrayValue("image-converter", 0) : "AnyImageConverter");
+        if(!converter) {
+            Debug{} << "Available image converter plugins:" << ", "_s.join(imageConverterManager.aliasList());
+            return 1;
+        }
+
+        /* Set options, if passed */
+        if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
+        if(args.arrayValueCount("image-converter-options"))
+            Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("image-converter-options", 0));
+        Trade::Implementation::printImageConverterInfo(useColor, *converter);
+        return 0;
+    }
+
     /* Wow, C++, you suck. This implicitly initializes to random shit?!
 
        Also, because of addSupportedImporterContents() it's not really possible
@@ -499,7 +573,7 @@ well, the IDs reference attributes of the first mesh.)")
     }
 
     /* Print file info, if requested */
-    if(isInfoRequested(args)) {
+    if(isDataInfoRequested(args)) {
         const bool error = SceneTools::Implementation::printInfo(useColor, useColor24, args, *importer, importConversionTime);
 
         if(args.isSet("profile")) {

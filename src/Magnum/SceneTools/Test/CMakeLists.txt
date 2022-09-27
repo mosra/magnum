@@ -40,6 +40,9 @@ endif()
 if(MAGNUM_WITH_SCENECONVERTER AND CORRADE_TARGET_UNIX)
     set(SCENECONVERTER_EXECUTABLE_FILENAME $<TARGET_FILE:magnum-sceneconverter>)
 endif()
+if(MAGNUM_WITH_ANYSCENECONVERTER AND NOT MAGNUM_BUILD_PLUGINS_STATIC AND NOT MAGNUM_ANYSCENECONVERTER_BUILD_STATIC)
+    set(ANYSCENECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:AnySceneConverter>)
+endif()
 
 # First replace ${} variables, then $<> generator expressions
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -69,6 +72,14 @@ corrade_add_test(SceneToolsSceneConverterImple___Test SceneConverterImplementati
         SceneConverterImplementationTestFiles/info-skins.txt
         SceneConverterImplementationTestFiles/info-textures.txt)
 target_include_directories(SceneToolsSceneConverterImple___Test PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+if(MAGNUM_WITH_ANYSCENECONVERTER)
+    if(MAGNUM_BUILD_PLUGINS_STATIC OR MAGNUM_ANYSCENECONVERTER_BUILD_STATIC)
+        target_link_libraries(SceneToolsSceneConverterImple___Test PRIVATE AnySceneConverter)
+    else()
+        # So the plugins get properly built when building the test
+        add_dependencies(SceneToolsSceneConverterImple___Test AnySceneConverter)
+    endif()
+endif()
 
 # Executable testing is implemented on Unix platforms only at the moment
 if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
@@ -97,6 +108,10 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/images-3d-1x1x1.gltf
             SceneConverterTestFiles/info-data.txt
             SceneConverterTestFiles/info-data-ignored-output.txt
+            SceneConverterTestFiles/info-converter.txt
+            SceneConverterTestFiles/info-image-converter.txt
+            SceneConverterTestFiles/info-importer.txt
+            SceneConverterTestFiles/info-importer-ignored-input-output.txt
             SceneConverterTestFiles/point.obj
             SceneConverterTestFiles/quad-duplicates-fuzzy.obj
             SceneConverterTestFiles/quad-duplicates.obj

@@ -229,6 +229,9 @@ See also:
     correctly handle all corner cases yet and may assert on certain inputs.
 -   The @ref magnum-sceneconverter "magnum-sceneconverter" `--info` output is
     now more compact and colored for better readability
+-   Added `--info-importer`, `--info-converter` and `--info-image-converter`
+    options to @ref magnum-sceneconverter "magnum-sceneconverter", listing
+    plugin features and configuration file contents
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
@@ -321,6 +324,9 @@ See also:
     converters together
 -   The @ref magnum-imageconverter "magnum-imageconverter" `--info` output is
     now more compact and colored for better readability
+-   Added `--info-importer` and `--info-converter` options to
+    @ref magnum-imageconverter "magnum-imageconverter", listing plugin features
+    and configuration file contents
 
 @subsubsection changelog-latest-new-vk Vk library
 

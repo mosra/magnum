@@ -26,13 +26,21 @@
 */
 
 #include <chrono>
+#include <sstream> /** @todo remove when Debug is stream-free */
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h> /** @todo drop once String::replaceAll() has a StringView overload */
+#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
 
 namespace Magnum { namespace Trade { namespace Implementation {
@@ -40,6 +48,101 @@ namespace Magnum { namespace Trade { namespace Implementation {
 /* Used only in executables where we don't want it to be exported -- in
    particular magnum-imageconverter, magnum-sceneconverter and their tests */
 namespace {
+
+/** @todo move these to Magnum/Implementation/converterUtilities.h once also
+    shaderconverter / fontconverter / etc implements --info-converter etc */
+template<class T> void printPluginInfo(const Debug::Flags useColor, const T& plugin) {
+        const PluginManager::PluginMetadata* metadata = plugin.metadata();
+        CORRADE_INTERNAL_ASSERT(metadata);
+
+        Debug d{useColor};
+        d << Debug::boldColor(Debug::Color::Default) << "Plugin name:" << Debug::boldColor(Debug::Color::Yellow) << metadata->name() << Debug::resetColor;
+        const std::vector<std::string> aliases = metadata->provides();
+        if(!aliases.empty()) {
+            d << Debug::newline << Debug::boldColor(Debug::Color::Default) << "Aliases:" << Debug::resetColor;
+            for(const std::string& alias: aliases) {
+                d << Debug::newline << " ";
+                if(alias == plugin.plugin())
+                    d << Debug::color(Debug::Color::Yellow);
+                d << alias;
+                if(alias == plugin.plugin())
+                    d << Debug::resetColor;
+            }
+        }
+
+        /* Ugly, eh? */
+        std::ostringstream out;
+        Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << Debug::packed << plugin.features();
+        d << Debug::newline << Debug::boldColor(Debug::Color::Default) << "Features:" << Debug::color(Debug::Color::Cyan) << Debug::newline << " " << Utility::String::replaceAll(out.str(), "|", "\n  ") << Debug::resetColor;
+}
+
+void printPluginConfigurationInfo(Debug& d, const Utility::ConfigurationGroup& configuration, const Containers::StringView prefix) {
+    using namespace Containers::Literals;
+
+    for(Containers::Pair<Containers::StringView, Containers::StringView> i: configuration.valuesComments()) {
+        if(i.first()) {
+            d << Debug::newline << " " << Debug::boldColor(Debug::Color::Blue) << i.first() << Debug::nospace << Debug::color(Debug::Color::Blue) << "=" << Debug::nospace << Debug::color(Debug::Color::Red);
+            /* Print the value wrapped in quotes if it contains spaces, indent
+               also all newlines */
+            if(i.second().contains('\n'))
+                /** @todo replaceAll() without std::string */
+                d << Utility::format("\"\"\"\n  {}\n  \"\"\"", Utility::String::replaceAll(i.second(), "\n", "\n  "));
+            /** @todo less wasteful API for checking leading/trailing zeros? */
+            else if(i.second().trimmed() != i.second())
+                d << Utility::format("\"{}\"", i.second());
+            else
+                d << i.second();
+            d << Debug::resetColor;
+        } else {
+            /* Configuration contents are delimited by these markers in order
+               to include them in Doxygen-generated docs. If we reach them,
+               it's the end of the (public) configuration values. Don't print
+               them, don't print even the last newline, and exit. */
+            if(i.second() == "# [configuration_]"_s) {
+                return;
+            }
+
+            /* Print leading space only if there's actually something */
+            d << Debug::newline;
+            if(i.second()) d << " " << Debug::boldColor(Debug::Color::Black) << i.second() << Debug::resetColor;
+        }
+    }
+
+    for(Containers::Pair<Containers::StringView, Containers::Reference<const Utility::ConfigurationGroup>> i: configuration.groups()) {
+        const Containers::String name = prefix ? "/"_s.join({prefix, i.first()}) : Containers::String{i.first()};
+
+        d << Debug::newline << " " << Debug::color(Debug::Color::Blue) << "[" << Debug::nospace << Debug::boldColor(Debug::Color::Blue) << name << Debug::color(Debug::Color::Blue) << Debug::nospace << "]" << Debug::resetColor;
+
+        printPluginConfigurationInfo(d, i.second(), name);
+    }
+}
+
+void printPluginConfigurationInfo(const Debug::Flags useColor, const PluginManager::AbstractPlugin& plugin) {
+    const Utility::ConfigurationGroup& configuration = plugin.configuration();
+    if(configuration.isEmpty()) return;
+
+    Debug d{useColor};
+    d << Debug::boldColor(Debug::Color::Default) << "Configuration:" << Debug::resetColor;
+    printPluginConfigurationInfo(d, configuration, {});
+}
+
+void printImporterInfo(const Debug::Flags useColor, const Trade::AbstractImporter& importer) {
+    printPluginInfo(useColor, importer);
+    printPluginConfigurationInfo(useColor, importer);
+}
+
+void printImageConverterInfo(const Debug::Flags useColor, const Trade::AbstractImageConverter& converter) {
+    printPluginInfo(useColor, converter);
+
+    Debug d{useColor|Debug::Flag::NoNewlineAtTheEnd};
+
+    if(const Containers::String extension = converter.extension())
+        d << Debug::boldColor(Debug::Color::Default) << "File extension:" << Debug::resetColor << extension << Debug::newline;
+    if(const Containers::String mimeType = converter.mimeType())
+        d << Debug::boldColor(Debug::Color::Default) << "MIME type:" << Debug::resetColor << mimeType << Debug::newline;
+
+    printPluginConfigurationInfo(useColor, converter);
+}
 
 struct Duration {
     explicit Duration(std::chrono::high_resolution_clock::duration& output): _output(output), _t{std::chrono::high_resolution_clock::now()} {}

@@ -192,7 +192,8 @@ magnum-imageconverter [-h|--help] [-I|--importer PLUGIN]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [-D|--dimensions N]
     [--image N] [--level N] [--layer N] [--layers] [--levels] [--in-place]
-    [--info] [--color on|off|auto] [-v|--verbose] [--profile] [--] input output
+    [--info-importer] [--info-converter] [--info] [--color on|off|auto]
+    [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -221,6 +222,8 @@ Arguments:
     more
 -   `--levels` --- combine multiple image levels into a single file
 -   `--in-place` --- overwrite the input image with the output
+-   `--info-importer` --- print info about the importer plugin and exit
+-   `--info-converter` --- print info about the image converter plugin and exit
 -   `--info` --- print info about the input file and exit
 -   `--color` --- colored output for `--info` (default: `auto`)
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
@@ -231,9 +234,16 @@ tightly-packed square of pixels in given @ref PixelFormat. Specifying `-C` /
 `--converter raw` will save raw imported data instead of using a converter
 plugin.
 
-If `--info` is given, the utility will print information about all images
-present in the file, independently of the `-D` / `--dimensions` option. In this
-case no conversion is done and output file doesn't need to be specified.
+If the `--info-importer` or `--info-converter` option is given, the utility
+will print information about given plugin specified via the `-I` or `-C`
+option, including its configuration options potentially overriden with
+`-i` or `-c`. In this case no file is read and no conversion is done and
+neither the input nor the output file needs to be specified.
+
+If `--info` is given, the utility will print information about given data,
+independently of the `-D` / `--dimensions` option. In this case the input file
+is read but no no conversion is done and output file doesn't need to be
+specified.
 
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
@@ -257,6 +267,11 @@ using namespace Magnum;
 using namespace Containers::Literals;
 
 namespace {
+
+bool isPluginInfoRequested(const Utility::Arguments& args) {
+    return args.isSet("info-importer") ||
+           args.isSet("info-converter");
+}
 
 template<UnsignedInt dimensions> bool checkCommonFormatFlags(const Utility::Arguments& args, const Containers::Array<Trade::ImageData<dimensions>>& images) {
     CORRADE_INTERNAL_ASSERT(!images.isEmpty());
@@ -362,15 +377,21 @@ int main(int argc, char** argv) {
         .addBooleanOption("layers").setHelp("layers", "combine multiple layers into an image with one dimension more")
         .addBooleanOption("levels").setHelp("layers", "combine multiple image levels into a single file")
         .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
+        .addBooleanOption("info-importer").setHelp("info-importer", "print info about the importer plugin and exit")
+        .addBooleanOption("info-converter").setHelp("info-converter", "print info about the image converter plugin and exit")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addOption("color", "auto").setHelp("color", "colored output for --info", "on|off|auto")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
-            /* If --in-place or --info is passed, we don't need the output
-               argument */
+            /* If --info for plugins is passed, we don't need the input */
             if(error == Utility::Arguments::ParseError::MissingArgument &&
-               key == "output" && (args.isSet("in-place") || args.isSet("info")))
+               key == "input" && isPluginInfoRequested(args))
+                return true;
+            /* If --in-place or --info for plugins or data is passed, we don't
+               need the output argument */
+            if(error == Utility::Arguments::ParseError::MissingArgument &&
+               key == "output" && (args.isSet("in-place") || isPluginInfoRequested(args) || args.isSet("info")))
                 return true;
 
             /* Handle all other errors as usual */
@@ -382,9 +403,14 @@ Specifying --importer raw:<format> will treat the input as a raw tightly-packed
 square of pixels in given pixel format. Specifying -C / --converter raw will
 save raw imported data instead of using a converter plugin.
 
-If --info is given, the utility will print information about all images present
-in the file, independently of the -D / --dimensions option. In this case no
-conversion is done and output file doesn't need to be specified.
+If the --info-importer or --info-converter option is given, the utility will
+print information about given plugin specified via the -I or -C option,
+including its configuration options potentially overriden with -i or -c. In
+this case no file is read and no conversion is done and neither the input nor
+the output file needs to be specified.
+
+If --info is given, the utility will print information about given data, independently of the -D / --dimensions option. In this case the input file is
+read but no conversion is done and output file doesn't need to be specified.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
@@ -410,16 +436,26 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         useColor = Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors;
 
     /* Generic checks */
+    if(const std::size_t inputCount = args.arrayValueCount("input")) {
+        /* Not an error in this case, it should be possible to just append
+           --info* to existing command line without having to remove anything.
+           But print a warning at least, it could also be a mistyped option. */
+        if(isPluginInfoRequested(args)) {
+            Warning w;
+            w << "Ignoring input files for --info:";
+            for(std::size_t i = 0; i != inputCount; ++i)
+                w << args.arrayValue<Containers::StringView>("input", i);
+        }
+    }
     if(args.value<Containers::StringView>("output")) {
         if(args.isSet("in-place")) {
             Error{} << "Output file shouldn't be set for --in-place:" << args.value<Containers::StringView>("output");
             return 1;
         }
 
-        /* Not an error in this case, it should be possible to just append
-           --info to existing command line without having to remove anything.
-           But print a warning at least, it could also be a mistyped option. */
-        if(args.isSet("info"))
+        /* Same as above, it should be possible to just append --info* to
+           existing command line */
+        if(isPluginInfoRequested(args) || args.isSet("info"))
             Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
     }
 
@@ -450,7 +486,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         Error{} << "The --levels option can't be combined with raw data output";
         return 1;
     }
-    if(!args.isSet("layers") && !args.isSet("levels") && args.arrayValueCount("input") > 1) {
+    if(!args.isSet("layers") && !args.isSet("levels") && args.arrayValueCount("input") > 1 && !isPluginInfoRequested(args)) {
         Error{} << "Multiple input files require the --layers / --levels option to be set";
         return 1;
     }
@@ -462,6 +498,35 @@ no -C / --converter is specified, AnyImageConverter is used.)")
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
+
+    /* Print plugin info, if requested */
+    if(args.isSet("info-importer")) {
+        Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
+        if(!importer) {
+            Debug{} << "Available importer plugins:" << ", "_s.join(importerManager.aliasList());
+            return 1;
+        }
+
+        /* Set options, if passed */
+        if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
+        Implementation::setOptions(*importer, "AnyImageImporter", args.value("importer-options"));
+        Trade::Implementation::printImporterInfo(useColor, *importer);
+        return 0;
+    }
+    if(args.isSet("info-converter")) {
+        Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.arrayValueCount("converter") ? args.arrayValue("converter", 0) : "AnyImageConverter");
+        if(!converter) {
+            Debug{} << "Available converter plugins:" << ", "_s.join(converterManager.aliasList());
+            return 1;
+        }
+
+        /* Set options, if passed */
+        if(args.isSet("verbose")) converter->addFlags(Trade::ImageConverterFlag::Verbose);
+        if(args.arrayValueCount("converter-options"))
+            Implementation::setOptions(*converter, "AnyImageConverter", args.arrayValue("converter-options", 0));
+        Trade::Implementation::printImageConverterInfo(useColor, *converter);
+        return 0;
+    }
 
     const Int dimensions = args.value<Int>("dimensions");
     /** @todo make them array options as well? */
