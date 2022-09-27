@@ -26,6 +26,7 @@
 */
 
 #include <cctype> /* std::isupper() */
+#include <sstream>
 #include <unordered_map> /* sceneFieldNames */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
