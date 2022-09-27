@@ -138,7 +138,7 @@ else()
         # which CMake somehow prefers before the SDL2-2.0.dylib file. Making
         # the dylib first so it is preferred. Not sure how this maps to debug
         # config though :/
-        NAMES SDL2-2.0 SDL2
+        NAMES SDL2-2.0 SDL2 SDL2-static
         PATH_SUFFIXES ${_SDL2_LIBRARY_PATH_SUFFIX})
     find_library(SDL2_LIBRARY_DEBUG
         NAMES SDL2d
