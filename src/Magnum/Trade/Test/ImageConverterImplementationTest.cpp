@@ -36,19 +36,19 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-struct ImageConverterTest: TestSuite::Tester {
-    explicit ImageConverterTest();
+struct ImageConverterImplementationTest: TestSuite::Tester {
+    explicit ImageConverterImplementationTest();
 
-    void infoImplementation();
-    void infoImplementationError();
+    void info();
+    void infoError();
 };
 
-ImageConverterTest::ImageConverterTest() {
-    addTests({&ImageConverterTest::infoImplementation,
-              &ImageConverterTest::infoImplementationError});
+ImageConverterImplementationTest::ImageConverterImplementationTest() {
+    addTests({&ImageConverterImplementationTest::info,
+              &ImageConverterImplementationTest::infoError});
 }
 
-void ImageConverterTest::infoImplementation() {
+void ImageConverterImplementationTest::info() {
     struct Importer: Trade::AbstractImporter {
         Trade::ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -139,11 +139,11 @@ void ImageConverterTest::infoImplementation() {
     Debug redirectOutput{&out};
     Implementation::printImageInfo(Debug::Flag::DisableColors, infos, nullptr, nullptr, nullptr);
     CORRADE_COMPARE_AS(out.str(),
-        Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/info.txt"),
+        Utility::Path::join(TRADE_TEST_DIR, "ImageConverterImplementationTestFiles/info.txt"),
         TestSuite::Compare::StringToFile);
 }
 
-void ImageConverterTest::infoImplementationError() {
+void ImageConverterImplementationTest::infoError() {
     struct Importer: Trade::AbstractImporter {
         Trade::ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -189,4 +189,4 @@ void ImageConverterTest::infoImplementationError() {
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Trade::Test::ImageConverterTest)
+CORRADE_TEST_MAIN(Magnum::Trade::Test::ImageConverterImplementationTest)

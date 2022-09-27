@@ -52,72 +52,80 @@ corrade_add_test(SceneToolsConvertToSingleFun___Test ConvertToSingleFunctionObje
 corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 
-corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
-    LIBRARIES
-        MagnumSceneTools
-        # Link the same static plugins as for the magnum-sceneconverter
-        # executable so plugin existence checks are consistent between the two
-        ${MAGNUM_SCENECONVERTER_STATIC_PLUGINS}
+corrade_add_test(SceneToolsSceneConverterImple___Test SceneConverterImplementationTest.cpp
+    LIBRARIES MagnumSceneTools
     FILES
-        SceneConverterTestFiles/blue4x4.png
-        # magnum-imageconverter --layers blue4x4.png --array blue4x4x1.ktx2 -c writerName=
-        SceneConverterTestFiles/blue4x4x1.ktx2
-        SceneConverterTestFiles/broken-image-2d.gltf
-        SceneConverterTestFiles/broken-image-3d.gltf
-        SceneConverterTestFiles/broken-mesh.obj
-        SceneConverterTestFiles/broken-scene.gltf
-        SceneConverterTestFiles/dxt1.dds
-        SceneConverterTestFiles/empty.gltf
-        SceneConverterTestFiles/image-dds.gltf
-        SceneConverterTestFiles/images-2d.gltf
-        SceneConverterTestFiles/images-2d-1x1.bin
-        SceneConverterTestFiles/images-2d-1x1.gltf
-        SceneConverterTestFiles/images-3d.gltf
-        SceneConverterTestFiles/images-3d-1x1x1.bin
-        SceneConverterTestFiles/images-3d-1x1x1.gltf
-        SceneConverterTestFiles/info-data.txt
-        SceneConverterTestFiles/info-data-ignored-output.txt
-        SceneConverterTestFiles/info-animations.txt
-        SceneConverterTestFiles/info-cameras.txt
-        SceneConverterTestFiles/info-images.txt
-        SceneConverterTestFiles/info-lights.txt
-        SceneConverterTestFiles/info-materials.txt
-        SceneConverterTestFiles/info-meshes-bounds.txt
-        SceneConverterTestFiles/info-meshes.txt
-        SceneConverterTestFiles/info-objects.txt
-        SceneConverterTestFiles/info-references.txt
-        SceneConverterTestFiles/info-scenes-objects.txt
-        SceneConverterTestFiles/info-scenes.txt
-        SceneConverterTestFiles/info-skins.txt
-        SceneConverterTestFiles/info-textures.txt
-        SceneConverterTestFiles/point.obj
-        SceneConverterTestFiles/quad-duplicates-fuzzy.obj
-        SceneConverterTestFiles/quad-duplicates.obj
-        SceneConverterTestFiles/quad-duplicates.ply
-        SceneConverterTestFiles/quad-name-custom-attributes-duplicates.bin
-        SceneConverterTestFiles/quad-name-custom-attributes-duplicates.gltf
-        SceneConverterTestFiles/quad-name-custom-attributes.bin
-        SceneConverterTestFiles/quad-name-custom-attributes.gltf
-        SceneConverterTestFiles/quad-normals-texcoords.obj
-        SceneConverterTestFiles/quad-strip.bin
-        SceneConverterTestFiles/quad-strip.gltf
-        SceneConverterTestFiles/quad.bin
-        SceneConverterTestFiles/quad.gltf
-        SceneConverterTestFiles/quad.obj
-        SceneConverterTestFiles/quad.ply
-        SceneConverterTestFiles/red2x2.png
-        # magnum-imageconverter --layers red2x2.png --array red2x2x1.ktx2 -c writerName=
-        SceneConverterTestFiles/red2x2x1.ktx2
-        SceneConverterTestFiles/two-quads-duplicates-fuzzy.bin
-        SceneConverterTestFiles/two-quads-duplicates-fuzzy.gltf
-        SceneConverterTestFiles/two-quads-duplicates.bin
-        SceneConverterTestFiles/two-quads-duplicates.gltf
-        SceneConverterTestFiles/two-quads.bin
-        SceneConverterTestFiles/two-quads.gltf
-        SceneConverterTestFiles/two-triangles-transformed.bin
-        SceneConverterTestFiles/two-triangles-transformed.gltf
-        SceneConverterTestFiles/two-triangles.obj)
-target_include_directories(SceneToolsSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
-if(MAGNUM_WITH_SCENECONVERTER AND CORRADE_TARGET_UNIX)
-    add_dependencies(SceneToolsSceneConverterTest magnum-sceneconverter)
+        SceneConverterImplementationTestFiles/info-animations.txt
+        SceneConverterImplementationTestFiles/info-cameras.txt
+        SceneConverterImplementationTestFiles/info-images.txt
+        SceneConverterImplementationTestFiles/info-lights.txt
+        SceneConverterImplementationTestFiles/info-materials.txt
+        SceneConverterImplementationTestFiles/info-meshes-bounds.txt
+        SceneConverterImplementationTestFiles/info-meshes.txt
+        SceneConverterImplementationTestFiles/info-objects.txt
+        SceneConverterImplementationTestFiles/info-references.txt
+        SceneConverterImplementationTestFiles/info-scenes-objects.txt
+        SceneConverterImplementationTestFiles/info-scenes.txt
+        SceneConverterImplementationTestFiles/info-skins.txt
+        SceneConverterImplementationTestFiles/info-textures.txt)
+target_include_directories(SceneToolsSceneConverterImple___Test PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+
+# Executable testing is implemented on Unix platforms only at the moment
+if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
+    corrade_add_test(SceneToolsSceneConverterTest SceneConverterTest.cpp
+        LIBRARIES
+            MagnumSceneTools
+            # Link the same static plugins as for the magnum-sceneconverter
+            # executable so plugin existence checks are consistent between the two
+            ${MAGNUM_SCENECONVERTER_STATIC_PLUGINS}
+        FILES
+            SceneConverterTestFiles/blue4x4.png
+            # magnum-imageconverter --layers blue4x4.png --array blue4x4x1.ktx2 -c writerName=
+            SceneConverterTestFiles/blue4x4x1.ktx2
+            SceneConverterTestFiles/broken-image-2d.gltf
+            SceneConverterTestFiles/broken-image-3d.gltf
+            SceneConverterTestFiles/broken-mesh.obj
+            SceneConverterTestFiles/broken-scene.gltf
+            SceneConverterTestFiles/dxt1.dds
+            SceneConverterTestFiles/empty.gltf
+            SceneConverterTestFiles/image-dds.gltf
+            SceneConverterTestFiles/images-2d.gltf
+            SceneConverterTestFiles/images-2d-1x1.bin
+            SceneConverterTestFiles/images-2d-1x1.gltf
+            SceneConverterTestFiles/images-3d.gltf
+            SceneConverterTestFiles/images-3d-1x1x1.bin
+            SceneConverterTestFiles/images-3d-1x1x1.gltf
+            SceneConverterTestFiles/info-data.txt
+            SceneConverterTestFiles/info-data-ignored-output.txt
+            SceneConverterTestFiles/point.obj
+            SceneConverterTestFiles/quad-duplicates-fuzzy.obj
+            SceneConverterTestFiles/quad-duplicates.obj
+            SceneConverterTestFiles/quad-duplicates.ply
+            SceneConverterTestFiles/quad-name-custom-attributes-duplicates.bin
+            SceneConverterTestFiles/quad-name-custom-attributes-duplicates.gltf
+            SceneConverterTestFiles/quad-name-custom-attributes.bin
+            SceneConverterTestFiles/quad-name-custom-attributes.gltf
+            SceneConverterTestFiles/quad-normals-texcoords.obj
+            SceneConverterTestFiles/quad-strip.bin
+            SceneConverterTestFiles/quad-strip.gltf
+            SceneConverterTestFiles/quad.bin
+            SceneConverterTestFiles/quad.gltf
+            SceneConverterTestFiles/quad.obj
+            SceneConverterTestFiles/quad.ply
+            SceneConverterTestFiles/red2x2.png
+            # magnum-imageconverter --layers red2x2.png --array red2x2x1.ktx2 -c writerName=
+            SceneConverterTestFiles/red2x2x1.ktx2
+            SceneConverterTestFiles/two-quads-duplicates-fuzzy.bin
+            SceneConverterTestFiles/two-quads-duplicates-fuzzy.gltf
+            SceneConverterTestFiles/two-quads-duplicates.bin
+            SceneConverterTestFiles/two-quads-duplicates.gltf
+            SceneConverterTestFiles/two-quads.bin
+            SceneConverterTestFiles/two-quads.gltf
+            SceneConverterTestFiles/two-triangles-transformed.bin
+            SceneConverterTestFiles/two-triangles-transformed.gltf
+            SceneConverterTestFiles/two-triangles.obj)
+    target_include_directories(SceneToolsSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(MAGNUM_WITH_SCENECONVERTER)
+        add_dependencies(SceneToolsSceneConverterTest magnum-sceneconverter)
+    endif()
 endif()
