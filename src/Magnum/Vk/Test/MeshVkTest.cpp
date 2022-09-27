@@ -439,8 +439,9 @@ void MeshVkTest::cmdDrawTwoAttributes() {
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
         Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.tga"),
-        /* ARM Mali (Android) has some minor off-by-one differences */
-        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.012f}));
+        /* ARM Mali (Android) has some minor off-by-one differences, llvmpipe
+           as well */
+        (DebugTools::CompareImageToFile{_manager, 0.75f, 0.029f}));
 }
 
 void MeshVkTest::cmdDrawTwoAttributesTwoBindings() {
@@ -510,8 +511,9 @@ void MeshVkTest::cmdDrawTwoAttributesTwoBindings() {
         _framebuffer.size().xy(),
         _pixels.dedicatedMemory().mapRead()}),
         Utility::Path::join(VK_TEST_DIR, "MeshTestFiles/vertexcolor.tga"),
-        /* ARM Mali (Android) has some minor off-by-one differences */
-        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.012f}));
+        /* ARM Mali (Android) has some minor off-by-one differences, llvmpipe
+           as well */
+        (DebugTools::CompareImageToFile{_manager, 0.75f, 0.029f}));
 }
 
 void MeshVkTest::cmdDrawNullBindingRobustness2() {
