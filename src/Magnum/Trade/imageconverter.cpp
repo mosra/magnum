@@ -401,7 +401,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         .parse(argc, argv);
 
     /* Generic checks */
-    if(!args.value<Containers::StringView>("output").isEmpty()) {
+    if(args.value<Containers::StringView>("output")) {
         if(args.isSet("in-place")) {
             Error{} << "Output file shouldn't be set for --in-place:" << args.value<Containers::StringView>("output");
             return 1;
