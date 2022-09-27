@@ -184,7 +184,11 @@ void DescriptorPoolVkTest::allocateFail() {
         /* tryAllocate() should not assert, and should not print anything */
         std::ostringstream out;
         Error redirectError{&out};
-        CORRADE_VERIFY(!pool.tryAllocate(layout));
+        {
+            CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
+                "Mesa llvmpipe never fails an allocation.");
+            CORRADE_VERIFY(!pool.tryAllocate(layout));
+        }
         CORRADE_COMPARE(out.str(), "");
     } {
         CORRADE_SKIP_IF_NO_ASSERT();
@@ -193,6 +197,8 @@ void DescriptorPoolVkTest::allocateFail() {
         std::ostringstream out;
         Error redirectError{&out};
         pool.allocate(layout);
+        CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
+            "Mesa llvmpipe never fails an allocation.");
         CORRADE_COMPARE(out.str(), "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
     }
 }
@@ -303,7 +309,11 @@ void DescriptorPoolVkTest::reset() {
     CORRADE_VERIFY(pool.tryAllocate(layout));
 
     /* Second won't */
-    CORRADE_VERIFY(!pool.tryAllocate(layout));
+    {
+        CORRADE_EXPECT_FAIL_IF(device().properties().name().contains("llvmpipe"),
+            "Mesa llvmpipe never fails an allocation.");
+        CORRADE_VERIFY(!pool.tryAllocate(layout));
+    }
 
     pool.reset();
 
