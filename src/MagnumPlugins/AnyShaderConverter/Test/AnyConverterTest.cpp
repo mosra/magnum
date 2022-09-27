@@ -462,7 +462,7 @@ void AnyConverterTest::validateFilePropagateConfigurationUnknown() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")),
-        Containers::pair(false, Containers::String{}));
+        Containers::pair(true, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateFile(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
@@ -711,7 +711,7 @@ void AnyConverterTest::validateDataPropagateConfigurationUnknown() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
-        Containers::pair(false, Containers::String{}));
+        Containers::pair(true, Containers::String{}));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
