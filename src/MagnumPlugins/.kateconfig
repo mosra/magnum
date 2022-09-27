@@ -1,0 +1,1 @@
+kate-wildcard(*Importer.conf;*Converter.conf;*Font.conf): word-wrap-column 78;
