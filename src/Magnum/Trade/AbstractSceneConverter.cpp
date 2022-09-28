@@ -1270,8 +1270,10 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
         "Trade::AbstractSceneConverter::addImporterContents(): no conversion in progress", {});
     CORRADE_ASSERT(importer.isOpened(),
         "Trade::AbstractSceneConverter::addImporterContents(): the importer is not opened", {});
-    const SceneContents contentsPresentExceptLevels = contents & sceneContentsFor(importer);
     const SceneContents contentsSupported = sceneContentsFor(*this);
+    #ifndef CORRADE_NO_ASSERT
+    const SceneContents contentsPresentExceptLevels = contents & sceneContentsFor(importer);
+    #endif
     CORRADE_ASSERT(!(contentsPresentExceptLevels & ~contentsSupported),
         "Trade::AbstractSceneConverter::addImporterContents(): unsupported contents" << Debug::packed << (contentsPresentExceptLevels & ~contentsSupported), {});
 
