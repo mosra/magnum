@@ -834,7 +834,7 @@ MAGNUM_EXPORT bool isPixelFormatDepthOrStencil(PixelFormat format);
  * @brief @copybrief pixelFormatSize()
  * @m_deprecated_since_latest Use @ref pixelFormatSize() instead.
  */
-MAGNUM_EXPORT CORRADE_DEPRECATED("use pixelFormatSize() instead") inline UnsignedInt pixelSize(PixelFormat format) {
+CORRADE_DEPRECATED("use pixelFormatSize() instead") inline UnsignedInt pixelSize(PixelFormat format) {
     return pixelFormatSize(format);
 }
 #endif
