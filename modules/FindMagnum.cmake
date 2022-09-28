@@ -949,8 +949,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Automatic import of static plugins. Skip in case the include dir was
-        # not found -- that'll fail later with a proper message.
-        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
+        # not found -- that'll fail later with a proper message. Skip it also
+        # if the include dir doesn't contain the generated configure.h, which
+        # is the case with Magnum as a subproject and given plugin not enabled
+        # -- there it finds just the sources, where's just configure.h.cmake,
+        # and that's not useful for anything. The assumption here is that it
+        # will fail later anyway on the binary not being found.
+        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND EXISTS ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h)
             # Automatic import of static plugins
             file(READ ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h _magnum${_component}Configure)
             string(FIND "${_magnum${_component}Configure}" "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnum${_component}_BUILD_STATIC)
