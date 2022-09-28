@@ -176,6 +176,12 @@ const struct {
         "GltfImporter", nullptr, "StanfordSceneConverter", {}, nullptr,
         "quad-duplicates.ply", nullptr,
         {}},
+    {"concatenate meshes with a scene but no default scene", Containers::array<Containers::String>({
+        "--concatenate-meshes",
+        Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/two-triangles-transformed-no-default-scene.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad-duplicates.ply")}),
+        "GltfImporter", nullptr, "StanfordSceneConverter", {}, nullptr,
+        "quad-duplicates.ply", nullptr,
+        {}},
     /** @todo drop --mesh once it's not needed anymore again, then add a
         multi-mesh variant */
     {"one mesh, filter mesh attributes", Containers::array<Containers::String>({

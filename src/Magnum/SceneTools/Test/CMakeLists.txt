@@ -138,6 +138,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/two-quads.gltf
             SceneConverterTestFiles/two-triangles-transformed.bin
             SceneConverterTestFiles/two-triangles-transformed.gltf
+            SceneConverterTestFiles/two-triangles-transformed-no-default-scene.gltf
             SceneConverterTestFiles/two-triangles.obj)
     target_include_directories(SceneToolsSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(MAGNUM_WITH_SCENECONVERTER)

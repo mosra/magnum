@@ -26,8 +26,17 @@
       "byteLength": 255
     }
   ],
+  "samplers": [
+    {
+      "wrapS": 10497,
+      "wrapT": 10497,
+      "minFilter": 9987,
+      "magFilter": 9729
+    }
+  ],
   "textures": [
     {
+      "sampler": 0,
       "extensions": {
         "KHR_texture_ktx": {
           "source": 0,
@@ -36,6 +45,7 @@
       }
     },
     {
+      "sampler": 0,
       "extensions": {
         "KHR_texture_ktx": {
           "source": 1,

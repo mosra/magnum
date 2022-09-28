@@ -621,13 +621,16 @@ well, the IDs reference attributes of the first mesh.)")
 
             /* If there's a scene, use it to flatten mesh hierarchy. If not,
                assume all meshes are in the root. */
-            /** @todo make it possible to choose the scene */
-            if(importer->defaultScene() != -1) {
+            if(importer->defaultScene() != -1 || importer->sceneCount()) {
                 Containers::Optional<Trade::SceneData> scene;
                 {
+                    /** @todo make it possible to choose the scene, or possibly
+                        fail if there are multiple scenes but no default one
+                        and require the user to pick? */
+                    const UnsignedInt defaultScene = importer->defaultScene() == -1 ? 0 : importer->defaultScene();
                     Trade::Implementation::Duration d{importConversionTime};
-                    if(!(scene = importer->scene(importer->defaultScene()))) {
-                        Error{} << "Cannot import scene" << importer->defaultScene() << "for mesh concatenation";
+                    if(!(scene = importer->scene(defaultScene))) {
+                        Error{} << "Cannot import scene" << defaultScene << "for mesh concatenation";
                         return 1;
                     }
                 }
