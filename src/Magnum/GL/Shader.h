@@ -576,7 +576,8 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Shader(const Shader&) = delete;
 
         /** @brief Move constructor */
-        Shader(Shader&& other) noexcept;
+        /* MinGW complains loudly if the declaration doesn't also have inline */
+        inline Shader(Shader&& other) noexcept;
 
         /**
          * @brief Destructor
@@ -590,7 +591,8 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Shader& operator=(const Shader&) = delete;
 
         /** @brief Move assignment */
-        Shader& operator=(Shader&& other) noexcept;
+        /* MinGW complains loudly if the declaration doesn't also have inline */
+        inline Shader& operator=(Shader&& other) noexcept;
 
         /** @brief OpenGL shader ID */
         GLuint id() const { return _id; }
