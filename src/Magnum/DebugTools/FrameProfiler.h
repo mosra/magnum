@@ -356,7 +356,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          *
          * Returns a formatted string with names, means and units of all
          * measurements in the order they were added. If some measurement data
-         * is available yet, prints placeholder values for these; if the
+         * is not available yet, prints placeholder values for these.
          * @see @ref isMeasurementAvailable(), @ref isEnabled()
          */
         std::string statistics() const;
