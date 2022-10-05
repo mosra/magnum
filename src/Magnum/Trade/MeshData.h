@@ -1216,7 +1216,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Short indexStride() const;
 
         /**
-         * @brief Mesh indices
+         * @brief Indices
          *
          * For an indexed mesh, the second dimension represent the actual data
          * type (its size is equal to type size for known @ref MeshIndexType
@@ -1235,7 +1235,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::StridedArrayView2D<const char> indices() const;
 
         /**
-         * @brief Mutable mesh indices
+         * @brief Mutable indices
          *
          * Like @ref indices() const, but returns a mutable view. Expects that
          * the mesh is mutable.
@@ -1244,7 +1244,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::StridedArrayView2D<char> mutableIndices();
 
         /**
-         * @brief Mesh indices in a concrete type
+         * @brief Indices in a concrete type
          *
          * Expects that the mesh is indexed and that @p T corresponds to
          * @ref indexType(). In rare cases the first dimension stride may be
@@ -1259,7 +1259,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         template<class T> Containers::StridedArrayView1D<const T> indices() const;
 
         /**
-         * @brief Mutable mesh indices in a concrete type
+         * @brief Mutable indices in a concrete type
          *
          * Like @ref indices() const, but returns a mutable view. Expects that
          * the mesh is mutable.
@@ -1268,7 +1268,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         template<class T> Containers::StridedArrayView1D<T> mutableIndices();
 
         /**
-         * @brief Mesh vertex count
+         * @brief Vertex count
          *
          * Count of elements in every attribute array returned by
          * @ref attribute() (or, in case of an attribute-less mesh, the

@@ -455,7 +455,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
-         * @brief Image data
+         * @brief Raw image data
          *
          * @see @ref pixels()
          */
@@ -853,7 +853,7 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          */
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
-        /** @brief Image data */
+        /** @brief Raw image data */
         Containers::ArrayView<Type> data() const { return _data; }
 
         #ifdef MAGNUM_BUILD_DEPRECATED

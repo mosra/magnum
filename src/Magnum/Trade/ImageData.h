@@ -737,7 +737,7 @@ template<UnsignedInt dimensions> class ImageData {
            needless state changes -- thus the calculation can't be done */
 
         /**
-         * @brief Image data
+         * @brief Raw image data
          *
          * @see @ref release(), @ref pixels()
          */

@@ -407,7 +407,7 @@ template<UnsignedInt dimensions> class Image {
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
-         * @brief Image data
+         * @brief Raw image data
          *
          * @see @ref release(), @ref pixels()
          */
@@ -417,7 +417,7 @@ template<UnsignedInt dimensions> class Image {
         Containers::ArrayView<const char> data() const & { return _data; }
 
         /**
-         * @brief Image data from a r-value
+         * @brief Raw image data from a r-value
          * @m_since{2019,10}
          *
          * Unlike @ref data(), which returns a view, this is equivalent to
@@ -687,7 +687,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
-         * @brief Raw data
+         * @brief Raw image ddata
          *
          * @see @ref release()
          */
@@ -697,7 +697,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         Containers::ArrayView<const char> data() const & { return _data; }
 
         /**
-         * @brief Raw data from a r-value
+         * @brief Raw image data from a r-value
          * @m_since{2019,10}
          *
          * Unlike @ref data(), which returns a view, this is equivalent to
