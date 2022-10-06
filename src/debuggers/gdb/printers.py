@@ -260,6 +260,12 @@ class MagnumRange(MagnumTypePrinter):
     def to_string(self):
         return f"Range (min: {self.val['_min']}, max: {self.val['_max']})"
 
+class MagnumUnit(MagnumTypePrinter):
+    """Prints a Math::Unit"""
+
+    def to_string(self):
+        return f"{self.val['_value']}"
+
 class MagnumVectorColor(MagnumTypePrinter):
     """
     Prints a Math::Vector({2,3,4}).
@@ -375,6 +381,9 @@ def build_magnum_printer():
     magnum_printers.add_printer("Math::RectangularMatrix",
                                 "^Magnum::Math::RectangularMatrix<\d+, \d+, .*>$",
                                 MagnumMatrix)
+    magnum_printers.add_printer("Math::Unit",
+                                "^Magnum::Math::Unit<.*>$"
+                                MagnumUnit)
     magnum_printers.add_printer("Math::Vector",
                                 "^Magnum::Math::Vector<\d+,.*>$",
                                 MagnumVectorColor)
