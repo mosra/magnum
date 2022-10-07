@@ -52,6 +52,7 @@ corrade_add_test(AnySceneImporterTest AnySceneImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
         ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/mesh-primitive-points.obj
+        empty.gltf
         mesh-custom-attribute.gltf
         scene-custom-field.gltf
         triangle.ply)

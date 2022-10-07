@@ -35,19 +35,21 @@
    implementation. Assumes that the Any* plugin itself doesn't have any
    configuration options and so propagates all groups and values that were
    set, emitting a warning if the target doesn't have such option in its
-   default configuration. */
+   default configuration.
+
+   Thoroughly tested in AnySceneImporterTest. */
 
 namespace Magnum { namespace Implementation {
 
 /* Used only in plugins where we don't want it to be exported */
 namespace {
 
-void propagateConfiguration(const char* warningPrefix, const Containers::String& groupPrefix, const Containers::StringView plugin, const Utility::ConfigurationGroup& src, Utility::ConfigurationGroup& dst) {
+void propagateConfiguration(const char* warningPrefix, const Containers::String& groupPrefix, const Containers::StringView plugin, const Utility::ConfigurationGroup& src, Utility::ConfigurationGroup& dst, bool warnUnrecognized = true) {
     using namespace Containers::Literals;
 
     /* Propagate values */
     for(Containers::Pair<Containers::StringView, Containers::StringView> value: src.values()) {
-        if(!dst.hasValue(value.first())) {
+        if(!dst.hasValue(value.first()) && warnUnrecognized) {
             Warning{} << warningPrefix << "option" << "/"_s.joinWithoutEmptyParts({groupPrefix, value.first()}) << "not recognized by" << plugin;
         }
 
@@ -57,8 +59,20 @@ void propagateConfiguration(const char* warningPrefix, const Containers::String&
     /* Recursively propagate groups */
     for(Containers::Pair<Containers::StringView, Containers::Reference<const Utility::ConfigurationGroup>> group: src.groups()) {
         Utility::ConfigurationGroup* dstGroup = dst.group(group.first());
-        if(!dstGroup) dstGroup = dst.addGroup(group.first());
-        propagateConfiguration(warningPrefix, "/"_s.joinWithoutEmptyParts({groupPrefix, group.first()}), plugin, group.second(), *dstGroup);
+
+        /* If the group exists but is empty (such as GltfImporter's
+           customSceneFieldTypes), don't warn about unrecognized values. This
+           logic is repeated for nested subgroups instead of being inherited,
+           meaning that adding a nonexistent subgroup to an empty group will
+           warn again. */
+        bool warnUnrecognizedSubgroup = true;
+        if(!dstGroup) {
+            dstGroup = dst.addGroup(group.first());
+        } else if(!dstGroup->hasGroups() && !dstGroup->hasValues()) {
+            warnUnrecognizedSubgroup = false;
+        }
+
+        propagateConfiguration(warningPrefix, "/"_s.joinWithoutEmptyParts({groupPrefix, group.first()}), plugin, group.second(), *dstGroup, warnUnrecognizedSubgroup);
     }
 }
 

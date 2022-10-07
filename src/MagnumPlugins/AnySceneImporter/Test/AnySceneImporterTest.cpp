@@ -63,6 +63,7 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void propagateFlags();
     void propagateConfiguration();
     void propagateConfigurationUnknown();
+    void propagateConfigurationUnknownInEmptySubgroup();
     void propagateFileCallback();
 
     void sceneFieldName();
@@ -115,6 +116,7 @@ AnySceneImporterTest::AnySceneImporterTest() {
               &AnySceneImporterTest::propagateFlags,
               &AnySceneImporterTest::propagateConfiguration,
               &AnySceneImporterTest::propagateConfigurationUnknown,
+              &AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup,
               &AnySceneImporterTest::propagateFileCallback,
 
               &AnySceneImporterTest::sceneFieldName,
@@ -291,6 +293,32 @@ void AnySceneImporterTest::propagateConfigurationUnknown() {
         "Trade::AnySceneImporter::openFile(): option noSuchOption not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/notHere not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/feh/noHereNotEither not recognized by AssimpImporter\n");
+}
+
+void AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    importer->configuration().addGroup("customSceneFieldTypes");
+    importer->configuration().group("customSceneFieldTypes")->setValue("field", "Float");
+    importer->configuration().group("customSceneFieldTypes")->setValue("another", "Int");
+    importer->configuration().group("customSceneFieldTypes")->addGroup("notFound")->setValue("noHereNotEither", false);
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "empty.gltf")));
+    CORRADE_COMPARE(out.str(),
+        /* Should not warn for values added to the empty customSceneFieldTypes
+           group, but should warn if a subgroup is added there. This is
+           consistent with how the magnum-*converter -i / -c options are
+           handled in Magnum/Implementation/converterUtilities.h. */
+        "Trade::AnySceneImporter::openFile(): option customSceneFieldTypes/notFound/noHereNotEither not recognized by GltfImporter\n");
 }
 
 void AnySceneImporterTest::propagateFileCallback() {

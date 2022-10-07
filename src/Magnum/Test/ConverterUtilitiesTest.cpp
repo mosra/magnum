@@ -150,6 +150,41 @@ option=value
 )",
         /* The trailing space is there because the plugin name is empty */
         "Option group/notFound/nested/option not recognized by \n"},
+    /* This should not warn for emptyGroup, since it's a common use case (for
+       example GltfImporter's customSceneFields). It should also remember that
+       the group was initially empty to not warn again when more options are
+       subsequently added. OTOH, for subgroups added to an empty group it
+       still warns. */
+    {"unrecognized option in empty config subgroup", R"([configuration]
+option=
+[configuration/emptyGroup]
+# No values originally here
+[configuration/nonEmptyGroup]
+option=
+)",
+        "emptyGroup/notFound=value,nonEmptyGroup/notFound=value,emptyGroup/another,emptyGroup/subgroup/notFound=value", "AnyPlugin", R"([configuration]
+option=
+[configuration/emptyGroup]
+# No values originally here
+notFound=value
+another=true
+[configuration/emptyGroup/subgroup]
+notFound=value
+[configuration/nonEmptyGroup]
+option=
+notFound=value
+)",
+        /* The trailing space is there because the plugin name is empty */
+        "Option nonEmptyGroup/notFound not recognized by \n"
+        "Option emptyGroup/subgroup/notFound not recognized by \n"},
+    /* OTOH this should warn, as it's an option in the root configuration */
+    {"unrecognized option in empty root config", R"([configuration]
+)",
+        "notFound=value", "AnyPlugin", R"([configuration]
+notFound=value
+)",
+        /* The trailing space is there because the plugin name is empty */
+        "Option notFound not recognized by \n"},
 };
 
 ConverterUtilitiesTest::ConverterUtilitiesTest() {

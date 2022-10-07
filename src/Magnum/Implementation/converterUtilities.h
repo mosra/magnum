@@ -25,6 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <unordered_set>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/PluginManager/AbstractPlugin.h>
@@ -38,6 +39,7 @@ namespace Magnum { namespace Implementation {
 namespace {
 
 void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringView anyPluginName, const Containers::StringView options) {
+    std::unordered_set<const Utility::ConfigurationGroup*> emptySubgroups;
     for(const Containers::StringView option: options.splitWithoutEmptyParts(',')) {
         auto keyValue = option.partition('=');
         keyValue[0] = keyValue[0].trimmed();
@@ -52,8 +54,19 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringV
             if(!subgroup) {
                 groupNotRecognized = true;
                 subgroup = group->addGroup(keyParts[i]);
+            /* For existing subgroups (i.e., not the root configuration)
+               remember if the group was initially empty (no subgroups, no
+               values; comments can be there). For those we won't warn about
+               unrecognized options below as it's a common use case (for
+               example GltfImporter's customSceneFieldTypes). Has to be done
+               upfront in case more than one option is added to the same group
+               -- otherwise adding the second would warn again, as the group
+               is no longer empty at that point. */
+            } else if(!subgroup->hasGroups() && !subgroup->hasValues()) {
+                emptySubgroups.insert(subgroup);
             }
             group = subgroup;
+
         }
 
         /* Provide a warning message in case the plugin doesn't define given
@@ -62,9 +75,15 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringV
            not an error.
 
            If it's an Any* plugin, then this check is provided by it directly,
-           and since the Any* plugin obviously don't expose the options of the concrete plugins, this warning would fire for them always, which
+           and since the Any* plugin obviously don't expose the options of the
+           concrete plugins, this warning would fire for them always, which
            wouldn't help anything. */
-        if((groupNotRecognized || !group->hasValue(keyParts.back())) && plugin.plugin() != anyPluginName) {
+        if((groupNotRecognized || (!group->hasValue(keyParts.back()) &&
+                /* The warning isn't printed in case a value is added into an
+                   empty subgroup, see above */
+                emptySubgroups.find(group) == emptySubgroups.end()
+            )) && plugin.plugin() != anyPluginName)
+        {
             Warning{} << "Option" << keyValue[0] << "not recognized by" << plugin.plugin();
         }
 
