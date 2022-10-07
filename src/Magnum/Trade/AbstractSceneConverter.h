@@ -622,19 +622,12 @@ case we *know* that @ref AnySceneConverter supports
 @ref SceneConverterFeature::ConvertMeshToFile, however in a more general case
 it might be good to check against the reported @ref features() first.
 
-@snippet MagnumTrade.cpp AbstractSceneConverter-usage-file
+@snippet MagnumTrade.cpp AbstractSceneConverter-usage-mesh-file
 
 See @ref plugins for more information about general plugin usage,
 @ref file-formats to compare implementations of common file formats and the
 list of @m_class{m-doc} [derived classes](#derived-classes) for all available
 scene converter plugins.
-
-@m_class{m-note m-success}
-
-@par
-    There's also the @ref magnum-sceneconverter "magnum-sceneconverter" tool
-    that exposes functionality of all scene converter plugins through a command
-    line interface.
 
 @subsection Trade-AbstractSceneConverter-usage-mesh-data Converting a single mesh data
 
@@ -671,10 +664,37 @@ following:
 While the operations shown above are convenient enough for simple cases
 involving just a single mesh, general conversion of a whole scene needs much
 more than that. Such conversion is done in a batch way --- first initializing
-the conversion of desired kind, adding particular data, and finalizing the
-conversion together with getting the output back.
+the conversion of desired kind using @ref begin(), @ref beginData() or
+@ref beginFile(), adding particular data using @ref add(), and finalizing the
+conversion together with getting the output back using @ref end(),
+@ref endData() or @ref endFile().
 
-@todoc usage example once a batch converter exists
+A common scenario is that you have an @ref AbstractImporter instance containing
+an imported file, and you want to convert it to another format. While it's
+possible to go through all imported meshes, images, textures materials, etc.
+and add them one by one, there's a convenience @ref addImporterContents() that
+passes everything through, and @ref addSupportedImporterContents() that passes
+through only data actually supported by the converter, printing a warning for
+the rest. In the following example, a COLLADA file is converted to a glTF using
+@ref GltfSceneConverter delegated from @link AnySceneConverter @endlink:
+
+@snippet MagnumTrade.cpp AbstractSceneConverter-usage-multiple-file
+
+This API takes an optional second parameter, @ref SceneContents, allowing you
+to selectively perform operations on certain data types while still making use
+of the convenience passthrough for the rest. The following snippet will remove
+duplicates from all meshes before saving them to the output:
+
+@snippet MagnumTrade.cpp AbstractSceneConverter-usage-multiple-file-selective
+
+<b></b>
+
+@m_class{m-note m-success}
+
+@par
+    There's also the @ref magnum-sceneconverter "magnum-sceneconverter" tool
+    that exposes functionality of all scene converter plugins through a command
+    line interface.
 
 @section Trade-AbstractSceneConverter-data-dependency Data dependency
 

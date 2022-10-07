@@ -42,6 +42,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -241,7 +242,7 @@ void doOpenData(Containers::Array<char>&& data, Trade::DataFlags dataFlags) over
 }
 
 {
-/* [AbstractSceneConverter-usage-file] */
+/* [AbstractSceneConverter-usage-mesh-file] */
 PluginManager::Manager<Trade::AbstractSceneConverter> manager;
 Containers::Pointer<Trade::AbstractSceneConverter> converter =
     manager.loadAndInstantiate("AnySceneConverter");
@@ -249,7 +250,7 @@ Containers::Pointer<Trade::AbstractSceneConverter> converter =
 Trade::MeshData mesh = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, {}});
 if(!converter || !converter->convertToFile(mesh, "mesh.ply"))
     Fatal{} << "Can't save mesh.ply with AnySceneConverter";
-/* [AbstractSceneConverter-usage-file] */
+/* [AbstractSceneConverter-usage-mesh-file] */
 }
 
 {
@@ -272,6 +273,47 @@ Containers::Pointer<Trade::AbstractSceneConverter> converter;
 if(!converter || !converter->convertInPlace(mesh))
     Fatal{} << "Can't optimize the mesh with MeshOptimizerSceneConverter";
 /* [AbstractSceneConverter-usage-mesh-in-place] */
+}
+
+{
+/* [AbstractSceneConverter-usage-multiple-file] */
+PluginManager::Manager<Trade::AbstractImporter> importerManager;
+Containers::Pointer<Trade::AbstractImporter> importer =
+    importerManager.loadAndInstantiate("AnySceneImporter");
+if(!importer || importer->openFile("file.dae"))
+    Fatal{} << "Can't open the input file";
+
+PluginManager::Manager<Trade::AbstractSceneConverter> manager;
+Containers::Pointer<Trade::AbstractSceneConverter> converter =
+    manager.loadAndInstantiate("AnySceneConverter");
+
+if(!converter->beginFile("file.gltf") ||
+   !converter->addSupportedImporterContents(*importer) ||
+   !converter->endFile())
+    Fatal{} << "Can't save the output file";
+/* [AbstractSceneConverter-usage-multiple-file] */
+}
+
+{
+Containers::Pointer<Trade::AbstractImporter> importer;
+Containers::Pointer<Trade::AbstractSceneConverter> converter;
+/* [AbstractSceneConverter-usage-multiple-file-selective] */
+if(!converter->beginFile("file.gltf"))
+    Fatal{} << "Can't begin the output file";
+
+/* Add meshes manually, removing duplicates in each in the process */
+for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
+    Containers::Optional<Trade::MeshData> mesh = importer->mesh(i);
+    if(!mesh ||
+       !converter->add(MeshTools::removeDuplicates(*mesh), importer->meshName(i)))
+        Fatal{} << "Can't add mesh" << i;
+}
+
+/* Add the rest of the input file and finish */
+if(!converter->addSupportedImporterContents(*importer, ~Trade::SceneContent::Meshes) ||
+   !converter->endFile())
+    Fatal{} << "Can't save the output file";
+/* [AbstractSceneConverter-usage-multiple-file-selective] */
 }
 
 {
