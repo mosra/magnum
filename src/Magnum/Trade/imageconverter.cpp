@@ -128,7 +128,7 @@ from:
 @parblock
 
 @code{.sh}
-magnum-imageconverter -I AnySceneImporter --info file.gltf
+magnum-imageconverter -I GltfImporter --info file.gltf
 @endcode
 
 <b></b>
@@ -141,21 +141,44 @@ magnum-imageconverter -I AnySceneImporter --info file.gltf
 
 @m_class{m-noindent}
 
-and then extracting the third image to a PNG file for inspection:
+... and then extracting the third image to a PNG file for inspection:
 
 @code{.sh}
-magnum-imageconverter -I AnySceneImporter --image 2 file.gltf image.png
+magnum-imageconverter -I GltfImporter --image 2 file.gltf image.png
 @endcode
 
-Converting a PNG file to a KTX2, block-compressing the data to BC3 using
-@relativeref{Trade,StbDxtImageConverter} and enabling a high-quality output.
+Converting a PNG file to a KTX2, resizing it to 512x512 with
+@relativeref{Trade,StbResizeImageConverter}, block-compressing its data to BC3
+using @relativeref{Trade,StbDxtImageConverter} with high-quality output.
 Because the plugin implements image-to-image conversion, the  @relativeref{Trade,AnyImageConverter} plugin is implicitly used after it,
 proxying to @relativeref{Trade,KtxImageConverter} as the `*.ktx2` extension was
 chosen:
 
 @code{.sh}
-magnum-imageconverter image.png -C StbDxtImageConverter -c highQuality image.ktx2
+magnum-imageconverter image.png image.ktx2 \
+    -C StbResizeImageConverter -c size="512 512" \
+    -C StbDxtImageConverter -c highQuality
 @endcode
+
+Printing features and documented options of a particular image converter
+plugin. For debugging convenience the printed configuration file will reflect
+also all options specified via `-c`:
+
+@m_class{m-code-figure}
+
+@parblock
+
+@code{.sh}
+magnum-imageconverter --info-converter -C StbResizeImageConverter -c size="512 512"
+@endcode
+
+<b></b>
+
+@m_class{m-nopad}
+
+@include imageconverter-info-converter.ansi
+
+@endparblock
 
 @subsection magnum-imageconverter-example-levels-layers Dealing with image levels and layers
 

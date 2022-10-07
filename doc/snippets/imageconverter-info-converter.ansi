@@ -1,0 +1,16 @@
+[1;39mPlugin name:[1;33m StbResizeImageConverter[0m
+[1;39mFeatures:[0;36m
+  Convert2D
+  Convert3D[0m
+[1;39mConfiguration:[0m
+ [1;30m # Target width and height, separated by a space. Required.[0m
+ [1;34m size[0;34m=[0;31m512 512[0m
+
+ [1;30m # How neighboring pixel values are retrieved on image edges. Valid values[0m
+ [1;30m # are:[0m
+ [1;30m #  - clamp -- as if the edge pixels were extended[0m
+ [1;30m #  - wrap -- as if the image was repeated[0m
+ [1;30m #  - reflect -- as if the image was repeated and reflected[0m
+ [1;30m #  - zero -- uses zero values for out-of-bounds pixels[0m
+ [1;34m edge[0;34m=[0;31mclamp[0m
+…

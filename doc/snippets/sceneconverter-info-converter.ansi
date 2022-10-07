@@ -1,0 +1,24 @@
+[1;39mPlugin name:[1;33m GltfSceneConverter[0m
+[1;39mFeatures:[0;36m
+  ConvertMultipleToData
+  AddScenes
+  AddMeshes
+  AddMaterials
+  AddTextures
+  AddImages2D
+  AddCompressedImages2D[0m
+[1;39mConfiguration:[0m
+ [1;30m # Copyright and generator name, written into the asset object. If empty, no[0m
+ [1;30m # value is written.[0m
+ [1;34m copyright[0;34m=[0;31mMe & Myself[0m
+ [1;34m generator[0;34m=[0;31mMagnum GltfSceneConverter[0m
+
+ [1;30m # Add one or more extensionUsed and/or extensionRequired values to populate[0m
+ [1;30m # the extension usage and requirement arrays.[0m
+
+ [1;30m # Whether to write a *.gltf or a *.glb file. If empty, detected automatically[0m
+ [1;30m # based on filename extension, conversion to data defaults to a binary file.[0m
+ [1;30m # If a text file is selected for conversion to data, converting anything that[0m
+ [1;30m # involves binary buffers will currently fail.[0m
+ [1;34m binary[0;34m=[0;31m[0m
+…

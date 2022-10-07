@@ -94,24 +94,83 @@ magnum-sceneconverter --info Box.gltf
 
 @endparblock
 
-Converting an OBJ file to a PLY, implicitly using
+Converting an OBJ file to a glTF, implicitly using
 @relativeref{Trade,AnySceneConverter} that delegates to
-@relativeref{Trade,StanfordSceneConverter} or
-@ref file-formats "any other plugin capable of PLY export" depending on what's
+@relativeref{Trade,GltfSceneConverter} or
+@ref file-formats "any other plugin capable of glTF export" depending on what's
 available:
 
 @code{.sh}
-magnum-sceneconverter chair.obj chair.ply
+magnum-sceneconverter chair.obj chair.gltf
 @endcode
 
-Processing an OBJ file with @relativeref{Trade,MeshOptimizerSceneConverter},
-setting @ref Trade-MeshOptimizerSceneConverter-configuration "plugin-specific configuration options"
-to reduce the index count to half, saving as a PLY, with verbose output showing
-the processing stats:
+Extracting a single mesh from a glTF to a PLY file, implicitly delegated to
+@relativeref{Trade,StanfordSceneConverter}, for closer inspection:
 
 @code{.sh}
-magnum-sceneconverter chair.obj -C MeshOptimizerSceneConverter \
-    -c simplify=true,simplifyTargetIndexCountThreshold=0.5 chair.ply -v
+magnum-sceneconverter scene.gltf --mesh 17 mesh17.ply
+@endcode
+
+Repacking a glTF and encoding all its images as Basis UASTC with
+@relativeref{Trade,BasisImageConverter} using the @cb{.ini} imageConverter @ce
+@ref Trade-GltfSceneConverter-configuration "option of GltfSceneConverter":
+
+@code{.sh}
+magnum-sceneconverter scene.gltf scene.basis.gltf \
+    -c imageConverter=BasisKtxImageConverter,imageConverter/uastc
+@endcode
+
+Printing features and documented options of a particular scene converter
+plugin. For debugging convenience the printed configuration file will reflect
+also all options specified via `-c`:
+
+@m_class{m-code-figure}
+
+@parblock
+
+@code{.sh}
+magnum-sceneconverter --info-converter -C GltfSceneConverter -c copyright="Me & Myself"
+@endcode
+
+<b></b>
+
+@m_class{m-nopad}
+
+@include sceneconverter-info-converter.ansi
+
+@endparblock
+
+@subsection magnum-sceneconverter-example-image-mesh-conversion Performing operations on all images and meshes in the file
+
+Processing a glTF file and removing duplicates in all its meshes:
+
+@code{.sh}
+magnum-sceneconverter scene.gltf --remove-duplicates scene.deduplicated.gltf
+@endcode
+
+Processing a glTF file, resizing all its images to 512x512 with
+@relativeref{Trade,StbResizeImageConverter}, block-compressing their data to a
+BC3 using @relativeref{Trade,StbDxtImageConverter} with high-quality output and
+saving them in a KTX2 container with @relativeref{Trade,KtxImageConverter} and
+an experimental [KHR_texture_ktx](https://github.com/KhronosGroup/glTF/pull/1964)
+glTF extension:
+
+@code{.sh}
+magnum-sceneconverter scene.gltf scene.dxt.gltf \
+    -P StbResizeImageConverter -p size="512 512" \
+    -P StbDxtImageConverter -p highQuality \
+    -c imageConverter=KtxImageConverter,experimentalKhrTextureKtx
+@endcode
+
+Processing a glTF file and decimating all its meshes to a half size with
+@relativeref{Trade,MeshOptimizerSceneConverter}, with verbose output showing
+the processing stats. The `-M` / `-m` options can be chained the same way as
+`-P` / `-p` above, if needed:
+
+@code{.sh}
+magnum-sceneconverter scene.gltf scene.decimated.gltf \
+    -M MeshOptimizerSceneConverter \
+    -m simplify,simplifyTargetIndexCountThreshold=0.5 -v
 @endcode
 
 @section magnum-sceneconverter-usage Full usage documentation
