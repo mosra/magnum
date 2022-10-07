@@ -253,7 +253,8 @@ void ImageConverterImplementationTest::pluginConfigurationInfoDoxygenDelimiter()
 # A comment
 value=yes
 # [configuration_]
-privateValue=SECRET
+
+newlyAddedValue=42
 )";
     Utility::Configuration conf{in};
 
@@ -265,7 +266,9 @@ privateValue=SECRET
     CORRADE_COMPARE(out.str(),
         "Configuration:\n"
         "  # A comment\n"
-        "  value=yes\n");
+        "  value=yes\n"
+        "\n"
+        "  newlyAddedValue=42\n");
 }
 
 void ImageConverterImplementationTest::importerInfo() {

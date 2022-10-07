@@ -95,12 +95,11 @@ void printPluginConfigurationInfo(Debug& d, const Utility::ConfigurationGroup& c
             d << Debug::resetColor;
         } else {
             /* Configuration contents are delimited by these markers in order
-               to include them in Doxygen-generated docs. If we reach them,
-               it's the end of the (public) configuration values. Don't print
-               them, don't print even the last newline, and exit. */
-            if(i.second() == "# [configuration_]"_s) {
-                return;
-            }
+               to include them in Doxygen-generated docs. Newly added values
+               will however appear *after* these markers so we can't just
+               return here. */
+            if(i.second() == "# [configuration_]"_s)
+                continue;
 
             /* Print leading space only if there's actually something */
             d << Debug::newline;
