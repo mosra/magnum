@@ -180,6 +180,7 @@ void ImageConverterImplementationTest::pluginConfigurationInfo() {
         void doClose() override {}
     } importer;
 
+    /** @todo UGH, fix the insane Configuration API already */
     std::stringstream in;
     in << R"([configuration]
 # A comment
@@ -204,9 +205,7 @@ subvalue=35
 [configuration/group]
 true=false
 )";
-    Utility::Configuration conf{in};
-
-    importer.configuration() = Utility::ConfigurationGroup{*conf.group("configuration")};
+    importer.configuration() = Utility::ConfigurationGroup{*Utility::Configuration{in}.group("configuration")};
 
     /* Print to visually verify coloring */
     {
