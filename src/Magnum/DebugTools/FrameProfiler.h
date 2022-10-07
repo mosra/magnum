@@ -539,7 +539,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfilerGL: public FrameProfiler {
              * @requires_gl33 Extension @gl_extension{ARB,timer_query}
              * @requires_es_extension Extension @gl_extension{EXT,disjoint_timer_query}
              * @requires_webgl_extension Extension @webgl_extension{EXT,disjoint_timer_query}
-             *      on WebGL 1, @gl_extension{EXT,disjoint_timer_query_webgl2}
+             *      on WebGL 1, @webgl_extension{EXT,disjoint_timer_query_webgl2}
              *      on WebGL 2
              */
             GpuDuration = 1 << 2,
