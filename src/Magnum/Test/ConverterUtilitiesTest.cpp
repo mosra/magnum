@@ -40,95 +40,116 @@ struct ConverterUtilitiesTest: TestSuite::Tester {
 
 const struct {
     const char* name;
+    const char* config;
     const char* options;
     const char* anyPluginName;
     const char* expectedConfig;
     const char* expectedWarning;
 } SetOptionsData[]{
-    {"", "option=value", "AnyPlugin", R"([configuration]
+    {"", R"([configuration]
+option=
+another=
+)",
+        "option=value", "AnyPlugin", R"([configuration]
 option=value
 another=
-[configuration/group]
-option=
-[configuration/group/nested]
-option=
 )", nullptr},
-    {"two options", "option=value,another=yes", "AnyPlugin", R"([configuration]
+    {"two options", R"([configuration]
+option=
+some=
+another=
+)",
+        "option=value,another=yes", "AnyPlugin", R"([configuration]
 option=value
+some=
 another=yes
-[configuration/group]
-option=
-[configuration/group/nested]
-option=
 )", nullptr},
-    {"implicit true", "option=value,another", "AnyPlugin", R"([configuration]
+    {"implicit true", R"([configuration]
+option=
+another=
+)",
+        "option=value,another", "AnyPlugin", R"([configuration]
 option=value
 another=true
+)", nullptr},
+    {"group", R"([configuration]
+option=
 [configuration/group]
 option=
-[configuration/group/nested]
+another=
+)",
+        "group/option=value", "AnyPlugin", R"([configuration]
 option=
+[configuration/group]
+option=value
+another=
 )", nullptr},
-    {"group", "group/option=value", "AnyPlugin", R"([configuration]
+    {"nested group + root option after", R"([configuration]
 option=
 another=
 [configuration/group]
-option=value
+option=
 [configuration/group/nested]
 option=
-)", nullptr},
-    {"nested group + root option after", "group/nested/option=value,another=yes", "AnyPlugin", R"([configuration]
+another=
+)",
+        "group/nested/option=value,another=yes", "AnyPlugin", R"([configuration]
 option=
 another=yes
 [configuration/group]
 option=
 [configuration/group/nested]
 option=value
-)", nullptr},
-    {"unrecognized option", "notFound=value", "AnyPlugin", R"([configuration]
-option=
 another=
+)", nullptr},
+    {"unrecognized option", R"([configuration]
+option=
+[configuration/group]
+)",
+        "notFound=value", "AnyPlugin", R"([configuration]
+option=
 notFound=value
 [configuration/group]
-option=
-[configuration/group/nested]
-option=
 )",
         /* The trailing space is there because the plugin name is empty */
         "Option notFound not recognized by \n"},
-    {"unrecognized option in Any plugin", "notFound=value", "", R"([configuration]
+    {"unrecognized option in Any plugin", R"([configuration]
 option=
-another=
+[configuration/group]
+)",
+        "notFound=value", "", R"([configuration]
+option=
 notFound=value
 [configuration/group]
-option=
-[configuration/group/nested]
-option=
 )", nullptr},
-    {"unrecognized group", "notFound/option=value", "AnyPlugin", R"([configuration]
+    {"unrecognized group", R"([configuration]
 option=
-another=
 [configuration/group]
 option=
-[configuration/group/nested]
+)",
+        "notFound/option=value", "AnyPlugin", R"([configuration]
+option=
+[configuration/group]
 option=
 [configuration/notFound]
 option=value
 )",
         /* The trailing space is there because the plugin name is empty */
         "Option notFound/option not recognized by \n"},
-    {"unrecognized nested group", "group/notFound/nested/option=value", "AnyPlugin", R"([configuration]
+    {"unrecognized nested group", R"([configuration]
 option=
-another=
 [configuration/group]
 option=
-[configuration/group/nested]
+)",
+        "group/notFound/nested/option=value", "AnyPlugin", R"([configuration]
+option=
+[configuration/group]
 option=
 [configuration/group/notFound/nested]
 option=value
 )",
         /* The trailing space is there because the plugin name is empty */
-        "Option group/notFound/nested/option not recognized by \n"}
+        "Option group/notFound/nested/option not recognized by \n"},
 };
 
 ConverterUtilitiesTest::ConverterUtilitiesTest() {
@@ -140,16 +161,12 @@ void ConverterUtilitiesTest::setOptions() {
     auto&& data = SetOptionsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    struct Plugin: PluginManager::AbstractPlugin {
-        explicit Plugin() {
-            /* Populate default config */
-            configuration().setValue("option", "");
-            configuration().setValue("another", "");
-            Utility::ConfigurationGroup& group = *configuration().addGroup("group");
-            group.setValue("option", "");
-            group.addGroup("nested")->setValue("option", "");
-        }
-    } plugin;
+    struct: PluginManager::AbstractPlugin {} plugin;
+
+    /** @todo UGH, fix the insane Configuration API already */
+    std::stringstream in;
+    in << data.config;
+    plugin.configuration() = Utility::ConfigurationGroup{*Utility::Configuration{in}.group("configuration")};
 
     {
         std::ostringstream out;
