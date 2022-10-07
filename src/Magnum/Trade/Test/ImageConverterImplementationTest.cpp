@@ -27,6 +27,7 @@
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/StringToFile.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
@@ -48,6 +49,7 @@ struct ImageConverterImplementationTest: TestSuite::Tester {
     void importerInfo();
     void converterInfo();
     void converterInfoExtensionMimeType();
+    void converterInfoExtensionMimeTypeNoFileConversion();
 
     void info();
     void infoError();
@@ -66,6 +68,7 @@ ImageConverterImplementationTest::ImageConverterImplementationTest() {
               &ImageConverterImplementationTest::importerInfo,
               &ImageConverterImplementationTest::converterInfo,
               &ImageConverterImplementationTest::converterInfoExtensionMimeType,
+              &ImageConverterImplementationTest::converterInfoExtensionMimeTypeNoFileConversion,
 
               &ImageConverterImplementationTest::info,
               &ImageConverterImplementationTest::infoError});
@@ -362,6 +365,36 @@ void ImageConverterImplementationTest::converterInfoExtensionMimeType() {
         "MIME type: image/x-tga\n"
         "Configuration:\n"
         "  something=is there\n");
+}
+
+void ImageConverterImplementationTest::converterInfoExtensionMimeTypeNoFileConversion() {
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+
+    /* Check if the required plugin can be loaded. Catches also ABI and
+       interface mismatch errors. */
+    if(!(converterManager.load("StbResizeImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("StbResizeImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.instantiate("StbResizeImageConverter");
+
+    /* Print to visually verify coloring */
+    {
+        Debug{} << "======================== visual color verification start =======================";
+        Implementation::printImageConverterInfo(Debug::isTty() ? Debug::Flags{} : Debug::Flag::DisableColors, *converter);
+        Debug{} << "======================== visual color verification end =========================";
+    }
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Implementation::printImageConverterInfo(Debug::Flag::DisableColors, *converter);
+    CORRADE_COMPARE_AS(out.str(),
+        "Plugin name: StbResizeImageConverter\n"
+        "Features:\n"
+        "  Convert2D\n"
+        "  Convert3D\n"
+        "Configuration:\n"
+        "  # Target width and height",
+        TestSuite::Compare::StringHasPrefix);
 }
 
 void ImageConverterImplementationTest::info() {

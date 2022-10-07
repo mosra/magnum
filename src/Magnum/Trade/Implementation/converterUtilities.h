@@ -135,10 +135,17 @@ void printImageConverterInfo(const Debug::Flags useColor, const Trade::AbstractI
 
     Debug d{useColor|Debug::Flag::NoNewlineAtTheEnd};
 
-    if(const Containers::String extension = converter.extension())
-        d << Debug::boldColor(Debug::Color::Default) << "File extension:" << Debug::resetColor << extension << Debug::newline;
-    if(const Containers::String mimeType = converter.mimeType())
-        d << Debug::boldColor(Debug::Color::Default) << "MIME type:" << Debug::resetColor << mimeType << Debug::newline;
+    if(converter.features() & (ImageConverterFeature::Convert1DToFile|
+                               ImageConverterFeature::Convert2DToFile|
+                               ImageConverterFeature::Convert3DToFile|
+                               ImageConverterFeature::ConvertCompressed1DToFile|
+                               ImageConverterFeature::ConvertCompressed2DToFile|
+                               ImageConverterFeature::ConvertCompressed3DToFile)) {
+        if(const Containers::String extension = converter.extension())
+            d << Debug::boldColor(Debug::Color::Default) << "File extension:" << Debug::resetColor << extension << Debug::newline;
+        if(const Containers::String mimeType = converter.mimeType())
+            d << Debug::boldColor(Debug::Color::Default) << "MIME type:" << Debug::resetColor << mimeType << Debug::newline;
+    }
 
     printPluginConfigurationInfo(useColor, converter);
 }
