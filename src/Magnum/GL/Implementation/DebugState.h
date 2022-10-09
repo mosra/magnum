@@ -50,6 +50,7 @@ struct DebugState {
     struct MessageCallback {
         DebugOutput::Callback callback{};
         const void* userParam{};
+        std::string buf;
     } messageCallback;
 };
 

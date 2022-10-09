@@ -104,8 +104,10 @@ void
 APIENTRY
 #endif
 callbackWrapper(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-    const auto& callback = *static_cast<const Implementation::DebugState::MessageCallback*>(userParam);
-    callback.callback(DebugOutput::Source(source), DebugOutput::Type(type), id, DebugOutput::Severity(severity), std::string{message, std::size_t(length)}, callback.userParam);
+    auto& callback = *static_cast<Implementation::DebugState::MessageCallback*>(const_cast<void*>(userParam));
+    callback.buf.reserve(256);
+    callback.buf.assign(message, std::size_t(length));
+    callback.callback(DebugOutput::Source(source), DebugOutput::Type(type), id, DebugOutput::Severity(severity), callback.buf, callback.userParam);
 }
 
 }
