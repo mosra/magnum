@@ -614,23 +614,72 @@ jobs:
 workflows:
   version: 2
   build:
+    # While there's no actual execution or data dependency between the jobs,
+    # this is done in order to reduce unnecessary credit usage. The GL, Vulkan
+    # and non-deprecated Linux builds are taken as the main sanity checks. Only
+    # if they pass, the rest of the jobs gets gradually executed, with further
+    # dependencies especially for the macOS jobs that take the most credits.
     jobs:
     - linux-gl
-    - linux-arm64
+    - linux-arm64:
+        requires:
+        - linux-gl
+        - linux-vulkan
     - linux-vulkan
-    - linux-gles2
-    - linux-gles3
-    - linux-static
+    - linux-gles2:
+        requires:
+        - linux-gl
+    - linux-gles3:
+        requires:
+        - linux-gl
+    - linux-static:
+        requires:
+        - linux-gl
+        - linux-vulkan
     - linux-nondeprecated
-    - linux-sanitizers
-    - linux-threadsanitizer
-    - macos-gl
-    - macos-vulkan
-    - macos-gles3
-    - macos-static
-    - emscripten-webgl1
-    - emscripten-webgl2
-    - android-x86-gles2
-    - android-x86-gles3
-    - android-x86-vulkan
-    - ios-gles3
+    - linux-sanitizers:
+        requires:
+        - linux-gl
+    - linux-threadsanitizer:
+        requires:
+        - linux-sanitizers
+    - macos-gl:
+        requires:
+        - linux-gl
+        - linux-nondeprecated
+    - macos-vulkan:
+        requires:
+        - linux-vulkan
+        - macos-gl
+    - macos-gles3:
+        requires:
+        - linux-gles3
+        - macos-gl
+    - macos-static:
+        requires:
+        - linux-static
+        - macos-gl
+    - emscripten-webgl1:
+        requires:
+        - linux-gles2
+        - linux-static
+    - emscripten-webgl2:
+        requires:
+        - linux-gles3
+        - linux-static
+    - android-x86-gles2:
+        requires:
+        - linux-gles2
+        - linux-static
+    - android-x86-gles3:
+        requires:
+        - linux-gles3
+        - linux-static
+    - android-x86-vulkan:
+        requires:
+        - linux-vulkan
+        - linux-static
+    - ios-gles3:
+        requires:
+        - macos-gles3
+        - macos-static
