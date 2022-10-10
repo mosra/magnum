@@ -116,4 +116,17 @@ namespace Implementation {
 
 }}
 
+// TODO remove this once corrade#152 gets merged
+#if defined __cpp_constexpr && __cpp_constexpr >= 201304 || \
+    defined CORRADE_TARGET_MSVC && _MSC_VER >= 1910 && CORRADE_CXX_STANDARD >= 201402L
+#define MAGNUM_CONSTEXPR14 constexpr
+#else
+#define MAGNUM_CONSTEXPR14
+#endif
+#if defined(__clang__) && __clang_major__ >= 9 || defined(__GNUG__) && __GNUG__ >= 9 || defined(_MSC_VER) && _MSC_VER >= 1931
+#define MAGNUM_CONSTEVAL (__builtin_is_constant_evaluated())
+#elif CORRADE_CXX_STANDARD >= 202002L
+#define MAGNUM_CONSTEVAL (std::is_constant_evaluated())
+#endif
+
 #endif

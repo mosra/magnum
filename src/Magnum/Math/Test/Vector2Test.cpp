@@ -32,6 +32,8 @@
 #include "Magnum/Math/StrictWeakOrdering.h"
 #include "Magnum/Math/Swizzle.h"
 
+#include "Cpp14VectorTest.h"
+
 struct Vec2 {
     float x, y;
 };
@@ -57,6 +59,7 @@ namespace Test { namespace {
 struct Vector2Test: Corrade::TestSuite::Tester {
     explicit Vector2Test();
 
+#ifndef SKIP_TESTING
     void construct();
     void constructDefault();
     void constructNoInit();
@@ -76,6 +79,9 @@ struct Vector2Test: Corrade::TestSuite::Tester {
 
     void swizzleType();
     void debug();
+#else
+    void skipTesting();
+#endif
 };
 
 typedef Math::Vector3<Int> Vector3i;
@@ -83,7 +89,14 @@ typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Int> Vector2i;
 
 Vector2Test::Vector2Test() {
-    addTests({&Vector2Test::construct,
+#ifndef TESTING_CONSTEXPR
+    setTestName("MathVector2Test");
+#else
+    setTestName("Cpp14MathVector2Test");
+#endif
+    addTests({
+#ifndef SKIP_TESTING
+              &Vector2Test::construct,
               &Vector2Test::constructDefault,
               &Vector2Test::constructNoInit,
               &Vector2Test::constructOneValue,
@@ -101,8 +114,14 @@ Vector2Test::Vector2Test() {
               &Vector2Test::strictWeakOrdering,
 
               &Vector2Test::swizzleType,
-              &Vector2Test::debug});
+              &Vector2Test::debug
+#else
+              &Vector2Test::skipTesting
+#endif
+    });
 }
+
+#ifndef SKIP_TESTING
 
 void Vector2Test::construct() {
     constexpr Vector2 a = {1.5f, 2.5f};
@@ -197,7 +216,7 @@ void Vector2Test::convert() {
 }
 
 void Vector2Test::access() {
-    Vector2 vec(1.0f, -2.0f);
+    CE Vector2 vec(1.0f, -2.0f);
     CORRADE_COMPARE(vec.x(), 1.0f);
     CORRADE_COMPARE(vec.y(), -2.0f);
 
@@ -209,8 +228,8 @@ void Vector2Test::access() {
 }
 
 void Vector2Test::cross() {
-    Vector2i a(1, -1);
-    Vector2i b(4, 3);
+    CE Vector2i a(1, -1);
+    CE Vector2i b(4, 3);
 
     CORRADE_COMPARE(Math::cross(a, b), 7);
     CORRADE_COMPARE(Math::cross<Int>({a, 0}, {b, 0}), Vector3i(0, 0, Math::cross(a, b)));
@@ -268,6 +287,11 @@ void Vector2Test::debug() {
     Debug(&o) << Vector2(0.5f, 15.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15)\n");
 }
+#else
+void Vector2Test::skipTesting() {
+    CORRADE_SKIP("Relaxed constexpr not supported by the compiler.");
+}
+#endif
 
 }}}}
 
