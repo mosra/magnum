@@ -256,7 +256,7 @@ if(MAGNUM_TARGET_EGL AND NOT CORRADE_TARGET_WINDOWS)
 else()
     # TODO when CMake 3.22 can be relied on, clean this up to use a proper
     # condition instead
-    cmake_dependent_option(MAGNUM_WITH_WINDWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "ON" OFF)
+    cmake_dependent_option(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "ON" OFF)
 endif()
 option(MAGNUM_WITH_EGLCONTEXT "Build EglContext library" OFF)
 
