@@ -1907,14 +1907,16 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
+
+    /* This should work fine */
+    shader.setViewportSize({});
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
-        /* setViewportSize() works on both UBOs and classic */
         .setObjectId({})
         .setColor({})
         .setWireframeColor({})
@@ -1941,15 +1943,17 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
+
+    /* This should work fine */
+    shader.setViewportSize({});
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
     shader.setProjectionMatrix({})
         .setTransformationMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
-        /* setViewportSize() works on both UBOs and classic */
         .setObjectId({})
         .setColor({})
         .setWireframeColor({})
