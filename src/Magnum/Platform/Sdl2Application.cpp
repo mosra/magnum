@@ -149,6 +149,14 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
     #endif
+    /* By default, SDL behaves like if it was playing a video or whatever,
+       preventing the computer from turning off the screen or going to sleep.
+       While it sorta makes sense for games, it's useless and annoying for
+       regular apps. Together with the compositor disabling those two are the
+       most stupid defaults. */
+    #ifdef SDL_HINT_VIDEO_ALLOW_SCREENSAVER
+    SDL_SetHint(SDL_HINT_VIDEO_ALLOW_SCREENSAVER, "1");
+    #endif
     /* Available since 2.0.12, use EGL if desired */
     #if defined(MAGNUM_TARGET_EGL) && defined(SDL_HINT_VIDEO_X11_FORCE_EGL)
     SDL_SetHint(SDL_HINT_VIDEO_X11_FORCE_EGL, "1");

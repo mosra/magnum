@@ -286,6 +286,19 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
+@subsection Platform-Sdl2Application-usage-power Power management
+
+SDL by default prevents the computer from powering off the or screen going to
+sleep. While possibly useful for game-like use cases, it's generally
+undesirable for regular applications. @ref Sdl2Application turns this behavior
+off. You can restore SDL's default behavior by disabling the
+[corresponding SDL hint](https://wiki.libsdl.org/CategoryHints) through an
+environment variable or through @cpp SDL_SetHint() @ce from your application.
+
+@code{.sh}
+SDL_VIDEO_ALLOW_SCREENSAVER=0 ./your-app
+@endcode
+
 @subsection Platform-Sdl2Application-usage-posix POSIX specifics
 
 On POSIX systems, SDL by default intercepts the `SIGTERM` signal and generates
@@ -314,7 +327,8 @@ for non-fullscreen apps (KWin, among others, is known to respect this setting).
 When using SDL >= 2.0.8, @ref Sdl2Application turns this behavior off, keeping
 the compositor running to avoid the flicker. You can turn this behavior back on
 by enabling the [corresponding SDL hint](https://wiki.libsdl.org/CategoryHints)
-through an environment variable:
+through an environment variable or through @cpp SDL_SetHint() @ce from your
+application.
 
 @code{.sh}
 SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR=1 ./your-app
