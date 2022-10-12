@@ -599,8 +599,8 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Vector projected onto a line
          *
-         * Returns a vector projected onto @p line. Enabled only for
-         * floating-point types. @f[
+         * Returns a vector [projected](https://en.wikipedia.org/wiki/Vector_projection)
+         * onto @p line. Enabled only for floating-point types. @f[
          *      \operatorname{proj}_{\boldsymbol{b}}\,(\boldsymbol{a}) = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
          * @see @ref Math::dot(), @ref projectedOntoNormalized()
