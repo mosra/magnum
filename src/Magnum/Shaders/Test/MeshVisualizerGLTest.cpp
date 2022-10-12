@@ -2378,6 +2378,9 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
 
+    /* This should work fine */
+    shader.setViewportSize({});
+
     std::ostringstream out;
     Error redirectError{&out};
     shader
@@ -2385,7 +2388,6 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
         .setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
-        /* setViewportSize() works on both UBOs and classic */
         .setObjectId({})
         .setColor({})
         .setWireframeColor({})
@@ -2421,6 +2423,9 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
 
+    /* This should work fine */
+    shader.setViewportSize({});
+
     std::ostringstream out;
     Error redirectError{&out};
     shader
@@ -2429,7 +2434,6 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
         .setTransformationMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
-        /* setViewportSize() works on both UBOs and classic */
         .setObjectId({})
         .setColor({})
         .setWireframeColor({})
