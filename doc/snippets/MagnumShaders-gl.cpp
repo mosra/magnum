@@ -64,6 +64,8 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/TextureArray.h"
+#include "Magnum/Primitives/Circle.h"
+#include "Magnum/MeshTools/CompileLines.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
 #include "Magnum/Shaders/Flat.h"
 #include "Magnum/Shaders/Generic.h"
@@ -698,6 +700,13 @@ vert.addSource(Utility::format(
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+{
+/* [LineGL-usage] */
+Trade::MeshData circle = Primitives::circle2DWireframe(16);
+GL::Mesh mesh = MeshTools::compileLines(circle);
+/* [LineGL-usage] */
+}
+
 {
 GL::Mesh mesh;
 Matrix3 transformationMatrix, projectionMatrix;

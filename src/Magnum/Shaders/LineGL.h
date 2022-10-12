@@ -84,7 +84,11 @@ Instead, it requires the input data to be organized in quads, with
 describing point wíth their surroundings, and @ref Annotation with
 point-specific annotation such as whether given point is a line cap or a join
 with neighboring segment. The data layout is described in detail in
-@ref Shaders-LineGL-mesh-representation below.
+@ref Shaders-LineGL-mesh-representation below, however in practice it's easiest
+to compile an existing line @ref Trade::MeshData to the desired form using
+@ref MeshTools::compileLines():
+
+@snippet MagnumShaders-gl.cpp LineGL-usage
 
 For rendering use @ref setTransformationProjectionMatrix(),
 @ref setColor(), @ref setWidth() and others. It's important to pass viewport

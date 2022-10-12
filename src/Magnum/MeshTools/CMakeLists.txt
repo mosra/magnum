@@ -88,6 +88,14 @@ if(MAGNUM_TARGET_GL)
     list(APPEND MagnumMeshTools_HEADERS
         Compile.h
         FullScreenTriangle.h)
+
+    if(NOT MAGNUM_TARGET_GLES2)
+        list(APPEND MagnumMeshTools_GracefulAssert_SRCS
+            CompileLines.cpp)
+
+        list(APPEND MagnumMeshTools_HEADERS
+            CompileLines.h)
+    endif()
 endif()
 
 # Objects shared between main and test library

@@ -949,7 +949,7 @@ void LineGLTest::renderTeardown() {
 }
 
 /* A barebones utility for generating a line mesh. Embedded directly in the
-   test (as opposed to using something from MeshTools) to have it easier to
+   test (as opposed to using MeshTools::compileLines()) to have it easier to
    modify, debug and iterate on. */
 template<UnsignedInt dimensions> struct Vertex {
     VectorTypeFor<dimensions, Float> previousPosition;

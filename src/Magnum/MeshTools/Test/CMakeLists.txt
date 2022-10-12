@@ -43,6 +43,12 @@ corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum Magnu
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 
+if(NOT MAGNUM_TARGET_GLES2)
+    corrade_add_test(MeshToolsCompileLinesTest CompileLinesTest.cpp
+        # Needs to link to Shaders for debug output for LineVertexAnnotations
+        LIBRARIES MagnumMeshToolsTestLib MagnumShaders)
+endif()
+
 # Graceful assert for testing
 set_property(TARGET
     MeshToolsConcatenateTest
@@ -123,6 +129,37 @@ if(MAGNUM_BUILD_GL_TESTS)
         endif()
         if(MAGNUM_WITH_TGAIMPORTER)
             add_dependencies(MeshToolsCompileGLTest TgaImporter)
+        endif()
+    endif()
+
+    if(NOT MAGNUM_TARGET_GLES2)
+        corrade_add_test(MeshToolsCompileLinesGLTest CompileLinesGLTest.cpp
+            LIBRARIES
+                MagnumDebugTools
+                MagnumMeshToolsTestLib
+                MagnumOpenGLTester
+                MagnumShaders
+            FILES
+                CompileLinesTestFiles/bevel.tga
+                CompileLinesTestFiles/line-primitive.tga
+                CompileLinesTestFiles/miter.tga
+                CompileLinesTestFiles/vertex-color.tga)
+        target_include_directories(MeshToolsCompileLinesGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+        if(MAGNUM_BUILD_PLUGINS_STATIC)
+            if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+                target_link_libraries(MeshToolsCompileLinesGLTest PRIVATE AnyImageImporter)
+            endif()
+            if(MAGNUM_WITH_TGAIMPORTER)
+                target_link_libraries(MeshToolsCompileLinesGLTest PRIVATE TgaImporter)
+            endif()
+        else()
+            # So the plugins get properly built when building the test
+            if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+                add_dependencies(MeshToolsCompileLinesGLTest AnyImageImporter)
+            endif()
+            if(MAGNUM_WITH_TGAIMPORTER)
+                add_dependencies(MeshToolsCompileLinesGLTest TgaImporter)
+            endif()
         endif()
     endif()
 endif()
