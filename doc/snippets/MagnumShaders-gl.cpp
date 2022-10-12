@@ -42,6 +42,7 @@
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/GL/Version.h"
@@ -66,6 +67,8 @@
 #include "Magnum/Shaders/DistanceFieldVector.h"
 #include "Magnum/Shaders/Flat.h"
 #include "Magnum/Shaders/Generic.h"
+#include "Magnum/Shaders/Line.h"
+#include "Magnum/Shaders/LineGL.h"
 #include "Magnum/Shaders/MeshVisualizer.h"
 #include "Magnum/Shaders/Phong.h"
 #include "Magnum/Shaders/Vector.h"
@@ -693,6 +696,67 @@ vert.addSource(Utility::format(
     .addFile("MyShader.vert");
 /* [GenericGL-custom-preprocessor] */
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Matrix3 transformationMatrix, projectionMatrix;
+/* [LineGL-usage2] */
+Shaders::LineGL2D shader;
+shader
+    .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
+    .setColor(0x2f83cc_rgbf)
+    .setWidth(4.0f)
+    .draw(mesh);
+/* [LineGL-usage2] */
+}
+
+{
+GL::Mesh mesh;
+/* [LineGL-usage-antialiasing] */
+GL::Renderer::enable(GL::Renderer::Feature::Blending);
+GL::Renderer::setBlendFunction(
+    GL::Renderer::BlendFunction::One,
+    GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+
+Shaders::LineGL2D shader;
+shader
+    DOXYGEN_ELLIPSIS()
+    .setSmoothness(1.0f)
+    .draw(mesh);
+/* [LineGL-usage-antialiasing] */
+}
+
+{
+GL::Mesh mesh;
+Matrix3 transformationMatrix, projectionMatrix;
+/* [LineGL-ubo] */
+GL::Buffer transformationProjectionUniform, materialUniform, drawUniform;
+transformationProjectionUniform.setData({
+    Shaders::TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
+});
+materialUniform.setData({
+    Shaders::LineMaterialUniform{}
+        .setColor(0x2f83cc_rgbf)
+});
+drawUniform.setData({
+    Shaders::LineDrawUniform{}
+        .setMaterialId(0)
+});
+
+Shaders::LineGL2D shader{Shaders::LineGL2D::Configuration{}
+    .setFlags(Shaders::LineGL2D::Flag::UniformBuffers)};
+shader
+    .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
+    .bindTransformationProjectionBuffer(transformationProjectionUniform)
+    .bindMaterialBuffer(materialUniform)
+    .bindDrawBuffer(drawUniform)
+    .draw(mesh);
+/* [LineGL-ubo] */
+}
+#endif
 
 {
 GL::Mesh mesh;

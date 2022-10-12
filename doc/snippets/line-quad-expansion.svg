@@ -1,0 +1,33 @@
+<svg style="width: 450px; height: 150px;" viewBox="0 0 119.06 39.688" class="m-image">
+ <g transform="translate(-161.4 29.104)">
+  <g fill="none" stroke-width=".26458">
+   <g stroke="#747474">
+    <path d="m271.2-3.9688h-42.333v10.583h42.333v-10.583" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+    <path d="m211.67-14.552-42.333 10.583 2.6458 10.583 42.333-10.583-2.6458-10.583" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+    <path d="m214.31-14.552-2.6458 10.583-42.333-10.583 2.6458-10.583 42.333 10.583" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   </g>
+   <path d="m170.66-19.844 42.333 10.583-42.333 10.583" stop-color="#000000" stroke="#dcdcdc" style="font-variation-settings:normal"/>
+   <path d="m228.86 1.3229 42.333 1e-6" stop-color="#000000" stroke="#dcdcdc" style="font-variation-settings:normal"/>
+  </g>
+  <path d="m176.47-19.805 2.249 1.9216-2.8867 0.64627 0.63765-2.5678" fill="#dcdcdc" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  <path d="m264.58-1.8035e-6 2.6458 1.3229-2.6458 1.3229v-2.6458" fill="#dcdcdc" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  <g fill="none" stroke="#747474" stroke-dasharray="0.264583, 0.529167" stroke-linejoin="round" stroke-width=".26458">
+   <path d="m171.98 6.6146 39.688-21.167" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m169.33-14.552h44.979" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m228.86 6.6146 42.333-10.583" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  </g>
+  <g fill="#dcdcdc">
+   <path d="m205.45-12.505 2.249 1.9216-2.8867 0.64627 0.63765-2.5678" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m207.18-9.2214-2.249 1.9216 2.8867 0.64627-0.63765-2.5678" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m178.98-2.1922-2.249 1.9216 2.8867 0.64627-0.63765-2.5678" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m232.83-1.8053e-6 2.6458 1.3229-2.6458 1.3229v-2.6458" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  </g>
+ </g>
+ <g stroke="#2f363f">
+  <circle transform="translate(-161.4 29.104)" cx="170.66" cy="-19.844" r="2.6458" fill="#3bd267" stop-color="#000000" stroke-width=".26458" style="font-variation-settings:normal"/>
+  <circle transform="translate(-161.4 29.104)" cx="212.99" cy="-9.2604" r="2.6458" fill="#2f83cc" stop-color="#000000" stroke-width=".26458" style="font-variation-settings:normal"/>
+  <circle transform="translate(-161.4 29.104)" cx="170.66" cy="1.3229" r="2.6458" fill="#a5c9ea" stop-color="#000000" stroke-width=".26458" style="font-variation-settings:normal"/>
+  <circle transform="translate(-161.4 29.104)" cx="228.86" cy="1.3229" r="2.6458" fill="#cd3431" stop-color="#000000" stroke-width=".26458" style="font-variation-settings:normal"/>
+  <circle transform="translate(-161.4 29.104)" cx="271.2" cy="1.3229" r="2.6458" fill="#c7cf2f" stop-color="#000000" stroke-width=".26458" style="font-variation-settings:normal"/>
+ </g>
+</svg>

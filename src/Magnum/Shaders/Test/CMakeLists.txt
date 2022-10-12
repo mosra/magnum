@@ -45,6 +45,13 @@ corrade_add_test(ShadersPhongGL_Test PhongGL_Test.cpp LIBRARIES MagnumShadersTes
 corrade_add_test(ShadersVectorGL_Test VectorGL_Test.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVertexColorGL_Test VertexColorGL_Test.cpp LIBRARIES MagnumShaders)
 
+if(NOT MAGNUM_TARGET_GLES2)
+    corrade_add_test(ShadersLineTest LineTest.cpp LIBRARIES MagnumShadersTestLib)
+    target_compile_definitions(ShadersLineTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
+
+    corrade_add_test(ShadersLineGL_Test LineGL_Test.cpp LIBRARIES MagnumShaders)
+endif()
+
 if(MAGNUM_BUILD_GL_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
     find_package(Corrade REQUIRED PluginManager)
@@ -455,4 +462,62 @@ if(MAGNUM_BUILD_GL_TESTS)
             VertexColorTestFiles
             PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     endif()
+
+    if(NOT MAGNUM_TARGET_GLES2)
+        set(ShadersLineGLTest_SRCS LineGLTest.cpp)
+        if(CORRADE_TARGET_IOS)
+            list(APPEND ShadersLineGLTest_SRCS TestFiles LineTestFiles)
+        endif()
+        corrade_add_test(ShadersLineGLTest ${ShadersLineGLTest_SRCS}
+            LIBRARIES
+                MagnumDebugTools
+                MagnumMeshTools
+                MagnumPrimitives
+                MagnumShadersTestLib
+                MagnumOpenGLTester
+            FILES
+                LineTestFiles/caps-butt-joins-bevel.tga
+                LineTestFiles/caps-butt-joins-miter-flat.tga
+                LineTestFiles/caps-round-joins-miter.tga
+                LineTestFiles/caps-square-joins-bevel.tga
+                LineTestFiles/caps-square-joins-miter-flat.tga
+                LineTestFiles/caps-square-joins-miter-limit-36.tga
+                LineTestFiles/caps-square-joins-miter-limit-70deg.tga
+                LineTestFiles/caps-square-joins-miter-limit-91deg.tga
+                LineTestFiles/caps-square-joins-miter.tga
+                LineTestFiles/caps-triangle-joins-bevel.tga
+                LineTestFiles/cube3D-caps-butt-joins-bevel.tga
+                LineTestFiles/cube3D-caps-square-joins-miter.tga
+                LineTestFiles/cube3D-depth.tga
+                LineTestFiles/cube3D-flat-single-pixel.tga
+                LineTestFiles/defaults.tga
+                LineTestFiles/instanced.tga
+                LineTestFiles/multidraw.tga
+                LineTestFiles/perspective3D.tga
+                LineTestFiles/vertex-color.tga)
+        target_include_directories(ShadersLineGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+        if(MAGNUM_BUILD_PLUGINS_STATIC)
+            if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+                target_link_libraries(ShadersLineGLTest PRIVATE AnyImageImporter)
+            endif()
+            if(MAGNUM_WITH_TGAIMPORTER)
+                target_link_libraries(ShadersLineGLTest PRIVATE TgaImporter)
+            endif()
+        else()
+            # So the plugins get properly built when building the test
+            if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+                add_dependencies(ShadersLineGLTest AnyImageImporter)
+            endif()
+            if(MAGNUM_WITH_TGAIMPORTER)
+                add_dependencies(ShadersLineGLTest TgaImporter)
+            endif()
+        endif()
+
+        if(CORRADE_TARGET_IOS)
+            set_source_files_properties(
+                LineTestFiles
+                PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+        endif()
+    endif()
 endif()
+

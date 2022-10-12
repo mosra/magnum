@@ -1,0 +1,35 @@
+<svg style="width: 275px; height: 50px;" viewBox="0 0 72.76 13.229" class="m-image">
+ <g transform="translate(-2.6458 -14.552)" fill="none" stroke="#747474" stroke-width=".26458">
+  <path d="m47.625 15.879h-42.303v10.576h42.303v-10.576" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  <path d="m5.3219 21.167 42.303 5e-6" stop-color="#000000" stroke-dasharray="0.264583, 0.529165" stroke-linejoin="round" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+ </g>
+ <g transform="translate(-166.69 -112.45)" display="none" fill="none" stroke-linejoin="round">
+  <path transform="translate(164.04 97.896)" d="m5.2917 26.458 47.625-10.583" display="inline" stop-color="#000000" stroke="#dcdcdc" stroke-dasharray="0.264583, 0.264583" stroke-dashoffset=".26458" stroke-width=".26458"/>
+  <g stroke-linecap="round">
+   <path d="m169.33 124.35h47.625v-10.583h-47.625z" stop-color="#000000" stroke="#dcdcdc" stroke-width=".26458" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m169.33 113.77h42.333l5.2917 5.2917-5.2917 5.2917h-42.333" stop-color="#000000" stroke="#2f83cc" stroke-width=".52916" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m226.16 124.35h10.583v-10.583h-10.583z" stop-color="#000000" stroke="#dcdcdc" stroke-width=".26458" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  </g>
+  <path d="m226.22 124.35 10.583-10.583" stop-color="#000000" stroke="#dcdcdc" stroke-dasharray="0.264583, 0.264583" stroke-dashoffset=".26458" stroke-width=".26458"/>
+  <path d="m231.45 113.77-5.2917 5.2917 5.2917 5.2917 5.2917-5.2917-5.2917-5.2917" stop-color="#000000" stroke="#2f83cc" stroke-linecap="round" stroke-width=".52916" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+ </g>
+ <g transform="translate(-166.69 -112.45)" fill="none">
+  <g stroke="#dcdcdc" stroke-linejoin="round" stroke-width=".26458">
+   <path transform="translate(164.04 97.896)" d="m5.2917 26.458 47.625-10.583" stop-color="#000000" stroke-dasharray="0.264583, 0.264583" stroke-dashoffset=".26458"/>
+   <path transform="translate(1.0912e-6)" d="m226.22 124.35 10.583-10.583" stop-color="#000000" stroke-dasharray="0.264583, 0.264583" stroke-dashoffset=".26458"/>
+   <path d="m169.33 124.35h47.625v-10.583h-47.625z" stop-color="#000000" stroke-linecap="round" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m226.16 124.35h10.583v-10.583h-10.583z" stop-color="#000000" stroke-linecap="round" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  </g>
+  <g stroke="#2f83cc" stroke-width=".52916">
+   <path d="m211.67 113.77a5.2917 5.2917 0 0 1 5.2917 5.2917 5.2917 5.2917 0 0 1-5.2917 5.2917" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m169.33 113.77h42.333" stop-color="#000000" stroke-linecap="round" stroke-linejoin="round" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <path d="m169.33 124.35h42.333" stop-color="#000000" stroke-linecap="round" stroke-linejoin="round" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+   <circle cx="231.45" cy="119.06" r="5.2917" stop-color="#000000" style="-inkscape-stroke:none;font-variation-settings:normal"/>
+  </g>
+ </g>
+ <g transform="translate(-2.6458 -14.552)" stroke="#2f363f" stroke-width=".26458">
+  <circle cx="67.438" cy="21.167" r="1.3532" fill="#747474" stop-color="#000000" style="font-variation-settings:normal"/>
+  <circle cx="47.625" cy="21.136" r="1.3532" fill="#c7cf2f" stop-color="#000000" style="font-variation-settings:normal"/>
+  <circle cx="5.2917" cy="21.167" r="1.3229" fill="#cd3431" stop-color="#000000" style="font-variation-settings:normal"/>
+ </g>
+</svg>

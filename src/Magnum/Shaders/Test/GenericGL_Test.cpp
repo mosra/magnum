@@ -89,6 +89,8 @@ void GenericGL_Test::glslMatch() {
 
     CORRADE_COMPARE(TEXTURE_OFFSET_ATTRIBUTE_LOCATION, GenericGL2D::TextureOffset::Location);
     CORRADE_COMPARE(TEXTURE_OFFSET_ATTRIBUTE_LOCATION, GenericGL3D::TextureOffset::Location);
+
+    /* Line-specific attributes tested in LineGL_Test instead */
 }
 
 void GenericGL_Test::glslMatchOutput() {

@@ -73,6 +73,19 @@ set(MagnumShaders_HEADERS
 set(MagnumShaders_PRIVATE_HEADERS
     Implementation/CreateCompatibilityShader.h)
 
+if(NOT MAGNUM_TARGET_GLES2)
+    list(APPEND MagnumShaders_GracefulAssert_SRCS
+        Line.cpp
+        LineGL.cpp)
+
+    list(APPEND MagnumShaders_HEADERS
+        Line.h
+        LineGL.h)
+
+    list(APPEND MagnumShaders_PRIVATE_HEADERS
+        Implementation/lineMiterLimit.h)
+endif()
+
 if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumShaders_HEADERS
         VertexColor.h)

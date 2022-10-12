@@ -1,9 +1,10 @@
+#ifndef Magnum_Shaders_Implementation_lineMiterLimit_h
+#define Magnum_Shaders_Implementation_lineMiterLimit_h
 /*
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2020 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -24,27 +25,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* Kept consistent with GenericGL.h (tested in ShadersGenericGL_Test) */
+#include "Magnum/Math/Functions.h"
 
-#define POSITION_ATTRIBUTE_LOCATION 0
-#define TEXTURECOORDINATES_ATTRIBUTE_LOCATION 1 /* also LineAnnotation */
-#define LINE_ANNOTATION_ATTRIBUTE_LOCATION 1 /* also LineAnnotation */
-#define COLOR_ATTRIBUTE_LOCATION 2
-#define TANGENT_ATTRIBUTE_LOCATION 3 /* also LinePreviousPosition */
-#define LINE_PREVIOUS_POSITION_ATTRIBUTE_LOCATION 3 /* also Tangent */
-#define BITANGENT_ATTRIBUTE_LOCATION 4 /* also ObjectId */
-#define OBJECT_ID_ATTRIBUTE_LOCATION 4 /* also Bitangent */
-#define NORMAL_ATTRIBUTE_LOCATION 5 /* also LineNextPosition */
-#define LINE_NEXT_POSITION_ATTRIBUTE_LOCATION 5 /* also Normal */
-#define JOINTIDS_ATTRIBUTE_LOCATION 6
-#define WEIGHTS_ATTRIBUTE_LOCATION 7
+namespace Magnum { namespace Shaders { namespace Implementation {
 
-#define TRANSFORMATION_MATRIX_ATTRIBUTE_LOCATION 8
-#define SECONDARY_JOINTIDS_ATTRIBUTE_LOCATION 10 /* also TransformationMatrix[2] */
-#define SECONDARY_WEIGHTS_ATTRIBUTE_LOCATION 11 /* also TransformationMatrix[3] */
-#define NORMAL_MATRIX_ATTRIBUTE_LOCATION 12
-#define TEXTURE_OFFSET_ATTRIBUTE_LOCATION 15 /* + layer in the 3rd component */
+inline Float lineMiterLengthLimit(const char* const name, const Float limit) {
+    #ifdef CORRADE_NO_ASSERT
+    static_cast<void>(name);
+    #endif
+    CORRADE_ASSERT(limit >= 1.0f && !Math::isInf(limit),
+        name << "expected a finite value greater than or equal to 1, got" << limit, {});
+    /* Calculate the half-angle from the length and return a cosine of it */
+    return Math::cos(2.0f*Math::asin(1.0f/limit));
+}
 
-/* Outputs */
-#define COLOR_OUTPUT_ATTRIBUTE_LOCATION 0
-#define OBJECT_ID_OUTPUT_ATTRIBUTE_LOCATION 1
+inline Float lineMiterAngleLimit(const char* const name, const Rad limit) {
+    using namespace Math::Literals;
+    #ifdef CORRADE_NO_ASSERT
+    static_cast<void>(name);
+    #endif
+    CORRADE_ASSERT(limit > 0.0_radf && limit <= Rad{Constants::pi()},
+        name << "expected a value greater than 0° and less than or equal to 180°, got" << Float(Deg(limit)) << Debug::nospace << "°", {});
+    /* Return a cosine of the angle */
+    return Math::cos(limit);
+}
+
+}}}
+
+#endif
