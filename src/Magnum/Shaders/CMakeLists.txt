@@ -39,6 +39,7 @@ set(MagnumShaders_SRCS
 set(MagnumShaders_GracefulAssert_SRCS
     DistanceFieldVectorGL.cpp
     FlatGL.cpp
+    LineGL.cpp
     MeshVisualizerGL.cpp
     PhongGL.cpp
     VectorGL.cpp
@@ -53,6 +54,7 @@ set(MagnumShaders_HEADERS
     FlatGL.h
     Generic.h
     GenericGL.h
+    LineGL.h
     MeshVisualizer.h
     MeshVisualizerGL.h
     Phong.h

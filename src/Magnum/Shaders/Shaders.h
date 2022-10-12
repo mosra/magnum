@@ -58,6 +58,10 @@ typedef CORRADE_DEPRECATED("use FlatGL3D instead") FlatGL3D Flat3D;
 
 /* Generic is used only statically */
 
+template<UnsignedInt> class LineGL;
+typedef LineGL<2> LineGL2D;
+typedef LineGL<3> LineGL3D;
+
 class MeshVisualizerGL2D;
 class MeshVisualizerGL3D;
 #ifdef MAGNUM_BUILD_DEPRECATED
