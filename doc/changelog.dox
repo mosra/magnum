@@ -725,6 +725,8 @@ See also:
 -   @ref GL::Shader limit queries for a particular shader stage on desktop were
     out-of-bounds array accesses, causing wrong or random values being returned
     for most shader-related limits
+-   Fixed @ref GL::Shader reporting errors and warnings with line numbers
+    off-by-one on desktop GLSL < 330.
 -   Fixed assertions related to OpenGL driver workarounds when the proprietary
     AMDGPU PRO drivers are used on Linux
 -   Fixed an assertion when using @ref MeshTools::removeDuplicates() on an

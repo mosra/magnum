@@ -760,6 +760,10 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Type _type;
         GLuint _id;
         ObjectFlags _flags;
+        #ifndef MAGNUM_TARGET_GLES
+        /* Used by addSource() / addFile(), see there for details */
+        bool _offsetLineByOneOnOldGlsl;
+        #endif
 
         std::vector<std::string> _sources;
 };
@@ -767,7 +771,12 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 /** @debugoperatorclassenum{Shader,Shader::Type} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Shader::Type value);
 
-inline Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _flags{other._flags}, _sources{std::move(other._sources)} {
+inline Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _flags{other._flags},
+    #ifndef MAGNUM_TARGET_GLES
+    _offsetLineByOneOnOldGlsl{other._flags},
+    #endif
+    _sources{std::move(other._sources)}
+{
     other._id = 0;
 }
 
@@ -776,6 +785,9 @@ inline Shader& Shader::operator=(Shader&& other) noexcept {
     swap(_type, other._type);
     swap(_id, other._id);
     swap(_flags, other._flags);
+    #ifndef MAGNUM_TARGET_GLES
+    swap(_offsetLineByOneOnOldGlsl, other._offsetLineByOneOnOldGlsl);
+    #endif
     swap(_sources, other._sources);
     return *this;
 }

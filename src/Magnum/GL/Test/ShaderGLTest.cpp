@@ -234,9 +234,11 @@ void ShaderGLTest::addSource() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
         "#version 120\n",
-        "#line 1 1\n",
+        /* On (desktop) GLSL < 330 the #line affect next line, not current
+           line; see compileFailure() for a correctness verification */
+        "#line 0 1\n",
         "#define FOO BAR\n",
-        "#line 1 2\n",
+        "#line 0 2\n",
         "void main() {}\n"
     }));
     #else
@@ -264,6 +266,10 @@ void ShaderGLTest::addSourceNoVersion() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
         "",
+        /* Here, even though there's #version 120 eventually added by the user,
+           it assumes the specified version was new GLSL, not old. Explicitly
+           specified old GLSL is such a rare use case that I don't bother
+           looking for the #version directive and adjusting. */
         "#version 120\n",
         "#line 1 1\n",
         "#define FOO BAR\n",
@@ -294,7 +300,9 @@ void ShaderGLTest::addFile() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
         "#version 120\n",
-        "#line 1 1\n",
+        /* On (desktop) GLSL < 330 the #line affect next line, not current
+           line; see compileFailure() for a correctness verification */
+        "#line 0 1\n",
         "void main() {}\n"
     }));
     #else

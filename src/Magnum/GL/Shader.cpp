@@ -648,6 +648,17 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
 Shader::Shader(const Version version, const Type type): _type{type}, _flags{ObjectFlag::DeleteOnDestruction|ObjectFlag::Created} {
     _id = glCreateShader(GLenum(_type));
 
+    /* Used by addSource() / addFile() to insert either `#line 0` (for GLSL <
+       330, which interprets it as affecting this line) or `#line 1` (for GLSL
+       >= 330 which interprets it as affecting next line). GLSL ES has it like
+       GLSL >= 330 always. */
+    #ifndef MAGNUM_TARGET_GLES
+    if(version < Version::GL330)
+        _offsetLineByOneOnOldGlsl = true;
+    else
+        _offsetLineByOneOnOldGlsl = false;
+    #endif
+
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
         case Version::GL210: _sources.emplace_back("#version 120\n"); return;
@@ -678,7 +689,11 @@ Shader::Shader(const Version version, const Type type): _type{type}, _flags{Obje
     CORRADE_ASSERT_UNREACHABLE("GL::Shader::Shader(): unsupported version" << version, );
 }
 
-Shader::Shader(const Type type, const GLuint id, ObjectFlags flags) noexcept: _type{type}, _id{id}, _flags{flags} {}
+Shader::Shader(const Type type, const GLuint id, ObjectFlags flags) noexcept: _type{type}, _id{id}, _flags{flags}
+    #ifndef MAGNUM_TARGET_GLES
+    , _offsetLineByOneOnOldGlsl{}
+    #endif
+    {}
 
 Shader::~Shader() {
     /* Moved out or not deleting on destruction, nothing to do */
@@ -723,7 +738,17 @@ Shader& Shader::addSource(std::string source) {
            order to avoid complex logic in compile() where we assert for at
            least some user-provided source, an empty string is added here
            instead. */
-        if(!_sources.empty()) (this->*addSource)("#line 1 " + std::to_string((_sources.size()+1)/2) + '\n');
+        if(!_sources.empty()) (this->*addSource)(
+           /* GLSL < 330 interprets #line 0 as the next line being line 1,
+              while GLSL >= 330 which interprets #line 1 as next line being
+              line 1; the latter is consistent with the C preprocessor. GLSL ES
+              behaves like GLSL >= 330 always. */
+            (
+                #ifndef MAGNUM_TARGET_GLES
+                _offsetLineByOneOnOldGlsl ? "#line 0 " :
+                #endif
+                "#line 1 "
+            ) + std::to_string((_sources.size()+1)/2) + '\n');
         else (this->*addSource)({});
 
         (this->*addSource)(std::move(source));
