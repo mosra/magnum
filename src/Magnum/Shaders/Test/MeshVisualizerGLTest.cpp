@@ -3067,7 +3067,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     }
 
     /** @todo make this unnecessary */
-    shader.setViewportSize({80, 80});
+    shader.setViewportSize(Vector2{RenderSize});
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
@@ -3165,7 +3165,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     }
 
     /** @todo make this unnecessary */
-    shader.setViewportSize({80, 80});
+    shader.setViewportSize(Vector2{RenderSize});
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(sphere);
@@ -3775,7 +3775,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection|flag)};
     /** @todo make this unnecessary */
-    shader.setViewportSize({80, 80});
+    shader.setViewportSize(Vector2{RenderSize});
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(sphere);
@@ -3873,7 +3873,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
 
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags|MeshVisualizerGL2D::Flag::Wireframe|flag)};
-    shader.setViewportSize({80, 80});
+    shader.setViewportSize(Vector2{RenderSize});
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader
@@ -4003,7 +4003,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
 
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags|MeshVisualizerGL3D::Flag::Wireframe|flag)};
-    shader.setViewportSize({80, 80});
+    shader.setViewportSize(Vector2{RenderSize});
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader
@@ -4186,7 +4186,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         .setFlags(flags)};
     shader
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
-        .setViewportSize({80, 80})
+        .setViewportSize(Vector2{RenderSize})
         .bindColorMapTexture(_colorMapTexture);
 
     GL::Texture2D texture{NoCreate};
@@ -4374,7 +4374,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         .setFlags(flags)};
     shader
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
-        .setViewportSize({80, 80})
+        .setViewportSize(Vector2{RenderSize})
         .bindColorMapTexture(_colorMapTexture);
 
     GL::Texture2D texture{NoCreate};
@@ -4520,7 +4520,7 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
         .setFlags(MeshVisualizerGL3D::Flag::Wireframe)};
     shader.setWireframeWidth(8.0f)
         .setWireframeColor(0xff0000_rgbf)
-        .setViewportSize({80, 80})
+        .setViewportSize(Vector2{RenderSize})
         .setTransformationMatrix(
             Matrix4::translation({0.0f, 0.5f, -3.5f})*
             Matrix4::rotationX(-60.0_degf)*
@@ -4651,7 +4651,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
             .setFlags(data.secondPassFlags)};
         shader
             /** @todo make this unnecessary */
-            .setViewportSize({80, 80})
+            .setViewportSize(Vector2{RenderSize})
             .setTransformationMatrix(transformation)
             .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
             .setColor(0xffff99_rgbf)
@@ -4662,7 +4662,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags|flag)};
     /** @todo make this unnecessary */
-    shader.setViewportSize({80, 80});
+    shader.setViewportSize(Vector2{RenderSize});
     if(data.flags & (MeshVisualizerGL3D::Flag::PrimitiveId|MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::VertexId))
         shader.bindColorMapTexture(_colorMapTexture);
 
