@@ -144,23 +144,23 @@ in highp vec4 position;
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = LINE_DIRECTION_ATTRIBUTE_LOCATION)
+layout(location = LINE_PREVIOUS_POSITION_ATTRIBUTE_LOCATION)
 #endif
 #ifdef TWO_DIMENSIONS
-in highp vec2 direction_;
+in highp vec2 previousPosition;
 #elif defined(THREE_DIMENSIONS)
-in highp vec3 direction_;
+in highp vec3 previousPosition;
 #else
 #error
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = LINE_NEIGHBOR_DIRECTION_ATTRIBUTE_LOCATION)
+layout(location = LINE_NEXT_POSITION_ATTRIBUTE_LOCATION)
 #endif
 #ifdef TWO_DIMENSIONS
-in highp vec2 neighborDirection_;
+in highp vec2 nextPosition;
 #elif defined(THREE_DIMENSIONS)
-in highp vec3 neighborDirection_;
+in highp vec3 nextPosition;
 #else
 #error
 #endif
@@ -196,6 +196,7 @@ in highp mat4 instancedTransformationMatrix;
 
 out highp vec2 centerDistanceSigned;
 out highp float halfSegmentLength;
+out lowp float hasCap;
 
 #ifdef VERTEX_COLOR
 out lowp vec4 interpolatedVertexColor;
@@ -237,38 +238,45 @@ void main() {
     #endif
     #endif
 
+    // TODO look at the precision qualifiers, same for *.frag
     #ifdef TWO_DIMENSIONS
-    const vec2 lineCenterPosition = (transformationProjectionMatrix*
+    highp const vec2 transformedPosition = (transformationProjectionMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
         #endif
         vec3(position, 1.0)).xy;
 
-    // TODO take prev/next positions, this makes no sense
-    const vec2 direction = (transformationProjectionMatrix*
+    highp const vec2 transformedPreviousPosition = (transformationProjectionMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
         #endif
-        vec3(position + direction_, 1.0)).xy - lineCenterPosition;
+        vec3(previousPosition, 1.0)).xy;
 
-    const vec2 neighborDirection = (transformationProjectionMatrix*
+    highp const vec2 transformedNextPosition = (transformationProjectionMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
         #endif
-        vec3(position + neighborDirection_, 1.0)).xy - lineCenterPosition;
+        vec3(nextPosition, 1.0)).xy;
 
-    const float directionLength = length(direction);
+    highp const vec2 direction = (gl_VertexID & 2) == 0 ?
+        transformedNextPosition - transformedPosition :
+        transformedPosition - transformedPreviousPosition;
+    highp const vec2 neighborDirection = (gl_VertexID & 2) == 0 ?
+        transformedPosition - transformedPreviousPosition :
+        transformedNextPosition - transformedPosition;
+
+    highp const float directionLength = length(direction);
     // TODO since this is used just for AA, set to a special value in case of
     //  a line joint that shouldn't be AAd?
     halfSegmentLength = length(direction*0.5*viewportSize/2.0);
     // TODO zero-sized lines better?
-    const vec2 directionNormalized = directionLength == 0.0 ? vec2(1.0, 0.0) : direction/directionLength;
+    highp const vec2 directionNormalized = directionLength == 0.0 ? vec2(1.0, 0.0) : direction/directionLength;
 
     /* Line width includes also twice the smoothness radius, some extra padding
        on top, and is rounded to whole pixels. So for the edge distance we need
        half of it. */
     // TODO ref the paper here; actually just drop all that, smoothstep FTW
-    const float edgeDistance = ceil(width + 2.0*smoothness)*0.5;
+    highp const float edgeDistance = ceil(width + 2.0*smoothness)*0.5;
 
     /* Copied from MeshTools::generateLines() internals for completenes. The
        position is always either `A` or `B` for all four quad corners, the `d`
@@ -288,21 +296,26 @@ void main() {
        means for points 1 and 3 (i.e., gl_VertexID not divisible by 2) we need
        to negate it to point the other way. */
     // TODO zero-sized lines do what?
-    const float edgeSign = (gl_VertexID & 1) == 0 ? 1.0 : -1.0;
-    const float capSign = (gl_VertexID & 2) == 0 ? -1.0 : 1.0;
-    const float edgeDistanceSigned = edgeDistance*edgeSign;
+    highp const float edgeSign = (gl_VertexID & 1) == 0 ? 1.0 : -1.0;
+    highp const float capSign = (gl_VertexID & 2) == 0 ? -1.0 : 1.0;
+    highp const float edgeDistanceSigned = edgeDistance*edgeSign;
 //     vec2 edgeDirection = perpendicular(directionNormalized)*edgeDistanceSigned*2.0/viewportSize;
 
 //     float centerDirection
-    vec2 edgeDirection;
+    highp vec2 edgeDirection;
 
     /* Distance to center, passed to the fragment shader. It's chosen in a way
        that interpolates to a zero vector in the quad center, and the area
-       where `abs(centerDirection) <= [d+w,w]` is inside the line. Inside the
+       where `abs(centerDirection) <= [d+w,w]` is inside the line.
+
+       On the left is shown a line segment that has caps on both sides, thus
+       has
+       Inside the
        line strip (where there's no line caps, shown on the left) the X value
        is always 0, resulting in no antialiasing done on the beginning/end edge
        in order to join tightly with the neigboring segments.
 
+        TODO what the hell, this is never 0, this is all wrong
           0------------------2              0-----------------------------2
         [0,+w]-------------[0,+w]        [-d-w,+w]------------------[+d+w,+w]
           |                  |              | |                         | |
@@ -310,7 +323,6 @@ void main() {
           |                  |              | |                         | |
         [0,-w]-------------[0,-w]        [-d-w,-w]------------------[+d+w,-w]
           1------------------3              1-----------------------------3 */
-    // TODO handle caps
     centerDistanceSigned.y = edgeDistanceSigned;
 
     /* If the neighbor direction is a NaN, it means we're at the line cap --
@@ -325,12 +337,14 @@ void main() {
 
        For points 0 and 1 it'll be in the negative direction `d`, for points 2
        and 3 in positive `d`. */
-    if(all(isnan(neighborDirection))) {
+    // TODO make the 0.7 configurable
+    if(all(isnan(neighborDirection)) || dot(normalize(direction), normalize(neighborDirection)) < -0.7) {
         edgeDirection =
             (directionNormalized*capSign +
             perpendicular(directionNormalized)*edgeSign)*edgeDistance*2.0/viewportSize
             ;
         centerDistanceSigned.x = (edgeDistance + halfSegmentLength)*capSign;
+        hasCap = 1.0; // TODO uhhhhhhh some extra offset for the cap here??
 
     /* Otherwise we need to create a tight joint with the neighboring line
        segment, as shown with the points 2 and 3. Given normalized direction
@@ -361,26 +375,27 @@ void main() {
     } else {
 //         edgeDirection = perpendicular(directionNormalized)*edgeSign*edgeDistance*2.0/viewportSize;
 
-        const vec2 averageDirection = capSign*directionNormalized + normalize(neighborDirection);
-        const float averageDirectionLength = length(averageDirection);
-        edgeDirection = perpendicular(averageDirection)*(capSign*edgeSign*edgeDistance*4.0/averageDirectionLength)/viewportSize;
+        const highp vec2 averageDirection = capSign*(directionNormalized + normalize(neighborDirection));
+        const highp float averageDirectionLength = length(averageDirection);
+        const highp float j = 2.0*edgeDistance/averageDirectionLength;
+        edgeDirection = (normalize(perpendicular(averageDirection))*capSign*edgeSign*j)*2.0/viewportSize;
 
 //         const float ex = sqrt((4.0*edgeDistance*edgeDistance/(averageDirectionLength*averageDirectionLength)) - edgeDistance*edgeDistance);
-        const float ex = sqrt(dot(edgeDirection, edgeDirection) - edgeDistance*edgeDistance);
+        const highp float ex = sqrt(j*j - edgeDistance*edgeDistance);
 
 //         edgeDirection = -perpendicular(averageDirection)*(1.0*edgeDistance*edgeSign*capSign/averageDirectionLength)
 //             *2.0/viewportSize;
 
-        // TODO it can't be 0!! it also has to include the skew in here but
-        //  then somehow be marked to not smooth
-        centerDistanceSigned.x = halfSegmentLength*capSign;// + ex*sign(dot(direction*capSign, edgeDirection));
+        // TODO the ex should be included in here, why it isn't??
+        centerDistanceSigned.x = halfSegmentLength*capSign;// + ex*sign(dot(direction*capSign, (perpendicular(averageDirection))*capSign*edgeSign));
+
+        hasCap = -1.0; // TODO uhhh some extra offset here so 0 is in the center?
     }
 
-    // TODO cap ends / joints, depending on neighborDirection size
-
-    gl_Position.xyzw = vec4(lineCenterPosition + edgeDirection, 0.0, 1.0);
+    gl_Position.xyzw = vec4(transformedPosition + edgeDirection, 0.0, 1.0);
     #elif defined(THREE_DIMENSIONS)
     // TODO 3D, how to handle perspective? multiply edgeDistance with w?
+    // TODO also how to handle depth?
     gl_Position = transformationProjectionMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*

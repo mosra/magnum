@@ -23,22 +23,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* Kept consistent with Generic.h (tested in ShadersGenericTest) */
+#include <Corrade/TestSuite/Tester.h>
 
-#define POSITION_ATTRIBUTE_LOCATION 0
-#define TEXTURECOORDINATES_ATTRIBUTE_LOCATION 1
-#define COLOR_ATTRIBUTE_LOCATION 2
-#define TANGENT_ATTRIBUTE_LOCATION 3 /* also LinePreviousPosition */
-#define LINE_PREVIOUS_POSITION_ATTRIBUTE_LOCATION 3 /* also Tangent */
-#define BITANGENT_ATTRIBUTE_LOCATION 4 /* also ObjectId */
-#define OBJECT_ID_ATTRIBUTE_LOCATION 4 /* also Bitangent */
-#define NORMAL_ATTRIBUTE_LOCATION 5 /* also LineNextPosition */
-#define LINE_NEXT_POSITION_ATTRIBUTE_LOCATION 5 /* also Normal */
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
-#define TRANSFORMATION_MATRIX_ATTRIBUTE_LOCATION 8
-#define NORMAL_MATRIX_ATTRIBUTE_LOCATION 12
-#define TEXTURE_OFFSET_ATTRIBUTE_LOCATION 15 /* + layer in the 3rd component */
+struct GenerateLinesTest: TestSuite::Tester {
+    explicit GenerateLinesTest();
+};
 
-/* Outputs */
-#define COLOR_OUTPUT_ATTRIBUTE_LOCATION 0
-#define OBJECT_ID_OUTPUT_ATTRIBUTE_LOCATION 1
+GenerateLinesTest::GenerateLinesTest() {
+}
+
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateLinesTest)

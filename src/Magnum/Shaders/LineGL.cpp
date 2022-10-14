@@ -130,6 +130,13 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
         .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
         ;
+    if(configuration.capStyle() == CapStyle::Square)
+        frag.addSource("#define CAP_STYLE_SQUARE\n");
+    else if(configuration.capStyle() == CapStyle::Round)
+        frag.addSource("#define CAP_STYLE_ROUND\n");
+    else if(configuration.capStyle() == CapStyle::Triangle)
+        frag.addSource("#define CAP_STYLE_TRIANGLE\n");
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         frag.addSource(Utility::formatString(
@@ -149,6 +156,7 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
 
     LineGL<dimensions> out{NoInit};
     out._flags = configuration.flags();
+    out._capStyle = configuration.capStyle();
     #ifndef MAGNUM_TARGET_GLES2
     out._materialCount = configuration.materialCount();
     out._drawCount = configuration.drawCount();
@@ -164,8 +172,8 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     #endif
     {
         out.bindAttributeLocation(Position::Location, "position");
-        out.bindAttributeLocation(LineDirection::Location, "direction");
-        out.bindAttributeLocation(LineNeighborDirection::Location, "neighborDirection");
+        out.bindAttributeLocation(PreviousPosition::Location, "direction");
+        out.bindAttributeLocation(NextPosition::Location, "neighborDirection");
         if(configuration.flags() & Flag::VertexColor)
             out.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         #ifndef MAGNUM_TARGET_GLES2

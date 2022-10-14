@@ -47,6 +47,13 @@ namespace Implementation {
         #endif
     };
     typedef Containers::EnumSet<LineGLFlag> LineGLFlags;
+
+    // TODO this is GL-independent probably, what to do? put in Line.h?
+    enum class LineGLCapStyle: UnsignedByte {
+        Square,
+        Round,
+        Triangle
+    };
 }
 
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL: public GL::AbstractShaderProgram {
@@ -57,8 +64,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL: public GL::
         typedef typename GenericGL<dimensions>::Position Position;
 
         // TODO move to Generic
-        typedef GL::Attribute<3, VectorTypeFor<dimensions, Float>> LineDirection;
-        typedef GL::Attribute<5, VectorTypeFor<dimensions, Float>> LineNeighborDirection;
+        typedef GL::Attribute<3, VectorTypeFor<dimensions, Float>> PreviousPosition;
+        typedef GL::Attribute<5, VectorTypeFor<dimensions, Float>> NextPosition;
 
         typedef typename GenericGL<dimensions>::Color3 Color3;
 
@@ -103,11 +110,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL: public GL::
          * @see @ref flags()
          */
         typedef Containers::EnumSet<Flag> Flags;
+
+        enum class CapStyle: UnsignedByte {
+            Square,
+            Round,
+            Triangle
+        };
         #else
         /* Done this way to be prepared for possible future diversion of 2D
            and 3D flags (e.g. introducing 3D-specific features) */
         typedef Implementation::LineGLFlag Flag;
         typedef Implementation::LineGLFlags Flags;
+
+        //
+        typedef Implementation::LineGLCapStyle CapStyle;
         #endif
 
         static CompileState compile(const Configuration& configuration = Configuration{});
@@ -177,6 +193,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL: public GL::
         explicit LineGL(NoInitT);
 
         Flags _flags;
+        CapStyle _capStyle;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _materialCount{}, _drawCount{};
         #endif
@@ -209,6 +226,15 @@ template<UnsignedInt dimensions> class LineGL<dimensions>::Configuration {
 
         Flags flags() const { return _flags; }
 
+        Configuration& setCapStyle(CapStyle style) {
+            _capStyle = style;
+            return *this;
+        }
+
+        CapStyle capStyle() const { return _capStyle; }
+
+        // TODO joint style
+
         #ifndef MAGNUM_TARGET_GLES2
         Configuration& setMaterialCount(UnsignedInt count) {
             _materialCount = count;
@@ -227,6 +253,7 @@ template<UnsignedInt dimensions> class LineGL<dimensions>::Configuration {
 
     private:
         Flags _flags;
+        CapStyle _capStyle = CapStyle::Square;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _materialCount{1};
         UnsignedInt _drawCount{1};

@@ -114,7 +114,6 @@ struct LineGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
-        Containers::String _testDir;
 
         GL::Renderbuffer _color{NoCreate};
         #ifndef MAGNUM_TARGET_GLES2
@@ -163,7 +162,7 @@ const struct {
 // };
 
 #ifndef MAGNUM_TARGET_GLES2
-constexpr struct {
+const struct {
     const char* name;
     LineGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
@@ -175,6 +174,34 @@ constexpr struct {
         "material count can't be zero"}
 };
 #endif
+
+const struct {
+    const char* name;
+    Containers::Array<Vector2> lineSegments;
+    Float width;
+    Float smoothness;
+    const char* expected;
+} Render2DData[]{
+    // TODO cap variants, short & long
+    {"joint angles, obtuse", {InPlaceInit, {
+        { 0.2f,  0.8f}, {0.2f,  0.4f}, {0.2f,  0.4f}, {0.8f,  0.4f},
+        {-0.4f,  0.4f}, {0.0f,  0.0f}, {0.0f,  0.0f}, {0.8f,  0.0f},
+        {-0.8f, -0.0f}, {0.0f, -0.4f}, {0.0f, -0.4f}, {0.8f, -0.4f},
+        {-0.8f, -0.8f}, {0.0f, -0.8f}, {0.0f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, "joint-angles-obtuse.tga"},
+    // TODO cap variants here also
+    {"joint angles, acute", {InPlaceInit, {
+        { 0.4f,  0.8f}, {0.0f,  0.4f}, {0.0f,  0.4f}, {0.8f,  0.4f},
+        { 0.8f,  0.0f}, {0.0f, -0.4f}, {0.0f, -0.4f}, {0.8f, -0.4f},
+        { 0.8f, -0.8f}, {0.0f, -0.8f}, {0.0f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, "joint-angles-acute.tga"},
+    // TODO cap variants here also
+    {"joint angles, acute, short", {InPlaceInit, {
+        { -0.25f, 0.45f}, {-0.3f, 0.4f}, {-0.3f, 0.4f}, {0.6f, 0.4f},
+        { -0.25f, -0.45f}, {-0.3f, -0.4f}, {-0.3f, -0.4f}, {0.6f, -0.4f},
+    }}, 20.0f, 0.0f, "joint-angles-acute-short.tga"},
+    // TODO cap variants here also
+};
 
 LineGLTest::LineGLTest() {
     addInstancedTests<LineGLTest>({
@@ -250,6 +277,17 @@ LineGLTest::LineGLTest() {
         // &LineGLTest::renderDefaults3D<LineGL3D::Flag::UniformBuffers>,
         // #endif
         },
+        &LineGLTest::renderSetup,
+        &LineGLTest::renderTeardown);
+
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<LineGLTest>({
+        &LineGLTest::render2D,
+        #ifndef MAGNUM_TARGET_GLES2
+        // &LineGLTest::render2D<LineGL2D::Flag::UniformBuffers>,
+        #endif
+        },
+        Containers::arraySize(Render2DData),
         &LineGLTest::renderSetup,
         &LineGLTest::renderTeardown);
 
@@ -617,6 +655,88 @@ void LineGLTest::renderTeardown() {
     _color = GL::Renderbuffer{NoCreate};
 }
 
+template<UnsignedInt dimensions> GL::Mesh generateLineMesh(Containers::ArrayView<const VectorTypeFor<dimensions, Float>> lineSegments) {
+    struct Vertex {
+        VectorTypeFor<dimensions, Float> previousPosition;
+        VectorTypeFor<dimensions, Float> position;
+        VectorTypeFor<dimensions, Float> nextPosition;
+    };
+
+    CORRADE_INTERNAL_ASSERT(lineSegments.size() % 2 == 0);
+    Containers::Array<Vertex> vertices{NoInit, lineSegments.size()*2};
+    for(std::size_t i = 0; i != lineSegments.size(); ++i)
+        vertices[i*2 + 0].position = vertices[i*2 + 1].position = lineSegments[i];
+
+    /* Mark prev/next positions with NaN if it's the beginning, the end or the
+       segments are disjoint */
+    vertices[0].previousPosition =
+        vertices[1].previousPosition =
+            vertices[vertices.size() - 2].nextPosition =
+                vertices[vertices.size() - 1].nextPosition =
+                    VectorTypeFor<dimensions, Float>{Constants::nan()};
+    for(std::size_t i = 4; i < vertices.size(); i += 4) {
+        if(vertices[i - 2].position == vertices[i].position) continue;
+        vertices[i - 2].nextPosition =
+            vertices[i - 1].nextPosition =
+                vertices[i + 0].previousPosition =
+                    vertices[i + 1].previousPosition =
+                        VectorTypeFor<dimensions, Float>{Constants::nan()};
+    }
+
+    /* Prev positions for first vertices */
+    for(std::size_t i = 2; i < Containers::arraySize(vertices); i += 4) {
+        if(Math::isNan(vertices[i].previousPosition)) continue;
+        vertices[i + 0].previousPosition = vertices[i + 1].previousPosition =
+            vertices[i - 2].position;
+    }
+    /* Prev positions for last vertices */
+    for(std::size_t i = 4; i < Containers::arraySize(vertices); i += 4) {
+        if(Math::isNan(vertices[i].previousPosition)) continue;
+        vertices[i + 0].previousPosition = vertices[i + 1].previousPosition =
+            vertices[i - 4].position;
+    }
+    /* Next positions for first vertices */
+    for(std::size_t i = 0; i < Containers::arraySize(vertices) - 2; i += 4) {
+        if(Math::isNan(vertices[i].nextPosition)) continue;
+        vertices[i + 0].nextPosition = vertices[i + 1].nextPosition =
+            vertices[i + 2].position;
+    }
+    /* Next positions for last vertices */
+    for(std::size_t i = 2; i < Containers::arraySize(vertices) - 4; i += 4) {
+        if(Math::isNan(vertices[i].nextPosition)) continue;
+        vertices[i + 0].nextPosition = vertices[i + 1].nextPosition =
+            vertices[i + 4].position;
+    }
+
+    Containers::Array<UnsignedInt> indices{NoInit, lineSegments.size()*6/2};
+    for(std::size_t i = 0; i != lineSegments.size()/2; ++i) {
+        indices[i*6 + 0] = i*4 + 0;
+        indices[i*6 + 1] = i*4 + 1;
+        indices[i*6 + 2] = i*4 + 2;
+        indices[i*6 + 3] = i*4 + 2;
+        indices[i*6 + 4] = i*4 + 1;
+        indices[i*6 + 5] = i*4 + 3;
+    }
+
+    GL::Mesh mesh;
+    mesh.addVertexBuffer(GL::Buffer{vertices}, 0,
+            LineGL2D::PreviousPosition{},
+            LineGL2D::Position{},
+            LineGL2D::NextPosition{})
+        .setIndexBuffer(GL::Buffer{indices}, 0, GL::MeshIndexType::UnsignedInt)
+        .setCount(indices.size());
+
+    return mesh;
+}
+
+GL::Mesh generateLineMesh(std::initializer_list<Vector2> lineSegments) {
+    return generateLineMesh<2>(Containers::arrayView(lineSegments));
+}
+
+// GL::Mesh generateLineMesh(std::initializer_list<Vector3> lineSegments) {
+//     return generateLineMesh<3>(Containers::arrayView(lineSegments));
+// }
+
 template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
     #ifndef MAGNUM_TARGET_GLES2
     if(flag == LineGL2D::Flag::UniformBuffers) {
@@ -629,88 +749,22 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
     }
     #endif
 
-    // TODO drop this crap, use MeshTools once things settle down
-    struct Vertex {
-        Vector2 neighborDirection;
-        Vector2 position;
-        Vector2 direction;
-    } vertices[]{
-        /* Two connected line segments, down and then to the right */
-        {Vector2{Constants::nan()}, {-0.25f, 0.5f}, {}},
-        {Vector2{Constants::nan()}, {-0.25f, 0.5f}, {}},
-        {{}, {-0.5f, -0.5f}, {}},
-        {{}, {-0.5f, -0.5f}, {}},
-        {{}, {-0.5f, -0.5f}, {}},
-        {{}, {-0.5f, -0.5f}, {}},
-        {Vector2{Constants::nan()}, {0.5f, -0.25f}, {}},
-        {Vector2{Constants::nan()}, {0.5f, -0.25f}, {}},
-
-        /* Singular horizontal and vertical segment */
-        {Vector2{Constants::nan()}, {-0.75f, 0.25f}, {}},
-        {Vector2{Constants::nan()}, {-0.75f, 0.25f}, {}},
-        {Vector2{Constants::nan()}, {-0.75f, 0.75f}, {}},
-        {Vector2{Constants::nan()}, {-0.75f, 0.75f}, {}},
-
-        {Vector2{Constants::nan()}, {-0.25f, -0.75f}, {}},
-        {Vector2{Constants::nan()}, {-0.25f, -0.75f}, {}},
-        {Vector2{Constants::nan()}, {0.75f, -0.75f}, {}},
-        {Vector2{Constants::nan()}, {0.75f, -0.75f}, {}},
-
-        /* A single point */
-        {Vector2{Constants::nan()}, {0.5f, 0.5f}, {}},
-        {Vector2{Constants::nan()}, {0.5f, 0.5f}, {}},
-        {Vector2{Constants::nan()}, {0.5f, 0.5f}, {}},
-        {Vector2{Constants::nan()}, {0.5f, 0.5f}, {}},
-    };
-
-    /* Prev directions */
-    for(std::size_t i = 4; i < Containers::arraySize(vertices); i += 4) {
-        if(Math::isNan(vertices[i + 0].neighborDirection)) continue;
-        vertices[i + 0].neighborDirection = vertices[i + 1].neighborDirection =
-            vertices[i - 4].position - vertices[i + 0].position;
-    }
-    /* Segment directions */
-    for(std::size_t i = 0; i < Containers::arraySize(vertices); i += 4) {
-        vertices[i + 0].direction = vertices[i + 1].direction =
-            vertices[i + 2].direction = vertices[i + 3].direction =
-                vertices[i + 2].position - vertices[i + 0].position;
-    }
-    /* Next directions */
-    for(std::size_t i = 2; i < Containers::arraySize(vertices) - 4; i += 4) {
-        if(Math::isNan(vertices[i + 0].neighborDirection)) continue;
-        vertices[i + 0].neighborDirection = vertices[i + 1].neighborDirection =
-            vertices[i + 4].position - vertices[i + 0].position;
-    }
-
-    !Debug{} << Containers::stridedArrayView(vertices).slice(&Vertex::position).prefix(8);
-    !Debug{} << Containers::stridedArrayView(vertices).slice(&Vertex::direction).prefix(8);
-    !Debug{} << Containers::stridedArrayView(vertices).slice(&Vertex::neighborDirection).prefix(8);
-
-    const UnsignedInt indices[]{
-        0, 1, 2, 2, 1, 3,
-        4, 5, 6, 6, 5, 7,
-        8, 9, 10, 10, 9, 11,
-        12, 13, 14, 14, 13, 15,
-        16, 17, 18, 18, 17, 19
-    };
-
-    GL::Mesh lines;
-    lines.addVertexBuffer(GL::Buffer{vertices}, 0,
-            LineGL2D::LineNeighborDirection{},
-            LineGL2D::Position{},
-            LineGL2D::LineDirection{})
-        .setIndexBuffer(GL::Buffer{indices}, 0, GL::MeshIndexType::UnsignedInt)
-        .setCount(Containers::arraySize(indices));
+    GL::Mesh lines = generateLineMesh({
+        /* A / line from the top to bottom */
+        {-0.0f, 0.5f}, {-0.5f, -0.5f},
+        /* A / line from the bottom to top */
+        {-0.5f, -0.5f}, {0.5f, -0.25f},
+        /* A | line from the bottom to top */
+        {-0.75f, -0.25f}, {-0.75f, 0.75f},
+        /* A _ line from the left to right */
+        {-0.25f, -0.75f}, {0.75f, -0.75f},
+        /* A zero-size line that should be visible as a point */
+        {0.5f, 0.5f}, {0.5f, 0.5f}
+    });
 
     LineGL2D shader{LineGL2D::Configuration{}
         .setFlags(flag)};
     shader.setViewportSize(Vector2{RenderSize});
-    shader
-        .setWidth(5.0f)
-        .setSmoothness(1.0f)
-        // .setBackgroundColor(0xff0000ff_rgbaf)
-        // .setColor(0x557766_rgbf)
-        ;
 
     if(flag == LineGL2D::Flag{}) {
         shader.draw(lines);
@@ -744,9 +798,73 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Path::join(_testDir, "LineTestFiles/defaults2D.tga"),
-        /* SwiftShader has 8 different pixels on the edges */
-        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
+        Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/defaults2D.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+template<LineGL2D::Flag flag> void LineGLTest::render2D() {
+    auto&& data = Render2DData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flag == LineGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
+    GL::Mesh lines = generateLineMesh<2>(data.lineSegments);
+
+    LineGL2D shader{LineGL2D::Configuration{}
+        .setFlags(flag)};
+    shader.setViewportSize(Vector2{RenderSize});
+    shader
+        .setWidth(data.width)
+        .setSmoothness(data.smoothness)
+        // .setBackgroundColor(0xff0000ff_rgbaf)
+        // .setColor(0x557766_rgbf)
+        ;
+
+    // TODO test with blending -- there should be no self-intersection
+
+    if(flag == LineGL2D::Flag{}) {
+        shader.draw(lines);
+    }
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(flag == LineGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            LineDrawUniform{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            LineMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .draw(lines);
+    }
+    #endif
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager}));
 }
 
 }}}}
