@@ -120,12 +120,14 @@ template<class T> inline T linePointSquared(const Vector2<T>& a, const Vector2<T
 @param point    Point
 
 The distance @f$ d @f$ is calculated from point @f$ \boldsymbol{p} @f$ and line
-defined by @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$ using
+defined by @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$ using a
 @ref cross(const Vector2<T>&, const Vector2<T>&) "perp-dot product": @f[
-    d = \frac{|(\boldsymbol b - \boldsymbol a)_\bot \cdot (\boldsymbol a - \boldsymbol p)|}{|\boldsymbol b - \boldsymbol a|}
+    d = \frac{|(\boldsymbol b - \boldsymbol a) \times (\boldsymbol a - \boldsymbol p)|}{|\boldsymbol b - \boldsymbol a|}
+        = \frac{|(\boldsymbol b - \boldsymbol a)_\bot \cdot (\boldsymbol a - \boldsymbol p)|}{|\boldsymbol b - \boldsymbol a|}
 @f]
 Source: http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
-@see @ref linePointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+@see @ref linePointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&),
+    @ref linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
 */
 template<class T> inline T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
     const Vector2<T> bMinusA = b - a;
@@ -140,7 +142,8 @@ for comparing distance with other values, because it doesn't calculate the
 square root.
 */
 template<class T> inline T linePointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
-    return cross(point - a, point - b).dot()/(b - a).dot();
+    const Vector3<T> bMinusA = b - a;
+    return cross(bMinusA, a - point).dot()/bMinusA.dot();
 }
 
 /**
@@ -150,12 +153,13 @@ template<class T> inline T linePointSquared(const Vector3<T>& a, const Vector3<T
 @param point    Point
 
 The distance @f$ d @f$ is calculated from point @f$ \boldsymbol{p} @f$ and line
-defined by @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$ using
+defined by @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$ using a
 @ref cross(const Vector3<T>&, const Vector3<T>&) "cross product": @f[
-    d = \frac{|(\boldsymbol p - \boldsymbol a) \times (\boldsymbol p - \boldsymbol b)|}{|\boldsymbol b - \boldsymbol a|}
+    d = \frac{|(\boldsymbol b - \boldsymbol a) \times (\boldsymbol a - \boldsymbol p)|}{|\boldsymbol b - \boldsymbol a|}
 @f]
 Source: http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-@see @ref linePointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+@see @ref linePointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&),
+    @ref linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
 */
 template<class T> inline T linePoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
     return std::sqrt(linePointSquared(a, b, point));

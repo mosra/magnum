@@ -36,17 +36,21 @@ namespace Magnum { namespace Math {
 /**
 @brief 2D cross product
 
-2D version of cross product, also called perp-dot product, equivalent to
-calling @ref cross(const Vector3<T>&, const Vector3<T>&) with Z coordinate set
-to `0` and extracting only Z coordinate from the result (X and Y coordinates
-are always zero). Returns `0` either when one of the vectors is zero or they
-are parallel or antiparallel and `1` when two *normalized* vectors are
-perpendicular. @f[
+2D version of a cross product, also called a [perp-dot product](https://en.wikipedia.org/wiki/Vector_projection#Scalar_rejection),
+equivalent to calling @ref cross(const Vector3<T>&, const Vector3<T>&) with Z
+coordinate set to `0` and extracting only Z coordinate from the result (X and Y
+coordinates are always zero). Returns `0` either when one of the vectors is
+zero or they are parallel or antiparallel and `1` when two *normalized* vectors
+are perpendicular. @f[
     \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
 @f]
+
+Value of a 2D cross product is related to a distance of a point and a line, see
+@ref Distance::linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+for more information.
 @see @ref Vector2::perpendicular(),
     @ref dot(const Vector<size, T>&, const Vector<size, T>&)
- */
+*/
 template<class T> inline T cross(const Vector2<T>& a, const Vector2<T>& b) {
     return a._data[0]*b._data[1] - a._data[1]*b._data[0];
 }

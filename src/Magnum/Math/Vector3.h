@@ -34,7 +34,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief Cross product
+@brief [Cross product](https://en.wikipedia.org/wiki/Cross_product)
 
 Result has length of @cpp 0 @ce either when one of them is zero or they are
 parallel or antiparallel and length of @cpp 1 @ce when two *normalized* vectors
@@ -45,7 +45,9 @@ are perpendicular. @f[
 If @f$ \boldsymbol{a} @f$, @f$ \boldsymbol{b} @f$ and @f$ \boldsymbol{c} @f$
 are corners of a triangle in a counterclockwise order,
 @f$ (\boldsymbol{c} - \boldsymbol{b}) \times (\boldsymbol{a} - \boldsymbol{b}) @f$
-gives the direction of its normal.
+gives the direction of its normal. Length of a cross product is related to a
+distance of a point and a line, see @ref Distance::linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+for more information.
 @see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation()
 */
 template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
