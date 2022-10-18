@@ -111,14 +111,16 @@ Returns intersection point positions @f$ t @f$, @f$ u @f$ on both lines:
 The two lines intersect if @f$ t @f$ and @f$ u @f$ exist such that: @f[
      \boldsymbol{p} + t \boldsymbol{r} = \boldsymbol{q} + u \boldsymbol{s}
 @f]
-Crossing both sides with @f$ \boldsymbol{s} @f$, distributing the cross product
-and eliminating @f$ \boldsymbol{s} \times \boldsymbol{s} = 0 @f$, then solving
-for @f$ t @f$ and similarly for @f$ u @f$: @f[
+Crossing both sides with @f$ \boldsymbol{s} @f$
+(a @ref cross(const Vector2<T>&, const Vector2<T>&) "perp-dot product"),
+distributing  the cross product and eliminating
+@f$ \boldsymbol{s} \times \boldsymbol{s} = 0 @f$, then solving for @f$ t @f$
+and similarly for @f$ u @f$: @f[
      \begin{array}{rcl}
          (\boldsymbol{p} + t \boldsymbol{r}) \times \boldsymbol{s} & = & (\boldsymbol{q} + u \boldsymbol{s}) \times \boldsymbol{s} \\
          t (\boldsymbol{r} \times \boldsymbol{s}) & = & (\boldsymbol{q} - \boldsymbol{p}) \times \boldsymbol{s} \\
-         t & = & \cfrac{(\boldsymbol{q} - \boldsymbol{p}) \times \boldsymbol{s}}{\boldsymbol{r} \times \boldsymbol{s}} \\
-         u & = & \cfrac{(\boldsymbol{q} - \boldsymbol{p}) \times \boldsymbol{r}}{\boldsymbol{r} \times \boldsymbol{s}}
+         t & = & \cfrac{(\boldsymbol{q} - \boldsymbol{p}) \times \boldsymbol{s}}{\boldsymbol{r} \times \boldsymbol{s}} = \cfrac{(\boldsymbol{q} - \boldsymbol{p})_\bot \cdot \boldsymbol{s}}{\boldsymbol{r}_\bot \cdot \boldsymbol{s}} \\
+         u & = & \cfrac{(\boldsymbol{q} - \boldsymbol{p}) \times \boldsymbol{r}}{\boldsymbol{r} \times \boldsymbol{s}} = \cfrac{(\boldsymbol{q} - \boldsymbol{p})_\bot \cdot \boldsymbol{r}}{\boldsymbol{r}_\bot \cdot \boldsymbol{s}}
      \end{array}
 @f]
 
