@@ -1106,6 +1106,15 @@ static_cast<void>(a);
 }
 
 {
+/* [Quaternion-axis-nan] */
+Quaternion a = DOXYGEN_ELLIPSIS({});
+Rad angle = a.angle();
+Vector3 axis = angle == 0.0_radf ? Vector3::xAxis() : a.axis();
+/* [Quaternion-axis-nan] */
+static_cast<void>(axis);
+}
+
+{
 /* [unpack-template-explicit] */
 // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
 Float a = Math::unpack<Float>('\xFF');

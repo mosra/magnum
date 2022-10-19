@@ -435,12 +435,20 @@ template<class T> class Quaternion {
         /**
          * @brief Rotation axis of a unit quaternion
          *
-         * Expects that the quaternion is normalized. Returns either unit-length
-         * vector for valid rotation quaternion or NaN vector for
-         * default-constructed quaternion. @f[
+         * Expects that the quaternion is normalized. @f[
          *      \boldsymbol a = \frac{\boldsymbol q_V}{\sqrt{1 - q_S^2}}
          * @f]
-         * @see @ref isNormalized(), @ref angle(), @ref rotation()
+         *
+         * If the @ref angle() is zero, the returned axis is a NaN vector,
+         * indicating that the axis is arbitrary. In other words, rotating
+         * by a zero angle around any axis will always give back a
+         * @f$ [\boldsymbol 0, 1] @f$ quaternion. To always get a unit vector
+         * back, you do the following, replace it with an X axis for a zero
+         * angle:
+         *
+         * @snippet MagnumMath.cpp Quaternion-axis-nan
+         *
+         * @see @ref isNormalized(), @ref rotation()
          */
         Vector3<T> axis() const;
 
