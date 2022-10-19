@@ -209,7 +209,11 @@ void BezierTest::convert() {
     constexpr QuadraticBezier2D c{a};
     CORRADE_COMPARE(c, b);
 
+#if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = QBezier2D(b);
+#else
     constexpr QBezier2D d(b);
+#endif
     CORRADE_COMPARE(d.x0, a.x0);
     CORRADE_COMPARE(d.x1, a.x1);
     CORRADE_COMPARE(d.y0, a.y0);

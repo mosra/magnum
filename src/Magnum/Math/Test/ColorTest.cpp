@@ -455,7 +455,11 @@ void ColorTest::convert() {
     Color3 c3(a3);
     CORRADE_COMPARE(c3, b3);
 
+#if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d3 = Vec3(b3);
+#else
     constexpr Vec3 d3(b3);
+#endif
     CORRADE_COMPARE(d3.x, a3.x);
     CORRADE_COMPARE(d3.y, a3.y);
     CORRADE_COMPARE(d3.z, a3.z);
@@ -469,7 +473,11 @@ void ColorTest::convert() {
     Color4 c4(a4);
     CORRADE_COMPARE(c4, b4);
 
+#if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d4 = Vec4(b4);
+#else
     constexpr Vec4 d4(b4);
+#endif
     CORRADE_COMPARE(d4.x, a4.x);
     CORRADE_COMPARE(d4.y, a4.y);
     CORRADE_COMPARE(d4.z, a4.z);

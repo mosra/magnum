@@ -274,7 +274,11 @@ void ComplexTest::convert() {
     constexpr Complex c(a);
     CORRADE_COMPARE(c, b);
 
+#if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = Cmpl(b);
+#else
     constexpr Cmpl d(b);
+#endif
     CORRADE_COMPARE(d.re, a.re);
     CORRADE_COMPARE(d.im, a.im);
 

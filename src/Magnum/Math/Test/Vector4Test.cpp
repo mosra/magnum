@@ -216,7 +216,11 @@ void Vector4Test::convert() {
     constexpr Vector4 c(a);
     CORRADE_COMPARE(c, b);
 
+#if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = Vec4(b);
+#else
     constexpr Vec4 d(b);
+#endif
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

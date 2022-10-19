@@ -311,7 +311,11 @@ void MatrixTest::convert() {
     constexpr Matrix3x3 c(b);
     CORRADE_COMPARE(c, b);
 
+#if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = Mat3(b);
+#else
     constexpr Mat3 d(b);
+#endif
     for(std::size_t i = 0; i != 9; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 

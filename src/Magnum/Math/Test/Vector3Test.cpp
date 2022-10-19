@@ -195,7 +195,11 @@ void Vector3Test::convert() {
     constexpr Vector3 c(a);
     CORRADE_COMPARE(c, b);
 
+#if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = Vec3(b);
+#else
     constexpr Vec3 d(b);
+#endif
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
