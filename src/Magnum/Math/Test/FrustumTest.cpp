@@ -298,7 +298,12 @@ void FrustumTest::convert() {
     constexpr Frustum c{a};
     CORRADE_COMPARE(c, b);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = Frstm(b);
+    #else
     constexpr Frstm d(b);
+    #endif
     CORRADE_COMPARE_AS(Corrade::Containers::arrayView(d.data),
         Corrade::Containers::arrayView(a.data),
         Corrade::TestSuite::Compare::Container);

@@ -311,7 +311,12 @@ void QuaternionTest::convert() {
     constexpr Quaternion c{a};
     CORRADE_COMPARE(c, b);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = Quat(b);
+    #else
     constexpr Quat d(b);
+    #endif
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

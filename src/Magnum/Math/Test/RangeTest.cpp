@@ -398,17 +398,32 @@ void RangeTest::convert() {
     CORRADE_COMPARE(i, e);
     CORRADE_COMPARE(j, f);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto k = Dim(d);
+    #else
     constexpr Dim k(d);
+    #endif
     CORRADE_COMPARE(k.offset, a.offset);
     CORRADE_COMPARE(k.size, a.size);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto l = Rect(e);
+    #else
     constexpr Rect l(e);
+    #endif
     CORRADE_COMPARE(l.x, b.x);
     CORRADE_COMPARE(l.y, b.y);
     CORRADE_COMPARE(l.w, b.w);
     CORRADE_COMPARE(l.h, b.h);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto m = Box(f);
+    #else
     constexpr Box m(f);
+    #endif
     CORRADE_COMPARE(m.x, c.x);
     CORRADE_COMPARE(m.y, c.y);
     CORRADE_COMPARE(m.z, c.z);

@@ -296,7 +296,12 @@ void DualQuaternionTest::convert() {
     constexpr DualQuaternion c{a};
     CORRADE_COMPARE(c, b);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = DualQuat(b);
+    #else
     constexpr DualQuat d(b);
+    #endif
     CORRADE_COMPARE(d.re.x, a.re.x);
     CORRADE_COMPARE(d.re.y, a.re.y);
     CORRADE_COMPARE(d.re.z, a.re.z);

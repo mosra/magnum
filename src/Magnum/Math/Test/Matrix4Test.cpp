@@ -369,10 +369,15 @@ void Matrix4Test::convert() {
     constexpr Matrix4 c(b);
     CORRADE_COMPARE(c, b);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = Mat4(b);
+    #else
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
     constexpr
     #endif
     Mat4 d(b);
+    #endif
     for(std::size_t i = 0; i != 16; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 

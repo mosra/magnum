@@ -267,7 +267,12 @@ void DualComplexTest::convert() {
     constexpr DualComplex c{a};
     CORRADE_COMPARE(c, b);
 
+    /* https://developercommunity.visualstudio.com/t/MSVC-1933-fails-to-compile-valid-code-u/10185268 */
+    #if defined(CORRADE_TARGET_MSVC) && CORRADE_CXX_STANDARD >= 202002L
+    constexpr auto d = DualCmpl(b);
+    #else
     constexpr DualCmpl d(b);
+    #endif
     CORRADE_COMPARE(d.re, a.re);
     CORRADE_COMPARE(d.im, a.im);
     CORRADE_COMPARE(d.x, a.x);
