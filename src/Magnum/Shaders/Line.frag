@@ -176,17 +176,15 @@ void main() {
     lowp const vec4 color = materials[materialId].color;
     #endif
 
+    // TODO this comment is plain wrong
     /* Pixels with `abs(centerDistanceSigned) <= [d+w,w]` are foreground,
        pixels with `abs(centerDistanceSigned) > [d+w+s,w+s]` are background,
        smoothstep in between */
     highp const vec2 edge = vec2(halfSegmentLength+0.5*width, width*0.5);
-//     lowp const vec2 factor = smoothstep( // TODO CSE
-//         edge - vec2(smoothness),
-//         edge + vec2(smoothness), abs(centerDistanceSigned));
-//     lowp const vec2 factor = step(edge, abs(centerDistanceSigned));
 
     // TODO better names ffs
     highp vec2 distance_ = vec2(max(abs(centerDistanceSigned.x) - halfSegmentLength, 0.0), abs(centerDistanceSigned.y));
+    // TODO document what is this
     if(hasCap < 0.0) distance_.x = 0.0;
 
     #ifdef CAP_STYLE_SQUARE
@@ -207,7 +205,6 @@ void main() {
     const highp float factorX = factor.x;
     #endif
 
-//     fragmentColor.ba = vec2(0.0);
     fragmentColor = mix(
         #ifdef VERTEX_COLOR
         interpolatedVertexColor*

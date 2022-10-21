@@ -25,6 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/MeshTools/GenerateLines.h"
+
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct GenerateLinesTest: TestSuite::Tester {

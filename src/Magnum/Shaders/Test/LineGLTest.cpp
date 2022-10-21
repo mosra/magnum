@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
@@ -42,6 +43,7 @@
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/Generic.h"
@@ -122,6 +124,7 @@ struct LineGLTest: GL::OpenGLTester {
         GL::Framebuffer _framebuffer{NoCreate};
 };
 
+using namespace Containers::Literals;
 using namespace Math::Literals;
 
 const struct {
@@ -180,27 +183,153 @@ const struct {
     Containers::Array<Vector2> lineSegments;
     Float width;
     Float smoothness;
+    LineGL2D::CapStyle capStyle;
+    bool reverse;
+    Matrix3 transform;
+    bool expectOverlap;
     const char* expected;
 } Render2DData[]{
-    // TODO cap variants, short & long
+    {"line caps default, flat", {InPlaceInit, {
+        {-0.8f,  0.8f}, {-0.8f,  0.8f},
+        {-0.8f,  0.4f}, {-0.4f,  0.4f},
+        {-0.8f,  0.0f}, { 0.0f,  0.0f},
+        {-0.8f, -0.4f}, { 0.4f, -0.4f},
+        {-0.8f, -0.8f}, { 0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, false, {},
+        false, "line-caps-square-flat.tga"},
+    {"line caps square", {InPlaceInit, {
+        {-0.8f,  0.8f}, {-0.8f,  0.8f},
+        {-0.8f,  0.4f}, {-0.4f,  0.4f},
+        {-0.8f,  0.0f}, { 0.0f,  0.0f},
+        {-0.8f, -0.4f}, { 0.4f, -0.4f},
+        {-0.8f, -0.8f}, { 0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Square, false, {},
+        false, "line-caps-square.tga"},
+    {"line caps round", {InPlaceInit, {
+        {-0.8f,  0.8f}, {-0.8f,  0.8f},
+        {-0.8f,  0.4f}, {-0.4f,  0.4f},
+        {-0.8f,  0.0f}, { 0.0f,  0.0f},
+        {-0.8f, -0.4f}, { 0.4f, -0.4f},
+        {-0.8f, -0.8f}, { 0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Round, false, {},
+        false, "line-caps-round.tga"},
+    {"line caps triangle", {InPlaceInit, {
+        {-0.8f,  0.8f}, {-0.8f,  0.8f},
+        {-0.8f,  0.4f}, {-0.4f,  0.4f},
+        {-0.8f,  0.0f}, { 0.0f,  0.0f},
+        {-0.8f, -0.4f}, { 0.4f, -0.4f},
+        {-0.8f, -0.8f}, { 0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Triangle, false, {},
+        false, "line-caps-triangle.tga"},
     {"joint angles, obtuse", {InPlaceInit, {
-        { 0.2f,  0.8f}, {0.2f,  0.4f}, {0.2f,  0.4f}, {0.8f,  0.4f},
-        {-0.4f,  0.4f}, {0.0f,  0.0f}, {0.0f,  0.0f}, {0.8f,  0.0f},
-        {-0.8f, -0.0f}, {0.0f, -0.4f}, {0.0f, -0.4f}, {0.8f, -0.4f},
-        {-0.8f, -0.8f}, {0.0f, -0.8f}, {0.0f, -0.8f}, {0.8f, -0.8f},
-    }}, 10.0f, 0.0f, "joint-angles-obtuse.tga"},
-    // TODO cap variants here also
+        { 0.4f,  0.8f}, {0.4f,  0.4f}, {0.4f,  0.4f}, {0.8f,  0.4f},
+        {-0.2f,  0.4f}, {0.2f,  0.0f}, {0.2f,  0.0f}, {0.8f,  0.0f},
+        {-0.8f, -0.0f}, {0.2f, -0.4f}, {0.2f, -0.4f}, {0.8f, -0.4f},
+        {-0.8f, -0.8f}, {0.2f, -0.8f}, {0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, false, {},
+        false, "joint-angles-obtuse.tga"},
+    {"joint angles, obtuse, reverse direction", {InPlaceInit, {
+        /* Same as "joint angles, obtuse" */
+        { 0.4f,  0.8f}, {0.4f,  0.4f}, {0.4f,  0.4f}, {0.8f,  0.4f},
+        {-0.2f,  0.4f}, {0.2f,  0.0f}, {0.2f,  0.0f}, {0.8f,  0.0f},
+        {-0.8f, -0.0f}, {0.2f, -0.4f}, {0.2f, -0.4f}, {0.8f, -0.4f},
+        {-0.8f, -0.8f}, {0.2f, -0.8f}, {0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, true, {},
+        false, "joint-angles-obtuse.tga"},
+    {"joint angles, obtuse, transformed", {InPlaceInit, {
+        /* Same as "joint angles, obtuse" */
+        { 0.4f,  0.8f}, {0.4f,  0.4f}, {0.4f,  0.4f}, {0.8f,  0.4f},
+        {-0.2f,  0.4f}, {0.2f,  0.0f}, {0.2f,  0.0f}, {0.8f,  0.0f},
+        {-0.8f, -0.0f}, {0.2f, -0.4f}, {0.2f, -0.4f}, {0.8f, -0.4f},
+        {-0.8f, -0.8f}, {0.2f, -0.8f}, {0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, true,
+        Matrix3::scaling({100.0f, 2.0f})*Matrix3::rotation(45.0_degf),
+        false, "joint-angles-obtuse.tga"},
+    {"joint angles, obtuse, round caps", {InPlaceInit, {
+        /* Same as "joint angles, obtuse" */
+        { 0.4f,  0.8f}, {0.4f,  0.4f}, {0.4f,  0.4f}, {0.8f,  0.4f},
+        {-0.2f,  0.4f}, {0.2f,  0.0f}, {0.2f,  0.0f}, {0.8f,  0.0f},
+        {-0.8f, -0.0f}, {0.2f, -0.4f}, {0.2f, -0.4f}, {0.8f, -0.4f},
+        {-0.8f, -0.8f}, {0.2f, -0.8f}, {0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Round, false, {},
+        false, "joint-angles-obtuse-round-caps.tga"},
+    {"joint angles, obtuse, round caps, reverse direction", {InPlaceInit, {
+        /* Same as "joint angles, obtuse" */
+        { 0.4f,  0.8f}, {0.4f,  0.4f}, {0.4f,  0.4f}, {0.8f,  0.4f},
+        {-0.2f,  0.4f}, {0.2f,  0.0f}, {0.2f,  0.0f}, {0.8f,  0.0f},
+        {-0.8f, -0.0f}, {0.2f, -0.4f}, {0.2f, -0.4f}, {0.8f, -0.4f},
+        {-0.8f, -0.8f}, {0.2f, -0.8f}, {0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Round, true, {},
+        false, "joint-angles-obtuse-round-caps.tga"},
     {"joint angles, acute", {InPlaceInit, {
-        { 0.4f,  0.8f}, {0.0f,  0.4f}, {0.0f,  0.4f}, {0.8f,  0.4f},
-        { 0.8f,  0.0f}, {0.0f, -0.4f}, {0.0f, -0.4f}, {0.8f, -0.4f},
-        { 0.8f, -0.8f}, {0.0f, -0.8f}, {0.0f, -0.8f}, {0.8f, -0.8f},
-    }}, 10.0f, 0.0f, "joint-angles-acute.tga"},
-    // TODO cap variants here also
-    {"joint angles, acute, short", {InPlaceInit, {
-        { -0.25f, 0.45f}, {-0.3f, 0.4f}, {-0.3f, 0.4f}, {0.6f, 0.4f},
-        { -0.25f, -0.45f}, {-0.3f, -0.4f}, {-0.3f, -0.4f}, {0.6f, -0.4f},
-    }}, 20.0f, 0.0f, "joint-angles-acute-short.tga"},
-    // TODO cap variants here also
+        { 0.1f,  0.8f}, {-0.2f,  0.5f}, {-0.2f,  0.5f}, {0.8f,  0.5f},
+        { 0.6f,  0.2f}, {-0.2f, -0.2f}, {-0.2f, -0.2f}, {0.8f, -0.2f},
+        { 0.6f, -0.5f}, {-0.2f, -0.8f}, {-0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, false, {},
+        false, "joint-angles-acute.tga"},
+    // TODO joint styles
+    {"joint angles, acute, reverse direction", {InPlaceInit, {
+        /* Same as "joint angles, acute" */
+        { 0.1f,  0.8f}, {-0.2f,  0.5f}, {-0.2f,  0.5f}, {0.8f,  0.5f},
+        { 0.6f,  0.2f}, {-0.2f, -0.2f}, {-0.2f, -0.2f}, {0.8f, -0.2f},
+        { 0.6f, -0.5f}, {-0.2f, -0.8f}, {-0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, true, {},
+        false, "joint-angles-acute.tga"},
+    {"joint angles, acute, transformed", {InPlaceInit, {
+        /* Same as "joint angles, transformed" */
+        { 0.1f,  0.8f}, {-0.2f,  0.5f}, {-0.2f,  0.5f}, {0.8f,  0.5f},
+        { 0.6f,  0.2f}, {-0.2f, -0.2f}, {-0.2f, -0.2f}, {0.8f, -0.2f},
+        { 0.6f, -0.5f}, {-0.2f, -0.8f}, {-0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, false,
+        Matrix3::scaling({100.0f, 2.0f})*Matrix3::rotation(45.0_degf),
+        false, "joint-angles-acute.tga"},
+    {"joint angles, acute, round caps", {InPlaceInit, {
+        /* Same as "joint angles, acute" */
+        { 0.1f,  0.8f}, {-0.2f,  0.5f}, {-0.2f,  0.5f}, {0.8f,  0.5f},
+        { 0.6f,  0.2f}, {-0.2f, -0.2f}, {-0.2f, -0.2f}, {0.8f, -0.2f},
+        { 0.6f, -0.5f}, {-0.2f, -0.8f}, {-0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Round, false, {},
+        false, "joint-angles-acute-round-caps.tga"},
+    {"joint angles, acute, round caps, reverse direction", {InPlaceInit, {
+        /* Same as "joint angles, acute" */
+        { 0.1f,  0.8f}, {-0.2f,  0.5f}, {-0.2f,  0.5f}, {0.8f,  0.5f},
+        { 0.6f,  0.2f}, {-0.2f, -0.2f}, {-0.2f, -0.2f}, {0.8f, -0.2f},
+        { 0.6f, -0.5f}, {-0.2f, -0.8f}, {-0.2f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Round, true, {},
+        false, "joint-angles-acute-round-caps.tga"},
+    {"joint angles, short cap", {InPlaceInit, {
+        {-0.3f, 0.6f}, {-0.6f, 0.6f}, {-0.6f, 0.6f}, {-0.6f, -0.6f}, {-0.6f, -0.6f}, {-0.4f, -0.6f},
+        { 0.6f, 0.6f}, {0.5f, 0.6f}, {0.5f, 0.6f}, {0.5f, -0.6f}, {0.5f, -0.6f}, {0.51f, -0.6f},
+    }}, 20.0f, 1.0f, LineGL2D::CapStyle::Round, false, {},
+        true, "joint-angles-short-cap.tga"},
+    {"joint angles, short cap, reversed", {InPlaceInit, {
+        {-0.3f, 0.6f}, {-0.6f, 0.6f}, {-0.6f, 0.6f}, {-0.6f, -0.6f}, {-0.6f, -0.6f}, {-0.4f, -0.6f},
+        { 0.6f, 0.6f}, {0.5f, 0.6f}, {0.5f, 0.6f}, {0.5f, -0.6f}, {0.5f, -0.6f}, {0.51f, -0.6f},
+    }}, 20.0f, 1.0f, LineGL2D::CapStyle::Round, true, {}, // TODO no difference
+        true, "joint-angles-short-cap.tga"},
+    {"joint angles, short cap, acute", {InPlaceInit, {
+        { 0.6f, 0.8f}, {0.0f, 0.6f}, {0.0f, 0.6f}, {0.8f, 0.6f},
+        { 0.6f, 0.2f}, {0.0f, 0.05f}, {0.0f, 0.05f}, {0.8f, 0.05f},
+        { 0.6f, -0.35f}, {0.0f, -0.45f}, {0.0f, -0.45f}, {0.8f, -0.45f},
+        { 0.6f, -0.8f}, {0.0f, -0.8f}, {0.0f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, false, {},
+        true, "joint-angles-short-cap-acute.tga"},
+    {"joint angles, short cap, acute reverse direction", {InPlaceInit, {
+        /* Same as "joint angles, short cap, acute" */
+        { 0.6f, 0.8f}, {0.0f, 0.6f}, {0.0f, 0.6f}, {0.8f, 0.6f},
+        { 0.6f, 0.2f}, {0.0f, 0.05f}, {0.0f, 0.05f}, {0.8f, 0.05f},
+        { 0.6f, -0.35f}, {0.0f, -0.45f}, {0.0f, -0.45f}, {0.8f, -0.45f},
+        { 0.6f, -0.8f}, {0.0f, -0.8f}, {0.0f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 0.0f, {}, true, {},
+        true, "joint-angles-short-cap-acute.tga"},
+    {"joint angles, short cap, acute, round", {InPlaceInit, {
+        /* Same as "joint angles, short cap, acute" */
+        { 0.6f, 0.8f}, {0.0f, 0.6f}, {0.0f, 0.6f}, {0.8f, 0.6f},
+        { 0.6f, 0.2f}, {0.0f, 0.05f}, {0.0f, 0.05f}, {0.8f, 0.05f},
+        { 0.6f, -0.35f}, {0.0f, -0.45f}, {0.0f, -0.45f}, {0.8f, -0.45f},
+        { 0.6f, -0.8f}, {0.0f, -0.8f}, {0.0f, -0.8f}, {0.8f, -0.8f},
+    }}, 10.0f, 1.0f, LineGL2D::CapStyle::Round, false, {},
+        true, "joint-angles-short-cap-acute-round.tga"},
 };
 
 LineGLTest::LineGLTest() {
@@ -655,7 +784,7 @@ void LineGLTest::renderTeardown() {
     _color = GL::Renderbuffer{NoCreate};
 }
 
-template<UnsignedInt dimensions> GL::Mesh generateLineMesh(Containers::ArrayView<const VectorTypeFor<dimensions, Float>> lineSegments) {
+template<UnsignedInt dimensions> GL::Mesh generateLineMesh(Containers::StridedArrayView1D<const VectorTypeFor<dimensions, Float>> lineSegments) {
     struct Vertex {
         VectorTypeFor<dimensions, Float> previousPosition;
         VectorTypeFor<dimensions, Float> position;
@@ -663,7 +792,8 @@ template<UnsignedInt dimensions> GL::Mesh generateLineMesh(Containers::ArrayView
     };
 
     CORRADE_INTERNAL_ASSERT(lineSegments.size() % 2 == 0);
-    Containers::Array<Vertex> vertices{NoInit, lineSegments.size()*2};
+    /* Not NoInit, because we're subsequently checking for NaNs */
+    Containers::Array<Vertex> vertices{ValueInit, lineSegments.size()*2};
     for(std::size_t i = 0; i != lineSegments.size(); ++i)
         vertices[i*2 + 0].position = vertices[i*2 + 1].position = lineSegments[i];
 
@@ -766,6 +896,13 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
         .setFlags(flag)};
     shader.setViewportSize(Vector2{RenderSize});
 
+    /* Enabling blending and a half-transparent color -- there should be no
+       overlaps */
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(
+        GL::Renderer::BlendFunction::One,
+        GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+
     if(flag == LineGL2D::Flag{}) {
         shader.draw(lines);
     }
@@ -788,6 +925,8 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
     }
     #endif
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -817,19 +956,30 @@ template<LineGL2D::Flag flag> void LineGLTest::render2D() {
     }
     #endif
 
-    GL::Mesh lines = generateLineMesh<2>(data.lineSegments);
+    Containers::Array<Vector2> transformedLineSegments{NoInit, data.lineSegments.size()};
+    Utility::copy(data.lineSegments, transformedLineSegments);
+    for(Vector2& i: transformedLineSegments)
+        i = data.transform.transformPoint(i);
+
+    GL::Mesh lines = generateLineMesh<2>(
+        data.reverse ? stridedArrayView(transformedLineSegments).flipped<0>() : transformedLineSegments);
 
     LineGL2D shader{LineGL2D::Configuration{}
-        .setFlags(flag)};
+        .setFlags(flag)
+        .setCapStyle(data.capStyle)};
     shader.setViewportSize(Vector2{RenderSize});
     shader
         .setWidth(data.width)
         .setSmoothness(data.smoothness)
-        // .setBackgroundColor(0xff0000ff_rgbaf)
-        // .setColor(0x557766_rgbf)
-        ;
+        .setTransformationProjectionMatrix(data.transform.inverted())
+        .setColor(0x80808080_rgbaf);
 
-    // TODO test with blending -- there should be no self-intersection
+    /* Enabling blending and a half-transparent color -- there should be no
+       overlaps */
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(
+        GL::Renderer::BlendFunction::One,
+        GL::Renderer::BlendFunction::OneMinusSourceAlpha);
 
     if(flag == LineGL2D::Flag{}) {
         shader.draw(lines);
@@ -854,17 +1004,27 @@ template<LineGL2D::Flag flag> void LineGLTest::render2D() {
     #endif
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
+
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager}));
+
+    {
+        CORRADE_EXPECT_FAIL_IF(data.expectOverlap, "Rendered with overlapping geometry at the moment.");
+        CORRADE_COMPARE(Math::max(image.pixels<Color4ub>().asContiguous()), 0x888888ff_rgba);
+    }
+
 }
 
 }}}}

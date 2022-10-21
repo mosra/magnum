@@ -194,6 +194,7 @@ in highp mat4 instancedTransformationMatrix;
 
 /* Outputs */
 
+// TODO document, maybe join together?
 out highp vec2 centerDistanceSigned;
 out highp float halfSegmentLength;
 out lowp float hasCap;
@@ -264,12 +265,14 @@ void main() {
     highp const vec2 neighborDirection = (gl_VertexID & 2) == 0 ?
         transformedPosition - transformedPreviousPosition :
         transformedNextPosition - transformedPosition;
+    highp const vec2 firstPoint = (gl_VertexID & 2) == 0 ?
+        transformedPosition : transformedPreviousPosition;
+    highp const vec2 neighborEndPoint = (gl_VertexID & 2) == 0 ?
+        transformedPreviousPosition : transformedNextPosition;
 
     highp const float directionLength = length(direction);
-    // TODO since this is used just for AA, set to a special value in case of
-    //  a line joint that shouldn't be AAd?
     halfSegmentLength = length(direction*0.5*viewportSize/2.0);
-    // TODO zero-sized lines better?
+    // TODO zero-sized lines better? average from prev/next?
     highp const vec2 directionNormalized = directionLength == 0.0 ? vec2(1.0, 0.0) : direction/directionLength;
 
     /* Line width includes also twice the smoothness radius, some extra padding
@@ -282,7 +285,7 @@ void main() {
        position is always either `A` or `B` for all four quad corners, the `d`
        comes in the direction attribute, `pd`/`nd` in neighborDirection and
        the vertex order, which is (4n +) 0/1/2/3, in gl_VertexID.
-
+    // TODO redo all this here, the whole comment is outdated
             0-d->-------2-d->
             |          / \
             A---------B   nd
@@ -291,7 +294,6 @@ void main() {
                      \   \    .
                       nd   .   .
                         v   C    . */
-    // TODO redo all this here
     /* The perpendicular direction is rotating 90° counterclockwise. Which
        means for points 1 and 3 (i.e., gl_VertexID not divisible by 2) we need
        to negate it to point the other way. */
@@ -337,60 +339,69 @@ void main() {
 
        For points 0 and 1 it'll be in the negative direction `d`, for points 2
        and 3 in positive `d`. */
-    // TODO make the 0.7 configurable
-    if(all(isnan(neighborDirection)) || dot(normalize(direction), normalize(neighborDirection)) < -0.7) {
+    if(all(isnan(neighborDirection)) ||
+        /* Cap limit */
+        // TODO make the 0.7 configurable; no actually drop it altogether
+        dot(normalize(direction), normalize(neighborDirection)) < -0.99 ||
+        /* Neighbor segment too short */
+        // TODO why the 2*?? why the square??
+        (abs(dot(perpendicular(normalize(direction))*viewportSize/2.0, (neighborEndPoint - firstPoint)*viewportSize/2.0)) < 2*edgeDistance*edgeDistance &&
+            // TODO this is a wrong attempt to handle colinear, needs to
+            //  calculate proper distance from a line segment instead or do
+            //  something else entirely ffs
+            dot(direction, neighborDirection) <= 0.0)
+    ) {
         edgeDirection =
             (directionNormalized*capSign +
             perpendicular(directionNormalized)*edgeSign)*edgeDistance*2.0/viewportSize
             ;
         centerDistanceSigned.x = (edgeDistance + halfSegmentLength)*capSign;
-        hasCap = 1.0; // TODO uhhhhhhh some extra offset for the cap here??
 
     /* Otherwise we need to create a tight joint with the neighboring line
        segment, as shown with the points 2 and 3. Given normalized direction
        `d` and neighbor direction `nd`, `normalized(d + nd)` is the "average"
        direction of the two and `perpendicular(normalized(d + nd))` gives us
-       the direction from B to 2:
+       the direction from B to 2 (or from 3 to B):
 
-          --------+----2
-                  |  / alpha/2
-                w | / j
-                  |/
-            --d->-B
-         alpha/2 / \
-                /   nd
-               /     v
-          ----3
+           --------+---2
+                   | α/
+                 w | / j
+                   |/
+        +_-----d->-B
+           -_    α/α\
+              -_ /   nd
+         d + nd /-_   v
+           ----3    -_ \
+                       -+
 
-       With `alpha` being the angle between `d` and `nd`, `alpha/2` appears in
-       two right triangles and the following holds, `w` being the edge distance
-       from above, and `j` being the length that's needed to scale  `perpendicular(normalized(d + nd))` to get point 2:
+       With `2α` being the angle between `d` and `nd`, `α` appears in two right
+       triangles and the following holds, `w` being the edge distance from
+       above, and `j` being the length that's needed to scale
+       `perpendicular(normalized(d + nd))` to get point 2:
 
-                       |d + nd|    w               2 w
-        sin(alpha/2) = -------- = ---   -->  j = --------
-                        2 |d|      j             |d + nd|
+                 |d + nd|    w               2 w
+        sin(α) = -------- = ---   -->  j = --------
+                  2 |d|      j             |d + nd|
 
        Point 3 is then just in the opposite direction; for the other side it's
        done equivalently. */
     } else {
-//         edgeDirection = perpendicular(directionNormalized)*edgeSign*edgeDistance*2.0/viewportSize;
-
         const highp vec2 averageDirection = capSign*(directionNormalized + normalize(neighborDirection));
         const highp float averageDirectionLength = length(averageDirection);
         const highp float j = 2.0*edgeDistance/averageDirectionLength;
         edgeDirection = (normalize(perpendicular(averageDirection))*capSign*edgeSign*j)*2.0/viewportSize;
 
-//         const float ex = sqrt((4.0*edgeDistance*edgeDistance/(averageDirectionLength*averageDirectionLength)) - edgeDistance*edgeDistance);
         const highp float ex = sqrt(j*j - edgeDistance*edgeDistance);
 
-//         edgeDirection = -perpendicular(averageDirection)*(1.0*edgeDistance*edgeSign*capSign/averageDirectionLength)
-//             *2.0/viewportSize;
-
-        // TODO the ex should be included in here, why it isn't??
-        centerDistanceSigned.x = halfSegmentLength*capSign;// + ex*sign(dot(direction*capSign, (perpendicular(averageDirection))*capSign*edgeSign));
-
-        hasCap = -1.0; // TODO uhhh some extra offset here so 0 is in the center?
+        centerDistanceSigned.x = halfSegmentLength*capSign + ex*sign(dot(direction*capSign, (perpendicular(averageDirection))*edgeSign));
     }
+
+    /* Cap is there only if neighbors are NaN, otherwise a joint is rendered */
+    // TODO uhhhhh document why the sign comparison
+    if(all(isnan(neighborDirection)) || sign(centerDistanceSigned.x) != sign(halfSegmentLength*capSign))
+        hasCap = abs(centerDistanceSigned.x);
+    else
+        hasCap = -abs(centerDistanceSigned.x);
 
     gl_Position.xyzw = vec4(transformedPosition + edgeDirection, 0.0, 1.0);
     #elif defined(THREE_DIMENSIONS)
