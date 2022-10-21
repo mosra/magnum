@@ -706,6 +706,7 @@ See also:
     information.
 -   The `FindSDL2.cmake` module now looks for `SDL2-static` as well (see
     [mosra/magnum#594](https://github.com/mosra/magnum/pull/594))
+-   Fixed a typo in a CMake option name (see [mosra/magnum#599](https://github.com/mosra/magnum/pull/599))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
