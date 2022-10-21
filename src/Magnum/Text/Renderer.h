@@ -78,6 +78,12 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          */
         UnsignedInt capacity() const { return _capacity; }
 
+        /**
+         * @brief Font size
+         * @m_since_latest
+         */
+        Float fontSize() const { return _fontSize; }
+
         /** @brief Rectangle spanning the rendered text */
         Range2D rectangle() const { return _rectangle; }
 
@@ -135,7 +141,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
     private:
         AbstractFont& font;
         const GlyphCache& cache;
-        Float size;
+        Float _fontSize;
         Alignment _alignment;
         UnsignedInt _capacity;
         Range2D _rectangle;

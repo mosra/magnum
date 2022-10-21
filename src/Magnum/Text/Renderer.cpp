@@ -297,7 +297,7 @@ void AbstractRenderer::bufferUnmapImplementationDefault(GL::Buffer& buffer)
     #endif
 }
 
-AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer{GL::Buffer::TargetHint::Array}, _indexBuffer{GL::Buffer::TargetHint::ElementArray}, font(font), cache(cache), size(size), _alignment(alignment), _capacity(0) {
+AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer{GL::Buffer::TargetHint::Array}, _indexBuffer{GL::Buffer::TargetHint::ElementArray}, font(font), cache(cache), _fontSize{size}, _alignment(alignment), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -362,7 +362,7 @@ void AbstractRenderer::render(const std::string& text) {
     /* Render vertex data */
     std::vector<Vertex> vertexData;
     _rectangle = {};
-    std::tie(vertexData, _rectangle) = renderVerticesInternal(font, cache, size, text, _alignment);
+    std::tie(vertexData, _rectangle) = renderVerticesInternal(font, cache, _fontSize, text, _alignment);
 
     const UnsignedInt glyphCount = vertexData.size()/4;
     const UnsignedInt vertexCount = glyphCount*4;

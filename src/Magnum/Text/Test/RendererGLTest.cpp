@@ -274,6 +274,7 @@ void RendererGLTest::mutableText() {
     Text::Renderer2D renderer(font, nullGlyphCache, 0.25f);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
+    CORRADE_COMPARE(renderer.fontSize(), 0.25f);
     CORRADE_COMPARE(renderer.rectangle(), Range2D());
 
     /* Reserve some capacity */

@@ -546,6 +546,10 @@ See also:
     the color map offset was not a part of per-draw data, but rather material
     data.
 
+@subsubsection changelog-latest-changes-text Text library
+
+-   Added @ref Text::Renderer::fontSize()
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   A changed signature of the @ref Trade::AbstractImporter::doOpenData(Containers::Array<char>&&, DataFlags)
