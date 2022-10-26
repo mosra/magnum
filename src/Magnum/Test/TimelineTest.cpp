@@ -47,23 +47,38 @@ void TimelineTest::test() {
     Timeline timeline;
     CORRADE_COMPARE(timeline.previousFrameTime(), 0.0f);
     CORRADE_COMPARE(timeline.previousFrameDuration(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameTime(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameDuration(), 0.0f);
 
     /* And it continues to be 0 */
     Utility::System::sleep(50);
     CORRADE_COMPARE(timeline.previousFrameTime(), 0.0f);
     CORRADE_COMPARE(timeline.previousFrameDuration(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameTime(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameDuration(), 0.0f);
 
     /* There's no previous frame right after the start */
     timeline.start();
     CORRADE_COMPARE(timeline.previousFrameTime(), 0.0f);
     CORRADE_COMPARE(timeline.previousFrameDuration(), 0.0f);
 
-    /* Still no previous frame */
+    /* Still no previous frame, but current frame starts growing */
     Utility::System::sleep(50);
     CORRADE_COMPARE(timeline.previousFrameTime(), 0.0f);
     CORRADE_COMPARE(timeline.previousFrameDuration(), 0.0f);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.05f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.05f + 0.05f,
+        TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f + 0.05f,
+        TestSuite::Compare::Less);
+    CORRADE_COMPARE_WITH(timeline.currentFrameTime(),
+        timeline.currentFrameDuration(),
+        TestSuite::Compare::around(0.01f));
 
-    /* Now it is */
+    /* Now the previous frame is there */
     timeline.nextFrame();
     Float firstFrameTime = timeline.previousFrameTime();
     Float firstFrameDuration = timeline.previousFrameDuration();
@@ -79,10 +94,19 @@ void TimelineTest::test() {
         timeline.previousFrameTime(),
         TestSuite::Compare::LessOrEqual);
 
-    /* And it doesn't change until another nextFrame() call */
+    /* And it doesn't change until another nextFrame() call. Current frame
+       grows again. */
     Utility::System::sleep(50);
     CORRADE_COMPARE(timeline.previousFrameTime(), firstFrameTime);
     CORRADE_COMPARE(timeline.previousFrameDuration(), firstFrameDuration);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.10f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.10f + 0.05f,
+        TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f + 0.05f,
+        TestSuite::Compare::Less);
 
     /* Third frame being measured now */
     timeline.nextFrame();
@@ -97,10 +121,18 @@ void TimelineTest::test() {
     CORRADE_COMPARE_AS(secondFrameDuration, 0.05f + 0.05f,
         TestSuite::Compare::Less);
 
-    /* And it doesn't change now either */
+    /* Previous frame doesn't change now either, current grows */
     Utility::System::sleep(50);
     CORRADE_COMPARE(timeline.previousFrameTime(), secondFrameTime);
     CORRADE_COMPARE(timeline.previousFrameDuration(), secondFrameDuration);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.15f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.15f + 0.05f,
+        TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f + 0.05f,
+        TestSuite::Compare::Less);
 
     /* Calling start() resets the time to 0 */
     timeline.start();
@@ -109,6 +141,15 @@ void TimelineTest::test() {
 
     /* And it continues to be counted */
     Utility::System::sleep(50);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.05f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameTime(), 0.05f + 0.05f,
+        TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f,
+        TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(timeline.currentFrameDuration(), 0.05f + 0.05f,
+        TestSuite::Compare::Less);
+
     timeline.nextFrame();
     CORRADE_COMPARE_AS(timeline.previousFrameTime(), 0.05f,
         TestSuite::Compare::GreaterOrEqual);
@@ -126,12 +167,16 @@ void TimelineTest::test() {
     timeline.stop();
     CORRADE_COMPARE(timeline.previousFrameTime(), 0.0f);
     CORRADE_COMPARE(timeline.previousFrameDuration(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameTime(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameDuration(), 0.0f);
 
     /* And it continues to be 0 */
     Utility::System::sleep(50);
     timeline.nextFrame();
     CORRADE_COMPARE(timeline.previousFrameTime(), 0.0f);
     CORRADE_COMPARE(timeline.previousFrameDuration(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameTime(), 0.0f);
+    CORRADE_COMPARE(timeline.currentFrameDuration(), 0.0f);
 }
 
 }}}
