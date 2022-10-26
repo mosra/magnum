@@ -61,4 +61,19 @@ Float Timeline::previousFrameTime() const {
     return duration_cast<microseconds>(_previousFrameTime-_startTime).count()/1e6f;
 }
 
+Float Timeline::currentFrameDuration() const {
+    if (!running) return 0;
+
+    auto now = high_resolution_clock::now();
+    auto duration = UnsignedInt(duration_cast<microseconds>(now-_previousFrameTime).count());
+    return duration/1e6f;
+}
+
+Float Timeline::currentFrameTime() const {
+    if (!running) return 0;
+
+    auto now = high_resolution_clock::now();
+    return duration_cast<microseconds>(now-_startTime).count()/1e6f;
+}
+
 }

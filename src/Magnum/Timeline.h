@@ -134,6 +134,22 @@ class MAGNUM_EXPORT Timeline {
          */
         Float previousFrameDuration() const { return _previousFrameDuration; }
 
+        /**
+         * @brief Time since the last frame (in seconds)
+         *
+         * Returns time elapsed since nextFrame() was called. If the timeline is
+         * stopped, the function returns @cpp 0.0f @ce.
+         */
+        Float currentFrameDuration() const;
+
+        /**
+         * @brief Present time (in seconds)
+         *
+         * Returns time elapsed since start() was called. If the timeline is
+         * stopped, the function returns @cpp 0.0f @ce.
+         */
+        Float currentFrameTime() const;
+
     private:
         std::chrono::high_resolution_clock::time_point _startTime;
         std::chrono::high_resolution_clock::time_point _previousFrameTime;
