@@ -41,6 +41,7 @@ corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES MagnumTestLib)
 # Prefixed with project name to avoid conflicts with TagsTest in Corrade
 corrade_add_test(MagnumTagsTest TagsTest.cpp LIBRARIES Magnum)
+corrade_add_test(TimelineTest TimelineTest.cpp LIBRARIES Magnum)
 
 # Prefixed with project name to avoid conflicts with VersionTest in Corrade and
 # other repos
