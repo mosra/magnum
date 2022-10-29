@@ -366,6 +366,11 @@ See also:
 -   Removed unnecessary @ref std::string usage from certain
     @relativeref{Corrade,Utility::ConfigurationValue} specializations (see
     [mosra/magnum#582](https://github.com/mosra/magnum/pull/582))
+-   Added @ref Timeline::currentFrameTime() and
+    @relativeref{Timeline,currentFrameDuration()} counterparts to
+    @relativeref{Timeline,previousFrameTime()} and
+    @relativeref{Timeline,previousFrameDuration()} (see
+    [mosra/magnum#604](https://github.com/mosra/magnum/pull/604))
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 

@@ -221,6 +221,8 @@ Are the below lists missing your name or something's wrong?
     Vcpkg packages
 -   **Siim Kallas** ([\@seemk](https://github.com/seemk)) ---
     @ref Platform::Sdl2Application improvements, bugfixes
+-   **Stanislaw Halik** ([\@sthalik](https://github.com/sthalik)) ---
+    @ref Timeline additions
 -   **Steeve Morin** ([\@steeve](https://github.com/steeve)) --- iOS
     buildsystem improvements
 -   **Stefan Wasilewski** ([\@smw](https://github.com/smw)) --- macOS port

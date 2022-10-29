@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2022 Stanislaw Halik <sthalik@misaki.pl>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -127,6 +128,7 @@ class MAGNUM_EXPORT Timeline {
 
         /**
          * @brief Current time in seconds
+         * @m_since_latest
          *
          * Returns time elapsed since @ref start() was called. Never smaller
          * than @ref previousFrameTime(). If the timeline  is stopped, the
@@ -136,6 +138,7 @@ class MAGNUM_EXPORT Timeline {
 
         /**
          * @brief Time since the last frame in seconds
+         * @m_since_latest
          *
          * Returns time elapsed since @ref start() or @ref nextFrame() was
          * called, whichever happened last. Compared to
