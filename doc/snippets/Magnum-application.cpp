@@ -23,42 +23,50 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Timeline.h"
+#include "Magnum/Platform/Sdl2Application.h"
+#include "Magnum/Timeline.h"
 
-#include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/System.h>
+using namespace Magnum;
 
-#include "Magnum/Magnum.h"
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
-using namespace std::chrono;
+class MyApplication: public Platform::Application {
+    public:
+        explicit MyApplication(const Arguments& arguments);
 
-namespace Magnum {
+        void drawEvent();
 
-void Timeline::start() {
-    _running = true;
-    _startTime = high_resolution_clock::now();
-    _previousFrameTime = _startTime;
-    _previousFrameDuration = 0;
+    private:
+        Timeline _timeline;
+};
+
+/* [Timeline-usage] */
+MyApplication::MyApplication(const Arguments& arguments):
+    Platform::Application{arguments, NoCreate}
+{
+    DOXYGEN_ELLIPSIS()
+
+    // Enable VSync or set minimal loop period for the application, if
+    // needed/applicable ...
+
+    _timeline.start();
 }
 
-void Timeline::stop() {
-    _running = false;
-    _startTime = high_resolution_clock::time_point();
-    _previousFrameTime = _startTime;
-    _previousFrameDuration = 0;
+void MyApplication::drawEvent() {
+    DOXYGEN_ELLIPSIS()
+
+    // Distance of object traveling at speed of 15 units per second
+    Float distance = 15.0f*_timeline.previousFrameDuration(); DOXYGEN_IGNORE(static_cast<void>(distance);)
+
+    // Move an object, draw it ...
+
+    swapBuffers();
+    redraw();
+    _timeline.nextFrame();
 }
+/* [Timeline-usage] */
 
-void Timeline::nextFrame() {
-    if(!_running) return;
-
-    auto now = high_resolution_clock::now();
-    auto duration = UnsignedInt(duration_cast<microseconds>(now-_previousFrameTime).count());
-    _previousFrameDuration = duration/1e6f;
-    _previousFrameTime = now;
-}
-
-Float Timeline::previousFrameTime() const {
-    return duration_cast<microseconds>(_previousFrameTime-_startTime).count()/1e6f;
-}
-
+int main() {
+    return 0; /* on iOS SDL redefines main to SDL_main and then return is needed */
 }

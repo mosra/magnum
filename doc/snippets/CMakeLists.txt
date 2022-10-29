@@ -192,6 +192,7 @@ if(MAGNUM_WITH_SDL2APPLICATION AND MAGNUM_TARGET_GL)
     target_link_libraries(getting-started-blue PRIVATE MagnumSdl2Application)
 
     add_library(snippets-MagnumPlatform STATIC
+        Magnum-application.cpp
         MagnumPlatform.cpp
         MagnumGL-application.cpp)
     target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)

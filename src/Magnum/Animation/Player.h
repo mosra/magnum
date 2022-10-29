@@ -175,8 +175,10 @@ never from @ref pause(), @ref stop() or any other API.
 For managing global application you can use @ref Timeline, @ref std::chrono
 APIs or any other type that supports basic arithmetic. The time doesn't have to
 be monotonic or have constant speed, but note that non-continuous and backward
-time jumps may have worse performance than going monotonically forward. See
-@ref Animation-Player-time-type "below" for more information about using
+time jumps may have worse performance than going monotonically forward. With
+the @ref Timeline in particular, it's recommended to never call
+@ref Timeline::stop() but control the player start/pause/stop state instead.
+See @ref Animation-Player-time-type "below" for more information about using
 different time types.
 
 @snippet MagnumAnimation.cpp Player-usage-playback

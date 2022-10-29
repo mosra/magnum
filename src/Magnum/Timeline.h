@@ -39,20 +39,20 @@ namespace Magnum {
 /**
 @brief Timeline
 
-Keeps track of time delta between frames. Can be used as source for animation
-speed computations.
+Keeps track of time delta between frames. Can be used for advancing animation
+playback.
 
 @section Timeline-usage Basic usage
 
-Construct the timeline on initialization so the instance is available for
-whole lifetime of the application. Call @ref start() before first draw event is
-performed, after everything is properly initialized.
+Construct the timeline on initialization so the instance is available for the
+whole lifetime of the application. Call @ref start() after the application
+state is fully initialized and before the first draw event is performed.
 
-@note When timeline is started, it immediately starts measuring frame time.
-    Be prepared that time of first frame will be much longer than time of
-    following frames. It mainly depends on where you called @ref start() in
-    your initialization routine, but can be also affected by driver- and
-    GPU-specific lazy texture binding, shader recompilations etc.
+@note When the timeline is started, it immediately starts measuring frame time.
+    Be prepared that time of the first frame may be much longer than time of
+    the following frames. It mainly depends on where you called @ref start() in
+    your initialization routine, but can be also affected by various
+    driver-specific operations that are done lazily during the first frame.
 
 In your draw event implementation don't forget to call @ref nextFrame() after
 buffer swap. You can use @ref previousFrameDuration() to compute animation
@@ -60,52 +60,38 @@ speed. To limit application framerate you can use
 @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" or
 @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()".
 Note that on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the framerate is
-governed by browser and you can't do anything about it.
+governed by the browser and you can't do anything about it.
 
 Example usage:
 
-@code{.cpp}
-MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
-    // Initialization ...
+@snippet Magnum-application.cpp Timeline-usage
 
-    // Enable VSync or set minimal loop period for the application, if
-    // needed/applicable ...
-
-    timeline.start();
-}
-
-void MyApplication::drawEvent() {
-    // Distance of object travelling at speed of 15 units per second
-    Float distance = 15.0f*timeline.previousFrameDuration();
-
-    // Move object, draw ...
-
-    swapBuffers();
-    redraw();
-    timeline.nextFrame();
-}
-@endcode
+Apart from directly using the returned time values, the @ref Timeline can also
+be used together with @ref Animation::Player for a more controlled behavior. In
+that case, it's recommended to never call @ref Timeline::stop() but control the
+player start/pause/stop state instead. See @ref Animation::Player documentation
+for more information.
 */
 class MAGNUM_EXPORT Timeline {
     public:
         /**
          * @brief Constructor
          *
-         * Creates stopped timeline.
+         * Creates a stopped timeline.
          * @see @ref start()
          */
-        explicit Timeline(): _previousFrameDuration(0), running(false) {}
+        explicit Timeline() = default;
 
         /**
-         * @brief Start timeline
+         * @brief Start the timeline
          *
-         * Sets previous frame time and duration to @cpp 0 @ce.
+         * Sets previous frame time and duration to @cpp 0.0f @ce.
          * @see @ref stop(), @ref previousFrameDuration()
          */
         void start();
 
         /**
-         * @brief Stop timeline
+         * @brief Stop the timeline
          *
          * @see @ref start(), @ref nextFrame()
          */
@@ -114,32 +100,32 @@ class MAGNUM_EXPORT Timeline {
         /**
          * @brief Advance to next frame
          *
-         * @note This function does nothing if the timeline is stopped.
+         * Does nothing if the timeline is stopped.
          * @see @ref stop()
          */
         void nextFrame();
 
         /**
-         * @brief Time at previous frame (in seconds)
+         * @brief Time at previous frame in seconds
          *
-         * Returns time elapsed since start() was called. If the timeline is
-         * stopped, the function returns @cpp 0.0f @ce.
+         * Returns time elapsed since @ref start() was called. If the timeline
+         * is stopped, the function returns @cpp 0.0f @ce.
          */
         Float previousFrameTime() const;
 
         /**
-         * @brief Duration of previous frame (in seconds)
+         * @brief Duration of previous frame in seconds
          *
          * If the timeline is stopped, the function returns @cpp 0.0f @ce.
          */
         Float previousFrameDuration() const { return _previousFrameDuration; }
 
     private:
-        std::chrono::high_resolution_clock::time_point _startTime;
-        std::chrono::high_resolution_clock::time_point _previousFrameTime;
-        Float _previousFrameDuration;
+        std::chrono::high_resolution_clock::time_point _startTime{};
+        std::chrono::high_resolution_clock::time_point _previousFrameTime{};
+        Float _previousFrameDuration{};
 
-        bool running;
+        bool _running = false;
 };
 
 }
