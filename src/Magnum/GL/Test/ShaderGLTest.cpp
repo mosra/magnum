@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Shader is <string>-free */
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -34,10 +35,6 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/OpenGLTester.h"
-
-#ifndef MAGNUM_TARGET_WEBGL
-#include <Corrade/Containers/String.h>
-#endif
 
 #include "configure.h"
 
@@ -66,6 +63,28 @@ struct ShaderGLTest: OpenGLTester {
     void compileNoVersion();
 };
 
+const struct {
+    const char* name;
+    Version version;
+} CompileFailureData[]{
+    #ifndef MAGNUM_TARGET_GLES /* GLES has the new semantics always */
+    {"old GLSL #line semantics, affects next line",
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        },
+    #endif
+    {"new GLSL #line semantics, affects current line",
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL330
+        #else
+        Version::GLES200
+        #endif
+        },
+};
+
 ShaderGLTest::ShaderGLTest() {
     addTests({&ShaderGLTest::construct,
               &ShaderGLTest::constructNoVersion,
@@ -80,16 +99,17 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
               &ShaderGLTest::compile,
-              &ShaderGLTest::compileAsync,
-              &ShaderGLTest::compileFailure,
-              &ShaderGLTest::compileFailureAsync,
+              &ShaderGLTest::compileAsync});
+
+    addInstancedTests({&ShaderGLTest::compileFailure},
+        Containers::arraySize(CompileFailureData));
+
+    addTests({&ShaderGLTest::compileFailureAsync,
               &ShaderGLTest::compileUtf8,
               &ShaderGLTest::compileNoVersion});
 }
 
-#ifndef MAGNUM_TARGET_WEBGL
 using namespace Containers::Literals;
-#endif
 
 void ShaderGLTest::construct() {
     {
@@ -331,20 +351,19 @@ void ShaderGLTest::compileAsync() {
 }
 
 void ShaderGLTest::compileFailure() {
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr Version v =
-        #ifndef CORRADE_TARGET_APPLE
-        Version::GL210
-        #else
-        Version::GL310
-        #endif
-        ;
-    #else
-    constexpr Version v = Version::GLES200;
-    #endif
+    auto&& data = CompileFailureData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-    Shader shader(v, Shader::Type::Vertex);
-    shader.addSource("[fu] bleh error #:! stuff\n");
+    if(!Context::current().isVersionSupported(data.version))
+        CORRADE_SKIP(data.version << "is not supported");
+
+    Shader shader{data.version, Shader::Type::Vertex};
+
+    /* First source is 1, so 11 sources means the error will be in source 12 */
+    for(std::size_t i = 0; i != 11; ++i)
+        shader.addSource("// something\n");
+    /* First line is 1, so 175 newlines means the error is on line 176 */
+    shader.addSource("void main() {" + "\n"_s*175 + "someOutputVariable = ERROR_ERROR();\n}\n");
 
     std::ostringstream out;
     {
@@ -354,6 +373,22 @@ void ShaderGLTest::compileFailure() {
     CORRADE_VERIFY(shader.isCompileFinished());
     CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of vertex shader failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
+
+    /* The error message should contain the correct source number */
+    CORRADE_COMPARE_AS(out.str(), "11", TestSuite::Compare::StringNotContains);
+    {
+        #ifndef MAGNUM_TARGET_WEBGL
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa,
+            "Mesa reports source number only in some cases.");
+        #endif
+        CORRADE_COMPARE_AS(out.str(), "12", TestSuite::Compare::StringContains);
+    }
+    CORRADE_COMPARE_AS(out.str(), "13", TestSuite::Compare::StringNotContains);
+
+    /* The error message should contain the correct line number */
+    CORRADE_COMPARE_AS(out.str(), "175", TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(out.str(), "176", TestSuite::Compare::StringContains);
+    CORRADE_COMPARE_AS(out.str(), "177", TestSuite::Compare::StringNotContains);
 }
 
 void ShaderGLTest::compileFailureAsync() {
