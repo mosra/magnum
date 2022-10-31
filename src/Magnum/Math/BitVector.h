@@ -72,11 +72,11 @@ The class implements @cpp && @ce, @cpp || @ce and @cpp ! @ce operators
 component-wise, in other words equivalently to @cpp & @ce, @cpp | @ce and
 @cpp ~ @ce. This is done in order to have consistent behavior with boolean
 operations on scalar types --- in the following example, it causes the final
-conversion to @cpp bool @ce done at the end (instead of it happening already in
-the boolean subexpressions). Combined with @ref operator bool() returning
-@cpp true @ce only if all bits are set, this means the condition will be passed
-only if @cpp b @ce is around @cpp a @ce in *all dimensions*, and work the same
-way as if the variables were just scalars:
+conversion to @cpp bool @ce to be done at the end (instead of it happening
+already in the boolean subexpressions). Combined with @ref operator bool()
+returning @cpp true @ce only if all bits are set, this means the condition will
+be passed only if @cpp b @ce is around @cpp a @ce in *all dimensions*, and work
+the same way as if the variables were just scalars:
 
 @snippet MagnumMath.cpp BitVector-boolean
 
