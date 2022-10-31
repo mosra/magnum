@@ -102,16 +102,32 @@ template<> struct TweakableTraits<Deg> {
     static const char* name() { return "Deg"; }
     static const char* literal() { return "degf"; }
 };
+template<> struct TweakableTraits<Unit<Math::Deg, Float>> {
+    static const char* name() { return "Unit<Deg, Float>"; }
+    static const char* literal() { return "degf"; }
+};
 template<> struct TweakableTraits<Degd> {
     static const char* name() { return "Degd"; }
+    static const char* literal() { return "deg"; }
+};
+template<> struct TweakableTraits<Unit<Math::Deg, Double>> {
+    static const char* name() { return "Unit<Deg, Double>"; }
     static const char* literal() { return "deg"; }
 };
 template<> struct TweakableTraits<Rad> {
     static const char* name() { return "Rad"; }
     static const char* literal() { return "radf"; }
 };
+template<> struct TweakableTraits<Unit<Math::Rad, Float>> {
+    static const char* name() { return "Unit<Rad, Float>"; }
+    static const char* literal() { return "radf"; }
+};
 template<> struct TweakableTraits<Radd> {
     static const char* name() { return "Radd"; }
+    static const char* literal() { return "rad"; }
+};
+template<> struct TweakableTraits<Unit<Math::Rad, Double>> {
+    static const char* name() { return "Unit<Rad, Double>"; }
     static const char* literal() { return "rad"; }
 };
 #endif
@@ -134,16 +150,24 @@ AngleTest::AngleTest() {
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests<AngleTest>({
         &AngleTest::tweakable<Deg>,
+        &AngleTest::tweakable<Unit<Math::Deg, Float>>,
         &AngleTest::tweakable<Degd>,
+        &AngleTest::tweakable<Unit<Math::Deg, Double>>,
         &AngleTest::tweakable<Rad>,
-        &AngleTest::tweakable<Radd>},
+        &AngleTest::tweakable<Unit<Math::Rad, Float>>,
+        &AngleTest::tweakable<Radd>,
+        &AngleTest::tweakable<Unit<Math::Rad, Double>>},
         Corrade::Containers::arraySize(TweakableData));
 
     addInstancedTests<AngleTest>({
         &AngleTest::tweakableError<Deg>,
+        &AngleTest::tweakableError<Unit<Math::Deg, Float>>,
         &AngleTest::tweakableError<Degd>,
+        &AngleTest::tweakableError<Unit<Math::Deg, Double>>,
         &AngleTest::tweakableError<Rad>,
-        &AngleTest::tweakableError<Radd>},
+        &AngleTest::tweakableError<Unit<Math::Rad, Float>>,
+        &AngleTest::tweakableError<Radd>,
+        &AngleTest::tweakableError<Unit<Math::Rad, Double>>},
         Corrade::Containers::arraySize(TweakableErrorData));
     #endif
 }

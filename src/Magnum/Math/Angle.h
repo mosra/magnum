@@ -270,6 +270,11 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Float>
     static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> parse(Containers::StringView value);
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Needed to parse e.g. -1.0_degf, which is the base class type */
+template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Deg, Magnum::Float>>: TweakableParser<Magnum::Math::Deg<Magnum::Float>> {};
+#endif
+
 /**
 @tweakableliteral{Magnum::Math::Deg}
 
@@ -282,6 +287,11 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Double
     /** @brief Parse the value */
     static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> parse(Containers::StringView value);
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Needed to parse e.g. -1.0_deg, which is the base class type */
+template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Deg, Magnum::Double>>: TweakableParser<Magnum::Math::Deg<Magnum::Double>> {};
+#endif
 
 /**
 @tweakableliteral{Magnum::Math::Rad}
@@ -296,6 +306,11 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Float>
     static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> parse(Containers::StringView value);
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Needed to parse e.g. -1.0_radf, which is the base class type */
+template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Rad, Magnum::Float>>: TweakableParser<Magnum::Math::Rad<Magnum::Float>> {};
+#endif
+
 /**
 @tweakableliteral{Magnum::Math::Rad}
 
@@ -308,6 +323,11 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Double
     /** @brief Parse the value */
     static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> parse(Containers::StringView value);
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Needed to parse e.g. -1.0_rad, which is the base class type */
+template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Rad, Magnum::Double>>: TweakableParser<Magnum::Math::Rad<Magnum::Double>> {};
+#endif
 #endif
 
 }}
