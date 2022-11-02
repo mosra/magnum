@@ -49,7 +49,6 @@ set(MagnumSceneTools_GracefulAssert_SRCS
 set(MagnumSceneTools_HEADERS
     FlattenMeshHierarchy.h
     OrderClusterParents.h
-    SceneTools.h
 
     visibility.h)
 

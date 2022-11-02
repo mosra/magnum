@@ -901,6 +901,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # No special setup for SceneGraph library
 
+        # SceneTools library
+        elseif(_component STREQUAL SceneTools)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES FlattenMeshHierarchy.h)
+
         # ShaderTools library
         elseif(_component STREQUAL ShaderTools)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
