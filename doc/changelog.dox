@@ -738,7 +738,8 @@ See also:
 -   Fixed assertions related to OpenGL driver workarounds when the proprietary
     AMDGPU PRO drivers are used on Linux
 -   Fixed @relativeref{Corrade,Utility::Tweakable} parsers to compile with
-    negative @ref Math::Angle literals such as @cpp _(-15.0_degf) @ce
+    negative @ref Math::Deg / @ref Math::Rad literals such as
+    @cpp _(-15.0_degf) @ce
 -   Fixed an assertion when using @ref MeshTools::removeDuplicates() on an
     interleaved @ref Trade::MeshData that included padding at the beginning or
     end of each vertex

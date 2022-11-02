@@ -67,9 +67,8 @@ required to follow them to the point.
         files (needed so QtCreator lists all project files properly)
     -   verify that debug postfix is set
         (@cmake set_target_properties(MagnumLibraryName PROPERTIES DEBUG_POSTFIX "-d") @ce)
-    -   verify that folder is set for all libraries and `OBJECT` libraries to
-        avoid cluttering project tree view in IDEs
-        (@cmake set_target_properties(MagnumLibraryName PROPERTIES FOLDER "Magnum/LibraryName") @ce)
+    -   verify that folder is correctly set for the `CMakeLists.txt` file
+        (@cmake set(CMAKE_FOLDER "Magnum/LibraryName") @ce)
     -   verify that target installation is done in proper places (separate
         `RUNTIME` / `LIBRARY` / `ARCHIVE` destinations)
     -   verify that @cmake set_target_properties(MagnumLibraryName PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION}) @ce
@@ -82,12 +81,15 @@ required to follow them to the point.
 6.  Create a new `src/Magnum/LibraryName/Test/` directory:
     -   add a `CMakeLists.txt` with pre-populated license header, add your name
         to it
+    -   verify that folder is correctly set for the `CMakeLists.txt` file
+        (@cmake set(CMAKE_FOLDER "Magnum/LibraryName/Test") @ce)
     -   conditionally @cmake add_subdirectory() @ce it if `MAGNUM_BUILD_TESTS`
         is enabled
 7.  Create a new `src/Magnum/LibraryName/LibraryName.h` header for forward
     declarations (if needed), add a file-level doc block with
     <tt>Forward declarations for the \@ref Magnum::LibraryName namespace</tt>
     as brief docs
+    -   reference it from `doc/compilation-speedup.dox`
 8.  Create a new `src/Magnum/LibraryName/visibility.h` header with
     `MAGNUM_LIBRARYNAME_EXPORT` and `MAGNUM_LIBRARYNAME_LOCAL` macros by
     copypasting it from another library:
@@ -107,32 +109,44 @@ required to follow them to the point.
         with CMake
 10. Code and test the rest of the library, see @ref developers-file and
     @ref developers-symbol for more information
-11. Add the `MAGNUM_WITH_LIBRARYNAME` option to all files in `package/` directory,
-    explicitly saying either `ON` or `OFF` based on platform support:
+11. Add the `MAGNUM_WITH_LIBRARYNAME` option to all files in the `package/ci`
+    directory, explicitly saying either `ON` or `OFF` based on platform
+    support and whether it makes sense to enable it for given job if it's off
+    by default, or disable it for given job if it's enabled by default:
+    -   all `package/ci/appveyor-*.bat` files (`^` is a line continuation)
+    -   all `package/ci/``*.sh` files (@c \\ is a line continuation)
+12. Add the `MAGNUM_WITH_LIBRARYNAME` option to other files in `package/`
+    directory if it's off by default but it makes sense to include it in given
+    package (such as, say, @ref Audio which is off by default because it
+    relies on OpenAL, but makes sense to be included on Linux and macOS because
+    there it's easy to get OpenAL):
     -   all `package/archlinux/PKGBUILD*` files (and the AUR package(s))
+    -   all `package/msys/PKGBUILD*` files (and the AUR package(s))
     -   the `package/debian/rules` file (watch out, tabs!)
     -   the `package/gentoo/` `*.ebuild` file
     -   the `package/homebrew/` `*.rb` file (watch out, Ruby!)
-    -   all `package/ci/appveyor-*.bat` files (`^` is a line continuation)
-    -   all `package/ci/``*.sh` files (@c \\ is a line continuation)
-12. If the library has dependencies:
+13. If the library is enabled by default, disable it in `package/ci/` of
+    depending projects if not needed for a particular job to save CI times
+14. If the library has dependencies:
     -   make sure they are mentioned in the library documentation
     -   make sure they are mentioned in building and CMake docs
     -   make sure they are mentioned in `CREDITS.md`
-    -   make sure AppVeyor and Travis downloads them (based on platform
+    -   make sure AppVeyor and CircleCI downloads them (based on platform
         support)
-13. Mention the library in `doc/changelog.dox` (or similar files in other
+15. Add the library to the graph in `doc/custom-buildsystem-order.dot`, listing
+    also its depdendencies to the rest of the project
+16. Mention the library in `doc/changelog.dox` (or similar files in other
     repos)
-14. @ref building-doc "Build documentation":
-    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
-        and verify there are no new warnings
+17. @ref building-doc "Build documentation":
+    -   run [doxygen.py](https://mcss.mosra.cz/documentation/doxygen/) on
+        `Doxyfile-mcss` and verify there are no new warnings
     -   eyeball the namespace and directory docs, fix suspicious things, look
         also in the building and cmake docs
-15. Build a coverage build (`package/archlinux/PKGBUILD-coverage`), or abuse
+18. Build a coverage build (`package/archlinux/PKGBUILD-coverage`), or abuse
     the CI for that later
-16. Push to a temporary branch (e.g., `next`)
-17. Iterate until the CIs are green and the code coverage is good enough
-18. Merge to `master`
+19. Push to a temporary branch (e.g., `next`)
+20. Iterate until the CIs are green and the code coverage is good enough
+21. Merge to `master`
 
 In order to remove a library, be sure to touch all places mentioned above, only
 in inverse --- but usually @ref developers-deprecation "deprecate first".
