@@ -32,7 +32,6 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/TestSuite/TestSuite.h>
-#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/PixelFormat.h"
@@ -49,7 +48,7 @@
 namespace Magnum { namespace DebugTools {
 
 namespace Implementation {
-    MAGNUM_DEBUGTOOLS_EXPORT std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected);
+    MAGNUM_DEBUGTOOLS_EXPORT Containers::Triple<Containers::Array<Float>, Float, Float> calculateImageDelta(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected);
 
     MAGNUM_DEBUGTOOLS_EXPORT void printDeltaImage(Debug& out, Containers::ArrayView<const Float> delta, const Vector2i& size, Float max, Float maxThreshold, Float meanThreshold);
 

@@ -28,11 +28,12 @@
 #include <map>
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
-#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Comparator.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -95,7 +96,7 @@ template<std::size_t size, class T> Float calculateImageDelta(const Containers::
 
 }
 
-std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected) {
+Containers::Triple<Containers::Array<Float>, Float, Float> calculateImageDelta(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected) {
     /* Calculate a delta image */
     Containers::Array<Float> deltaData{NoInit,
         std::size_t(expected.size().product())};
@@ -203,7 +204,7 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
        left that could cause the comparison to fail. */
     const Float mean = Math::Algorithms::kahanSum(deltaData.begin(), deltaData.end())/deltaData.size();
 
-    return std::make_tuple(std::move(deltaData), max, mean);
+    return {std::move(deltaData), max, mean};
 }
 
 namespace {
@@ -484,8 +485,9 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    Containers::Array<Float> delta;
-    std::tie(delta, _state->max, _state->mean) = DebugTools::Implementation::calculateImageDelta(actualFormat, actualPixels, expected);
+    Containers::Triple<Containers::Array<Float>, Float, Float> deltaMaxMean = DebugTools::Implementation::calculateImageDelta(actualFormat, actualPixels, expected);
+    _state->max = deltaMaxMean.second();
+    _state->mean = deltaMaxMean.third();
 
     /* Verify the max/mean is never below zero so we didn't mess up when
        calculating specials. Note the inverted condition to catch NaNs in
@@ -511,7 +513,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
     } else return TestSuite::ComparisonStatusFlags{};
 
     /* Otherwise save the deltas and fail */
-    _state->delta = std::move(delta);
+    _state->delta = std::move(deltaMaxMean.first());
     return flags;
 }
 

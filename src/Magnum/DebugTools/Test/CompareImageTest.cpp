@@ -29,6 +29,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -280,13 +281,12 @@ void CompareImageTest::formatImplementationSpecific() {
 }
 
 void CompareImageTest::calculateDelta() {
-    Containers::Array<Float> delta;
-    Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRed.format(), ActualRed.pixels(), ExpectedRed);
-
-    CORRADE_COMPARE_AS(delta, Containers::arrayView(DeltaRed), TestSuite::Compare::Container);
-    CORRADE_COMPARE(max, 1.0f);
-    CORRADE_COMPARE(mean, 0.208889f);
+    Containers::Triple<Containers::Array<Float>, Float, Float> deltaMaxMean = Implementation::calculateImageDelta(ActualRed.format(), ActualRed.pixels(), ExpectedRed);
+    CORRADE_COMPARE_AS(deltaMaxMean.first(),
+        Containers::arrayView(DeltaRed),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(deltaMaxMean.second(), 1.0f);
+    CORRADE_COMPARE(deltaMaxMean.third(), 0.208889f);
 }
 
 /* Different storage for each */
@@ -308,16 +308,13 @@ const ImageView2D ExpectedRgb{
     PixelFormat::RGB8Unorm, {2, 2}, ExpectedRgbData};
 
 void CompareImageTest::calculateDeltaStorage() {
-    Containers::Array<Float> delta;
-    Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRgb.format(), ActualRgb.pixels(), ExpectedRgb);
-
-    CORRADE_COMPARE_AS(delta, Containers::arrayView<Float>({
+    Containers::Triple<Containers::Array<Float>, Float, Float> deltaMaxMean = Implementation::calculateImageDelta(ActualRgb.format(), ActualRgb.pixels(), ExpectedRgb);
+    CORRADE_COMPARE_AS(deltaMaxMean.first(), Containers::arrayView<Float>({
         1.0f/3.0f, (55.0f + 1.0f)/3.0f,
         48.0f/3.0f, 117.0f/3.0f
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE(max, 117.0f/3.0f);
-    CORRADE_COMPARE(mean, 18.5f);
+    CORRADE_COMPARE(deltaMaxMean.second(), 117.0f/3.0f);
+    CORRADE_COMPARE(deltaMaxMean.third(), 18.5f);
 }
 
 /* Variants:
@@ -352,18 +349,16 @@ const ImageView2D ActualSpecials{PixelFormat::R32F, {9, 1}, ActualDataSpecials};
 const ImageView2D ExpectedSpecials{PixelFormat::R32F, {9, 1}, ExpectedDataSpecials};
 
 void CompareImageTest::calculateDeltaSpecials() {
-    Containers::Array<Float> delta;
-    Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualSpecials.format(), ActualSpecials.pixels(), ExpectedSpecials);
-    CORRADE_COMPARE_AS(Containers::arrayView(delta),
+    Containers::Triple<Containers::Array<Float>, Float, Float> deltaMaxMean = Implementation::calculateImageDelta(ActualSpecials.format(), ActualSpecials.pixels(), ExpectedSpecials);
+    CORRADE_COMPARE_AS(Containers::arrayView(deltaMaxMean.first()),
         Containers::arrayView(DeltaSpecials),
         TestSuite::Compare::Container);
     /* Max should be calculated *without* the specials because otherwise every
        other potential difference will be zero compared to infinity. OTOH mean
        needs to get "poisoned" by those in order to have *something* to fail
        the test with. */
-    CORRADE_COMPARE(max, 3.1f);
-    CORRADE_COMPARE(mean, -Constants::nan());
+    CORRADE_COMPARE(deltaMaxMean.second(), 3.1f);
+    CORRADE_COMPARE(deltaMaxMean.third(), -Constants::nan());
 }
 
 void CompareImageTest::calculateDeltaSpecials3() {
@@ -373,17 +368,15 @@ void CompareImageTest::calculateDeltaSpecials3() {
     const ImageView2D actualSpecials3{PixelFormat::RGB32F, {3, 1}, ActualDataSpecials};
     const ImageView2D expectedSpecials3{PixelFormat::RGB32F, {3, 1}, ExpectedDataSpecials};
 
-    Containers::Array<Float> delta;
-    Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(actualSpecials3.format(), actualSpecials3.pixels(), expectedSpecials3);
-    CORRADE_COMPARE_AS(delta, Containers::arrayView<Float>({
+    Containers::Triple<Containers::Array<Float>, Float, Float> deltaMaxMean = Implementation::calculateImageDelta(actualSpecials3.format(), actualSpecials3.pixels(), expectedSpecials3);
+    CORRADE_COMPARE_AS(deltaMaxMean.first(), Containers::arrayView<Float>({
         Constants::nan(), Constants::nan(), 1.15f
     }), TestSuite::Compare::Container);
     /* Max and mean should be calculated *without* the specials because
        otherwise every other potential difference will be zero compared to
        infinity */
-    CORRADE_COMPARE(max, 1.15f);
-    CORRADE_COMPARE(mean, -Constants::nan());
+    CORRADE_COMPARE(deltaMaxMean.second(), 1.15f);
+    CORRADE_COMPARE(deltaMaxMean.third(), -Constants::nan());
 }
 
 void CompareImageTest::deltaImage() {
