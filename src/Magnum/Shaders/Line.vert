@@ -345,7 +345,7 @@ void main() {
         dot(normalize(direction), normalize(neighborDirection)) < -0.99 ||
         /* Neighbor segment too short */
         // TODO why the 2*?? why the square??
-        (abs(dot(perpendicular(normalize(direction))*viewportSize/2.0, (neighborEndPoint - firstPoint)*viewportSize/2.0)) < 2*edgeDistance*edgeDistance &&
+        (abs(dot(perpendicular(normalize(direction))*viewportSize/2.0, (neighborEndPoint - firstPoint)*viewportSize/2.0)) < 2.0*edgeDistance*edgeDistance &&
             // TODO this is a wrong attempt to handle colinear, needs to
             //  calculate proper distance from a line segment instead or do
             //  something else entirely ffs
