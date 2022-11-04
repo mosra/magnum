@@ -43,7 +43,7 @@ GlobalStateAcrossLibrariesALTest::GlobalStateAcrossLibrariesALTest() {
 
 void GlobalStateAcrossLibrariesALTest::test() {
     #if defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(MAGNUM_BUILD_STATIC)
-    CORRADE_VERIFY(!"MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
+    CORRADE_FAIL("MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
     #endif
 
     Context context;

@@ -4148,7 +4148,7 @@ template<class T> void MeshGLTest::multiDrawIndexed() {
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
         #else
-        CORRADE_FAIL_IF(false, "Can't do base vertex here.");
+        CORRADE_FAIL("Can't do base vertex here.");
         #endif
     }
 
@@ -4242,7 +4242,7 @@ template<class T> void MeshGLTest::multiDrawIndexedSparseArrays() {
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
         #else
-        CORRADE_FAIL_IF(false, "Can't do base vertex here.");
+        CORRADE_FAIL("Can't do base vertex here.");
         #endif
     }
 
@@ -4332,7 +4332,7 @@ void MeshGLTest::multiDrawIndexedViews() {
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
         #else
-        CORRADE_FAIL_IF(false, "Can't do base vertex here.");
+        CORRADE_FAIL("Can't do base vertex here.");
         #endif
     }
 
@@ -4684,7 +4684,7 @@ void MeshGLTest::multiDrawInstanced() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
         #endif
         #else
-        CORRADE_FAIL_IF(false, "Can't do base instance here.");
+        CORRADE_FAIL("Can't do base instance here.");
         #endif
     }
 
@@ -4765,7 +4765,7 @@ void MeshGLTest::multiDrawInstancedSparseArrays() {
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
         #endif
         #else
-        CORRADE_FAIL_IF(false, "Can't do base instance here.");
+        CORRADE_FAIL("Can't do base instance here.");
         #endif
     }
 
@@ -4865,7 +4865,7 @@ template<class T> void MeshGLTest::multiDrawInstancedIndexed() {
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
         #endif
         #else
-        CORRADE_FAIL_IF(false, "Can't do base vertex or base instance here.");
+        CORRADE_FAIL("Can't do base vertex or base instance here.");
         #endif
     }
 
@@ -4956,7 +4956,7 @@ template<class T> void MeshGLTest::multiDrawInstancedIndexedSparseArrays() {
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
         #endif
         #else
-        CORRADE_FAIL_IF(false, "Can't do base vertex or base instance here.");
+        CORRADE_FAIL("Can't do base vertex or base instance here.");
         #endif
     }
 

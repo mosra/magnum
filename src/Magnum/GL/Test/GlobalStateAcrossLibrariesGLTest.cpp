@@ -44,7 +44,7 @@ GlobalStateAcrossLibrariesGLTest::GlobalStateAcrossLibrariesGLTest() {
 
 void GlobalStateAcrossLibrariesGLTest::magnumContext() {
     #if defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(MAGNUM_BUILD_STATIC)
-    CORRADE_VERIFY(!"MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
+    CORRADE_FAIL("MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
     #endif
 
     CORRADE_VERIFY(GL::Context::hasCurrent());
@@ -59,7 +59,7 @@ void GlobalStateAcrossLibrariesGLTest::magnumContext() {
 
 void GlobalStateAcrossLibrariesGLTest::functionPointers() {
     #if defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(MAGNUM_BUILD_STATIC)
-    CORRADE_VERIFY(!"MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
+    CORRADE_FAIL("MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
     #endif
 
     CORRADE_VERIFY(glCreateProgram);

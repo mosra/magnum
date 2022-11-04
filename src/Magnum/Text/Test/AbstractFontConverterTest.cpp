@@ -1002,7 +1002,7 @@ void AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound() {
         }
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char>) const override {
-            CORRADE_VERIFY(!"this shouldn't get reached");
+            CORRADE_FAIL("This shouldn't get reached");
             return {};
         }
     } converter;

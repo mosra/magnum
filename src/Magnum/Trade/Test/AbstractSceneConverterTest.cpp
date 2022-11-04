@@ -1348,7 +1348,7 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatch() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertToData(const Magnum::Trade::MeshData&) override {
-            CORRADE_FAIL_IF(true, "doConvertToData() should not be called");
+            CORRADE_FAIL("doConvertToData() should not be called");
             return {};
         }
 
@@ -1391,7 +1391,7 @@ void AbstractSceneConverterTest::convertMeshToDataThroughBatchAddFailed() {
         }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
-            CORRADE_FAIL_IF(true, "doEndData() shouldn't be called");
+            CORRADE_FAIL("doEndData() shouldn't be called");
             return {};
         }
     } converter;
@@ -1606,7 +1606,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatch() {
         }
 
         bool doConvertToFile(const Trade::MeshData&, Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doConvertToFile() should not be called");
+            CORRADE_FAIL("doConvertToFile() should not be called");
             return {};
         }
 
@@ -1656,7 +1656,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughBatchAddFailed() {
         }
 
         bool doEndFile(Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doEndFile() shouldn't be called");
+            CORRADE_FAIL("doEndFile() shouldn't be called");
             return {};
         }
     } converter;
@@ -3383,17 +3383,17 @@ void AbstractSceneConverterTest::addMeshThroughConvertMesh() {
         }
 
         bool doBegin() override {
-            CORRADE_FAIL_IF(true, "doBegin() should not be called");
+            CORRADE_FAIL("doBegin() should not be called");
             return {};
         }
 
         Containers::Pointer<AbstractImporter> doEnd() override {
-            CORRADE_FAIL_IF(true, "doEnd() should not be called");
+            CORRADE_FAIL("doEnd() should not be called");
             return {};
         }
 
         bool doAdd(UnsignedInt, const Trade::MeshData&, Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doAdd() should not be called");
+            CORRADE_FAIL("doAdd() should not be called");
             return {};
         }
     } converter;
@@ -3524,17 +3524,17 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToData() {
         }
 
         bool doBeginData() override {
-            CORRADE_FAIL_IF(true, "doBeginData() should not be called");
+            CORRADE_FAIL("doBeginData() should not be called");
             return {};
         }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
-            CORRADE_FAIL_IF(true, "doEndData() should not be called");
+            CORRADE_FAIL("doEndData() should not be called");
             return {};
         }
 
         bool doAdd(UnsignedInt, const Trade::MeshData&, Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doAdd() should not be called");
+            CORRADE_FAIL("doAdd() should not be called");
             return {};
         }
     } converter;
@@ -3638,17 +3638,17 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFile() {
         }
 
         bool doBeginFile(Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doBeginFile() should not be called");
+            CORRADE_FAIL("doBeginFile() should not be called");
             return {};
         }
 
         bool doEndFile(Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doEndFile() should not be called");
+            CORRADE_FAIL("doEndFile() should not be called");
             return {};
         }
 
         bool doAdd(UnsignedInt, const Trade::MeshData&, Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doAdd() should not be called");
+            CORRADE_FAIL("doAdd() should not be called");
             return {};
         }
     } converter;
@@ -3688,27 +3688,27 @@ void AbstractSceneConverterTest::addMeshThroughConvertMeshToFileThroughData() {
         }
 
         bool doBeginData() override {
-            CORRADE_FAIL_IF(true, "doBeginData() should not be called");
+            CORRADE_FAIL("doBeginData() should not be called");
             return {};
         }
 
         Containers::Optional<Containers::Array<char>> doEndData() override {
-            CORRADE_FAIL_IF(true, "doEndData() should not be called");
+            CORRADE_FAIL("doEndData() should not be called");
             return {};
         }
 
         bool doBeginFile(Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doBeginFile() should not be called");
+            CORRADE_FAIL("doBeginFile() should not be called");
             return {};
         }
 
         bool doEndFile(Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doEndFile() should not be called");
+            CORRADE_FAIL("doEndFile() should not be called");
             return {};
         }
 
         bool doAdd(UnsignedInt, const Trade::MeshData&, Containers::StringView) override {
-            CORRADE_FAIL_IF(true, "doAdd() should not be called");
+            CORRADE_FAIL("doAdd() should not be called");
             return {};
         }
     } converter;
@@ -6113,7 +6113,7 @@ void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
         Containers::String doSceneFieldName(UnsignedInt name) override {
             if(name == 34977) return "OffsetSmall";
             if(name == 5266) return "ValueData";
-            CORRADE_FAIL_IF(true, "This should not be reached");
+            CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
     } importer;
@@ -6178,7 +6178,7 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
         Containers::String doMeshAttributeName(UnsignedShort name) override {
             if(name == 31977) return "OffsetSmall";
             if(name == 5266) return "ValueData";
-            CORRADE_FAIL_IF(true, "This should not be reached");
+            CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
     } importer;

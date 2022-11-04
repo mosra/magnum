@@ -852,7 +852,7 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -1222,7 +1222,7 @@ void AbstractConverterTest::convertFileToFileThroughDataNotFound() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -1389,7 +1389,7 @@ void AbstractConverterTest::convertFileToDataAsDataNotFound() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -1847,7 +1847,7 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotFound() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -2077,7 +2077,7 @@ void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -2342,14 +2342,14 @@ void AbstractConverterTest::setInputFileCallbackValidateFileDirectly() {
         }
 
         Containers::Pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
-            CORRADE_VERIFY(!"this should not be reached");
+            CORRADE_FAIL("Uhis should not be reached");
             return {};
         }
     } converter;
 
     int a{};
     converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
-        CORRADE_VERIFY(!"this should not be reached");
+        CORRADE_FAIL("This should not be reached");
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
 
@@ -2397,7 +2397,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -2444,7 +2444,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
 
@@ -2470,7 +2470,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsData() {
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -2488,7 +2488,7 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -2517,14 +2517,14 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileDirectly() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            CORRADE_VERIFY(!"this should not be reached");
+            CORRADE_FAIL("This should not be reached");
             return {};
         }
     } converter;
 
     int a{};
     converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
-        CORRADE_VERIFY(!"this should not be reached");
+        CORRADE_FAIL("This should not be reached");
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
 
@@ -2574,7 +2574,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileThroughBaseImpl
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -2627,7 +2627,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, Containers::StringView, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
 
@@ -2655,7 +2655,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsData() {
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -2679,7 +2679,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataFailed() 
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, Containers::StringView, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -2704,7 +2704,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataNotWritab
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, Containers::StringView, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
 
@@ -2730,7 +2730,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataNotWritab
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -2759,14 +2759,14 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataDirectly() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            CORRADE_VERIFY(!"this should not be reached");
+            CORRADE_FAIL("This should not be reached");
             return {};
         }
     } converter;
 
     int a{};
     converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
-        CORRADE_VERIFY(!"this should not be reached");
+        CORRADE_FAIL("This should not be reached");
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
 
@@ -2820,7 +2820,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataThroughBaseImpl
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -2871,7 +2871,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertFileToData(Stage, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
 
@@ -2899,7 +2899,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsData() {
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -2921,7 +2921,7 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsDataFailed() 
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doConvertFileToData(Stage, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -2950,14 +2950,14 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileDirectly() {
         }
 
         Containers::Optional<Containers::Array<char>> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
-            CORRADE_VERIFY(!"this should not be reached");
+            CORRADE_FAIL("This should not be reached");
             return {};
         }
     } converter;
 
     int a{};
     converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
-        CORRADE_VERIFY(!"this should not be reached");
+        CORRADE_FAIL("This should not be reached");
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
 
@@ -3015,7 +3015,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3051,7 +3051,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
         }
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
-            CORRADE_VERIFY(!"this shouldn't be called");
+            CORRADE_FAIL("This shouldn't be called");
             return {};
         }
 
@@ -3077,7 +3077,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3105,7 +3105,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
 
@@ -3138,7 +3138,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3168,7 +3168,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -3192,7 +3192,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed() {
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3215,7 +3215,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>, Containers::StringView) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
 
@@ -3244,7 +3244,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3279,14 +3279,14 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataDirectly() {
         }
 
         Containers::Optional<Containers::Array<char>> doLinkDataToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::ArrayView<const char>>>) override {
-            CORRADE_VERIFY(!"this should not be reached");
+            CORRADE_FAIL("This should not be reached");
             return {};
         }
     } converter;
 
     int a{};
     converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
-        CORRADE_VERIFY(!"this should not be reached");
+        CORRADE_FAIL("This should not be reached");
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
 
@@ -3348,7 +3348,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3403,7 +3403,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3431,7 +3431,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
 
@@ -3464,7 +3464,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData() {
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
@@ -3492,7 +3492,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
         void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Optional<Containers::Array<char>> doLinkFilesToData(Containers::ArrayView<const Containers::Pair<Stage, Containers::StringView>>) override {
-            CORRADE_VERIFY(!"this shouldn't be reached");
+            CORRADE_FAIL("This shouldn't be reached");
             return {};
         }
     } converter;
@@ -3516,7 +3516,7 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
             return {};
         }
 
-        CORRADE_VERIFY(!"this shouldn't be reached");
+        CORRADE_FAIL("This shouldn't be reached");
         return {};
     }, state);
 
