@@ -854,6 +854,10 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                     #define _c(type) case Trade::MaterialAttributeType::type: \
                         d << Debug::packed << info.data.attribute<type>(i, j);           \
                         break;
+                    #define _ct(name, type) case Trade::MaterialAttributeType::name: \
+                        d << Debug::packed << info.data.attribute<type>(i, j);           \
+                        break;
+                    _ct(Bool, bool)
                     /* LCOV_EXCL_START */
                     _c(Float)
                     _c(Deg)
@@ -880,10 +884,12 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                     _c(Matrix4x2)
                     _c(Matrix4x3)
                     /* LCOV_EXCL_STOP */
+                    _ct(Pointer, const void*)
+                    _ct(MutablePointer, void*)
+                    _ct(String, Containers::StringView)
+                    _ct(TextureSwizzle, Trade::MaterialTextureSwizzle)
                     #undef _c
-                    case Trade::MaterialAttributeType::Bool:
-                        d << info.data.attribute<bool>(i, j);
-                        break;
+                    #undef _ct
                     case Trade::MaterialAttributeType::Vector3:
                         /** @todo hasSuffix() might be more robust against
                             false positives, but KHR_materials_specular in glTF
@@ -900,20 +906,8 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                             d << Debug::color << Math::pack<Color3ub>(info.data.attribute<Vector4>(i, j).rgb());
                         d << Debug::packed << info.data.attribute<Vector4>(i, j);
                         break;
-                    case Trade::MaterialAttributeType::Pointer:
-                        d << info.data.attribute<const void*>(i, j);
-                        break;
-                    case Trade::MaterialAttributeType::MutablePointer:
-                        d << info.data.attribute<void*>(i, j);
-                        break;
-                    case Trade::MaterialAttributeType::String:
-                        d << info.data.attribute<Containers::StringView>(i, j);
-                        break;
                     case Trade::MaterialAttributeType::Buffer:
                         d << info.data.attribute<Containers::ArrayView<const void>>(i, j).size() << "bytes";
-                        break;
-                    case Trade::MaterialAttributeType::TextureSwizzle:
-                        d << Debug::packed << info.data.attribute<Trade::MaterialTextureSwizzle>(i, j);
                         break;
                 }
             }
