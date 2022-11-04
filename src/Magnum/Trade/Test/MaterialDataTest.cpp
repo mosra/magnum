@@ -998,6 +998,11 @@ void MaterialDataTest::construct() {
     CORRADE_COMPARE(data.attributeName(3), "highlightColor");
 
     /* Access by ID */
+    CORRADE_COMPARE(data.attributeData(0).name(), "AmbientTextureMatrix");
+    CORRADE_COMPARE(data.attributeData(1).name(), "DiffuseTextureCoordinates");
+    CORRADE_COMPARE(data.attributeData(2).name(), "DoubleSided");
+    CORRADE_COMPARE(data.attributeData(3).name(), "highlightColor");
+
     CORRADE_COMPARE(data.attributeType(0), MaterialAttributeType::Matrix3x3);
     CORRADE_COMPARE(data.attributeType(1), MaterialAttributeType::UnsignedInt);
     CORRADE_COMPARE(data.attributeType(2), MaterialAttributeType::Bool);
@@ -1220,6 +1225,10 @@ void MaterialDataTest::constructLayers() {
     CORRADE_COMPARE(data.attributeName(3, 1), "thickness");
 
     /* Access by layer ID and attribute ID */
+    CORRADE_COMPARE(data.attributeData(0, 0).name(), "DiffuseTextureCoordinates");
+    CORRADE_COMPARE(data.attributeData(1, 2).name(), "highlightColor");
+    CORRADE_COMPARE(data.attributeData(3, 1).name(), "thickness");
+
     CORRADE_COMPARE(data.attributeType(0, 0), MaterialAttributeType::UnsignedInt);
     CORRADE_COMPARE(data.attributeType(1, 2), MaterialAttributeType::Vector4);
     CORRADE_COMPARE(data.attributeType(3, 1), MaterialAttributeType::Float);
@@ -2587,6 +2596,7 @@ void MaterialDataTest::accessLayerOutOfBounds() {
     data.findAttributeId(2, MaterialAttribute::AlphaMask);
     data.attributeId(2, "AlphaMask");
     data.attributeId(2, MaterialAttribute::AlphaMask);
+    data.attributeData(2, 0);
     data.attributeName(2, 0);
     data.attributeType(2, 0);
     data.attributeType(2, "AlphaMask");
@@ -2626,6 +2636,7 @@ void MaterialDataTest::accessLayerOutOfBounds() {
         "Trade::MaterialData::findAttributeId(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeId(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeId(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeData(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 layers\n"
@@ -2844,6 +2855,7 @@ void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    data.attributeData(1, 2);
     data.attributeName(1, 2);
     data.attributeType(1, 2);
     data.attribute(1, 2);
@@ -2853,6 +2865,7 @@ void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
     data.mutableAttribute<Int>(1, 2);
     data.mutableAttribute<Containers::MutableStringView>(1, 2);
     CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attributeData(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer 1\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n"

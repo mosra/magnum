@@ -2452,6 +2452,23 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         } /**< @overload */
 
         /**
+         * @brief Raw attribute data
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const,
+         * @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const.
+         */
+        const MaterialAttributeData& attributeData(UnsignedInt layer, UnsignedInt id) const;
+
+        /**
+         * @brief Raw attribute data in the base material
+         *
+         * The @p @p id is expected to be smaller than @ref attributeCount() const.
+         */
+        const MaterialAttributeData& attributeData(UnsignedInt id) const {
+            return attributeData(0, id);
+        }
+
+        /**
          * @brief Name of an attribute in given material layer
          *
          * The @p layer is expected to be smaller than @ref layerCount() const

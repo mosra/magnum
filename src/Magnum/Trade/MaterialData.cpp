@@ -748,6 +748,14 @@ UnsignedInt MaterialData::attributeId(const MaterialLayer layer, const MaterialA
     return attributeId(string, name);
 }
 
+const MaterialAttributeData& MaterialData::attributeData(const UnsignedInt layer, const UnsignedInt id) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attributeData(): index" << layer << "out of range for" << layerCount() << "layers", _data[0]);
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attributeData(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, _data[0]);
+    return _data[layerOffset(layer) + id];
+}
+
 Containers::StringView MaterialData::attributeName(const UnsignedInt layer, const UnsignedInt id) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeName(): index" << layer << "out of range for" << layerCount() << "layers", {});
