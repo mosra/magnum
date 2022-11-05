@@ -62,6 +62,7 @@ cmake .. \
     `# Needed by VkMeshVkTest, together with TgaImporter and AnyImageImporter` \
     -DMAGNUM_WITH_DEBUGTOOLS=ON \
     -DMAGNUM_WITH_GL=OFF \
+    -DMAGNUM_WITH_MATERIALTOOLS=OFF \
     -DMAGNUM_WITH_MESHTOOLS=OFF \
     -DMAGNUM_WITH_PRIMITIVES=OFF \
     -DMAGNUM_WITH_SCENEGRAPH=OFF \

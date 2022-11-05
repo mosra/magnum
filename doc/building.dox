@@ -484,6 +484,8 @@ can specify which parts will be built and which not:
 -   `MAGNUM_WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
 -   `MAGNUM_WITH_GL` --- Build the @ref GL library. Enabled automatically if
     `MAGNUM_WITH_SHADERS` is enabled.
+-   `MAGNUM_WITH_MATERIALTOOLS` --- Build the @ref MaterialTools library.
+    Enables also building of the @ref Trade library.
 -   `MAGNUM_WITH_MESHTOOLS` --- Build the @ref MeshTools library. Enables also
     building of the @ref Trade library.
 -   `MAGNUM_WITH_PRIMITIVES` --- Build the @ref Primitives library. Enables
@@ -500,8 +502,8 @@ can specify which parts will be built and which not:
     automatically if `MAGNUM_WITH_TEXT` or `MAGNUM_WITH_DISTANCEFIELDCONVERTER`
     is enabled.
 -   `MAGNUM_WITH_TRADE` --- Build the @ref Trade library. Enabled automatically
-    if `MAGNUM_WITH_MESHTOOLS`, `MAGNUM_WITH_PRIMITIVES`
-    or `MAGNUM_WITH_SCENETOOLS` is enabled.
+    if `MAGNUM_WITH_MATERIALTOOLS`, `MAGNUM_WITH_MESHTOOLS`,
+    `MAGNUM_WITH_PRIMITIVES` or `MAGNUM_WITH_SCENETOOLS` is enabled.
 -   `MAGNUM_WITH_VK` --- Build the @ref Vk library. Depends on Vulkan, not
     enabled by default.
 

@@ -218,6 +218,10 @@ if(MAGNUM_WITH_GL)
     add_subdirectory(GL)
 endif()
 
+if(MAGNUM_WITH_MATERIALTOOLS)
+    add_subdirectory(MaterialTools)
+endif()
+
 if(MAGNUM_WITH_MESHTOOLS)
     add_subdirectory(MeshTools)
 endif()

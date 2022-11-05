@@ -57,6 +57,7 @@
 #  Audio                        - Audio library
 #  DebugTools                   - DebugTools library
 #  GL                           - GL library
+#  MaterialTools                - MaterialTools library
 #  MeshTools                    - MeshTools library
 #  Primitives                   - Primitives library
 #  SceneGraph                   - SceneGraph library
@@ -367,8 +368,8 @@ endif()
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENTS
-    Audio DebugTools GL MeshTools Primitives SceneGraph SceneTools Shaders
-    ShaderTools Text TextureTools Trade
+    Audio DebugTools GL MaterialTools MeshTools Primitives SceneGraph
+    SceneTools Shaders ShaderTools Text TextureTools Trade
     WindowlessEglApplication EglContext OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENTS
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
@@ -431,6 +432,8 @@ if(MAGNUM_TARGET_GL)
     set(_MAGNUM_DebugTools_Shaders_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_GL_DEPENDENCY_IS_OPTIONAL ON)
 endif()
+
+set(_MAGNUM_MaterialTools_DEPENDENCIES Trade)
 
 set(_MAGNUM_MeshTools_DEPENDENCIES Trade)
 if(MAGNUM_TARGET_GL)
@@ -882,6 +885,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
             endif()
+
+        # MaterialTools library
+        elseif(_component STREQUAL MaterialTools)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES PhongToPbrMetallicRoughness.h)
 
         # MeshTools library
         elseif(_component STREQUAL MeshTools)

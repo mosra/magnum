@@ -184,6 +184,11 @@ See also:
     over trivial code but easier to discover
 -   Added an unary @cpp operator+() @ce to all @ref Math classes
 
+@subsubsection changelog-latest-new-materialtools MaterialTools library
+
+-   New @ref MaterialTools library providing various material conversion
+    utilities
+
 @subsubsection changelog-latest-new-meshtools MeshTools library
 
 -   New @ref MeshTools::boundingSphereBouncingBubble() algorithm for

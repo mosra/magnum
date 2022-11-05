@@ -40,6 +40,7 @@ digraph "Magnum library dependency order" {
     MagnumDebugTools [label="Magnum\nDebugTools" class="m-info"]
     MagnumGL [label="Magnum\nGL" class="m-info"]
     MagnumMath [label="Magnum\nMath" class="m-primary" style=dotted]
+    MagnumMaterialTools [label="Magnum\nMaterialTools" class="m-info"]
     MagnumMeshTools [label="Magnum\nMeshTools" class="m-info"]
     MagnumOpenGLTester [label="Magnum\nOpenGLTester" class="m-info"]
     MagnumPrimitives [label="Magnum\nPrimitives" class="m-info"]
@@ -75,6 +76,8 @@ digraph "Magnum library dependency order" {
     MagnumDebugTools -> MagnumSceneGraph [style=dotted]
 
     MagnumGL -> Magnum
+
+    MagnumMaterialTools -> MagnumTrade
 
     MagnumMeshTools -> MagnumTrade
     MagnumMeshTools -> MagnumGL [style=dotted]

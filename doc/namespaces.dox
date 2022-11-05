@@ -351,6 +351,30 @@ See @ref building, @ref cmake and @ref opengl for more information.
     requires attribution for public use.
 */
 
+/** @dir Magnum/MaterialTools
+ * @brief Namespace @ref Magnum::MaterialTools
+ * @m_since_latest
+ */
+/** @namespace Magnum::MaterialTools
+@brief Material tools
+@m_since_latest
+
+Tools for converting materials.
+
+This library is built if `MAGNUM_WITH_MATERIALTOOLS` is enabled when building
+Magnum. To use this library with CMake, request the `MaterialTools` component
+of the `Magnum` package and link to the `Magnum::MaterialTools` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED MaterialTools)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::MaterialTools)
+@endcode
+
+See @ref building and @ref cmake for more information.
+*/
+
 /** @dir Magnum/MeshTools
  * @brief Namespace @ref Magnum::MeshTools
  */
