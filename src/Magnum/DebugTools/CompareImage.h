@@ -222,8 +222,10 @@ single pixel and mean delta averaged over all pixels:
 
 @snippet debugtools-compareimage.cpp delta
 
-Based on actual images used, in case of comparison failure the comparator can
+Based on actual images used, in case of a comparison failure the comparator can
 give for example the following output:
+
+@m_class{m-console-wrap}
 
 @include debugtools-compareimage.ansi
 
