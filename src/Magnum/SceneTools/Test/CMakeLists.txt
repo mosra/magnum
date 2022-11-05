@@ -51,7 +51,7 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
     INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
-corrade_add_test(SceneToolsConvertToSingleFun___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(SceneToolsConvertToSingleFunc___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 
