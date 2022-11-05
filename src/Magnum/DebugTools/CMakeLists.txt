@@ -97,11 +97,15 @@ endif()
 # Build the TestSuite-related functionality only if it is present
 find_package(Corrade COMPONENTS TestSuite)
 if(Corrade_TestSuite_FOUND AND MAGNUM_WITH_TRADE)
+    list(APPEND MagnumDebugTools_SRCS
+        CompareMaterial.cpp)
+
     list(APPEND MagnumDebugTools_GracefulAssert_SRCS
         CompareImage.cpp)
 
     list(APPEND MagnumDebugTools_HEADERS
-        CompareImage.h)
+        CompareImage.h
+        CompareMaterial.h)
 endif()
 
 # Objects shared between main and test library

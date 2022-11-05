@@ -132,14 +132,14 @@ if(MAGNUM_WITH_DEBUGTOOLS)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                        ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-        # CompareImage documentation snippet. I need it executable so I can
-        # copy&paste the output to the documentation. Also not using
-        # corrade_add_test() because it shouldn't be run as part of CTest as it
-        # purposely fails.
+        # CompareImage / CompareMaterial documentation snippets. I need them
+        # executable so I can include the colored output in the documentation.
+        # Also not using corrade_add_test() because it shouldn't be run as part
+        # of CTest as it purposely fails.
         add_executable(debugtools-compareimage debugtools-compareimage.cpp)
-        target_link_libraries(debugtools-compareimage PRIVATE
-            MagnumDebugTools
-            MagnumTrade)
+        add_executable(debugtools-comparematerial debugtools-comparematerial.cpp)
+        target_link_libraries(debugtools-compareimage PRIVATE MagnumDebugTools)
+        target_link_libraries(debugtools-comparematerial PRIVATE MagnumDebugTools)
         target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 

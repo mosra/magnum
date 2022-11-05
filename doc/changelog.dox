@@ -68,6 +68,8 @@ See also:
 
 -   Added @ref DebugTools::ColorMap::coolWarmSmooth() and
     @ref DebugTools::ColorMap::coolWarmBent() (see [mosra/magnum#473](https://github.com/mosra/magnum/pull/473))
+-   New @ref DebugTools::CompareMaterial comparator for convenient comparison
+    of @ref Trade::MaterialData instances
 
 @subsubsection changelog-latest-new-gl GL library
 

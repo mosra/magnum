@@ -100,6 +100,8 @@ if(MAGNUM_WITH_TRADE)
             add_dependencies(DebugToolsCompareImageTest TgaImporter)
         endif()
     endif()
+
+    corrade_add_test(DebugToolsCompareMaterialTest CompareMaterialTest.cpp LIBRARIES MagnumDebugToolsTestLib)
 endif()
 
 if(MAGNUM_TARGET_GL)

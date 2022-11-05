@@ -329,6 +329,8 @@ then autodetected from the passed type, with normalized formats preferred. In
 practice this means e.g. @ref Math::Vector2 "Math::Vector2<UnsignedByte>" will
 be understood as @ref PixelFormat::RG8Unorm and there's currently no way to
 interpret it as @ref PixelFormat::RG8UI, for example.
+
+@see @ref CompareMaterial
 */
 class CompareImage {
     public:

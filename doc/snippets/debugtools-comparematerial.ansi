@@ -1,0 +1,16 @@
+[1;39mStarting MaterialTest with 1 test cases...[0m
+[1;31m  FAIL[0;34m [[1;36m1[0;34m][1;39m conversion()[0m at …/debugtools-comparematerial.cpp:65
+        Materials actual and expected have different layers.[0;32m Actual (+)[0m vs[0;31m expected (-)[0m:
+      [0;31m -[0mTypes:[0;31m PbrMetallicRoughness[0m
+      [0;32m +[0mTypes:[0;32m PbrMetallicRoughness|PbrClearCoat[0m
+        Base layer:
+          BaseColor @ Vector4: {0.851206, 0.687386, 0.416013, 1}
+      [0;31m -[0m  DoubleSided @ Bool:[0;31m false[0m
+      [0;32m +[0m  DoubleSided @ Bool:[0;32m true[0m
+          Metalness @ Float: 0.603401
+          Roughness @ Float: 0.105112
+      [0;32m +Layer 1:[0m
+      [0;32m +   LayerName @ String: ClearCoat[0m
+      [0;32m +  LayerFactor @ Float: 0.02[0m
+      [0;32m +  Roughness @ Float: 0.320856[0m
+[1;39mFinished MaterialTest with[1;31m 1 errors[1;39m out of 1 checks.[0m
