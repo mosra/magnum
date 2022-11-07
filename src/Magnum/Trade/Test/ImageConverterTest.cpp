@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/StringToFile.h>
 #include <Corrade/Utility/Format.h>
@@ -100,24 +101,15 @@ ImageConverterTest::ImageConverterTest() {
 namespace {
 
 #ifdef IMAGECONVERTER_EXECUTABLE_FILENAME
-/** @todo take a StringIterable once it exists */
-Containers::Pair<bool, Containers::String> call(Containers::ArrayView<const Containers::String> arguments) {
-    /* Create a string view array for the arguments, implicitly pass the
-       application name and plugin directory override */
-    /** @todo drop once StringIterable exists */
-    Containers::Array<Containers::StringView> argumentViews{ValueInit, arguments.size() + 3};
-    argumentViews[0] = ""_s;
-    argumentViews[1] = "--plugin-dir"_s;
-    argumentViews[2] = MAGNUM_PLUGINS_INSTALL_DIR;
-    for(std::size_t i = 0; i != arguments.size(); ++i)
-        argumentViews[i + 3] = arguments[i];
-
+Containers::Pair<bool, Containers::String> call(const Containers::StringIterable& arguments) {
     const Containers::String outputFilename = Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "ImageConverterTestFiles/output.txt");
     /** @todo clean up once Utility::System::execute() with output redirection
         exists */
-    const bool success = std::system(Utility::format("{} {} > {} 2>&1",
+    /* Implicitly pass the plugin directory override */
+    const bool success = std::system(Utility::format("{} --plugin-dir {} {} > {} 2>&1",
         IMAGECONVERTER_EXECUTABLE_FILENAME,
-        " "_s.join(argumentViews), /** @todo handle space escaping here? */
+        MAGNUM_PLUGINS_INSTALL_DIR,
+        " "_s.join(arguments), /** @todo handle space escaping here? */
         outputFilename
     ).data()) == 0;
 
