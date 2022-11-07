@@ -57,9 +57,11 @@ endif()
 # Main MaterialTools library
 add_library(MagnumMaterialTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMaterialToolsObjects>
-    ${MagnumMaterialTools_GracefulAssert_SRCS}
     ${MagnumMaterialTools_HEADERS}
-    ${MagnumMaterialTools_PRIVATE_HEADERS})
+    ${MagnumMaterialTools_PRIVATE_HEADERS}
+    # XCode workaround, see file comment for details.
+    # TODO remove once MagnumMaterialTools_GracefulAssert_SRCS is non-empty
+    ${PROJECT_SOURCE_DIR}/src/dummy.cpp)
 set_target_properties(MagnumMaterialTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumMaterialTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
