@@ -1415,7 +1415,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * than one shader at once. Other than that there is no other
          * (performance) difference when using this function.
          */
-        void attachShaders(Containers::Iterable<Shader> shaders);
+        void attachShaders(const Containers::Iterable<Shader>& shaders);
 
         /**
          * @brief Bind an attribute to given location
@@ -1584,7 +1584,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         /* No default argument is provided in order to *really* encourage apps
            to pass the shaders here */
-        bool checkLink(Containers::Iterable<Shader> shaders);
+        bool checkLink(const Containers::Iterable<Shader>& shaders);
 
         /**
          * @brief Get uniform location

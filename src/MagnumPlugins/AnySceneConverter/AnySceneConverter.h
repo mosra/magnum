@@ -145,20 +145,20 @@ class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneCon
         bool doAdd(UnsignedInt id, const SkinData3D& skin, Containers::StringView name) override;
 
         bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView name) override;
-        bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData> meshLevels, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name) override;
         void doSetMeshAttributeName(UnsignedShort attribute, Containers::StringView name) override;
 
         bool doAdd(UnsignedInt id, const MaterialData& material, Containers::StringView name) override;
         bool doAdd(UnsignedInt id, const TextureData& texture, Containers::StringView name) override;
 
         bool doAdd(UnsignedInt id, const ImageData1D& image, Containers::StringView name) override;
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name) override;
 
         bool doAdd(UnsignedInt id, const ImageData2D& image, Containers::StringView name) override;
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name) override;
 
         bool doAdd(UnsignedInt id, const ImageData3D& image, Containers::StringView name) override;
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override;
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name) override;
 
         Containers::Pointer<AbstractSceneConverter> _converter;
 };

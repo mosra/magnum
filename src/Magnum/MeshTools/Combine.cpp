@@ -43,7 +43,7 @@ Trade::MeshData combineIndexedImplementation(
     #ifndef CORRADE_NO_ASSERT
     const char* assertPrefix,
     #endif
-    const MeshPrimitive primitive, Containers::Array<char>& combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::Iterable<const Trade::MeshData> data)
+    const MeshPrimitive primitive, Containers::Array<char>& combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::Iterable<const Trade::MeshData>& data)
 {
     /* Calculate attribute count and vertex stride */
     UnsignedInt attributeCount = 0;
@@ -110,7 +110,7 @@ Trade::MeshData combineIndexedImplementation(
 
 }
 
-Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData> data) {
+Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData>& data) {
     CORRADE_ASSERT(!data.isEmpty(),
         "MeshTools::combineIndexedAttributes(): no meshes passed",
         (Trade::MeshData{MeshPrimitive{}, 0}));

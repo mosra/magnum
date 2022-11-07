@@ -537,7 +537,7 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
     glAttachShader(_id, shader.id());
 }
 
-void AbstractShaderProgram::attachShaders(Containers::Iterable<Shader> shaders) {
+void AbstractShaderProgram::attachShaders(const Containers::Iterable<Shader>& shaders) {
     for(Shader& s: shaders) attachShader(s);
 }
 
@@ -596,7 +596,7 @@ void AbstractShaderProgram::submitLink() {
     glLinkProgram(_id);
 }
 
-bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader> shaders) {
+bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader>& shaders) {
     /* If any compilation failed, abort without even checking the link status.
        The checkCompile() API is called always, to print also compilation
        warnings even in case everything still manages to link well. */

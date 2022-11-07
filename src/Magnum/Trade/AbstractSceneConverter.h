@@ -241,7 +241,7 @@ enum class SceneConverterFeature: UnsignedInt {
 
     /**
      * Add multiple mesh levels with
-     * @ref AbstractSceneConverter::add(Containers::Iterable<const MeshData>, Containers::StringView)
+     * @ref AbstractSceneConverter::add(const Containers::Iterable<const MeshData>&, Containers::StringView)
      * if @ref SceneConverterFeature::AddMeshes is also supported.
      * @m_since_latest
      */
@@ -249,13 +249,13 @@ enum class SceneConverterFeature: UnsignedInt {
 
     /**
      * Add multiple image levels with
-     * @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData1D>, Containers::StringView)
+     * @ref AbstractSceneConverter::add(const Containers::Iterable<const ImageData1D>&, Containers::StringView)
      * if @ref SceneConverterFeature::AddImages1D or
      * @relativeref{SceneConverterFeature,AddCompressedImages1D} is also
-     * supported; with @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData2D>, Containers::StringView)
+     * supported; with @ref AbstractSceneConverter::add(const Containers::Iterable<const ImageData2D>&, Containers::StringView)
      * if @ref SceneConverterFeature::AddImages2D or
      * @relativeref{SceneConverterFeature,AddCompressedImages2D} is also
-     * supported; or with @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData1D>, Containers::StringView)
+     * supported; or with @ref AbstractSceneConverter::add(const Containers::Iterable<const ImageData1D>&, Containers::StringView)
      * if @ref SceneConverterFeature::AddImages3D or
      * @relativeref{SceneConverterFeature,AddCompressedImages3D} is also
      * supported.
@@ -429,7 +429,7 @@ enum class SceneContent: UnsignedInt {
     /**
      * Multiple mesh levels. For every mesh gathers @ref MeshData from all
      * @ref AbstractImporter::meshLevelCount() and passes them to
-     * @ref AbstractSceneConverter::add(Containers::Iterable<const MeshData>, Containers::StringView)
+     * @ref AbstractSceneConverter::add(const Containers::Iterable<const MeshData>&, Containers::StringView)
      * instead of passing just the first level to
      * @ref AbstractSceneConverter::add(const MeshData&, Containers::StringView).
      * @see @ref SceneContent::Meshes
@@ -442,9 +442,9 @@ enum class SceneContent: UnsignedInt {
      * @ref AbstractImporter::image1DLevelCount() /
      * @relativeref{AbstractImporter,image2DLevelCount()} /
      * @relativeref{AbstractImporter,image3DLevelCount()} and passes them to
-     * @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData1D>, Containers::StringView) /
-     * @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData2D>, Containers::StringView) "add(Containers::Iterable<const ImageData2D>, Containers::StringView)" /
-     * @ref AbstractSceneConverter::add(Containers::Iterable<const ImageData3D>, Containers::StringView) "add(Containers::Iterable<const ImageData3D>, Containers::StringView)"
+     * @ref AbstractSceneConverter::add(const Containers::Iterable<const ImageData1D>&, Containers::StringView) /
+     * @ref AbstractSceneConverter::add(const Containers::Iterable<const ImageData2D>&, Containers::StringView) "add(const Containers::Iterable<const ImageData2D>&, Containers::StringView)" /
+     * @ref AbstractSceneConverter::add(const Containers::Iterable<const ImageData3D>&, Containers::StringView) "add(const Containers::Iterable<const ImageData3D>&, Containers::StringView)"
      * instead of just passing the first level to
      *
      * @ref AbstractSceneConverter::add(const ImageData1D&, Containers::StringView) /
@@ -744,7 +744,7 @@ checked by the implementation:
     (if any) was aborted with @ref doAbort().
 -   The @ref doAdd() and various `doSet*()` functions are called only if a
     corresponding @ref SceneConverterFeature is supported.
--   The @ref doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView)
+-   The @ref doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView)
     function is called only if the list has at least one mesh
 -   All @ref doAdd() functions taking a single image are called only if the
     image has a non-zero size in all dimensions and the data is not
@@ -1389,7 +1389,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Count of meshes successfully added with
          * @ref add(const MeshData&, Containers::StringView) or
-         * @ref add(Containers::Iterable<const MeshData>, Containers::StringView)
+         * @ref add(const Containers::Iterable<const MeshData>&, Containers::StringView)
          * since the initial @ref begin(), @ref beginData() or @ref beginFile()
          * call. Expects that a conversion is currently in progress. If
          * @ref SceneConverterFeature::AddMeshes is not supported and only the
@@ -1460,10 +1460,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *      @ref setMeshAttributeName()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const MeshData> meshLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const MeshData> meshLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const MeshData> meshLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const MeshData>& meshLevels);
         #endif
 
         /**
@@ -1577,7 +1577,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Count of images successfully added with
          * @ref add(const ImageData1D&, Containers::StringView) or
-         * @ref add(Containers::Iterable<const ImageData1D>, Containers::StringView)
+         * @ref add(const Containers::Iterable<const ImageData1D>&, Containers::StringView)
          * and overloads since the initial @ref begin(), @ref beginData() or
          * @ref beginFile() call. Expects that a conversion is currently in
          * progress. If neither @ref SceneConverterFeature::AddImages1D nor
@@ -1663,10 +1663,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *      @ref ImageData::isCompressed()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData1D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData1D>& imageLevels);
         #endif
 
         /**
@@ -1680,10 +1680,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
            allow passing an array of Reference<ImageData>, fixes the
            ambiguity. */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView1D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView1D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView1D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView1D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView1D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView1D>& imageLevels);
         #endif
 
         /**
@@ -1697,10 +1697,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
            allow passing an array of Reference<ImageData>, fixes the
            ambiguity. */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView1D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView1D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView1D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView1D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView1D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView1D>& imageLevels);
         #endif
 
         /**
@@ -1709,7 +1709,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Count of images successfully added with
          * @ref add(const ImageData2D&, Containers::StringView) or
-         * @ref add(Containers::Iterable<const ImageData2D>, Containers::StringView)
+         * @ref add(const Containers::Iterable<const ImageData2D>&, Containers::StringView)
          * and overloads since the initial @ref begin(), @ref beginData() or
          * @ref beginFile() call. Expects that a conversion is currently in
          * progress. If neither @ref SceneConverterFeature::AddImages2D nor
@@ -1794,10 +1794,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @see @ref isConverting(), @ref features()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData2D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData2D>& imageLevels);
         #endif
 
         /**
@@ -1811,10 +1811,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
            allow passing an array of Reference<ImageData>, fixes the
            ambiguity. */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView2D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView2D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView2D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView2D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView2D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView2D>& imageLevels);
         #endif
 
         /**
@@ -1828,10 +1828,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
            allow passing an array of Reference<ImageData>, fixes the
            ambiguity. */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView2D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView2D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView2D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView2D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView2D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView2D>& imageLevels);
         #endif
 
         /**
@@ -1840,7 +1840,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Count of images successfully added with
          * @ref add(const ImageData3D&, Containers::StringView) or
-         * @ref add(Containers::Iterable<const ImageData3D>, Containers::StringView)
+         * @ref add(const Containers::Iterable<const ImageData3D>&, Containers::StringView)
          * and overloads since the initial @ref begin(), @ref beginData() or
          * @ref beginFile() call. Expects that a conversion is currently in
          * progress. If neither @ref SceneConverterFeature::AddImages3D nor
@@ -1925,10 +1925,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @see @ref isConverting(), @ref features()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageData3D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageData3D>& imageLevels);
         #endif
 
         /**
@@ -1942,10 +1942,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
            allow passing an array of Reference<ImageData>, fixes the
            ambiguity. */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView3D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView3D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView3D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const ImageView3D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView3D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const ImageView3D>& imageLevels);
         #endif
 
         /**
@@ -1959,10 +1959,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
            allow passing an array of Reference<ImageData>, fixes the
            ambiguity. */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView3D> imageLevels, Containers::StringView name = {});
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView3D>& imageLevels, Containers::StringView name = {});
         #else
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView3D> imageLevels, Containers::StringView name);
-        Containers::Optional<UnsignedInt> add(Containers::Iterable<const CompressedImageView3D> imageLevels);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView3D>& imageLevels, Containers::StringView name);
+        Containers::Optional<UnsignedInt> add(const Containers::Iterable<const CompressedImageView3D>& imageLevels);
         #endif
 
         /**
@@ -2260,7 +2260,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * If @ref SceneConverterFeature::AddMeshes together with
          * @relativeref{SceneConverterFeature,MeshLevels} is supported, default
-         * implementation calls @ref doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView)
+         * implementation calls @ref doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView)
          * with just the single @p mesh.
          *
          * Otherwise, if @ref SceneConverterFeature::ConvertMesh,
@@ -2283,13 +2283,13 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         virtual bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView name);
 
         /**
-         * @brief Implementation for @ref add(Containers::Iterable<const MeshData>, Containers::StringView)
+         * @brief Implementation for @ref add(const Containers::Iterable<const MeshData>&, Containers::StringView)
          * @m_since_latest
          *
          * The @p id is equal to @ref meshCount() at the time this function
          * is called.
          */
-        virtual bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData> meshLevels, Containers::StringView name);
+        virtual bool doAdd(UnsignedInt id, const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name);
 
         /**
          * @brief Implementation for @ref setMeshAttributeName()
@@ -2330,22 +2330,22 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref ImageData1D instance.
          *
          * If @ref SceneConverterFeature::ImageLevels is supported, default
-         * implementation calls @ref doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView)
+         * implementation calls @ref doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>&, Containers::StringView)
          * with just the single @p image.
          */
         virtual bool doAdd(UnsignedInt id, const ImageData1D& image, Containers::StringView name);
 
         /**
-         * @brief Implementation for @ref add(Containers::Iterable<const ImageData1D>, Containers::StringView)
+         * @brief Implementation for @ref add(const Containers::Iterable<const ImageData1D>&, Containers::StringView)
          * @m_since_latest
          *
          * The @p id is equal to @ref image1DCount() at the time this function
-         * is called. If @ref add(Containers::Iterable<const ImageView1D>, Containers::StringView)
-         * or @ref add(Containers::Iterable<const CompressedImageView1D>, Containers::StringView)
+         * is called. If @ref add(const Containers::Iterable<const ImageView1D>&, Containers::StringView)
+         * or @ref add(const Containers::Iterable<const CompressedImageView1D>&, Containers::StringView)
          * was called, receives the views wrapped in non-owning
          * @ref ImageData1D instances.
          */
-        virtual bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name);
+        virtual bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name);
 
         /**
          * @brief Implementation for @ref add(const ImageData2D&, Containers::StringView)
@@ -2358,22 +2358,22 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref ImageData2D instance.
          *
          * If @ref SceneConverterFeature::ImageLevels is supported, default
-         * implementation calls @ref doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView)
+         * implementation calls @ref doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>&, Containers::StringView)
          * with just the single @p image.
          */
         virtual bool doAdd(UnsignedInt id, const ImageData2D& image, Containers::StringView name);
 
         /**
-         * @brief Implementation for @ref add(Containers::Iterable<const ImageData2D>, Containers::StringView)
+         * @brief Implementation for @ref add(const Containers::Iterable<const ImageData2D>&, Containers::StringView)
          * @m_since_latest
          *
          * The @p id is equal to @ref image2DCount() at the time this function
-         * is called. If @ref add(Containers::Iterable<const ImageView2D>, Containers::StringView)
-         * or @ref add(Containers::Iterable<const CompressedImageView2D>, Containers::StringView)
+         * is called. If @ref add(const Containers::Iterable<const ImageView2D>&, Containers::StringView)
+         * or @ref add(const Containers::Iterable<const CompressedImageView2D>&, Containers::StringView)
          * was called, receives the views wrapped in non-owning
          * @ref ImageData2D instances.
          */
-        virtual bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name);
+        virtual bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name);
 
         /**
          * @brief Implementation for @ref add(const ImageData3D&, Containers::StringView)
@@ -2386,22 +2386,22 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @ref ImageData3D instance.
          *
          * If @ref SceneConverterFeature::ImageLevels is supported, default
-         * implementation calls @ref doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView)
+         * implementation calls @ref doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>&, Containers::StringView)
          * with just the single @p image.
          */
         virtual bool doAdd(UnsignedInt id, const ImageData3D& image, Containers::StringView name);
 
         /**
-         * @brief Implementation for @ref add(Containers::Iterable<const ImageData3D>, Containers::StringView)
+         * @brief Implementation for @ref add(const Containers::Iterable<const ImageData3D>&, Containers::StringView)
          * @m_since_latest
          *
          * The @p id is equal to @ref image3DCount() at the time this function
-         * is called. If @ref add(Containers::Iterable<const ImageView3D>, Containers::StringView)
-         * or @ref add(Containers::Iterable<const CompressedImageView3D>, Containers::StringView)
+         * is called. If @ref add(const Containers::Iterable<const ImageView3D>&, Containers::StringView)
+         * or @ref add(const Containers::Iterable<const CompressedImageView3D>&, Containers::StringView)
          * was called, receives the views wrapped in non-owning
          * @ref ImageData3D instances.
          */
-        virtual bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name);
+        virtual bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name);
 
         /* Called from addImporterContents() and addSupportedImporterContents() */
         MAGNUM_TRADE_LOCAL bool addImporterContentsInternal(AbstractImporter& importer, SceneContents contents, bool noLevelsIfUnsupported);

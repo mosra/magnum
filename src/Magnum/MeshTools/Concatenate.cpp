@@ -33,7 +33,7 @@ namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
 
-std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(Containers::Iterable<const Trade::MeshData> meshes) {
+std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Containers::Iterable<const Trade::MeshData>& meshes) {
     UnsignedInt indexCount = 0;
     UnsignedInt vertexCount = 0;
     for(const Trade::MeshData& mesh: meshes) {
@@ -62,7 +62,7 @@ struct MeshAttributeHash: std::hash<typename std::underlying_type<Trade::MeshAtt
     }
 };
 
-Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::Iterable<const Trade::MeshData> meshes, const char* const assertPrefix) {
+Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::Iterable<const Trade::MeshData>& meshes, const char* const assertPrefix) {
     #ifdef CORRADE_NO_ASSERT
     static_cast<void>(assertPrefix);
     #endif
@@ -189,7 +189,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
 }
 
-Trade::MeshData concatenate(const Containers::Iterable<const Trade::MeshData> meshes, const InterleaveFlags flags) {
+Trade::MeshData concatenate(const Containers::Iterable<const Trade::MeshData>& meshes, const InterleaveFlags flags) {
     CORRADE_ASSERT(!meshes.isEmpty(),
         "MeshTools::concatenate(): expected at least one mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));

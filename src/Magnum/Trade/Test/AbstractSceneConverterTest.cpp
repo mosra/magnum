@@ -3869,7 +3869,7 @@ void AbstractSceneConverterTest::addMeshLevels() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData> meshLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
                returns */
             CORRADE_COMPARE(id, meshCount());
@@ -3912,7 +3912,7 @@ void AbstractSceneConverterTest::addMeshLevelsFailed() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
             return false;
         }
     } converter;
@@ -3991,7 +3991,7 @@ void AbstractSceneConverterTest::addMeshThroughLevels() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData> meshLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(meshLevels.size(), 1);
             CORRADE_COMPARE(meshLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
@@ -4830,7 +4830,7 @@ void AbstractSceneConverterTest::addImageLevels1D() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
                returns */
             CORRADE_COMPARE(id, image1DCount());
@@ -4876,7 +4876,7 @@ void AbstractSceneConverterTest::addImageLevels1DView() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(!imageLevels[1].isCompressed());
@@ -4915,7 +4915,7 @@ void AbstractSceneConverterTest::addImageLevels1DCompressedView() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(imageLevels[1].isCompressed());
@@ -4955,7 +4955,7 @@ void AbstractSceneConverterTest::addImageLevels1DFailed() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>&, Containers::StringView) override {
             return false;
         }
     } converter;
@@ -5048,7 +5048,7 @@ void AbstractSceneConverterTest::addImageLevels2D() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
                returns */
             CORRADE_COMPARE(id, image2DCount());
@@ -5094,7 +5094,7 @@ void AbstractSceneConverterTest::addImageLevels2DView() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(!imageLevels[1].isCompressed());
@@ -5133,7 +5133,7 @@ void AbstractSceneConverterTest::addImageLevels2DCompressedView() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(imageLevels[1].isCompressed());
@@ -5173,7 +5173,7 @@ void AbstractSceneConverterTest::addImageLevels2DFailed() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>&, Containers::StringView) override {
             return false;
         }
     } converter;
@@ -5455,7 +5455,7 @@ void AbstractSceneConverterTest::addImageLevels3D() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name) override {
             /* Camera count should not be increased before the function
                returns */
             CORRADE_COMPARE(id, image3DCount());
@@ -5501,7 +5501,7 @@ void AbstractSceneConverterTest::addImageLevels3DView() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(!imageLevels[1].isCompressed());
@@ -5540,7 +5540,7 @@ void AbstractSceneConverterTest::addImageLevels3DCompressedView() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 2);
             CORRADE_VERIFY(imageLevels[1].isCompressed());
@@ -5580,7 +5580,7 @@ void AbstractSceneConverterTest::addImageLevels3DFailed() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>&, Containers::StringView) override {
             return false;
         }
     } converter;
@@ -5673,7 +5673,7 @@ void AbstractSceneConverterTest::addImage1DThroughLevels() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 1);
             CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
@@ -5703,7 +5703,7 @@ void AbstractSceneConverterTest::addImage2DThroughLevels() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 1);
             CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
@@ -5733,7 +5733,7 @@ void AbstractSceneConverterTest::addImage3DThroughLevels() {
 
         bool doBegin() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D> imageLevels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>& imageLevels, Containers::StringView name) override {
             CORRADE_COMPARE(name, "hello");
             CORRADE_COMPARE(imageLevels.size(), 1);
             CORRADE_COMPARE(imageLevels[0].importerState(), reinterpret_cast<const void*>(0xdeadbeef));
@@ -6037,7 +6037,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             Debug{} << "Adding mesh" << id << "named" << name << "with" << data.importerState();
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData> levels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const MeshData>& levels, Containers::StringView name) override {
             for(std::size_t i = 0; i != levels.size(); ++i)
                 Debug{} << "Adding mesh" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
             return true;
@@ -6056,7 +6056,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             Debug{} << "Adding 1D image" << id << "named" << name << "with" << data.importerState();
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D> levels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData1D>& levels, Containers::StringView name) override {
             for(std::size_t i = 0; i != levels.size(); ++i)
                 Debug{} << "Adding 1D image" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
             return true;
@@ -6066,7 +6066,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             Debug{} << "Adding 2D image" << id << "named" << name << "with" << data.importerState();
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D> levels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData2D>& levels, Containers::StringView name) override {
             for(std::size_t i = 0; i != levels.size(); ++i)
                 Debug{} << "Adding 2D image" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
             return true;
@@ -6076,7 +6076,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             Debug{} << "Adding 3D image" << id << "named" << name << "with" << data.importerState();
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D> levels, Containers::StringView name) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData3D>& levels, Containers::StringView name) override {
             for(std::size_t i = 0; i != levels.size(); ++i)
                 Debug{} << "Adding 3D image" << id << "level" << i << "named" << name << "with" << levels[i].importerState();
             return true;
@@ -6193,7 +6193,7 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
 
         bool doBeginData() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
             Debug{} << "Adding mesh levels";
             return true;
         }
@@ -6412,7 +6412,7 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             Debug{} << "Adding mesh";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
             Debug{} << "Adding mesh levels";
             return true;
         }
@@ -6430,7 +6430,7 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             Debug{} << "Adding 1D image";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>&, Containers::StringView) override {
             Debug{} << "Adding 1D image levels";
             return true;
         }
@@ -6439,7 +6439,7 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             Debug{} << "Adding 2D image";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>&, Containers::StringView) override {
             Debug{} << "Adding 2D image levels";
             return true;
         }
@@ -6447,7 +6447,7 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
             Debug{} << "Adding 3D image";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>&, Containers::StringView) override {
             Debug{} << "Adding 3D image levels";
             return true;
         }
@@ -6637,7 +6637,7 @@ void AbstractSceneConverterTest::addImporterContentsConversionFail() {
             Debug{} << "Adding mesh";
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const MeshData>, Containers::StringView) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
             if(id == 2) return false;
 
             Debug{} << "Adding mesh levels";
@@ -6663,7 +6663,7 @@ void AbstractSceneConverterTest::addImporterContentsConversionFail() {
             Debug{} << "Adding 1D image";
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData1D>&, Containers::StringView) override {
             if(id == 2) return false;
 
             Debug{} << "Adding 1D image levels";
@@ -6676,7 +6676,7 @@ void AbstractSceneConverterTest::addImporterContentsConversionFail() {
             Debug{} << "Adding 2D image";
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData2D>&, Containers::StringView) override {
             if(id == 2) return false;
 
             Debug{} << "Adding 2D image levels";
@@ -6688,7 +6688,7 @@ void AbstractSceneConverterTest::addImporterContentsConversionFail() {
             Debug{} << "Adding 3D image";
             return true;
         }
-        bool doAdd(UnsignedInt id, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt id, const Containers::Iterable<const ImageData3D>&, Containers::StringView) override {
             if(id == 2) return false;
 
             Debug{} << "Adding 3D image levels";
@@ -6919,15 +6919,15 @@ void AbstractSceneConverterTest::addImporterContentsNotSupportedUncompressedImag
         }
         bool doBeginData() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData1D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const Trade::ImageData1D>&, Containers::StringView) override {
             Debug{} << "Added 1D image";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData2D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const Trade::ImageData2D>&, Containers::StringView) override {
             Debug{} << "Added 2D image";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData3D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const Trade::ImageData3D>&, Containers::StringView) override {
             Debug{} << "Added 3D image";
             return true;
         }
@@ -6997,15 +6997,15 @@ void AbstractSceneConverterTest::addImporterContentsNotSupportedCompressedImage(
         }
         bool doBeginData() override { return true; }
 
-        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData1D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const Trade::ImageData1D>&, Containers::StringView) override {
             Debug{} << "Added 1D image";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData2D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const Trade::ImageData2D>&, Containers::StringView) override {
             Debug{} << "Added 2D image";
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const Trade::ImageData3D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const Trade::ImageData3D>&, Containers::StringView) override {
             Debug{} << "Added 3D image";
             return true;
         }
@@ -7159,7 +7159,7 @@ void AbstractSceneConverterTest::addSupportedImporterContents() {
         bool doAdd(UnsignedInt, const SkinData3D&, Containers::StringView) override {
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView) override {
             return true;
         }
         bool doAdd(UnsignedInt, const MaterialData&, Containers::StringView) override {
@@ -7168,13 +7168,13 @@ void AbstractSceneConverterTest::addSupportedImporterContents() {
         bool doAdd(UnsignedInt, const TextureData&, Containers::StringView) override {
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>&, Containers::StringView) override {
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>&, Containers::StringView) override {
             return true;
         }
-        bool doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView) override {
+        bool doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>&, Containers::StringView) override {
             return true;
         }
 

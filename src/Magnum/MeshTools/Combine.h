@@ -95,7 +95,7 @@ implementation-specific format.
 @see @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData> data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData>& data);
 
 /**
 @brief Combine per-face attributes into an existing mesh

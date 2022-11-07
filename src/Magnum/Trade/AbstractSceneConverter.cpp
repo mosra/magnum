@@ -209,7 +209,7 @@ struct AbstractSceneConverter::State {
 Containers::StringView AbstractSceneConverter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractSceneConverter/0.2"_s
+"cz.mosra.magnum.Trade.AbstractSceneConverter/0.2.1"_s
 /* [interface] */
     ;
 }
@@ -824,7 +824,7 @@ bool AbstractSceneConverter::doAdd(const UnsignedInt id, const MeshData& mesh, c
     return doAdd(id, Containers::Iterable<const MeshData>{mesh}, name);
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const MeshData> meshLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const MeshData>& meshLevels, const Containers::StringView name) {
     CORRADE_ASSERT(features() >= (SceneConverterFeature::AddMeshes|SceneConverterFeature::MeshLevels),
         "Trade::AbstractSceneConverter::add(): multi-level mesh conversion not supported", {});
     CORRADE_ASSERT(_state,
@@ -837,11 +837,11 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return {};
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const MeshData> meshLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const MeshData>& meshLevels) {
     return add(meshLevels, {});
 }
 
-bool AbstractSceneConverter::doAdd(UnsignedInt, Containers::Iterable<const MeshData>, Containers::StringView) {
+bool AbstractSceneConverter::doAdd(UnsignedInt, const Containers::Iterable<const MeshData>&, Containers::StringView) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::add(): multi-level mesh conversion advertised but not implemented", {});
 }
 
@@ -924,7 +924,7 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
     return true;
 }
 
-template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::Iterable<const ImageData<dimensions>> imageLevels) {
+template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::Iterable<const ImageData<dimensions>>& imageLevels) {
     CORRADE_ASSERT(!imageLevels.isEmpty(),
         messagePrefix << "at least one image level has to be specified", false);
 
@@ -1009,7 +1009,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedIm
     return add(image, {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData1D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData1D>& imageLevels, const Containers::StringView name) {
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds.
        Has to be first so we can safely ask for the first item in asserts
@@ -1027,15 +1027,15 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return {};
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData1D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData1D>& imageLevels) {
     return add(imageLevels, {});
 }
 
-bool AbstractSceneConverter::doAdd(UnsignedInt, Containers::Iterable<const ImageData1D>, Containers::StringView) {
+bool AbstractSceneConverter::doAdd(UnsignedInt, const Containers::Iterable<const ImageData1D>&, Containers::StringView) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::add(): multi-level 1D image conversion advertised but not implemented", {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView1D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView1D>& imageLevels, const Containers::StringView name) {
     Containers::Array<ImageData1D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const ImageView1D& image = imageLevels[i];
@@ -1045,11 +1045,11 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(data, name);
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView1D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView1D>& imageLevels) {
     return add(imageLevels, {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView1D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView1D>& imageLevels, const Containers::StringView name) {
     Containers::Array<ImageData1D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const CompressedImageView1D& image = imageLevels[i];
@@ -1059,7 +1059,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(data, name);
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView1D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView1D>& imageLevels) {
     return add(imageLevels, {});
 }
 
@@ -1110,7 +1110,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedIm
     return add(image, {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData2D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData2D>& imageLevels, const Containers::StringView name) {
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds.
        Has to be first so we can safely ask for the first item in asserts
@@ -1128,15 +1128,15 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return {};
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData2D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData2D>& imageLevels) {
     return add(imageLevels, {});
 }
 
-bool AbstractSceneConverter::doAdd(UnsignedInt, Containers::Iterable<const ImageData2D>, Containers::StringView) {
+bool AbstractSceneConverter::doAdd(UnsignedInt, const Containers::Iterable<const ImageData2D>&, Containers::StringView) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::add(): multi-level 2D image conversion advertised but not implemented", {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView2D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView2D>& imageLevels, const Containers::StringView name) {
     Containers::Array<ImageData2D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const ImageView2D& image = imageLevels[i];
@@ -1146,11 +1146,11 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(data, name);
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView2D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView2D>& imageLevels) {
     return add(imageLevels, {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView2D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView2D>& imageLevels, const Containers::StringView name) {
     Containers::Array<ImageData2D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const CompressedImageView2D& image = imageLevels[i];
@@ -1160,7 +1160,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(data, name);
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView2D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView2D>& imageLevels) {
     return add(imageLevels, {});
 }
 
@@ -1211,7 +1211,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const CompressedIm
     return add(image, {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData3D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData3D>& imageLevels, const Containers::StringView name) {
     #ifndef CORRADE_NO_ASSERT
     /* Explicitly return if checks fail for CORRADE_GRACEFUL_ASSERT builds.
        Has to be first so we can safely ask for the first item in asserts
@@ -1229,15 +1229,15 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return {};
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData3D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageData3D>& imageLevels) {
     return add(imageLevels, {});
 }
 
-bool AbstractSceneConverter::doAdd(UnsignedInt, Containers::Iterable<const ImageData3D>, Containers::StringView) {
+bool AbstractSceneConverter::doAdd(UnsignedInt, const Containers::Iterable<const ImageData3D>&, Containers::StringView) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::add(): multi-level 3D image conversion advertised but not implemented", {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView3D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView3D>& imageLevels, const Containers::StringView name) {
     Containers::Array<ImageData3D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const ImageView3D& image = imageLevels[i];
@@ -1247,11 +1247,11 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(data, name);
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView3D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const ImageView3D>& imageLevels) {
     return add(imageLevels, {});
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView3D> imageLevels, const Containers::StringView name) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView3D>& imageLevels, const Containers::StringView name) {
     Containers::Array<ImageData3D> data{NoInit, imageLevels.size()};
     for(std::size_t i = 0; i != imageLevels.size(); ++i) {
         const CompressedImageView3D& image = imageLevels[i];
@@ -1261,7 +1261,7 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
     return add(data, name);
 }
 
-Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView3D> imageLevels) {
+Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::Iterable<const CompressedImageView3D>& imageLevels) {
     return add(imageLevels, {});
 }
 

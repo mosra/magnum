@@ -323,7 +323,7 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutCreateInfo {
          * -    `pBindingFlags` to a list of all
          *      @ref DescriptorSetLayoutBinding::flags() from @p bindings
          */
-        explicit DescriptorSetLayoutCreateInfo(Containers::Iterable<const DescriptorSetLayoutBinding> bindings, Flags flags = {});
+        explicit DescriptorSetLayoutCreateInfo(const Containers::Iterable<const DescriptorSetLayoutBinding>& bindings, Flags flags = {});
 
         /** @overload */
         /* Iterable takes std::initializer_list itself but having it also here

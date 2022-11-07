@@ -91,7 +91,7 @@ DescriptorSetLayoutBinding& DescriptorSetLayoutBinding::operator=(DescriptorSetL
     return *this;
 }
 
-DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::Iterable<const DescriptorSetLayoutBinding> bindings, const Flags flags): _info{} {
+DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::Iterable<const DescriptorSetLayoutBinding>& bindings, const Flags flags): _info{} {
     /* Check the total count of immutable samplers to allocate them all in a
        contiguous memory location. Also check if we have any binding flags. If
        yes, we have to create an additional array and put a structure into the

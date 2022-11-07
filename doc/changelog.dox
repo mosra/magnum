@@ -474,7 +474,7 @@ See also:
 
 -   @ref MeshTools::interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags),
     @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) and
-    @ref MeshTools::concatenate(Containers::Iterable<const Trade::MeshData>, InterleaveFlags)
+    @ref MeshTools::concatenate(const Containers::Iterable<const Trade::MeshData>&, InterleaveFlags)
     optionally take a @ref MeshTools::InterleaveFlags parameter affecting the
     output, in particular whether to preserve the original interleaved layout.
 

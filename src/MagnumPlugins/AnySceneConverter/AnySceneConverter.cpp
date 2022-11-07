@@ -233,7 +233,7 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const MeshDat
     return !!_converter->add(mesh, name);
 }
 
-bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const MeshData> meshLevels, const Containers::StringView name) {
+bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const MeshData>& meshLevels, const Containers::StringView name) {
     CORRADE_INTERNAL_ASSERT(id == _converter->meshCount());
     return !!_converter->add(meshLevels, name);
 }
@@ -257,7 +257,7 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const ImageDa
     return !!_converter->add(image, name);
 }
 
-bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const ImageData1D> imageLevels, const Containers::StringView name) {
+bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const ImageData1D>& imageLevels, const Containers::StringView name) {
     CORRADE_INTERNAL_ASSERT(id == _converter->image1DCount());
     return !!_converter->add(imageLevels, name);
 }
@@ -267,7 +267,7 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const ImageDa
     return !!_converter->add(image, name);
 }
 
-bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const ImageData2D> imageLevels, const Containers::StringView name) {
+bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const ImageData2D>& imageLevels, const Containers::StringView name) {
     CORRADE_INTERNAL_ASSERT(id == _converter->image2DCount());
     return !!_converter->add(imageLevels, name);
 }
@@ -277,7 +277,7 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const ImageDa
     return !!_converter->add(image, name);
 }
 
-bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const ImageData3D> imageLevels, const Containers::StringView name) {
+bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Containers::Iterable<const ImageData3D>& imageLevels, const Containers::StringView name) {
     CORRADE_INTERNAL_ASSERT(id == _converter->image3DCount());
     return !!_converter->add(imageLevels, name);
 }
@@ -285,4 +285,4 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Contain
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneConverter, Magnum::Trade::AnySceneConverter,
-    "cz.mosra.magnum.Trade.AbstractSceneConverter/0.2")
+    "cz.mosra.magnum.Trade.AbstractSceneConverter/0.2.1")
