@@ -25,6 +25,7 @@
 
 #include <set>
 #include <sstream>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>

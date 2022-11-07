@@ -26,6 +26,7 @@
 #include <algorithm> /* std::find() */
 #include <sstream>
 #include <Corrade/Containers/ScopeGuard.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>

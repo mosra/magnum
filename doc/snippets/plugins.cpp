@@ -1,3 +1,4 @@
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 

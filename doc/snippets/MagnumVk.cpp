@@ -26,6 +26,7 @@
 #include <string>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Path.h>
 

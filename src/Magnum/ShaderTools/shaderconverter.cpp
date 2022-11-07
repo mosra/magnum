@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>

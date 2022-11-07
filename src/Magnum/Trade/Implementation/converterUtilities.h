@@ -32,6 +32,7 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/FormatStl.h> /** @todo drop once String::replaceAll() has a StringView overload */

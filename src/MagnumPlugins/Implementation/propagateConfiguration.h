@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 
 #include "Magnum/Magnum.h"

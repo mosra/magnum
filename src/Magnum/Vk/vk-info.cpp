@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Cpu.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Utility/Arguments.h>
 
 #include "Magnum/Vk/DeviceFeatures.h"
