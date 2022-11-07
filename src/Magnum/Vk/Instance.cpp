@@ -30,6 +30,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Arguments.h>
 
@@ -272,8 +273,7 @@ void Instance::wrap(const VkInstance handle, const Version version, const Contai
        repeating what was passed to the constructor */
     _handle = handle;
     _flags = flags;
-    initializeExtensions(enabledExtensions);
-    initialize(version, 0, nullptr);
+    initialize(version, enabledExtensions, 0, nullptr);
 }
 
 void Instance::wrap(const VkInstance handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const HandleFlags flags) {
@@ -333,11 +333,10 @@ Result Instance::tryCreate(const InstanceCreateInfo& info) {
         return Result(result);
     }
 
-    initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
     if(info._state)
-        initialize(version, info._state->argc, info._state->argv);
+        initialize(version, Containers::arrayView(info->ppEnabledExtensionNames, info->enabledExtensionCount), info._state->argc, info._state->argv);
     else
-        initialize(version, 0, nullptr);
+        initialize(version, Containers::arrayView(info->ppEnabledExtensionNames, info->enabledExtensionCount), 0, nullptr);
 
     return Result::Success;
 }
@@ -346,25 +345,23 @@ Result Instance::tryCreate() {
     return tryCreate(InstanceCreateInfo{});
 }
 
-template<class T> void Instance::initializeExtensions(const Containers::ArrayView<const T> enabledExtensions) {
+void Instance::initialize(const Version version, const Containers::StringIterable& enabledExtensions, const Int argc, const char* const* const argv) {
     /* Mark all known extensions as enabled */
-    for(const T extension: enabledExtensions) {
+    for(const Containers::StringView extension: enabledExtensions) {
         for(Containers::ArrayView<const InstanceExtension> knownExtensions: {
             InstanceExtension::extensions(Version::None),
           /*InstanceExtension::extensions(Version::Vk10), is empty */
             InstanceExtension::extensions(Version::Vk11),
           /*InstanceExtension::extensions(Version::Vk12) is empty */
         }) {
-            const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const InstanceExtension& a, const T& b) {
-                return a.string() < static_cast<const Containers::StringView&>(b);
+            const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const InstanceExtension& a, Containers::StringView b) {
+                return a.string() < b;
             });
             if(found == knownExtensions.end() || found->string() != extension) continue;
             _extensionStatus.set(found->index(), true);
         }
     }
-}
 
-void Instance::initialize(const Version version, const Int argc, const char* const* const argv) {
     /* Init version, function pointers */
     _version = version;
     flextVkInitInstance(_handle, &_functionPointers);

@@ -435,8 +435,7 @@ class MAGNUM_VK_EXPORT Instance {
         Implementation::InstanceState& state() { return *_state; }
 
     private:
-        template<class T> MAGNUM_VK_LOCAL void initializeExtensions(Containers::ArrayView<const T> enabledExtensions);
-        MAGNUM_VK_LOCAL void initialize(Version version, Int argc, const char* const* argv);
+        MAGNUM_VK_LOCAL void initialize(Version version, const Containers::StringIterable& enabledExtensions, Int argc, const char* const* argv);
 
         VkInstance _handle;
         HandleFlags _flags;

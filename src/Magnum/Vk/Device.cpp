@@ -31,6 +31,7 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Arguments.h>
@@ -669,12 +670,11 @@ void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, con
     _handle = handle;
     _flags = flags;
     _properties.emplace(DeviceProperties::wrap(instance, physicalDevice));
-    initializeExtensions(enabledExtensions);
 
     /* Because we have no control over extensions / features, no workarounds
        are used here -- better to just do nothing than just a partial attempt */
     Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds = Implementation::disableAllWorkarounds();
-    initialize(instance, version, encounteredWorkarounds, enabledFeatures);
+    initialize(instance, version, enabledExtensions, encounteredWorkarounds, enabledFeatures);
 }
 
 void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
@@ -782,8 +782,7 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
 
     /* Initialize the enabled extension list and feature-, extension-,
        workaround-dependent function pointers */
-    initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
-    initialize(instance, version, encounteredWorkarounds, info._state->enabledFeatures | info._state->implicitFeatures);
+    initialize(instance, version, Containers::arrayView(info->ppEnabledExtensionNames, info->enabledExtensionCount), encounteredWorkarounds, info._state->enabledFeatures | info._state->implicitFeatures);
 
     /* Print a list of used workarounds */
     if(!info._state->quietLog) {
@@ -852,22 +851,20 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
     return Result::Success;
 }
 
-template<class T> void Device::initializeExtensions(const Containers::ArrayView<const T> enabledExtensions) {
+void Device::initialize(Instance& instance, const Version version, const Containers::StringIterable& enabledExtensions, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures) {
     /* Mark all known extensions as enabled */
-    for(const T extension: enabledExtensions) {
+    for(const Containers::StringView extension: enabledExtensions) {
         for(const Version version: KnownVersionsForExtensions) {
             const Containers::ArrayView<const Extension> knownExtensions =
                 Extension::extensions(version);
-            const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, const T& b) {
-                return a.string() < static_cast<const Containers::StringView&>(b);
+            const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, Containers::StringView b) {
+                return a.string() < b;
             });
             if(found == knownExtensions.end() || found->string() != extension) continue;
             _enabledExtensions.set(found->index(), true);
         }
     }
-}
 
-void Device::initialize(Instance& instance, const Version version, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures) {
     /* Init version, features, function pointers */
     _version = version;
     _enabledFeatures = enabledFeatures;
