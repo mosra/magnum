@@ -115,7 +115,7 @@ All other attributes (including ones common for Phong and PBR such as
 resulting material has @ref Trade::MaterialType::PbrMetallicRoughness set and
 @ref Trade::MaterialType::Phong removed.
 
-@see @ref phongToFlat(), @ref Trade::PbrMetallicRoughnessMaterialData
+@see @ref Trade::PbrMetallicRoughnessMaterialData
 */
 MAGNUM_MATERIALTOOLS_EXPORT Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trade::MaterialData& material, PhongToPbrMetallicRoughnessFlags flags = {});
 
