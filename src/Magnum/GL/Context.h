@@ -1113,9 +1113,7 @@ class MAGNUM_GL_EXPORT Context::Configuration {
          * Corresponds to the `--magnum-disable-workarounds`
          * @ref GL-Context-usage-command-line "command-line option".
          */
-        Configuration& addDisabledWorkarounds(Containers::ArrayView<const Containers::StringView> workarounds);
-        /** @overload */
-        Configuration& addDisabledWorkarounds(std::initializer_list<Containers::StringView> workarounds);
+        Configuration& addDisabledWorkarounds(const Containers::StringIterable& workarounds);
 
         /** @brief Disabled extensions */
         Containers::ArrayView<const Extension> disabledExtensions() const;
@@ -1147,11 +1145,7 @@ class MAGNUM_GL_EXPORT Context::Configuration {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Type)       \
-    Type& addDisabledWorkarounds(Containers::ArrayView<const Containers::StringView> workarounds) { \
-        GL::Context::Configuration::addDisabledWorkarounds(workarounds);    \
-        return *this;                                                       \
-    }                                                                       \
-    Type& addDisabledWorkarounds(std::initializer_list<Containers::StringView> workarounds) { \
+    Type& addDisabledWorkarounds(const Containers::StringIterable& workarounds) { \
         GL::Context::Configuration::addDisabledWorkarounds(workarounds);    \
         return *this;                                                       \
     }                                                                       \

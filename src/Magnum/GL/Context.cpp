@@ -28,6 +28,7 @@
 #include <algorithm> /* std::lower_bound() */
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/Macros.h> /* CORRADE_THREAD_LOCAL */
@@ -1266,10 +1267,6 @@ Containers::ArrayView<const Containers::StringView> Context::Configuration::disa
 
 Containers::ArrayView<const Extension> Context::Configuration::disabledExtensions() const {
     return _disabledExtensions;
-}
-
-Context::Configuration& Context::Configuration::addDisabledWorkarounds(std::initializer_list<Containers::StringView> workarounds) {
-    return addDisabledWorkarounds(Containers::arrayView(workarounds));
 }
 
 Context::Configuration& Context::Configuration::addDisabledExtensions(Containers::ArrayView<const Extension> extensions) {

@@ -23,8 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringIterable.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -751,7 +752,7 @@ void Context::setupDriverWorkarounds() {
     #endif
 }
 
-Context::Configuration& Context::Configuration::addDisabledWorkarounds(Containers::ArrayView<const Containers::StringView> workarounds) {
+Context::Configuration& Context::Configuration::addDisabledWorkarounds(const Containers::StringIterable& workarounds) {
     arrayReserve(_disabledWorkarounds, _disabledWorkarounds.size() + workarounds.size());
 
     for(const Containers::StringView workaround: workarounds) {
