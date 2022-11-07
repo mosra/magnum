@@ -701,13 +701,13 @@ const struct {
         "Cannot process mesh 0 with MeshOptimizerSceneConverter\n"},
     {"can't import a 2D image for per-image processing", Containers::array<Containers::String>({
         "-I", "GltfImporter", "-P", "NonexistentImageConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/broken-image-2d.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")}),
-        "GltfImporter", "AnyImageImporter", nullptr, nullptr,
+        "GltfImporter", "PngImporter", nullptr, nullptr,
         Utility::format("\n" /* Just a suffix */
         "Trade::AbstractImporter::openFile(): cannot open file {}\n"
         "Cannot import 2D image 0\n", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/nonexistent.png"))},
     {"can't import a 3D image for per-image processing", Containers::array<Containers::String>({
         "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx", "-P", "NonexistentImageConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/broken-image-3d.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")}),
-        "GltfImporter", "AnyImageImporter", nullptr, nullptr,
+        "GltfImporter", "KtxImporter", nullptr, nullptr,
         Utility::format("\n" /* Just a suffix */
         "Trade::AbstractImporter::openFile(): cannot open file {}\n"
         "Cannot import 3D image 0\n", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/nonexistent.ktx2"))},
@@ -723,7 +723,7 @@ const struct {
         "PngImageConverter doesn't support 2D image conversion, only Convert2DToData\n"},
     {"plugin doesn't support compressed image conversion", Containers::array<Containers::String>({
         "-I", "GltfImporter", "-P", "StbResizeImageConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/image-dds.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")}),
-        "GltfImporter", "PngImporter", nullptr, "StbResizeImageConverter",
+        "GltfImporter", "DdsImporter", nullptr, "StbResizeImageConverter",
         /** @todo add an ability to pass options to AnyImageImporter to
             suppress this */
         "Trade::DdsImporter::openData(): block-compressed image is assumed to be encoded with Y down and Z forward, imported data will have wrong orientation. Enable assumeYUpZBackward to suppress this warning.\n"
@@ -735,7 +735,7 @@ const struct {
         "Cannot process 2D image 0 with StbResizeImageConverter\n"},
     {"can't process a 3D image", Containers::array<Containers::String>({
         "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx", "-P", "StbResizeImageConverter", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-3d.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")}),
-        "GltfImporter", "PngImporter", nullptr, "StbResizeImageConverter",
+        "GltfImporter", "KtxImporter", nullptr, "StbResizeImageConverter",
         "Trade::StbResizeImageConverter::convert(): output size was not specified\n"
         "Cannot process 3D image 0 with StbResizeImageConverter\n"},
     {"can't add processed 2D images", Containers::array<Containers::String>({
