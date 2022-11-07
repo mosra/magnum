@@ -27,6 +27,7 @@
 
 #include <algorithm> /* std::lower_bound() */
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -45,7 +46,7 @@ ExtensionProperties::~ExtensionProperties() = default;
 
 ExtensionProperties& ExtensionProperties::operator=(ExtensionProperties&&) noexcept = default;
 
-ExtensionProperties::ExtensionProperties(const Containers::ArrayView<const Containers::StringView> layers, VkResult(*const enumerator)(void*, const char*, UnsignedInt*, VkExtensionProperties*), void* const state) {
+ExtensionProperties::ExtensionProperties(const Containers::StringIterable& layers, VkResult(*const enumerator)(void*, const char*, UnsignedInt*, VkExtensionProperties*), void* const state) {
     /* Retrieve total extension count for all layers + the global extensions */
     std::size_t totalCount = 0;
     for(std::size_t i = 0; i <= layers.size(); ++i) {
@@ -186,14 +187,14 @@ UnsignedInt InstanceExtensionProperties::revision(const InstanceExtension& exten
     return revision(extension.string());
 }
 
-InstanceExtensionProperties enumerateInstanceExtensionProperties(const Containers::ArrayView<const Containers::StringView> layers) {
+InstanceExtensionProperties enumerateInstanceExtensionProperties(const Containers::StringIterable& layers) {
     return InstanceExtensionProperties{layers, [](void*, const char* const layer, UnsignedInt* count, VkExtensionProperties* properties) {
         return vkEnumerateInstanceExtensionProperties(layer, count, properties);
     }, nullptr};
 }
 
-InstanceExtensionProperties enumerateInstanceExtensionProperties(const std::initializer_list<Containers::StringView> layers) {
-    return enumerateInstanceExtensionProperties(Containers::arrayView(layers));
+InstanceExtensionProperties enumerateInstanceExtensionProperties() {
+    return enumerateInstanceExtensionProperties({});
 }
 
 }}

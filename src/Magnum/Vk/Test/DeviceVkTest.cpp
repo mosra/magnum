@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -563,8 +564,7 @@ void DeviceVkTest::createInfoRvalue() {
     rawQueueInfo.queueCount = 1;
 
     DeviceCreateInfo&& info = DeviceCreateInfo{pickDevice(instance())}
-        .addEnabledExtensions(Containers::ArrayView<const Containers::StringView>{})
-        .addEnabledExtensions(std::initializer_list<Containers::StringView>{})
+        .addEnabledExtensions(Containers::StringIterable{})
         .addEnabledExtensions(Containers::ArrayView<const Extension>{})
         .addEnabledExtensions(std::initializer_list<Extension>{})
         .addEnabledExtensions<>()

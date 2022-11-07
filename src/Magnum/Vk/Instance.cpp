@@ -174,7 +174,7 @@ InstanceCreateInfo& InstanceCreateInfo::setApplicationInfo(const Containers::Str
     return *this;
 }
 
-InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::ArrayView<const Containers::StringView> layers) {
+InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::StringIterable& layers) {
     if(layers.isEmpty()) return *this;
     if(!_state) _state.emplace();
 
@@ -204,11 +204,7 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const Containers::Array
     return *this;
 }
 
-InstanceCreateInfo& InstanceCreateInfo::addEnabledLayers(const std::initializer_list<Containers::StringView> layers) {
-    return addEnabledLayers(Containers::arrayView(layers));
-}
-
-InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) {
+InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::StringIterable& extensions) {
     if(extensions.isEmpty()) return *this;
     if(!_state) _state.emplace();
 
@@ -238,10 +234,6 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::A
     return *this;
 }
 
-InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) {
-    return addEnabledExtensions(Containers::arrayView(extensions));
-}
-
 InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const InstanceExtension> extensions) {
     if(extensions.isEmpty()) return *this;
     if(!_state) _state.emplace();
@@ -265,7 +257,7 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const std::initiali
     return addEnabledExtensions(Containers::arrayView(extensions));
 }
 
-void Instance::wrap(const VkInstance handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const HandleFlags flags) {
+void Instance::wrap(const VkInstance handle, const Version version, const Containers::StringIterable& enabledExtensions, const HandleFlags flags) {
     CORRADE_ASSERT(!_handle,
         "Vk::Instance::wrap(): instance already created", );
 
@@ -274,10 +266,6 @@ void Instance::wrap(const VkInstance handle, const Version version, const Contai
     _handle = handle;
     _flags = flags;
     initialize(version, enabledExtensions, 0, nullptr);
-}
-
-void Instance::wrap(const VkInstance handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const HandleFlags flags) {
-    wrap(handle, version, Containers::arrayView(enabledExtensions), flags);
 }
 
 Instance::Instance(const InstanceCreateInfo& info): Instance{NoCreate} {

@@ -273,10 +273,7 @@ class MAGNUM_VK_EXPORT Device {
          * for different behavior.
          * @see @ref release()
          */
-        void wrap(Instance& instance, VkPhysicalDevice physicalDevice, VkDevice handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
-
-        /** @overload */
-        void wrap(Instance& instance, VkPhysicalDevice physicalDevice, VkDevice handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
+        void wrap(Instance& instance, VkPhysicalDevice physicalDevice, VkDevice handle, Version version, const Containers::StringIterable& enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
 
         /**
          * @brief Constructor

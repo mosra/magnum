@@ -183,9 +183,7 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          *      @link Containers::Literals::operator""_s() @endlink literal to
          *      prevent that where possible.
          */
-        InstanceCreateInfo& addEnabledLayers(Containers::ArrayView<const Containers::StringView> layers);
-        /** @overload */
-        InstanceCreateInfo& addEnabledLayers(std::initializer_list<Containers::StringView> layers);
+        InstanceCreateInfo& addEnabledLayers(const Containers::StringIterable& layers);
 
         /**
          * @brief Add enabled instance extensions
@@ -213,9 +211,7 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          *      @link Containers::Literals::operator""_s() @endlink literal to
          *      prevent that where possible.
          */
-        InstanceCreateInfo& addEnabledExtensions(Containers::ArrayView<const Containers::StringView> extensions);
-        /** @overload */
-        InstanceCreateInfo& addEnabledExtensions(std::initializer_list<Containers::StringView> extension);
+        InstanceCreateInfo& addEnabledExtensions(const Containers::StringIterable& extensions);
         /** @overload */
         InstanceCreateInfo& addEnabledExtensions(Containers::ArrayView<const InstanceExtension> extensions);
         /** @overload */

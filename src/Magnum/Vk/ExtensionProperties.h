@@ -183,7 +183,7 @@ class MAGNUM_VK_EXPORT ExtensionProperties {
     private:
         friend class InstanceExtensionProperties;
 
-        explicit ExtensionProperties(const Containers::ArrayView<const Containers::StringView> layers, VkResult(*enumerator)(void*, const char*, UnsignedInt*, VkExtensionProperties*), void* state);
+        explicit ExtensionProperties(const Containers::StringIterable& layers, VkResult(*enumerator)(void*, const char*, UnsignedInt*, VkExtensionProperties*), void* state);
 
         Containers::ArrayTuple _data;
         Containers::ArrayView<VkExtensionProperties> _extensions;
@@ -257,10 +257,10 @@ class MAGNUM_VK_EXPORT InstanceExtensionProperties: public ExtensionProperties {
         /* The DAMN THING forgets parameter name if this is present, FFS. It
            also lists this among friends, which is AN IMPLEMENTATION DETAIL */
         friend DeviceProperties;
-        friend MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(Containers::ArrayView<const Containers::StringView>);
+        friend MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(const Containers::StringIterable&);
         #endif
 
-        explicit InstanceExtensionProperties(const Containers::ArrayView<const Containers::StringView> layers, VkResult(*enumerator)(void*, const char*, UnsignedInt*, VkExtensionProperties*), void* state): ExtensionProperties{layers, enumerator, state} {}
+        explicit InstanceExtensionProperties(const Containers::StringIterable& layers, VkResult(*enumerator)(void*, const char*, UnsignedInt*, VkExtensionProperties*), void* state): ExtensionProperties{layers, enumerator, state} {}
 };
 
 /**
@@ -272,13 +272,13 @@ Expects that all listed layers are supported.
 @see @ref LayerProperties::isSupported(),
     @fn_vk_keyword{EnumerateExtensionProperties}
 */
-MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(Containers::ArrayView<const Containers::StringView> layers = {});
-
-/**
- * @overload
- * @m_since_latest
- */
-MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(std::initializer_list<Containers::StringView> layers);
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(const Containers::StringIterable& layers = {});
+#else
+/* To avoid including StringIterable */
+MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(const Containers::StringIterable& layers);
+MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties();
+#endif
 
 }}
 

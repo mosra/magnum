@@ -290,7 +290,7 @@ DeviceCreateInfo& DeviceCreateInfo::operator=(DeviceCreateInfo&& other) noexcept
     return *this;
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) & {
+DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::StringIterable& extensions) & {
     if(extensions.isEmpty()) return *this;
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
@@ -322,15 +322,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
     return *this;
 }
 
-DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) && {
-    return std::move(addEnabledExtensions(extensions));
-}
-
-DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) & {
-    return addEnabledExtensions(Containers::arrayView(extensions));
-}
-
-DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) && {
+DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::StringIterable& extensions) && {
     return std::move(addEnabledExtensions(extensions));
 }
 
@@ -661,7 +653,7 @@ constexpr Version KnownVersionsForExtensions[]{
 
 }
 
-void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
+void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, const VkDevice handle, const Version version, const Containers::StringIterable& enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
     CORRADE_ASSERT(!_handle,
         "Vk::Device::wrap(): device already created", );
 
@@ -675,10 +667,6 @@ void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, con
        are used here -- better to just do nothing than just a partial attempt */
     Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds = Implementation::disableAllWorkarounds();
     initialize(instance, version, enabledExtensions, encounteredWorkarounds, enabledFeatures);
-}
-
-void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
-    wrap(instance, physicalDevice, handle, version, Containers::arrayView(enabledExtensions), enabledFeatures, flags);
 }
 
 Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{NoCreate} {

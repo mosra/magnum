@@ -248,10 +248,7 @@ class MAGNUM_VK_EXPORT Instance {
          * behavior.
          * @see @ref release()
          */
-        void wrap(VkInstance handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, HandleFlags flags = {});
-
-        /** @overload */
-        void wrap(VkInstance handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, HandleFlags flags = {});
+        void wrap(VkInstance handle, Version version, const Containers::StringIterable& enabledExtensions, HandleFlags flags = {});
 
         /**
          * @brief Constructor

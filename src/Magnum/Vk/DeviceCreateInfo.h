@@ -190,13 +190,9 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *      @link Containers::Literals::operator""_s() @endlink
          *      literal to prevent that where possible.
          */
-        DeviceCreateInfo& addEnabledExtensions(Containers::ArrayView<const Containers::StringView> extensions) &;
+        DeviceCreateInfo& addEnabledExtensions(const Containers::StringIterable& extensions) &;
         /** @overload */
-        DeviceCreateInfo&& addEnabledExtensions(Containers::ArrayView<const Containers::StringView> extensions) &&;
-        /** @overload */
-        DeviceCreateInfo& addEnabledExtensions(std::initializer_list<Containers::StringView> extension) &;
-        /** @overload */
-        DeviceCreateInfo&& addEnabledExtensions(std::initializer_list<Containers::StringView> extension) &&;
+        DeviceCreateInfo&& addEnabledExtensions(const Containers::StringIterable& extensions) &&;
         /** @overload */
         DeviceCreateInfo& addEnabledExtensions(Containers::ArrayView<const Extension> extensions) &;
         /** @overload */

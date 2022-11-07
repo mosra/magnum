@@ -29,6 +29,7 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StaticArray.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
@@ -237,15 +238,15 @@ void DeviceProperties::getFeaturesImplementation11(DeviceProperties& self, VkPhy
     return (**self._instance).GetPhysicalDeviceFeatures2(self._handle, &features);
 }
 
-ExtensionProperties DeviceProperties::enumerateExtensionProperties(Containers::ArrayView<const Containers::StringView> layers) {
+ExtensionProperties DeviceProperties::enumerateExtensionProperties(const Containers::StringIterable& layers) {
     return InstanceExtensionProperties{layers, [](void* state, const char* const layer, UnsignedInt* count, VkExtensionProperties* properties) {
         auto& deviceProperties = *static_cast<DeviceProperties*>(state);
         return (**deviceProperties._instance).EnumerateDeviceExtensionProperties(deviceProperties._handle, layer, count, properties);
     }, this};
 }
 
-ExtensionProperties DeviceProperties::enumerateExtensionProperties(std::initializer_list<Containers::StringView> layers) {
-    return enumerateExtensionProperties(Containers::arrayView(layers));
+ExtensionProperties DeviceProperties::enumerateExtensionProperties() {
+    return enumerateExtensionProperties({});
 }
 
 const ExtensionProperties& DeviceProperties::extensionPropertiesInternal() {

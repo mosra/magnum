@@ -405,10 +405,13 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * @see @ref LayerProperties::isSupported(),
          *      @fn_vk_keyword{EnumerateDeviceExtensionProperties}
          */
-        ExtensionProperties enumerateExtensionProperties(Containers::ArrayView<const Containers::StringView> layers = {});
-
-        /** @overload */
-        ExtensionProperties enumerateExtensionProperties(std::initializer_list<Containers::StringView> layers);
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        ExtensionProperties enumerateExtensionProperties(const Containers::StringIterable& layers = {});
+        #else
+        /* To avoid including StringIterable */
+        ExtensionProperties enumerateExtensionProperties(const Containers::StringIterable& layers);
+        ExtensionProperties enumerateExtensionProperties();
+        #endif
 
         /**
          * @brief Device features
