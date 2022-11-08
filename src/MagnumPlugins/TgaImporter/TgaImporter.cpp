@@ -188,10 +188,16 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     /* Copy data directly if not RLE */
     Containers::Array<char> data{outputSize};
     if(!rle) {
-        /* Files that are larger are allowed in this case (but not for RLE) */
         if(srcPixels.size() < outputSize) {
             Error{} << "Trade::TgaImporter::image2D(): file too short, expected" << outputSize + sizeof(Implementation::TgaHeader) << "bytes but got" << _in.size();
             return {};
+        }
+
+        /* Image data that are larger are allowed in this case (even if there's
+           a TGA 2 footer after), as we get garbage back in the worst case. In
+           case of RLE this would be a failure. */
+        if(srcPixels.size() > outputSize) {
+            Warning{} << "Trade::TgaImporter::image2D(): ignoring" << srcPixels.size() - outputSize << "extra bytes at the end of image data";
         }
 
         Utility::copy(srcPixels.prefix(data.size()), data);

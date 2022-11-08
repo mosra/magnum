@@ -58,6 +58,7 @@ struct TgaImporterTest: TestSuite::Tester {
     void grayscale8Rle();
 
     void tga2();
+    void fileTooLong();
 
     void openMemory();
     void openTwice();
@@ -65,6 +66,13 @@ struct TgaImporterTest: TestSuite::Tester {
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
+};
+
+constexpr const char Grayscale8[]{
+    0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
+    1, 2,
+    3, 4,
+    5, 6,
 };
 
 constexpr const char Grayscale8Rle[]{
@@ -229,6 +237,20 @@ const struct {
     }}},
 };
 
+const struct {
+    const char* name;
+    Containers::Array<char> extra;
+} FileTooLongData[]{
+    {"", {InPlaceInit, {
+        'e', 'x', 't', 'r', 'a'
+    }}},
+    {"TGA 2", {InPlaceInit, {
+        'e', 'x', 't', 'r', 'a',
+        0, 0, 0, 0, 0, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
+};
+
 /* Shared among all plugins that implement data copying optimizations */
 const struct {
     const char* name;
@@ -269,6 +291,9 @@ TgaImporterTest::TgaImporterTest() {
 
     addInstancedTests({&TgaImporterTest::tga2},
         Containers::arraySize(Tga2Data));
+
+    addInstancedTests({&TgaImporterTest::fileTooLong},
+        Containers::arraySize(FileTooLongData));
 
     addInstancedTests({&TgaImporterTest::openMemory},
         Containers::arraySize(OpenMemoryData));
@@ -464,13 +489,7 @@ void TgaImporterTest::color32Rle() {
 
 void TgaImporterTest::grayscale8() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = {
-        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
-        1, 2,
-        3, 4,
-        5, 6
-    };
-    CORRADE_VERIFY(importer->openData(data));
+    CORRADE_VERIFY(importer->openData(Grayscale8));
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
@@ -524,6 +543,36 @@ void TgaImporterTest::tga2() {
         3, 3,
         5, 6
     }), TestSuite::Compare::Container);
+}
+
+void TgaImporterTest::fileTooLong() {
+    auto&& data = FileTooLongData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+
+    /* The actual image data is always the same, only the end differs */
+    CORRADE_VERIFY(importer->openData(
+        Containers::StringView{Containers::arrayView(Grayscale8)} +
+        Containers::StringView{data.extra}));
+
+    Containers::Optional<Trade::ImageData2D> image;
+    std::ostringstream out;
+    {
+        Warning redirectWarning{&out};
+        image = importer->image2D(0);
+    }
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
+    CORRADE_COMPARE(image->storage().alignment(), 1);
+    CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        1, 2,
+        3, 4,
+        5, 6
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): ignoring 5 extra bytes at the end of image data\n");
 }
 
 void TgaImporterTest::openMemory() {
