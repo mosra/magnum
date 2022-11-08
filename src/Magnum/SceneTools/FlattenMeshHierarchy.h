@@ -63,7 +63,8 @@ an unspecified value.
 
 @experimental
 
-@see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is2D(),
+@see @ref flattenMeshHierarchy2DInto(), @ref flattenMeshHierarchy3D(),
+    @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is2D(),
     @ref MeshTools::concatenate()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -72,6 +73,33 @@ MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, 
 /* To avoid including Matrix3 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation);
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene);
+#endif
+
+/**
+@brief Flatten a 2D mesh hierarchy into an existing array
+@param[in]  scene           Input scene
+@param[out] transformations Where to put the calculated transformations
+@param[in]  globalTransformation Global transformation to prepend
+@m_since_latest
+
+A variant of @ref flattenMeshHierarchy2D() that fills existing memory instead
+of allocating a new array. The @p transformations array is expected to have the
+same size as the @ref Trade::SceneField::Mesh field. Corresponding mesh and
+material IDs as well as object ID mapping can be retrieved directly with
+@ref Trade::SceneData::meshesMaterialsInto(), as the returned transformations
+are matching their order. The snippet below shows retrieving absolute
+transformations together with object and mesh IDs, but ignoring materials:
+
+@snippet MagnumSceneTools.cpp flattenMeshHierarchy2DInto
+
+@experimental
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation = {});
+#else
+/* To avoid including Matrix3 */
+MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation);
+MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations);
 #endif
 
 /**
@@ -101,7 +129,8 @@ an unspecified value.
 
 @experimental
 
-@see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is3D(),
+@see @ref flattenMeshHierarchy3DInto(), @ref flattenMeshHierarchy2D(),
+    @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is3D(),
     @ref MeshTools::concatenate()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -110,6 +139,33 @@ MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, 
 /* To avoid including Matrix4 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation);
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene);
+#endif
+
+/**
+@brief Flatten a 3D mesh hierarchy into an existing array
+@param[in]  scene           Input scene
+@param[out] transformations Where to put the calculated transformations
+@param[in]  globalTransformation Global transformation to prepend
+@m_since_latest
+
+A variant of @ref flattenMeshHierarchy3D() that fills existing memory instead
+of allocating a new array. The @p transformations array is expected to have the
+same size as the @ref Trade::SceneField::Mesh field. Corresponding mesh and
+material IDs as well as object ID mapping can be retrieved directly with
+@ref Trade::SceneData::meshesMaterialsInto(), as the returned transformations
+are matching their order. The snippet below shows retrieving absolute
+transformations together with object and mesh IDs, but ignoring materials:
+
+@snippet MagnumSceneTools.cpp flattenMeshHierarchy3DInto
+
+@experimental
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation = {});
+#else
+/* To avoid including Matrix3 */
+MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation);
+MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations);
 #endif
 
 }}

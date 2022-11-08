@@ -60,18 +60,20 @@ template<> struct SceneDataDimensionTraits<3> {
     }
 };
 
-template<UnsignedInt dimensions>
-Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> flattenMeshHierarchyImplementation(const Trade::SceneData& scene, const MatrixTypeFor<dimensions, Float>& globalTransformation) {
+template<UnsignedInt dimensions> void flattenMeshHierarchyIntoImplementation(const Trade::SceneData& scene, const Containers::StridedArrayView1D<MatrixTypeFor<dimensions, Float>>& outputTransformations, const MatrixTypeFor<dimensions, Float>& globalTransformation) {
     CORRADE_ASSERT(SceneDataDimensionTraits<dimensions>::isDimensions(scene),
-        "SceneTools::flattenMeshHierarchy(): the scene is not" << dimensions << Debug::nospace << "D", {});
+        "SceneTools::flattenMeshHierarchy(): the scene is not" << dimensions << Debug::nospace << "D", );
     const Containers::Optional<UnsignedInt> parentFieldId = scene.findFieldId(Trade::SceneField::Parent);
     CORRADE_ASSERT(parentFieldId,
-        "SceneTools::flattenMeshHierarchy(): the scene has no hierarchy", {});
+        "SceneTools::flattenMeshHierarchy(): the scene has no hierarchy", );
+    Containers::Optional<UnsignedInt> meshFieldId = scene.findFieldId(Trade::SceneField::Mesh);
+    CORRADE_ASSERT(outputTransformations.size() == (meshFieldId ? scene.fieldSize(*meshFieldId) : 0),
+        "SceneTools::flattenMeshHierarchyInto(): bad output size, expected" << scene.fieldSize(*meshFieldId) << "but got" << outputTransformations.size(), );
 
     /* If there's no mesh field in the file, nothing to do. Another case is
        that there is a mesh field but it's empty, then for simplicity we still
        go through everything. */
-    if(!scene.hasField(Trade::SceneField::Mesh)) return {};
+    if(!meshFieldId) return;
 
     /* Allocate a single storage for all temporary data */
     Containers::ArrayView<Containers::Pair<UnsignedInt, Int>> orderedClusteredParents;
@@ -113,16 +115,30 @@ Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions,
        absolute transformations to each. The matrix location is abused for
        object mapping, which is subsequently replaced by the absolute object
        transformation for given mesh. */
-    Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> out{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
-    const auto matrices = stridedArrayView(out).slice(&decltype(out)::Type::third);
-    const auto mapping = Containers::arrayCast<UnsignedInt>(matrices);
-    scene.meshesMaterialsInto(mapping,
+    const auto mapping = Containers::arrayCast<UnsignedInt>(outputTransformations);
+    scene.mappingInto(*meshFieldId, mapping);
+    for(std::size_t i = 0; i != mapping.size(); ++i) {
+        CORRADE_INTERNAL_ASSERT(mapping[i] < scene.mappingBound());
+        outputTransformations[i] = absoluteTransformations[mapping[i] + 1];
+    }
+}
+
+template<UnsignedInt dimensions> Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> flattenMeshHierarchyImplementation(const Trade::SceneData& scene, const MatrixTypeFor<dimensions, Float>& globalTransformation) {
+    const Containers::Optional<UnsignedInt> meshFieldId = scene.findFieldId(Trade::SceneField::Mesh);
+
+    /* Get the transformations. This will be a no-op if the mesh field isn't
+       present, but will go through other assertions that may still be rather
+       valuable */
+    Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> out{NoInit, meshFieldId ? scene.fieldSize(*meshFieldId) : 0};
+    flattenMeshHierarchyIntoImplementation<dimensions>(scene,
+        stridedArrayView(out).slice(&decltype(out)::Type::third),
+        globalTransformation);
+
+    /* Fetch the additional mesh and material ID as well, which are in the
+       same order */
+    if(meshFieldId) scene.meshesMaterialsInto(nullptr,
         stridedArrayView(out).slice(&decltype(out)::Type::first),
         stridedArrayView(out).slice(&decltype(out)::Type::second));
-    for(std::size_t i = 0; i != out.size(); ++i) {
-        CORRADE_INTERNAL_ASSERT(mapping[i] < scene.mappingBound());
-        matrices[i] = absoluteTransformations[mapping[i] + 1];
-    }
 
     return out;
 }
@@ -137,12 +153,28 @@ Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHier
     return flattenMeshHierarchyImplementation<2>(scene, {});
 }
 
+void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation) {
+    return flattenMeshHierarchyIntoImplementation<2>(scene, transformations, globalTransformation);
+}
+
+void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations) {
+    return flattenMeshHierarchyIntoImplementation<2>(scene, transformations, {});
+}
+
 Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation) {
     return flattenMeshHierarchyImplementation<3>(scene, globalTransformation);
 }
 
 Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene) {
     return flattenMeshHierarchyImplementation<3>(scene, {});
+}
+
+void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation) {
+    return flattenMeshHierarchyIntoImplementation<3>(scene, transformations, globalTransformation);
+}
+
+void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations) {
+    return flattenMeshHierarchyIntoImplementation<3>(scene, transformations, {});
 }
 
 }}

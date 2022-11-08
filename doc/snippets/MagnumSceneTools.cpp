@@ -72,6 +72,45 @@ for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation:
 }
 
 {
+/* [flattenMeshHierarchy2DInto] */
+Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
+
+struct Data {
+    Matrix3 transformation;
+    UnsignedInt object;
+    UnsignedInt mesh;
+};
+Containers::Array<Data> data{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
+
+SceneTools::flattenMeshHierarchy2DInto(scene,
+    stridedArrayView(data).slice(&Data::transformation));
+scene.meshesMaterialsInto(
+    stridedArrayView(data).slice(&Data::object),
+    stridedArrayView(data).slice(&Data::mesh),
+    nullptr);
+/* [flattenMeshHierarchy2DInto] */
+} {
+/* [flattenMeshHierarchy3DInto] */
+Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
+
+struct Data {
+    Matrix4 transformation;
+    UnsignedInt object;
+    UnsignedInt mesh;
+};
+Containers::Array<Data> data{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
+
+SceneTools::flattenMeshHierarchy3DInto(scene,
+    stridedArrayView(data).slice(&Data::transformation));
+scene.meshesMaterialsInto(
+    stridedArrayView(data).slice(&Data::object),
+    stridedArrayView(data).slice(&Data::mesh),
+    nullptr);
+/* [flattenMeshHierarchy3DInto] */
+}
+
+
+{
 /* [orderClusterParents-transformations] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 
