@@ -45,12 +45,10 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct TgaImporterTest: TestSuite::Tester {
     explicit TgaImporterTest();
 
-    void openEmpty();
-    void openShort();
-
-    void paletted();
+    void invalidEmpty();
+    void invalidShort();
     void invalid();
-    void unsupportedBits();
+    void invalidBits();
 
     void color24();
     void color24Rle();
@@ -59,38 +57,12 @@ struct TgaImporterTest: TestSuite::Tester {
     void grayscale8();
     void grayscale8Rle();
 
-    void rleTooLarge();
-
     void openMemory();
     void openTwice();
     void importTwice();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
-};
-
-constexpr struct {
-    const char* name;
-    char imageType;
-    char bpp;
-    const char* message;
-} UnsupportedBitsData[] {
-    {"color 16", 2, 16, "unsupported color bits-per-pixel: 16"},
-    {"grayscale 16", 3, 16, "unsupported grayscale bits-per-pixel: 16"},
-    {"RLE color 16", 10, 16, "unsupported color bits-per-pixel: 16"},
-    {"RLE grayscale 16", 11, 16, "unsupported grayscale bits-per-pixel: 16"}
-};
-
-constexpr struct {
-    const char* name;
-    ImporterFlags flags;
-    const char* message24;
-    const char* message32;
-} VerboseData[] {
-    {"", {}, "", ""},
-    {"verbose", ImporterFlag::Verbose,
-        "Trade::TgaImporter::image2D(): converting from BGR to RGB\n",
-        "Trade::TgaImporter::image2D(): converting from BGRA to RGBA\n"}
 };
 
 constexpr const char Color24[] = {
@@ -110,12 +82,13 @@ constexpr const char Color24Rle[] = {
     '\x82', 4, 5, 6
 };
 
-/* MSVC 2015 crashes when seeing constexpr here. Not doing that, then. */
+/* Separate from ErrorData so we can just slice existing arrays instead of
+   creating new ones from scratch */
 const struct {
     const char* name;
     Containers::ArrayView<const char> data;
     const char* message;
-} ShortData[] {
+} InvalidShortData[] {
     {"short header", Containers::arrayView(Color24).prefix(17),
         "file too short, expected at least 18 bytes but got 17"},
     {"short data", Containers::arrayView(Color24).exceptSuffix(1),
@@ -124,6 +97,52 @@ const struct {
         "RLE file too short at pixel 3"},
     {"short RLE raw data", Containers::arrayView(Color24Rle).exceptSuffix(5),
         "RLE file too short at pixel 0"}
+};
+
+const struct {
+    const char* name;
+    char imageType;
+    char bpp;
+    const char* message;
+} InvalidBitsData[] {
+    {"color 16", 2, 16, "unsupported color bits-per-pixel: 16"},
+    {"grayscale 16", 3, 16, "unsupported grayscale bits-per-pixel: 16"},
+    {"RLE color 16", 10, 16, "unsupported color bits-per-pixel: 16"},
+    {"RLE grayscale 16", 11, 16, "unsupported grayscale bits-per-pixel: 16"}
+};
+
+const struct {
+    const char* name;
+    Containers::Array<char> data;
+    const char* message;
+} InvalidData[]{
+    {"paletted", {InPlaceInit, {
+        0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    }}, "paletted files are not supported"},
+    {"invalid image type", {InPlaceInit, {
+        0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    }}, "unsupported image type: 9"},
+    {"RLE too large", {InPlaceInit, {
+        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+        /* 3 pixels as-is */
+        '\x02', 1, 2, 3,
+                2, 3, 4,
+                3, 4, 5,
+        /* 1 pixel 4x repeated (one more than it should be) */
+        '\x83', 4, 5, 6
+    }}, "RLE data at byte 28 contains 4 pixels but only 3 left to decode"},
+};
+
+const struct {
+    const char* name;
+    ImporterFlags flags;
+    const char* message24;
+    const char* message32;
+} VerboseData[] {
+    {"", {}, "", ""},
+    {"verbose", ImporterFlag::Verbose,
+        "Trade::TgaImporter::image2D(): converting from BGR to RGB\n",
+        "Trade::TgaImporter::image2D(): converting from BGRA to RGBA\n"}
 };
 
 /* Shared among all plugins that implement data copying optimizations */
@@ -143,17 +162,16 @@ const struct {
 };
 
 TgaImporterTest::TgaImporterTest() {
-    addTests({&TgaImporterTest::openEmpty});
+    addTests({&TgaImporterTest::invalidEmpty});
 
-    addInstancedTests({&TgaImporterTest::openShort},
-        Containers::arraySize(ShortData));
+    addInstancedTests({&TgaImporterTest::invalidShort},
+        Containers::arraySize(InvalidShortData));
 
-    addTests({&TgaImporterTest::paletted,
-              &TgaImporterTest::invalid});
+    addInstancedTests({&TgaImporterTest::invalid},
+        Containers::arraySize(InvalidData));
 
-    addInstancedTests({
-        &TgaImporterTest::unsupportedBits},
-        Containers::arraySize(UnsupportedBitsData));
+    addInstancedTests({&TgaImporterTest::invalidBits},
+        Containers::arraySize(InvalidBitsData));
 
     addInstancedTests({
         &TgaImporterTest::color24,
@@ -163,9 +181,7 @@ TgaImporterTest::TgaImporterTest() {
         Containers::arraySize(VerboseData));
 
     addTests({&TgaImporterTest::grayscale8,
-              &TgaImporterTest::grayscale8Rle,
-
-              &TgaImporterTest::rleTooLarge});
+              &TgaImporterTest::grayscale8Rle});
 
     addInstancedTests({&TgaImporterTest::openMemory},
         Containers::arraySize(OpenMemoryData));
@@ -180,7 +196,7 @@ TgaImporterTest::TgaImporterTest() {
     #endif
 }
 
-void TgaImporterTest::openEmpty() {
+void TgaImporterTest::invalidEmpty() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
 
     std::ostringstream out;
@@ -191,8 +207,8 @@ void TgaImporterTest::openEmpty() {
     CORRADE_COMPARE(out.str(), "Trade::TgaImporter::openData(): the file is empty\n");
 }
 
-void TgaImporterTest::openShort() {
-    auto&& data = ShortData[testCaseInstanceId()];
+void TgaImporterTest::invalidShort() {
+    auto&& data = InvalidShortData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
@@ -205,30 +221,22 @@ void TgaImporterTest::openShort() {
     CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImporter::image2D(): {}\n", data.message));
 }
 
-void TgaImporterTest::paletted() {
-    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[]{ 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    CORRADE_VERIFY(importer->openData(data));
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): paletted files are not supported\n");
-}
-
 void TgaImporterTest::invalid() {
+    auto&& data = InvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[]{ 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    CORRADE_VERIFY(importer->openData(data));
+
+    CORRADE_VERIFY(importer->openData(data.data));
 
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): unsupported image type: 9\n");
+    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImporter::image2D(): {}\n", data.message));
 }
 
-void TgaImporterTest::unsupportedBits() {
-    auto&& data = UnsupportedBitsData[testCaseInstanceId()];
+void TgaImporterTest::invalidBits() {
+    auto&& data = InvalidBitsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
@@ -416,25 +424,6 @@ void TgaImporterTest::grayscale8Rle() {
         3, 3,
         5, 6
     }), TestSuite::Compare::Container);
-}
-
-void TgaImporterTest::rleTooLarge() {
-    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = {
-        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
-        /* 3 pixels as-is */
-        '\x02', 1, 2, 3,
-                2, 3, 4,
-                3, 4, 5,
-        /* 1 pixel 4x repeated (one more than it should be) */
-        '\x83', 4, 5, 6
-    };
-    CORRADE_VERIFY(importer->openData(data));
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): RLE data at byte 28 contains 4 pixels but only 3 left to decode\n");
 }
 
 void TgaImporterTest::openMemory() {
