@@ -576,7 +576,7 @@ void TgaImporterTest::fileTooLong() {
 }
 
 void TgaImporterTest::openMemory() {
-    /* same as dxt1() except that it uses openData() & openMemory() to test
+    /* same as color24() except that it uses openData() & openMemory() to test
        data copying on import */
 
     auto&& data = OpenMemoryData[testCaseInstanceId()];
