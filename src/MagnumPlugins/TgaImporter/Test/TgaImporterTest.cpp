@@ -434,7 +434,7 @@ void TgaImporterTest::rleTooLarge() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): RLE data larger than advertised Vector(2, 3) pixels at byte 28\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): RLE data at byte 28 contains 4 pixels but only 3 left to decode\n");
 }
 
 void TgaImporterTest::openMemory() {

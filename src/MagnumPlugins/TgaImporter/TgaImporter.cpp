@@ -167,7 +167,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
                 return Containers::NullOpt;
             }
             if(count*pixelSize > dstPixels.size()) {
-                Error{} << "Trade::TgaImporter::image2D(): RLE data larger than advertised" << size << "pixels at byte" << (srcPixels.data() - _in.data());
+                Error{} << "Trade::TgaImporter::image2D(): RLE data at byte" << (srcPixels.data() - _in.data()) << "contains" << count << "pixels but only" << dstPixels.size()/pixelSize << "left to decode";
                 return Containers::NullOpt;
             }
 
