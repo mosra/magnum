@@ -2655,10 +2655,10 @@ void MaterialDataTest::accessLayerOutOfBounds() {
         "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 layers\n"
-        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
-        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
-        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
-        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::findAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::findAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::findAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::findAttribute(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeOr(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::attributeOr(): index 2 out of range for 2 layers\n");
 }
@@ -2747,10 +2747,10 @@ void MaterialDataTest::accessLayerNotFound() {
         "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::mutableAttribute(): layer ClearCoat not found\n"
-        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
-        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
-        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
-        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::findAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::findAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::findAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::findAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::attributeOr(): layer ClearCoat not found\n"
         "Trade::MaterialData::attributeOr(): layer ClearCoat not found\n");
 }
@@ -2837,10 +2837,10 @@ void MaterialDataTest::accessInvalidLayerName() {
         "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialLayer(0xfefe)\n"
         "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialLayer(0xfefe)\n");
 }
@@ -3011,10 +3011,10 @@ void MaterialDataTest::accessInvalidAttributeName() {
         "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::mutableAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::findAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0xfefe)\n");
 }

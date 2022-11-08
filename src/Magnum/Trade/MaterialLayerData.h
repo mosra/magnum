@@ -254,26 +254,66 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         /**
          * @brief Type-erased attribute value in this layer, if exists
          *
-         * Same as calling @ref MaterialData::tryAttribute() with @p layer.
+         * Same as calling @ref MaterialData::findAttribute() with @p layer.
          */
-        const void* tryAttribute(Containers::StringView name) const {
-            return MaterialData::tryAttribute(layer, name);
+        const void* findAttribute(Containers::StringView name) const {
+            return MaterialData::findAttribute(layer, name);
         }
-        const void* tryAttribute(MaterialAttribute name) const {
-            return MaterialData::tryAttribute(layer, name);
+        const void* findAttribute(MaterialAttribute name) const {
+            return MaterialData::findAttribute(layer, name);
         } /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief findAttribute(Containers::StringView) const
+         * @m_deprecated_since_latest Use @ref findAttribute(Containers::StringView) const
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(Containers::StringView name) const {
+            return findAttribute(name);
+        }
+
+        /**
+         * @brief @copybrief findAttribute(MaterialAttribute) const
+         * @m_deprecated_since_latest Use @ref findAttribute(MaterialAttribute) const
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(MaterialAttribute name) const {
+            return findAttribute(name);
+        }
+        #endif
 
         /**
          * @brief Value of a named attribute in this layer, if exists
          *
-         * Same as calling @ref MaterialData::tryAttribute() with @p layer.
+         * Same as calling @ref MaterialData::findAttribute() with @p layer.
          */
-        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView name) const {
-            return MaterialData::tryAttribute<T>(layer, name);
+        template<class T> Containers::Optional<T> findAttribute(Containers::StringView name) const {
+            return MaterialData::findAttribute<T>(layer, name);
         }
-        template<class T> Containers::Optional<T> tryAttribute(MaterialAttribute name) const {
-            return MaterialData::tryAttribute<T>(layer, name);
+        template<class T> Containers::Optional<T> findAttribute(MaterialAttribute name) const {
+            return MaterialData::findAttribute<T>(layer, name);
         } /**< @overload */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief findAttribute(Containers::StringView) const
+         * @m_deprecated_since_latest Use @ref findAttribute(Containers::StringView) const
+         *      instead.
+         */
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(Containers::StringView name) const {
+            return findAttribute<T>(name);
+        }
+
+        /**
+         * @brief @copybrief findAttribute(MaterialAttribute) const
+         * @m_deprecated_since_latest Use @ref findAttribute(MaterialAttribute) const
+         *      instead.
+         */
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(MaterialAttribute name) const {
+            return findAttribute<T>(name);
+        }
+        #endif
 
         /**
          * @brief Value of a named attribute in this layer or a default
@@ -314,7 +354,10 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         using MaterialData::attributeType;
         using MaterialData::attribute;
         using MaterialData::mutableAttribute;
+        using MaterialData::findAttribute;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         using MaterialData::tryAttribute;
+        #endif
         using MaterialData::attributeOr;
         #else
         UnsignedInt attributeCount(UnsignedInt layer_) const {
@@ -534,44 +577,87 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
             return MaterialData::mutableAttribute<T>(layer_, name);
         }
 
-        const void* tryAttribute(UnsignedInt layer_, Containers::StringView name) const {
-            return MaterialData::tryAttribute(layer_, name);
+        const void* findAttribute(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::findAttribute(layer_, name);
         }
-        const void* tryAttribute(UnsignedInt layer_, MaterialAttribute name) const {
-            return MaterialData::tryAttribute(layer_, name);
+        const void* findAttribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::findAttribute(layer_, name);
         }
-        const void* tryAttribute(Containers::StringView layer_, Containers::StringView name) const {
-            return MaterialData::tryAttribute(layer_, name);
+        const void* findAttribute(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::findAttribute(layer_, name);
         }
-        const void* tryAttribute(Containers::StringView layer_, MaterialAttribute name) const {
-            return MaterialData::tryAttribute(layer_, name);
+        const void* findAttribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::findAttribute(layer_, name);
         }
-        const void* tryAttribute(MaterialLayer layer_, Containers::StringView name) const {
-            return MaterialData::tryAttribute(layer_, name);
+        const void* findAttribute(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::findAttribute(layer_, name);
         }
-        const void* tryAttribute(MaterialLayer layer_, MaterialAttribute name) const {
-            return MaterialData::tryAttribute(layer_, name);
-        }
-
-        template<class T> Containers::Optional<T> tryAttribute(UnsignedInt layer_, Containers::StringView name) const {
-            return MaterialData::tryAttribute<T>(layer_, name);
-        }
-        template<class T> Containers::Optional<T> tryAttribute(UnsignedInt layer_, MaterialAttribute name) const {
-            return MaterialData::tryAttribute<T>(layer_, name);
+        const void* findAttribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::findAttribute(layer_, name);
         }
 
-        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer_, Containers::StringView name) const {
-            return MaterialData::tryAttribute<T>(layer_, name);
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(UnsignedInt layer_, Containers::StringView name) const {
+            return findAttribute(layer_, name);
         }
-        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer_, MaterialAttribute name) const {
-            return MaterialData::tryAttribute<T>(layer_, name);
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return findAttribute(layer_, name);
         }
-        template<class T> Containers::Optional<T> tryAttribute(MaterialLayer layer_, Containers::StringView name) const {
-            return MaterialData::tryAttribute<T>(layer_, name);
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(Containers::StringView layer_, Containers::StringView name) const {
+            return findAttribute(layer_, name);
         }
-        template<class T> Containers::Optional<T> tryAttribute(MaterialLayer layer_, MaterialAttribute name) const {
-            return MaterialData::tryAttribute<T>(layer_, name);
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return findAttribute(layer_, name);
         }
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(MaterialLayer layer_, Containers::StringView name) const {
+            return findAttribute(layer_, name);
+        }
+        CORRADE_DEPRECATED("use findAttribute() instead") const void* tryAttribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return findAttribute(layer_, name);
+        }
+        #endif
+
+        template<class T> Containers::Optional<T> findAttribute(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::findAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> findAttribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::findAttribute<T>(layer_, name);
+        }
+
+        template<class T> Containers::Optional<T> findAttribute(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::findAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> findAttribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::findAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> findAttribute(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::findAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> findAttribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::findAttribute<T>(layer_, name);
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(UnsignedInt layer_, Containers::StringView name) const {
+            return findAttribute<T>(layer_, name);
+        }
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return findAttribute<T>(layer_, name);
+        }
+
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(Containers::StringView layer_, Containers::StringView name) const {
+            return findAttribute<T>(layer_, name);
+        }
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return findAttribute<T>(layer_, name);
+        }
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(MaterialLayer layer_, Containers::StringView name) const {
+            return findAttribute<T>(layer_, name);
+        }
+        template<class T> CORRADE_DEPRECATED("use findAttribute() instead") Containers::Optional<T> tryAttribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return findAttribute<T>(layer_, name);
+        }
+        #endif
 
         template<class T> T attributeOr(UnsignedInt layer_, Containers::StringView name, const T& defaultValue) const {
             return MaterialData::attributeOr<T>(layer_, name, defaultValue);

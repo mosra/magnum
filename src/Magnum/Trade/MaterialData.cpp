@@ -494,9 +494,9 @@ Matrix3 MaterialData::layerFactorTextureMatrix(const UnsignedInt layer) const {
         "Trade::MaterialData::layerFactorTextureMatrix(): index" << layer << "out of range for" << layerCount() << "layers", {});
     CORRADE_ASSERT(hasAttribute(layer, MaterialAttribute::LayerFactorTexture),
         "Trade::MaterialData::layerFactorTextureMatrix(): layer" << layer << "doesn't have a factor texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(layer, MaterialAttribute::LayerFactorTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(layer, MaterialAttribute::LayerFactorTextureMatrix))
         return *value;
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(layer, MaterialAttribute::TextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(layer, MaterialAttribute::TextureMatrix))
         return *value;
     return attributeOr(0, MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -509,9 +509,9 @@ Matrix3 MaterialData::layerFactorTextureMatrix(const Containers::StringView laye
         "Trade::MaterialData::layerFactorTextureMatrix(): layer" << layer << "doesn't have a factor texture", {});
     /* Not delegating into layerFactorTextureMatrix() because we have a
        different variant of the assert here */
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(layerId, MaterialAttribute::LayerFactorTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(layerId, MaterialAttribute::LayerFactorTextureMatrix))
         return *value;
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(layerId, MaterialAttribute::TextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(layerId, MaterialAttribute::TextureMatrix))
         return *value;
     return attributeOr(0, MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -527,9 +527,9 @@ UnsignedInt MaterialData::layerFactorTextureCoordinates(const UnsignedInt layer)
         "Trade::MaterialData::layerFactorTextureCoordinates(): index" << layer << "out of range for" << layerCount() << "layers", {});
     CORRADE_ASSERT(hasAttribute(layer, MaterialAttribute::LayerFactorTexture),
         "Trade::MaterialData::layerFactorTextureCoordinates(): layer" << layer << "doesn't have a factor texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layer, MaterialAttribute::LayerFactorTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layer, MaterialAttribute::LayerFactorTextureCoordinates))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layer, MaterialAttribute::TextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layer, MaterialAttribute::TextureCoordinates))
         return *value;
     return attributeOr(0, MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -542,9 +542,9 @@ UnsignedInt MaterialData::layerFactorTextureCoordinates(const Containers::String
         "Trade::MaterialData::layerFactorTextureCoordinates(): layer" << layer << "doesn't have a factor texture", {});
     /* Not delegating into layerFactorTextureCoordinates() because we have a
        different variant of the assert here */
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layerId, MaterialAttribute::LayerFactorTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layerId, MaterialAttribute::LayerFactorTextureCoordinates))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layerId, MaterialAttribute::TextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layerId, MaterialAttribute::TextureCoordinates))
         return *value;
     return attributeOr(0, MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -560,9 +560,9 @@ UnsignedInt MaterialData::layerFactorTextureLayer(const UnsignedInt layer) const
         "Trade::MaterialData::layerFactorTextureLayer(): index" << layer << "out of range for" << layerCount() << "layers", {});
     CORRADE_ASSERT(hasAttribute(layer, MaterialAttribute::LayerFactorTexture),
         "Trade::MaterialData::layerFactorTextureLayer(): layer" << layer << "doesn't have a factor texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layer, MaterialAttribute::LayerFactorTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layer, MaterialAttribute::LayerFactorTextureLayer))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layer, MaterialAttribute::TextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layer, MaterialAttribute::TextureLayer))
         return *value;
     return attributeOr(0, MaterialAttribute::TextureLayer, 0u);
 }
@@ -575,9 +575,9 @@ UnsignedInt MaterialData::layerFactorTextureLayer(const Containers::StringView l
         "Trade::MaterialData::layerFactorTextureLayer(): layer" << layer << "doesn't have a factor texture", {});
     /* Not delegating into layerFactorTextureLayer() because we have a
        different variant of the assert here */
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layerId, MaterialAttribute::LayerFactorTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layerId, MaterialAttribute::LayerFactorTextureLayer))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(layerId, MaterialAttribute::TextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(layerId, MaterialAttribute::TextureLayer))
         return *value;
     return attributeOr(0, MaterialAttribute::TextureLayer, 0u);
 }
@@ -1057,45 +1057,45 @@ template<> MAGNUM_TRADE_EXPORT Containers::ArrayView<void> MaterialData::mutable
 }
 #endif
 
-const void* MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
+const void* MaterialData::findAttribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
-        "Trade::MaterialData::tryAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+        "Trade::MaterialData::findAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
     const UnsignedInt id = findAttributeIdInternal(layer, name);
     if(id == ~UnsignedInt{}) return nullptr;
     return _data[layerOffset(layer) + id].value();
 }
 
-const void* MaterialData::tryAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
+const void* MaterialData::findAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
-    CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
-    return tryAttribute(layer, string);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttribute(): invalid name" << name, {});
+    return findAttribute(layer, string);
 }
 
-const void* MaterialData::tryAttribute(const Containers::StringView layer, const Containers::StringView name) const {
+const void* MaterialData::findAttribute(const Containers::StringView layer, const Containers::StringView name) const {
     const UnsignedInt layerId = findLayerIdInternal(layer);
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
-        "Trade::MaterialData::tryAttribute(): layer" << layer << "not found", {});
+        "Trade::MaterialData::findAttribute(): layer" << layer << "not found", {});
     const UnsignedInt id = findAttributeIdInternal(layerId, name);
     if(id == ~UnsignedInt{}) return nullptr;
     return _data[layerOffset(layerId) + id].value();
 }
 
-const void* MaterialData::tryAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
+const void* MaterialData::findAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
     const Containers::StringView string = Implementation::materialAttributeNameInternal(name);
-    CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
-    return tryAttribute(layer, string);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttribute(): invalid name" << name, {});
+    return findAttribute(layer, string);
 }
 
-const void* MaterialData::tryAttribute(const MaterialLayer layer, const Containers::StringView name) const {
+const void* MaterialData::findAttribute(const MaterialLayer layer, const Containers::StringView name) const {
     const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
-    CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
-    return tryAttribute(string, name);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttribute(): invalid name" << layer, {});
+    return findAttribute(string, name);
 }
 
-const void* MaterialData::tryAttribute(const MaterialLayer layer, const MaterialAttribute name) const {
+const void* MaterialData::findAttribute(const MaterialLayer layer, const MaterialAttribute name) const {
     const Containers::StringView string = Implementation::materialLayerNameInternal(layer);
-    CORRADE_ASSERT(string, "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
-    return tryAttribute(string, name);
+    CORRADE_ASSERT(string, "Trade::MaterialData::findAttribute(): invalid name" << layer, {});
+    return findAttribute(string, name);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
