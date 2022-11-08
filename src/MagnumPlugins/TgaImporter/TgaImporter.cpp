@@ -78,7 +78,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     /* Check if the file is long enough */
     if(_in.size() < sizeof(Implementation::TgaHeader)) {
         Error{} << "Trade::TgaImporter::image2D(): file too short, expected at least" << sizeof(Implementation::TgaHeader) << "bytes but got" << _in.size();
-        return Containers::NullOpt;
+        return {};
     }
 
     const Implementation::TgaHeader& header = *reinterpret_cast<const Implementation::TgaHeader*>(_in.data());
@@ -91,7 +91,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     PixelFormat format;
     if(header.colorMapType != 0) {
         Error() << "Trade::TgaImporter::image2D(): paletted files are not supported";
-        return Containers::NullOpt;
+        return {};
     }
 
     /* Color */
@@ -108,7 +108,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
                 break;
             default:
                 Error() << "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
-                return Containers::NullOpt;
+                return {};
         }
 
     /* Grayscale */
@@ -120,13 +120,13 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         format = PixelFormat::R8Unorm;
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
-            return Containers::NullOpt;
+            return {};
         }
 
     /* Other? */
     } else {
         Error() << "Trade::TgaImporter::image2D(): unsupported image type:" << header.imageType;
-        return Containers::NullOpt;
+        return {};
     }
 
     const std::size_t pixelSize = header.bpp/8;
@@ -139,7 +139,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         /* Files that are larger are allowed in this case (but not for RLE) */
         if(srcPixels.size() < outputSize) {
             Error{} << "Trade::TgaImporter::image2D(): file too short, expected" << outputSize + sizeof(Implementation::TgaHeader) << "bytes but got" << _in.size();
-            return Containers::NullOpt;
+            return {};
         }
 
         Utility::copy(srcPixels.prefix(data.size()), data);
@@ -164,11 +164,11 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
             /* Check bounds */
             if(1 + dataSize > srcPixels.size()) {
                 Error{} << "Trade::TgaImporter::image2D(): RLE file too short at pixel" << (dstPixels.begin() - data.begin())/pixelSize;
-                return Containers::NullOpt;
+                return {};
             }
             if(count*pixelSize > dstPixels.size()) {
                 Error{} << "Trade::TgaImporter::image2D(): RLE data at byte" << (srcPixels.data() - _in.data()) << "contains" << count << "pixels but only" << dstPixels.size()/pixelSize << "left to decode";
-                return Containers::NullOpt;
+                return {};
             }
 
             /* Copy the data */
