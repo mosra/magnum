@@ -635,6 +635,8 @@ See also:
     @relativeref{Trade::TextureType,CubeMapArray} in order to be able to
     distinguish what's the intended texture use, e.g. whether it's a 3D texture
     with filtering along Z or if it's a 2D array with discrete slices.
+-   @relativeref{Trade,TgaImporter} now recognizes and skips TGA 2 file footers
+    instead of treating them as actual image data
 -   @ref magnum-imageconverter "magnum-imageconverter" has a new `--in-place`
     option for converting images in-place
 -   In order to reduce the amount of exported symbols, a single no-op

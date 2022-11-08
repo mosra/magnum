@@ -49,6 +49,14 @@ struct TgaHeader {
     UnsignedByte    bpp;            /* Bits per pixel (8, 16, 24, 32) */
     UnsignedByte    descriptor;     /* Image descriptor */
 };
+
+/* TGA 2 file footer (optional)
+    https://en.wikipedia.org/wiki/Truevision_TGA#File_footer_(optional) */
+struct TgaFooter {
+    UnsignedInt extensionOffset;
+    UnsignedInt developerAreaOffset;
+    char signature[18]; /* TRUEVISION-XFILE.\0 */
+};
 #pragma pack()
 
 static_assert(sizeof(TgaHeader) == 18, "TgaHeader size is not 18 bytes");

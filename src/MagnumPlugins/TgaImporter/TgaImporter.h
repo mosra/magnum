@@ -98,6 +98,9 @@ are imported with default @ref PixelStorage parameters except for alignment,
 which may be changed to `1` if the data require it.
 
 RLE compression is supported, paletted images are not.
+
+If a TGA 2 footer is recognized in the file, the optional extension and
+developer area blocks at the end of the file are ignored.
 */
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:

@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 
@@ -37,6 +38,8 @@
 #include "MagnumPlugins/TgaImporter/TgaHeader.h"
 
 namespace Magnum { namespace Trade {
+
+using namespace Containers::Literals;
 
 TgaImporter::TgaImporter() = default;
 
@@ -132,9 +135,58 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     const std::size_t pixelSize = header.bpp/8;
     const std::size_t outputSize = std::size_t(size.product())*pixelSize;
 
+    /* The source pixel data is implicitly the rest of the file. If there's a
+       TGA 2 header at the end, ignore the extension and developer areas.
+        https://en.wikipedia.org/wiki/Truevision_TGA#File_footer_(optional) */
+    Containers::ArrayView<const char> srcPixels = _in.exceptPrefix(sizeof(Implementation::TgaHeader));
+    if(Containers::StringView{_in}.hasSuffix("TRUEVISION-XFILE.\0"_s)) {
+        if(srcPixels.size() < sizeof(Implementation::TgaFooter)) {
+            Error{} << "Trade::TgaImporter::image2D(): TGA 2 file too short, expected at least" << sizeof(Implementation::TgaHeader) + sizeof(Implementation::TgaFooter) << "bytes but got" << _in.size();
+            return {};
+        }
+
+        const auto& footer = *reinterpret_cast<const Implementation::TgaFooter*>(srcPixels.end() - sizeof(Implementation::TgaFooter));
+        const UnsignedInt extensionOffset = Utility::Endianness::littleEndian(footer.extensionOffset);
+        const UnsignedInt developerAreaOffset = Utility::Endianness::littleEndian(footer.developerAreaOffset);
+
+        srcPixels = srcPixels.exceptSuffix(sizeof(Implementation::TgaFooter));
+
+        /* If the extension area is present, cut it from the pixel data */
+        if(extensionOffset) {
+            if(extensionOffset < sizeof(Implementation::TgaHeader)) {
+                Error{} << "Trade::TgaImporter::image2D(): TGA 2 extension offset" << extensionOffset << "overlaps with file header";
+                return {};
+            }
+            if(extensionOffset > _in.size() - sizeof(Implementation::TgaFooter)) {
+                Error{} << "Trade::TgaImporter::image2D(): TGA 2 extension offset" << extensionOffset << "out of bounds for" << _in.size() << "bytes and a" << sizeof(Implementation::TgaFooter) << Debug::nospace << "-byte file footer";
+                return {};
+            }
+
+            srcPixels = srcPixels.prefix(_in.data() + extensionOffset);
+        }
+
+        /* If the developer area is present, cut it from the pixel data */
+        if(developerAreaOffset) {
+            if(developerAreaOffset < sizeof(Implementation::TgaHeader)) {
+                Error{} << "Trade::TgaImporter::image2D(): TGA 2 developer area offset" << developerAreaOffset << "overlaps with file header";
+                return {};
+            }
+            if(developerAreaOffset > _in.size() - sizeof(Implementation::TgaFooter)) {
+                Error{} << "Trade::TgaImporter::image2D(): TGA 2 developer area offset" << developerAreaOffset << "out of bounds for" << _in.size() << "bytes and a" << sizeof(Implementation::TgaFooter) << Debug::nospace << "-byte file footer";
+                return {};
+            }
+
+            if(!extensionOffset)
+                srcPixels = srcPixels.prefix(_in.data() + developerAreaOffset);
+            else if(developerAreaOffset < extensionOffset) {
+                Error{} << "Trade::TgaImporter::image2D(): TGA 2 developer area offset" << developerAreaOffset << "overlaps with extensions at" << extensionOffset << "bytes";
+                return {};
+            }
+        }
+    }
+
     /* Copy data directly if not RLE */
     Containers::Array<char> data{outputSize};
-    Containers::ArrayView<const char> srcPixels = _in.exceptPrefix(sizeof(Implementation::TgaHeader));
     if(!rle) {
         /* Files that are larger are allowed in this case (but not for RLE) */
         if(srcPixels.size() < outputSize) {

@@ -57,12 +57,26 @@ struct TgaImporterTest: TestSuite::Tester {
     void grayscale8();
     void grayscale8Rle();
 
+    void tga2();
+
     void openMemory();
     void openTwice();
     void importTwice();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
+};
+
+constexpr const char Grayscale8Rle[]{
+    0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
+    /* 2 pixels as-is */
+    '\x01', 1, 2,
+    /* 1 pixel 2x repeated */
+    '\x81', 3,
+    /* 1 pixel as-is */
+    '\x00', 5,
+    /* 1 pixel 1x repeated */
+    '\x00', 6
 };
 
 constexpr const char Color24[] = {
@@ -122,6 +136,37 @@ const struct {
     {"invalid image type", {InPlaceInit, {
         0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     }}, "unsupported image type: 9"},
+    {"TGA 2 file too short", {InPlaceInit, {
+        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+        0, 0, 0, 0, 0, 0, 0, /* One byte for the sizes missing here */
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}, "TGA 2 file too short, expected at least 44 bytes but got 43"},
+    {"TGA 2 extension offset overlaps with file header", {InPlaceInit, {
+        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+        17, 0, 0, 0, 0, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}, "TGA 2 extension offset 17 overlaps with file header"},
+    {"TGA 2 extension offset overlaps with file footer", {InPlaceInit, {
+        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+        19, 0, 0, 0, 0, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}, "TGA 2 extension offset 19 out of bounds for 44 bytes and a 26-byte file footer"},
+    {"TGA 2 developer area offset overlaps with file header", {InPlaceInit, {
+        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+        0, 0, 0, 0, 17, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}, "TGA 2 developer area offset 17 overlaps with file header"},
+    {"TGA 2 developer area offset overlaps with file footer", {InPlaceInit, {
+        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+        0, 0, 0, 0, 19, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}, "TGA 2 developer area offset 19 out of bounds for 44 bytes and a 26-byte file footer"},
+    {"TGA 2 developer area offset overlaps with extension area", {InPlaceInit, {
+        0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+        '\xdd', '\xee', '\xee',
+        19, 0, 0, 0, 18, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}, "TGA 2 developer area offset 18 overlaps with extensions at 19 bytes"},
     {"RLE too large", {InPlaceInit, {
         0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         /* 3 pixels as-is */
@@ -143,6 +188,45 @@ const struct {
     {"verbose", ImporterFlag::Verbose,
         "Trade::TgaImporter::image2D(): converting from BGR to RGB\n",
         "Trade::TgaImporter::image2D(): converting from BGRA to RGBA\n"}
+};
+
+/* Tga2Data footer offsets rely on this */
+static_assert(sizeof(Grayscale8Rle) == 27, "size of grayscale data not 27 bytes");
+const struct {
+    const char* name;
+    Containers::Array<char> footer;
+} Tga2Data[]{
+    {"just the footer", {InPlaceInit, {
+        0, 0, 0, 0, 0, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
+    {"extension", {InPlaceInit, {
+        '\xee', '\xee',
+        27, 0, 0, 0, 0, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
+    {"developer area", {InPlaceInit, {
+        '\xdd', '\xdd',
+        0, 0, 0, 0, 27, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
+    {"both extension and developer area", {InPlaceInit, {
+        '\xee', '\xee', '\xee', '\xdd', '\xdd', '\xdd', '\xdd', '\xdd',
+        27, 0, 0, 0, 30, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
+    {"empty extension area", {InPlaceInit, {
+        27, 0, 0, 0, 0, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
+    {"empty developer area", {InPlaceInit, {
+        0, 0, 0, 0, 27, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
+    {"empty extension and developer area", {InPlaceInit, {
+        27, 0, 0, 0, 27, 0, 0, 0,
+        'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
+    }}},
 };
 
 /* Shared among all plugins that implement data copying optimizations */
@@ -182,6 +266,9 @@ TgaImporterTest::TgaImporterTest() {
 
     addTests({&TgaImporterTest::grayscale8,
               &TgaImporterTest::grayscale8Rle});
+
+    addInstancedTests({&TgaImporterTest::tga2},
+        Containers::arraySize(Tga2Data));
 
     addInstancedTests({&TgaImporterTest::openMemory},
         Containers::arraySize(OpenMemoryData));
@@ -400,18 +487,31 @@ void TgaImporterTest::grayscale8() {
 
 void TgaImporterTest::grayscale8Rle() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = {
-        0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
-        /* 2 pixels as-is */
-        '\x01', 1, 2,
-        /* 1 pixel 2x repeated */
-        '\x81', 3,
-        /* 1 pixel as-is */
-        '\x00', 5,
-        /* 1 pixel 1x repeated */
-        '\x00', 6
-    };
-    CORRADE_VERIFY(importer->openData(data));
+    CORRADE_VERIFY(importer->openData(Grayscale8Rle));
+
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->flags(), ImageFlags2D{});
+    CORRADE_COMPARE(image->storage().alignment(), 1);
+    CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView<char>({
+        1, 2,
+        3, 3,
+        5, 6
+    }), TestSuite::Compare::Container);
+}
+
+void TgaImporterTest::tga2() {
+    auto&& data = Tga2Data[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+
+    /* The actual image data is always the same, only the footer differs */
+    CORRADE_VERIFY(importer->openData(
+        Containers::StringView{Containers::arrayView(Grayscale8Rle)} +
+        Containers::StringView{data.footer}));
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
