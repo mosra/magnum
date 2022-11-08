@@ -61,16 +61,13 @@ calls @ref orderClusterParents() internally.
 @see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is2D(),
     @ref MeshTools::concatenate()
 */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation = {});
+#else
+/* To avoid including Matrix3 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation);
-
-/** @overload
-@m_since_latest
-
-Same as above with @p globalTransformation set to an identity matrix.
-
-@experimental
-*/
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene);
+#endif
 
 /**
 @brief Flatten a 3D mesh hierarchy
@@ -97,16 +94,13 @@ calls @ref orderClusterParents() internally.
 @see @ref Trade::SceneData::hasField(), @ref Trade::SceneData::is3D(),
     @ref MeshTools::concatenate()
 */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation = {});
+#else
+/* To avoid including Matrix4 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation);
-
-/** @overload
-@m_since_latest
-
-Same as above with @p globalTransformation set to an identity matrix.
-
-@experimental
-*/
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene);
+#endif
 
 }}
 
