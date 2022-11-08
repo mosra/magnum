@@ -115,6 +115,10 @@ only exception is @ref MaterialAttribute::LayerName which is
 When this enum is used in @ref MaterialAttributeData constructors, the data are
 additionally checked for type compatibility. Other than that, there is no
 difference to the string variants.
+
+Each attribute value documents the default value that should be used if the
+attribute isn't present. Some attributes, such as `*Texture`, have no defaults
+--- in that case it means the material doesn't use given feature.
 @see @ref MaterialAttributeData, @ref MaterialData,
     @ref materialAttributeName()
 */
@@ -128,6 +132,8 @@ enum class MaterialAttribute: UnsignedInt {
      * case the corresponding string is @cpp " LayerName" @ce (with a space at
      * the front), done in order to have the layer name attribute appear first
      * in each layer and thus simplify layer implementation.
+     *
+     * Default value is an empty string.
      * @see @ref MaterialData::layerName()
      */
     LayerName = 1,
@@ -139,6 +145,8 @@ enum class MaterialAttribute: UnsignedInt {
      * preferred, however renderers can fall back to alpha-masked rendering.
      * Alpha values below this value are meant to be rendered as fully
      * transparent and alpha values above this value as fully opaque.
+     *
+     * Default value is @cpp 0.5f @ce.
      * @see @ref MaterialAlphaMode, @ref MaterialData::alphaMode(),
      *      @ref MaterialData::alphaMask()
      */
@@ -152,6 +160,8 @@ enum class MaterialAttribute: UnsignedInt {
      * the material should be treated as opaque. If set together with
      * @ref MaterialAttribute::AlphaMask, blending is preferred, however
      * renderers can fall back to alpha-masked rendering.
+     *
+     * Default value is @cpp false @ce.
      * @see @ref MaterialAlphaMode, @ref MaterialData::alphaMode()
      */
     AlphaBlend,
@@ -159,7 +169,7 @@ enum class MaterialAttribute: UnsignedInt {
     /**
      * Double sided, @ref MaterialAttributeType::Bool.
      *
-     * If not present, the default value is @cpp false @ce.
+     * Default value is @cpp false @ce.
      * @see @ref MaterialData::isDoubleSided()
      */
     DoubleSided,
@@ -169,6 +179,10 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::AmbientTexture is present as well, these two
      * are multiplied together.
+     *
+     * Default value is @cpp 0x000000ff_srgbaf @ce if there's no
+     * @ref MaterialAttribute::AmbientTexture and @cpp 0xffffffff_srgbaf @ce if
+     * there is.
      * @see @ref PhongMaterialData::ambientColor()
      */
     AmbientColor,
@@ -189,6 +203,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PhongMaterialData::ambientTextureMatrix()
      */
     AmbientTextureMatrix,
@@ -199,6 +215,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::ambientTextureCoordinates()
      */
     AmbientTextureCoordinates,
@@ -209,6 +227,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::ambientTextureLayer()
      */
     AmbientTextureLayer,
@@ -219,6 +239,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::DiffuseTexture is present as well, these two
      * are multiplied together.
+     *
+     * Default value is @cpp 0xffffffff_srgbaf @ce.
      * @see @ref FlatMaterialData::color(),
      *      @ref PhongMaterialData::diffuseColor(),
      *      @ref PbrSpecularGlossinessMaterialData::diffuseColor()
@@ -243,6 +265,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref FlatMaterialData::textureMatrix(),
      *      @ref PhongMaterialData::diffuseTextureMatrix(),
      *      @ref PbrSpecularGlossinessMaterialData::diffuseTextureMatrix()
@@ -255,6 +279,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref FlatMaterialData::textureCoordinates(),
      *      @ref PhongMaterialData::diffuseTextureCoordinates(),
      *      @ref PbrSpecularGlossinessMaterialData::diffuseTextureCoordinates()
@@ -267,6 +293,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::diffuseTextureLayer()
      */
     DiffuseTextureLayer,
@@ -281,6 +309,8 @@ enum class MaterialAttribute: UnsignedInt {
      * If @ref MaterialAttribute::SpecularTexture or
      * @ref MaterialAttribute::SpecularGlossinessTexture is present as well,
      * these two are multiplied together.
+     *
+     * Default value is @cpp 0xffffff00_srgbaf @ce.
      * @see @ref PhongMaterialData::specularColor(),
      *      @ref PbrSpecularGlossinessMaterialData::specularColor()
      */
@@ -293,6 +323,8 @@ enum class MaterialAttribute: UnsignedInt {
      * If @ref MaterialAttribute::SpecularColor is present as well, these two
      * are multiplied together. Can be alternatively supplied as a packed
      * @ref MaterialAttribute::SpecularGlossinessTexture.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::hasSpecularTexture(),
      *      @ref PhongMaterialData::specularTexture(),
      *      @ref PbrSpecularGlossinessMaterialData::hasSpecularTexture(),
@@ -308,10 +340,12 @@ enum class MaterialAttribute: UnsignedInt {
      * Can be used to describe whether the alpha channel of a
      * @ref MaterialAttribute::SpecularTexture is used or not. Either
      * @ref MaterialTextureSwizzle::RGBA or @ref MaterialTextureSwizzle::RGB
-     * (which is the default) is expected. Does not apply to
+     * is expected. Does not apply to
      * @ref MaterialAttribute::SpecularGlossinessTexture --- in that case,
      * the specular texture is always three-channel, regardless of this
      * attribute.
+     *
+     * Default value is @ref MaterialTextureSwizzle::RGB.
      * @see @ref PbrSpecularGlossinessMaterialData::specularTextureSwizzle()
      */
     SpecularTextureSwizzle,
@@ -322,6 +356,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PhongMaterialData::specularTextureMatrix(),
      *      @ref PbrSpecularGlossinessMaterialData::glossinessTextureMatrix()
      */
@@ -333,6 +369,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::specularTextureCoordinates(),
      *      @ref PbrSpecularGlossinessMaterialData::specularTextureCoordinates()
      */
@@ -344,6 +382,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::specularTextureLayer(),
      *      @ref PbrSpecularGlossinessMaterialData::specularTextureLayer()
      */
@@ -352,6 +392,7 @@ enum class MaterialAttribute: UnsignedInt {
     /**
      * Shininess value for Phong materials, @ref MaterialAttributeType::Float.
      *
+     * No default value is specified for this attribute.
      * @see @ref PhongMaterialData::shininess()
      */
     Shininess,
@@ -362,6 +403,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::BaseColorTexture is present as well, these
      * two are multiplied together.
+     *
+     * Default value is @cpp 0xffffffff_srgbaf @ce.
      * @see @ref FlatMaterialData::color(),
      *      @ref PbrMetallicRoughnessMaterialData::baseColor()
      */
@@ -384,6 +427,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref FlatMaterialData::textureMatrix(),
      *      @ref PbrMetallicRoughnessMaterialData::baseColorTextureMatrix()
      */
@@ -395,6 +440,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref FlatMaterialData::textureCoordinates(),
      *      @ref PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates()
      */
@@ -406,6 +453,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref FlatMaterialData::textureLayer(),
      *      @ref PbrMetallicRoughnessMaterialData::baseColorTextureLayer()
      */
@@ -418,6 +467,8 @@ enum class MaterialAttribute: UnsignedInt {
      * If @ref MaterialAttribute::MetalnessTexture or
      * @ref MaterialAttribute::NoneRoughnessMetallicTexture is present as well,
      * these two are multiplied together.
+     *
+     * Default value is @cpp 1.0f @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::metalness()
      */
     Metalness,
@@ -443,11 +494,12 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Can be used to express arbitrary packing of
      * @ref MaterialAttribute::MetalnessTexture together with other maps in a
-     * single texture. A single-channel swizzle value is expected. If not
-     * present, @ref MaterialTextureSwizzle::R is assumed. Does not apply to
-     * @ref MaterialAttribute::NoneRoughnessMetallicTexture --- in that case,
-     * the metalness is implicitly in the red channel regardless of this
-     * attribute.
+     * single texture. A single-channel swizzle value is expected. Does not
+     * apply to @ref MaterialAttribute::NoneRoughnessMetallicTexture --- in
+     * that case, the metalness is implicitly in the red channel regardless of
+     * this attribute.
+     *
+     * Default value is @ref MaterialTextureSwizzle::R.
      * @see @ref PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture()
@@ -461,6 +513,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PbrMetallicRoughnessMaterialData::metalnessTextureMatrix()
      */
     MetalnessTextureMatrix,
@@ -471,6 +525,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::metalnessTextureCoordinates()
      */
     MetalnessTextureCoordinates,
@@ -481,6 +537,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::metalnessTextureLayer()
      */
     MetalnessTextureLayer,
@@ -492,6 +550,8 @@ enum class MaterialAttribute: UnsignedInt {
      * If @ref MaterialAttribute::RoughnessTexture or
      * @ref MaterialAttribute::NoneRoughnessMetallicTexture is present as well,
      * these two are multiplied together.
+     *
+     * Default value is @cpp 1.0f @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::roughness()
      */
     Roughness,
@@ -517,11 +577,12 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Can be used to express arbitrary packing of
      * @ref MaterialAttribute::RoughnessTexture together with other maps in a
-     * single texture. A single-channel swizzle value is expected. If not
-     * present, @ref MaterialTextureSwizzle::R is assumed. Does not apply to
-     * @ref MaterialAttribute::NoneRoughnessMetallicTexture --- in that case,
-     * the metalness is implicitly in the green channel regardless of this
-     * attribute.
+     * single texture. A single-channel swizzle value is expected. Does not
+     * apply to @ref MaterialAttribute::NoneRoughnessMetallicTexture --- in
+     * that case, the metalness is implicitly in the green channel regardless
+     * of this attribute.
+     *
+     * Default value is @ref MaterialTextureSwizzle::R.
      * @see @ref PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture()
@@ -535,6 +596,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PbrMetallicRoughnessMaterialData::roughnessTextureMatrix()
      */
     RoughnessTextureMatrix,
@@ -545,6 +608,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::roughnessTextureCoordinates()
      */
     RoughnessTextureCoordinates,
@@ -555,6 +620,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::roughnessTextureLayer()
      */
     RoughnessTextureLayer,
@@ -604,6 +671,8 @@ enum class MaterialAttribute: UnsignedInt {
      * If @ref MaterialAttribute::GlossinessTexture or
      * @ref MaterialAttribute::SpecularGlossinessTexture is present as well,
      * these two are multiplied together.
+     *
+     * Default value is @cpp 1.0f @ce.
      * @see @ref PbrSpecularGlossinessMaterialData::glossiness()
      */
     Glossiness,
@@ -627,11 +696,12 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Can be used to express arbitrary packing of
      * @ref MaterialAttribute::GlossinessTexture together with other maps in a
-     * single texture. A single-channel swizzle value is expected. If not
-     * present, @ref MaterialTextureSwizzle::R is assumed. Does not apply to
-     * @ref MaterialAttribute::SpecularGlossinessTexture --- in that case,
-     * the glossiness is implicitly in the alpha channel regardless of this
-     * attribute.
+     * single texture. A single-channel swizzle value is expected. Does not
+     * apply to @ref MaterialAttribute::SpecularGlossinessTexture --- in that
+     * case, the glossiness is implicitly in the alpha channel regardless of
+     * this attribute.
+     *
+     * Default value is @ref MaterialTextureSwizzle::R.
      * @see @ref PbrSpecularGlossinessMaterialData::hasSpecularGlossinessTexture(),
      *      @ref PbrSpecularGlossinessMaterialData::glossinessTextureSwizzle()
      */
@@ -643,6 +713,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PbrSpecularGlossinessMaterialData::glossinessTextureMatrix()
      */
     GlossinessTextureMatrix,
@@ -653,6 +725,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrSpecularGlossinessMaterialData::glossinessTextureCoordinates()
      */
     GlossinessTextureCoordinates,
@@ -663,6 +737,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrSpecularGlossinessMaterialData::glossinessTextureLayer()
      */
     GlossinessTextureLayer,
@@ -719,6 +795,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Scales the texture defined by @ref MaterialAttribute::NormalTexture, see
      * above for details.
+     *
+     * Default value is @cpp 1.0f @ce.
      * @see @ref PhongMaterialData::normalTextureScale(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTextureScale(),
      *      @ref PbrSpecularGlossinessMaterialData::normalTextureScale(),
@@ -730,8 +808,7 @@ enum class MaterialAttribute: UnsignedInt {
      * Normal texture swizzle, @ref MaterialAttributeType::TextureSwizzle.
      *
      * Can be used to express arbitrary packing together with other maps in a
-     * single texture. A two- or three-channel swizzle value is expected. If
-     * not present, @ref MaterialTextureSwizzle::RGB is assumed.
+     * single texture. A two- or three-channel swizzle value is expected.
      *
      * If the texture is just two-component, the remaining component is
      * implicit and calculated as @f$ z = \sqrt{1 - x^2 - y^2} @f$. In order to
@@ -746,6 +823,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * @snippet MagnumTrade.glsl unpackTwoChannelNormal
      *
+     * Default value is @ref MaterialTextureSwizzle::RGB.
      * @see @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTextureSwizzle(),
      *      @ref PbrSpecularGlossinessMaterialData::normalTextureSwizzle(),
@@ -759,6 +837,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PhongMaterialData::normalTextureMatrix(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTextureMatrix(),
      *      @ref PbrSpecularGlossinessMaterialData::normalTextureMatrix()
@@ -771,6 +851,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::normalTextureCoordinates(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTextureCoordinates(),
      *      @ref PbrSpecularGlossinessMaterialData::normalTextureCoordinates()
@@ -782,6 +864,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::normalTextureLayer(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTextureLayer(),
      *      @ref PbrSpecularGlossinessMaterialData::normalTextureLayer()
@@ -816,6 +900,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Affects the texture defined by @ref MaterialAttribute::OcclusionTexture,
      * see above for details.
+     *
+     * Default value is @cpp 1.0f @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::occlusionTextureStrength(),
      *      @ref PbrSpecularGlossinessMaterialData::occlusionTextureStrength()
      */
@@ -825,8 +911,9 @@ enum class MaterialAttribute: UnsignedInt {
      * Occlusion texture swizzle, @ref MaterialAttributeType::TextureSwizzle.
      *
      * Can be used to express arbitrary packing together with other maps in a
-     * single texture. A single-channel swizzle value is expected. If
-     * not present, @ref MaterialTextureSwizzle::R is assumed.
+     * single texture. A single-channel swizzle value is expected.
+     *
+     * Default value is @ref MaterialTextureSwizzle::R.
      * @see @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::occlusionTextureSwizzle(),
      *      @ref PbrSpecularGlossinessMaterialData::occlusionTextureSwizzle()
@@ -839,6 +926,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PbrMetallicRoughnessMaterialData::occlusionTextureMatrix(),
      *      @ref PbrSpecularGlossinessMaterialData::occlusionTextureSwizzle()
      */
@@ -850,6 +939,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::occlusionTextureCoordinates(),
      *      @ref PbrSpecularGlossinessMaterialData::occlusionTextureCoordinates()
      */
@@ -860,6 +951,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::occlusionTextureLayer(),
      *      @ref PbrSpecularGlossinessMaterialData::occlusionTextureLayer()
      */
@@ -871,6 +964,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::EmissiveTexture is present as well, these two
      * are multiplied together.
+     *
+     * Default value is @cpp 0x000000_srgbf @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::emissiveColor(),
      *      @ref PbrSpecularGlossinessMaterialData::emissiveColor()
      */
@@ -896,6 +991,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PbrMetallicRoughnessMaterialData::emissiveTextureMatrix(),
      *      @ref PbrSpecularGlossinessMaterialData::emissiveTextureMatrix(),
      */
@@ -907,6 +1004,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::emissiveTextureCoordinates(),
      *      @ref PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates()
      */
@@ -917,6 +1016,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PbrMetallicRoughnessMaterialData::emissiveTextureLayer(),
      *      @ref PbrSpecularGlossinessMaterialData::emissiveTextureLayer()
      */
@@ -929,6 +1030,8 @@ enum class MaterialAttribute: UnsignedInt {
      * The exact semantic of this attribute is layer-specific. If
      * @ref MaterialAttribute::LayerFactorTexture is present as well, these two
      * are multiplied together.
+     *
+     * Default value is @cpp 1.0f @ce.
      * @see @ref MaterialData::layerFactor()
      */
     LayerFactor,
@@ -948,8 +1051,9 @@ enum class MaterialAttribute: UnsignedInt {
      * Layer intensity texture swizzle, @ref MaterialAttributeType::TextureSwizzle.
      *
      * Can be used to express arbitrary packing together with other maps in a
-     * single texture. A single-channel swizzle value is expected. If not
-     * present, @ref MaterialTextureSwizzle::R is assumed.
+     * single texture. A single-channel swizzle value is expected.
+     *
+     * Default value is @ref MaterialTextureSwizzle::R.
      * @see @ref MaterialData::layerFactorTextureSwizzle()
      */
     LayerFactorTextureSwizzle,
@@ -961,6 +1065,8 @@ enum class MaterialAttribute: UnsignedInt {
      * Expected to be contained in additional layers, not the base material.
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     *
+     * Default value is an identity matrix.
      * @see @ref MaterialData::layerFactorTextureMatrix()
      */
     LayerFactorTextureMatrix,
@@ -972,6 +1078,8 @@ enum class MaterialAttribute: UnsignedInt {
      * Expected to be contained in additional layers, not the base material.
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref MaterialData::layerFactorTextureCoordinates()
      */
     LayerFactorTextureCoordinates,
@@ -983,6 +1091,8 @@ enum class MaterialAttribute: UnsignedInt {
      * Expected to be contained in additional layers, not the base material.
      * Has a precedence over @ref MaterialAttribute::TextureLayer if both are
      * present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref MaterialData::layerFactorTextureLayer()
      */
     LayerFactorTextureLayer,
@@ -1002,6 +1112,8 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::EmissiveTextureMatrix /
      * @ref MaterialAttribute::LayerFactorTextureMatrix have a precedence over
      * this attribute for given texture, if present.
+     *
+     * Default value is an identity matrix.
      * @see @ref PhongMaterialData::hasCommonTextureTransformation(),
      *      @ref PbrMetallicRoughnessMaterialData::hasCommonTextureTransformation(),
      *      @ref PbrSpecularGlossinessMaterialData::hasCommonTextureTransformation(),
@@ -1029,6 +1141,8 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::EmissiveTextureCoordinates /
      * @ref MaterialAttribute::LayerFactorTextureCoordinates have a precedence
      * over this attribute for given texture, if present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::hasCommonTextureCoordinates(),
      *      @ref PbrMetallicRoughnessMaterialData::hasCommonTextureCoordinates(),
      *      @ref PbrSpecularGlossinessMaterialData::hasCommonTextureCoordinates(),
@@ -1056,6 +1170,8 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::EmissiveTextureLayer /
      * @ref MaterialAttribute::LayerFactorTextureLayer have a precedence over
      * this attribute for given texture, if present.
+     *
+     * Default value is @cpp 0u @ce.
      * @see @ref PhongMaterialData::hasCommonTextureLayer(),
      *      @ref PbrMetallicRoughnessMaterialData::hasCommonTextureLayer(),
      *      @ref PbrSpecularGlossinessMaterialData::hasCommonTextureLayer(),
