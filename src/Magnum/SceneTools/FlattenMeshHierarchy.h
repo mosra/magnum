@@ -40,11 +40,11 @@ namespace Magnum { namespace SceneTools {
 @brief Flatten a 2D mesh hierarchy
 @m_since_latest
 
-For all @ref Trade::SceneField::Mesh entries that are a part of a hierarchy
-returns a triple of mesh ID, @ref Trade::SceneField::MeshMaterial and its
-absolute transformation in the scene with @p globalTransformation prepended.
-The @ref Trade::SceneField::Parent field is expected to be contained in the
-scene, having no cycles or duplicates, and the scene is expected to be 2D. If
+For all @ref Trade::SceneField::Mesh entries returns a triple of mesh ID,
+@ref Trade::SceneField::MeshMaterial and its absolute transformation in the
+scene with @p globalTransformation prepended. The
+@ref Trade::SceneField::Parent field is expected to be contained in the scene,
+having no cycles or duplicates, and the scene is expected to be 2D. If
 @ref Trade::SceneField::Mesh is not present or is empty, returns an empty
 array. You can then use @ref MeshTools::transform2D() to apply the
 transformations to actual meshes:
@@ -55,6 +55,11 @@ The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of the @ref Trade::SceneField::Mesh
 field and @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The function
 calls @ref orderClusterParents() internally.
+
+The returned data are in the same order as the @ref Trade::SceneField::Mesh
+attribute. Meshes attached to objects without a @ref Trade::SceneField::Parent
+or to objects in loose hierarchy subtrees will have their transformation set to
+an unspecified value.
 
 @experimental
 
@@ -73,11 +78,11 @@ MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, 
 @brief Flatten a 3D mesh hierarchy
 @m_since_latest
 
-For all @ref Trade::SceneField::Mesh entries that are a part of a hierarchy
-returns a triple of mesh ID, @ref Trade::SceneField::MeshMaterial and its
-absolute transformation in the scene with @p globalTransformation prepended.
-The @ref Trade::SceneField::Parent field is expected to be contained in the
-scene, having no cycles or duplicates, and the scene is expected to be 3D. If
+For all @ref Trade::SceneField::Mesh entries returns a triple of mesh ID,
+@ref Trade::SceneField::MeshMaterial and its absolute transformation in the
+scene with @p globalTransformation prepended. The
+@ref Trade::SceneField::Parent field is expected to be contained in the scene,
+having no cycles or duplicates, and the scene is expected to be 3D. If
 @ref Trade::SceneField::Mesh is not present or is empty, returns an empty
 array. You can then use @ref MeshTools::transform3D() to apply the
 transformations to actual meshes:
@@ -88,6 +93,11 @@ The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of the @ref Trade::SceneField::Mesh
 field and @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The function
 calls @ref orderClusterParents() internally.
+
+The returned data are in the same order as the @ref Trade::SceneField::Mesh
+attribute. Meshes attached to objects without a @ref Trade::SceneField::Parent
+or to objects in loose hierarchy subtrees will have their transformation set to
+an unspecified value.
 
 @experimental
 

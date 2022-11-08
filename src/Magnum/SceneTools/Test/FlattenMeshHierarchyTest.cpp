@@ -52,30 +52,21 @@ struct {
     const char* name;
     Matrix3 globalTransformation2D;
     Matrix4 globalTransformation3D;
-    std::size_t parentsToExclude, transformationsToExclude, meshesToExclude;
+    std::size_t transformationsToExclude, meshesToExclude;
     std::size_t expectedOutputSize;
 } TestData[]{
     {"", {}, {},
-        0, 2, 3,
+        2, 0,
         5},
     {"global transformation",
         Matrix3::scaling(Vector2{0.5f}), Matrix4::scaling(Vector3{0.5f}),
-        0, 2, 3,
+        2, 0,
         5},
     {"transformations not part of the hierarchy", {}, {},
-        0, 0, 3,
+        0, 0,
         5},
-    {"meshes not part of the hierarchy", {}, {},
-        0, 2, 0,
-        5},
-    {"transformations and meshes not part of the hierarchy", {}, {},
-        0, 0, 0,
-        5},
-    {"no parents", {}, {},
-        9, 2, 3,
-        0},
     {"no meshes", {}, {},
-        0, 2, 8,
+        2, 5,
         0},
 };
 
@@ -110,7 +101,7 @@ void FlattenMeshHierarchyTest::test2D() {
             UnsignedShort object;
             UnsignedShort mesh;
             Short meshMaterial;
-        } meshes[8];
+        } meshes[5];
     } data[]{{
         /*
             Cases to test:
@@ -156,11 +147,7 @@ void FlattenMeshHierarchyTest::test2D() {
          {32, Matrix3::translation({1.0f, 0.5f})},
          {17, Matrix3::translation({2.0f, 1.0f})},
         },
-        {{0, 262, 33},
-         {32, 155, 47},
-         {0, 127, -1},
-         /* The above are not part of the hierarchy */
-         {2, 113, 96},
+        {{2, 113, 96},
          {3, 266, 74},
          {4, 525, 33},
          {3, 422, -1},
@@ -172,11 +159,9 @@ void FlattenMeshHierarchyTest::test2D() {
         Trade::SceneFieldData{Trade::SceneField::Camera, Trade::SceneMappingType::UnsignedShort, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Parent,
             Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::object)
-                .exceptSuffix(instanceData.parentsToExclude),
+                .slice(&Data::Parent::object),
             Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::parent)
-                .exceptSuffix(instanceData.parentsToExclude)},
+                .slice(&Data::Parent::parent)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
             Containers::stridedArrayView(data->transforms)
                 .slice(&Data::Transformation::object)
@@ -187,17 +172,17 @@ void FlattenMeshHierarchyTest::test2D() {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .exceptPrefix(instanceData.meshesToExclude),
+                .exceptSuffix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::mesh)
-                .exceptPrefix(instanceData.meshesToExclude)},
+                .exceptSuffix(instanceData.meshesToExclude)},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .exceptPrefix(instanceData.meshesToExclude),
+                .exceptSuffix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::meshMaterial)
-                .exceptPrefix(instanceData.meshesToExclude)},
+                .exceptSuffix(instanceData.meshesToExclude)},
     }};
 
     Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> out;
@@ -207,8 +192,6 @@ void FlattenMeshHierarchyTest::test2D() {
     else
         out = flattenMeshHierarchy2D(scene);
 
-    CORRADE_EXPECT_FAIL_IF(instanceData.meshesToExclude == 0 || instanceData.parentsToExclude != 0,
-        "Meshes that are not part of the hierarchy are not excluded at the moment.");
     CORRADE_COMPARE_AS(out, (Containers::arrayView<Containers::Triple<UnsignedInt, Int, Matrix3>>({
         {113, 96, instanceData.globalTransformation2D*
                   Matrix3::translation({1.0f, -1.5f})*
@@ -250,7 +233,7 @@ void FlattenMeshHierarchyTest::test3D() {
             UnsignedShort object;
             UnsignedShort mesh;
             Short meshMaterial;
-        } meshes[8];
+        } meshes[5];
     } data[]{{
         /*
             Cases to test:
@@ -296,11 +279,7 @@ void FlattenMeshHierarchyTest::test3D() {
          {32, Matrix4::translation({1.0f, 0.5f, 2.0f})},
          {17, Matrix4::translation({2.0f, 1.0f, 4.0f})},
         },
-        {{0, 262, 33},
-         {32, 155, 47},
-         {0, 127, -1},
-         /* The above are not part of the hierarchy */
-         {2, 113, 96},
+        {{2, 113, 96},
          {3, 266, 74},
          {4, 525, 33},
          {3, 422, -1},
@@ -312,11 +291,9 @@ void FlattenMeshHierarchyTest::test3D() {
         Trade::SceneFieldData{Trade::SceneField::Camera, Trade::SceneMappingType::UnsignedShort, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Parent,
             Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::object)
-                .exceptSuffix(instanceData.parentsToExclude),
+                .slice(&Data::Parent::object),
             Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::parent)
-                .exceptSuffix(instanceData.parentsToExclude)},
+                .slice(&Data::Parent::parent)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
             Containers::stridedArrayView(data->transforms)
                 .slice(&Data::Transformation::object)
@@ -327,17 +304,17 @@ void FlattenMeshHierarchyTest::test3D() {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .exceptPrefix(instanceData.meshesToExclude),
+                .exceptSuffix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::mesh)
-                .exceptPrefix(instanceData.meshesToExclude)},
+                .exceptSuffix(instanceData.meshesToExclude)},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::object)
-                .exceptPrefix(instanceData.meshesToExclude),
+                .exceptSuffix(instanceData.meshesToExclude),
             Containers::stridedArrayView(data->meshes)
                 .slice(&Data::Mesh::meshMaterial)
-                .exceptPrefix(instanceData.meshesToExclude)},
+                .exceptSuffix(instanceData.meshesToExclude)},
     }};
 
     Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> out;
@@ -347,8 +324,6 @@ void FlattenMeshHierarchyTest::test3D() {
     else
         out = flattenMeshHierarchy3D(scene);
 
-    CORRADE_EXPECT_FAIL_IF(instanceData.meshesToExclude == 0 || instanceData.parentsToExclude != 0,
-        "Meshes that are not part of the hierarchy are not excluded at the moment.");
     CORRADE_COMPARE_AS(out, (Containers::arrayView<Containers::Triple<UnsignedInt, Int, Matrix4>>({
         {113, 96, instanceData.globalTransformation3D*
                   Matrix4::translation({1.0f, -1.5f, 0.5f})*

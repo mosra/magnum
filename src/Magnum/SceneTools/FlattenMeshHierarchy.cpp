@@ -113,8 +113,6 @@ Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions,
        absolute transformations to each. The matrix location is abused for
        object mapping, which is subsequently replaced by the absolute object
        transformation for given mesh. */
-    /** @todo skip meshes that aren't part of the hierarchy once we have a
-        BitArray to efficiently mark what's in the hierarchy and what not */
     Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> out{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
     const auto matrices = stridedArrayView(out).slice(&decltype(out)::Type::third);
     const auto mapping = Containers::arrayCast<UnsignedInt>(matrices);
