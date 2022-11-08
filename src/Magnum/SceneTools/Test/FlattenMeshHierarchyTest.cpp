@@ -48,7 +48,7 @@ struct FlattenMeshHierarchyTest: TestSuite::Tester {
 
 using namespace Math::Literals;
 
-struct {
+const struct {
     const char* name;
     Matrix3 globalTransformation2D;
     Matrix4 globalTransformation3D;
@@ -80,265 +80,201 @@ FlattenMeshHierarchyTest::FlattenMeshHierarchyTest() {
               &FlattenMeshHierarchyTest::noMeshField});
 }
 
+const struct Scene {
+    /* Using smaller types to verify we don't have unnecessarily hardcoded
+       32-bit types */
+    struct Parent {
+        UnsignedShort object;
+        Byte parent;
+    } parents[9];
+
+    struct Transformation {
+        UnsignedShort object;
+        Matrix3 transformation2D;
+        Matrix4 transformation3D;
+    } transforms[7];
+
+    struct Mesh {
+        UnsignedShort object;
+        UnsignedShort mesh;
+        Short meshMaterial;
+    } meshes[5];
+} Data[]{{
+    /*
+        Cases to test:
+
+        -   leaf paths with no attachments which don't contribute to the
+            output in any way
+        -   nodes with transforms but no meshes
+        -   nodes with meshes but no transforms
+        -   nodes with multiple meshes
+        -   nodes with neither transforms nor meshes
+        -   object 4 has a mesh with identity transform (or, rather, no
+            transformation entry at all)
+        -   objects 2 and 16 have the same mesh attached with the exact
+            same transform -- this is a nonsense (they would overlap) and
+            as such isn't deduplicated in any way
+        -   objects 0, 32 and 17 have transformations/meshes, but not part
+            of the hierarchy; these are cut away from the views in the
+            first test case to keep it simple
+
+            1T       4M
+           / \       |              32M 0MM
+          5T 2TM     11
+         / \   \     |               32T 17T
+       3MM  7T  6   16TM
+    */
+    {{3, 5},
+     {11, 4},
+     {5, 1},
+     {1, -1},
+     {7, 5},
+     {6, 2},
+     {2, 1},
+     {4, -1},
+     {16, 11}},
+    {{2, Matrix3::scaling({3.0f, 5.0f}),
+         Matrix4::scaling({3.0f, 5.0f, 2.0f})},
+     {1, Matrix3::translation({1.0f, -1.5f}),
+         Matrix4::translation({1.0f, -1.5f, 0.5f})},
+     /* Same absolute transform as node 2 */
+     {16, Matrix3::translation({1.0f, -1.5f})*
+          Matrix3::scaling({3.0f, 5.0f}),
+          Matrix4::translation({1.0f, -1.5f, 0.5f})*
+          Matrix4::scaling({3.0f, 5.0f, 2.0f})},
+     {7, Matrix3::scaling({2.0f, 1.0f}),
+         Matrix4::scaling({2.0f, 1.0f, 0.5f})},
+     {5, Matrix3::rotation(35.0_degf),
+         Matrix4::rotationZ(35.0_degf)},
+     /* These are not part of the hierarchy */
+     {32, Matrix3::translation({1.0f, 0.5f}),
+          Matrix4::translation({1.0f, 0.5f, 2.0f})},
+     {17, Matrix3::translation({2.0f, 1.0f}),
+          Matrix4::translation({2.0f, 1.0f, 4.0f})},
+    },
+    {{2, 113, 96},
+     {3, 266, 74},
+     {4, 525, 33},
+     {3, 422, -1},
+     {16, 113, 96}}
+}};
+
 void FlattenMeshHierarchyTest::test2D() {
-    auto&& instanceData = TestData[testCaseInstanceId()];
-    setTestCaseDescription(instanceData.name);
+    auto&& data = TestData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-    struct Data {
-        /* Using smaller types to verify we don't have unnecessarily hardcoded
-           32-bit types */
-        struct Parent {
-            UnsignedShort object;
-            Byte parent;
-        } parents[9];
-
-        struct Transformation {
-            UnsignedShort object;
-            Matrix3 transformation;
-        } transforms[7];
-
-        struct Mesh {
-            UnsignedShort object;
-            UnsignedShort mesh;
-            Short meshMaterial;
-        } meshes[5];
-    } data[]{{
-        /*
-            Cases to test:
-
-            -   leaf paths with no attachments which don't contribute to the
-                output in any way
-            -   nodes with transforms but no meshes
-            -   nodes with meshes but no transforms
-            -   nodes with multiple meshes
-            -   nodes with neither transforms nor meshes
-            -   object 4 has a mesh with identity transform (or, rather, no
-                transformation entry at all)
-            -   objects 2 and 16 have the same mesh attached with the exact
-                same transform -- this is a nonsense (they would overlap) and
-                as such isn't deduplicated in any way
-            -   objects 0, 32 and 17 have transformations/meshes, but not part
-                of the hierarchy; these are cut away from the views in the
-                first test case to keep it simple
-
-                1T       4M
-               / \       |              32M 0MM
-              5T 2TM     11
-             / \   \     |               32T 17T
-           3MM  7T  6   16TM
-        */
-        {{3, 5},
-         {11, 4},
-         {5, 1},
-         {1, -1},
-         {7, 5},
-         {6, 2},
-         {2, 1},
-         {4, -1},
-         {16, 11}},
-        {{2, Matrix3::scaling({3.0f, 5.0f})},
-         {1, Matrix3::translation({1.0f, -1.5f})},
-         /* Same absolute transform as node 2 */
-         {16, Matrix3::translation({1.0f, -1.5f})*
-              Matrix3::scaling({3.0f, 5.0f})},
-         {7, Matrix3::scaling({2.0f, 1.0f})},
-         {5, Matrix3::rotation(35.0_degf)},
-         /* These are not part of the hierarchy */
-         {32, Matrix3::translation({1.0f, 0.5f})},
-         {17, Matrix3::translation({2.0f, 1.0f})},
-        },
-        {{2, 113, 96},
-         {3, 266, 74},
-         {4, 525, 33},
-         {3, 422, -1},
-         {16, 113, 96}}
-    }};
-
-    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 33, {}, data, {
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 33, {}, Data, {
         /* To verify it doesn't just pick the first field ever */
         Trade::SceneFieldData{Trade::SceneField::Camera, Trade::SceneMappingType::UnsignedShort, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Parent,
-            Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::object),
-            Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::parent)},
+            Containers::stridedArrayView(Data->parents)
+                .slice(&Scene::Parent::object),
+            Containers::stridedArrayView(Data->parents)
+                .slice(&Scene::Parent::parent)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
-            Containers::stridedArrayView(data->transforms)
-                .slice(&Data::Transformation::object)
-                .exceptSuffix(instanceData.transformationsToExclude),
-            Containers::stridedArrayView(data->transforms)
-                .slice(&Data::Transformation::transformation)
-                .exceptSuffix(instanceData.transformationsToExclude)},
+            Containers::stridedArrayView(Data->transforms)
+                .slice(&Scene::Transformation::object)
+                .exceptSuffix(data.transformationsToExclude),
+            Containers::stridedArrayView(Data->transforms)
+                .slice(&Scene::Transformation::transformation2D)
+                .exceptSuffix(data.transformationsToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::object)
-                .exceptSuffix(instanceData.meshesToExclude),
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::mesh)
-                .exceptSuffix(instanceData.meshesToExclude)},
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::object)
+                .exceptSuffix(data.meshesToExclude),
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::mesh)
+                .exceptSuffix(data.meshesToExclude)},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::object)
-                .exceptSuffix(instanceData.meshesToExclude),
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::meshMaterial)
-                .exceptSuffix(instanceData.meshesToExclude)},
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::object)
+                .exceptSuffix(data.meshesToExclude),
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::meshMaterial)
+                .exceptSuffix(data.meshesToExclude)},
     }};
 
     Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> out;
     /* To test the parameter-less overload also */
-    if(instanceData.globalTransformation2D != Matrix3{})
-        out = flattenMeshHierarchy2D(scene, instanceData.globalTransformation2D);
+    if(data.globalTransformation2D != Matrix3{})
+        out = flattenMeshHierarchy2D(scene, data.globalTransformation2D);
     else
         out = flattenMeshHierarchy2D(scene);
 
     CORRADE_COMPARE_AS(out, (Containers::arrayView<Containers::Triple<UnsignedInt, Int, Matrix3>>({
-        {113, 96, instanceData.globalTransformation2D*
+        {113, 96, data.globalTransformation2D*
                   Matrix3::translation({1.0f, -1.5f})*
                   Matrix3::scaling({3.0f, 5.0f})},
-        {266, 74, instanceData.globalTransformation2D*
+        {266, 74, data.globalTransformation2D*
                   Matrix3::translation({1.0f, -1.5f})*
                   Matrix3::rotation(35.0_degf)},
-        {525, 33, instanceData.globalTransformation2D},
-        {422, -1, instanceData.globalTransformation2D*
+        {525, 33, data.globalTransformation2D},
+        {422, -1, data.globalTransformation2D*
                   Matrix3::translation({1.0f, -1.5f})*
                   Matrix3::rotation(35.0_degf)},
-        {113, 96, instanceData.globalTransformation2D*
+        {113, 96, data.globalTransformation2D*
                   Matrix3::translation({1.0f, -1.5f})*
                   Matrix3::scaling({3.0f, 5.0f})}
-    })).prefix(instanceData.expectedOutputSize), TestSuite::Compare::Container);
+    })).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
 }
 
 void FlattenMeshHierarchyTest::test3D() {
-    auto&& instanceData = TestData[testCaseInstanceId()];
-    setTestCaseDescription(instanceData.name);
+    auto&& data = TestData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-    /* Basically the same as test2D(), except that it has 3D transforms.
-       Putting both into the same test case would be a bit too nasty. */
-
-    struct Data {
-        /* Using smaller types to verify we don't have unnecessarily hardcoded
-           32-bit types */
-        struct Parent {
-            UnsignedShort object;
-            Byte parent;
-        } parents[9];
-
-        struct Transformation {
-            UnsignedShort object;
-            Matrix4 transformation;
-        } transforms[7];
-
-        struct Mesh {
-            UnsignedShort object;
-            UnsignedShort mesh;
-            Short meshMaterial;
-        } meshes[5];
-    } data[]{{
-        /*
-            Cases to test:
-
-            -   leaf paths with no attachments which don't contribute to the
-                output in any way
-            -   nodes with transforms but no meshes
-            -   nodes with meshes but no transforms
-            -   nodes with multiple meshes
-            -   nodes with neither transforms nor meshes
-            -   object 4 has a mesh with identity transform (or, rather, no
-                transformation entry at all)
-            -   objects 2 and 16 have the same mesh attached with the exact
-                same transform -- this is a nonsense (they would overlap) and
-                as such isn't deduplicated in any way
-            -   objects 0, 32 and 17 have transformations/meshes, but not part
-                of the hierarchy; these are cut away from the views in the
-                first test case to keep it simple
-
-                1T       4M
-               / \       |              32M 0MM
-              5T 2TM     11
-             / \   \     |               32T 17T
-           3MM  7T  6   16TM
-        */
-        {{3, 5},
-         {11, 4},
-         {5, 1},
-         {1, -1},
-         {7, 5},
-         {6, 2},
-         {2, 1},
-         {4, -1},
-         {16, 11}},
-        {{2, Matrix4::scaling({3.0f, 5.0f, 2.0f})},
-         {1, Matrix4::translation({1.0f, -1.5f, 0.5f})},
-         /* Same absolute transform as node 2 */
-         {16, Matrix4::translation({1.0f, -1.5f, 0.5f})*
-              Matrix4::scaling({3.0f, 5.0f, 2.0f})},
-         {7, Matrix4::scaling({2.0f, 1.0f, 0.5f})},
-         {5, Matrix4::rotationZ(35.0_degf)},
-         /* These are not part of the hierarchy */
-         {32, Matrix4::translation({1.0f, 0.5f, 2.0f})},
-         {17, Matrix4::translation({2.0f, 1.0f, 4.0f})},
-        },
-        {{2, 113, 96},
-         {3, 266, 74},
-         {4, 525, 33},
-         {3, 422, -1},
-         {16, 113, 96}}
-    }};
-
-    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 33, {}, data, {
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 33, {}, Data, {
         /* To verify it doesn't just pick the first field ever */
         Trade::SceneFieldData{Trade::SceneField::Camera, Trade::SceneMappingType::UnsignedShort, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Parent,
-            Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::object),
-            Containers::stridedArrayView(data->parents)
-                .slice(&Data::Parent::parent)},
+            Containers::stridedArrayView(Data->parents)
+                .slice(&Scene::Parent::object),
+            Containers::stridedArrayView(Data->parents)
+                .slice(&Scene::Parent::parent)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
-            Containers::stridedArrayView(data->transforms)
-                .slice(&Data::Transformation::object)
-                .exceptSuffix(instanceData.transformationsToExclude),
-            Containers::stridedArrayView(data->transforms)
-                .slice(&Data::Transformation::transformation)
-                .exceptSuffix(instanceData.transformationsToExclude)},
+            Containers::stridedArrayView(Data->transforms)
+                .slice(&Scene::Transformation::object)
+                .exceptSuffix(data.transformationsToExclude),
+            Containers::stridedArrayView(Data->transforms)
+                .slice(&Scene::Transformation::transformation3D)
+                .exceptSuffix(data.transformationsToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::object)
-                .exceptSuffix(instanceData.meshesToExclude),
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::mesh)
-                .exceptSuffix(instanceData.meshesToExclude)},
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::object)
+                .exceptSuffix(data.meshesToExclude),
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::mesh)
+                .exceptSuffix(data.meshesToExclude)},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::object)
-                .exceptSuffix(instanceData.meshesToExclude),
-            Containers::stridedArrayView(data->meshes)
-                .slice(&Data::Mesh::meshMaterial)
-                .exceptSuffix(instanceData.meshesToExclude)},
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::object)
+                .exceptSuffix(data.meshesToExclude),
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::meshMaterial)
+                .exceptSuffix(data.meshesToExclude)},
     }};
 
     Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> out;
     /* To test the parameter-less overload also */
-    if(instanceData.globalTransformation3D != Matrix4{})
-        out = flattenMeshHierarchy3D(scene, instanceData.globalTransformation3D);
+    if(data.globalTransformation3D != Matrix4{})
+        out = flattenMeshHierarchy3D(scene, data.globalTransformation3D);
     else
         out = flattenMeshHierarchy3D(scene);
 
     CORRADE_COMPARE_AS(out, (Containers::arrayView<Containers::Triple<UnsignedInt, Int, Matrix4>>({
-        {113, 96, instanceData.globalTransformation3D*
+        {113, 96, data.globalTransformation3D*
                   Matrix4::translation({1.0f, -1.5f, 0.5f})*
                   Matrix4::scaling({3.0f, 5.0f, 2.0f})},
-        {266, 74, instanceData.globalTransformation3D*
+        {266, 74, data.globalTransformation3D*
                   Matrix4::translation({1.0f, -1.5f, 0.5f})*
                   Matrix4::rotationZ(35.0_degf)},
-        {525, 33, instanceData.globalTransformation3D},
-        {422, -1, instanceData.globalTransformation3D*
+        {525, 33, data.globalTransformation3D},
+        {422, -1, data.globalTransformation3D*
                   Matrix4::translation({1.0f, -1.5f, 0.5f})*
                   Matrix4::rotationZ(35.0_degf)},
-        {113, 96, instanceData.globalTransformation3D*
+        {113, 96, data.globalTransformation3D*
                   Matrix4::translation({1.0f, -1.5f, 0.5f})*
                   Matrix4::scaling({3.0f, 5.0f, 2.0f})}
-    })).prefix(instanceData.expectedOutputSize), TestSuite::Compare::Container);
+    })).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
 }
 
 void FlattenMeshHierarchyTest::not2DNot3D() {
