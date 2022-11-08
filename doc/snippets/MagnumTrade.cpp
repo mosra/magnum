@@ -446,7 +446,7 @@ Float roughness = data.attribute<Float>(Trade::MaterialAttribute::Roughness);
 Color4 color = data.attributeOr(Trade::MaterialAttribute::BaseColor,
                                 0x3bd267ff_srgbaf);
 if(Containers::Optional<UnsignedInt> texture =
-   data.tryAttribute<UnsignedInt>(Trade::MaterialAttribute::BaseColorTexture))
+   data.findAttribute<UnsignedInt>(Trade::MaterialAttribute::BaseColorTexture))
 {
     // ...
 }

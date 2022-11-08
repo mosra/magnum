@@ -239,7 +239,7 @@ UnsignedInt PhongMaterialData::ambientTexture() const {
 Matrix3 PhongMaterialData::ambientTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::AmbientTexture),
         "Trade::PhongMaterialData::ambientTextureMatrix(): the material doesn't have an ambient texture", {});
-    if(Containers::Optional<Matrix3> set = tryAttribute<Matrix3>(MaterialAttribute::AmbientTextureMatrix))
+    if(Containers::Optional<Matrix3> set = findAttribute<Matrix3>(MaterialAttribute::AmbientTextureMatrix))
         return *set;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -247,7 +247,7 @@ Matrix3 PhongMaterialData::ambientTextureMatrix() const {
 UnsignedInt PhongMaterialData::ambientTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::AmbientTexture),
         "Trade::PhongMaterialData::ambientTextureCoordinates(): the material doesn't have an ambient texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::AmbientTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::AmbientTextureCoordinates))
         return *set;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -255,7 +255,7 @@ UnsignedInt PhongMaterialData::ambientTextureCoordinates() const {
 UnsignedInt PhongMaterialData::ambientTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::AmbientTexture),
         "Trade::PhongMaterialData::ambientTextureLayer(): the material doesn't have an ambient texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::AmbientTextureLayer))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::AmbientTextureLayer))
         return *set;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -271,7 +271,7 @@ UnsignedInt PhongMaterialData::diffuseTexture() const {
 Matrix3 PhongMaterialData::diffuseTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
         "Trade::PhongMaterialData::diffuseTextureMatrix(): the material doesn't have a diffuse texture", {});
-    if(Containers::Optional<Matrix3> set = tryAttribute<Matrix3>(MaterialAttribute::DiffuseTextureMatrix))
+    if(Containers::Optional<Matrix3> set = findAttribute<Matrix3>(MaterialAttribute::DiffuseTextureMatrix))
         return *set;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -279,7 +279,7 @@ Matrix3 PhongMaterialData::diffuseTextureMatrix() const {
 UnsignedInt PhongMaterialData::diffuseTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
         "Trade::PhongMaterialData::diffuseTextureCoordinates(): the material doesn't have a diffuse texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates))
         return *set;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -287,7 +287,7 @@ UnsignedInt PhongMaterialData::diffuseTextureCoordinates() const {
 UnsignedInt PhongMaterialData::diffuseTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
         "Trade::PhongMaterialData::diffuseTextureLayer(): the material doesn't have a diffuse texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureLayer))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureLayer))
         return *set;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -297,9 +297,9 @@ Color4 PhongMaterialData::specularColor() const {
 }
 
 UnsignedInt PhongMaterialData::specularTexture() const {
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture))
         return *value;
 
     /* Explicit assertion because printing that SpecularTexture isn't found
@@ -318,7 +318,7 @@ MaterialTextureSwizzle PhongMaterialData::specularTextureSwizzle() const {
 Matrix3 PhongMaterialData::specularTextureMatrix() const {
     CORRADE_ASSERT(hasSpecularTexture(),
         "Trade::PhongMaterialData::specularTextureMatrix(): the material doesn't have a specular texture", {});
-    if(Containers::Optional<Matrix3> set = tryAttribute<Matrix3>(MaterialAttribute::SpecularTextureMatrix))
+    if(Containers::Optional<Matrix3> set = findAttribute<Matrix3>(MaterialAttribute::SpecularTextureMatrix))
         return *set;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -326,7 +326,7 @@ Matrix3 PhongMaterialData::specularTextureMatrix() const {
 UnsignedInt PhongMaterialData::specularTextureCoordinates() const {
     CORRADE_ASSERT(hasSpecularTexture(),
         "Trade::PhongMaterialData::specularTextureCoordinates(): the material doesn't have a specular texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureCoordinates))
         return *set;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -334,7 +334,7 @@ UnsignedInt PhongMaterialData::specularTextureCoordinates() const {
 UnsignedInt PhongMaterialData::specularTextureLayer() const {
     CORRADE_ASSERT(hasSpecularTexture(),
         "Trade::PhongMaterialData::specularTextureLayer(): the material doesn't have a specular texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureLayer))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureLayer))
         return *set;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -358,7 +358,7 @@ MaterialTextureSwizzle PhongMaterialData::normalTextureSwizzle() const {
 Matrix3 PhongMaterialData::normalTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PhongMaterialData::normalTextureMatrix(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<Matrix3> set = tryAttribute<Matrix3>(MaterialAttribute::NormalTextureMatrix))
+    if(Containers::Optional<Matrix3> set = findAttribute<Matrix3>(MaterialAttribute::NormalTextureMatrix))
         return *set;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -366,7 +366,7 @@ Matrix3 PhongMaterialData::normalTextureMatrix() const {
 UnsignedInt PhongMaterialData::normalTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
         return *set;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -374,7 +374,7 @@ UnsignedInt PhongMaterialData::normalTextureCoordinates() const {
 UnsignedInt PhongMaterialData::normalTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PhongMaterialData::normalTextureLayer(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<UnsignedInt> set = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
+    if(Containers::Optional<UnsignedInt> set = findAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
         return *set;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }

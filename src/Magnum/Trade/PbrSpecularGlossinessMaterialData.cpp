@@ -176,7 +176,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::diffuseTexture() const {
 Matrix3 PbrSpecularGlossinessMaterialData::diffuseTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
         "Trade::PbrSpecularGlossinessMaterialData::diffuseTextureMatrix(): the material doesn't have a diffuse texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::DiffuseTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::DiffuseTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -184,7 +184,7 @@ Matrix3 PbrSpecularGlossinessMaterialData::diffuseTextureMatrix() const {
 UnsignedInt PbrSpecularGlossinessMaterialData::diffuseTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
         "Trade::PbrSpecularGlossinessMaterialData::diffuseTextureCoordinates(): the material doesn't have a diffuse texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -192,7 +192,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::diffuseTextureCoordinates() const
 UnsignedInt PbrSpecularGlossinessMaterialData::diffuseTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::DiffuseTexture),
         "Trade::PbrSpecularGlossinessMaterialData::diffuseTextureLayer(): the material doesn't have a diffuse texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::DiffuseTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -202,9 +202,9 @@ Color4 PbrSpecularGlossinessMaterialData::specularColor() const {
 }
 
 UnsignedInt PbrSpecularGlossinessMaterialData::specularTexture() const {
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture))
         return *value;
 
     /* Explicit assertion because printing that SpecularTexture isn't found
@@ -223,7 +223,7 @@ MaterialTextureSwizzle PbrSpecularGlossinessMaterialData::specularTextureSwizzle
 Matrix3 PbrSpecularGlossinessMaterialData::specularTextureMatrix() const {
     CORRADE_ASSERT(hasSpecularTexture(),
         "Trade::PbrSpecularGlossinessMaterialData::specularTextureMatrix(): the material doesn't have a specular texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::SpecularTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::SpecularTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -231,7 +231,7 @@ Matrix3 PbrSpecularGlossinessMaterialData::specularTextureMatrix() const {
 UnsignedInt PbrSpecularGlossinessMaterialData::specularTextureCoordinates() const {
     CORRADE_ASSERT(hasSpecularTexture(),
         "Trade::PbrSpecularGlossinessMaterialData::specularTextureCoordinates(): the material doesn't have a specular texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -239,7 +239,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::specularTextureCoordinates() cons
 UnsignedInt PbrSpecularGlossinessMaterialData::specularTextureLayer() const {
     CORRADE_ASSERT(hasSpecularTexture(),
         "Trade::PbrSpecularGlossinessMaterialData::specularTextureLayer(): the material doesn't have a specular texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::SpecularTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -249,9 +249,9 @@ Float PbrSpecularGlossinessMaterialData::glossiness() const {
 }
 
 UnsignedInt PbrSpecularGlossinessMaterialData::glossinessTexture() const {
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::GlossinessTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::GlossinessTexture))
         return *value;
 
     /* Explicit assertion because printing that GlossinessTexture isn't found
@@ -270,7 +270,7 @@ MaterialTextureSwizzle PbrSpecularGlossinessMaterialData::glossinessTextureSwizz
 Matrix3 PbrSpecularGlossinessMaterialData::glossinessTextureMatrix() const {
     CORRADE_ASSERT(hasGlossinessTexture(),
         "Trade::PbrSpecularGlossinessMaterialData::glossinessTextureMatrix(): the material doesn't have a glossiness texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::GlossinessTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::GlossinessTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -278,7 +278,7 @@ Matrix3 PbrSpecularGlossinessMaterialData::glossinessTextureMatrix() const {
 UnsignedInt PbrSpecularGlossinessMaterialData::glossinessTextureCoordinates() const {
     CORRADE_ASSERT(hasGlossinessTexture(),
         "Trade::PbrSpecularGlossinessMaterialData::glossinessTextureCoordinates(): the material doesn't have a glossiness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::GlossinessTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::GlossinessTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -286,7 +286,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::glossinessTextureCoordinates() co
 UnsignedInt PbrSpecularGlossinessMaterialData::glossinessTextureLayer() const {
     CORRADE_ASSERT(hasGlossinessTexture(),
         "Trade::PbrSpecularGlossinessMaterialData::glossinessTextureLayer(): the material doesn't have a glossiness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::GlossinessTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::GlossinessTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -310,7 +310,7 @@ MaterialTextureSwizzle PbrSpecularGlossinessMaterialData::normalTextureSwizzle()
 Matrix3 PbrSpecularGlossinessMaterialData::normalTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureMatrix(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::NormalTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::NormalTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -318,7 +318,7 @@ Matrix3 PbrSpecularGlossinessMaterialData::normalTextureMatrix() const {
 UnsignedInt PbrSpecularGlossinessMaterialData::normalTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -326,7 +326,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::normalTextureCoordinates() const 
 UnsignedInt PbrSpecularGlossinessMaterialData::normalTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureLayer(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -350,7 +350,7 @@ MaterialTextureSwizzle PbrSpecularGlossinessMaterialData::occlusionTextureSwizzl
 Matrix3 PbrSpecularGlossinessMaterialData::occlusionTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureMatrix(): the material doesn't have an occlusion texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::OcclusionTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::OcclusionTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -358,7 +358,7 @@ Matrix3 PbrSpecularGlossinessMaterialData::occlusionTextureMatrix() const {
 UnsignedInt PbrSpecularGlossinessMaterialData::occlusionTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureCoordinates(): the material doesn't have an occlusion texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -366,7 +366,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::occlusionTextureCoordinates() con
 UnsignedInt PbrSpecularGlossinessMaterialData::occlusionTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureLayer(): the material doesn't have an occlusion texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -382,7 +382,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::emissiveTexture() const {
 Matrix3 PbrSpecularGlossinessMaterialData::emissiveTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
         "Trade::PbrSpecularGlossinessMaterialData::emissiveTextureMatrix(): the material doesn't have an emissive texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::EmissiveTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::EmissiveTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -390,7 +390,7 @@ Matrix3 PbrSpecularGlossinessMaterialData::emissiveTextureMatrix() const {
 UnsignedInt PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
         "Trade::PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates(): the material doesn't have an emissive texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -398,7 +398,7 @@ UnsignedInt PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates() cons
 UnsignedInt PbrSpecularGlossinessMaterialData::emissiveTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
         "Trade::PbrSpecularGlossinessMaterialData::emissiveTextureLayer(): the material doesn't have an emissive texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }

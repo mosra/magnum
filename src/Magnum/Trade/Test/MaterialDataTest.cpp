@@ -1940,20 +1940,20 @@ void MaterialDataTest::accessOptional() {
     }};
 
     /* This exists */
-    CORRADE_VERIFY(data.tryAttribute("SpecularTexture"));
-    CORRADE_VERIFY(data.tryAttribute(MaterialAttribute::SpecularTexture));
-    CORRADE_COMPARE(*static_cast<const Int*>(data.tryAttribute("SpecularTexture")), 3);
-    CORRADE_COMPARE(*static_cast<const Int*>(data.tryAttribute(MaterialAttribute::SpecularTexture)), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("SpecularTexture"), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture), 3);
+    CORRADE_VERIFY(data.findAttribute("SpecularTexture"));
+    CORRADE_VERIFY(data.findAttribute(MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const Int*>(data.findAttribute("SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const Int*>(data.findAttribute(MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>("SpecularTexture"), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture), 3);
     CORRADE_COMPARE(data.attributeOr("SpecularTexture", 5u), 3);
     CORRADE_COMPARE(data.attributeOr(MaterialAttribute::SpecularTexture, 5u), 3);
 
     /* This doesn't */
-    CORRADE_VERIFY(!data.tryAttribute("DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute(MaterialAttribute::DiffuseTexture));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute("DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute(MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>("DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>(MaterialAttribute::DiffuseTexture));
     CORRADE_COMPARE(data.attributeOr("DiffuseTexture", 5u), 5);
     CORRADE_COMPARE(data.attributeOr(MaterialAttribute::DiffuseTexture, 5u), 5);
 }
@@ -2030,8 +2030,8 @@ void MaterialDataTest::accessWrongType() {
     data.mutableAttribute<Color3>(0);
     data.mutableAttribute<Color3>(MaterialAttribute::DiffuseColor);
     data.mutableAttribute<Color3>("DiffuseColor");
-    data.tryAttribute<Color3>(MaterialAttribute::DiffuseColor);
-    data.tryAttribute<Color3>("DiffuseColor");
+    data.findAttribute<Color3>(MaterialAttribute::DiffuseColor);
+    data.findAttribute<Color3>("DiffuseColor");
     data.attributeOr(MaterialAttribute::DiffuseColor, Color3{1.0f});
     data.attributeOr("DiffuseColor", Color3{1.0f});
     CORRADE_COMPARE(out.str(),
@@ -2041,7 +2041,7 @@ void MaterialDataTest::accessWrongType() {
         "Trade::MaterialData::mutableAttribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         "Trade::MaterialData::mutableAttribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         "Trade::MaterialData::mutableAttribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
-        /* tryAttribute() and attributeOr() delegate to attribute() so the
+        /* findAttribute() and attributeOr() delegate to attribute() so the
            assert is the same */
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
         "Trade::MaterialData::attribute(): DiffuseColor is Trade::MaterialAttributeType::Vector4 but requested a type equivalent to Trade::MaterialAttributeType::Vector3\n"
@@ -2098,8 +2098,8 @@ void MaterialDataTest::accessWrongTypeString() {
     data.mutableAttribute<Containers::MutableStringView>(0);
     data.mutableAttribute<Containers::MutableStringView>(MaterialAttribute::Shininess);
     data.mutableAttribute<Containers::MutableStringView>("Shininess");
-    data.tryAttribute<Containers::StringView>(MaterialAttribute::Shininess);
-    data.tryAttribute<Containers::StringView>("Shininess");
+    data.findAttribute<Containers::StringView>(MaterialAttribute::Shininess);
+    data.findAttribute<Containers::StringView>("Shininess");
     data.attributeOr(MaterialAttribute::Shininess, Containers::StringView{});
     data.attributeOr("Shininess", Containers::StringView{});
     CORRADE_COMPARE(out.str(),
@@ -2109,7 +2109,7 @@ void MaterialDataTest::accessWrongTypeString() {
         "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
-        /* tryAttribute() and attributeOr() delegate to attribute() so the
+        /* findAttribute() and attributeOr() delegate to attribute() so the
            assert is the same */
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
@@ -2132,8 +2132,8 @@ void MaterialDataTest::accessWrongTypeBuffer() {
     data.mutableAttribute<Containers::ArrayView<void>>(0);
     data.mutableAttribute<Containers::ArrayView<void>>(MaterialAttribute::Shininess);
     data.mutableAttribute<Containers::ArrayView<void>>("Shininess");
-    data.tryAttribute<Containers::ArrayView<const void>>(MaterialAttribute::Shininess);
-    data.tryAttribute<Containers::ArrayView<const void>>("Shininess");
+    data.findAttribute<Containers::ArrayView<const void>>(MaterialAttribute::Shininess);
+    data.findAttribute<Containers::ArrayView<const void>>("Shininess");
     data.attributeOr(MaterialAttribute::Shininess, Containers::ArrayView<const void>{});
     data.attributeOr("Shininess", Containers::ArrayView<const void>{});
     CORRADE_COMPARE(out.str(),
@@ -2143,7 +2143,7 @@ void MaterialDataTest::accessWrongTypeBuffer() {
         "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
         "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
         "Trade::MaterialData::mutableAttribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
-        /* tryAttribute() and attributeOr() delegate to attribute() so the
+        /* findAttribute() and attributeOr() delegate to attribute() so the
            assert is the same */
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a buffer\n"
@@ -2500,20 +2500,20 @@ void MaterialDataTest::accessLayerIndexOptional() {
     }, {1, 3}};
 
     /* This exists */
-    CORRADE_VERIFY(data.tryAttribute(1, "SpecularTexture"));
-    CORRADE_VERIFY(data.tryAttribute(1, MaterialAttribute::SpecularTexture));
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(1, "SpecularTexture")), 3);
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(1, MaterialAttribute::SpecularTexture)), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(1, "SpecularTexture"), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(1, MaterialAttribute::SpecularTexture), 3);
+    CORRADE_VERIFY(data.findAttribute(1, "SpecularTexture"));
+    CORRADE_VERIFY(data.findAttribute(1, MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute(1, "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute(1, MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>(1, "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>(1, MaterialAttribute::SpecularTexture), 3);
     CORRADE_COMPARE(data.attributeOr(1, "SpecularTexture", 5u), 3);
     CORRADE_COMPARE(data.attributeOr(1, MaterialAttribute::SpecularTexture, 5u), 3);
 
     /* This doesn't */
-    CORRADE_VERIFY(!data.tryAttribute(1, "DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute(1, MaterialAttribute::DiffuseTexture));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(1, "DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(1, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute(1, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute(1, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>(1, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>(1, MaterialAttribute::DiffuseTexture));
     CORRADE_COMPARE(data.attributeOr(1, "DiffuseTexture", 5u), 5);
     CORRADE_COMPARE(data.attributeOr(1, MaterialAttribute::DiffuseTexture, 5u), 5);
 }
@@ -2527,20 +2527,20 @@ void MaterialDataTest::accessLayerNameOptional() {
     }, {1, 4}};
 
     /* This exists */
-    CORRADE_VERIFY(data.tryAttribute(MaterialLayer::ClearCoat, "SpecularTexture"));
-    CORRADE_VERIFY(data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture));
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialLayer::ClearCoat, "SpecularTexture")), 3);
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture)), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "SpecularTexture"), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture), 3);
+    CORRADE_VERIFY(data.findAttribute(MaterialLayer::ClearCoat, "SpecularTexture"));
+    CORRADE_VERIFY(data.findAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute(MaterialLayer::ClearCoat, "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture), 3);
     CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, "SpecularTexture", 5u), 3);
     CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture, 5u), 3);
 
     /* This doesn't */
-    CORRADE_VERIFY(!data.tryAttribute(MaterialLayer::ClearCoat, "DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute(MaterialLayer::ClearCoat, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
     CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, "DiffuseTexture", 5u), 5);
     CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture, 5u), 5);
 }
@@ -2554,20 +2554,20 @@ void MaterialDataTest::accessLayerStringOptional() {
     }, {1, 4}};
 
     /* This exists */
-    CORRADE_VERIFY(data.tryAttribute("ClearCoat", "SpecularTexture"));
-    CORRADE_VERIFY(data.tryAttribute("ClearCoat", MaterialAttribute::SpecularTexture));
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("ClearCoat", "SpecularTexture")), 3);
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("ClearCoat", MaterialAttribute::SpecularTexture)), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("ClearCoat", "SpecularTexture"), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::SpecularTexture), 3);
+    CORRADE_VERIFY(data.findAttribute("ClearCoat", "SpecularTexture"));
+    CORRADE_VERIFY(data.findAttribute("ClearCoat", MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute("ClearCoat", "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute("ClearCoat", MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>("ClearCoat", "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::SpecularTexture), 3);
     CORRADE_COMPARE(data.attributeOr("ClearCoat", "SpecularTexture", 5u), 3);
     CORRADE_COMPARE(data.attributeOr("ClearCoat", MaterialAttribute::SpecularTexture, 5u), 3);
 
     /* This doesn't */
-    CORRADE_VERIFY(!data.tryAttribute("ClearCoat", "DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute("ClearCoat", MaterialAttribute::DiffuseTexture));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("ClearCoat", "DiffuseTexture"));
-    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute("ClearCoat", "DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute("ClearCoat", MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>("ClearCoat", "DiffuseTexture"));
+    CORRADE_VERIFY(!data.findAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::DiffuseTexture));
     CORRADE_COMPARE(data.attributeOr("ClearCoat", "DiffuseTexture", 5u), 5);
     CORRADE_COMPARE(data.attributeOr("ClearCoat", MaterialAttribute::DiffuseTexture, 5u), 5);
 }
@@ -2615,10 +2615,10 @@ void MaterialDataTest::accessLayerOutOfBounds() {
     data.mutableAttribute<Int>(2, "AlphaMask");
     data.mutableAttribute<Int>(2, MaterialAttribute::AlphaMask);
     data.mutableAttribute<Containers::MutableStringView>(2, 0);
-    data.tryAttribute(2, "AlphaMask");
-    data.tryAttribute(2, MaterialAttribute::AlphaMask);
-    data.tryAttribute<bool>(2, "AlphaMask");
-    data.tryAttribute<bool>(2, MaterialAttribute::AlphaMask);
+    data.findAttribute(2, "AlphaMask");
+    data.findAttribute(2, MaterialAttribute::AlphaMask);
+    data.findAttribute<bool>(2, "AlphaMask");
+    data.findAttribute<bool>(2, MaterialAttribute::AlphaMask);
     data.attributeOr(2, "AlphaMask", false);
     data.attributeOr(2, MaterialAttribute::AlphaMask, false);
     CORRADE_COMPARE(out.str(),
@@ -2708,10 +2708,10 @@ void MaterialDataTest::accessLayerNotFound() {
     data.mutableAttribute<Int>("ClearCoat", "AlphaMask");
     data.mutableAttribute<Int>("ClearCoat", MaterialAttribute::AlphaMask);
     data.mutableAttribute<Containers::MutableStringView>("ClearCoat", 0);
-    data.tryAttribute("ClearCoat", "AlphaMask");
-    data.tryAttribute("ClearCoat", MaterialAttribute::AlphaMask);
-    data.tryAttribute<bool>("ClearCoat", "AlphaMask");
-    data.tryAttribute<bool>("ClearCoat", MaterialAttribute::AlphaMask);
+    data.findAttribute("ClearCoat", "AlphaMask");
+    data.findAttribute("ClearCoat", MaterialAttribute::AlphaMask);
+    data.findAttribute<bool>("ClearCoat", "AlphaMask");
+    data.findAttribute<bool>("ClearCoat", MaterialAttribute::AlphaMask);
     data.attributeOr("ClearCoat", "AlphaMask", false);
     data.attributeOr("ClearCoat", MaterialAttribute::AlphaMask, false);
     CORRADE_COMPARE(out.str(),
@@ -2796,10 +2796,10 @@ void MaterialDataTest::accessInvalidLayerName() {
     data.mutableAttribute<Int>(MaterialLayer(0xfefe), "AlphaMask");
     data.mutableAttribute<Int>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
     data.mutableAttribute<Containers::MutableStringView>(MaterialLayer(0xfefe), 0);
-    data.tryAttribute(MaterialLayer(0xfefe), "AlphaMask");
-    data.tryAttribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
-    data.tryAttribute<bool>(MaterialLayer(0xfefe), "AlphaMask");
-    data.tryAttribute<bool>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.findAttribute(MaterialLayer(0xfefe), "AlphaMask");
+    data.findAttribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.findAttribute<bool>(MaterialLayer(0xfefe), "AlphaMask");
+    data.findAttribute<bool>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
     data.attributeOr(MaterialLayer(0xfefe), "AlphaMask", false);
     data.attributeOr(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask, false);
     CORRADE_COMPARE(out.str(),
@@ -2988,10 +2988,10 @@ void MaterialDataTest::accessInvalidAttributeName() {
     data.mutableAttribute("Layer", MaterialAttribute(0xfefe));
     data.mutableAttribute<Int>(0, MaterialAttribute(0x0));
     data.mutableAttribute<Int>("Layer", MaterialAttribute(0xfefe));
-    data.tryAttribute(0, MaterialAttribute(0x0));
-    data.tryAttribute("Layer", MaterialAttribute(0xfefe));
-    data.tryAttribute<Int>(0, MaterialAttribute(0x0));
-    data.tryAttribute<Int>("Layer", MaterialAttribute(0xfefe));
+    data.findAttribute(0, MaterialAttribute(0x0));
+    data.findAttribute("Layer", MaterialAttribute(0xfefe));
+    data.findAttribute<Int>(0, MaterialAttribute(0x0));
+    data.findAttribute<Int>("Layer", MaterialAttribute(0xfefe));
     data.attributeOr(0, MaterialAttribute(0x0), 42);
     data.attributeOr("Layer", MaterialAttribute(0xfefe), 42);
     CORRADE_COMPARE(out.str(),
@@ -3220,11 +3220,11 @@ void MaterialDataTest::templateLayerAccess() {
     CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
     CORRADE_COMPARE(data.mutableAttribute<UnsignedInt>("LayerFactorTexture"), 3);
 
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialAttribute::LayerFactorTexture)), 3);
-    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("LayerFactorTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute(MaterialAttribute::LayerFactorTexture)), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.findAttribute("LayerFactorTexture")), 3);
 
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
-    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("LayerFactorTexture"), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
+    CORRADE_COMPARE(data.findAttribute<UnsignedInt>("LayerFactorTexture"), 3);
 
     CORRADE_COMPARE(data.attributeOr(MaterialAttribute::LayerFactorTexture, 5u), 3);
     CORRADE_COMPARE(data.attributeOr("LayerFactorTexture", 5u), 3);

@@ -251,7 +251,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::baseColorTexture() const {
 Matrix3 PbrMetallicRoughnessMaterialData::baseColorTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::BaseColorTexture),
         "Trade::PbrMetallicRoughnessMaterialData::baseColorTextureMatrix(): the material doesn't have a base color texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::BaseColorTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::BaseColorTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -259,7 +259,7 @@ Matrix3 PbrMetallicRoughnessMaterialData::baseColorTextureMatrix() const {
 UnsignedInt PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::BaseColorTexture),
         "Trade::PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates(): the material doesn't have a base color texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::BaseColorTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::BaseColorTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -267,7 +267,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates() cons
 UnsignedInt PbrMetallicRoughnessMaterialData::baseColorTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::BaseColorTexture),
         "Trade::PbrMetallicRoughnessMaterialData::baseColorTextureLayer(): the material doesn't have a base color texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::BaseColorTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::BaseColorTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -277,9 +277,9 @@ Float PbrMetallicRoughnessMaterialData::metalness() const {
 }
 
 UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTexture() const {
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetalnessTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::MetalnessTexture))
         return *value;
 
     /* Explicit assertion because printing  that MetalnessTexture isn't found
@@ -298,7 +298,7 @@ MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::metalnessTextureSwizzle
 Matrix3 PbrMetallicRoughnessMaterialData::metalnessTextureMatrix() const {
     CORRADE_ASSERT(hasMetalnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::metalnessTextureMatrix(): the material doesn't have a metalness texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::MetalnessTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::MetalnessTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -306,7 +306,7 @@ Matrix3 PbrMetallicRoughnessMaterialData::metalnessTextureMatrix() const {
 UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTextureCoordinates() const {
     CORRADE_ASSERT(hasMetalnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::metalnessTextureCoordinates(): the material doesn't have a metalness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetalnessTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::MetalnessTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -314,7 +314,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTextureCoordinates() cons
 UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTextureLayer() const {
     CORRADE_ASSERT(hasMetalnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::metalnessTextureLayer(): the material doesn't have a metalness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetalnessTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::MetalnessTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -324,9 +324,9 @@ Float PbrMetallicRoughnessMaterialData::roughness() const {
 }
 
 UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTexture() const {
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
         return *value;
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::RoughnessTexture))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::RoughnessTexture))
         return *value;
 
     /* Explicit assertion because printing that RoughnessTexture isn't found
@@ -345,7 +345,7 @@ MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::roughnessTextureSwizzle
 Matrix3 PbrMetallicRoughnessMaterialData::roughnessTextureMatrix() const {
     CORRADE_ASSERT(hasRoughnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::roughnessTextureMatrix(): the material doesn't have a roughness texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::RoughnessTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::RoughnessTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -353,7 +353,7 @@ Matrix3 PbrMetallicRoughnessMaterialData::roughnessTextureMatrix() const {
 UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTextureCoordinates() const {
     CORRADE_ASSERT(hasRoughnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::roughnessTextureCoordinates(): the material doesn't have a roughness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::RoughnessTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::RoughnessTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -361,7 +361,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTextureCoordinates() cons
 UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTextureLayer() const {
     CORRADE_ASSERT(hasRoughnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::roughnessTextureLayer(): the material doesn't have a roughness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::RoughnessTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::RoughnessTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -385,7 +385,7 @@ MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::normalTextureSwizzle() 
 Matrix3 PbrMetallicRoughnessMaterialData::normalTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureMatrix(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::NormalTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::NormalTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -393,7 +393,7 @@ Matrix3 PbrMetallicRoughnessMaterialData::normalTextureMatrix() const {
 UnsignedInt PbrMetallicRoughnessMaterialData::normalTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -401,7 +401,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::normalTextureCoordinates() const {
 UnsignedInt PbrMetallicRoughnessMaterialData::normalTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureLayer(): the material doesn't have a normal texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::NormalTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -425,7 +425,7 @@ MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::occlusionTextureSwizzle
 Matrix3 PbrMetallicRoughnessMaterialData::occlusionTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureMatrix(): the material doesn't have an occlusion texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::OcclusionTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::OcclusionTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -433,7 +433,7 @@ Matrix3 PbrMetallicRoughnessMaterialData::occlusionTextureMatrix() const {
 UnsignedInt PbrMetallicRoughnessMaterialData::occlusionTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureCoordinates(): the material doesn't have an occlusion texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -441,7 +441,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::occlusionTextureCoordinates() cons
 UnsignedInt PbrMetallicRoughnessMaterialData::occlusionTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureLayer(): the material doesn't have an occlusion texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::OcclusionTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
@@ -457,7 +457,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::emissiveTexture() const {
 Matrix3 PbrMetallicRoughnessMaterialData::emissiveTextureMatrix() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
         "Trade::PbrMetallicRoughnessMaterialData::emissiveTextureMatrix(): the material doesn't have an emissive texture", {});
-    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::EmissiveTextureMatrix))
+    if(Containers::Optional<Matrix3> value = findAttribute<Matrix3>(MaterialAttribute::EmissiveTextureMatrix))
         return *value;
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
@@ -465,7 +465,7 @@ Matrix3 PbrMetallicRoughnessMaterialData::emissiveTextureMatrix() const {
 UnsignedInt PbrMetallicRoughnessMaterialData::emissiveTextureCoordinates() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
         "Trade::PbrMetallicRoughnessMaterialData::emissiveTextureCoordinates(): the material doesn't have an emissive texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureCoordinates))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureCoordinates))
         return *value;
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
@@ -473,7 +473,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::emissiveTextureCoordinates() const
 UnsignedInt PbrMetallicRoughnessMaterialData::emissiveTextureLayer() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::EmissiveTexture),
         "Trade::PbrMetallicRoughnessMaterialData::emissiveTextureLayer(): the material doesn't have an emissive texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureLayer))
+    if(Containers::Optional<UnsignedInt> value = findAttribute<UnsignedInt>(MaterialAttribute::EmissiveTextureLayer))
         return *value;
     return attributeOr(MaterialAttribute::TextureLayer, 0u);
 }
