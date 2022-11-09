@@ -458,7 +458,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     /* Limits and implementation-defined values */
     #define _h(val) Debug{} << "\n " << GL::Extensions::val::string() << Debug::nospace << ":";
     #define _l(val) Debug{} << "   " << #val << Debug::nospace << (sizeof(#val) > 64 ? NewlineAndManySpaces.slice(0, 69) : NewlineAndManySpaces.slice(1, 66 - sizeof(#val))) << val;
-    #define _lvec(val) Debug{} << "   " << #val << Debug::nospace << (sizeof(#val) > 42 ? NewlineAndManySpaces.slice(0, 47) : NewlineAndManySpaces.slice(1, 44 - sizeof(#val))) << val;
+    #define _lvec(val) Debug{} << "   " << #val << Debug::nospace << (sizeof(#val) > 48 ? NewlineAndManySpaces.slice(0, 53) : NewlineAndManySpaces.slice(1, 50 - sizeof(#val))) << Debug::packed << val;
 
     Debug{} << "Limits and implementation-defined values:";
     _lvec(GL::AbstractFramebuffer::maxViewportSize())
