@@ -80,6 +80,18 @@ const struct {
             {Trade::MaterialLayer::ClearCoat},
             {"name", "hello"_s},
         }, {1, 3, 4}}},
+    {"fuzzy compare",
+        Trade::MaterialData{Trade::MaterialType::Phong, {
+            {Trade::MaterialAttribute::Shininess, 2000.0f},
+            {Trade::MaterialAttribute::AlphaMask, 0.5f},
+            {Trade::MaterialAttribute::DiffuseTexture, 3u},
+        }},
+        Trade::MaterialData{Trade::MaterialType::Phong, {
+            {Trade::MaterialAttribute::Shininess, 2000.0f + 0.01f},
+            {Trade::MaterialAttribute::AlphaMask, 0.5f - 1.0e-6f},
+            {Trade::MaterialAttribute::DiffuseTexture, 3u},
+        }},
+    },
 };
 
 const struct {

@@ -91,9 +91,9 @@ bool attributesEqual(const Trade::MaterialAttributeData& a, const Trade::Materia
     CORRADE_INTERNAL_ASSERT(a.type() == b.type());
     switch(a.type()) {
         #define _c(type) case Trade::MaterialAttributeType::type:           \
-            return a.value<type>() == b.value<type>();
+            return Math::TypeTraits<type>::equals(a.value<type>(), b.value<type>());
         #define _ct(name, type) case Trade::MaterialAttributeType::name:    \
-            return a.value<type>() == b.value<type>();
+            return Math::TypeTraits<type>::equals(a.value<type>(), b.value<type>());
         _ct(Bool, bool)
         /* LCOV_EXCL_START */
         _c(Float)
