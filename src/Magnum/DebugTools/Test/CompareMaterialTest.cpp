@@ -47,21 +47,39 @@ using namespace Math::Literals;
 
 const struct {
     const char* name;
-    Trade::MaterialData material;
+    Trade::MaterialData actual;
+    Trade::MaterialData expected;
 } SameData[]{
-    {"empty", Trade::MaterialData{{}, {}}},
-    {"empty with types", Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat, {}}},
-    {"base attributes", Trade::MaterialData{Trade::MaterialType::Phong, {
-        {Trade::MaterialAttribute::DiffuseColor, 0x556699aa_rgbaf},
-        {Trade::MaterialAttribute::NormalTexture, 5u},
-        {"name", "hello"_s},
-    }}},
-    {"layers", Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat, {
-        {Trade::MaterialAttribute::NormalTexture, 5u},
-        {Trade::MaterialLayer::ClearCoat},
-        {Trade::MaterialAttribute::LayerFactor, 0.76f},
-        {"name", "hello"_s},
-    }, {1, 3, 4}}},
+    {"empty",
+        Trade::MaterialData{{}, {}},
+        Trade::MaterialData{{}, {}}},
+    {"empty with types",
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat, {}},
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat, {}}},
+    {"base attributes",
+        Trade::MaterialData{Trade::MaterialType::Phong, {
+            {Trade::MaterialAttribute::DiffuseColor, 0x556699aa_rgbaf},
+            {Trade::MaterialAttribute::NormalTexture, 5u},
+            {"name", "hello"_s},
+        }},
+        Trade::MaterialData{Trade::MaterialType::Phong, {
+            {"name", "hello"_s},
+            {Trade::MaterialAttribute::DiffuseColor, 0x556699aa_rgbaf},
+            {Trade::MaterialAttribute::NormalTexture, 5u},
+        }}},
+    {"layers",
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat, {
+            {Trade::MaterialAttribute::NormalTexture, 5u},
+            {Trade::MaterialLayer::ClearCoat},
+            {Trade::MaterialAttribute::LayerFactor, 0.76f},
+            {"name", "hello"_s},
+        }, {1, 3, 4}},
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat, {
+            {Trade::MaterialAttribute::NormalTexture, 5u},
+            {Trade::MaterialAttribute::LayerFactor, 0.76f},
+            {Trade::MaterialLayer::ClearCoat},
+            {"name", "hello"_s},
+        }, {1, 3, 4}}},
 };
 
 const struct {
@@ -271,7 +289,7 @@ void CompareMaterialTest::same() {
     auto&& data = SameData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    CORRADE_COMPARE_AS(data.material, data.material, CompareMaterial);
+    CORRADE_COMPARE_AS(data.actual, data.expected, CompareMaterial);
 }
 
 void CompareMaterialTest::different() {
