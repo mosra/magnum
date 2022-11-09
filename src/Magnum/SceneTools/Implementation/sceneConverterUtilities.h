@@ -205,6 +205,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         for(UnsignedInt i = 0; i != importer.sceneCount(); ++i) {
             Containers::Optional<Trade::SceneData> scene = importer.scene(i);
             if(!scene) {
+                Error{} << "Can't import scene" << i;
                 error = true;
                 continue;
             }
@@ -285,6 +286,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         {
             Trade::Implementation::Duration d{importTime};
             if(!(animation = importer.animation(i))) {
+                Error{} << "Can't import animation" << i;
                 error = true;
                 continue;
             }
@@ -306,6 +308,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             {
                 Trade::Implementation::Duration d{importTime};
                 if(!(skin = importer.skin2D(i))) {
+                    Error{} << "Can't import 2D skin" << i;
                     error = true;
                     continue;
                 }
@@ -325,6 +328,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             {
                 Trade::Implementation::Duration d{importTime};
                 if(!(skin = importer.skin3D(i))) {
+                    Error{} << "Can't import 3D skin" << i;
                     error = true;
                     continue;
                 }
@@ -347,6 +351,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         {
             Trade::Implementation::Duration d{importTime};
             if(!(light = importer.light(i))) {
+                Error{} << "Can't import light" << i;
                 error = true;
                 continue;
             }
@@ -367,6 +372,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         {
             Trade::Implementation::Duration d{importTime};
             if(!(camera = importer.camera(i))) {
+                Error{} << "Can't import camera" << i;
                 error = true;
                 continue;
             }
@@ -393,6 +399,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             {
                 Trade::Implementation::Duration d{importTime};
                 if(!(material = importer.material(i))) {
+                    Error{} << "Can't import material" << i;
                     error = true;
                     continue;
                 }
@@ -431,6 +438,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             {
                 Trade::Implementation::Duration d{importTime};
                 if(!(mesh = importer.mesh(i, j))) {
+                    Error{} << "Can't import mesh" << i << "level" << j;
                     error = true;
                     continue;
                 }
@@ -517,6 +525,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             {
                 Trade::Implementation::Duration d{importTime};
                 if(!(texture = importer.texture(i))) {
+                    Error{} << "Can't import texture" << i;
                     error = true;
                     continue;
                 }

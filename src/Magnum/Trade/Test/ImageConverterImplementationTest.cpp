@@ -528,11 +528,17 @@ void ImageConverterImplementationTest::infoError() {
     /* But it should not exit after first error */
     CORRADE_COMPARE(out.str(),
         "1D image 0 error!\n"
+        "Can't import 1D image 0 level 0\n"
         "1D image 1 error!\n"
+        "Can't import 1D image 1 level 0\n"
         "2D image 0 error!\n"
+        "Can't import 2D image 0 level 0\n"
         "2D image 1 error!\n"
+        "Can't import 2D image 1 level 0\n"
         "3D image 0 error!\n"
-        "3D image 1 error!\n");
+        "Can't import 3D image 0 level 0\n"
+        "3D image 1 error!\n"
+        "Can't import 3D image 1 level 0\n");
 }
 
 }}}}

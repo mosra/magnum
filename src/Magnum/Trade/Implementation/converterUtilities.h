@@ -197,6 +197,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
             {
                 Duration d{importTime};
                 if(!(image = importer.image1D(i, j))) {
+                    Error{} << "Can't import 1D image" << i << "level" << j;
                     error = true;
                     continue;
                 }
@@ -223,6 +224,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
             {
                 Duration d{importTime};
                 if(!(image = importer.image2D(i, j))) {
+                    Error{} << "Can't import 2D image" << i << "level" << j;
                     error = true;
                     continue;
                 }
@@ -249,6 +251,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, 
             {
                 Duration d{importTime};
                 if(!(image = importer.image3D(i, j))) {
+                    Error{} << "Can't import 3D image" << i << "level" << j;
                     error = true;
                     continue;
                 }
