@@ -27,5 +27,4 @@
 # property that would have to be set on each target separately.
 set(CMAKE_FOLDER "Magnum/MaterialTools/Test")
 
-corrade_add_test(MaterialToolsPhongToPbrMetall___Test PhongToPbrMetallicRoughnessTest.cpp
-    LIBRARIES MagnumDebugTools MagnumMaterialTools)
+corrade_add_test(MaterialToolsPhongToPbrMetall___Test PhongToPbrMetallicRoughnessTest.cpp LIBRARIES MagnumDebugTools MagnumMaterialTools)
