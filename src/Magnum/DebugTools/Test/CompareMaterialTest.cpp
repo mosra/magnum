@@ -160,6 +160,40 @@ const struct {
         "       +  NormalTextureLayer @ UnsignedInt: 2\n"
         "       -  NormalTextureScale @ Float: 0.5\n"
         "       -  OcclusionTexture @ UnsignedInt: 3\n"},
+    {"different attributes, empty base layer",
+        /* Same as above, except everything is in the second layer to verify
+           we're not accidentally checking just the first layer */
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
+            {Trade::MaterialAttribute::DoubleSided, true},
+            {Trade::MaterialAttribute::NormalTexture, 5u},
+            {Trade::MaterialAttribute::NormalTextureScale, 0.5f},
+            {Trade::MaterialAttribute::OcclusionTexture, 3u},
+        }, {0, 4}},
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
+            {Trade::MaterialAttribute::Metalness, 5.5f},
+            {Trade::MaterialAttribute::NormalTexture, 5u},
+            {Trade::MaterialAttribute::NormalTextureLayer, 2u},
+        }, {0, 3}},
+        "Materials a and b have different attributes. Actual (+) vs expected (-):\n"
+        "        Types: PbrMetallicRoughness\n"
+        "        Base layer:\n"
+        "        Layer 1:\n"
+        "       +  DoubleSided @ Bool: true\n"
+        "       -  Metalness @ Float: 5.5\n"
+        "          NormalTexture @ UnsignedInt: 5\n"
+        "       -  NormalTextureLayer @ UnsignedInt: 2\n"
+        "       +  NormalTextureScale @ Float: 0.5\n"
+        "       +  OcclusionTexture @ UnsignedInt: 3\n",
+        "Materials b and a have different attributes. Actual (+) vs expected (-):\n"
+        "        Types: PbrMetallicRoughness\n"
+        "        Base layer:\n"
+        "        Layer 1:\n"
+        "       -  DoubleSided @ Bool: true\n"
+        "       +  Metalness @ Float: 5.5\n"
+        "          NormalTexture @ UnsignedInt: 5\n"
+        "       +  NormalTextureLayer @ UnsignedInt: 2\n"
+        "       -  NormalTextureScale @ Float: 0.5\n"
+        "       -  OcclusionTexture @ UnsignedInt: 3\n"},
     {"different attribute types",
         Trade::MaterialData{{}, {
             {"pointer", reinterpret_cast<void*>(0xdead)},
