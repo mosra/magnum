@@ -174,11 +174,11 @@ TestSuite::ComparisonStatusFlags Comparator<DebugTools::CompareMaterial>::operat
                 arrayAppend(_state->attributes, InPlaceInit, attributeState, inActual, inExpected);
                 ++inActual;
                 ++inExpected;
-            } else if(actual.attributeName(inActual) < expected.attributeName(inExpected)) {
+            } else if(actual.attributeName(layer, inActual) < expected.attributeName(layer, inExpected)) {
                 arrayAppend(_state->attributes, InPlaceInit, AttributeState::OnlyInActual, inActual, ~UnsignedInt{});
                 _state->materialState = Utility::max(_state->materialState, MaterialState::DifferentAttributes);
                 ++inActual;
-            } else if(actual.attributeName(inActual) > expected.attributeName(inExpected)) {
+            } else if(actual.attributeName(layer, inActual) > expected.attributeName(layer, inExpected)) {
                 arrayAppend(_state->attributes, InPlaceInit, AttributeState::OnlyInExpected, ~UnsignedInt{}, inExpected);
                 _state->materialState = Utility::max(_state->materialState, MaterialState::DifferentAttributes);
                 ++inExpected;
