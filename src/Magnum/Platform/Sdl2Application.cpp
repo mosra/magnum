@@ -27,6 +27,10 @@
 
 #include "Sdl2Application.h"
 
+#ifdef CORRADE_TARGET_GCC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 #ifdef CORRADE_TARGET_CLANG_CL
 /* SDL does #pragma pack(push,8) and #pragma pack(pop,8) in different headers
    (begin_code.h and end_code.h) and clang-cl doesn't like that, even though it
@@ -37,6 +41,9 @@
 #include <SDL.h>
 #ifdef CORRADE_TARGET_CLANG_CL
 #pragma clang diagnostic pop
+#endif
+#ifdef CORRADE_TARGET_GCC
+#pragma GCC diagnostic pop
 #endif
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <tuple>
