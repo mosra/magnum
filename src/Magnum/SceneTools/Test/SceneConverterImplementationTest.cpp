@@ -77,11 +77,13 @@ const struct {
     const char* name;
     const char* arg;
     const char* expected;
+    Int defaultScene;
     bool printVisualCheck;
 } InfoScenesObjectsData[]{
-    {"", "--info", "info-scenes-objects.txt", true},
-    {"only scenes", "--info-scenes", "info-scenes.txt", false},
-    {"only objects", "--info-objects", "info-objects.txt", false},
+    {"", "--info", "info-scenes-objects.txt", 1, true},
+    {"only scenes", "--info-scenes", "info-scenes.txt", 0, false},
+    {"only scenes, no default scene", "--info-scenes", "info-scenes-no-default.txt", -1, false},
+    {"only objects", "--info-objects", "info-objects.txt", 1, false}
 };
 
 const struct {
@@ -197,6 +199,8 @@ void SceneConverterImplementationTest::infoScenesObjects() {
     setTestCaseDescription(data.name);
 
     struct Importer: Trade::AbstractImporter {
+        explicit Importer(Int defaultScene): _defaultScene{defaultScene} {}
+
         Trade::ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
@@ -205,6 +209,9 @@ void SceneConverterImplementationTest::infoScenesObjects() {
            thus not listed. Object 5 has no fields and thus not listed either. */
         UnsignedLong doObjectCount() const override { return 10; }
         UnsignedInt doSceneCount() const override { return 2; }
+        Int doDefaultScene() const override {
+            return _defaultScene;
+        }
         Containers::String doSceneName(UnsignedInt id) override {
             return id == 0 ? "A simple scene" : "";
         }
@@ -262,7 +269,9 @@ void SceneConverterImplementationTest::infoScenesObjects() {
             /* No need to fill the data, zero-init is fine */
             {7, 3}, {}, {2, 4, 4}, {}
         }};
-    } importer;
+
+        Int _defaultScene;
+    } importer{data.defaultScene};
 
     const char* argv[]{"", data.arg};
     CORRADE_VERIFY(_infoArgs.tryParse(Containers::arraySize(argv), argv));
@@ -1185,6 +1194,8 @@ void SceneConverterImplementationTest::infoError() {
             return {};
         }
 
+        Int doDefaultScene() const override { return 1; }
+
         UnsignedInt doAnimationCount() const override { return 2; }
         Containers::Optional<Trade::AnimationData> doAnimation(UnsignedInt id) override {
             Error{} << "Animation" << id << "error!";
@@ -1293,6 +1304,9 @@ void SceneConverterImplementationTest::infoError() {
         "Can't import 2D image 0 level 0\n"
         "Image 1 error!\n"
         "Can't import 2D image 1 level 0\n"
+        /* It should print the default scene even if all of them failed to
+           import */
+        "Default scene: 1\n"
         /* ... and it should print all info output after the errors */
         "Object 0: A name\n");
 }

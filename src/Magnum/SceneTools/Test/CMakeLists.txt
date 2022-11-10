@@ -67,8 +67,9 @@ corrade_add_test(SceneToolsSceneConverterImple___Test SceneConverterImplementati
         SceneConverterImplementationTestFiles/info-meshes.txt
         SceneConverterImplementationTestFiles/info-objects.txt
         SceneConverterImplementationTestFiles/info-references.txt
-        SceneConverterImplementationTestFiles/info-scenes-objects.txt
         SceneConverterImplementationTestFiles/info-scenes.txt
+        SceneConverterImplementationTestFiles/info-scenes-no-default.txt
+        SceneConverterImplementationTestFiles/info-scenes-objects.txt
         SceneConverterImplementationTestFiles/info-skins.txt
         SceneConverterImplementationTestFiles/info-textures.txt)
 target_include_directories(SceneToolsSceneConverterImple___Test PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)

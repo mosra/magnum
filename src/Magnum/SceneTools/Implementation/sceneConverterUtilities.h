@@ -564,6 +564,11 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         imageInfos = Trade::Implementation::imageInfo(importer, error, importTime);
     }
 
+    /* Print default scene also if sceneInfos is empty (for example due to an
+       import failure) */
+    if((args.isSet("info") || args.isSet("info-scenes")) && importer.defaultScene() != -1)
+        Debug{useColor} << Debug::boldColor(Debug::Color::Default) << "Default scene:" << Debug::resetColor << importer.defaultScene();
+
     std::size_t totalSceneDataSize = 0;
     for(const SceneInfo& info: sceneInfos) {
         Debug d{useColor};

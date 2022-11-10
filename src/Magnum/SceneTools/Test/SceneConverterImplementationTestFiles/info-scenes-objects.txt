@@ -1,3 +1,4 @@
+Default scene: 1
 Scene 0: A simple scene
   Bound: 4 objects @ UnsignedInt (0.1 kB)
   Fields:
