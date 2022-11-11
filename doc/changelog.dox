@@ -445,6 +445,10 @@ See also:
     @relativeref{GL::Framebuffer::InvalidationAttachment,Stencil} (see
     [mosra/magnum#554](https://github.com/mosra/magnum/pull/554))
 -   Added @ref GL::Shader::wrap() and @relativeref{GL::Shader,release()}
+-   New @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION() and
+    @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION()
+    macros for easier and more robust implementation of method chaining in
+    @ref GL::AbstractShaderProgram subclasses
 
 @subsubsection changelog-latest-changes-math Math library
 

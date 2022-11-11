@@ -28,7 +28,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::GL::AbstractShaderProgram
+ * @brief Class @ref Magnum::GL::AbstractShaderProgram, macro @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(), @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION()
  */
 
 #include <string>
@@ -108,13 +108,16 @@ functions and properties:
     @snippet MagnumGL.cpp AbstractShaderProgram-xfb
 </li>
 <li>And optionally, **return derived type from relevant draw/dispatch functions**
-    to make it possible for users to easily chain draw calls, and on the other
+    to make it possible for users to easily chain draw calls; and on the other
     hand **hide the irrelevant APIs** to prevent users from accidentally
-    calling @ref draw() on compute shaders, @ref drawTransformFeedback() on
-    shaders that don't have transform feedback or @ref dispatchCompute() on
-    shaders that aren't compute. For example:
+    calling @ref draw() / @ref drawTransformFeedback() on compute shaders, or
+    @ref dispatchCompute() on shaders that aren't compute. Because there's many
+    overloads of those APIs and they differ based on target platform, it's
+    recommended to be done via either
+    @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION() or
+    @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION():
 
-    @snippet MagnumGL.cpp AbstractShaderProgram-return-hide-irrelevant
+    @snippet MagnumGL.cpp AbstractShaderProgram-subclass-macro
 </ul>
 
 @subsection GL-AbstractShaderProgram-attribute-location Binding attribute and fragment data location
@@ -2014,6 +2017,146 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         std::vector<std::string> _transformFeedbackVaryingNames;
         #endif
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef CORRADE_TARGET_32BIT
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_32BIT(...) \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedLong>& indexOffsets) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets)); \
+    }                                                                       \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, std::nullptr_t) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr)); \
+    }
+#else
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_32BIT(...)
+#endif
+#ifdef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
+#ifndef CORRADE_TARGET_32BIT
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_GLES2_NOT_32BIT(...) \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceCounts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedLong>& indexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceOffsets) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets, instanceOffsets)); \
+    }                                                                       \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceCounts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, std::nullptr_t, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceOffsets) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, instanceCounts, vertexOffsets, nullptr, instanceOffsets)); \
+    }
+#else
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_GLES2_NOT_32BIT(...)
+#endif
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_GLES2(...) \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceCounts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& indexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceOffsets) { \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets, instanceOffsets)); \
+        }                                                                   \
+    _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_GLES2_NOT_32BIT(__VA_ARGS__)
+#else
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_GLES2(...)
+#endif
+    #ifndef CORRADE_TARGET_32BIT
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_32BIT(...) \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceCounts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedLong>& indexOffsets) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets)); \
+    }                                                                       \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceCounts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, std::nullptr_t) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, instanceCounts, vertexOffsets, nullptr)); \
+    }
+#else
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_32BIT(...)
+#endif
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES(...) \
+    _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_GLES2(__VA_ARGS__) \
+    _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES_NOT_32BIT(__VA_ARGS__) \
+    __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& instanceCounts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& indexOffsets) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets)); \
+    }
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_GLES(...)
+#else
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES(...)
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_GLES(...) \
+    __VA_ARGS__& drawTransformFeedback(Magnum::GL::Mesh& mesh, Magnum::GL::TransformFeedback& xfb, Magnum::UnsignedInt stream = 0) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::drawTransformFeedback(mesh, xfb, stream)); \
+    }                                                                       \
+    __VA_ARGS__& drawTransformFeedback(Magnum::GL::MeshView& mesh, Magnum::GL::TransformFeedback& xfb, Magnum::UnsignedInt stream = 0) { \
+        return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::drawTransformFeedback(mesh, xfb, stream)); \
+    }
+#endif
+#ifndef MAGNUM_TARGET_GLES
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_HIDE_XFB \
+    using Magnum::GL::AbstractShaderProgram::drawTransformFeedback;
+#else
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_HIDE_XFB
+#endif
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_HIDE_COMPUTE \
+    using Magnum::GL::AbstractShaderProgram::dispatchCompute;
+#else
+#define _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_HIDE_COMPUTE
+#endif
+#endif
+
+/**
+@brief @relativeref{Magnum::GL,AbstractShaderProgram} subclass method chaining implementation for draws
+@m_since_latest
+
+Overrides all variants of @relativeref{Magnum::GL,AbstractShaderProgram::draw()}
+and @relativeref{Magnum::GL::AbstractShaderProgram,drawTransformFeedback()} in
+given subclass to return a reference to that class type instead of
+@relativeref{Magnum::GL,AbstractShaderProgram}, and additionally prevents
+accidental calls to
+@relativeref{Magnum::GL,AbstractShaderProgram::dispatchCompute()}. See
+@ref GL-AbstractShaderProgram-subclassing for more information.
+*/
+#define MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(...)   \
+    private:                                                                \
+        _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_HIDE_COMPUTE \
+    public:                                                                 \
+        __VA_ARGS__& draw(Magnum::GL::Mesh& mesh) {                         \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh)); \
+        }                                                                   \
+        __VA_ARGS__& draw(Magnum::GL::Mesh&& mesh) {                        \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh)); \
+        }                                                                   \
+        __VA_ARGS__& draw(Magnum::GL::MeshView& mesh) {                     \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh)); \
+        }                                                                   \
+        __VA_ARGS__& draw(Magnum::GL::MeshView&& mesh) {                    \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh));  \
+        }                                                                   \
+        __VA_ARGS__& draw(Magnum::GL::Mesh& mesh, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& counts, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& vertexOffsets, const Corrade::Containers::StridedArrayView1D<const Magnum::UnsignedInt>& indexOffsets) { \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets)); \
+        }                                                                   \
+        _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_32BIT(__VA_ARGS__) \
+        _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES(__VA_ARGS__) \
+        __VA_ARGS__& draw(Corrade::Containers::ArrayView<const Corrade::Containers::Reference<Magnum::GL::MeshView>> meshes) { \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(meshes)); \
+        }                                                                   \
+        __VA_ARGS__& draw(std::initializer_list<Corrade::Containers::Reference<Magnum::GL::MeshView>> meshes) { \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(meshes)); \
+        }                                                                   \
+        _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_GLES(__VA_ARGS__)
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+/**
+@brief @relativeref{Magnum::GL,AbstractShaderProgram} subclass method chaining implementation for compute dispatch
+@m_since_latest
+
+Overrides @relativeref{Magnum::GL,AbstractShaderProgram::dispatchCompute()} in
+given subclass to return a reference to that class type instead of
+@relativeref{Magnum::GL,AbstractShaderProgram}, and additionally prevents
+accidental calls to @relativeref{Magnum::GL,AbstractShaderProgram::draw()} and
+@relativeref{Magnum::GL::AbstractShaderProgram,drawTransformFeedback()}. See
+@ref GL-AbstractShaderProgram-subclassing for more information.
+@requires_gles31 Not defined on OpenGL ES 2.0 builds.
+@requires_gles Not defined on WebGL builds.
+*/
+#define MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION(...) \
+    private:                                                                \
+        using Magnum::GL::AbstractShaderProgram::draw;                      \
+        _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_HIDE_XFB \
+    public:                                                                 \
+        __VA_ARGS__& dispatchCompute(const Magnum::Vector3ui& workgroupCount) {     \
+            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::dispatchCompute(workgroupCount)); \
+        }
+#endif
 
 }}
 

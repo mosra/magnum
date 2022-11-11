@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
@@ -41,11 +42,16 @@
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/ImageFormat.h"
 #endif
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/MeshView.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
-#include "Magnum/GL/OpenGLTester.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/GL/TransformFeedback.h"
+#endif
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Color.h"
@@ -99,6 +105,11 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     void compute();
     #endif
     #endif
+
+    void subclassDraw();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void subclassDispatch();
+    #endif
 };
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
@@ -138,8 +149,13 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::uniformBlock,
 
               #ifndef MAGNUM_TARGET_WEBGL
-              &AbstractShaderProgramGLTest::compute
+              &AbstractShaderProgramGLTest::compute,
               #endif
+              #endif
+
+              &AbstractShaderProgramGLTest::subclassDraw,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &AbstractShaderProgramGLTest::subclassDispatch
               #endif
               });
 }
@@ -1099,6 +1115,109 @@ void AbstractShaderProgramGLTest::compute() {
     #endif
 }
 #endif
+#endif
+
+}}}}
+
+/* These are outside of any namespace to verify the macros fully qualify all
+   names */
+namespace {
+    struct ShaderSubclassDraw: Magnum::GL::AbstractShaderProgram {
+        MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(ShaderSubclassDraw)
+    };
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    struct ShaderSubclassDispatch: Magnum::GL::AbstractShaderProgram {
+        MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION(ShaderSubclassDispatch)
+    };
+    #endif
+}
+
+namespace Magnum { namespace GL { namespace Test { namespace {
+
+void AbstractShaderProgramGLTest::subclassDraw() {
+    ShaderSubclassDraw shader;
+    Mesh mesh;
+    mesh
+        .setCount(0);
+    MeshView meshView{mesh};
+    meshView
+        .setCount(0);
+    Mesh meshNoInstances;
+    meshNoInstances
+        .setInstanceCount(0);
+    Mesh meshViewNoInstances;
+    meshViewNoInstances
+        .setInstanceCount(0);
+    #ifndef MAGNUM_TARGET_GLES
+    TransformFeedback xfb{NoCreate};
+    #endif
+
+    Containers::StridedArrayView1D<const UnsignedInt> counts;
+    #ifdef MAGNUM_TARGET_GLES
+    Containers::StridedArrayView1D<const UnsignedInt> instanceCounts;
+    #endif
+    Containers::StridedArrayView1D<const UnsignedInt> vertexOffsets;
+    Containers::StridedArrayView1D<const UnsignedInt> indexOffsets;
+    #ifndef CORRADE_TARGET_32BIT
+    Containers::StridedArrayView1D<const UnsignedLong> indexOffsetsLong;
+    #endif
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+    Containers::StridedArrayView1D<const UnsignedInt> instanceOffsets;
+    #endif
+
+    /* These should all be a no-op because the mesh is empty and/or because we
+       specify no multidraw items. And if everything is alright, the returned
+       type should still be ShaderSubclassDraw& even after all these. */
+    ShaderSubclassDraw& out = shader
+        .draw(mesh)
+        .draw(std::move(mesh))
+        .draw(meshView)
+        .draw(std::move(meshView))
+        .draw(mesh, counts, vertexOffsets, indexOffsets)
+        #ifndef CORRADE_TARGET_32BIT
+        .draw(mesh, counts, vertexOffsets, indexOffsetsLong)
+        .draw(mesh, counts, vertexOffsets, nullptr)
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
+        .draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets, instanceOffsets)
+        #ifndef CORRADE_TARGET_32BIT
+        .draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsetsLong, instanceOffsets)
+        .draw(mesh, counts, instanceCounts, vertexOffsets, nullptr, instanceOffsets)
+        #endif
+        #endif
+        .draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsets)
+        #ifndef CORRADE_TARGET_32BIT
+        .draw(mesh, counts, instanceCounts, vertexOffsets, indexOffsetsLong)
+        .draw(mesh, counts, instanceCounts, vertexOffsets, nullptr)
+        #endif
+        #endif
+        .draw(Containers::arrayView<Containers::Reference<MeshView>>({}))
+        .draw(std::initializer_list<Containers::Reference<MeshView>>{})
+        #ifndef MAGNUM_TARGET_GLES
+        .drawTransformFeedback(meshNoInstances, xfb)
+        .drawTransformFeedback(meshNoInstances, xfb, 0)
+        .drawTransformFeedback(meshViewNoInstances, xfb)
+        .drawTransformFeedback(meshViewNoInstances, xfb, 0)
+        #endif
+        ;
+
+    CORRADE_VERIFY(out.id());
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractShaderProgramGLTest::subclassDispatch() {
+    ShaderSubclassDispatch shader;
+
+    /* These should all be a no-op because the count is empty. And if
+       everything is alright, the returned type should still be
+       ShaderSubclassDispatch& again. */
+    ShaderSubclassDispatch& out = shader.dispatchCompute({});
+
+    CORRADE_VERIFY(out.id());
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
 #endif
 
 }}}}
