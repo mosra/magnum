@@ -367,6 +367,14 @@ MaterialData::~MaterialData() = default;
 
 MaterialData& MaterialData::operator=(MaterialData&&) noexcept = default;
 
+UnsignedInt MaterialData::attributeDataOffset(const UnsignedInt layer) const {
+    CORRADE_ASSERT(layer <= layerCount(),
+        "Trade::MaterialData::attributeDataOffset(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    if(!_layerOffsets)
+        return layer == 0 ? 0 : _data.size();
+    return layer == 0 ? 0 : _layerOffsets[layer - 1];
+}
+
 UnsignedInt MaterialData::findLayerIdInternal(const Containers::StringView layer) const {
     for(std::size_t i = 1; i < _layerOffsets.size(); ++i) {
         if(_layerOffsets[i] > _layerOffsets[i - 1] &&

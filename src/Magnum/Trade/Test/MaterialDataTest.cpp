@@ -991,6 +991,9 @@ void MaterialDataTest::construct() {
     CORRADE_COMPARE(data.layerName(0), "");
     CORRADE_VERIFY(!data.hasLayer(""));
 
+    CORRADE_COMPARE(data.attributeDataOffset(0), 0);
+    CORRADE_COMPARE(data.attributeDataOffset(1), 4);
+
     /* Verify sorting */
     CORRADE_COMPARE(data.attributeName(0), "AmbientTextureMatrix");
     CORRADE_COMPARE(data.attributeName(1), "DiffuseTextureCoordinates");
@@ -1183,6 +1186,12 @@ void MaterialDataTest::constructLayers() {
 
     CORRADE_COMPARE(data.layerCount(), 4);
     CORRADE_COMPARE(data.layerData().size(), 4);
+
+    CORRADE_COMPARE(data.attributeDataOffset(0), 0);
+    CORRADE_COMPARE(data.attributeDataOffset(1), 2);
+    CORRADE_COMPARE(data.attributeDataOffset(2), 5);
+    CORRADE_COMPARE(data.attributeDataOffset(3), 5);
+    CORRADE_COMPARE(data.attributeDataOffset(4), 7);
 
     CORRADE_COMPARE(data.attributeData().size(), 7);
     CORRADE_COMPARE(data.attributeCount(0), 2);
@@ -2580,8 +2589,12 @@ void MaterialDataTest::accessLayerOutOfBounds() {
         {MaterialAttribute::SpecularTexture, 3u}
     }, {0, 2}};
 
+    /* This is fine */
+    data.attributeDataOffset(2);
+
     std::ostringstream out;
     Error redirectError{&out};
+    data.attributeDataOffset(3);
     data.layerName(2);
     data.layerFactor(2);
     data.layerFactorTexture(2);
@@ -2622,6 +2635,7 @@ void MaterialDataTest::accessLayerOutOfBounds() {
     data.attributeOr(2, "AlphaMask", false);
     data.attributeOr(2, MaterialAttribute::AlphaMask, false);
     CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attributeDataOffset(): index 3 out of range for 2 layers\n"
         "Trade::MaterialData::layerName(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::layerFactor(): index 2 out of range for 2 layers\n"
         "Trade::MaterialData::layerFactorTexture(): index 2 out of range for 2 layers\n"
