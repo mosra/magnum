@@ -103,7 +103,7 @@ const struct {
 };
 
 const struct {
-    const char* name;
+    TestSuite::TestCaseDescriptionSourceLocation name;
     Containers::Array<Containers::String> args;
     const char* requiresImporter;
     const char* requiresImporter2;
@@ -233,7 +233,8 @@ const struct {
         /* There should be a minimal difference compared to the original */
         "two-quads.gltf", "two-quads.bin",
         "Mesh 0 duplicate removal: 5 -> 4 vertices\n"
-        "Mesh 1 duplicate removal: 6 -> 4 vertices\n"},
+        "Mesh 1 duplicate removal: 6 -> 4 vertices\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"},
     {"one implicit mesh, remove duplicate vertices fuzzy", Containers::array<Containers::String>({
         "--remove-duplicate-vertices-fuzzy", "1.0e-1",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-duplicates-fuzzy.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")}),
@@ -268,7 +269,8 @@ const struct {
         "GltfImporter", nullptr, "GltfSceneConverter", {}, nullptr,
         "two-quads.gltf", "two-quads.bin",
         "Mesh 0 fuzzy duplicate removal: 5 -> 4 vertices\n"
-        "Mesh 1 fuzzy duplicate removal: 6 -> 4 vertices\n"},
+        "Mesh 1 fuzzy duplicate removal: 6 -> 4 vertices\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"},
     {"one implicit mesh, two converters", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
@@ -291,6 +293,7 @@ const struct {
            of MeshOptimizerSceneConverter got actually passed further and not
            discarded */
         "Trade::AnySceneImporter::openFile(): using GltfImporter\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 1\n"
         "Trade::MeshOptimizerSceneConverter::convert(): processing stats:\n"
         "  vertex cache:\n"
         "    4 -> 4 transformed vertices\n"
@@ -304,7 +307,8 @@ const struct {
         "    65536 -> 65536 shaded pixels\n"
         "    65536 -> 65536 covered pixels\n"
         "    overdraw 1 -> 1\n"
-        "Trade::AnySceneConverter::beginFile(): using GltfSceneConverter\n"},
+        "Trade::AnySceneConverter::beginFile(): using GltfSceneConverter\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 1\n"},
     {"one implicit mesh, two converters, explicit last, verbose", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter", "-C", "GltfSceneConverter", "-v",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
@@ -315,6 +319,7 @@ const struct {
            option the verbose output includes a progress info */
         "Trade::AnySceneImporter::openFile(): using GltfImporter\n"
         "Processing (1/2) with MeshOptimizerSceneConverter...\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 1\n"
         "Trade::MeshOptimizerSceneConverter::convert(): processing stats:\n"
         "  vertex cache:\n"
         "    4 -> 4 transformed vertices\n"
@@ -328,7 +333,8 @@ const struct {
         "    65536 -> 65536 shaded pixels\n"
         "    65536 -> 65536 covered pixels\n"
         "    overdraw 1 -> 1\n"
-        "Saving output (2/2) with GltfSceneConverter...\n"},
+        "Saving output (2/2) with GltfSceneConverter...\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 1\n"},
     {"one implicit mesh, two converters, options for the first only", Containers::array<Containers::String>({
         "-C", "MeshOptimizerSceneConverter",
         "-c", "nonexistentMeshOptimizerOption=yes",
@@ -389,7 +395,8 @@ const struct {
         "    65536 -> 65536 shaded pixels\n"
         "    65536 -> 65536 covered pixels\n"
         "    overdraw 1 -> 1\n"
-        "Trade::AnySceneConverter::beginFile(): using StanfordSceneConverter\n"},
+        "Trade::AnySceneConverter::beginFile(): using StanfordSceneConverter\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 1\n"},
     {"implicit custom-processed mesh with a name and custom attributes", Containers::array<Containers::String>({
         /* Removing the generator identifier to have the file closer to the
            original */
@@ -459,7 +466,8 @@ const struct {
         "  overdraw:\n"
         "    65536 -> 65536 shaded pixels\n"
         "    65536 -> 65536 covered pixels\n"
-        "    overdraw 1 -> 1\n"},
+        "    overdraw 1 -> 1\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"},
     {"two mesh converters, two options, one mesh, verbose", Containers::array<Containers::String>({
         "-I", "GltfImporter", "-C", "GltfSceneConverter",
         "-M", "MeshOptimizerSceneConverter",
@@ -566,7 +574,9 @@ const struct {
         "Trade::AnyImageImporter::openFile(): using KtxImporter\n"
         "Processing 3D image 0 with StbResizeImageConverter...\n"
         "Trade::AnyImageImporter::openFile(): using KtxImporter\n"
-        "Processing 3D image 1 with StbResizeImageConverter...\n"},
+        "Processing 3D image 1 with StbResizeImageConverter...\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding texture 0 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding texture 1 out of 2\n"},
 };
 
 const struct {

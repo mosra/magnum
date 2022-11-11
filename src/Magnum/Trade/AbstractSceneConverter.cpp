@@ -1284,6 +1284,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
     if(contents & SceneContent::Meshes) {
         Containers::Array<Trade::MeshData> levels;
         for(UnsignedInt i = 0, iMax = importer.meshCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding mesh" << i << "out of" << iMax;
+
             UnsignedInt levelCount = contents & SceneContent::MeshLevels ? importer.meshLevelCount(i) : 1;
             if(levelCount != 1 && !(contentsSupported & SceneContent::MeshLevels)) {
                 if(noLevelsIfUnsupported) {
@@ -1300,6 +1303,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             arrayReserve(levels, levelCount);
             arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
             for(UnsignedInt j = 0; j != levelCount; ++j) {
+                if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
+                    Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing mesh" << i << "level" << j << "out of" << levelCount;
+
                 Containers::Optional<Trade::MeshData> mesh = importer.mesh(i, j);
                 if(!mesh) return false;
 
@@ -1333,6 +1339,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
     if(contents & SceneContent::Images1D) {
         Containers::Array<Trade::ImageData1D> levels;
         for(UnsignedInt i = 0, iMax = importer.image1DCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding 1D image" << i << "out of" << iMax;
+
             UnsignedInt levelCount = contents & SceneContent::ImageLevels ? importer.image1DLevelCount(i) : 1;
             if(levelCount != 1 && !(contentsSupported & SceneContent::ImageLevels)) {
                 if(noLevelsIfUnsupported) {
@@ -1350,6 +1359,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             arrayReserve(levels, levelCount);
             arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
             for(UnsignedInt j = 0; j != levelCount; ++j) {
+                if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
+                    Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 1D image" << i << "level" << j << "out of" << levelCount;
+
                 Containers::Optional<Trade::ImageData1D> image = importer.image1D(i, j);
                 if(!image) return false;
 
@@ -1380,6 +1392,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
     if(contents & SceneContent::Images2D) {
         Containers::Array<Trade::ImageData2D> levels;
         for(UnsignedInt i = 0, iMax = importer.image2DCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image" << i << "out of" << iMax;
+
             UnsignedInt levelCount = contents & SceneContent::ImageLevels ? importer.image2DLevelCount(i) : 1;
             if(levelCount != 1 && !(contentsSupported & SceneContent::ImageLevels)) {
                 if(noLevelsIfUnsupported) {
@@ -1397,6 +1412,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             arrayReserve(levels, levelCount);
             arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
             for(UnsignedInt j = 0; j != levelCount; ++j) {
+                if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
+                    Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 2D image" << i << "level" << j << "out of" << levelCount;
+
                 Containers::Optional<Trade::ImageData2D> image = importer.image2D(i, j);
                 if(!image) return false;
 
@@ -1427,6 +1445,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
     if(contents & SceneContent::Images3D) {
         Containers::Array<Trade::ImageData3D> levels;
         for(UnsignedInt i = 0, iMax = importer.image3DCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding 3D image" << i << "out of" << iMax;
+
             UnsignedInt levelCount = contents & SceneContent::ImageLevels ? importer.image3DLevelCount(i) : 1;
             if(levelCount != 1 && !(contentsSupported & SceneContent::ImageLevels)) {
                 if(noLevelsIfUnsupported) {
@@ -1444,6 +1465,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
             arrayReserve(levels, levelCount);
             arrayResize(levels, NoInit, 0); /** @todo arrayClear() */
             for(UnsignedInt j = 0; j != levelCount; ++j) {
+                if((flags() & SceneConverterFlag::Verbose) && levelCount != 1)
+                    Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): importing 3D image" << i << "level" << j << "out of" << levelCount;
+
                 Containers::Optional<Trade::ImageData3D> image = importer.image3D(i, j);
                 if(!image) return false;
 
@@ -1473,6 +1497,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
     if(contents & SceneContent::Textures) {
         for(UnsignedInt i = 0, iMax = importer.textureCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding texture" << i << "out of" << iMax;
+
             const Containers::Optional<Trade::TextureData> texture = importer.texture(i);
             if(!texture || !add(*texture, contents & SceneContent::Names ? importer.textureName(i) : Containers::String{}))
                 return false;
@@ -1481,6 +1508,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
     if(contents & SceneContent::Materials) {
         for(UnsignedInt i = 0, iMax = importer.materialCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding material" << i << "out of" << iMax;
+
             const Containers::Optional<Trade::MaterialData> material = importer.material(i);
             if(!material || !add(*material, contents & SceneContent::Names ? importer.materialName(i) : Containers::String{}))
                 return false;
@@ -1489,6 +1519,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
     if(contents & SceneContent::Lights) {
         for(UnsignedInt i = 0, iMax = importer.lightCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding light" << i << "out of" << iMax;
+
             const Containers::Optional<Trade::LightData> light = importer.light(i);
             if(!light || !add(*light, contents & SceneContent::Names ? importer.lightName(i) : Containers::String{}))
                 return false;
@@ -1497,6 +1530,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
     if(contents & SceneContent::Cameras) {
         for(UnsignedInt i = 0, iMax = importer.cameraCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding camera" << i << "out of" << iMax;
+
             const Containers::Optional<Trade::CameraData> camera = importer.camera(i);
             if(!camera || !add(*camera, contents & SceneContent::Names ? importer.cameraName(i) : Containers::String{}))
                 return false;
@@ -1511,6 +1547,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
         }
 
         for(UnsignedInt i = 0, iMax = importer.sceneCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding scene" << i << "out of" << iMax;
+
             Containers::Optional<Trade::SceneData> scene = importer.scene(i);
             if(!scene) return false;
 
@@ -1537,6 +1576,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
     if(contents & SceneContent::Skins2D) {
         for(UnsignedInt i = 0, iMax = importer.skin2DCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding 2D skin" << i << "out of" << iMax;
+
             const Containers::Optional<Trade::SkinData2D> skin = importer.skin2D(i);
             if(!skin || !add(*skin, contents & SceneContent::Names ? importer.skin2DName(i) : Containers::String{}))
                 return false;
@@ -1545,6 +1587,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
     if(contents & SceneContent::Skins3D) {
         for(UnsignedInt i = 0, iMax = importer.skin3DCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding 3D skin" << i << "out of" << iMax;
+
             const Containers::Optional<Trade::SkinData3D> skin = importer.skin3D(i);
             if(!skin || !add(*skin, contents & SceneContent::Names ? importer.skin3DName(i) : Containers::String{}))
                 return false;
@@ -1553,6 +1598,9 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
     if(contents & SceneContent::Animations) {
         for(UnsignedInt i = 0, iMax = importer.animationCount(); i != iMax; ++i) {
+            if(flags() & SceneConverterFlag::Verbose)
+                Debug{} << "Trade::AbstractSceneConverter::addImporterContents(): adding animation" << i << "out of" << iMax;
+
             const Containers::Optional<Trade::AnimationData> animation = importer.animation(i);
             if(!animation || !add(*animation, contents & SceneContent::Names ? importer.animationName(i) : Containers::String{}))
                 return false;

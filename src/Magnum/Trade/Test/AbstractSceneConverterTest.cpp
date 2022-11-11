@@ -315,128 +315,232 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 using namespace Containers::Literals;
 
 const struct {
-    const char* name;
+    TestSuite::TestCaseDescriptionSourceLocation name;
     SceneContents contents;
+    SceneConverterFlags flags;
     const char* expected;
 } AddImporterContentsData[]{
-    {"scenes", SceneContent::Scenes,
+    {"scenes", SceneContent::Scenes, {},
         "Adding scene 0 named  with 0x5ce00000\n"
         "Adding scene 1 named  with 0x5ce00001\n"
         "Setting default scene to 1\n"},
-    {"scenes + names", SceneContent::Scenes|SceneContent::Names,
+    {"scenes, verbose", SceneContent::Scenes, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 2\n"
+        "Adding scene 0 named  with 0x5ce00000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding scene 1 out of 2\n"
+        "Adding scene 1 named  with 0x5ce00001\n"
+        "Setting default scene to 1\n"},
+    {"scenes + names", SceneContent::Scenes|SceneContent::Names, {},
         "Setting object 0 name to Object 0\n"
         "Setting object 1 name to Object 1\n"
         "Setting object 2 name to Object 2\n"
         "Adding scene 0 named Scene 0 with 0x5ce00000\n"
         "Adding scene 1 named Scene 1 with 0x5ce00001\n"
         "Setting default scene to 1\n"},
-    {"animations", SceneContent::Animations,
+    {"animations", SceneContent::Animations, {},
         "Adding animation 0 named  with 0x40100000\n"
         "Adding animation 1 named  with 0x40100001\n"},
-    {"animations + names", SceneContent::Animations|SceneContent::Names,
+    {"animations, verbose", SceneContent::Animations, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding animation 0 out of 2\n"
+        "Adding animation 0 named  with 0x40100000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding animation 1 out of 2\n"
+        "Adding animation 1 named  with 0x40100001\n"},
+    {"animations + names", SceneContent::Animations|SceneContent::Names, {},
         "Adding animation 0 named Animation 0 with 0x40100000\n"
         "Adding animation 1 named Animation 1 with 0x40100001\n"},
-    {"lights", SceneContent::Lights,
+    {"lights", SceneContent::Lights, {},
         "Adding light 0 named  with 0x11600000\n"
         "Adding light 1 named  with 0x11600001\n"},
-    {"lights + names", SceneContent::Lights|SceneContent::Names,
+    {"lights, verbose", SceneContent::Lights, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding light 0 out of 2\n"
+        "Adding light 0 named  with 0x11600000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding light 1 out of 2\n"
+        "Adding light 1 named  with 0x11600001\n"},
+    {"lights + names", SceneContent::Lights|SceneContent::Names, {},
         "Adding light 0 named Light 0 with 0x11600000\n"
         "Adding light 1 named Light 1 with 0x11600001\n"},
-    {"cameras", SceneContent::Cameras,
+    {"cameras", SceneContent::Cameras, {},
         "Adding camera 0 named  with 0xca0e0000\n"
         "Adding camera 1 named  with 0xca0e0001\n"},
-    {"cameras + names", SceneContent::Cameras|SceneContent::Names,
+    {"cameras, verbose", SceneContent::Cameras, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding camera 0 out of 2\n"
+        "Adding camera 0 named  with 0xca0e0000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding camera 1 out of 2\n"
+        "Adding camera 1 named  with 0xca0e0001\n"},
+    {"cameras + names", SceneContent::Cameras|SceneContent::Names, {},
         "Adding camera 0 named Camera 0 with 0xca0e0000\n"
         "Adding camera 1 named Camera 1 with 0xca0e0001\n"},
-    {"2D skins", SceneContent::Skins2D,
+    {"2D skins", SceneContent::Skins2D, {},
         "Adding 2D skin 0 named  with 0x50102d00\n"
         "Adding 2D skin 1 named  with 0x50102d01\n"},
-    {"2D skins + names", SceneContent::Skins2D|SceneContent::Names,
+    {"2D skins, verbose", SceneContent::Skins2D, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D skin 0 out of 2\n"
+        "Adding 2D skin 0 named  with 0x50102d00\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D skin 1 out of 2\n"
+        "Adding 2D skin 1 named  with 0x50102d01\n"},
+    {"2D skins + names", SceneContent::Skins2D|SceneContent::Names, {},
         "Adding 2D skin 0 named 2D skin 0 with 0x50102d00\n"
         "Adding 2D skin 1 named 2D skin 1 with 0x50102d01\n"},
-    {"3D skins", SceneContent::Skins3D,
+    {"3D skins", SceneContent::Skins3D, {},
         "Adding 3D skin 0 named  with 0x50103d00\n"
         "Adding 3D skin 1 named  with 0x50103d01\n"},
-    {"3D skins + names", SceneContent::Skins3D|SceneContent::Names,
+    {"3D skins, verbose", SceneContent::Skins3D, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 3D skin 0 out of 2\n"
+        "Adding 3D skin 0 named  with 0x50103d00\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 3D skin 1 out of 2\n"
+        "Adding 3D skin 1 named  with 0x50103d01\n"},
+    {"3D skins + names", SceneContent::Skins3D|SceneContent::Names, {},
         "Adding 3D skin 0 named 3D skin 0 with 0x50103d00\n"
         "Adding 3D skin 1 named 3D skin 1 with 0x50103d01\n"},
-    {"meshes", SceneContent::Meshes,
+    {"meshes", SceneContent::Meshes, {},
         "Adding mesh 0 named  with 0xe500000\n"
         "Adding mesh 1 named  with 0xe500001\n"},
-    {"meshes + names", SceneContent::Meshes|SceneContent::Names,
+    {"meshes, verbose", SceneContent::Meshes, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 2\n"
+        "Adding mesh 0 named  with 0xe500000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 1 out of 2\n"
+        "Adding mesh 1 named  with 0xe500001\n"},
+    {"meshes + names", SceneContent::Meshes|SceneContent::Names, {},
         "Adding mesh 0 named Mesh 0 with 0xe500000\n"
         "Adding mesh 1 named Mesh 1 with 0xe500001\n"},
-    {"meshes + levels", SceneContent::Meshes|SceneContent::MeshLevels,
+    {"meshes + levels", SceneContent::Meshes|SceneContent::MeshLevels, {},
         "Adding mesh 0 named  with 0xe500000\n"
         "Adding mesh 1 level 0 named  with 0xe500001\n"
         "Adding mesh 1 level 1 named  with 0xe500011\n"
         "Adding mesh 1 level 2 named  with 0xe500021\n"},
-    {"meshes + levels + names", SceneContent::Meshes|SceneContent::MeshLevels|SceneContent::Names,
+    {"meshes + levels, verbose", SceneContent::Meshes|SceneContent::MeshLevels, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 2\n"
+        "Adding mesh 0 named  with 0xe500000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 1 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing mesh 1 level 0 out of 3\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing mesh 1 level 1 out of 3\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing mesh 1 level 2 out of 3\n"
+        "Adding mesh 1 level 0 named  with 0xe500001\n"
+        "Adding mesh 1 level 1 named  with 0xe500011\n"
+        "Adding mesh 1 level 2 named  with 0xe500021\n"},
+    {"meshes + levels + names", SceneContent::Meshes|SceneContent::MeshLevels|SceneContent::Names, {},
         "Adding mesh 0 named Mesh 0 with 0xe500000\n"
         "Adding mesh 1 level 0 named Mesh 1 with 0xe500001\n"
         "Adding mesh 1 level 1 named Mesh 1 with 0xe500011\n"
         "Adding mesh 1 level 2 named Mesh 1 with 0xe500021\n"},
-    {"materials", SceneContent::Materials,
+    {"materials", SceneContent::Materials, {},
         "Adding material 0 named  with 0xa7e0000\n"
         "Adding material 1 named  with 0xa7e0001\n"},
-    {"materials + names", SceneContent::Materials|SceneContent::Names,
+    {"materials, verbose", SceneContent::Materials, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding material 0 out of 2\n"
+        "Adding material 0 named  with 0xa7e0000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding material 1 out of 2\n"
+        "Adding material 1 named  with 0xa7e0001\n"},
+    {"materials + names", SceneContent::Materials|SceneContent::Names, {},
         "Adding material 0 named Material 0 with 0xa7e0000\n"
         "Adding material 1 named Material 1 with 0xa7e0001\n"},
-    {"textures", SceneContent::Textures,
+    {"textures", SceneContent::Textures, {},
         "Adding texture 0 named  with 0x7e070000\n"
         "Adding texture 1 named  with 0x7e070001\n"},
-    {"textures + names", SceneContent::Textures|SceneContent::Names,
+    {"textures, verbose", SceneContent::Textures, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding texture 0 out of 2\n"
+        "Adding texture 0 named  with 0x7e070000\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding texture 1 out of 2\n"
+        "Adding texture 1 named  with 0x7e070001\n"},
+    {"textures + names", SceneContent::Textures|SceneContent::Names, {},
         "Adding texture 0 named Texture 0 with 0x7e070000\n"
         "Adding texture 1 named Texture 1 with 0x7e070001\n"},
-    {"1D images", SceneContent::Images1D,
+    {"1D images", SceneContent::Images1D, {},
         "Adding 1D image 0 named  with 0x10a91d00\n"
         "Adding 1D image 1 named  with 0x10a91d01\n"},
-    {"1D images + names", SceneContent::Images1D|SceneContent::Names,
+    {"1D images, verbose", SceneContent::Images1D, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 1D image 0 out of 2\n"
+        "Adding 1D image 0 named  with 0x10a91d00\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 1D image 1 out of 2\n"
+        "Adding 1D image 1 named  with 0x10a91d01\n"},
+    {"1D images + names", SceneContent::Images1D|SceneContent::Names, {},
         "Adding 1D image 0 named 1D image 0 with 0x10a91d00\n"
         "Adding 1D image 1 named 1D image 1 with 0x10a91d01\n"},
-    {"1D images + levels", SceneContent::Images1D|SceneContent::ImageLevels,
+    {"1D images + levels", SceneContent::Images1D|SceneContent::ImageLevels, {},
         "Adding 1D image 0 named  with 0x10a91d00\n"
         "Adding 1D image 1 level 0 named  with 0x10a91d01\n"
         "Adding 1D image 1 level 1 named  with 0x10a91d11\n"
         "Adding 1D image 1 level 2 named  with 0x10a91d21\n"
         "Adding 1D image 1 level 3 named  with 0x10a91d31\n"},
-    {"1D images + levels + names", SceneContent::Images1D|SceneContent::ImageLevels|SceneContent::Names,
+    {"1D images + levels, verbose", SceneContent::Images1D|SceneContent::ImageLevels, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 1D image 0 out of 2\n"
+        "Adding 1D image 0 named  with 0x10a91d00\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 1D image 1 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 1D image 1 level 0 out of 4\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 1D image 1 level 1 out of 4\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 1D image 1 level 2 out of 4\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 1D image 1 level 3 out of 4\n"
+        "Adding 1D image 1 level 0 named  with 0x10a91d01\n"
+        "Adding 1D image 1 level 1 named  with 0x10a91d11\n"
+        "Adding 1D image 1 level 2 named  with 0x10a91d21\n"
+        "Adding 1D image 1 level 3 named  with 0x10a91d31\n"},
+    {"1D images + levels + names", SceneContent::Images1D|SceneContent::ImageLevels|SceneContent::Names, {},
         "Adding 1D image 0 named 1D image 0 with 0x10a91d00\n"
         "Adding 1D image 1 level 0 named 1D image 1 with 0x10a91d01\n"
         "Adding 1D image 1 level 1 named 1D image 1 with 0x10a91d11\n"
         "Adding 1D image 1 level 2 named 1D image 1 with 0x10a91d21\n"
         "Adding 1D image 1 level 3 named 1D image 1 with 0x10a91d31\n"},
-    {"2D images", SceneContent::Images2D,
+    {"2D images", SceneContent::Images2D, {},
         "Adding 2D image 0 named  with 0x10a92d00\n"
         "Adding 2D image 1 named  with 0x10a92d01\n"},
-    {"2D images + names", SceneContent::Images2D|SceneContent::Names,
+    {"2D images, verbose", SceneContent::Images2D, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 0 out of 2\n"
+        "Adding 2D image 0 named  with 0x10a92d00\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 1 out of 2\n"
+        "Adding 2D image 1 named  with 0x10a92d01\n"},
+    {"2D images + names", SceneContent::Images2D|SceneContent::Names, {},
         "Adding 2D image 0 named 2D image 0 with 0x10a92d00\n"
         "Adding 2D image 1 named 2D image 1 with 0x10a92d01\n"},
-    {"2D images + levels", SceneContent::Images2D|SceneContent::ImageLevels,
+    {"2D images + levels", SceneContent::Images2D|SceneContent::ImageLevels, {},
         "Adding 2D image 0 level 0 named  with 0x10a92d00\n"
         "Adding 2D image 0 level 1 named  with 0x10a92d10\n"
         "Adding 2D image 0 level 2 named  with 0x10a92d20\n"
         "Adding 2D image 1 named  with 0x10a92d01\n"},
-    {"2D images + names", SceneContent::Images2D|SceneContent::ImageLevels|SceneContent::Names,
+    {"2D images + levels, verbose", SceneContent::Images2D|SceneContent::ImageLevels, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 0 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 2D image 0 level 0 out of 3\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 2D image 0 level 1 out of 3\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 2D image 0 level 2 out of 3\n"
+        "Adding 2D image 0 level 0 named  with 0x10a92d00\n"
+        "Adding 2D image 0 level 1 named  with 0x10a92d10\n"
+        "Adding 2D image 0 level 2 named  with 0x10a92d20\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 1 out of 2\n"
+        "Adding 2D image 1 named  with 0x10a92d01\n"},
+    {"2D images + names", SceneContent::Images2D|SceneContent::ImageLevels|SceneContent::Names, {},
         "Adding 2D image 0 level 0 named 2D image 0 with 0x10a92d00\n"
         "Adding 2D image 0 level 1 named 2D image 0 with 0x10a92d10\n"
         "Adding 2D image 0 level 2 named 2D image 0 with 0x10a92d20\n"
         "Adding 2D image 1 named 2D image 1 with 0x10a92d01\n"},
-    {"3D images", SceneContent::Images3D,
+    {"3D images", SceneContent::Images3D, {},
         "Adding 3D image 0 named  with 0x10a93d00\n"
         "Adding 3D image 1 named  with 0x10a93d01\n"},
-    {"3D images + names", SceneContent::Images3D|SceneContent::Names,
+    {"3D images, verbose", SceneContent::Images3D, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 3D image 0 out of 2\n"
+        "Adding 3D image 0 named  with 0x10a93d00\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 3D image 1 out of 2\n"
+        "Adding 3D image 1 named  with 0x10a93d01\n"},
+    {"3D images + names", SceneContent::Images3D|SceneContent::Names, {},
         "Adding 3D image 0 named 3D image 0 with 0x10a93d00\n"
         "Adding 3D image 1 named 3D image 1 with 0x10a93d01\n"},
-    {"3D images + levels", SceneContent::Images3D|SceneContent::ImageLevels,
+    {"3D images + levels", SceneContent::Images3D|SceneContent::ImageLevels, {},
         "Adding 3D image 0 named  with 0x10a93d00\n"
         "Adding 3D image 1 level 0 named  with 0x10a93d01\n"
         "Adding 3D image 1 level 1 named  with 0x10a93d11\n"},
-    {"3D images + names", SceneContent::Images3D|SceneContent::ImageLevels|SceneContent::Names,
+    {"3D images + levels, verbose", SceneContent::Images3D|SceneContent::ImageLevels, SceneConverterFlag::Verbose,
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 3D image 0 out of 2\n"
+        "Adding 3D image 0 named  with 0x10a93d00\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 3D image 1 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 3D image 1 level 0 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): importing 3D image 1 level 1 out of 2\n"
+        "Adding 3D image 1 level 0 named  with 0x10a93d01\n"
+        "Adding 3D image 1 level 1 named  with 0x10a93d11\n"},
+    {"3D images + names", SceneContent::Images3D|SceneContent::ImageLevels|SceneContent::Names, {},
         "Adding 3D image 0 named 3D image 0 with 0x10a93d00\n"
         "Adding 3D image 1 level 0 named 3D image 1 with 0x10a93d01\n"
         "Adding 3D image 1 level 1 named 3D image 1 with 0x10a93d11\n"},
-    {"names only", SceneContent::Names,
+    {"names only", SceneContent::Names, {},
+        "" /* Nothing */},
+    {"names only, verbose", SceneContent::Names, SceneConverterFlag::Verbose,
         "" /* Nothing */},
 };
 
@@ -6083,6 +6187,7 @@ void AbstractSceneConverterTest::addImporterContents() {
         }
     } converter;
 
+    converter.addFlags(data.flags);
     CORRADE_VERIFY(converter.beginData());
 
     std::ostringstream out;
