@@ -24,6 +24,8 @@ build() {
 
     cd "$_rootdir/build-emscripten-wasm"
 
+    # Put tests into a separate target as they take ages to build. They're
+    # built only inside check() so `makepkg --nocheck` will skip building them.
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
@@ -45,17 +47,16 @@ build() {
         -DMAGNUM_WITH_WAVAUDIOIMPORTER=ON \
         -DMAGNUM_WITH_GL_INFO=ON \
         -DMAGNUM_WITH_AL_INFO=ON \
-        -DMAGNUM_BUILD_TESTS=OFF \
-        -DMAGNUM_BUILD_GL_TESTS=OFF
+        -DMAGNUM_BUILD_TESTS=ON \
+        -DMAGNUM_BUILD_GL_TESTS=ON \
+        -DCORRADE_TESTSUITE_TEST_TARGET=build-tests
     ninja
 }
 
 check() {
     cd "$_rootdir/build-emscripten-wasm"
 
-    # So tests are not even built (takes AGES) when the user doesn't want to
-    cmake . -DMAGNUM_BUILD_TESTS=ON -DMAGNUM_BUILD_GL_TESTS=ON
-    ninja
+    ninja build-tests
 
     CORRADE_TEST_COLOR=ON ctest -j9 --output-on-failure -E ALTest
 }
