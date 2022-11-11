@@ -937,11 +937,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
-         * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0),
-         * OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in
-         * OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL
-         * 1.0 is available, the associated vertex array object is bound
-         * instead of setting up the mesh from scratch.
+         * Expects that @p mesh is compatible with this shader and is fully set
+         * up. If @p counts is empty, no draw commands are issued. If
+         * @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in OpenGL
+         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
+         * available, the associated vertex array object is bound instead of
+         * setting up the mesh from scratch.
          *
          * If @p counts, @p vertexOffsets and @p indexOffsets are contiguous
          * views, they get passed directly to the underlying GL functions,
@@ -1268,7 +1270,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Expects that @p mesh is compatible with this shader, is fully set up
          * and that the output buffer(s) from @p xfb are used as vertex buffers
-         * in the mesh. Everything set by @ref Mesh::setCount(),
+         * in the mesh. If its instance count is @cpp 0 @ce, no draw commands
+         * are issued. Everything set by @ref Mesh::setCount(),
          * @ref Mesh::setBaseInstance(), @ref Mesh::setBaseVertex() and
          * @ref Mesh::setIndexBuffer() is ignored, the mesh is drawn as
          * non-indexed and the vertex count is taken from the @p xfb object. If
