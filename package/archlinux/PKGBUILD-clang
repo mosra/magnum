@@ -74,5 +74,3 @@ package() {
     cd "$_rootdir/build-clang"
     DESTDIR="$pkgdir/" ninja install
 }
-
-# kate: hl bash
