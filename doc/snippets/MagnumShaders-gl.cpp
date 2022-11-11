@@ -26,6 +26,7 @@
 #include <numeric>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/ImageView.h"

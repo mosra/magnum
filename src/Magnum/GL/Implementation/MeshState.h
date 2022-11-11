@@ -77,7 +77,7 @@ struct MeshState {
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
-    void(*multiDrawViewImplementation)(Containers::ArrayView<const Containers::Reference<MeshView>>);
+    void(*multiDrawViewImplementation)(const Containers::Iterable<MeshView>&);
     void(APIENTRY *multiDrawArraysImplementation)(GLenum, const GLint*, const GLsizei*, GLsizei);
     void(APIENTRY *multiDrawElementsImplementation)(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

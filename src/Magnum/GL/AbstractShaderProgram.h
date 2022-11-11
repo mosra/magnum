@@ -45,7 +45,8 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
-/* For attachShaders(), which used to take a std::initializer_list<Reference> */
+/* For attachShaders(), which used to take a std::initializer_list<Reference>,
+   and draw({MeshView}) as well */
 #include <Corrade/Containers/Iterable.h>
 /* For label() / setLabel(), which used to be a std::string */
 #include <Corrade/Containers/StringStl.h>
@@ -1254,13 +1255,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      if the mesh is indexed and @ref MeshView::baseVertex() is not
          *      `0`
          */
-        AbstractShaderProgram& draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
-
-        /**
-         * @overload
-         * @m_since{2020,06}
-         */
-        AbstractShaderProgram& draw(std::initializer_list<Containers::Reference<MeshView>> meshes);
+        AbstractShaderProgram& draw(const Containers::Iterable<MeshView>& meshes);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -2126,10 +2121,7 @@ accidental calls to
         }                                                                   \
         _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_32BIT(__VA_ARGS__) \
         _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_GLES(__VA_ARGS__) \
-        __VA_ARGS__& draw(Corrade::Containers::ArrayView<const Corrade::Containers::Reference<Magnum::GL::MeshView>> meshes) { \
-            return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(meshes)); \
-        }                                                                   \
-        __VA_ARGS__& draw(std::initializer_list<Corrade::Containers::Reference<Magnum::GL::MeshView>> meshes) { \
+        __VA_ARGS__& draw(const Corrade::Containers::Iterable<Magnum::GL::MeshView>& meshes) { \
             return static_cast<__VA_ARGS__&>(Magnum::GL::AbstractShaderProgram::draw(meshes)); \
         }                                                                   \
         _MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION_NOT_GLES(__VA_ARGS__)

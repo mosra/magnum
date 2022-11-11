@@ -1192,8 +1192,7 @@ void AbstractShaderProgramGLTest::subclassDraw() {
         .draw(mesh, counts, instanceCounts, vertexOffsets, nullptr)
         #endif
         #endif
-        .draw(Containers::arrayView<Containers::Reference<MeshView>>({}))
-        .draw(std::initializer_list<Containers::Reference<MeshView>>{})
+        .draw(Containers::Iterable<MeshView>{})
         #ifndef MAGNUM_TARGET_GLES
         .drawTransformFeedback(meshNoInstances, xfb)
         .drawTransformFeedback(meshNoInstances, xfb, 0)

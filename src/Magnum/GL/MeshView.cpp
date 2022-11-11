@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/Iterable.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -47,11 +48,11 @@ void MeshView::draw(AbstractShaderProgram&& shader, Containers::ArrayView<const 
 }
 
 void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes) {
-    shader.draw(meshes);
+    shader.draw(Containers::arrayView(meshes));
 }
 
 void MeshView::draw(AbstractShaderProgram&& shader, std::initializer_list<Containers::Reference<MeshView>> meshes) {
-    shader.draw(meshes);
+    shader.draw(Containers::arrayView(meshes));
 }
 #endif
 
@@ -85,10 +86,10 @@ MeshView& MeshView::draw(AbstractShaderProgram&& shader, TransformFeedback& xfb,
 #endif
 #endif
 
-void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
-    CORRADE_INTERNAL_ASSERT(meshes.size());
+void MeshView::multiDrawImplementationDefault(const Containers::Iterable<MeshView>& meshes) {
+    CORRADE_INTERNAL_ASSERT(!meshes.isEmpty());
 
-    Mesh& original = meshes[0]->_original;
+    Mesh& original = meshes.front()._original;
 
     /* Gather the parameters */
     Containers::ArrayView<UnsignedInt> counts;
@@ -110,19 +111,19 @@ void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Contai
        vertex is specified for any of the meshes */
     bool useVertexOffsets = !original.isIndexed();
     for(std::size_t i = 0; i != meshes.size(); ++i) {
-        CORRADE_ASSERT(meshes[i]->_instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
+        CORRADE_ASSERT(meshes[i]._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
 
-        counts[i] = meshes[i]->_count;
-        vertexOffsets[i] = meshes[i]->_baseVertex;
-        indexOffsets[i] = meshes[i]->_indexOffset;
-        if(meshes[i]->_baseVertex) useVertexOffsets = true;
+        counts[i] = meshes[i]._count;
+        vertexOffsets[i] = meshes[i]._baseVertex;
+        indexOffsets[i] = meshes[i]._indexOffset;
+        if(meshes[i]._baseVertex) useVertexOffsets = true;
     }
 
     original.drawInternal(counts, useVertexOffsets ? vertexOffsets : nullptr, indexOffsets);
 }
 
 #ifdef MAGNUM_TARGET_GLES
-void MeshView::multiDrawImplementationFallback(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
+void MeshView::multiDrawImplementationFallback(const Containers::Iterable<MeshView>& meshes) {
     for(MeshView& mesh: meshes) {
         /* Nothing to draw in this mesh */
         if(!mesh._count) continue;

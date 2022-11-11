@@ -474,15 +474,15 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh, const Containers:
 #endif
 #endif
 
-AbstractShaderProgram& AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
+AbstractShaderProgram& AbstractShaderProgram::draw(const Containers::Iterable<MeshView>& meshes) {
     if(meshes.isEmpty()) return *this;
 
     use();
 
     #ifndef CORRADE_NO_ASSERT
-    const Mesh* original = &*meshes.front()->_original;
+    const Mesh* original = &*meshes.front()._original;
     for(std::size_t i = 0; i != meshes.size(); ++i)
-        CORRADE_ASSERT(&*meshes[i]->_original == original, "GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected" << original << "but got" << &*meshes[i]->_original << "at index" << i, *this);
+        CORRADE_ASSERT(&*meshes[i]._original == original, "GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh, expected" << original << "but got" << &*meshes[i]._original << "at index" << i, *this);
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -491,10 +491,6 @@ AbstractShaderProgram& AbstractShaderProgram::draw(Containers::ArrayView<const C
     Context::current().state().mesh.multiDrawViewImplementation(meshes);
     #endif
     return *this;
-}
-
-AbstractShaderProgram& AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>> meshes) {
-    return draw(Containers::arrayView(meshes));
 }
 
 #ifndef MAGNUM_TARGET_GLES

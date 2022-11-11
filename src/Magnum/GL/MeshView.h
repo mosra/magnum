@@ -263,9 +263,9 @@ class MAGNUM_GL_EXPORT MeshView {
         friend AbstractShaderProgram;
         friend Implementation::MeshState;
 
-        static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+        static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(const Containers::Iterable<MeshView>& meshes);
         #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+        static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(const Containers::Iterable<MeshView>& meshes);
         #endif
 
         Containers::Reference<Mesh> _original;
