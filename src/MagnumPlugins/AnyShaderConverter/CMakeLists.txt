@@ -55,7 +55,7 @@ if(MAGNUM_ANYSHADERCONVERTER_BUILD_STATIC)
 endif()
 
 if(MAGNUM_BUILD_TESTS)
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum AnyShaderConverter target alias for superprojects

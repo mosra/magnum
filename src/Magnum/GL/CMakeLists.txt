@@ -285,7 +285,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumGLTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumGLTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumGLObjects>
         ${MagnumGL_FlextGL_SRCS}
         ${MagnumGL_GracefulAssert_SRCS})
@@ -316,7 +316,7 @@ if(MAGNUM_BUILD_TESTS)
     endif()
 
     if(MAGNUM_BUILD_GL_TESTS)
-        add_library(MagnumOpenGLTesterTestLib STATIC
+        add_library(MagnumOpenGLTesterTestLib STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
             $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>
             ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
         set_target_properties(MagnumOpenGLTesterTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -345,7 +345,7 @@ if(MAGNUM_BUILD_TESTS)
         endif()
     endif()
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum GL library target alias for superprojects

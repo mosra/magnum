@@ -130,7 +130,7 @@ install(FILES ${MagnumMeshTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DI
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
     set_target_properties(MagnumMeshToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -145,7 +145,7 @@ if(MAGNUM_BUILD_TESTS)
         target_link_libraries(MagnumMeshToolsTestLib PUBLIC MagnumGL)
     endif()
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum MeshTools target alias for superprojects

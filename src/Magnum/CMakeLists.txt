@@ -264,7 +264,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Math library with graceful assert for testing
-    add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumMathTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumMathObjects>
         ${MagnumMath_GracefulAssert_SRCS})
     target_include_directories(MagnumMathTestLib PUBLIC
@@ -279,7 +279,7 @@ if(MAGNUM_BUILD_TESTS)
     target_link_libraries(MagnumMathTestLib Corrade::Utility)
 
     # Library with graceful assert for testing
-    add_library(MagnumTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumMathObjects>
         $<TARGET_OBJECTS:MagnumObjects>
         ${Magnum_GracefulAssert_SRCS})
@@ -294,7 +294,7 @@ if(MAGNUM_BUILD_TESTS)
     endif()
     target_link_libraries(MagnumTestLib PUBLIC Corrade::Utility)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum library target alias and configure file for superprojects

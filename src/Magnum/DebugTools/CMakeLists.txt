@@ -159,7 +159,7 @@ install(FILES ${MagnumDebugTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_D
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumDebugToolsTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumDebugToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumDebugToolsObjects>
         ${MagnumDebugTools_GracefulAssert_SRCS})
     set_target_properties(MagnumDebugToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -185,7 +185,7 @@ if(MAGNUM_BUILD_TESTS)
         endif()
     endif()
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum DebugTools target alias for superprojects

@@ -171,7 +171,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumTradeTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumTradeTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumTradeObjects>
         ${MagnumTrade_GracefulAssert_SRCS})
     target_compile_definitions(MagnumTradeTestLib PRIVATE
@@ -184,7 +184,7 @@ if(MAGNUM_BUILD_TESTS)
         Magnum
         Corrade::PluginManager)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum Trade target alias for superprojects

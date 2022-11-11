@@ -230,7 +230,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumVkTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumVkTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumVkObjects>
         $<TARGET_OBJECTS:MagnumFlextVkObjects>
         ${MagnumVk_GracefulAssert_SRCS})
@@ -244,7 +244,7 @@ if(MAGNUM_BUILD_TESTS)
         Magnum
         Vulkan::Vulkan)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum Vk library target alias for superprojects

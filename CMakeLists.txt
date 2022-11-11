@@ -607,6 +607,18 @@ if(MAGNUM_BUILD_TESTS)
     if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
         include(${PROJECT_SOURCE_DIR}/toolchains/modules/UseAndroid.cmake)
     endif()
+
+    # If CORRADE_TESTSUITE_TEST_TARGET is set, tests aren't built by default
+    # (in the ALL target) but instead set as dependencies of a target named
+    # after the value of CORRADE_TESTSUITE_TEST_TARGET. This is a copy of
+    # what's done in corrade_add_test(), because we also build various test
+    # libraries and plugins in addition to the test executables.
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        if(NOT TARGET ${CORRADE_TESTSUITE_TEST_TARGET})
+            add_custom_target(${CORRADE_TESTSUITE_TEST_TARGET})
+        endif()
+        set(EXCLUDE_FROM_ALL_IF_TEST_TARGET EXCLUDE_FROM_ALL)
+    endif()
 endif()
 
 if(MAGNUM_WITH_OPENGLTESTER)
@@ -795,7 +807,12 @@ endif()
 add_subdirectory(modules)
 add_subdirectory(src)
 
-# Build snippets as part of testing
+# Build snippets as part of testing. Unlike all other Test/ directories, this
+# one isn't added with ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} because the targets
+# from there aren't referenced by CTest and thus it'd likely happen that they
+# accidentally don't get added as a dependency to that target, causing them to
+# be never built. Instead, each target there is handled separately, to minimize
+# the chance of an accident.
 if(MAGNUM_BUILD_TESTS)
     add_subdirectory(doc/snippets)
 endif()

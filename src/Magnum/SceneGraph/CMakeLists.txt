@@ -108,7 +108,7 @@ install(FILES ${MagnumSceneGraph_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_D
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
     set_target_properties(MagnumSceneGraphTestLib PROPERTIES
@@ -117,7 +117,7 @@ if(MAGNUM_BUILD_TESTS)
         "CORRADE_GRACEFUL_ASSERT" "MagnumSceneGraph_EXPORTS")
     target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum SceneGraph target alias for superprojects

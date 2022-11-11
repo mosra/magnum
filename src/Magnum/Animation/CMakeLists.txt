@@ -41,5 +41,5 @@ add_custom_target(MagnumAnimation SOURCES ${MagnumAnimation_HEADERS})
 install(FILES ${MagnumAnimation_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Animation)
 
 if(MAGNUM_BUILD_TESTS)
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()

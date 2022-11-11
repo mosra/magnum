@@ -116,7 +116,7 @@ install(FILES ${MagnumShaders_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumShadersTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumShadersTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumShadersObjects>
         ${MagnumShaders_GracefulAssert_SRCS})
     set_target_properties(MagnumShadersTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -129,7 +129,7 @@ if(MAGNUM_BUILD_TESTS)
         Magnum
         MagnumGL)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum Shaders library for superprojects

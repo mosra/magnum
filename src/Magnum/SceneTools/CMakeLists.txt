@@ -109,7 +109,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumSceneToolsTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumSceneToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         #$<TARGET_OBJECTS:MagnumSceneToolsObjects>
         ${MagnumSceneTools_GracefulAssert_SRCS})
     set_target_properties(MagnumSceneToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -122,7 +122,7 @@ if(MAGNUM_BUILD_TESTS)
         Magnum
         MagnumTrade)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum SceneTools target alias for superprojects

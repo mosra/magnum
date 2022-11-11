@@ -140,7 +140,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumTextTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumTextTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumTextObjects>
         ${MagnumText_GracefulAssert_SRCS})
     set_target_properties(MagnumTextTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -157,7 +157,7 @@ if(MAGNUM_BUILD_TESTS)
         target_link_libraries(MagnumText PUBLIC MagnumGL)
     endif()
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum Text target alias for superprojects

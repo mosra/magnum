@@ -52,10 +52,13 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     list(APPEND snippets_Magnum_SRCS platforms-html5.cpp)
 endif()
 
-add_library(snippets-Magnum STATIC ${snippets_Magnum_SRCS})
+add_library(snippets-Magnum STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} ${snippets_Magnum_SRCS})
 target_link_libraries(snippets-Magnum PRIVATE Magnum)
 if(MAGNUM_TARGET_GL)
     target_link_libraries(snippets-Magnum PRIVATE MagnumGL)
+endif()
+if(CORRADE_TESTSUITE_TEST_TARGET)
+    add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Magnum)
 endif()
 
 # This is taken from corrade/src/Corrade/Test/CMakeLists.txt, keep in sync
@@ -63,67 +66,94 @@ if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERS
    (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.9") OR
    (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.0") OR
    (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
-    add_library(snippets-Magnum-cpp14 STATIC MagnumMath-cpp14.cpp)
+    add_library(snippets-Magnum-cpp14 STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumMath-cpp14.cpp)
     target_link_libraries(snippets-Magnum-cpp14 PRIVATE Magnum)
     set_target_properties(snippets-Magnum-cpp14 PROPERTIES CORRADE_CXX_STANDARD 14)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-Magnum-cpp14)
+    endif()
 endif()
 
 if(MAGNUM_WITH_AUDIO)
-    add_library(snippets-MagnumAudio STATIC MagnumAudio.cpp)
+    add_library(snippets-MagnumAudio STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumAudio.cpp)
     target_link_libraries(snippets-MagnumAudio PRIVATE MagnumAudio)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumAudio)
+    endif()
 
     if(MAGNUM_WITH_SCENEGRAPH)
-        add_library(snippets-MagnumAudio-scenegraph STATIC
+        add_library(snippets-MagnumAudio-scenegraph STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
             MagnumAudio-scenegraph.cpp)
         target_link_libraries(snippets-MagnumAudio-scenegraph PRIVATE
             MagnumAudio
             MagnumSceneGraph)
+        if(CORRADE_TESTSUITE_TEST_TARGET)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumAudio-scenegraph)
+        endif()
     endif()
 endif()
 
 if(MAGNUM_WITH_GL)
-    add_library(snippets-MagnumGL STATIC
+    add_library(snippets-MagnumGL STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumGL.cpp
         MagnumMeshTools-gl.cpp
         MagnumShaders-gl.cpp
         MagnumText.cpp)
     target_link_libraries(snippets-MagnumGL PRIVATE MagnumGL)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumGL)
+    endif()
 endif()
 
 if(MAGNUM_WITH_MESHTOOLS)
-    add_library(snippets-MagnumMeshTools STATIC
+    add_library(snippets-MagnumMeshTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumMeshTools.cpp
         MagnumMeshTools-gl.cpp)
     target_link_libraries(snippets-MagnumMeshTools PRIVATE MagnumMeshTools)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumMeshTools)
+    endif()
 endif()
 
 if(MAGNUM_WITH_SHADERTOOLS)
-    add_library(snippets-MagnumShaderTools STATIC
+    add_library(snippets-MagnumShaderTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumShaderTools.cpp)
     target_link_libraries(snippets-MagnumShaderTools PRIVATE MagnumShaderTools)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumShaderTools)
+    endif()
 endif()
 
 if(MAGNUM_WITH_TRADE)
-    add_library(snippets-MagnumTrade STATIC
+    add_library(snippets-MagnumTrade STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         plugins.cpp
         MagnumTrade.cpp)
     target_link_libraries(snippets-MagnumTrade PRIVATE MagnumTrade)
     if(MAGNUM_TARGET_GL)
         target_link_libraries(snippets-MagnumTrade PRIVATE MagnumGL)
     endif()
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumTrade)
+    endif()
 endif()
 
 find_package(Corrade COMPONENTS TestSuite)
 
 if(MAGNUM_WITH_DEBUGTOOLS)
-    add_library(snippets-MagnumDebugTools STATIC
+    add_library(snippets-MagnumDebugTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumDebugTools.cpp)
     target_link_libraries(snippets-MagnumDebugTools PRIVATE MagnumDebugTools)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumDebugTools)
+    endif()
 
     if(MAGNUM_BUILD_GL_TESTS AND NOT MAGNUM_TARGET_GLES)
-        add_executable(debugtools-frameprofiler debugtools-frameprofiler.cpp)
+        add_executable(debugtools-frameprofiler ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} debugtools-frameprofiler.cpp)
         target_link_libraries(debugtools-frameprofiler PRIVATE
             MagnumDebugTools MagnumOpenGLTester)
+        if(CORRADE_TESTSUITE_TEST_TARGET)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} debugtools-frameprofiler)
+        endif()
     endif()
 
     # TODO: causes spurious linker errors on Travis iOS build, so I'm disabling it
@@ -136,33 +166,47 @@ if(MAGNUM_WITH_DEBUGTOOLS)
         # executable so I can include the colored output in the documentation.
         # Also not using corrade_add_test() because it shouldn't be run as part
         # of CTest as it purposely fails.
-        add_executable(debugtools-compareimage debugtools-compareimage.cpp)
-        add_executable(debugtools-comparematerial debugtools-comparematerial.cpp)
+        add_executable(debugtools-compareimage ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} debugtools-compareimage.cpp)
+        add_executable(debugtools-comparematerial ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} debugtools-comparematerial.cpp)
         target_link_libraries(debugtools-compareimage PRIVATE MagnumDebugTools)
         target_link_libraries(debugtools-comparematerial PRIVATE MagnumDebugTools)
         target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        if(CORRADE_TESTSUITE_TEST_TARGET)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET}
+                debugtools-compareimage
+                debugtools-comparematerial)
+        endif()
     endif()
 
     if(MAGNUM_TARGET_GL)
-        add_library(snippets-MagnumDebugTools-gl STATIC
+        add_library(snippets-MagnumDebugTools-gl STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
             MagnumDebugTools-gl.cpp)
         target_link_libraries(snippets-MagnumDebugTools-gl PRIVATE MagnumDebugTools)
+        if(CORRADE_TESTSUITE_TEST_TARGET)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumDebugTools-gl)
+        endif()
     endif()
 endif()
 
 if(MAGNUM_WITH_PRIMITIVES)
-    add_library(snippets-MagnumPrimitives STATIC
+    add_library(snippets-MagnumPrimitives STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumPrimitives.cpp)
     target_link_libraries(snippets-MagnumPrimitives PRIVATE MagnumPrimitives)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumPrimitives)
+    endif()
 endif()
 
 if(MAGNUM_WITH_SCENEGRAPH)
-    add_library(snippets-MagnumSceneGraph STATIC
+    add_library(snippets-MagnumSceneGraph STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumSceneGraph.cpp)
     target_link_libraries(snippets-MagnumSceneGraph PRIVATE MagnumSceneGraph)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumSceneGraph)
+    endif()
 
     if(MAGNUM_WITH_SDL2APPLICATION AND MAGNUM_WITH_GL AND MAGNUM_WITH_PRIMITIVES AND MAGNUM_WITH_SHADERS AND MAGNUM_WITH_MESHTOOLS)
-        add_library(snippets-MagnumSceneGraph-gl STATIC
+        add_library(snippets-MagnumSceneGraph-gl STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
             MagnumSceneGraph-gl.cpp)
         target_link_libraries(snippets-MagnumSceneGraph-gl PRIVATE
             MagnumGL
@@ -171,50 +215,77 @@ if(MAGNUM_WITH_SCENEGRAPH)
             MagnumSceneGraph
             MagnumSdl2Application
             MagnumShaders)
+        if(CORRADE_TESTSUITE_TEST_TARGET)
+            add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumSceneGraph-gl)
+        endif()
     endif()
 endif()
 
 if(MAGNUM_WITH_SCENETOOLS)
-    add_library(snippets-MagnumSceneTools STATIC
+    add_library(snippets-MagnumSceneTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         MagnumSceneTools.cpp)
     target_link_libraries(snippets-MagnumSceneTools PRIVATE MagnumSceneTools)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumSceneTools)
+    endif()
 endif()
 
 if(MAGNUM_WITH_VK)
-    add_library(snippets-MagnumVk STATIC MagnumVk.cpp)
+    add_library(snippets-MagnumVk STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumVk.cpp)
     target_link_libraries(snippets-MagnumVk PRIVATE MagnumVk)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumVk)
+    endif()
 endif()
 
 if(MAGNUM_WITH_SDL2APPLICATION AND MAGNUM_TARGET_GL)
-    add_executable(getting-started getting-started.cpp)
-    add_executable(getting-started-blue getting-started-blue.cpp)
+    add_executable(getting-started ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} getting-started.cpp)
+    add_executable(getting-started-blue ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} getting-started-blue.cpp)
     target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
     target_link_libraries(getting-started-blue PRIVATE MagnumSdl2Application)
 
-    add_library(snippets-MagnumPlatform STATIC
+    add_library(snippets-MagnumPlatform STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         Magnum-application.cpp
         MagnumPlatform.cpp
         MagnumGL-application.cpp)
     target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
+
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET}
+            getting-started
+            getting-started-blue
+            snippets-MagnumPlatform)
+    endif()
 endif()
 
 if((NOT MAGNUM_TARGET_GLES AND MAGNUM_WITH_SDL2APPLICATION) OR (MAGNUM_TARGET_GLES AND MAGNUM_WITH_XEGLAPPLICATION))
-    add_library(snippets-MagnumPlatform-portability STATIC MagnumPlatform-portability.cpp)
+    add_library(snippets-MagnumPlatform-portability STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-portability.cpp)
     if(MAGNUM_TARGET_GLES)
         target_link_libraries(snippets-MagnumPlatform-portability PRIVATE MagnumXEglApplication)
     else()
         target_link_libraries(snippets-MagnumPlatform-portability PRIVATE MagnumSdl2Application)
     endif()
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumPlatform-portability)
+    endif()
 endif()
 
 if(MAGNUM_WITH_WINDOWLESSEGLAPPLICATION)
-    add_library(snippets-MagnumPlatform-custom STATIC MagnumPlatform-custom.cpp)
-    add_library(snippets-MagnumPlatform-windowless STATIC MagnumPlatform-windowless.cpp)
-    add_library(snippets-MagnumPlatform-windowless-custom STATIC MagnumPlatform-windowless-custom.cpp)
-    add_library(snippets-MagnumPlatform-windowless-thread STATIC MagnumPlatform-windowless-thread.cpp)
+    add_library(snippets-MagnumPlatform-custom STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-custom.cpp)
+    add_library(snippets-MagnumPlatform-windowless STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-windowless.cpp)
+    add_library(snippets-MagnumPlatform-windowless-custom STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-windowless-custom.cpp)
+    add_library(snippets-MagnumPlatform-windowless-thread STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET} MagnumPlatform-windowless-thread.cpp)
 
     target_link_libraries(snippets-MagnumPlatform-custom PRIVATE MagnumWindowlessEglApplication)
     target_link_libraries(snippets-MagnumPlatform-windowless PRIVATE MagnumWindowlessEglApplication)
     target_link_libraries(snippets-MagnumPlatform-windowless-custom PRIVATE MagnumWindowlessEglApplication)
     target_link_libraries(snippets-MagnumPlatform-windowless-thread PRIVATE MagnumWindowlessEglApplication)
+
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET}
+            snippets-MagnumPlatform-custom
+            snippets-MagnumPlatform-windowless
+            snippets-MagnumPlatform-windowless-custom
+            snippets-MagnumPlatform-windowless-thread)
+    endif()
 endif()

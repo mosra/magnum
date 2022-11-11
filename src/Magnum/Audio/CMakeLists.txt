@@ -169,7 +169,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumAudioTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumAudioTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         $<TARGET_OBJECTS:MagnumAudioObjects>
         ${MagnumAudio_GracefulAssert_SRCS})
     target_compile_definitions(MagnumAudioTestLib PRIVATE
@@ -187,5 +187,5 @@ if(MAGNUM_BUILD_TESTS)
         target_link_libraries(MagnumAudioTestLib PUBLIC MagnumSceneGraph)
     endif()
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()

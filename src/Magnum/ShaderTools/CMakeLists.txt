@@ -102,7 +102,7 @@ endif()
 
 if(MAGNUM_BUILD_TESTS)
     # Library with graceful assert for testing
-    add_library(MagnumShaderToolsTestLib ${SHARED_OR_STATIC}
+    add_library(MagnumShaderToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
 #         $<TARGET_OBJECTS:MagnumShaderToolsObjects>
         ${MagnumShaderTools_GracefulAssert_SRCS})
     set_target_properties(MagnumShaderToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -115,7 +115,7 @@ if(MAGNUM_BUILD_TESTS)
         Magnum
         Corrade::PluginManager)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum ShaderTools target alias for superprojects

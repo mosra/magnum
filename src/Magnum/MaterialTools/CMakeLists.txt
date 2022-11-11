@@ -80,7 +80,7 @@ install(FILES ${MagnumMaterialTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTAL
 
 if(MAGNUM_BUILD_TESTS)
     # # Library with graceful assert for testing
-    # add_library(MagnumMaterialToolsTestLib ${SHARED_OR_STATIC}
+    # add_library(MagnumMaterialToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
     #     $<TARGET_OBJECTS:MagnumMaterialToolsObjects>
     #     ${MagnumMaterialTools_GracefulAssert_SRCS})
     # set_target_properties(MagnumMaterialToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
@@ -93,7 +93,7 @@ if(MAGNUM_BUILD_TESTS)
     #     Magnum
     #     MagnumTrade)
 
-    add_subdirectory(Test)
+    add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
 
 # Magnum MaterialTools target alias for superprojects
