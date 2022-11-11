@@ -1322,7 +1322,9 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param workgroupCount    Workgroup count in given dimension
          * @return Reference to self (for method chaining)
          *
-         * Valid only on programs with compute shader attached.
+         * Valid only on programs with compute shader attached. If
+         * @p workgroupCount is @cpp 0 @ce in any dimension, no compute
+         * dispatch commands are issued.
          * @see @fn_gl{DispatchCompute}
          * @requires_gl43 Extension @gl_extension{ARB,compute_shader}
          * @requires_gles31 Compute shaders are not available in OpenGL ES 3.0

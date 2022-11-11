@@ -519,6 +519,9 @@ AbstractShaderProgram& AbstractShaderProgram::drawTransformFeedback(MeshView& me
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 AbstractShaderProgram& AbstractShaderProgram::dispatchCompute(const Vector3ui& workgroupCount) {
+    /* Nothing to dispatch, exit without touching any state */
+    if(!workgroupCount.product()) return *this;
+
     use();
     glDispatchCompute(workgroupCount.x(), workgroupCount.y(), workgroupCount.z());
     return *this;
