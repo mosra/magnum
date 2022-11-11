@@ -2222,7 +2222,9 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Raw attribute data
          *
          * Returns @cpp nullptr @ce if the material has no attributes.
-         * @see @ref releaseAttributeData()
+         * @see @ref releaseAttributeData(), @ref attributeDataOffset(),
+         *      @ref attributeData(UnsignedInt, UnsignedInt) const,
+         *      @ref attributeData(UnsignedInt) const
          */
         Containers::ArrayView<const MaterialAttributeData> attributeData() const { return _data; }
 
