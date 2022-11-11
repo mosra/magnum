@@ -417,51 +417,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          */
         #endif
 
-        /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        VertexColorGL<dimensions>& draw(GL::Mesh& mesh) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        VertexColorGL<dimensions>& draw(GL::Mesh&& mesh) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        VertexColorGL<dimensions>& draw(GL::MeshView& mesh) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        VertexColorGL<dimensions>& draw(GL::MeshView&& mesh) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        VertexColorGL<dimensions>& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
-        }
-        #ifndef CORRADE_TARGET_32BIT
-        VertexColorGL<dimensions>& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
-        }
-        VertexColorGL<dimensions>& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr));
-        }
-        #endif
-        VertexColorGL<dimensions>& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(meshes));
-        }
-        VertexColorGL<dimensions>& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
-            return static_cast<VertexColorGL<dimensions>&>(GL::AbstractShaderProgram::draw(meshes));
-        }
-        #endif
+        MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(VertexColorGL<dimensions>)
 
     private:
         /* Creates the GL shader program object but does nothing else.
            Internal, used by compile(). */
         explicit VertexColorGL(NoInitT);
-
-        /* Prevent accidentally calling irrelevant functions */
-        #ifndef MAGNUM_TARGET_GLES
-        using GL::AbstractShaderProgram::drawTransformFeedback;
-        #endif
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        using GL::AbstractShaderProgram::dispatchCompute;
-        #endif
 
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2

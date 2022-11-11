@@ -105,14 +105,6 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
         MeshVisualizerGLBase& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #endif
 
-        /* Prevent accidentally calling irrelevant functions */
-        #ifndef MAGNUM_TARGET_GLES
-        using GL::AbstractShaderProgram::drawTransformFeedback;
-        #endif
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        using GL::AbstractShaderProgram::dispatchCompute;
-        #endif
-
         FlagsBase _flags;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _materialCount{}, _drawCount{};
@@ -876,38 +868,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @}
          */
 
-        /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        MeshVisualizerGL2D& draw(GL::Mesh& mesh) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL2D& draw(GL::Mesh&& mesh) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL2D& draw(GL::MeshView& mesh) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL2D& draw(GL::MeshView&& mesh) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL2D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
-        }
-        #ifndef CORRADE_TARGET_32BIT
-        MeshVisualizerGL2D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
-        }
-        MeshVisualizerGL2D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr));
-        }
-        #endif
-        MeshVisualizerGL2D& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(meshes));
-        }
-        MeshVisualizerGL2D& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
-            return static_cast<MeshVisualizerGL2D&>(GL::AbstractShaderProgram::draw(meshes));
-        }
-        #endif
+        MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(MeshVisualizerGL2D)
 
     private:
         /* Creates the GL shader program object but does nothing else.
@@ -2407,38 +2368,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @}
          */
 
-        /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        MeshVisualizerGL3D& draw(GL::Mesh& mesh) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL3D& draw(GL::Mesh&& mesh) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL3D& draw(GL::MeshView& mesh) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL3D& draw(GL::MeshView&& mesh) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh));
-        }
-        MeshVisualizerGL3D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedInt>& indexOffsets) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
-        }
-        #ifndef CORRADE_TARGET_32BIT
-        MeshVisualizerGL3D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, const Containers::StridedArrayView1D<const UnsignedLong>& indexOffsets) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, indexOffsets));
-        }
-        MeshVisualizerGL3D& draw(GL::Mesh& mesh, const Containers::StridedArrayView1D<const UnsignedInt>& counts, const Containers::StridedArrayView1D<const UnsignedInt>& vertexOffsets, std::nullptr_t) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(mesh, counts, vertexOffsets, nullptr));
-        }
-        #endif
-        MeshVisualizerGL3D& draw(Containers::ArrayView<const Containers::Reference<GL::MeshView>> meshes) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(meshes));
-        }
-        MeshVisualizerGL3D& draw(std::initializer_list<Containers::Reference<GL::MeshView>> meshes) {
-            return static_cast<MeshVisualizerGL3D&>(GL::AbstractShaderProgram::draw(meshes));
-        }
-        #endif
+        MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(MeshVisualizerGL3D)
 
     private:
         /* Creates the GL shader program object but does nothing else.
