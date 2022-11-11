@@ -55,18 +55,7 @@ be shared among multiple draw calls and thus are provided in a separate
 */
 struct DistanceFieldVectorDrawUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit DistanceFieldVectorDrawUniform(DefaultInitT = DefaultInit) noexcept:
-        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && defined(CORRADE_TARGET_BIG_ENDIAN)
-        _pad0{}, /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        materialId{0}
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        #ifndef CORRADE_TARGET_BIG_ENDIAN
-        , _pad0{}
-        #endif
-        , _pad1{}, _pad2{}, _pad3{}
-        #endif
-        {}
+    constexpr explicit DistanceFieldVectorDrawUniform(DefaultInitT = DefaultInit) noexcept: materialId{0} {}
 
     /** @brief Construct without initializing the contents */
     explicit DistanceFieldVectorDrawUniform(NoInitT) noexcept {}
@@ -113,39 +102,19 @@ struct DistanceFieldVectorDrawUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved for skinOffset */
     #endif
     #else
-    alignas(4) UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16; /* reserved for skinOffset */
+    alignas(4) UnsignedShort:16; /* reserved for skinOffset */
     UnsignedShort materialId;
     #endif
 
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32; /* reserved for objectId */
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
+    Int:32; /* reserved for objectId */
+    Int:32;
+    Int:32;
     #endif
 };
 
@@ -159,16 +128,7 @@ Describes material properties referenced from
 */
 struct DistanceFieldVectorMaterialUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit DistanceFieldVectorMaterialUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f},
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        /* Otherwise it refuses to constexpr, on 3.8 at least */
-        _pad0{}, _pad1{}, _pad2{}, _pad3{},
-        #endif
-        outlineColor{0.0f, 0.0f, 0.0f, 0.0f}, outlineStart{0.5f}, outlineEnd{1.0f}, smoothness{0.04f}
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        , _pad4{}
-        #endif
-        {}
+    constexpr explicit DistanceFieldVectorMaterialUniform(DefaultInitT = DefaultInit) noexcept: color{1.0f, 1.0f, 1.0f, 1.0f}, outlineColor{0.0f, 0.0f, 0.0f, 0.0f}, outlineStart{0.5f}, outlineEnd{1.0f}, smoothness{0.04f} {}
 
     /** @brief Construct without initializing the contents */
     explicit DistanceFieldVectorMaterialUniform(NoInitT) noexcept: color{NoInit}, outlineColor{NoInit} {}
@@ -234,26 +194,10 @@ struct DistanceFieldVectorMaterialUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32; /* reserved for backgroundColor */
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
+    Int:32; /* reserved for backgroundColor */
+    Int:32;
+    Int:32;
+    Int:32;
     #endif
 
     /**
@@ -298,11 +242,7 @@ struct DistanceFieldVectorMaterialUniform {
     /* warning: Member __pad4__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad4 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
+    Int:32;
     #endif
 };
 

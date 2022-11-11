@@ -55,15 +55,7 @@ separate @ref PhongMaterialUniform structure, referenced by @ref materialId.
 */
 struct PhongDrawUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit PhongDrawUniform(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit},
-        #if ((defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)) && defined(CORRADE_TARGET_BIG_ENDIAN)
-        _pad0{}, /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        materialId{0},
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8) && !defined(CORRADE_TARGET_BIG_ENDIAN)
-        _pad0{},
-        #endif
-        objectId{0}, lightOffset{0}, lightCount{0xffffffffu} {}
+    constexpr explicit PhongDrawUniform(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}, materialId{0}, objectId{0}, lightOffset{0}, lightCount{0xffffffffu} {}
 
     /** @brief Construct without initializing the contents */
     explicit PhongDrawUniform(NoInitT) noexcept: normalMatrix{NoInit} {}
@@ -153,18 +145,10 @@ struct PhongDrawUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved for skinOffset */
     #endif
     #else
-    UnsignedShort
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved for skinOffset */
     UnsignedShort materialId;
     #endif
 
@@ -220,11 +204,7 @@ Describes material properties referenced from
 */
 struct PhongMaterialUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit PhongMaterialUniform(DefaultInitT = DefaultInit) noexcept: ambientColor{0.0f, 0.0f, 0.0f, 0.0f}, diffuseColor{1.0f, 1.0f, 1.0f, 1.0f}, specularColor{1.0f, 1.0f, 1.0f, 0.0f}, normalTextureScale{1.0f}, shininess{80.0f}, alphaMask{0.5f}
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        , _pad0{} /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        {}
+    constexpr explicit PhongMaterialUniform(DefaultInitT = DefaultInit) noexcept: ambientColor{0.0f, 0.0f, 0.0f, 0.0f}, diffuseColor{1.0f, 1.0f, 1.0f, 1.0f}, specularColor{1.0f, 1.0f, 1.0f, 0.0f}, normalTextureScale{1.0f}, shininess{80.0f}, alphaMask{0.5f} {}
 
     /** @brief Construct without initializing the contents */
     explicit PhongMaterialUniform(NoInitT) noexcept: ambientColor{NoInit}, diffuseColor{NoInit}, specularColor{NoInit} {}
@@ -374,11 +354,7 @@ struct PhongMaterialUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
+    Int:32;
     #endif
 };
 
@@ -394,19 +370,7 @@ if @ref PhongGL::Flag::LightCulling is enabled.
 */
 struct PhongLightUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit PhongLightUniform(DefaultInitT = DefaultInit) noexcept: position{0.0f, 0.0f, 1.0f, 0.0f}, color{1.0f, 1.0f, 1.0f},
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0{}, /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        specularColor{1.0f, 1.0f, 1.0f},
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1{},
-        #endif
-        range{Constants::inf()}
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        , _pad2{}, _pad3{}, _pad4{}
-        #endif
-        {}
+    constexpr explicit PhongLightUniform(DefaultInitT = DefaultInit) noexcept: position{0.0f, 0.0f, 1.0f, 0.0f}, color{1.0f, 1.0f, 1.0f}, specularColor{1.0f, 1.0f, 1.0f}, range{Constants::inf()} {}
     /** @brief Construct without initializing the contents */
     explicit PhongLightUniform(NoInitT) noexcept: position{NoInit}, color{NoInit}, specularColor{NoInit} {}
 
@@ -483,11 +447,7 @@ struct PhongLightUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad0 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32; /* reserved for cone inner angle */
+    Int:32; /* reserved for cone inner angle */
     #endif
 
     /**
@@ -503,11 +463,7 @@ struct PhongLightUniform {
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad1 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32; /* reserved for cone outer angle */
+    Int:32; /* reserved for cone outer angle */
     #endif
 
     /**
@@ -521,21 +477,9 @@ struct PhongLightUniform {
     /* warning: Member __pad2__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad2 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32; /* reserved for cone direction */
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad3 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
-    Int
-        #if (defined(CORRADE_TARGET_CLANG) && __clang_major__ < 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ < 8)
-        _pad4 /* Otherwise it refuses to constexpr, on 3.8 at least */
-        #endif
-        :32;
+    Int:32; /* reserved for cone direction */
+    Int:32;
+    Int:32;
     #endif
 };
 
