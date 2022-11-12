@@ -185,7 +185,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT LineGL: public GL::
         LineGL<dimensions>& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #endif
 
-        // TODO draw() overloads, as a macro in AbstractShaderProgram
+        MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(LineGL<dimensions>)
 
     private:
         /* Creates the GL shader program object but does nothing else.
