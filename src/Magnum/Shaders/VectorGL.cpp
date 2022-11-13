@@ -64,24 +64,20 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Flags flags
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Configuration& configuration) {
     #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt materialCount, const UnsignedInt drawCount
-    #endif
-) {
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
         "Shaders::VectorGL: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
         "Shaders::VectorGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags >= Flag::UniformBuffers)
+    if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::MultiDraw) {
+    if(configuration.flags() >= Flag::MultiDraw) {
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
         #elif !defined(MAGNUM_TARGET_WEBGL)
@@ -110,28 +106,28 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+    vert.addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n");
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
-            drawCount));
-        vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            configuration.drawCount()));
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("Vector.vert"));
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(configuration.flags() >= Flag::UniformBuffers) {
         frag.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n",
-            drawCount,
-            materialCount));
-        frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            configuration.drawCount(),
+            configuration.materialCount()));
+        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     frag.addSource(rs.getString("generic.glsl"))
@@ -141,10 +137,10 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     frag.submitCompile();
 
     VectorGL out{NoInit};
-    out._flags = flags;
+    out._flags = configuration.flags();
     #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = materialCount;
-    out._drawCount = drawCount;
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
     #endif
 
     out.attachShaders({vert,  frag});
@@ -164,6 +160,26 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
 
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
+
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile() {
+    return compile(Configuration{});
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Flags flags) {
+    return compile(Configuration{}
+        .setFlags(flags));
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount) {
+    return compile(Configuration{}
+        .setFlags(flags)
+        .setMaterialCount(materialCount)
+        .setDrawCount(drawCount));
+}
+#endif
+#endif
 
 template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& state): VectorGL{static_cast<VectorGL&&>(std::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
@@ -231,14 +247,20 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& s
     static_cast<void>(version);
 }
 
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): VectorGL{compile(flags)} {}
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Configuration& configuration): VectorGL{compile(configuration)} {}
+
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(): VectorGL{Configuration{}} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): VectorGL{compile(Configuration{}
+    .setFlags(flags))} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Flags flags) {
-    return compile(flags, 1, 1);
-}
-
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): VectorGL{compile(flags, materialCount, drawCount)} {}
+template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): VectorGL{compile(Configuration{}
+    .setFlags(flags)
+    .setMaterialCount(materialCount)
+    .setDrawCount(drawCount))} {}
+#endif
 #endif
 
 template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(NoInitT) {}

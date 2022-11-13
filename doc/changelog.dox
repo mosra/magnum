@@ -911,6 +911,10 @@ See also:
     and correspondingly renamed typedefs to make room for Vulkan shaders and
     functionality shared between OpenGL and Vulkan implementation such as
     uniform buffer layout definitions
+-   @ref Shaders class constructors taking flags and other parameters directly
+    are deprecated in favor of constructors taking a configuration instance
+    such as @ref Shaders::FlatGL::FlatGL(const Configuration&) for better
+    extensibility
 -   @ref Shaders::PhongGL::setLightPositions() and
     @ref Shaders::PhongGL::setLightPosition() taking three-component vectors
     are deprecated in favor of variants taking four-component vectors, where the

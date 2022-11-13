@@ -75,16 +75,12 @@ namespace {
     #endif
 }
 
-PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt lightCount
-    #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt materialCount, const UnsignedInt drawCount
-    #endif
-) {
+PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     #ifndef CORRADE_NO_ASSERT
     {
-        const bool textureTransformationNotEnabledOrTextured = !(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture))
+        const bool textureTransformationNotEnabledOrTextured = !(configuration.flags() & Flag::TextureTransformation) || (configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture))
             #ifndef MAGNUM_TARGET_GLES2
-            || flags >= Flag::ObjectIdTexture
+            || configuration.flags() >= Flag::ObjectIdTexture
             #endif
             ;
         CORRADE_ASSERT(textureTransformationNotEnabledOrTextured,
@@ -93,35 +89,35 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags >= Flag::InstancedObjectId) || !(flags & Flag::Bitangent),
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::InstancedObjectId) || !(configuration.flags() & Flag::Bitangent),
         "Shaders::PhongGL: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
         "Shaders::PhongGL: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
         "Shaders::PhongGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags & Flag::TextureArrays) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)) || flags >= Flag::ObjectIdTexture,
+    CORRADE_ASSERT(!(configuration.flags() & Flag::TextureArrays) || (configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)) || configuration.flags() >= Flag::ObjectIdTexture,
         "Shaders::PhongGL: texture arrays enabled but the shader is not textured", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::UniformBuffers) || !(configuration.flags() & Flag::TextureArrays) || configuration.flags() >= (Flag::TextureArrays|Flag::TextureTransformation),
         "Shaders::PhongGL: texture arrays require texture transformation enabled as well if uniform buffers are used", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags & Flag::LightCulling) || (flags & Flag::UniformBuffers),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::LightCulling) || (configuration.flags() & Flag::UniformBuffers),
         "Shaders::PhongGL: light culling requires uniform buffers to be enabled", CompileState{NoCreate});
     #endif
 
-    CORRADE_ASSERT(!(flags & Flag::SpecularTexture) || !(flags & (Flag::NoSpecular)),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::SpecularTexture) || !(configuration.flags() & (Flag::NoSpecular)),
         "Shaders::PhongGL: specular texture requires the shader to not have specular disabled", CompileState{NoCreate});
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags >= Flag::UniformBuffers)
+    if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::MultiDraw) {
+    if(configuration.flags() >= Flag::MultiDraw) {
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
         #elif !defined(MAGNUM_TARGET_WEBGL)
@@ -132,7 +128,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     }
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    if(flags >= Flag::TextureArrays)
+    if(configuration.flags() >= Flag::TextureArrays)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::texture_array);
     #endif
 
@@ -146,7 +142,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     const GL::Context& context = GL::Context::current();
 
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || context.isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>(),
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || context.isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>(),
         "Shaders::PhongGL: uniform buffers require" << GL::Extensions::ARB::uniform_buffer_object::string(), CompileState{NoCreate});
     #endif
 
@@ -157,14 +153,14 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     #endif
 
     PhongGL out{NoInit};
-    out._flags = flags;
-    out._lightCount = lightCount;
-    out._lightColorsUniform = out._lightPositionsUniform + Int(lightCount);
-    out._lightSpecularColorsUniform = out._lightPositionsUniform + 2*Int(lightCount);
-    out._lightRangesUniform = out._lightPositionsUniform + 3*Int(lightCount);
+    out._flags = configuration.flags();
+    out._lightCount = configuration.lightCount();
+    out._lightColorsUniform = out._lightPositionsUniform + Int(configuration.lightCount());
+    out._lightSpecularColorsUniform = out._lightPositionsUniform + 2*Int(configuration.lightCount());
+    out._lightRangesUniform = out._lightPositionsUniform + 3*Int(configuration.lightCount());
     #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = materialCount;
-    out._drawCount = drawCount;
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -172,7 +168,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
 
     #ifndef MAGNUM_TARGET_GLES
     std::string lightInitializer;
-    if(!(flags >= Flag::UniformBuffers) && lightCount) {
+    if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount()) {
         using namespace Containers::Literals;
 
         /* Initializer for the light color / position / range arrays -- we need
@@ -189,12 +185,12 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
             lightPositionInitializerPreamble.size() +
             lightColorInitializerPreamble.size() +
             lightRangeInitializerPreamble.size() +
-            lightCount*(lightPositionInitializerItem.size() +
-                        lightColorInitializerItem.size() +
-                        lightRangeInitializerItem.size()));
+            configuration.lightCount()*(lightPositionInitializerItem.size() +
+                                        lightColorInitializerItem.size() +
+                                        lightRangeInitializerItem.size()));
 
         lightInitializer.append(lightPositionInitializerPreamble);
-        for(std::size_t i = 0; i != lightCount; ++i)
+        for(std::size_t i = 0; i != configuration.lightCount(); ++i)
             lightInitializer.append(lightPositionInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
@@ -202,7 +198,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
         lightInitializer.resize(lightInitializer.size() - 1);
 
         lightInitializer.append(lightColorInitializerPreamble);
-        for(std::size_t i = 0; i != lightCount; ++i)
+        for(std::size_t i = 0; i != configuration.lightCount(); ++i)
             lightInitializer.append(lightColorInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
@@ -210,7 +206,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
         lightInitializer.resize(lightInitializer.size() - 1);
 
         lightInitializer.append(lightRangeInitializerPreamble);
-        for(std::size_t i = 0; i != lightCount; ++i)
+        for(std::size_t i = 0; i != configuration.lightCount(); ++i)
             lightInitializer.append(lightRangeInitializerItem);
 
         /* Drop the last comma and add a newline at the end */
@@ -219,65 +215,65 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     }
     #endif
 
-    vert.addSource((flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)
+    vert.addSource((configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)
             #ifndef MAGNUM_TARGET_GLES2
-            || flags >= Flag::ObjectIdTexture
+            || configuration.flags() >= Flag::ObjectIdTexture
             #endif
             ) ? "#define TEXTURED\n" : "")
-        .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
-        .addSource(flags & Flag::Bitangent ? "#define BITANGENT\n" : "")
-        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
-        .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+        .addSource(configuration.flags() & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::Bitangent ? "#define BITANGENT\n" : "")
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
+        .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
         #endif
-        .addSource(lightCount ? "#define HAS_LIGHTS\n" : "")
+        .addSource(configuration.lightCount() ? "#define HAS_LIGHTS\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
-        .addSource(flags & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
-        .addSource(flags >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
+        .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
-            drawCount,
-            lightCount));
-        vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            configuration.drawCount(),
+            configuration.lightCount()));
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("Phong.vert"));
-    frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
-        .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
-        .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
-        .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
+    frag.addSource(configuration.flags() & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
         #endif
-        .addSource(flags & Flag::Bitangent ? "#define BITANGENT\n" : "")
-        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
-        .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
+        .addSource(configuration.flags() & Flag::Bitangent ? "#define BITANGENT\n" : "")
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
+        .addSource(configuration.flags() & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
-        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
-        .addSource(flags >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
         #endif
-        .addSource(flags & Flag::NoSpecular ? "#define NO_SPECULAR\n" : "")
+        .addSource(configuration.flags() & Flag::NoSpecular ? "#define NO_SPECULAR\n" : "")
         ;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(configuration.flags() >= Flag::UniformBuffers) {
         frag.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n"
             "#define LIGHT_COUNT {}\n",
-            drawCount,
-            materialCount,
-            lightCount));
-        frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "")
-            .addSource(flags >= Flag::LightCulling ? "#define LIGHT_CULLING\n" : "");
+            configuration.drawCount(),
+            configuration.materialCount(),
+            configuration.lightCount()));
+        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "")
+            .addSource(configuration.flags() >= Flag::LightCulling ? "#define LIGHT_CULLING\n" : "");
     } else
     #endif
     {
@@ -286,13 +282,13 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
             "#define LIGHT_COLORS_LOCATION {}\n"
             "#define LIGHT_SPECULAR_COLORS_LOCATION {}\n"
             "#define LIGHT_RANGES_LOCATION {}\n",
-            lightCount,
-            out._lightPositionsUniform + lightCount,
-            out._lightPositionsUniform + 2*lightCount,
-            out._lightPositionsUniform + 3*lightCount));
+            configuration.lightCount(),
+            out._lightPositionsUniform + configuration.lightCount(),
+            out._lightPositionsUniform + 2*configuration.lightCount(),
+            out._lightPositionsUniform + 3*configuration.lightCount()));
     }
     #ifndef MAGNUM_TARGET_GLES
-    if(!(flags >= Flag::UniformBuffers) && lightCount)
+    if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount())
         frag.addSource(std::move(lightInitializer));
     #endif
     frag.addSource(rs.getString("generic.glsl"))
@@ -311,35 +307,35 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
     #endif
     {
         out.bindAttributeLocation(Position::Location, "position");
-        if(lightCount)
+        if(configuration.lightCount())
             out.bindAttributeLocation(Normal::Location, "normal");
-        if((flags & Flag::NormalTexture) && lightCount) {
+        if((configuration.flags() & Flag::NormalTexture) && configuration.lightCount()) {
             out.bindAttributeLocation(Tangent::Location, "tangent");
-            if(flags & Flag::Bitangent)
+            if(configuration.flags() & Flag::Bitangent)
                 out.bindAttributeLocation(Bitangent::Location, "bitangent");
         }
-        if(flags & Flag::VertexColor)
+        if(configuration.flags() & Flag::VertexColor)
             out.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
-        if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture)
+        if(configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture)
             #ifndef MAGNUM_TARGET_GLES2
-            || flags >= Flag::ObjectIdTexture
+            || configuration.flags() >= Flag::ObjectIdTexture
             #endif
         )
             out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags & Flag::ObjectId) {
+        if(configuration.flags() & Flag::ObjectId) {
             out.bindFragmentDataLocation(ColorOutput, "color");
             out.bindFragmentDataLocation(ObjectIdOutput, "objectId");
         }
-        if(flags >= Flag::InstancedObjectId)
+        if(configuration.flags() >= Flag::InstancedObjectId)
             out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
-        if(flags & Flag::InstancedTransformation) {
+        if(configuration.flags() & Flag::InstancedTransformation) {
             out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
-            if(lightCount)
+            if(configuration.lightCount())
                 out.bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix");
         }
-        if(flags >= Flag::InstancedTextureOffset)
+        if(configuration.flags() >= Flag::InstancedTextureOffset)
             out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
     }
     #endif
@@ -348,6 +344,28 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
 
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
+
+PhongGL::CompileState PhongGL::compile() {
+    return compile(Configuration{});
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt lightCount) {
+    return compile(Configuration{}
+        .setFlags(flags)
+        .setLightCount(lightCount));
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt lightCount, const UnsignedInt materialCount, const UnsignedInt drawCount) {
+    return compile(Configuration{}
+        .setFlags(flags)
+        .setLightCount(lightCount)
+        .setMaterialCount(materialCount)
+        .setDrawCount(drawCount));
+}
+#endif
+#endif
 
 PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
@@ -469,14 +487,22 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
     static_cast<void>(version);
 }
 
-PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): PhongGL{compile(flags, lightCount)} {}
+PhongGL::PhongGL(const Configuration& configuration): PhongGL{compile(configuration)} {}
+
+PhongGL::PhongGL(): PhongGL{Configuration{}} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount): PhongGL{Configuration{}
+    .setFlags(flags)
+    .setLightCount(lightCount)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt lightCount) {
-    return compile(flags, lightCount, 1, 1);
-}
-
-PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount, const UnsignedInt materialCount, const UnsignedInt drawCount): PhongGL{compile(flags, lightCount, materialCount, drawCount)} {}
+PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount, const UnsignedInt materialCount, const UnsignedInt drawCount): PhongGL{compile(Configuration{}
+    .setFlags(flags)
+    .setLightCount(lightCount)
+    .setMaterialCount(materialCount)
+    .setDrawCount(drawCount))} {}
+#endif
 #endif
 
 PhongGL& PhongGL::setAmbientColor(const Magnum::Color4& color) {

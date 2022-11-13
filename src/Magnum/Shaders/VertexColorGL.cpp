@@ -57,22 +57,18 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Configuration& configuration) {
     #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt drawCount
-    #endif
-) {
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
         "Shaders::VertexColorGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags >= Flag::UniformBuffers)
+    if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::MultiDraw) {
+    if(configuration.flags() >= Flag::MultiDraw) {
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
         #elif !defined(MAGNUM_TARGET_WEBGL)
@@ -103,12 +99,12 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
 
     vert.addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n");
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
-            drawCount));
-        vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            configuration.drawCount()));
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"))
@@ -120,9 +116,9 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     frag.submitCompile();
 
     VertexColorGL<dimensions> out{NoInit};
-    out._flags = flags;
+    out._flags = configuration.flags();
     #ifndef MAGNUM_TARGET_GLES2
-    out._drawCount = drawCount;
+    out._drawCount = configuration.drawCount();
     #endif
 
     out.attachShaders({vert, frag});
@@ -142,6 +138,25 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
 
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
+
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile() {
+    return compile(Configuration{});
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags) {
+    return compile(Configuration{}
+        .setFlags(flags));
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags, const UnsignedInt drawCount) {
+    return compile(Configuration{}
+        .setFlags(flags)
+        .setDrawCount(drawCount));
+}
+#endif
+#endif
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(CompileState&& state): VertexColorGL{static_cast<VertexColorGL&&>(std::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
@@ -195,14 +210,19 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     static_cast<void>(version);
 }
 
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags): VertexColorGL{compile(flags)} {}
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Configuration& configuration): VertexColorGL{compile(configuration)} {}
+
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(): VertexColorGL{Configuration{}} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags): VertexColorGL{compile(Configuration{}
+    .setFlags(flags))} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags) {
-    return compile(flags, 1);
-}
-
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags, const UnsignedInt drawCount): VertexColorGL{compile(flags, drawCount)} {}
+template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags, const UnsignedInt drawCount): VertexColorGL{compile(Configuration{}
+    .setFlags(flags)
+    .setDrawCount(drawCount))} {}
+#endif
 #endif
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(NoInitT) {}

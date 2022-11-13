@@ -69,16 +69,12 @@ namespace {
     #endif
 }
 
-template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(const Flags flags
-    #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt materialCount, const UnsignedInt drawCount
-    #endif
-) {
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(const Configuration& configuration) {
     #ifndef CORRADE_NO_ASSERT
     {
-        const bool textureTransformationNotEnabledOrTextured = !(flags & Flag::TextureTransformation) || flags & Flag::Textured
+        const bool textureTransformationNotEnabledOrTextured = !(configuration.flags() & Flag::TextureTransformation) || configuration.flags() & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
-            || flags >= Flag::ObjectIdTexture
+            || configuration.flags() >= Flag::ObjectIdTexture
             #endif
             ;
         CORRADE_ASSERT(textureTransformationNotEnabledOrTextured,
@@ -87,25 +83,25 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
         "Shaders::FlatGL: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
         "Shaders::FlatGL: draw count can't be zero", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags & Flag::TextureArrays) || flags & Flag::Textured || flags >= Flag::ObjectIdTexture,
+    CORRADE_ASSERT(!(configuration.flags() & Flag::TextureArrays) || configuration.flags() & Flag::Textured || configuration.flags() >= Flag::ObjectIdTexture,
         "Shaders::FlatGL: texture arrays enabled but the shader is not textured", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags & Flag::UniformBuffers) || !(flags & Flag::TextureArrays) || flags >= (Flag::TextureArrays|Flag::TextureTransformation),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::UniformBuffers) || !(configuration.flags() & Flag::TextureArrays) || configuration.flags() >= (Flag::TextureArrays|Flag::TextureTransformation),
         "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(flags >= Flag::UniformBuffers)
+    if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::MultiDraw) {
+    if(configuration.flags() >= Flag::MultiDraw) {
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_draw_parameters);
         #elif !defined(MAGNUM_TARGET_WEBGL)
@@ -116,7 +112,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     }
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    if(flags >= Flag::TextureArrays)
+    if(configuration.flags() >= Flag::TextureArrays)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::texture_array);
     #endif
 
@@ -138,54 +134,54 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource((flags & Flag::Textured
+    vert.addSource((configuration.flags() & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
-            || flags >= Flag::ObjectIdTexture
+            || configuration.flags() >= Flag::ObjectIdTexture
             #endif
             ) ? "#define TEXTURED\n" : "")
-        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
-        .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
+        .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
         #endif
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
-        .addSource(flags & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
-        .addSource(flags >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
+        .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
-            drawCount));
-        vert.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            configuration.drawCount()));
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("Flat.vert"));
-    frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
+    frag.addSource(configuration.flags() & Flag::Textured ? "#define TEXTURED\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
         #endif
-        .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
-        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
+        .addSource(configuration.flags() & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
-        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
-        .addSource(flags >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(configuration.flags() >= Flag::UniformBuffers) {
         frag.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n",
-            drawCount,
-            materialCount));
-        frag.addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            configuration.drawCount(),
+            configuration.materialCount()));
+        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
     }
     #endif
     frag.addSource(rs.getString("generic.glsl"))
@@ -195,10 +191,10 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     frag.submitCompile();
 
     FlatGL<dimensions> out{NoInit};
-    out._flags = flags;
+    out._flags = configuration.flags();
     #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = materialCount;
-    out._drawCount = drawCount;
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
     #endif
 
     out.attachShaders({vert, frag});
@@ -211,25 +207,25 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     #endif
     {
         out.bindAttributeLocation(Position::Location, "position");
-        if(flags & Flag::Textured
+        if(configuration.flags() & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
-            || flags >= Flag::ObjectIdTexture
+            || configuration.flags() >= Flag::ObjectIdTexture
             #endif
         )
             out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
-        if(flags & Flag::VertexColor)
+        if(configuration.flags() & Flag::VertexColor)
             out.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags & Flag::ObjectId) {
+        if(configuration.flags() & Flag::ObjectId) {
             out.bindFragmentDataLocation(ColorOutput, "color");
             out.bindFragmentDataLocation(ObjectIdOutput, "objectId");
         }
-        if(flags >= Flag::InstancedObjectId)
+        if(configuration.flags() >= Flag::InstancedObjectId)
             out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
-        if(flags & Flag::InstancedTransformation)
+        if(configuration.flags() & Flag::InstancedTransformation)
             out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
-        if(flags >= Flag::InstancedTextureOffset)
+        if(configuration.flags() >= Flag::InstancedTextureOffset)
             out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
     }
     #endif
@@ -238,6 +234,26 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 
     return CompileState{std::move(out), std::move(vert), std::move(frag), version};
 }
+
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile() {
+    return compile(Configuration{});
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(const Flags flags) {
+    return compile(Configuration{}
+        .setFlags(flags));
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount) {
+    return compile(Configuration{}
+        .setFlags(flags)
+        .setMaterialCount(materialCount)
+        .setDrawCount(drawCount));
+}
+#endif
+#endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state): FlatGL{static_cast<FlatGL&&>(std::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
@@ -315,15 +331,20 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
     static_cast<void>(context);
 }
 
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags): FlatGL{compile(flags)} {}
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Configuration& configuration): FlatGL{compile(configuration)} {}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(): FlatGL{Configuration{}} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): FlatGL{compile(Configuration{}
+    .setFlags(flags))} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(Flags flags) {
-    return compile(flags, 1, 1);
-}
-
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount):
-    FlatGL{compile(flags, materialCount, drawCount)} {}
+template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): FlatGL{compile(Configuration{}
+    .setFlags(flags)
+    .setMaterialCount(materialCount)
+    .setDrawCount(drawCount))} {}
+#endif
 #endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT) {}

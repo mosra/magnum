@@ -376,19 +376,15 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::bindObjectIdTexture(GL::Texture2DArr
 
 }
 
-MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
-    #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt materialCount, const UnsignedInt drawCount
-    #endif
-) {
-    const FlagsBase baseFlags = Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(flags));
+MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration& configuration) {
+    const FlagsBase baseFlags = Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(configuration.flags()));
     assertExtensions(baseFlags);
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(configuration.flags() & ((Flag::Wireframe|Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizerGL2D: at least one visualization feature has to be enabled", CompileState{NoCreate});
     #else
-    CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(configuration.flags() & (Flag::Wireframe & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizerGL2D: at least Flag::Wireframe has to be enabled", CompileState{NoCreate});
     #endif
 
@@ -396,9 +392,9 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
        constructor when testing for asserts -- GLSL compilation would fail
        otherwise */
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
         "Shaders::MeshVisualizerGL2D: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
         "Shaders::MeshVisualizerGL2D: draw count can't be zero", CompileState{NoCreate});
     #endif
 
@@ -411,7 +407,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
         #ifndef MAGNUM_TARGET_GLES2
-        , materialCount, drawCount
+        , configuration.materialCount(), configuration.drawCount()
         #endif
     );
     Containers::Optional<GL::Shader> geom;
@@ -420,7 +416,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
            the shader code */
-        .addSource((flags & Flag::NoGeometryShader) || !(flags & Flag::Wireframe) ?
+        .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & Flag::Wireframe) ?
             "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("MeshVisualizer.vert"));
@@ -428,10 +424,10 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
            the shader code */
-        .addSource((flags & Flag::NoGeometryShader) || !(flags & Flag::Wireframe) ?
+        .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & Flag::Wireframe) ?
             "#define NO_GEOMETRY_SHADER\n" : "");
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers)
+    if(configuration.flags() >= Flag::UniformBuffers)
         frag.addSource("#define TWO_DIMENSIONS\n");
     #endif
     frag.addSource(rs.getString("generic.glsl"))
@@ -439,7 +435,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
 
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
+    if(configuration.flags() & Flag::Wireframe && !(configuration.flags() & Flag::NoGeometryShader)) {
         geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         (*geom)
             .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n")
@@ -453,15 +449,15 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
                     "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
                     "#define PRIMITIVE_ID\n") : "");
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(configuration.flags() >= Flag::UniformBuffers) {
             geom->addSource(Utility::formatString(
                 "#define TWO_DIMENSIONS\n"
                 "#define UNIFORM_BUFFERS\n"
                 "#define DRAW_COUNT {}\n"
                 "#define MATERIAL_COUNT {}\n",
-                drawCount,
-                materialCount));
-            geom->addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+                configuration.drawCount(),
+                configuration.materialCount()));
+            geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
         }
         #endif
         geom->addSource(rs.getString("MeshVisualizer.geom"));
@@ -477,8 +473,8 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
     MeshVisualizerGL2D out{NoInit};
     out._flags = baseFlags;
     #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = materialCount;
-    out._drawCount = drawCount;
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
     #endif
 
     out.attachShaders({vert, frag});
@@ -492,15 +488,15 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
     {
         out.bindAttributeLocation(Position::Location, "position");
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::ObjectIdTexture)
+        if(configuration.flags() >= Flag::ObjectIdTexture)
             out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
-        if(flags >= Flag::InstancedObjectId)
+        if(configuration.flags() >= Flag::InstancedObjectId)
             out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
-        if(flags & Flag::InstancedTransformation)
+        if(configuration.flags() & Flag::InstancedTransformation)
             out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::InstancedTextureOffset)
+        if(configuration.flags() >= Flag::InstancedTextureOffset)
             out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
         #endif
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -519,14 +515,20 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags
     return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, version};
 }
 
-MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): MeshVisualizerGL2D{compile(flags)} {}
-
-#ifndef MAGNUM_TARGET_GLES2
+#ifdef MAGNUM_BUILD_DEPRECATED
 MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags) {
-    return compile(flags, 1, 1);
+    return compile(Configuration{}
+        .setFlags(flags));
 }
 
-MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): MeshVisualizerGL2D{compile(flags, materialCount, drawCount)} {}
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount) {
+    return compile(Configuration{}
+        .setFlags(flags)
+        .setMaterialCount(materialCount)
+        .setDrawCount(drawCount));
+}
+#endif
 #endif
 
 MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D{static_cast<MeshVisualizerGL2D&&>(std::move(state))} {
@@ -643,6 +645,20 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     static_cast<void>(version);
 }
 
+MeshVisualizerGL2D::MeshVisualizerGL2D(const Configuration& configuration): MeshVisualizerGL2D{compile(configuration)} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags): MeshVisualizerGL2D{Configuration{}
+    .setFlags(flags)} {}
+
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL2D::MeshVisualizerGL2D(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): MeshVisualizerGL2D{compile(Configuration{}
+    .setFlags(flags)
+    .setMaterialCount(materialCount)
+    .setDrawCount(drawCount))} {}
+#endif
+#endif
+
 MeshVisualizerGL2D& MeshVisualizerGL2D::setViewportSize(const Vector2& size) {
     /* Not asserting here, since the relation to wireframe is a bit vague.
        Also it's an ugly hack that should be removed, ideally. */
@@ -703,31 +719,27 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::bindDrawBuffer(GL::Buffer& buffer, const
 }
 #endif
 
-MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
-    #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt materialCount, const UnsignedInt drawCount
-    #endif
-) {
-    FlagsBase baseFlags = Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(flags));
+MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration& configuration) {
+    FlagsBase baseFlags = Implementation::MeshVisualizerGLBase::FlagBase(UnsignedInt(configuration.flags()));
     assertExtensions(baseFlags);
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection|Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(configuration.flags() & ((Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection|Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizerGL3D: at least one visualization feature has to be enabled", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags & Flag::NoGeometryShader && flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::NoGeometryShader && configuration.flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)),
         "Shaders::MeshVisualizerGL3D: geometry shader has to be enabled when rendering TBN direction", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags & Flag::BitangentDirection && flags & Flag::BitangentFromTangentDirection),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::BitangentDirection && configuration.flags() & Flag::BitangentFromTangentDirection),
         "Shaders::MeshVisualizerGL3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive", CompileState{NoCreate});
     #elif !defined(MAGNUM_TARGET_GLES2)
-    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(configuration.flags() & ((Flag::Wireframe|Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizerGL3D: at least one visualization feature has to be enabled", CompileState{NoCreate});
     #else
-    CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(configuration.flags() & (Flag::Wireframe & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizerGL3D: at least Flag::Wireframe has to be enabled", CompileState{NoCreate});
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(!(flags >= Flag::InstancedObjectId) || !(flags & Flag::BitangentDirection),
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::InstancedObjectId) || !(configuration.flags() & Flag::BitangentDirection),
         "Shaders::MeshVisualizerGL3D: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead", CompileState{NoCreate});
     #endif
 
@@ -735,9 +747,9 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
        constructor when testing for asserts -- GLSL compilation would fail
        otherwise */
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || materialCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
         "Shaders::MeshVisualizerGL3D: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(flags >= Flag::UniformBuffers) || drawCount,
+    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
         "Shaders::MeshVisualizerGL3D: draw count can't be zero", CompileState{NoCreate});
     #endif
 
@@ -750,32 +762,32 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
         #ifndef MAGNUM_TARGET_GLES2
-        , materialCount, drawCount
+        , configuration.materialCount(), configuration.drawCount()
         #endif
     );
     Containers::Optional<GL::Shader> geom;
 
     /* Expands the check done for wireframe in MeshVisualizerBase with TBN */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_INTERNAL_ASSERT(!(flags & (Flag::NormalDirection|Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection)) || version >= GL::Version::GL320);
+    CORRADE_INTERNAL_ASSERT(!(configuration.flags() & (Flag::NormalDirection|Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection)) || version >= GL::Version::GL320);
     #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_INTERNAL_ASSERT(!(flags & (Flag::NormalDirection|Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection)) || version >= GL::Version::GLES310);
+    CORRADE_INTERNAL_ASSERT(!(configuration.flags() & (Flag::NormalDirection|Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection)) || version >= GL::Version::GLES310);
     #endif
 
     vert.addSource("#define THREE_DIMENSIONS\n")
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
            the vertex shader code */
-        .addSource((flags & Flag::NoGeometryShader) || !(flags & (Flag::Wireframe
+        .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & (Flag::Wireframe
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             |Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection|Flag::NormalDirection
             #endif
             )) ? "#define NO_GEOMETRY_SHADER\n" : "")
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        .addSource(flags & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
-        .addSource(flags & Flag::BitangentFromTangentDirection ? "#define BITANGENT_FROM_TANGENT_DIRECTION\n" : "")
-        .addSource(flags & Flag::BitangentDirection ? "#define BITANGENT_DIRECTION\n" : "")
-        .addSource(flags & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "")
+        .addSource(configuration.flags() & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
+        .addSource(configuration.flags() & Flag::BitangentFromTangentDirection ? "#define BITANGENT_FROM_TANGENT_DIRECTION\n" : "")
+        .addSource(configuration.flags() & Flag::BitangentDirection ? "#define BITANGENT_DIRECTION\n" : "")
+        .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "")
         #endif
         ;
     vert.addSource(rs.getString("generic.glsl"))
@@ -784,35 +796,35 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
            the vertex shader code */
-        .addSource((flags & Flag::NoGeometryShader) || !(flags & (Flag::Wireframe
+        .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & (Flag::Wireframe
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             |Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection|Flag::NormalDirection
             #endif
             )) ? "#define NO_GEOMETRY_SHADER\n" : "")
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        .addSource(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) ? "#define TBN_DIRECTION\n" : "")
+        .addSource(configuration.flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) ? "#define TBN_DIRECTION\n" : "")
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers)
+    if(configuration.flags() >= Flag::UniformBuffers)
         frag.addSource("#define THREE_DIMENSIONS\n");
     #endif
     frag.addSource(rs.getString("generic.glsl"))
         .addSource(rs.getString("MeshVisualizer.frag"));
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(flags & (Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) && !(flags & Flag::NoGeometryShader)) {
+    if(configuration.flags() & (Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) && !(configuration.flags() & Flag::NoGeometryShader)) {
         Int maxVertices = 0;
-        if(flags & Flag::Wireframe) maxVertices += 3;
-        if(flags & Flag::TangentDirection) maxVertices += 3*6;
-        if(flags & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection))
+        if(configuration.flags() & Flag::Wireframe) maxVertices += 3;
+        if(configuration.flags() & Flag::TangentDirection) maxVertices += 3*6;
+        if(configuration.flags() & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection))
             maxVertices += 3*6;
-        if(flags & Flag::NormalDirection) maxVertices += 3*6;
+        if(configuration.flags() & Flag::NormalDirection) maxVertices += 3*6;
 
         geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         (*geom)
             .addSource(Utility::formatString("#define MAX_VERTICES {}\n", maxVertices))
-            .addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
+            .addSource(configuration.flags() & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
             .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
             .addSource(baseFlags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
             .addSource(baseFlags & FlagBase::ObjectId ? "#define OBJECT_ID\n" : "")
@@ -822,19 +834,19 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
                 (baseFlags >= FlagBase::PrimitiveIdFromVertexId ?
                     "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
                     "#define PRIMITIVE_ID\n") : "")
-            .addSource(flags & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
-            .addSource(flags & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection) ? "#define BITANGENT_DIRECTION\n" : "")
-            .addSource(flags & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "");
+            .addSource(configuration.flags() & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
+            .addSource(configuration.flags() & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection) ? "#define BITANGENT_DIRECTION\n" : "")
+            .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "");
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(configuration.flags() >= Flag::UniformBuffers) {
             geom->addSource(Utility::formatString(
                 "#define THREE_DIMENSIONS\n"
                 "#define UNIFORM_BUFFERS\n"
                 "#define DRAW_COUNT {}\n"
                 "#define MATERIAL_COUNT {}\n",
-                drawCount,
-                materialCount));
-            geom->addSource(flags >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+                configuration.drawCount(),
+                configuration.materialCount()));
+            geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
         }
         #endif
         geom->addSource(rs.getString("MeshVisualizer.geom"));
@@ -850,8 +862,8 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
     MeshVisualizerGL3D out{NoInit};
     out._flags = baseFlags;
     #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = materialCount;
-    out._drawCount = drawCount;
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
     #endif
 
     out.attachShaders({vert, frag});
@@ -865,30 +877,30 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
     {
         out.bindAttributeLocation(Position::Location, "position");
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::ObjectIdTexture)
+        if(configuration.flags() >= Flag::ObjectIdTexture)
             out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
-        if(flags >= Flag::InstancedObjectId)
+        if(configuration.flags() >= Flag::InstancedObjectId)
             out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
-        if(flags & Flag::InstancedTransformation) {
+        if(configuration.flags() & Flag::InstancedTransformation) {
             out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-            if(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection))
+            if(configuration.flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection))
                 out.bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix");
             #endif
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::InstancedTextureOffset)
+        if(configuration.flags() >= Flag::InstancedTextureOffset)
             out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
         #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        if(flags & Flag::TangentDirection ||
-           flags & Flag::BitangentFromTangentDirection)
+        if(configuration.flags() & Flag::TangentDirection ||
+           configuration.flags() & Flag::BitangentFromTangentDirection)
             out.bindAttributeLocation(Tangent4::Location, "tangent");
-        if(flags & Flag::BitangentDirection)
+        if(configuration.flags() & Flag::BitangentDirection)
             out.bindAttributeLocation(Bitangent::Location, "bitangent");
-        if(flags & Flag::NormalDirection ||
-           flags & Flag::BitangentFromTangentDirection)
+        if(configuration.flags() & Flag::NormalDirection ||
+           configuration.flags() & Flag::BitangentFromTangentDirection)
             out.bindAttributeLocation(Normal::Location, "normal");
         #endif
 
@@ -907,6 +919,22 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(Flags flags
 
     return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, version};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Flags flags) {
+    return compile(Configuration{}
+        .setFlags(flags));
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount) {
+    return compile(Configuration{}
+        .setFlags(flags)
+        .setMaterialCount(materialCount)
+        .setDrawCount(drawCount));
+}
+#endif
+#endif
 
 MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
@@ -1055,14 +1083,20 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     static_cast<void>(version);
 }
 
-MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): MeshVisualizerGL3D{compile(flags)} {}
+MeshVisualizerGL3D::MeshVisualizerGL3D(const Configuration& configuration): MeshVisualizerGL3D{compile(configuration)} {}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+MeshVisualizerGL3D::MeshVisualizerGL3D(): MeshVisualizerGL3D{Configuration{}} {}
+
+MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags): MeshVisualizerGL3D{Configuration{}
+    .setFlags(flags)} {}
 
 #ifndef MAGNUM_TARGET_GLES2
-MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Flags flags) {
-    return compile(flags, 1, 1);
-}
-
-MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): MeshVisualizerGL3D{compile(flags, materialCount, drawCount)} {}
+MeshVisualizerGL3D::MeshVisualizerGL3D(const Flags flags, const UnsignedInt materialCount, const UnsignedInt drawCount): MeshVisualizerGL3D{compile(Configuration{}
+    .setFlags(flags)
+    .setMaterialCount(materialCount)
+    .setDrawCount(drawCount))} {}
+#endif
 #endif
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::setTransformationMatrix(const Matrix4& matrix) {

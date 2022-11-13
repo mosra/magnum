@@ -112,6 +112,7 @@ similar for all shaders, see @ref shaders-usage-multidraw for an example.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: public GL::AbstractShaderProgram {
     public:
+        class Configuration;
         class CompileState;
 
         /**
@@ -215,74 +216,71 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * @brief Compile asynchronously
          * @m_since_latest
          *
-         * Compared to @ref VertexColorGL(Flags) can perform an asynchronous
-         * compilation and linking. See @ref shaders-async for more
-         * information.
-         * @see @ref VertexColorGL(CompileState&&),
-         *      @ref compile(Flags, UnsignedInt)
+         * Compared to @ref VertexColorGL(const Configuration&) can perform an
+         * asynchronous compilation and linking. See @ref shaders-async for
+         * more information.
+         * @see @ref VertexColorGL(CompileState&&)
          */
-        static CompileState compile(Flags flags = {});
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        static CompileState compile(const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is forward-declared */
+        static CompileState compile(const Configuration& configuration);
+        static CompileState compile();
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Compile asynchronously
+         * @m_deprecated_since_latest Use @ref compile(const Configuration&)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use compile(const Configuration& instead") static CompileState compile(Flags flags);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Compile for a multi-draw scenario asynchronously
-         * @m_since_latest
-         *
-         * Compared to @ref VertexColorGL(Flags, UnsignedInt) can perform an
-         * asynchronous compilation and linking. See @ref shaders-async for
-         * more information.
-         * @see @ref VertexColorGL(CompileState&&), @ref compile(Flags)
+         * @m_deprecated_since_latest Use @ref compile(const Configuration&)
+         *      instead.
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        static CompileState compile(Flags flags, UnsignedInt drawCount);
+        CORRADE_DEPRECATED("use compile(const Configuration& instead") static CompileState compile(Flags flags, UnsignedInt drawCount);
+        #endif
         #endif
 
         /**
          * @brief Constructor
-         * @param flags     Flags
-         *
-         * While this function is meant mainly for the classic uniform
-         * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
-         * @ref VertexColorGL(Flags, UnsignedInt) with @p drawCount set to
-         * @cpp 1 @ce.
-         * @see @ref compile(Flags)
+         * @m_since_latest
          */
-        explicit VertexColorGL(Flags flags = {});
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit VertexColorGL(const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is forward-declared */
+        explicit VertexColorGL(const Configuration& configuration);
+        explicit VertexColorGL();
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Constructor
+         * @m_deprecated_since_latest Use @ref VertexColorGL(const Configuration&)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use VertexColorGL(const Configuration& instead") VertexColorGL(Flags flags);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Construct for a multi-draw scenario
-         * @param flags         Flags
-         * @param drawCount     Size of a @ref TransformationProjectionUniform2D
-         *      / @ref TransformationProjectionUniform3D buffer bound with
-         *      @ref bindTransformationProjectionBuffer()
-         * @m_since_latest
-         *
-         * If @p flags contains @ref Flag::UniformBuffers, @p drawCount
-         * describes the uniform buffer sizes as these are required to have a
-         * statically defined size. The draw offset is then set via
-         * @ref setDrawOffset().
-         *
-         * If @p flags don't contain @ref Flag::UniformBuffers, @p drawCount is
-         * ignored and the constructor behaves the same as
-         * @ref VertexColorGL(Flags).
-         * @see @ref compile(Flags, UnsignedInt)
+         * @m_deprecated_since_latest Use @ref VertexColorGL(const Configuration&)
+         *      instead.
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        /** @todo this constructor will eventually need to have also joint
-            count, per-vertex weight count, view count for multiview and clip
-            plane count ... and putting them in arbitrary order next to each
-            other is too error-prone, so it needs some other solution
-            (accepting pairs of parameter type and value like in GL context
-            creation, e.g., which will probably need a new enum as reusing Flag
-            for this might be too confusing); what if some parameters won't be
-            (unsigned) integers? like a string with shader extensions? make a
-            whole Configuration class? */
-        explicit VertexColorGL(Flags flags, UnsignedInt drawCount);
+        explicit CORRADE_DEPRECATED("use VertexColorGL(const Configuration& instead") VertexColorGL(Flags flags, UnsignedInt drawCount);
+        #endif
         #endif
 
         /**
@@ -433,6 +431,63 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         /* Used instead of all other uniforms when Flag::UniformBuffers is set,
            so it can alias them */
         Int _drawOffsetUniform{0};
+        #endif
+};
+
+/**
+@brief Configuration
+@m_since_latest
+
+@see @ref VertexColorGL(const Configuration&),
+    @ref compile(const Configuration&)
+*/
+template<UnsignedInt dimensions> class VertexColorGL<dimensions>::Configuration {
+    public:
+        explicit Configuration() = default;
+
+        /** @brief Flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set flags
+         *
+         * No flags are set by default.
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @brief Draw count */
+        UnsignedInt drawCount() const { return _drawCount; }
+
+        /**
+         * @brief Set draw count
+         *
+         * If @ref Flag::UniformBuffers is set, describes size of a
+         * @ref TransformationProjectionUniform2D /
+         * @ref TransformationProjectionUniform3D buffer bound with
+         * @ref bindTransformationProjectionBuffer(); as uniform buffers are
+         * required to have a statically defined size. The draw offset is then
+         * set via @ref setDrawOffset(). Default value is @cpp 1 @ce.
+         *
+         * If @ref Flag::UniformBuffers isn't set, this value is ignored.
+         * @see @ref setFlags()
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        Configuration& setDrawCount(UnsignedInt drawCount) {
+            _drawCount = drawCount;
+            return *this;
+        }
+        #endif
+
+    private:
+        Flags _flags;
+        #ifndef MAGNUM_TARGET_GLES2
+        UnsignedInt _drawCount = 1;
         #endif
 };
 

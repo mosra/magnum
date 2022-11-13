@@ -122,6 +122,7 @@ example.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL: public GL::AbstractShaderProgram {
     public:
+        class Configuration;
         class CompileState;
 
         /**
@@ -225,80 +226,71 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Compile asynchronously
          * @m_since_latest
          *
-         * Compared to @ref DistanceFieldVectorGL(Flags) can perform an
-         * asynchronous compilation and linking. See @ref shaders-async for
-         * more information.
-         * @see @ref DistanceFieldVectorGL(CompileState&&),
-         *      @ref compile(Flags, UnsignedInt, UnsignedInt)
+         * Compared to @ref DistanceFieldVectorGL(const Configuration&) can
+         * perform an asynchronous compilation and linking. See
+         * @ref shaders-async for more information.
+         * @see @ref DistanceFieldVectorGL(CompileState&&)
          */
-        static CompileState compile(Flags flags = {});
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        static CompileState compile(const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is forward-declared */
+        static CompileState compile(const Configuration& configuration);
+        static CompileState compile();
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Compile asynchronously
+         * @m_deprecated_since_latest Use @ref compile(const Configuration&)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use compile(const Configuration& instead") static CompileState compile(Flags flags);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Compile for a multi-draw scenario asynchronously
-         * @m_since_latest
-         *
-         * Compared to @ref DistanceFieldVectorGL(Flags, UnsignedInt, UnsignedInt)
-         * can perform an asynchronous compilation and linking. See
-         * @ref shaders-async for more information.
-         * @see @ref DistanceFieldVectorGL(CompileState&&), @ref compile(Flags)
+         * @m_deprecated_since_latest Use @ref compile(const Configuration&)
+         *      instead.
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        static CompileState compile(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        CORRADE_DEPRECATED("use compile(const Configuration& instead") static CompileState compile(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        #endif
         #endif
 
         /**
          * @brief Constructor
-         * @param flags     Flags
-         *
-         * While this function is meant mainly for the classic uniform
-         * scenario (without @ref Flag::UniformBuffers set), it's equivalent to
-         * @ref DistanceFieldVectorGL(Flags, UnsignedInt, UnsignedInt) with
-         * @p materialCount and @p drawCount set to @cpp 1 @ce.
-         * @see @ref compile(Flags)
+         * @m_since_latest
          */
-        explicit DistanceFieldVectorGL(Flags flags = {});
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit DistanceFieldVectorGL(const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is forward-declared */
+        explicit DistanceFieldVectorGL(const Configuration& configuration);
+        explicit DistanceFieldVectorGL();
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Constructor
+         * @m_deprecated_since_latest Use @ref DistanceFieldVectorGL(const Configuration&)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use DistanceFieldVectorGL(const Configuration& instead") DistanceFieldVectorGL(Flags flags);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Construct for a multi-draw scenario
-         * @param flags         Flags
-         * @param materialCount Size of a @ref DistanceFieldVectorMaterialUniform
-         *      buffer bound with @ref bindMaterialBuffer()
-         * @param drawCount     Size of a @ref TransformationProjectionUniform2D
-         *      / @ref TransformationProjectionUniform3D /
-         *      @ref DistanceFieldVectorDrawUniform /
-         *      @ref TextureTransformationUniform buffer bound with
-         *      @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer()
-         *      and @ref bindTextureTransformationBuffer()
-         * @m_since_latest
-         *
-         * If @p flags contains @ref Flag::UniformBuffers, @p materialCount and
-         * @p drawCount describe the uniform buffer sizes as these are required
-         * to have a statically defined size. The draw offset is then set via
-         * @ref setDrawOffset() and the per-draw materials are specified via
-         * @ref DistanceFieldVectorDrawUniform::materialId.
-         *
-         * If @p flags don't contain @ref Flag::UniformBuffers,
-         * @p materialCount and @p drawCount is ignored and the constructor
-         * behaves the same as @ref DistanceFieldVectorGL(Flags).
-         * @see @ref compile(Flags, UnsignedInt, UnsignedInt)
+         * @m_deprecated_since_latest Use @ref DistanceFieldVectorGL(const Configuration&)
+         *      instead.
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        /** @todo this constructor will eventually need to have also joint
-            count, per-vertex weight count, view count for multiview and clip
-            plane count ... and putting them in arbitrary order next to each
-            other is too error-prone, so it needs some other solution
-            (accepting pairs of parameter type and value like in GL context
-            creation, e.g., which will probably need a new enum as reusing Flag
-            for this might be too confusing); what if some parameters won't be
-            (unsigned) integers? like a string with shader extensions? make a
-            whole Configuration class? */
-        explicit DistanceFieldVectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        explicit CORRADE_DEPRECATED("use DistanceFieldVectorGL(const Configuration& instead") DistanceFieldVectorGL(Flags flags, UnsignedInt materialCount, UnsignedInt drawCount);
+        #endif
         #endif
 
         /**
@@ -634,6 +626,91 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         /* Used instead of all other uniforms when Flag::UniformBuffers is set,
            so it can alias them */
         Int _drawOffsetUniform{0};
+        #endif
+};
+
+/**
+@brief Configuration
+@m_since_latest
+
+@see @ref DistanceFieldVectorGL(const Configuration&),
+    @ref compile(const Configuration&)
+*/
+template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Configuration {
+    public:
+        explicit Configuration() = default;
+
+        /** @brief Flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set flags
+         *
+         * No flags are set by default.
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @brief Material count */
+        UnsignedInt materialCount() const { return _materialCount; }
+
+        /**
+         * @brief Set material count
+         *
+         * If @ref Flag::UniformBuffers is set, describes size of a
+         * @ref DistanceFieldVectorMaterialUniform buffer bound with
+         * @ref bindMaterialBuffer(); as uniform buffers are required to have a
+         * statically defined size. The per-draw materials are then specified
+         * via @ref DistanceFieldVectorDrawUniform::materialId. Default value
+         * is @cpp 1 @ce.
+         *
+         * If @ref Flag::UniformBuffers isn't set, this value is ignored.
+         * @see @ref setFlags(), @ref setDrawCount()
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        Configuration& setMaterialCount(UnsignedInt materialCount) {
+            _materialCount = materialCount;
+            return *this;
+        }
+
+        /** @brief Draw count */
+        UnsignedInt drawCount() const { return _drawCount; }
+
+        /**
+         * @brief Set draw count
+         *
+         * If @ref Flag::UniformBuffers is set, describes size of a
+         * @ref TransformationProjectionUniform2D /
+         * @ref TransformationProjectionUniform3D /
+         * @ref DistanceFieldVectorDrawUniform /
+         * @ref TextureTransformationUniform buffer bound with
+         * @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer() and
+         * @ref bindTextureTransformationBuffer(); as uniform buffers are
+         * required to have a statically defined size. The draw offset is then
+         * set via @ref setDrawOffset(). Default value is @cpp 1 @ce.
+         *
+         * If @ref Flag::UniformBuffers isn't set, this value is ignored.
+         * @see @ref setFlags(), @ref setMaterialCount()
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        Configuration& setDrawCount(UnsignedInt drawCount) {
+            _drawCount = drawCount;
+            return *this;
+        }
+        #endif
+
+    private:
+        Flags _flags;
+        #ifndef MAGNUM_TARGET_GLES2
+        UnsignedInt _materialCount = 1;
+        UnsignedInt _drawCount = 1;
         #endif
 };
 
