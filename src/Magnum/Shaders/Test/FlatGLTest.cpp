@@ -853,7 +853,8 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    FlatGL<dimensions> shader{data.flags};
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -869,7 +870,8 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
+    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation));
     CORRADE_COMPARE(state.flags(),  FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
 
     while(!state.isLinkFinished())
@@ -918,7 +920,10 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
         #endif
     }
 
-    FlatGL<dimensions> shader{data.flags, data.materialCount, data.drawCount};
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
@@ -941,7 +946,10 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync()
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 8, 48);
+    typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask)
+        .setMaterialCount(8)
+        .setDrawCount(48));
     CORRADE_COMPARE(state.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
     CORRADE_COMPARE(state.materialCount(), 8);
     CORRADE_COMPARE(state.drawCount(), 48);
@@ -969,7 +977,8 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync()
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    FlatGL<dimensions> a{FlatGL<dimensions>::Flag::Textured};
+    FlatGL<dimensions> a{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::Textured)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -996,7 +1005,10 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    FlatGL<dimensions> a{FlatGL<dimensions>::Flag::UniformBuffers, 2, 5};
+    FlatGL<dimensions> a{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1028,7 +1040,8 @@ template<UnsignedInt dimensions> void FlatGLTest::constructInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    FlatGL<dimensions>{data.flags};
+    FlatGL<dimensions>{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::FlatGL: {}\n", data.message));
 }
@@ -1048,7 +1061,10 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersInvalid
 
     std::ostringstream out;
     Error redirectError{&out};
-    FlatGL<dimensions>{data.flags, data.materialCount, data.drawCount};
+    FlatGL<dimensions>{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::FlatGL: {}\n", data.message));
 }
@@ -1068,7 +1084,8 @@ template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnable
     std::ostringstream out;
     Error redirectError{&out};
 
-    FlatGL<dimensions> shader{FlatGL<dimensions>::Flag::UniformBuffers};
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
@@ -1131,7 +1148,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTexturesInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    FlatGL<dimensions> shader{data.flags};
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)};
     GL::Texture2D texture;
     shader.bindTexture(texture);
     #ifndef MAGNUM_TARGET_GLES2
@@ -1156,7 +1174,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureArraysInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    FlatGL<dimensions> shader{data.flags};
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)};
     GL::Texture2DArray textureArray;
     shader.bindTexture(textureArray);
     shader.bindObjectIdTexture(textureArray);
@@ -1226,7 +1245,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureTransformBufferNotE
     Error redirectError{&out};
 
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
-    FlatGL<dimensions> shader{FlatGL<dimensions>::Flag::UniformBuffers};
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
     CORRADE_COMPARE(out.str(),
@@ -1265,8 +1285,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setWrongDrawOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    FlatGL<dimensions>{FlatGL<dimensions>::Flag::UniformBuffers, 2, 5}
-        .setDrawOffset(5);
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
+    shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
 }
@@ -1313,7 +1336,8 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderDefaults2D() {
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    FlatGL2D shader{flag};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == FlatGL2D::Flag{}) {
         shader.draw(circle);
@@ -1366,7 +1390,8 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderDefaults3D() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    FlatGL3D shader{flag};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == FlatGL3D::Flag{}) {
         shader.draw(sphere);
@@ -1419,7 +1444,8 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderColored2D() {
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    FlatGL2D shader{flag};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == FlatGL2D::Flag{}) {
         shader
@@ -1482,7 +1508,8 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderColored3D() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    FlatGL3D shader{flag};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == FlatGL3D::Flag{}) {
         shader
@@ -1586,7 +1613,8 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
         flags |= FlatGL2D::Flag::TextureTransformation;
     }
     #endif
-    FlatGL2D shader{flags};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(flags)};
 
     const Color4ub imageData[]{ 0x9999ff_rgb };
     ImageView2D image{PixelFormat::RGBA8Unorm, Vector2i{1}, imageData};
@@ -1698,7 +1726,8 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
         flags |= FlatGL3D::Flag::TextureTransformation;
     }
     #endif
-    FlatGL3D shader{flags};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(flags)};
 
     const Color4ub imageData[]{ 0x9999ff_rgb };
     ImageView2D image{PixelFormat::RGBA8Unorm, Vector2i{1}, imageData};
@@ -1830,7 +1859,8 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
         flags |= FlatGL2D::Flag::TextureTransformation;
     }
     #endif
-    FlatGL2D shader{flags};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(flags)};
 
     GL::Texture2D texture{NoCreate};
     #ifndef MAGNUM_TARGET_GLES2
@@ -1956,7 +1986,8 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
         flags |= FlatGL3D::Flag::TextureTransformation;
     }
     #endif
-    FlatGL3D shader{flags};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(flags)};
 
     GL::Texture2D texture{NoCreate};
     #ifndef MAGNUM_TARGET_GLES2
@@ -2096,7 +2127,8 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL2D shader{FlatGL2D::Flag::Textured|FlatGL2D::Flag::VertexColor|flag};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(FlatGL2D::Flag::Textured|FlatGL2D::Flag::VertexColor|flag)};
     shader.bindTexture(texture);
 
     if(flag == FlatGL2D::Flag{}) {
@@ -2185,7 +2217,8 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    FlatGL3D shader{FlatGL3D::Flag::Textured|FlatGL3D::Flag::VertexColor|flag};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(FlatGL3D::Flag::Textured|FlatGL3D::Flag::VertexColor|flag)};
     shader.bindTexture(texture);
 
     if(flag == FlatGL2D::Flag{}) {
@@ -2289,7 +2322,8 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderAlpha2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
 
-    FlatGL2D shader{data.flags|flag};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(data.flags|flag)};
     shader.bindTexture(texture);
 
     if(flag == FlatGL2D::Flag{}) {
@@ -2375,7 +2409,8 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderAlpha3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    FlatGL3D shader{data.flags|flag};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(data.flags|flag)};
     shader.bindTexture(texture);
 
     if(flag == FlatGL2D::Flag{}) {
@@ -2519,7 +2554,8 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL2D::Flag::TextureTransformation;
     }
-    FlatGL2D shader{FlatGL2D::Flag::ObjectId|flags};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(FlatGL2D::Flag::ObjectId|flags)};
 
     GL::Texture2D texture{NoCreate};
     GL::Texture2DArray textureArray{NoCreate};
@@ -2651,7 +2687,8 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL3D::Flag::TextureTransformation;
     }
-    FlatGL3D shader{FlatGL3D::Flag::ObjectId|flags};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(FlatGL3D::Flag::ObjectId|flags)};
 
     GL::Texture2D texture{NoCreate};
     GL::Texture2DArray textureArray{NoCreate};
@@ -2850,8 +2887,9 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         )
         .setInstanceCount(3);
 
-    FlatGL2D shader{FlatGL2D::Flag::VertexColor|
-        FlatGL2D::Flag::InstancedTransformation|data.flags|flag};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(FlatGL2D::Flag::VertexColor|
+        FlatGL2D::Flag::InstancedTransformation|data.flags|flag)};
 
     GL::Texture2D texture{NoCreate};
     #ifndef MAGNUM_TARGET_GLES2
@@ -3163,8 +3201,9 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         )
         .setInstanceCount(3);
 
-    FlatGL3D shader{FlatGL3D::Flag::VertexColor|
-        FlatGL3D::Flag::InstancedTransformation|data.flags|flag};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(FlatGL3D::Flag::VertexColor|
+        FlatGL3D::Flag::InstancedTransformation|data.flags|flag)};
 
     GL::Texture2D texture{NoCreate};
     #ifndef MAGNUM_TARGET_GLES2
@@ -3426,7 +3465,10 @@ void FlatGLTest::renderMulti2D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    FlatGL2D shader{FlatGL2D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(FlatGL2D::Flag::UniformBuffers|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
 
     GL::Texture2D texture{NoCreate};
     GL::Texture2DArray textureArray{NoCreate};
@@ -3762,7 +3804,10 @@ void FlatGLTest::renderMulti3D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    FlatGL3D shader{FlatGL3D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(FlatGL3D::Flag::UniformBuffers|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
 
     GL::Texture2D texture{NoCreate};
     GL::Texture2DArray textureArray{NoCreate};

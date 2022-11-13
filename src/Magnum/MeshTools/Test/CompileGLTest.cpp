@@ -123,12 +123,14 @@ struct CompileGLTest: GL::OpenGLTester {
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
         Shaders::FlatGL2D _flat2D;
-        Shaders::FlatGL2D _flatTextured2D{Shaders::FlatGL2D::Flag::Textured};
+        Shaders::FlatGL2D _flatTextured2D{Shaders::FlatGL2D::Configuration{}
+            .setFlags(Shaders::FlatGL2D::Flag::Textured)};
         #ifndef MAGNUM_TARGET_GLES2
         Shaders::FlatGL2D _flatObjectId2D{NoCreate};
         #endif
         Shaders::FlatGL3D _flat3D;
-        Shaders::FlatGL3D _flatTextured3D{Shaders::FlatGL3D::Flag::Textured};
+        Shaders::FlatGL3D _flatTextured3D{Shaders::FlatGL3D::Configuration{}
+            .setFlags(Shaders::FlatGL3D::Flag::Textured)};
         #ifndef MAGNUM_TARGET_GLES2
         Shaders::FlatGL3D _flatObjectId3D{NoCreate};
         #endif
@@ -331,8 +333,10 @@ CompileGLTest::CompileGLTest() {
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
     #endif
     {
-        _flatObjectId2D = Shaders::FlatGL2D{Shaders::FlatGL2D::Flag::InstancedObjectId};
-        _flatObjectId3D = Shaders::FlatGL3D{Shaders::FlatGL3D::Flag::InstancedObjectId};
+        _flatObjectId2D = Shaders::FlatGL2D{Shaders::FlatGL2D::Configuration{}
+            .setFlags(Shaders::FlatGL2D::Flag::InstancedObjectId)};
+        _flatObjectId3D = Shaders::FlatGL3D{Shaders::FlatGL3D::Configuration{}
+            .setFlags(Shaders::FlatGL3D::Flag::InstancedObjectId)};
         _objectId.setStorage(GL::RenderbufferFormat::R32UI, {32, 32});
         _framebuffer
             .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
@@ -351,14 +355,14 @@ CompileGLTest::CompileGLTest() {
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
     #endif
     {
-        _meshVisualizer3D = Shaders::MeshVisualizerGL3D{
-            Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
-            Shaders::MeshVisualizerGL3D::Flag::BitangentDirection|
-            Shaders::MeshVisualizerGL3D::Flag::NormalDirection};
-        _meshVisualizerBitangentsFromTangents3D = Shaders::MeshVisualizerGL3D{
-            Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
-            Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
-            Shaders::MeshVisualizerGL3D::Flag::NormalDirection};
+        _meshVisualizer3D = Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Configuration{}
+            .setFlags(Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
+                      Shaders::MeshVisualizerGL3D::Flag::BitangentDirection|
+                      Shaders::MeshVisualizerGL3D::Flag::NormalDirection)};
+        _meshVisualizerBitangentsFromTangents3D = Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Configuration{}
+            .setFlags(Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
+                      Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
+                      Shaders::MeshVisualizerGL3D::Flag::NormalDirection)};
     }
     #endif
 }

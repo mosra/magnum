@@ -1186,7 +1186,9 @@ void PhongGLTest::construct() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    PhongGL shader{data.flags, data.lightCount};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags)
+        .setLightCount(data.lightCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
     CORRADE_VERIFY(shader.id());
@@ -1201,7 +1203,9 @@ void PhongGLTest::construct() {
 }
 
 void PhongGLTest::constructAsync() {
-    PhongGL::CompileState state = PhongGL::compile(PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3);
+    PhongGL::CompileState state = PhongGL::compile(PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset)
+        .setLightCount(3));
     CORRADE_COMPARE(state.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
     CORRADE_COMPARE(state.lightCount(), 3);
 
@@ -1250,7 +1254,11 @@ void PhongGLTest::constructUniformBuffers() {
         #endif
     }
 
-    PhongGL shader{data.flags, data.lightCount, data.materialCount, data.drawCount};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags)
+        .setLightCount(data.lightCount)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
@@ -1272,7 +1280,11 @@ void PhongGLTest::constructUniformBuffersAsync() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    PhongGL::CompileState state = PhongGL::compile(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling, 8, 8, 24);
+    PhongGL::CompileState state = PhongGL::compile(PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling)
+        .setLightCount(8)
+        .setMaterialCount(8)
+        .setDrawCount(24));
     CORRADE_COMPARE(state.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
     CORRADE_COMPARE(state.lightCount(), 8);
     CORRADE_COMPARE(state.materialCount(), 8);
@@ -1300,7 +1312,9 @@ void PhongGLTest::constructUniformBuffersAsync() {
 #endif
 
 void PhongGLTest::constructMove() {
-    PhongGL a{PhongGL::Flag::AlphaMask, 3};
+    PhongGL a{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::AlphaMask)
+        .setLightCount(3)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1327,7 +1341,11 @@ void PhongGLTest::constructMoveUniformBuffers() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    PhongGL a{PhongGL::Flag::UniformBuffers, 3, 2, 5};
+    PhongGL a{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers)
+        .setLightCount(3)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1360,7 +1378,8 @@ void PhongGLTest::constructInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    PhongGL{data.flags};
+    PhongGL{PhongGL::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::PhongGL: {}\n", data.message));
 }
@@ -1379,7 +1398,11 @@ void PhongGLTest::constructUniformBuffersInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    PhongGL{data.flags, data.lightCount, data.materialCount, data.drawCount};
+    PhongGL{PhongGL::Configuration{}
+        .setFlags(data.flags)
+        .setLightCount(data.lightCount)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::PhongGL: {}\n", data.message));
 }
@@ -1397,7 +1420,8 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    PhongGL shader{PhongGL::Flag::UniformBuffers};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers)};
     shader.setAmbientColor({})
           .setDiffuseColor({})
           .setNormalTextureScale({})
@@ -1494,7 +1518,8 @@ void PhongGLTest::bindTexturesInvalid() {
     Error redirectError{&out};
 
     GL::Texture2D texture;
-    PhongGL shader{data.flags};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags)};
     shader.bindAmbientTexture(texture)
           .bindDiffuseTexture(texture)
           .bindSpecularTexture(texture)
@@ -1523,7 +1548,8 @@ void PhongGLTest::bindTextureArraysInvalid() {
     Error redirectError{&out};
 
     GL::Texture2DArray textureArray;
-    PhongGL shader{data.flags};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags)};
     shader.bindAmbientTexture(textureArray)
           .bindDiffuseTexture(textureArray)
           .bindSpecularTexture(textureArray)
@@ -1554,7 +1580,8 @@ void PhongGLTest::setSpecularDisabled() {
     Error redirectError{&out};
 
     GL::Texture2D texture;
-    PhongGL shader{PhongGL::Flag::NoSpecular};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::NoSpecular)};
     shader.setSpecularColor({})
         .setShininess({})
         /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
@@ -1621,7 +1648,8 @@ void PhongGLTest::bindTextureTransformBufferNotEnabled() {
     Error redirectError{&out};
 
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
-    PhongGL shader{PhongGL::Flag::UniformBuffers};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers)};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
     CORRADE_COMPARE(out.str(),
@@ -1650,7 +1678,9 @@ void PhongGLTest::setWrongLightCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    PhongGL{{}, 5}
+    PhongGL shader{PhongGL::Configuration{}
+        .setLightCount(5)};
+    shader
         .setLightColors({Color3{}})
         .setLightPositions({Vector4{}})
         .setLightRanges({0.0f});
@@ -1665,7 +1695,9 @@ void PhongGLTest::setWrongLightId() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    PhongGL{{}, 3}
+    PhongGL shader{PhongGL::Configuration{}
+        .setLightCount(3)};
+    shader
         .setLightColor(3, Color3{})
         .setLightPosition(3, Vector4{})
         .setLightRange(3, 0.0f);
@@ -1686,8 +1718,12 @@ void PhongGLTest::setWrongDrawOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    PhongGL{PhongGL::Flag::UniformBuffers, 1, 2, 5}
-        .setDrawOffset(5);
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers)
+        .setLightCount(1)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
+    shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
 }
@@ -1740,7 +1776,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    PhongGL shader{flag};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flag)};
 
     if(flag == PhongGL::Flag{}) {
         shader.draw(sphere);
@@ -1816,7 +1853,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    PhongGL shader{flag, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flag)
+        .setLightCount(2)};
 
     if(flag == PhongGL::Flag{}) {
         shader
@@ -1944,7 +1983,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
         flags |= PhongGL::Flag::TextureTransformation;
     }
     #endif
-    PhongGL shader{flags, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flags)
+        .setLightCount(2)};
 
     const Color4ub ambientData[]{ 0x330033_rgb };
     ImageView2D ambientImage{PixelFormat::RGBA8Unorm, Vector2i{1}, ambientData};
@@ -2130,7 +2171,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
         flags |= PhongGL::Flag::TextureTransformation;
     }
     #endif
-    PhongGL shader{flags, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flags)
+        .setLightCount(2)};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -2375,7 +2418,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
         flags |= PhongGL::Flag::TextureTransformation;
     }
     #endif
-    PhongGL shader{flags, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flags)
+        .setLightCount(2)};
 
     GL::Texture2D normal{NoCreate};
     #ifndef MAGNUM_TARGET_GLES2
@@ -2576,7 +2621,9 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    PhongGL shader{PhongGL::Flag::DiffuseTexture|PhongGL::Flag::VertexColor|flag, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::DiffuseTexture|PhongGL::Flag::VertexColor|flag)
+        .setLightCount(2)};
     shader.bindDiffuseTexture(diffuse);
 
     if(flag == PhongGL::Flag{}) {
@@ -2672,7 +2719,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    PhongGL shader{flag|data.flags};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flag|data.flags)};
     if(flag == PhongGL::Flag{}) {
         if(!(data.flags & PhongGL::Flag::NoSpecular)) shader
             .setSpecularColor(data.specular)
@@ -2860,7 +2908,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    PhongGL shader{data.flags|flag, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags|flag)
+        .setLightCount(2)};
     shader.bindTextures(&ambient, &diffuse, nullptr, nullptr);
 
     if(flag == PhongGL::Flag{}) {
@@ -3026,7 +3076,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= PhongGL::Flag::TextureTransformation;
     }
-    PhongGL shader{PhongGL::Flag::ObjectId|flags, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::ObjectId|flags)
+        .setLightCount(2)};
 
     GL::Texture2D texture{NoCreate};
     GL::Texture2DArray textureArray{NoCreate};
@@ -3178,7 +3230,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
     Matrix4 transformation =
         Matrix4::translation({0.0f, 0.0f, -1.5f});
 
-    PhongGL shader{flag, 1};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flag)
+        .setLightCount(1)};
     if(flag == PhongGL::Flag{}) {
         shader
             /* Set non-black ambient to catch accidental NaNs -- the render
@@ -3268,7 +3322,9 @@ void PhongGLTest::renderLightsSetOneByOne() {
     Matrix4 transformation =
         Matrix4::translation({0.0f, 0.0f, -1.5f});
 
-    PhongGL{{}, 2}
+    PhongGL shader{PhongGL::Configuration{}
+        .setLightCount(2)};
+    shader
         /* Set non-black ambient to catch accidental NaNs -- the render should
            never be fully black */
         .setAmbientColor(0x222222_rgbf)
@@ -3334,7 +3390,9 @@ void PhongGLTest::renderLowLightAngle() {
        in the vertex shader, where the incorrect normalization caused the
        fragment-interpolated light direction being incorrect, most visible with
        long polygons and low light angles. */
-    PhongGL{{}, 1}
+    PhongGL shader{PhongGL::Configuration{}
+        .setLightCount(1)};
+    shader
         .setLightPositions({{0.0f, 0.1f, 0.0f, 1.0f}})
         .setShininess(200)
         .setTransformationMatrix(transformation)
@@ -3404,7 +3462,9 @@ void PhongGLTest::renderLightCulling() {
         .setColor(0x669933_rgbf);
     GL::Buffer lightUniform{lights};
 
-    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling, 64};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling)
+        .setLightCount(64)};
     shader
         .bindProjectionBuffer(projectionUniform)
         .bindTransformationBuffer(transformationUniform)
@@ -3464,7 +3524,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
         flags |= PhongGL::Flag::ObjectId;
     }
     #endif
-    PhongGL shader{flags|flag, 0};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(flags|flag)
+        .setLightCount(0)};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -3700,8 +3762,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         )
         .setInstanceCount(3);
 
-    PhongGL shader{PhongGL::Flag::VertexColor|
-          PhongGL::Flag::InstancedTransformation|data.flags|flag, 2};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::VertexColor|PhongGL::Flag::InstancedTransformation|data.flags|flag)
+        .setLightCount(2)};
 
     GL::Texture2D diffuse{NoCreate};
     GL::Texture2D normal{NoCreate};
@@ -4046,7 +4109,11 @@ void PhongGLTest::renderMulti() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    PhongGL shader{PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling|data.flags, data.lightCount, data.materialCount, data.drawCount};
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling|data.flags)
+        .setLightCount(data.lightCount)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
 
     GL::Texture2D diffuse{NoCreate};
     GL::Texture2DArray diffuseArray{NoCreate};

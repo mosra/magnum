@@ -374,7 +374,8 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    DistanceFieldVectorGL<dimensions> shader{data.flags};
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -390,7 +391,8 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::TextureTransformation);
+    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL2D::Flag::TextureTransformation));
     CORRADE_COMPARE(state.flags(), DistanceFieldVectorGL2D::Flag::TextureTransformation);
 
     while(!state.isLinkFinished())
@@ -435,7 +437,10 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
         #endif
     }
 
-    DistanceFieldVectorGL<dimensions> shader{data.flags, data.materialCount, data.drawCount};
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
@@ -458,7 +463,10 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 48);
+    typename DistanceFieldVectorGL<dimensions>::CompileState state = DistanceFieldVectorGL<dimensions>::compile(typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL2D::Flag::UniformBuffers)
+        .setMaterialCount(16)
+        .setDrawCount(48));
     CORRADE_COMPARE(state.flags(), DistanceFieldVectorGL2D::Flag::UniformBuffers);
     CORRADE_COMPARE(state.materialCount(), 16);
     CORRADE_COMPARE(state.drawCount(), 48);
@@ -486,7 +494,8 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    DistanceFieldVectorGL<dimensions> a{DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation};
+    DistanceFieldVectorGL<dimensions> a{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -513,7 +522,10 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMoveUn
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    DistanceFieldVectorGL<dimensions> a{DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers, 2, 5};
+    DistanceFieldVectorGL<dimensions> a{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -552,7 +564,10 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
 
     std::ostringstream out;
     Error redirectError{&out};
-    DistanceFieldVectorGL<dimensions>{data.flags, data.materialCount, data.drawCount};
+    DistanceFieldVectorGL<dimensions>{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::DistanceFieldVectorGL: {}\n", data.message));
 }
@@ -572,7 +587,8 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setUniformUnifo
     std::ostringstream out;
     Error redirectError{&out};
 
-    DistanceFieldVectorGL<dimensions> shader{DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers};
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers)};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setColor({})
@@ -650,7 +666,8 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::bindTextureTran
     Error redirectError{&out};
 
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
-    DistanceFieldVectorGL<dimensions> shader{DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers};
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers)};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
     CORRADE_COMPARE(out.str(),
@@ -672,8 +689,11 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setWrongDrawOff
 
     std::ostringstream out;
     Error redirectError{&out};
-    DistanceFieldVectorGL<dimensions>{DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers, 2, 5}
-        .setDrawOffset(5);
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
+    shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::DistanceFieldVectorGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
 }
@@ -751,7 +771,8 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVectorGL2D shader{flag};
+    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
+        .setFlags(flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == DistanceFieldVectorGL2D::Flag{}) {
@@ -839,7 +860,8 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVectorGL3D shader{flag};
+    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
+        .setFlags(flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == DistanceFieldVectorGL3D::Flag{}) {
@@ -930,7 +952,8 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVectorGL2D shader{data.flags|flag};
+    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
+        .setFlags(data.flags|flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == DistanceFieldVectorGL2D::Flag{}) {
@@ -1038,7 +1061,8 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVectorGL3D shader{data.flags|flag};
+    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
+        .setFlags(data.flags|flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == DistanceFieldVectorGL3D::Flag{}) {
@@ -1235,7 +1259,10 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
+    DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
+        .setFlags(DistanceFieldVectorGL2D::Flag::UniformBuffers|DistanceFieldVectorGL2D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */
@@ -1441,7 +1468,10 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Flag::UniformBuffers|DistanceFieldVectorGL3D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
+    DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
+        .setFlags(DistanceFieldVectorGL3D::Flag::UniformBuffers|DistanceFieldVectorGL3D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */

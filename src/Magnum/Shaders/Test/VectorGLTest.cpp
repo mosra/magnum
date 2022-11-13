@@ -370,7 +370,8 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    VectorGL<dimensions> shader{data.flags};
+    VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -386,7 +387,8 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
 template<UnsignedInt dimensions> void VectorGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(VectorGL2D::Flag::TextureTransformation);
+    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL2D::Flag::TextureTransformation));
     CORRADE_COMPARE(state.flags(), VectorGL2D::Flag::TextureTransformation);
 
     while(!state.isLinkFinished())
@@ -432,7 +434,10 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
         #endif
     }
 
-    VectorGL<dimensions> shader{data.flags, data.materialCount, data.drawCount};
+    VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
@@ -454,7 +459,10 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersAsync
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation, 15, 42);
+    typename VectorGL<dimensions>::CompileState state = VectorGL<dimensions>::compile(typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation)
+        .setMaterialCount(15)
+        .setDrawCount(42));
     CORRADE_COMPARE(state.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
     CORRADE_COMPARE(state.materialCount(), 15);
     CORRADE_COMPARE(state.drawCount(), 42);
@@ -482,7 +490,8 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersAsync
 template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    VectorGL<dimensions> a{VectorGL<dimensions>::Flag::TextureTransformation};
+    VectorGL<dimensions> a{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::TextureTransformation)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -509,7 +518,10 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers(
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    VectorGL<dimensions> a{VectorGL<dimensions>::Flag::UniformBuffers, 2, 5};
+    VectorGL<dimensions> a{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::UniformBuffers)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -547,7 +559,10 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersInval
 
     std::ostringstream out;
     Error redirectError{&out};
-    VectorGL<dimensions>{data.flags, data.materialCount, data.drawCount};
+    VectorGL<dimensions>{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::VectorGL: {}\n", data.message));
 }
@@ -567,7 +582,8 @@ template<UnsignedInt dimensions> void VectorGLTest::setUniformUniformBuffersEnab
     std::ostringstream out;
     Error redirectError{&out};
 
-    VectorGL<dimensions> shader{VectorGL<dimensions>::Flag::UniformBuffers};
+    VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::UniformBuffers)};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setBackgroundColor({})
@@ -641,7 +657,8 @@ template<UnsignedInt dimensions> void VectorGLTest::bindTextureTransformBufferNo
     Error redirectError{&out};
 
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
-    VectorGL<dimensions> shader{VectorGL<dimensions>::Flag::UniformBuffers};
+    VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::UniformBuffers)};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
     CORRADE_COMPARE(out.str(),
@@ -663,7 +680,10 @@ template<UnsignedInt dimensions> void VectorGLTest::setWrongDrawOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    VectorGL<dimensions>{VectorGL<dimensions>::Flag::UniformBuffers, 2, 5}
+    VectorGL<dimensions>{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(VectorGL<dimensions>::Flag::UniformBuffers)
+        .setMaterialCount(2)
+        .setDrawCount(5)}
         .setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::VectorGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
@@ -742,7 +762,8 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL2D shader{flag};
+    VectorGL2D shader{VectorGL2D::Configuration{}
+        .setFlags(flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == VectorGL2D::Flag{}) {
@@ -821,7 +842,8 @@ template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL3D shader{flag};
+    VectorGL3D shader{VectorGL3D::Configuration{}
+        .setFlags(flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == VectorGL3D::Flag{}) {
@@ -903,7 +925,8 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL2D shader{data.flags|flag};
+    VectorGL2D shader{VectorGL2D::Configuration{}
+        .setFlags(data.flags|flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == VectorGL2D::Flag{}) {
@@ -1008,7 +1031,8 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    VectorGL3D shader{data.flags|flag};
+    VectorGL3D shader{VectorGL3D::Configuration{}
+        .setFlags(data.flags|flag)};
     shader.bindVectorTexture(texture);
 
     if(flag == VectorGL3D::Flag{}) {
@@ -1200,7 +1224,10 @@ void VectorGLTest::renderMulti2D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    VectorGL2D shader{VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
+    VectorGL2D shader{VectorGL2D::Configuration{}
+        .setFlags(VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */
@@ -1406,7 +1433,10 @@ void VectorGLTest::renderMulti3D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    VectorGL3D shader{VectorGL3D::Flag::UniformBuffers|VectorGL3D::Flag::TextureTransformation|data.flags, data.materialCount, data.drawCount};
+    VectorGL3D shader{VectorGL3D::Configuration{}
+        .setFlags(VectorGL3D::Flag::UniformBuffers|VectorGL3D::Flag::TextureTransformation|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
     /* Just one draw, rebinding UBOs each time */

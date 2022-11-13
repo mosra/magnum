@@ -278,7 +278,8 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
-    Shaders::MeshVisualizerGL2D wireframe2D{Shaders::MeshVisualizerGL2D::Flag::Wireframe};
+    Shaders::MeshVisualizerGL2D wireframe2D{Shaders::MeshVisualizerGL2D::Configuration{}
+        .setFlags(Shaders::MeshVisualizerGL2D::Flag::Wireframe)};
     wireframe2D.setColor(0x00000000_srgbaf)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -309,7 +310,8 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
-    Shaders::MeshVisualizerGL3D wireframe3D{Shaders::MeshVisualizerGL3D::Flag::Wireframe};
+    Shaders::MeshVisualizerGL3D wireframe3D{Shaders::MeshVisualizerGL3D::Configuration{}
+        .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe)};
     wireframe3D.setColor(0x00000000_srgbaf)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)

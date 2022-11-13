@@ -367,7 +367,9 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
         #endif
     }
 
-    VertexColorGL<dimensions> shader{data.flags, data.drawCount};
+    VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
@@ -389,7 +391,9 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    typename VertexColorGL<dimensions>::CompileState state = VertexColorGL<dimensions>::compile(VertexColorGL2D::Flag::UniformBuffers, 63);
+    typename VertexColorGL<dimensions>::CompileState state = VertexColorGL<dimensions>::compile(typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(VertexColorGL2D::Flag::UniformBuffers)
+        .setDrawCount(63));
     CORRADE_COMPARE(state.flags(), VertexColorGL2D::Flag::UniformBuffers);
     CORRADE_COMPARE(state.drawCount(), 63);
 
@@ -440,7 +444,9 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructMoveUniformBuf
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    VertexColorGL<dimensions> a{VertexColorGL<dimensions>::Flag::UniformBuffers, 5};
+    VertexColorGL<dimensions> a{typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)
+        .setDrawCount(5)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -474,7 +480,9 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
 
     std::ostringstream out;
     Error redirectError{&out};
-    VertexColorGL<dimensions>{VertexColorGL<dimensions>::Flag::UniformBuffers, 0};
+    VertexColorGL<dimensions>{typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)
+        .setDrawCount(0)};
     CORRADE_COMPARE(out.str(),
         "Shaders::VertexColorGL: draw count can't be zero\n");
 }
@@ -494,7 +502,8 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setUniformUniformBuffer
     std::ostringstream out;
     Error redirectError{&out};
 
-    VertexColorGL<dimensions> shader{VertexColorGL<dimensions>::Flag::UniformBuffers};
+    VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)};
     shader.setTransformationProjectionMatrix({});
     CORRADE_COMPARE(out.str(),
         "Shaders::VertexColorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n");
@@ -531,7 +540,9 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setWrongDrawOffset() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    VertexColorGL<dimensions>{VertexColorGL<dimensions>::Flag::UniformBuffers, 5}
+    VertexColorGL<dimensions>{typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)
+        .setDrawCount(5)}
         .setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::VertexColorGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
@@ -591,7 +602,8 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
     GL::Mesh circle = MeshTools::compile(circleData);
     circle.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
 
-    VertexColorGL2D shader{flag};
+    VertexColorGL2D shader{VertexColorGL2D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == VertexColorGL2D::Flag{}) {
         shader.draw(circle);
@@ -657,7 +669,8 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
     GL::Mesh sphere = MeshTools::compile(sphereData);
     sphere.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL3D::Color4::Location, T>{});
 
-    VertexColorGL3D shader{flag};
+    VertexColorGL3D shader{VertexColorGL3D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == VertexColorGL3D::Flag{}) {
         shader.draw(sphere);
@@ -717,7 +730,8 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D()
     GL::Mesh circle = MeshTools::compile(circleData);
     circle.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL2D::Color3::Location, T>{});
 
-    VertexColorGL2D shader{flag};
+    VertexColorGL2D shader{VertexColorGL2D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == VertexColorGL2D::Flag{}) {
         shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -784,7 +798,8 @@ template<class T, VertexColorGL3D::Flag flag> void VertexColorGLTest::render3D()
     GL::Mesh sphere = MeshTools::compile(sphereData);
     sphere.addVertexBuffer(colors, 0, GL::Attribute<VertexColorGL3D::Color4::Location, T>{});
 
-    VertexColorGL3D shader{flag};
+    VertexColorGL3D shader{VertexColorGL3D::Configuration{}
+        .setFlags(flag)};
 
     if(flag == VertexColorGL3D::Flag{}) {
         shader.setTransformationProjectionMatrix(
@@ -908,7 +923,9 @@ void VertexColorGLTest::renderMulti2D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    VertexColorGL2D shader{VertexColorGL2D::Flag::UniformBuffers|data.flags, data.drawCount};
+    VertexColorGL2D shader{VertexColorGL2D::Configuration{}
+        .setFlags(VertexColorGL2D::Flag::UniformBuffers|data.flags)
+        .setDrawCount(data.drawCount)};
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
@@ -1039,7 +1056,9 @@ void VertexColorGLTest::renderMulti3D() {
         );
     GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
 
-    VertexColorGL3D shader{VertexColorGL3D::Flag::UniformBuffers|data.flags, data.drawCount};
+    VertexColorGL3D shader{VertexColorGL3D::Configuration{}
+        .setFlags(VertexColorGL3D::Flag::UniformBuffers|data.flags)
+        .setDrawCount(data.drawCount)};
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {

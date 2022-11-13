@@ -145,7 +145,8 @@ drawUniform.setData({
         .setNormalMatrix(transformationMatrix.normalMatrix())
 });
 
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::UniformBuffers};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::UniformBuffers)};
 shader
     .bindProjectionBuffer(projectionUniform)
     .bindLightBuffer(lightUniform)
@@ -191,8 +192,11 @@ drawUniform.setData({
         .setMaterialId(0),
 });
 
-/* One light, two materials, three draws */
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::UniformBuffers, 1, 2, 3};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::UniformBuffers)
+    .setLightCount(1)
+    .setMaterialCount(2)
+    .setDrawCount(3)};
 shader
     .bindProjectionBuffer(projectionUniform)
     .bindTransformationBuffer(transformationUniform)
@@ -214,8 +218,11 @@ GL::Mesh mesh;
 GL::MeshView redConeView{DOXYGEN_ELLIPSIS(mesh)}, yellowCubeView{DOXYGEN_ELLIPSIS(mesh)}, redSphereView{DOXYGEN_ELLIPSIS(mesh)};
 DOXYGEN_ELLIPSIS()
 
-/* One light, two materials, three draws; with multidraw enabled */
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::MultiDraw, 1, 2, 3};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::MultiDraw)
+    .setLightCount(1)
+    .setMaterialCount(2)
+    .setDrawCount(3)};
 shader
     DOXYGEN_ELLIPSIS()
     .draw({redConeView, yellowCubeView, redSphereView});
@@ -253,8 +260,9 @@ sphereInstanced.addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
     Shaders::PhongGL::Color3{});
 sphereInstanced.setInstanceCount(3);
 
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::InstancedTransformation|
-                        Shaders::PhongGL::Flag::VertexColor};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::InstancedTransformation|
+              Shaders::PhongGL::Flag::VertexColor)};
 shader
     .setProjectionMatrix(projectionMatrix)
     DOXYGEN_ELLIPSIS()
@@ -268,7 +276,8 @@ GL::Mesh mesh;
 GL::Texture2D diffuseTexture;
 DOXYGEN_ELLIPSIS()
 
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::DiffuseTexture};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::DiffuseTexture)};
 shader.bindDiffuseTexture(diffuseTexture)
     DOXYGEN_ELLIPSIS()
     .draw(mesh);
@@ -302,11 +311,13 @@ textureTransformationUniform.setData({
         .setLayer(2),
 });
 
-Shaders::PhongGL shader{
-    Shaders::PhongGL::Flag::MultiDraw|
-    Shaders::PhongGL::Flag::DiffuseTexture|
-    Shaders::PhongGL::Flag::TextureArrays,
-    1, 2, 3};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::MultiDraw|
+              Shaders::PhongGL::Flag::DiffuseTexture|
+              Shaders::PhongGL::Flag::TextureArrays)
+    .setLightCount(1)
+    .setMaterialCount(2)
+    .setDrawCount(3)};
 shader
     DOXYGEN_ELLIPSIS()
     .bindDiffuseTexture(diffuseTexture)
@@ -331,7 +342,8 @@ mesh.addVertexBuffer(vertices, 0,
 GL::Mesh mesh;
 Matrix4 transformationMatrix, projectionMatrix;
 /* [shaders-meshvisualizer] */
-Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Flag::Wireframe};
+Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+    .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe)};
 shader
     .setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
@@ -347,9 +359,11 @@ shader
 Shaders::FlatGL3D::CompileState flatState =
     Shaders::FlatGL3D::compile();
 Shaders::FlatGL3D::CompileState flatTexturedState =
-    Shaders::FlatGL3D::compile(Shaders::FlatGL3D::Flag::Textured);
+    Shaders::FlatGL3D::compile(
+        Shaders::FlatGL3D::Configuration{}
+            .setFlags(Shaders::FlatGL3D::Flag::Textured));
 Shaders::MeshVisualizerGL3D::CompileState meshVisualizerState =
-    Shaders::MeshVisualizerGL3D::compile(DOXYGEN_ELLIPSIS(Shaders::MeshVisualizerGL3D::Flag::Wireframe));
+    Shaders::MeshVisualizerGL3D::compile(DOXYGEN_ELLIPSIS(Shaders::MeshVisualizerGL3D::Configuration{}));
 
 while(!flatState.isLinkFinished() ||
       !flatTexturedState.isLinkFinished() ||
@@ -428,8 +442,8 @@ drawUniform.setData({
 });
 
 Shaders::DistanceFieldVectorGL2D shader{
-    Shaders::DistanceFieldVectorGL2D::Flag::UniformBuffers
-};
+    Shaders::DistanceFieldVectorGL2D::Configuration{}
+        .setFlags(Shaders::DistanceFieldVectorGL2D::Flag::UniformBuffers)};
 shader
     .bindTransformationProjectionBuffer(projectionTransformationUniform)
     .bindMaterialBuffer(materialUniform)
@@ -498,7 +512,8 @@ mesh.addVertexBuffer(vertices, 0,
 Matrix4 transformationMatrix, projectionMatrix;
 GL::Texture2D texture;
 
-Shaders::FlatGL3D shader{Shaders::FlatGL3D::Flag::Textured};
+Shaders::FlatGL3D shader{Shaders::FlatGL3D::Configuration{}
+    .setFlags(Shaders::FlatGL3D::Flag::Textured)};
 shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
     .bindTexture(texture)
     .draw(mesh);
@@ -519,7 +534,8 @@ objectId.setStorage(GL::RenderbufferFormat::R16UI, size); // large as needed
 framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color)
     .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, objectId);
 
-Shaders::FlatGL3D shader{Shaders::FlatGL3D::Flag::ObjectId};
+Shaders::FlatGL3D shader{Shaders::FlatGL3D::Configuration{}
+    .setFlags(Shaders::FlatGL3D::Flag::ObjectId)};
 
 // ...
 
@@ -581,7 +597,8 @@ drawUniform.setData({
         .setMaterialId(0)
 });
 
-Shaders::FlatGL3D shader{Shaders::FlatGL3D::Flag::UniformBuffers};
+Shaders::FlatGL3D shader{Shaders::FlatGL3D::Configuration{}
+    .setFlags(Shaders::FlatGL3D::Flag::UniformBuffers)};
 shader
     .bindTransformationProjectionBuffer(projectionTransformationUniform)
     .bindMaterialBuffer(materialUniform)
@@ -677,7 +694,8 @@ Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
 Matrix4 projectionMatrix =
     Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
-Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Flag::Wireframe};
+Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+    .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe)};
 shader.setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
     .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
@@ -726,10 +744,10 @@ mesh.addVertexBuffer(vertices, 0,
 /* [MeshVisualizerGL3D-usage-tbn2] */
 Matrix4 transformationMatrix, projectionMatrix;
 
-Shaders::MeshVisualizerGL3D shader{
-    Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
-    Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
-    Shaders::MeshVisualizerGL3D::Flag::NormalDirection};
+Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+    .setFlags(Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
+              Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
+              Shaders::MeshVisualizerGL3D::Flag::NormalDirection)};
 shader.setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
     .setTransformationMatrix(transformationMatrix)
     .setProjectionMatrix(projectionMatrix)
@@ -759,9 +777,9 @@ GL::Mesh mesh;
 /* [MeshVisualizerGL3D-usage-no-geom2] */
 Matrix4 transformationMatrix, projectionMatrix;
 
-Shaders::MeshVisualizerGL3D shader{
-    Shaders::MeshVisualizerGL3D::Flag::Wireframe|
-    Shaders::MeshVisualizerGL3D::Flag::NoGeometryShader};
+Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+    .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+              Shaders::MeshVisualizerGL3D::Flag::NoGeometryShader)};
 shader.setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
     .setTransformationMatrix(transformationMatrix)
@@ -787,8 +805,8 @@ colorMapTexture
     .setStorage(1, GL::TextureFormat::RGBA8, size)
     .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 
-Shaders::MeshVisualizerGL3D shader{
-    Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId};
+Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+    .setFlags(Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId)};
 shader.setColorMapTransformation(0.0f, 1.0f/Math::max(objectIds))
     .setTransformationMatrix(transformationMatrix)
     .setProjectionMatrix(projectionMatrix)
@@ -824,9 +842,9 @@ drawUniform.setData({
         .setMaterialId(0)
 });
 
-Shaders::MeshVisualizerGL3D shader{
-    Shaders::MeshVisualizerGL3D::Flag::Wireframe|
-    Shaders::MeshVisualizerGL3D::Flag::UniformBuffers
+Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+    .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+              Shaders::MeshVisualizerGL3D::Flag::UniformBuffers)
 };
 shader
     .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
@@ -923,8 +941,9 @@ mesh.addVertexBuffer(vertices, 0,
 Matrix4 transformationMatrix, projectionMatrix;
 GL::Texture2D diffuseTexture, specularTexture;
 
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::DiffuseTexture|
-                      Shaders::PhongGL::Flag::SpecularTexture};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::DiffuseTexture|
+              Shaders::PhongGL::Flag::SpecularTexture)};
 shader.bindTextures(nullptr, &diffuseTexture, &specularTexture, nullptr)
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.normalMatrix())
@@ -938,7 +957,8 @@ shader.bindTextures(nullptr, &diffuseTexture, &specularTexture, nullptr)
 /* [PhongGL-usage-lights] */
 Matrix4 directionalLight, pointLight1, pointLight2; // camera-relative
 
-Shaders::PhongGL shader{{}, 3}; // 3 lights
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setLightCount(3)};
 shader
     .setLightPositions({Vector4{directionalLight.up(), 0.0f},
                         Vector4{pointLight1.translation(), 1.0f},
@@ -959,7 +979,8 @@ GL::Texture2D diffuseTexture;
 /* [PhongGL-usage-lights-ambient] */
 Trade::LightData ambientLight = DOXYGEN_ELLIPSIS(Trade::LightData{{}, {}, {}});
 
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::AmbientTexture|DOXYGEN_ELLIPSIS(Shaders::PhongGL::Flag::DiffuseTexture), DOXYGEN_ELLIPSIS(3)};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::AmbientTexture|DOXYGEN_ELLIPSIS(Shaders::PhongGL::Flag::DiffuseTexture))};
 shader
     .setAmbientColor(ambientColor + ambientLight.color()*ambientLight.intensity())
     .bindAmbientTexture(diffuseTexture)
@@ -971,8 +992,9 @@ shader
 GL::Texture2D diffuseAlphaTexture;
 Color3 diffuseRgb, specularRgb;
 /* [PhongGL-usage-alpha] */
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::AmbientTexture|
-                      Shaders::PhongGL::Flag::DiffuseTexture};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::AmbientTexture|
+              Shaders::PhongGL::Flag::DiffuseTexture)};
 shader.bindTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr, nullptr)
     .setAmbientColor(0x000000ff_rgbaf)
     .setDiffuseColor(Color4{diffuseRgb, 0.0f})
@@ -1010,7 +1032,8 @@ drawUniform.setData({
         .setMaterialId(0)
 });
 
-Shaders::PhongGL shader{Shaders::PhongGL::Flag::UniformBuffers};
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::UniformBuffers)};
 shader
     .bindProjectionBuffer(projectionUniform)
     .bindLightBuffer(lightUniform)
@@ -1075,7 +1098,8 @@ drawUniform.setData({
         .setMaterialId(0)
 });
 
-Shaders::VectorGL2D shader{Shaders::VectorGL2D::Flag::UniformBuffers};
+Shaders::VectorGL2D shader{Shaders::VectorGL2D::Configuration{}
+    .setFlags(Shaders::VectorGL2D::Flag::UniformBuffers)};
 shader
     .bindTransformationProjectionBuffer(projectionTransformationUniform)
     .bindMaterialBuffer(materialUniform)
@@ -1129,7 +1153,8 @@ projectionTransformationUniform.setData({
         .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
 });
 
-Shaders::VertexColorGL3D shader{Shaders::VertexColorGL3D::Flag::UniformBuffers};
+Shaders::VertexColorGL3D shader{Shaders::VertexColorGL3D::Configuration{}
+    .setFlags(Shaders::VertexColorGL3D::Flag::UniformBuffers)};
 shader
     .bindTransformationProjectionBuffer(projectionTransformationUniform)
     .draw(mesh);

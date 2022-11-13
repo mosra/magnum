@@ -594,9 +594,11 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::flat() {
     }
     #endif
 
-    FlatGL<dimensions> shader{data.flags
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
         #ifndef MAGNUM_TARGET_GLES2
-        , data.materialCount, data.drawCount
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)
         #endif
     };
 
@@ -705,9 +707,12 @@ void ShadersGLBenchmark::phong() {
     }
     #endif
 
-    PhongGL shader{data.flags, data.lightCount
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags)
+        .setLightCount(data.lightCount)
         #ifndef MAGNUM_TARGET_GLES2
-        , data.materialCount, data.drawCount
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)
         #endif
     };
 
@@ -873,9 +878,10 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vertexColor() {
     }
     #endif
 
-    VertexColorGL<dimensions> shader{data.flags
+    VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
         #ifndef MAGNUM_TARGET_GLES2
-        , data.drawCount
+        .setDrawCount(data.drawCount)
         #endif
     };
 
@@ -932,9 +938,11 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::vector() {
     }
     #endif
 
-    VectorGL<dimensions> shader{data.flags
+    VectorGL<dimensions> shader{typename VectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
         #ifndef MAGNUM_TARGET_GLES2
-        , data.materialCount, data.drawCount
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)
         #endif
     };
     shader.bindVectorTexture(_textureWhite);
@@ -1004,9 +1012,11 @@ template<UnsignedInt dimensions> void ShadersGLBenchmark::distanceFieldVector() 
     }
     #endif
 
-    DistanceFieldVectorGL<dimensions> shader{data.flags
+    DistanceFieldVectorGL<dimensions> shader{typename DistanceFieldVectorGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
         #ifndef MAGNUM_TARGET_GLES2
-        , data.materialCount, data.drawCount
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)
         #endif
     };
     shader.bindVectorTexture(_textureWhite);
@@ -1116,7 +1126,8 @@ void ShadersGLBenchmark::meshVisualizer2D() {
     }
     #endif
 
-    MeshVisualizerGL2D shader{data.flags};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags)};
     shader.setViewportSize(Vector2{RenderSize});
     #ifndef MAGNUM_TARGET_GLES2
     if(data.flags & (MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId
@@ -1250,7 +1261,8 @@ void ShadersGLBenchmark::meshVisualizer3D() {
     }
     #endif
 
-    MeshVisualizerGL3D shader{data.flags};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags)};
     shader.setViewportSize(Vector2{RenderSize});
 
     #ifndef MAGNUM_TARGET_GLES2

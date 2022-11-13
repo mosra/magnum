@@ -180,7 +180,9 @@ std::string ShaderVisualizer::meshVisualizer2D() {
         Matrix3::projection(Vector2{3.0f})*
         Matrix3::rotation(13.7_degf);
 
-    Shaders::MeshVisualizerGL2D{Shaders::MeshVisualizerGL2D::Flag::Wireframe}
+    Shaders::MeshVisualizerGL2D shader{Shaders::MeshVisualizerGL2D::Configuration{}
+        .setFlags(Shaders::MeshVisualizerGL2D::Flag::Wireframe)};
+    shader
         .setColor(BaseColor)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -206,7 +208,9 @@ std::string ShaderVisualizer::meshVisualizer2DPrimitiveId() {
         .setStorage(1, GL::TextureFormat::SRGB8Alpha8, size)
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 
-    Shaders::MeshVisualizerGL2D{Shaders::MeshVisualizerGL2D::Flag::PrimitiveId}
+    Shaders::MeshVisualizerGL2D shader{Shaders::MeshVisualizerGL2D::Configuration{}
+        .setFlags(Shaders::MeshVisualizerGL2D::Flag::PrimitiveId)};
+    shader
         .setTransformationProjectionMatrix(projection)
         .setColorMapTransformation(1.0f/255.0f, 1.0f/8.0f)
         .bindColorMapTexture(colorMapTexture)
@@ -220,10 +224,12 @@ std::string ShaderVisualizer::meshVisualizer3D() {
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
 
-    Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Flag::Wireframe|
-                              Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
-                              Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
-                              Shaders::MeshVisualizerGL3D::Flag::NormalDirection}
+    Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+        .setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe|
+                  Shaders::MeshVisualizerGL3D::Flag::TangentDirection|
+                  Shaders::MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
+                  Shaders::MeshVisualizerGL3D::Flag::NormalDirection)};
+    shader
         .setColor(BaseColor)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -253,7 +259,9 @@ std::string ShaderVisualizer::meshVisualizer3DPrimitiveId() {
         .setStorage(1, GL::TextureFormat::SRGB8Alpha8, size)
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 
-    Shaders::MeshVisualizerGL3D{Shaders::MeshVisualizerGL3D::Flag::PrimitiveId}
+    Shaders::MeshVisualizerGL3D shader{Shaders::MeshVisualizerGL3D::Configuration{}
+        .setFlags(Shaders::MeshVisualizerGL3D::Flag::PrimitiveId)};
+    shader
         .setTransformationMatrix(transformation)
         .setProjectionMatrix(Projection)
         .setColorMapTransformation(1.0f/255.0f, 1.0f/32.0f)

@@ -1403,7 +1403,8 @@ void MeshVisualizerGLTest::construct2D() {
     }
     #endif
 
-    MeshVisualizerGL2D shader{data.flags};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -1418,7 +1419,8 @@ void MeshVisualizerGLTest::construct2D() {
 
 
 void MeshVisualizerGLTest::construct2DAsync() {
-    MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader));
     CORRADE_COMPARE(state.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
 
     while(!state.isLinkFinished())
@@ -1503,7 +1505,10 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
         #endif
     }
 
-    MeshVisualizerGL2D shader{data.flags, data.materialCount, data.drawCount};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -1523,7 +1528,10 @@ void MeshVisualizerGLTest::constructUniformBuffers2DAsync() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile( MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 8, 55);
+    MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Configuration{}
+        .setFlags( MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setMaterialCount(8)
+        .setDrawCount(55));
     CORRADE_COMPARE(state.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(state.materialCount(), 8);
     CORRADE_COMPARE(state.drawCount(), 55);
@@ -1595,7 +1603,8 @@ void MeshVisualizerGLTest::construct3D() {
     }
     #endif
 
-    MeshVisualizerGL3D shader{data.flags};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -1609,7 +1618,8 @@ void MeshVisualizerGLTest::construct3D() {
 }
 
 void MeshVisualizerGLTest::construct3DAsync() {
-    MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader));
     CORRADE_COMPARE(state.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
 
     while(!state.isLinkFinished())
@@ -1694,7 +1704,10 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
         #endif
     }
 
-    MeshVisualizerGL3D shader{data.flags, data.materialCount, data.drawCount};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
@@ -1713,7 +1726,10 @@ void MeshVisualizerGLTest::constructUniformBuffers3DAsync() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 6, 28);
+    MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setMaterialCount(6)
+        .setDrawCount(28));
     CORRADE_COMPARE(state.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(state.materialCount(), 6);
     CORRADE_COMPARE(state.drawCount(), 28);
@@ -1746,7 +1762,8 @@ void MeshVisualizerGLTest::construct2DInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizerGL2D{data.flags};
+    MeshVisualizerGL2D{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
@@ -1764,7 +1781,10 @@ void MeshVisualizerGLTest::constructUniformBuffers2DInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizerGL2D{data.flags, data.materialCount, data.drawCount};
+    MeshVisualizerGL2D{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL2D: {}\n", data.message));
 }
 #endif
@@ -1777,7 +1797,8 @@ void MeshVisualizerGLTest::construct3DInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizerGL3D{data.flags};
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags)};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
@@ -1795,13 +1816,17 @@ void MeshVisualizerGLTest::constructUniformBuffers3DInvalid() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizerGL3D{data.flags, data.materialCount, data.drawCount};
+    MeshVisualizerGL3D{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL3D: {}\n", data.message));
 }
 #endif
 
 void MeshVisualizerGLTest::constructMove2D() {
-    MeshVisualizerGL2D a{MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
+    MeshVisualizerGL2D a{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1826,7 +1851,10 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    MeshVisualizerGL2D a{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 2, 5};
+    MeshVisualizerGL2D a{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1850,7 +1878,8 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
 #endif
 
 void MeshVisualizerGLTest::constructMove3D() {
-    MeshVisualizerGL3D a{MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
+    MeshVisualizerGL3D a{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1875,7 +1904,10 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    MeshVisualizerGL3D a{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 2, 5};
+    MeshVisualizerGL3D a{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1910,7 +1942,8 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
@@ -1944,7 +1977,8 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
     shader.setProjectionMatrix({})
         .setTransformationMatrix({})
         .setTextureMatrix({})
@@ -1989,7 +2023,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
     Error redirectError{&out};
 
     GL::Buffer buffer;
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
           .bindDrawBuffer(buffer)
@@ -2018,7 +2053,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
     Error redirectError{&out};
 
     GL::Buffer buffer;
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
     shader.bindProjectionBuffer(buffer)
           .bindProjectionBuffer(buffer, 0, 16)
           .bindTransformationBuffer(buffer)
@@ -2058,7 +2094,8 @@ void MeshVisualizerGLTest::bindObjectIdTextureInvalid2D() {
     #endif
 
     GL::Texture2D texture;
-    MeshVisualizerGL2D shader{data.flags2D};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags2D)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2078,7 +2115,8 @@ void MeshVisualizerGLTest::bindObjectIdTextureInvalid3D() {
     #endif
 
     GL::Texture2D texture;
-    MeshVisualizerGL3D shader{data.flags3D};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags3D)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2101,7 +2139,8 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid2D() {
     Error redirectError{&out};
 
     GL::Texture2DArray textureArray;
-    MeshVisualizerGL2D shader{data.flags2D};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags2D)};
     shader.bindObjectIdTexture(textureArray);
 
     CORRADE_COMPARE(out.str(), data.message);
@@ -2122,7 +2161,8 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D() {
     Error redirectError{&out};
 
     GL::Texture2DArray textureArray;
-    MeshVisualizerGL3D shader{data.flags3D};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags3D)};
     shader.bindObjectIdTexture(textureArray);
 
     CORRADE_COMPARE(out.str(), data.message);
@@ -2198,7 +2238,8 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
 void MeshVisualizerGLTest::setTextureMatrixNotEnabled2D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::ObjectIdTexture};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2210,7 +2251,8 @@ void MeshVisualizerGLTest::setTextureMatrixNotEnabled2D() {
 void MeshVisualizerGLTest::setTextureMatrixNotEnabled3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::ObjectIdTexture};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::ObjectIdTexture)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2222,7 +2264,8 @@ void MeshVisualizerGLTest::setTextureMatrixNotEnabled3D() {
 void MeshVisualizerGLTest::setTextureLayerNotArray2D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::ObjectIdTexture};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2234,7 +2277,8 @@ void MeshVisualizerGLTest::setTextureLayerNotArray2D() {
 void MeshVisualizerGLTest::setTextureLayerNotArray3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::ObjectIdTexture};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::ObjectIdTexture)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2252,7 +2296,8 @@ void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled2D() {
     #endif
 
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2272,7 +2317,8 @@ void MeshVisualizerGLTest::bindTextureTransformBufferNotEnabled3D() {
     #endif
 
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture)};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2355,7 +2401,8 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe)};
     shader.setNormalMatrix({})
         .setLineWidth({})
         .setLineLength({});
@@ -2378,8 +2425,11 @@ void MeshVisualizerGLTest::setWrongDrawOffset2D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizerGL2D{MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 2, 5}
-        .setDrawOffset(5);
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
+    shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
 }
@@ -2394,7 +2444,11 @@ void MeshVisualizerGLTest::setWrongDrawOffset3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 2, 5}
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setMaterialCount(2)
+        .setDrawCount(5)};
+    shader
         .setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
@@ -2463,7 +2517,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::Wireframe|flag};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|flag)};
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
@@ -2556,7 +2611,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh sphere = MeshTools::compile(Primitives::icosphereSolid(1));
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::Wireframe|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|flag)};
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(sphere);
@@ -2651,7 +2707,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::ObjectId|flag};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::ObjectId|flag)};
     shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
@@ -2704,7 +2761,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh icosphere = MeshTools::compile(Primitives::icosphereSolid(0));
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::InstancedObjectId|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::InstancedObjectId|flag)};
     shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
@@ -2785,7 +2843,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
                 Containers::arrayView(ids)}
         }));
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::InstancedObjectId|flag};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::InstancedObjectId|flag)};
     shader.bindColorMapTexture(colorMapTexture);
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
@@ -2861,7 +2920,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
                 Containers::arrayView(ids)}
         }));
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::InstancedObjectId|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::InstancedObjectId|flag)};
     shader.bindColorMapTexture(colorMapTexture);
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
@@ -2921,7 +2981,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::VertexId|flag};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::VertexId|flag)};
     shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
@@ -2972,7 +3033,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh icosphere = MeshTools::compile(Primitives::icosphereSolid(0));
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::VertexId|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::VertexId|flag)};
     shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
@@ -3056,7 +3118,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh circle = MeshTools::compile(circleData);
 
-    MeshVisualizerGL2D shader{flags|flag};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(flags|flag)};
     shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
@@ -3137,7 +3200,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     GL::Mesh icosphere = MeshTools::compile(icosphereData);
 
-    MeshVisualizerGL3D shader{flags|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(flags|flag)};
     shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
@@ -3196,9 +3260,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(4, 8,
         Primitives::UVSphereFlag::Tangents));
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::TangentDirection|
-            MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|
-            MeshVisualizerGL3D::Flag::NormalDirection|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection|flag)};
     /** @todo make this unnecessary */
     shader.setViewportSize({80, 80});
 
@@ -3296,7 +3359,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         }
     } else circle = MeshTools::compile(circleData);
 
-    MeshVisualizerGL2D shader{data.flags|MeshVisualizerGL2D::Flag::Wireframe|flag};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags|MeshVisualizerGL2D::Flag::Wireframe|flag)};
     shader.setViewportSize({80, 80});
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
@@ -3425,7 +3489,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
         }
     } else sphere = MeshTools::compile(sphereData);
 
-    MeshVisualizerGL3D shader{data.flags|MeshVisualizerGL3D::Flag::Wireframe|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags|MeshVisualizerGL3D::Flag::Wireframe|flag)};
     shader.setViewportSize({80, 80});
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
@@ -3605,7 +3670,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= MeshVisualizerGL2D::Flag::TextureTransformation;
     }
-    MeshVisualizerGL2D shader{flags};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(flags)};
     shader
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
         .setViewportSize({80, 80})
@@ -3792,7 +3858,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= MeshVisualizerGL3D::Flag::TextureTransformation;
     }
-    MeshVisualizerGL3D shader{flags};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(flags)};
     shader
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
         .setViewportSize({80, 80})
@@ -3937,8 +4004,9 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
 
-    MeshVisualizerGL3D{MeshVisualizerGL3D::Flag::Wireframe}
-        .setWireframeWidth(8.0f)
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe)};
+    shader.setWireframeWidth(8.0f)
         .setWireframeColor(0xff0000_rgbf)
         .setViewportSize({80, 80})
         .setTransformationMatrix(
@@ -4067,7 +4135,9 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
         Matrix4::scaling(Vector3::yScale(1.5f));
 
     if(data.secondPassFlags) {
-        MeshVisualizerGL3D{data.secondPassFlags}
+        MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+            .setFlags(data.secondPassFlags)};
+        shader
             /** @todo make this unnecessary */
             .setViewportSize({80, 80})
             .setTransformationMatrix(transformation)
@@ -4077,7 +4147,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
             .draw(mesh);
     }
 
-    MeshVisualizerGL3D shader{data.flags|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags|flag)};
     /** @todo make this unnecessary */
     shader.setViewportSize({80, 80});
     if(data.flags & (MeshVisualizerGL3D::Flag::PrimitiveId|MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::VertexId))
@@ -4258,8 +4329,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         )
         .setInstanceCount(3);
 
-    MeshVisualizerGL2D shader{
-        MeshVisualizerGL2D::Flag::InstancedTransformation|data.flags|flag};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::InstancedTransformation|data.flags|flag)};
     shader.setViewportSize(Vector2{RenderSize});
     #ifndef MAGNUM_TARGET_GLES2
     if(data.flags & (MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::ObjectId))
@@ -4528,8 +4599,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         )
         .setInstanceCount(3);
 
-    MeshVisualizerGL3D shader{
-        MeshVisualizerGL3D::Flag::InstancedTransformation|data.flags|flag};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::InstancedTransformation|data.flags|flag)};
     shader.setViewportSize(Vector2{RenderSize});
     #ifndef MAGNUM_TARGET_GLES2
     if(data.flags & (MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::ObjectId))
@@ -4749,7 +4820,10 @@ void MeshVisualizerGLTest::renderMulti2D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     shader.setViewportSize(Vector2{RenderSize});
     if(data.flags & (MeshVisualizerGL2D::Flag::VertexId|MeshVisualizerGL2D::Flag::ObjectId))
         shader.bindColorMapTexture(_colorMapTexture);
@@ -5069,7 +5143,10 @@ void MeshVisualizerGLTest::renderMulti3D() {
         CORRADE_SKIP("UBOs with dynamically indexed arrays are a crashy dumpster fire on SwiftShader, can't test.");
     #endif
 
-    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Flag::UniformBuffers|data.flags, data.materialCount, data.drawCount};
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|data.flags)
+        .setMaterialCount(data.materialCount)
+        .setDrawCount(data.drawCount)};
     shader.setViewportSize(Vector2{RenderSize});
     if(data.flags & (MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::ObjectId))
         shader.bindColorMapTexture(_colorMapTexture);
