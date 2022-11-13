@@ -41,11 +41,11 @@ namespace Magnum { namespace Trade {
 @brief Growable array allocator to be used in importer plugins
 @m_since{2020,06}
 
-Compared to @ref Corrade::Containers::ArrayMallocAllocator ensures that the
-@ref Array deleter function pointer is defined in the @ref Trade library and
-not in the plugin binary itself, avoiding dangling function pointer call when
-the data array is destructed after the plugin has been unloaded. Other than
-that the behavior is identical.
+Compared to @relativeref{Corrade,Containers::ArrayMallocAllocator} ensures that
+the @relativeref{Corrade,Containers::Array} deleter function pointer is defined
+in the @ref Trade library and not in the plugin binary itself, avoiding
+dangling function pointer call when the data array is destructed after the
+plugin has been unloaded. Other than that the behavior is identical.
 */
 template<class T> struct ArrayAllocator: Containers::ArrayMallocAllocator<T> {};
 

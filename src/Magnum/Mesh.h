@@ -48,10 +48,10 @@ In case of OpenGL, corresponds to @ref GL::MeshPrimitive and is convertible to
 it using @ref GL::meshPrimitive(). See documentation of each value for more
 information about the mapping.
 
-In case of Vulkan, corresponds to @type_vk_keyword{PrimitiveTopology} and is
-convertible to it using @ref Vk::vkPrimitiveTopology(). See documentation of
-each value for more information about the mapping. Note that not every mode is available there, use @ref Vk::hasVkPrimitiveTopology() to check for its
-presence.
+In case of Vulkan, corresponds to @ref Vk::MeshPrimitive and is convertible to
+it using @ref Vk::meshPrimitive(). See documentation of each value for more
+information about the mapping. Note that not every mode is available there, use
+@ref Vk::hasMeshPrimitive() to check for its presence.
 
 For D3D, corresponds to @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology);
 for Metal, corresponds to @m_class{m-doc-external} [MTLPrimitiveType](https://developer.apple.com/documentation/metal/mtlprimitivetype?language=objc).

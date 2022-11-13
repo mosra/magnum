@@ -178,7 +178,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      *
      * @see @ref AnimationTrackType::Vector2,
      *      @ref AnimationTrackType::CubicHermite2D,
-     *      @ref ObjectData2D::translation()
+     *      @ref SceneField::Translation, @ref SceneData::is2D()
      */
     Translation2D,
 
@@ -190,7 +190,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      *
      * @see @ref AnimationTrackType::Vector3,
      *      @ref AnimationTrackType::CubicHermite3D,
-     *      @ref ObjectData3D::translation()
+     *      @ref SceneField::Translation, @ref SceneData::is3D()
      */
     Translation3D,
 
@@ -202,7 +202,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      *
      * @see @ref AnimationTrackType::Complex,
      *      @ref AnimationTrackType::CubicHermiteComplex,
-     *      @ref ObjectData2D::rotation()
+     *      @ref SceneField::Rotation. @ref SceneData::is2D()
      */
     Rotation2D,
 
@@ -214,7 +214,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      *
      * @see @ref AnimationTrackType::Quaternion,
      *      @ref AnimationTrackType::CubicHermiteQuaternion,
-     *      @ref ObjectData3D::rotation()
+     *      @ref SceneField::Rotation, @ref SceneData::is3D()
      */
     Rotation3D,
 
@@ -226,7 +226,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      *
      * @see @ref AnimationTrackType::Vector2,
      *      @ref AnimationTrackType::CubicHermite2D,
-     *      @ref ObjectData2D::scaling()
+     *      @ref SceneField::Scaling, @ref SceneData::is2D()
      */
     Scaling2D,
 
@@ -238,7 +238,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      *
      * @see @ref AnimationTrackType::Vector3,
      *      @ref AnimationTrackType::CubicHermite3D,
-     *      @ref ObjectData3D::scaling()
+     *      @ref SceneField::Scaling, @ref SceneData::is3D()
      */
     Scaling3D,
 

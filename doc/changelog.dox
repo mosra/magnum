@@ -648,11 +648,6 @@ See also:
     various types via a @cpp reinterpret_cast @ce. But in an effort to be
     UBSan-clean, this is no longer done. See also [mosra/magnum#531](https://github.com/mosra/magnum/issues/531).
 
-@subsubsection changelog-latest-changes-vk Vk library
-
--   @ref Vk::hasVkSamplerAddressMode() and @ref Vk::vkSamplerAddressMode() now
-    recognizes @ref SamplerWrapping::MirrorClampToEdge
-
 @subsection changelog-latest-buildsystem Build system
 
 -   The oldest supported Clang version is now 6.0 (available on Ubuntu 18.04),
@@ -1569,14 +1564,14 @@ Released 2020-06-27, tagged as
 
 -   Updated Vulkan headers for version 1.2
 -   Conversion of @ref VertexFormat values to the @type_vk{Format} enum using
-    @ref Vk::vkFormat(Magnum::VertexFormat)
+    @cpp Vk::vkFormat(Magnum::VertexFormat) @ce
 
 @subsection changelog-2020-06-changes Changes and improvements
 
 -   The @ref MeshPrimitive type can now store implementation-specific primitive
     types similarly to @ref PixelFormat and the new @ref VertexFormat.
     Implementation-specific types are then simply passed through in
-    @ref GL::meshPrimitive() and @ref Vk::vkPrimitiveTopology().
+    @ref GL::meshPrimitive() and @cpp Vk::vkPrimitiveTopology() @ce.
 -   The @ref PixelFormat and @ref CompressedPixelFormat enums can now be saved
     and retrieved from @ref Corrade::Utility::Configuration /
     @ref Corrade::Utility::Arguments
@@ -2081,11 +2076,11 @@ Released 2019-10-24, tagged as
 -   Added sRGB BC1-3, BC4, BC5, BC6h, BC7, ETC2, EAC, 2D/3D ASTC and PVRTC
     formats to @ref CompressedPixelFormat as well as their conversion to
     corresponding GL/Vulkan formats in @ref GL::compressedPixelFormat() and
-    @ref Vk::vkFormat(Magnum::CompressedPixelFormat)
+    @cpp Vk::vkFormat(Magnum::CompressedPixelFormat) @ce
 -   New @ref PixelFormat::R8Srgb, @ref PixelFormat::RG8Srgb,
     @ref PixelFormat::RGB8Srgb and @ref PixelFormat::RGBA8Srgb sRGB pixel
     formats as well as their conversion to corresponding GL/Vulkan formats in
-    @ref GL::pixelFormat() and @ref Vk::vkFormat(Magnum::PixelFormat)
+    @ref GL::pixelFormat() and @cpp Vk::vkFormat(Magnum::PixelFormat) @ce
 -   New @cpp compressedBlockSize() @ce and @cpp compressedBlockDataSize() @ce
     utilities for querying parameters of @ref CompressedPixelFormat entries,
     similar to what @cpp pixelSize() @ce is for @ref PixelFormat
@@ -3291,16 +3286,16 @@ Released 2018-10-23, tagged as
 
 -   @ref Trade::AnimationData class and animation import interface in
     @ref Trade::AbstractImporter::animation() and related functions
--   New @ref Trade::AbstractMaterialData::flags(),
-    @ref Trade::AbstractMaterialData::alphaMode() and
-    @ref Trade::AbstractMaterialData::alphaMask() material properties
+-   New @cpp Trade::AbstractMaterialData::flags() @ce,
+    @cpp Trade::AbstractMaterialData::alphaMode() @ce and
+    @cpp Trade::AbstractMaterialData::alphaMask() @ce material properties
 -   New @ref Trade::CameraData::type(), @ref Trade::CameraData::aspectRatio()
     and @ref Trade::CameraData::size() properties, ability to describe 2D
     cameras
--   @ref Trade::ObjectData2D and @ref Trade::ObjectData3D now support also
-    separate translation / rotation / scaling specification instead of a
-    combined transformation matrix. See @ref Trade::ObjectData2D::transformation()
-    and @ref Trade::ObjectData3D::transformation() for more information.
+-   @cpp Trade::ObjectData2D @ce and @cpp Trade::ObjectData3D @ce now support
+    also separate translation / rotation / scaling specification instead of a
+    combined transformation matrix. See @cpp Trade::ObjectData2D::transformation() @ce
+    and @cpp Trade::ObjectData3D::transformation() @ce for more information.
 -   Support for file loading callbacks in @ref Trade::AbstractImporter
 -   Debug output for @cpp Trade::AbstractImporter::Feature @ce,
     @cpp Trade::AbstractImageConverter::Feature @ce enums and
@@ -3318,12 +3313,12 @@ Released 2018-10-23, tagged as
 
 -   New @ref Vk library that'll be the home of a Vulkan graphics backend in the
     future
--   New functions @ref Vk::hasVkPrimitiveTopology(),
-    @ref Vk::vkPrimitiveTopology(), @ref Vk::hasVkIndexType(),
-    @ref Vk::vkIndexType(), @ref Vk::hasVkFormat(), @ref Vk::vkFormat(),
-    @ref Vk::vkFilter(), @ref Vk::vkSamplerMipmapMode(),
-    @ref Vk::hasVkSamplerAddressMode(), @ref Vk::vkSamplerAddressMode() for
-    converting generic @ref MeshPrimitive, @ref MeshIndexType,
+-   New functions @cpp Vk::hasVkPrimitiveTopology() @ce,
+    @cpp Vk::vkPrimitiveTopology() @ce, @cpp Vk::hasVkIndexType() @ce,
+    @cpp Vk::vkIndexType() @ce, @cpp Vk::hasVkFormat() @ce, @cpp Vk::vkFormat() @ce,
+    @cpp Vk::vkFilter() @ce, @cpp Vk::vkSamplerMipmapMode() @ce,
+    @cpp Vk::hasVkSamplerAddressMode() @ce, @cpp Vk::vkSamplerAddressMode() @ce
+    for converting generic @ref MeshPrimitive, @ref MeshIndexType,
     @ref PixelFormat, @ref CompressedPixelFormat, @ref SamplerFilter,
     @ref SamplerMipmap and @ref SamplerWrapping enums to Vulkan-specific values
 

@@ -1719,12 +1719,16 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * documentation of a particular plugin for more information about
          * returned type and contents. Returns @cpp nullptr @ce by default.
          * Expects that a file is opened.
-         * @see @ref AbstractMaterialData::importerState(),
-         *      @ref AnimationData::importerState(), @ref CameraData::importerState(),
-         *      @ref ImageData::importerState(), @ref LightData::importerState(),
+         * @see @ref MaterialData::importerState(),
+         *      @ref AnimationData::importerState(),
+         *      @ref CameraData::importerState(),
+         *      @ref ImageData::importerState(),
+         *      @ref LightData::importerState(),
          *      @ref MeshData::importerState(),
-         *      @ref ObjectData2D::importerState(), @ref ObjectData3D::importerState(),
-         *      @ref SceneData::importerState(), @ref TextureData::importerState()
+         *      @ref SceneData::importerState(),
+         *      @ref SkinData2D::importerState(),
+         *      @ref SkinData3D::importerState(),
+         *      @ref TextureData::importerState()
          */
         const void* importerState() const;
 
