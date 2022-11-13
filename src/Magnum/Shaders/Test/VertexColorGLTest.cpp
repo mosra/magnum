@@ -323,7 +323,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
 template<UnsignedInt dimensions> void VertexColorGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    typename VertexColorGL<dimensions>::CompileState state = VertexColorGL<dimensions>::compile({});
+    typename VertexColorGL<dimensions>::CompileState state = VertexColorGL<dimensions>::compile();
 
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
