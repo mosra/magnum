@@ -123,7 +123,7 @@ See also:
     [mosra/magnum#576](https://github.com/mosra/magnum/pull/576))
 -   Recognizing ANGLE GLES and WebGL base vertex, base instance and multi-draw
     extensions and using them in @ref GL::AbstractShaderProgram::draw(Mesh&)
-    and @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>):
+    and @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&):
     -   @gl_extension{EXT,draw_elements_base_vertex}
     -   @gl_extension{OES,draw_elements_base_vertex}
     -   @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)

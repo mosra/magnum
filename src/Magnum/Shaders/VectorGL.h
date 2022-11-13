@@ -179,7 +179,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
              * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
              * and adds the value from @ref setDrawOffset() with the
              * @glsl gl_DrawID @ce builtin, which makes draws submitted via
-             * @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+             * @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
              * pick up per-draw parameters directly, without having to rebind
              * the uniform buffers or specify @ref setDrawOffset() before each
              * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
@@ -454,7 +454,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          *
          * If @ref Flag::MultiDraw is set, @glsl gl_DrawID @ce is added to this
          * value, which makes each draw submitted via
-         * @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+         * @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
          * pick up its own per-draw parameters.
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.

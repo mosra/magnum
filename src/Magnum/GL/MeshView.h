@@ -63,7 +63,7 @@ class MAGNUM_GL_EXPORT MeshView {
         /**
          * @brief Draw multiple meshes at once
          * @m_deprecated_since{2020,06} Use
-         *      @ref AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+         *      @ref AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
@@ -71,7 +71,7 @@ class MAGNUM_GL_EXPORT MeshView {
         /**
          * @overload
          * @m_deprecated_since{2020,06} Use
-         *      @ref AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+         *      @ref AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram&& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
@@ -79,7 +79,7 @@ class MAGNUM_GL_EXPORT MeshView {
         /**
          * @overload
          * @m_deprecated_since{2020,06} Use
-         *      @ref AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>>)
+         *      @ref AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes);
@@ -87,7 +87,7 @@ class MAGNUM_GL_EXPORT MeshView {
         /**
          * @overload
          * @m_deprecated_since{2020,06} Use
-         *      @ref AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>>)
+         *      @ref AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram&& shader, std::initializer_list<Containers::Reference<MeshView>> meshes);

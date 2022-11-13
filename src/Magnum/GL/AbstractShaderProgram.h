@@ -850,7 +850,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * instead of setting up the mesh from scratch.
          * @see @ref Mesh::setCount(), @ref Mesh::setInstanceCount(),
          *      @ref draw(MeshView&),
-         *      @ref draw(Containers::ArrayView<const Containers::Reference<MeshView>>),
+         *      @ref draw(const Containers::Iterable<MeshView>&),
          *      @ref drawTransformFeedback(),
          *      @fn_gl_keyword{UseProgram}, @fn_gl_keyword{EnableVertexAttribArray},
          *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
@@ -895,7 +895,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @m_since{2020,06}
          *
          * See @ref draw(Mesh&) for more information.
-         * @see @ref draw(Containers::ArrayView<const Containers::Reference<MeshView>>),
+         * @see @ref draw(const Containers::Iterable<MeshView>&),
          *      @ref drawTransformFeedback()
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref MeshView::baseVertex() is not

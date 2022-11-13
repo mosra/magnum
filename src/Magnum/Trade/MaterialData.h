@@ -2242,10 +2242,10 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Offset of a layer inside attribute data
          *
          * Returns the offset where attributes for @p layer start in the array
-         * returned by @ref atttributeData() const. The @p layer is expected
-         * to be less *or equal to* @ref layerCount(), i.e. it's always
-         * possible to call this function with @cpp layer @ce and
-         * @cpp layer + 1 @ce to get the attribute range for given layer.
+         * returned by @ref attributeData() const. The @p layer is expected to
+         * be less *or equal to* @ref layerCount(), i.e. it's always possible
+         * to call this function with @cpp layer @ce and @cpp layer + 1 @ce to
+         * get the attribute range for given layer.
          */
         UnsignedInt attributeDataOffset(UnsignedInt layer) const;
 
