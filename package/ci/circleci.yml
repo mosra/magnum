@@ -626,20 +626,24 @@ workflows:
         - linux-gl
         - linux-vulkan
     - linux-vulkan
+    - linux-nondeprecated
     - linux-gles2:
         requires:
         - linux-gl
+        - linux-nondeprecated
     - linux-gles3:
         requires:
         - linux-gl
+        - linux-nondeprecated
     - linux-static:
         requires:
         - linux-gl
         - linux-vulkan
-    - linux-nondeprecated
+        - linux-nondeprecated
     - linux-sanitizers:
         requires:
         - linux-gl
+        - linux-nondeprecated
     - linux-threadsanitizer:
         requires:
         - linux-sanitizers
