@@ -125,13 +125,13 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>6</td>
 <td colspan="3">
-* *Reserved* --- vertex weights
+@ref JointIds
 </td>
 </tr>
 <tr>
 <td>7</td>
 <td colspan="3">
-* *Reserved* --- bone indices
+@ref Weights
 </td>
 </tr>
 <tr>
@@ -149,13 +149,13 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>10</td>
 <td colspan="2">
-* *Reserved* --- 2nd vertex weights
+@ref SecondaryJointIds
 </td>
 </tr>
 <tr>
 <td>11</td>
 <td colspan="2">
-* *Reserved* --- 2nd bone indices
+@ref SecondaryWeights
 </td>
 </tr>
 <tr>
@@ -382,7 +382,37 @@ template<UnsignedInt dimensions> struct GenericGL {
      */
     typedef GL::Attribute<5, Vector3> Normal;
 
-    /* 6, 7 reserved for vertex weights / bone IDs */
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * @brief Skin joint IDs
+     * @m_since_latest
+     *
+     * @ref Magnum::Vector4ui "Vector4ui", four indices of joints that affect
+     * the vertex with weights defined in @ref Weights. Corresponds to up to
+     * first four components of @ref Trade::MeshAttribute::JointIds.
+     * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+     * @requires_gles30 Skinning requires integer support in shaders, which is
+     *      not available in OpenGL ES 2.0.
+     * @requires_webgl20 Skinning requires integer support in shaders, which is
+     *      not available in WebGL 1.0.
+     */
+    typedef GL::Attribute<6, Vector4ui> JointIds;
+
+    /**
+     * @brief Skin weights
+     * @m_since_latest
+     *
+     * @ref Magnum::Vector4 "Vector4", four weights of influence from joints
+     * referenced by @ref JointIds. Corresponds to up to four first components
+     * of @ref Trade::MeshAttribute::Weights.
+     * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+     * @requires_gles30 Skinning requires integer support in shaders, which is
+     *      not available in OpenGL ES 2.0.
+     * @requires_webgl20 Skinning requires integer support in shaders, which is
+     *      not available in WebGL 1.0.
+     */
+    typedef GL::Attribute<7, Vector4> Weights;
+    #endif
 
     /**
      * @brief (Instanced) transformation matrix
@@ -399,7 +429,42 @@ template<UnsignedInt dimensions> struct GenericGL {
      */
     typedef GL::Attribute<8, T> TransformationMatrix;
 
-    /* 9, 10, 11 occupied by TransformationMatrix */
+    /* 9, 10, 11 occupied by TransformationMatrix; 10 and 11 shared with
+       SecondaryJointIds / SecondaryWeights */
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * @brief Secondary skin joint IDs
+     * @m_since_latest
+     *
+     * @ref Magnum::Vector4ui "Vector4ui", four indices of joints that affect
+     * the vertex with weights defined in @ref SecondaryWeights, in addition to
+     * @ref JointIds. Corresponds to up to four additional components of
+     * @ref Trade::MeshAttribute::JointIds.
+     * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+     * @requires_gles30 Skinning requires integer support in shaders, which is
+     *      not available in OpenGL ES 2.0.
+     * @requires_webgl20 Skinning requires integer support in shaders, which is
+     *      not available in WebGL 1.0.
+     */
+    typedef GL::Attribute<10, Vector4ui> SecondaryJointIds;
+
+    /**
+     * @brief Secondary skin weights
+     * @m_since_latest
+     *
+     * @ref Magnum::Vector4 "Vector4", four weights of influence from joints
+     * referenced by @ref SecondaryJointIds, in addition to @ref Weights.
+     * Corresponds to up to four additional components of
+     * @ref Trade::MeshAttribute::Weights.
+     * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+     * @requires_gles30 Skinning requires integer support in shaders, which is
+     *      not available in OpenGL ES 2.0.
+     * @requires_webgl20 Skinning requires integer support in shaders, which is
+     *      not available in WebGL 1.0.
+     */
+    typedef GL::Attribute<11, Vector4> SecondaryWeights;
+    #endif
 
     /**
      * @brief (Instanced) normal matrix
@@ -479,6 +544,11 @@ struct BaseGenericGL {
     #ifndef MAGNUM_TARGET_GLES2
     typedef GL::Attribute<4, UnsignedInt> ObjectId;
     #endif
+    typedef GL::Attribute<6, Vector4ui> JointIds;
+    typedef GL::Attribute<7, Vector4> Weights;
+
+    typedef GL::Attribute<10, Vector4ui> SecondaryJointIds;
+    typedef GL::Attribute<11, Vector4> SecondaryWeights;
 
     typedef GL::Attribute<15, Vector2> TextureOffset;
     #ifndef MAGNUM_TARGET_GLES2
@@ -491,7 +561,8 @@ template<> struct GenericGL<2>: BaseGenericGL {
     /* 1, 2 used by TextureCoordinates and Color */
 
     typedef GL::Attribute<8, Matrix3> TransformationMatrix;
-    /* 9, 10 occupied by TransformationMatrix */
+    /* 9, 10 occupied by TransformationMatrix; 10 and 11 shared with
+       SecondaryJointIds and SecondaryWeights */
     /* 15 used by TextureOffset */
 };
 
@@ -502,10 +573,10 @@ template<> struct GenericGL<3>: BaseGenericGL {
     typedef GL::Attribute<3, Vector4> Tangent4;
     typedef GL::Attribute<4, Vector3> Bitangent; /* also ObjectId */
     typedef GL::Attribute<5, Vector3> Normal;
-    /* 6, 7 reserved for vertex weights / bone IDs */
 
     typedef GL::Attribute<8, Matrix4> TransformationMatrix;
-    /* 9, 10, 11 occupied by TransformationMatrix */
+    /* 9, 10, 11 occupied by TransformationMatrix; 10 and 11 shared with
+       SecondaryJointIds and SecondaryWeights */
     typedef GL::Attribute<12, Matrix3x3> NormalMatrix;
     /* 13, 14 occupied by NormalMatrix */
     /* 15 used by TextureOffset */
