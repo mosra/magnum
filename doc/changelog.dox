@@ -262,6 +262,14 @@ See also:
 -   Support for instanced drawing in @ref Shaders::MeshVisualizerGL2D and
     @ref Shaders::MeshVisualizerGL3D for better feature parity with the other
     shaders
+-   New @ref Shaders::Generic::JointIds,
+    @ref Shaders::Generic::SecondaryJointIds, @ref Shaders::Generic::Weights
+    and @ref Shaders::Generic::SecondaryWeights attributes for GPU skinning
+    support (see also [mosra/magnum#441](https://github.com/mosra/magnum/pull/441))
+-   GPU skinning support in @ref Shaders::FlatGL, @ref Shaders::PhongGL and
+    @ref Shaders::MeshVisualizerGL2D / @ref Shaders::MeshVisualizerGL3D (see
+    also [mosra/magnum#444](https://github.com/mosra/magnum/pull/444) and
+    [mosra/magnum#506](https://github.com/mosra/magnum/issues/506))
 -   Added @ref Shaders::PhongGL::setNormalTextureScale(), consuming the
     recently added @ref Trade::MaterialAttribute::NormalTextureScale material
     attribute
@@ -307,6 +315,9 @@ See also:
 -   New @ref Trade::SkinData class and @ref Trade::AbstractImporter::skin2D() /
     @ref Trade::AbstractImporter::skin3D() family of APIs for skin import, as
     well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
+-   New builtin @ref Trade::MeshAttribute::JointIds and
+    @ref Trade::MeshAttribute::Weights attributes for skinning (see
+    [mosra/magnum#441](https://github.com/mosra/magnum/pull/441))
 -   The @ref Trade::AbstractSceneConverter plugin interface gained support for
     batch conversion of whole scenes --- meshes, hierarchies, materials,
     textures, animations and other data; @relativeref{Trade,AnySceneConverter}
@@ -481,6 +492,10 @@ See also:
     @ref MeshTools::concatenate(const Containers::Iterable<const Trade::MeshData>&, InterleaveFlags)
     optionally take a @ref MeshTools::InterleaveFlags parameter affecting the
     output, in particular whether to preserve the original interleaved layout.
+-   Support for new @ref Trade::MeshAttribute::JointIds and
+    @ref Trade::MeshAttribute::Weights in @ref MeshTools::compile() as well as
+    a new @ref MeshTools::compiledPerVertexJointCount() helper utility (see
+    also [mosra/magnum#444](https://github.com/mosra/magnum/pull/444))
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 
