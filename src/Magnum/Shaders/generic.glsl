@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* Kept consistent with Generic.h (tested in ShadersGenericTest) */
+/* Kept consistent with GenericGL.h (tested in ShadersGenericGL_Test) */
 
 #define POSITION_ATTRIBUTE_LOCATION 0
 #define TEXTURECOORDINATES_ATTRIBUTE_LOCATION 1
