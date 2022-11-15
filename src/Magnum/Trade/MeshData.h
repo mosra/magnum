@@ -152,6 +152,47 @@ enum class MeshAttribute: UnsignedShort {
     Color,
 
     /**
+     * Skin joint IDs. Array attribute, type is usually
+     * @ref VertexFormat::UnsignedInt, but can be also
+     * @ref VertexFormat::UnsignedShort or
+     * @ref VertexFormat::UnsignedByte. Array size is not limited or enforced
+     * in any way, but shaders usually expect at most 8 items, or alternatively
+     * two instances of this attribute with at most 4 items in each.
+     *
+     * Count of instances of this attribute and array size of each instance is
+     * expected to match instance count and array sizes of
+     * @ref MeshAttribute::Weights.
+     *
+     * Corresponds to @ref Shaders::GenericGL::JointIds and
+     * @ref Shaders::GenericGL::SecondaryJointIds, divided between them based
+     * on array size or attribute count.
+     * @m_since_latest
+     * @see @ref MeshData::jointIdsAsArray()
+     */
+    JointIds,
+
+    /**
+     * Skin weights. Array attribute, type is usually @ref VertexFormat::Float,
+     * but can be also @ref VertexFormat::Half,
+     * @ref VertexFormat::UnsignedByteNormalized or
+     * @ref VertexFormat::UnsignedShortNormalized. Array size is not limited or
+     * enforced in any way, but shaders usually expect at most 8 items, or
+     * alternatively two instances of this attribute with at most 4 items in
+     * each.
+     *
+     * Count of instances of this attribute and array size of each instance is
+     * expected to match instance count and array sizes of
+     * @ref MeshAttribute::JointIds.
+     *
+     * Corresponds to @ref Shaders::GenericGL::Weights and
+     * @ref Shaders::GenericGL::SecondaryWeights, divided between them based
+     * on array size or attribute count.
+     * @m_since_latest
+     * @see @ref MeshData::weightsAsArray()
+     */
+    Weights,
+
+    /**
      * (Instanced) object ID for editor selection or scene annotation. Type is
      * usually @ref VertexFormat::UnsignedInt, but can be also
      * @ref VertexFormat::UnsignedShort or @ref VertexFormat::UnsignedByte.
@@ -406,10 +447,11 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * @param arraySize Array size. Use @cpp 0 @ce for non-array
          *      attributes.
          *
-         * Expects that @p data stride fits into a signed 16-bit value,
-         * @p format corresponds to @p name and @p arraySize is zero for
-         * builtin attributes. The stride can be zero or negative, but note
-         * that such data layouts are not commonly supported by GPU APIs.
+         * Expects that @p data stride fits into a signed 16-bit value, and for
+         * builtin attributes that @p format corresponds to @p name,
+         * @p arraySize is either zero for non-array attributes or non-zero for
+         * array attributes. The stride can be zero or negative, but note that
+         * such data layouts are not commonly supported by GPU APIs.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize = 0) noexcept;
 
@@ -422,8 +464,9 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          *      attributes.
          *
          * Expects that the second dimension of @p data is contiguous and its
-         * size matches @p format and @p arraySize, that @p format corresponds
-         * to @p name and @p arraySize is zero for builtin attributes. The
+         * size matches @p format and @p arraySize, and for builtin attributes
+         * that @p format corresponds to @p name and @p arraySize is either
+         * zero for non-array attributes or non-zero for array attributes. The
          * stride is expected to fit into a signed 16-bit value. It can be zero
          * or negative, but note that such data layouts are not commonly
          * supported by GPU APIs.
@@ -483,9 +526,8 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Detects @ref VertexFormat based on @p T and calls
          * @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&, UnsignedShort)
          * with the second dimension size passed to @p arraySize. Expects that
-         * the second dimension is contiguous. At the moment only custom
-         * attributes can be arrays, which means this function can't be used
-         * with a builtin @p name. See @ref MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&)
+         * the second dimension is contiguous, and if @p name is a builtin
+         * attribute, it's an array attribute. See @ref MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&)
          * for details about @ref VertexFormat detection.
          */
         template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data) noexcept;
@@ -506,10 +548,11 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * attribute construction time. Note that instances created this way
          * can't be used in most @ref MeshTools algorithms.
          *
-         * Expects that @p arraySize is zero for builtin attributes and
-         * @p stride fits into a signed 16-bit value. The stride can be zero or
-         * negative, but note that such data layouts are not commonly supported
-         * by GPU APIs.
+         * For builtin attributes expects that @p arraySize is zero for
+         * non-array attributes and non-zero for array attributes. The
+         * @p stride is expected to fit into a signed 16-bit value. It can be
+         * zero or negative, but note that such data layouts are not commonly
+         * supported by GPU APIs.
          *
          * Additionally, for even more flexibility, the @p vertexCount can be
          * overridden at @ref MeshData construction time, however all attributes
@@ -686,13 +729,13 @@ The second simplest usage is accessing attributes through the convenience
 functions @ref positions2DAsArray(), @ref positions3DAsArray(),
 @ref tangentsAsArray(), @ref bitangentsAsArray(), @ref normalsAsArray(),
 @ref tangentsAsArray(), @ref textureCoordinates2DAsArray(),
-@ref colorsAsArray() and @ref objectIdsAsArray(). You're expected to check for
-attribute presence first with either @ref hasAttribute() (or
-@ref attributeCount(MeshAttribute) const, as there can be multiple sets of
-texture coordinates, for example). If you are creating a @ref GL::Mesh, the
-usual path forward is then to @ref MeshTools::interleave() attributes of
-interest, upload them to a @ref GL::Buffer and configure attribute binding for
-the mesh.
+@ref colorsAsArray(), @ref jointIdsAsArray(), @ref weightsAsArray() and
+@ref objectIdsAsArray(). You're expected to check for attribute presence first
+with either @ref hasAttribute() (or @ref attributeCount(MeshAttribute) const,
+as there can be multiple sets of texture coordinates, for example). If you are
+creating a @ref GL::Mesh, the usual path forward is then to
+@ref MeshTools::interleave() attributes of interest, upload them to a
+@ref GL::Buffer and configure attribute binding for the mesh.
 
 The mesh can be also indexed, in which case the index buffer is exposed through
 @ref indicesAsArray().
@@ -848,7 +891,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * The @p indices are expected to point to a sub-range of @p indexData.
          * The @p attributes are expected to reference (sparse) sub-ranges of
-         * @p vertexData. If the mesh has no attributes, the @p indices are
+         * @p vertexData. Particular attributes can have additional
+         * restrictions, see documentation of @ref MeshAttribute values for
+         * more information. If the mesh has no attributes, the @p indices are
          * expected to be valid (but can be empty). If you want to create an
          * attribute-less non-indexed mesh, use
          * @ref MeshData(MeshPrimitive, UnsignedInt, const void*) to specify
@@ -1378,11 +1423,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * In case given attribute is an array (the equivalent of e.g.
          * @cpp int[30] @ce), returns array size, otherwise returns @cpp 0 @ce.
-         * At the moment only custom attributes can be arrays, no builtin
-         * @ref MeshAttribute is an array attribute. The @p id is expected to
-         * be smaller than @ref attributeCount() const. You can also use
-         * @ref attributeArraySize(MeshAttribute, UnsignedInt) const to
-         * directly get array size of given named attribute.
+         * The @p id is expected to be smaller than @ref attributeCount() const.
+         * You can also use @ref attributeArraySize(MeshAttribute, UnsignedInt) const
+         * to directly get array size of given named attribute.
          *
          * Note that this is different from vertex count, which is exposed
          * through @ref vertexCount(), and is an orthogonal concept to having
@@ -1520,7 +1563,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref positions2DAsArray(), @ref positions3DAsArray(),
          * @ref tangentsAsArray(), @ref bitangentSignsAsArray(),
          * @ref bitangentsAsArray(), @ref normalsAsArray(),
-         * @ref textureCoordinates2DAsArray(), @ref colorsAsArray() and
+         * @ref textureCoordinates2DAsArray(), @ref colorsAsArray(),
+         * @ref jointIdsAsArray(), @ref weightsAsArray() and
          * @ref objectIdsAsArray() accessors to get common attributes converted
          * to usual types in contiguous arrays, but note that these operations
          * involve extra allocation and data conversion.
@@ -1602,7 +1646,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref positions2DAsArray(), @ref positions3DAsArray(),
          * @ref tangentsAsArray(), @ref bitangentSignsAsArray(),
          * @ref bitangentsAsArray(), @ref normalsAsArray(),
-         * @ref textureCoordinates2DAsArray(), @ref colorsAsArray() and
+         * @ref textureCoordinates2DAsArray(), @ref colorsAsArray(),
+         * @ref jointIdsAsArray(), @ref weightsAsArray() and
          * @ref objectIdsAsArray() accessors to get common attributes converted
          * to usual types in contiguous arrays, but note that these operations
          * involve extra data conversion and an allocation.
@@ -1872,6 +1917,84 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @see @ref vertexCount()
          */
         void colorsInto(const Containers::StridedArrayView1D<Color4>& destination, UnsignedInt id = 0) const;
+
+        /**
+         * @brief Skin joint IDs as unsigned int arrays
+         * @m_since_latest
+         *
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * with @ref MeshAttribute::JointIds as the first argument. Converts
+         * the joint IDs array from an arbitrary underlying type and returns it
+         * in a newly-allocated array. Expects that the vertex format is *not*
+         * implementation-specific, in that case you can only access the
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         *
+         * As it's an array attribute, the returned array has @ref vertexCount()
+         * times @ref attributeArraySize(MeshAttribute, UnsignedInt) const
+         * elements. You can make a 2D view onto the result to conveniently
+         * index the data:
+         *
+         * @snippet MagnumTrade.cpp MeshData-jointIdsAsArray
+         *
+         * @see @ref weightsAsArray(), @ref jointIdsInto(),
+         *      @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
+         */
+        /* Originally I tried with jointIdsWeightsAsArray() because these two
+           attributes are usually needed together, and they are also checked to
+           have matching counts and array sizes on construction. However, it'd
+           mean the two arrays would have to be interleaved for each vertex
+           (Array<Pair<UnsignedInt, Float>>) which makes them no longer
+           directly usable for mesh attributes, and there are other hurdles
+           such as unpackInto() / castInto() expecting the second dimension to
+           be contiguous. */
+        Containers::Array<UnsignedInt> jointIdsAsArray(UnsignedInt id = 0) const;
+
+        /**
+         * @brief Skin joint IDs as unsigned int arrays into a pre-allocated view
+         * @m_since_latest
+         *
+         * Like @ref jointIdsAsArray(), but puts the result into @p destination
+         * instead of allocating a new array. Expects that @p destination is
+         * sized to contain exactly all data --- first dimension being
+         * @ref vertexCount() and second
+         * @ref attributeArraySize(MeshAttribute. UnsignedInt) const. The
+         * second dimension is additionally expected to be contiguous.
+         */
+        void jointIdsInto(const Containers::StridedArrayView2D<UnsignedInt>& destination, UnsignedInt id = 0) const;
+
+        /**
+         * @brief Skin weights as float arrays
+         * @m_since_latest
+         *
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * with @ref MeshAttribute::Weights as the first argument. Converts the
+         * weights array from an arbitrary underlying types and returns them in
+         * a newly-allocated array. Expects that the vertex format is *not*
+         * implementation-specific, in that case you can only access the
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         *
+         * As it's an array attribute, the returned array has @ref vertexCount()
+         * times @ref attributeArraySize(MeshAttribute, UnsignedInt) const
+         * elements. You can make a 2D view onto the result to conveniently
+         * index the data, see @ref jointIdsAsArray() for an example snippet.
+         * @see @ref weightsInto(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
+         */
+        Containers::Array<Float> weightsAsArray(UnsignedInt id = 0) const;
+
+        /**
+         * @brief Skin weights as float arrays into a pre-allocated view
+         * @m_since_latest
+         *
+         * Like @ref weightsAsArray(), but puts the result into @p destination
+         * instead of allocating a new array. Expects that @p destination is
+         * sized to contain exactly all data --- first dimension being
+         * @ref vertexCount() and second
+         * @ref attributeArraySize(MeshAttribute. UnsignedInt) const. The
+         * second dimension is additionally expected to be contiguous.
+         */
+        void weightsInto(const Containers::StridedArrayView2D<Float>& weightsDestination, UnsignedInt id = 0) const;
 
         /**
          * @brief Object IDs as 32-bit integers
@@ -2265,6 +2388,15 @@ namespace Implementation {
                  format == VertexFormat::Vector2usNormalized ||
                  format == VertexFormat::Vector2s ||
                  format == VertexFormat::Vector2sNormalized)) ||
+            (name == MeshAttribute::JointIds &&
+                (format == VertexFormat::UnsignedInt ||
+                 format == VertexFormat::UnsignedByte ||
+                 format == VertexFormat::UnsignedShort)) ||
+            (name == MeshAttribute::Weights &&
+                (format == VertexFormat::Float ||
+                 format == VertexFormat::Half ||
+                 format == VertexFormat::UnsignedByteNormalized ||
+                 format == VertexFormat::UnsignedShortNormalized)) ||
             (name == MeshAttribute::ObjectId &&
                 (format == VertexFormat::UnsignedInt ||
                  format == VertexFormat::UnsignedShort ||
@@ -2274,7 +2406,16 @@ namespace Implementation {
     }
 
     constexpr bool isAttributeArrayAllowed(MeshAttribute name) {
-        return isMeshAttributeCustom(name);
+        return
+            name == MeshAttribute::JointIds ||
+            name == MeshAttribute::Weights ||
+            /* Custom attributes can be anything */
+            isMeshAttributeCustom(name);
+    }
+    constexpr bool isAttributeArrayExpected(MeshAttribute name) {
+        /* Custom attributes don't *have to* be arrays */
+        return name == MeshAttribute::JointIds ||
+               name == MeshAttribute::Weights;
     }
     #endif
 }
@@ -2288,7 +2429,9 @@ constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribu
         "Trade::MeshAttributeData: expected stride to fit into 16 bits but got" << data.stride()),
         Short(data.stride()))},
     _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
-        "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)},
+        "Trade::MeshAttributeData:" << name << "can't be an array attribute"),
+        CORRADE_CONSTEXPR_ASSERT(arraySize || !Implementation::isAttributeArrayExpected(name), "Trade::MeshAttributeData:" << name << "has to be an array attribute"),
+        arraySize)},
     _data{data.data()} {}
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride, UnsignedShort arraySize) noexcept:

@@ -887,6 +887,22 @@ static_cast<void>(triangleIds);
 static_cast<void>(triangleCounts);
 }
 
+{
+/* [MeshData-jointIdsAsArray] */
+Trade::MeshData data = DOXYGEN_ELLIPSIS(Trade::MeshData{{}, 0});
+
+Containers::Array<UnsignedInt> array = data.jointIdsAsArray();
+Containers::StridedArrayView2D<UnsignedInt> array2D{array,
+    {data.vertexCount(), data.attributeArraySize(Trade::MeshAttribute::JointIds)}};
+
+for(Containers::StridedArrayView1D<UnsignedInt> i: array2D) {
+    for(UnsignedInt j: i) {
+        DOXYGEN_IGNORE(static_cast<void>(j);)// do something with joint ID j in vertex i
+    }
+}
+/* [MeshData-jointIdsAsArray] */
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 {
 CORRADE_IGNORE_DEPRECATED_PUSH

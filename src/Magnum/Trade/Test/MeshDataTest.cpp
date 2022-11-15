@@ -76,6 +76,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributeWrongFormat();
     void constructAttributeWrongStride();
     void constructAttributeWrongDataAccess();
+    void constructAttributeOnlyArrayAllowed();
 
     void constructArrayAttribute();
     void constructArrayAttributeNonContiguous();
@@ -117,6 +118,8 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndicesNotContained();
     void constructAttributeNotContained();
     void constructInconsitentVertexCount();
+    void constructDifferentJointIdWeightCount();
+    void constructInconsistentJointIdWeightArraySizes();
     void constructNotOwnedIndexFlagOwned();
     void constructNotOwnedVertexFlagOwned();
     void constructIndicesNotOwnedFlagOwned();
@@ -164,6 +167,11 @@ struct MeshDataTest: TestSuite::Tester {
     template<class T> void colorsAsArray();
     template<class T> void colorsAsArrayPackedUnsignedNormalized();
     void colorsIntoArrayInvalidSize();
+    template<class T> void jointIdsAsArray();
+    void jointIdsIntoArrayInvalidSizeStride();
+    template<class T> void weightsAsArray();
+    template<class T> void weightsAsArrayPackedUnsignedNormalized();
+    void weightsIntoArrayInvalidSizeStride();
     template<class T> void objectIdsAsArray();
     void objectIdsIntoArrayInvalidSize();
 
@@ -250,6 +258,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttributeWrongFormat,
               &MeshDataTest::constructAttributeWrongStride,
               &MeshDataTest::constructAttributeWrongDataAccess,
+              &MeshDataTest::constructAttributeOnlyArrayAllowed,
 
               &MeshDataTest::constructArrayAttribute,
               &MeshDataTest::constructArrayAttributeNonContiguous,
@@ -294,6 +303,8 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndicesNotContained,
               &MeshDataTest::constructAttributeNotContained,
               &MeshDataTest::constructInconsitentVertexCount,
+              &MeshDataTest::constructDifferentJointIdWeightCount,
+              &MeshDataTest::constructInconsistentJointIdWeightArraySizes,
               &MeshDataTest::constructNotOwnedIndexFlagOwned,
               &MeshDataTest::constructNotOwnedVertexFlagOwned,
               &MeshDataTest::constructIndicesNotOwnedFlagOwned,
@@ -396,6 +407,15 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4ub>,
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4us>,
               &MeshDataTest::colorsIntoArrayInvalidSize,
+              &MeshDataTest::jointIdsAsArray<UnsignedInt>,
+              &MeshDataTest::jointIdsAsArray<UnsignedByte>,
+              &MeshDataTest::jointIdsAsArray<UnsignedShort>,
+              &MeshDataTest::jointIdsIntoArrayInvalidSizeStride,
+              &MeshDataTest::weightsAsArray<Float>,
+              &MeshDataTest::weightsAsArray<Half>,
+              &MeshDataTest::weightsAsArrayPackedUnsignedNormalized<UnsignedByte>,
+              &MeshDataTest::weightsAsArrayPackedUnsignedNormalized<UnsignedShort>,
+              &MeshDataTest::weightsIntoArrayInvalidSizeStride,
               &MeshDataTest::objectIdsAsArray<UnsignedByte>,
               &MeshDataTest::objectIdsAsArray<UnsignedShort>,
               &MeshDataTest::objectIdsAsArray<UnsignedInt>,
@@ -989,6 +1009,23 @@ void MeshDataTest::constructAttributeWrongStride() {
         "Trade::MeshAttributeData: expected stride to fit into 16 bits but got -32769\n"
         "Trade::MeshAttributeData: expected padding to fit into 16 bits but got 32768\n"
         "Trade::MeshAttributeData: expected padding to fit into 16 bits but got -32769\n");
+}
+
+void MeshDataTest::constructAttributeOnlyArrayAllowed() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Vector2 data[3];
+
+    /* These should be fine */
+    MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float, data, 2};
+    MeshAttributeData{meshAttributeCustom(25), VertexFormat::Vector2, data};
+    MeshAttributeData{meshAttributeCustom(25), VertexFormat::Float, data, 2};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float, data};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshAttributeData: Trade::MeshAttribute::Weights has to be an array attribute\n");
 }
 
 void MeshDataTest::constructAttributeWrongDataAccess() {
@@ -2395,6 +2432,59 @@ void MeshDataTest::constructInconsitentVertexCount() {
         "Trade::MeshData: attribute 1 has 2 vertices but 3 expected\n");
 }
 
+void MeshDataTest::constructDifferentJointIdWeightCount() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct Vertex {
+        /* Weights required to be here by the constructor */
+        Float weights[2];
+        UnsignedByte jointIds[2];
+        UnsignedShort secondaryJointIds[4];
+    } vertices[3]{};
+    auto view = Containers::stridedArrayView(vertices);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshData{MeshPrimitive::Points, {}, vertices, {
+        /* Weights required to be here by the constructor */
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float,
+            view.slice(&Vertex::weights), 2},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedByte,
+            view.slice(&Vertex::jointIds), 2},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedShort,
+            view.slice(&Vertex::secondaryJointIds), 4}
+    }};
+    CORRADE_COMPARE(out.str(), "Trade::MeshData: expected 2 weight attributes to match joint IDs but got 1\n");
+}
+
+void MeshDataTest::constructInconsistentJointIdWeightArraySizes() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct Vertex {
+        /* Weights required to be here by the constructor */
+        Float weights[2];
+        UnsignedByte jointIds[2];
+        Half secondaryWeights[3];
+        UnsignedShort secondaryJointIds[4];
+    } vertices[3]{};
+    auto view = Containers::stridedArrayView(vertices);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshData{MeshPrimitive::Points, {}, vertices, {
+        /* Weights required to be here by the constructor */
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float,
+            view.slice(&Vertex::weights), 2},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedByte,
+            view.slice(&Vertex::jointIds), 2},
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Half,
+            view.slice(&Vertex::secondaryWeights), 3},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedShort,
+            view.slice(&Vertex::secondaryJointIds), 4}
+    }};
+    CORRADE_COMPARE(out.str(), "Trade::MeshData: expected 4 array items for weight attribute 1 to match joint IDs but got 3\n");
+}
+
 void MeshDataTest::constructNotOwnedIndexFlagOwned() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -2586,6 +2676,7 @@ template<class> struct NameTraits;
 #define _c(format) template<> struct NameTraits<format> {                   \
         static const char* name() { return #format; }                       \
     };
+/* Scalars are in Math::TypeTraits already */
 _c(Vector2)
 _c(Vector2h)
 _c(Vector2ub)
@@ -3322,6 +3413,192 @@ void MeshDataTest::colorsIntoArrayInvalidSize() {
         "Trade::MeshData::colorsInto(): expected a view with 3 elements but got 2\n");
 }
 
+template<class T> void MeshDataTest::jointIdsAsArray() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
+    struct Vertex {
+        /* Weights required to be here by the constructor */
+        Float otherWeights[3];
+        Float weights[5];
+        UnsignedInt otherJointIds[3];
+        UnsignedShort objectId;
+        T jointIds[5];
+    } vertices[]{
+        {{}, {}, {},
+         0,
+         {T(0), T(3), T(20), T(1), T(7)}},
+        {{}, {}, {},
+         0,
+         {T(9), T(1), T(15), T(2), T(3)}},
+        {{}, {}, {},
+         0,
+         {T(25), T(7), T(0), T(2), T(1)}},
+    };
+    auto view = Containers::stridedArrayView(vertices);
+
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        /* Weights required to be here by the constructor */
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float,
+            view.slice(&Vertex::otherWeights), 3},
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float,
+            view.slice(&Vertex::weights), 5},
+        MeshAttributeData{MeshAttribute::JointIds,
+            Implementation::vertexFormatFor<T>(),
+            view.slice(&Vertex::otherJointIds), 3},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::JointIds,
+            Implementation::vertexFormatFor<T>(),
+            view.slice(&Vertex::jointIds), 5},
+    }};
+    CORRADE_COMPARE_AS(data.jointIdsAsArray(1), (Containers::arrayView<UnsignedInt>({
+        0, 3, 20, 1, 7,
+        9, 1, 15, 2, 3,
+        25, 7, 0, 2, 1
+    })), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::jointIdsIntoArrayInvalidSizeStride() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct Vertex {
+        /* Weights required to be here by the constructor */
+        Float weights[2];
+        UnsignedByte jointIds[2];
+    } vertices[3]{};
+    auto view = Containers::stridedArrayView(vertices);
+
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        /* Weights required to be here by the constructor */
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float,
+            view.slice(&Vertex::weights), 2},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedByte,
+            view.slice(&Vertex::jointIds), 2}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    UnsignedInt jointIds1[3*3];
+    UnsignedInt jointIds2[2*2];
+    UnsignedInt jointIds3[3*4];
+    data.jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{jointIds1, {3, 3}});
+    data.jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{jointIds2, {2, 2}});
+    data.jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{jointIds3, {3, 4}}.every({1, 2}));
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::jointIdsInto(): expected a view with {3, 2} elements but got {3, 3}\n"
+        "Trade::MeshData::jointIdsInto(): expected a view with {3, 2} elements but got {2, 2}\n"
+        "Trade::MeshData::jointIdsInto(): second view dimension is not contiguous\n");
+}
+
+template<class T> void MeshDataTest::weightsAsArray() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
+    struct Vertex {
+        /* Joint IDs required to be here by the constructor */
+        UnsignedInt otherJointIds[3];
+        UnsignedInt jointIds[5];
+        Float otherWeights[3];
+        UnsignedShort objectId;
+        T weights[5];
+    } vertices[]{
+        {{}, {}, {},
+         0,
+         {T(2.0f), T(1.0f), T(0.75f), T(3.0f), T(1.75f)}},
+        {{}, {}, {},
+         0,
+         {T(0.0f), T(-1.0f), T(1.25f), T(1.0f), T(2.25f)}},
+        {{}, {}, {},
+         0,
+         {T(-2.0f), T(3.0f), T(2.5f), T(2.5f), T(0.25f)}},
+    };
+    auto view = Containers::stridedArrayView(vertices);
+
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        /* Joint IDs required to be here by the constructor */
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedInt,
+            view.slice(&Vertex::otherJointIds), 3},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedInt,
+            view.slice(&Vertex::jointIds), 5},
+        MeshAttributeData{MeshAttribute::Weights,
+            Implementation::vertexFormatFor<T>(),
+            view.slice(&Vertex::otherWeights), 3},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Weights,
+            Implementation::vertexFormatFor<T>(),
+            view.slice(&Vertex::weights), 5}
+    }};
+    CORRADE_COMPARE_AS(data.weightsAsArray(1), (Containers::arrayView<Float>({
+        2.0f, 1.0f, 0.75f, 3.0f, 1.75f,
+        0.0f, -1.0f, 1.25f, 1.0f, 2.25f,
+        -2.0f, 3.0f, 2.5f, 2.5f, 0.25f,
+    })), TestSuite::Compare::Container);
+}
+
+template<class T> void MeshDataTest::weightsAsArrayPackedUnsignedNormalized() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    struct Vertex {
+        /* Joint IDs required to be here by the constructor */
+        UnsignedByte jointIds[2];
+        T weights[2];
+    } vertices[2]{
+        {{}, {Math::pack<T>(1.0f), Math::pack<T>(0.8f)}},
+        {{}, {0, Math::pack<T>(0.4f)}}
+    };
+    auto view = Containers::stridedArrayView(vertices);
+
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        /* Joint IDs required to be here by the constructor */
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedByte,
+            view.slice(&Vertex::jointIds), 2},
+        MeshAttributeData{MeshAttribute::Weights,
+            vertexFormat(Implementation::vertexFormatFor<T>(), 1, true),
+            view.slice(&Vertex::weights), 2}
+    }};
+
+    CORRADE_COMPARE_AS(data.weightsAsArray(), (Containers::arrayView<Float>({
+        1.0f, 0.8f,
+        0.0f, 0.4f
+    })), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::weightsIntoArrayInvalidSizeStride() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct Vertex {
+        /* Joint IDs required to be here by the constructor */
+        UnsignedInt jointIds[2];
+        Half weights[2];
+    } vertices[3]{};
+    auto view = Containers::stridedArrayView(vertices);
+
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        /* Joint IDs required to be here by the constructor */
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedInt,
+            view.slice(&Vertex::jointIds), 2},
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Half,
+            view.slice(&Vertex::weights), 2}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Float weights1[3*3];
+    Float weights2[2*2];
+    Float weights3[3*4];
+    data.weightsInto(Containers::StridedArrayView2D<Float>{weights1, {3, 3}});
+    data.weightsInto(Containers::StridedArrayView2D<Float>{weights2, {2, 2}});
+    data.weightsInto(Containers::StridedArrayView2D<Float>{weights3, {3, 4}}.every({1, 2}));
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::weightsInto(): expected a view with {3, 2} elements but got {3, 3}\n"
+        "Trade::MeshData::weightsInto(): expected a view with {3, 2} elements but got {2, 2}\n"
+        "Trade::MeshData::weightsInto(): second view dimension is not contiguous\n");
+}
+
 template<class T> void MeshDataTest::objectIdsAsArray() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
@@ -3404,8 +3681,12 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
             vertexFormatWrap(0xdead5), attribute},
         MeshAttributeData{MeshAttribute::Color,
             vertexFormatWrap(0xdead6), attribute},
+        MeshAttributeData{MeshAttribute::JointIds,
+            vertexFormatWrap(0xdead7), attribute, 2},
+        MeshAttributeData{MeshAttribute::Weights,
+            vertexFormatWrap(0xdead8), attribute, 2},
         MeshAttributeData{MeshAttribute::ObjectId,
-            vertexFormatWrap(0xdead7), attribute}}};
+            vertexFormatWrap(0xdead9), attribute}}};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3425,6 +3706,8 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     data.normalsAsArray();
     data.textureCoordinates2DAsArray();
     data.colorsAsArray();
+    data.jointIdsAsArray();
+    data.weightsAsArray();
     data.objectIdsAsArray();
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
@@ -3443,7 +3726,9 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
         "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n"
         "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format 0xdead5\n"
         "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead6\n"
-        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format 0xdead7\n");
+        "Trade::MeshData::jointIdsInto(): can't extract data out of an implementation-specific vertex format 0xdead7\n"
+        "Trade::MeshData::weightsInto(): can't extract data out of an implementation-specific vertex format 0xdead8\n"
+        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format 0xdead9\n");
 }
 
 void MeshDataTest::mutableAccessNotAllowed() {
@@ -3530,9 +3815,14 @@ void MeshDataTest::indicesWrongType() {
 void MeshDataTest::attributeNotFound() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    MeshAttributeData colors1{MeshAttribute::Color, VertexFormat::Vector3, nullptr};
-    MeshAttributeData colors2{MeshAttribute::Color, VertexFormat::Vector4, nullptr};
-    MeshData data{MeshPrimitive::Points, nullptr, {colors1, colors2}};
+    MeshData data{MeshPrimitive::Points, nullptr, {
+        MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector3, nullptr},
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::UnsignedByteNormalized, nullptr, 3},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedByte, nullptr, 3},
+        MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector4, nullptr},
+        MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float, nullptr, 6},
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedShort, nullptr, 6}
+    }};
 
     /* This is fine */
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::Position), 0);
@@ -3541,19 +3831,19 @@ void MeshDataTest::attributeNotFound() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    data.attributeData(2);
-    data.attributeName(2);
-    data.attributeId(2);
-    data.attributeFormat(2);
-    data.attributeOffset(2);
-    data.attributeStride(2);
-    data.attributeArraySize(2);
-    data.attribute(2);
-    data.attribute<Vector2>(2);
-    data.attribute<Vector2[]>(2);
-    data.mutableAttribute(2);
-    data.mutableAttribute<Vector2>(2);
-    data.mutableAttribute<Vector2[]>(2);
+    data.attributeData(6);
+    data.attributeName(6);
+    data.attributeId(6);
+    data.attributeFormat(6);
+    data.attributeOffset(6);
+    data.attributeStride(6);
+    data.attributeArraySize(6);
+    data.attribute(6);
+    data.attribute<Vector2>(6);
+    data.attribute<Vector2[]>(6);
+    data.mutableAttribute(6);
+    data.mutableAttribute<Vector2>(6);
+    data.mutableAttribute<Vector2[]>(6);
 
     data.attributeId(MeshAttribute::Position);
     data.attributeId(MeshAttribute::Color, 2);
@@ -3586,21 +3876,27 @@ void MeshDataTest::attributeNotFound() {
     data.normalsAsArray();
     data.textureCoordinates2DAsArray();
     data.colorsAsArray(2);
+    /* jointIdsAsArray() and weightsAsArray() have their own assert in order to
+       fetch array size, have to test also Into() for these */
+    data.jointIdsAsArray(2);
+    data.jointIdsInto(nullptr, 2);
+    data.weightsAsArray(2);
+    data.weightsInto(nullptr, 2);
     data.objectIdsAsArray();
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshData::attributeData(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attributeName(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attributeId(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attributeFormat(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attributeOffset(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attributeStride(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attributeArraySize(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 attributes\n"
-        "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 attributes\n"
+        "Trade::MeshData::attributeData(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attributeName(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attributeId(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attributeFormat(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attributeOffset(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attributeStride(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attributeArraySize(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attribute(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attribute(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attribute(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 6 out of range for 6 attributes\n"
 
         "Trade::MeshData::attributeId(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeId(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
@@ -3633,6 +3929,10 @@ void MeshDataTest::attributeNotFound() {
         "Trade::MeshData::normalsInto(): index 0 out of range for 0 normal attributes\n"
         "Trade::MeshData::textureCoordinates2DInto(): index 0 out of range for 0 texture coordinate attributes\n"
         "Trade::MeshData::colorsInto(): index 2 out of range for 2 color attributes\n"
+        "Trade::MeshData::jointIdsAsArray(): index 2 out of range for 2 joint ID attributes\n"
+        "Trade::MeshData::jointIdsInto(): index 2 out of range for 2 joint ID attributes\n"
+        "Trade::MeshData::weightsAsArray(): index 2 out of range for 2 weight attributes\n"
+        "Trade::MeshData::weightsInto(): index 2 out of range for 2 weight attributes\n"
         "Trade::MeshData::objectIdsInto(): index 0 out of range for 0 object ID attributes\n");
 }
 

@@ -193,6 +193,18 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
             }
         }
     }
+
+    /* Verify that count and array sizes of skin joint IDs and weights match */
+    const UnsignedInt jointIdAttributeCount = attributeCount(MeshAttribute::JointIds);
+    const UnsignedInt weightAttributeCount = attributeCount(MeshAttribute::Weights);
+    CORRADE_ASSERT(weightAttributeCount == jointIdAttributeCount,
+        "Trade::MeshData: expected" << jointIdAttributeCount << "weight attributes to match joint IDs but got" << weightAttributeCount, );
+    for(UnsignedInt i = 0; i != jointIdAttributeCount; ++i) {
+        const UnsignedInt jointIdsArraySize = attributeArraySize(MeshAttribute::JointIds, i);
+        const UnsignedInt weightsArraySize = attributeArraySize(MeshAttribute::Weights, i);
+        CORRADE_ASSERT(weightsArraySize == jointIdsArraySize,
+            "Trade::MeshData: expected" << jointIdsArraySize << "array items for weight attribute" << i << "to match joint IDs but got" << weightsArraySize, );
+    }
     #endif
 }
 
@@ -835,6 +847,77 @@ Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {
     return out;
 }
 
+void MeshData::jointIdsInto(const Containers::StridedArrayView2D<UnsignedInt>& destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::JointIds, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::jointIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "joint ID attributes", );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    #ifndef CORRADE_NO_ASSERT
+    const Containers::Size2D expectedSize{_vertexCount, attribute._arraySize};
+    #endif
+    CORRADE_ASSERT(destination.size() == expectedSize,
+        "Trade::MeshData::jointIdsInto(): expected a view with" << expectedSize << "elements but got" << destination.size(), );
+    CORRADE_ASSERT(destination.isContiguous<1>(),
+        "Trade::MeshData::jointIdsInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::jointIdsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+    const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
+
+    if(attribute._format == VertexFormat::UnsignedInt)
+        Utility::copy(Containers::arrayCast<2, const UnsignedInt>(attributeData, attribute._arraySize), destination);
+    else if(attribute._format == VertexFormat::UnsignedByte)
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, attribute._arraySize), destination);
+    else if(attribute._format == VertexFormat::UnsignedShort)
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, attribute._arraySize), destination);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+Containers::Array<UnsignedInt> MeshData::jointIdsAsArray(const UnsignedInt id) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::JointIds, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::jointIdsAsArray(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "joint ID attributes", {});
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    Containers::Array<UnsignedInt> out{_vertexCount*attribute._arraySize};
+    jointIdsInto(Containers::StridedArrayView2D<UnsignedInt>{out, {_vertexCount, attribute._arraySize}}, id);
+    return out;
+}
+
+void MeshData::weightsInto(const Containers::StridedArrayView2D<Float>& destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Weights, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::weightsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Weights) << "weight attributes", );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    #ifndef CORRADE_NO_ASSERT
+    const Containers::Size2D expectedSize{_vertexCount, attribute._arraySize};
+    #endif
+    CORRADE_ASSERT(destination.size() == expectedSize,
+        "Trade::MeshData::weightsInto(): expected a view with" << expectedSize << "elements but got" << destination.size(), );
+    CORRADE_ASSERT(destination.isContiguous<1>(),
+        "Trade::MeshData::weightsInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::weightsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+    const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
+
+    if(attribute._format == VertexFormat::Float)
+        Utility::copy(Containers::arrayCast<2, const Float>(attributeData, attribute._arraySize), destination);
+    else if(attribute._format == VertexFormat::Half)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, attribute._arraySize), destination);
+    else if(attribute._format == VertexFormat::UnsignedByteNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, attribute._arraySize), destination);
+    else if(attribute._format == VertexFormat::UnsignedShortNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, attribute._arraySize), destination);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+Containers::Array<Float> MeshData::weightsAsArray(const UnsignedInt id) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Weights, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::weightsAsArray(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "weight attributes", {});
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    Containers::Array<Float> out{_vertexCount*attribute._arraySize};
+    weightsInto(Containers::StridedArrayView2D<Float>{out, {_vertexCount, attribute._arraySize}}, id);
+    return out;
+}
+
 void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::ObjectId, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::objectIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::ObjectId) << "object ID attributes", );
@@ -896,6 +979,8 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         _c(Normal)
         _c(TextureCoordinates)
         _c(Color)
+        _c(JointIds)
+        _c(Weights)
         _c(ObjectId)
         #undef _c
         /* LCOV_EXCL_STOP */
