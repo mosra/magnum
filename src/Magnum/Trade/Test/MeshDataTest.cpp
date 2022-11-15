@@ -3239,15 +3239,15 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
         MeshAttributeData{MeshAttribute::Tangent,
             vertexFormatWrap(0xdead2), attribute},
         MeshAttributeData{MeshAttribute::Bitangent,
-            vertexFormatWrap(0xdead2), attribute},
-        MeshAttributeData{MeshAttribute::Normal,
-            vertexFormatWrap(0xdead2), attribute},
-        MeshAttributeData{MeshAttribute::TextureCoordinates,
             vertexFormatWrap(0xdead3), attribute},
-        MeshAttributeData{MeshAttribute::Color,
+        MeshAttributeData{MeshAttribute::Normal,
             vertexFormatWrap(0xdead4), attribute},
+        MeshAttributeData{MeshAttribute::TextureCoordinates,
+            vertexFormatWrap(0xdead5), attribute},
+        MeshAttributeData{MeshAttribute::Color,
+            vertexFormatWrap(0xdead6), attribute},
         MeshAttributeData{MeshAttribute::ObjectId,
-            vertexFormatWrap(0xdead4), attribute}}};
+            vertexFormatWrap(0xdead7), attribute}}};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3270,22 +3270,22 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     data.objectIdsAsArray();
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
-        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead2\n"
-        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead3\n"
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead4\n"
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead5\n"
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead6\n"
         "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
-        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead2\n"
-        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead3\n"
         "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead4\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead5\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead6\n"
         "Trade::MeshData::positions2DInto(): can't extract data out of an implementation-specific vertex format 0xdead1\n"
         "Trade::MeshData::positions3DInto(): can't extract data out of an implementation-specific vertex format 0xdead1\n"
         "Trade::MeshData::tangentsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
         "Trade::MeshData::bitangentSignsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
-        "Trade::MeshData::bitangentsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
-        "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
-        "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format 0xdead3\n"
-        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n"
-        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n");
+        "Trade::MeshData::bitangentsInto(): can't extract data out of an implementation-specific vertex format 0xdead3\n"
+        "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n"
+        "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format 0xdead5\n"
+        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead6\n"
+        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format 0xdead7\n");
 }
 
 void MeshDataTest::mutableAccessNotAllowed() {
