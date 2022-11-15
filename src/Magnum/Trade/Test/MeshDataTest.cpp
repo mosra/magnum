@@ -2599,13 +2599,9 @@ _c(Color4us)
 template<class T> void MeshDataTest::indicesAsArray() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    Containers::Array<char> indexData{3*sizeof(T)};
-    auto indexView = Containers::arrayCast<T>(indexData);
-    indexView[0] = 75;
-    indexView[1] = 131;
-    indexView[2] = 240;
+    T indices[]{75, 131, 240};
 
-    MeshData data{MeshPrimitive::Points, std::move(indexData), MeshIndexData{indexView}, 241};
+    MeshData data{MeshPrimitive::Points, {}, indices, MeshIndexData{indices}, 241};
     CORRADE_COMPARE_AS(data.indicesAsArray(),
         Containers::arrayView<UnsignedInt>({75, 131, 240}),
         TestSuite::Compare::Container);
@@ -2614,8 +2610,8 @@ template<class T> void MeshDataTest::indicesAsArray() {
 void MeshDataTest::indicesIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> indexData{3*sizeof(UnsignedInt)};
-    MeshData data{MeshPrimitive::Points, std::move(indexData), MeshIndexData{Containers::arrayCast<UnsignedInt>(indexData)}, 1};
+    UnsignedInt indices[3]{};
+    MeshData data{MeshPrimitive::Points, {}, indices, MeshIndexData{indices}, 1};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2627,89 +2623,105 @@ void MeshDataTest::indicesIntoArrayInvalidSize() {
 
 template<class T> void MeshDataTest::positions2DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector2<U>{U(2.0f), U(1.0f)});
-    positionsView[1] = T::pad(Math::Vector2<U>{U(0.0f), U(-1.0f)});
-    positionsView[2] = T::pad(Math::Vector2<U>{U(-2.0f), U(3.0f)});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector2<TT>{TT(2.0f), TT(1.0f)}),
+        T::pad(Math::Vector2<TT>{TT(0.0f), TT(-1.0f)}),
+        T::pad(Math::Vector2<TT>{TT(-2.0f), TT(3.0f)})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, positionsView}}};
-    CORRADE_COMPARE_AS(data.positions2DAsArray(),
-        Containers::arrayView<Vector2>({{2.0f, 1.0f}, {0.0f, -1.0f}, {-2.0f, 3.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
+    CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
+        {2.0f, 1.0f}, {0.0f, -1.0f}, {-2.0f, 3.0f}
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void MeshDataTest::positions2DAsArrayPackedUnsigned() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector2<typename T::Type>{2, 1});
-    positionsView[1] = T::pad(Math::Vector2<typename T::Type>{0, 15});
-    positionsView[2] = T::pad(Math::Vector2<typename T::Type>{22, 3});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector2<TT>{2, 1}),
+        T::pad(Math::Vector2<TT>{0, 15}),
+        T::pad(Math::Vector2<TT>{22, 3})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, positionsView}}};
-    CORRADE_COMPARE_AS(data.positions2DAsArray(),
-        Containers::arrayView<Vector2>({{2.0f, 1.0f}, {0.0f, 15.0f}, {22.0f, 3.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
+    CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
+        {2.0f, 1.0f}, {0.0f, 15.0f}, {22.0f, 3.0f}
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void MeshDataTest::positions2DAsArrayPackedSigned() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector2<typename T::Type>{2, 1});
-    positionsView[1] = T::pad(Math::Vector2<typename T::Type>{0, -15});
-    positionsView[2] = T::pad(Math::Vector2<typename T::Type>{-22, 3});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector2<TT>{2, 1}),
+        T::pad(Math::Vector2<TT>{0, -15}),
+        T::pad(Math::Vector2<TT>{-22, 3})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, positionsView}}};
-    CORRADE_COMPARE_AS(data.positions2DAsArray(),
-        Containers::arrayView<Vector2>({{2.0f, 1.0f}, {0.0f, -15.0f}, {-22.0f, 3.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
+    CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
+        {2.0f, 1.0f}, {0.0f, -15.0f}, {-22.0f, 3.0f}
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void MeshDataTest::positions2DAsArrayPackedUnsignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector2<typename T::Type>{Math::pack<typename T::Type>(1.0f), 0});
-    positionsView[1] = T::pad(Math::Vector2<typename T::Type>{0, Math::pack<typename T::Type>(1.0f)});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector2<TT>{Math::pack<TT>(1.0f), 0}),
+        T::pad(Math::Vector2<TT>{0, Math::pack<TT>(1.0f)})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        positionsView}}};
-    CORRADE_COMPARE_AS(data.positions2DAsArray(),
-        Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, 1.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(positions)}
+    }};
+    CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
+        {1.0f, 0.0f}, {0.0f, 1.0f}
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void MeshDataTest::positions2DAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector2<typename T::Type>{Math::pack<typename T::Type>(1.0f), 0});
-    positionsView[1] = T::pad(Math::Vector2<typename T::Type>{0, Math::pack<typename T::Type>(-1.0f)});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector2<TT>{Math::pack<TT>(1.0f), 0}),
+        T::pad(Math::Vector2<TT>{0, Math::pack<TT>(-1.0f)})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        positionsView}}};
-    CORRADE_COMPARE_AS(data.positions2DAsArray(),
-        Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, -1.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(positions)}
+    }};
+    CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
+        {1.0f, 0.0f}, {0.0f, -1.0f}
+    }), TestSuite::Compare::Container);
 }
 
 void MeshDataTest::positions2DIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector2)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)}}};
+    Vector2 positions[3]{};
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2721,17 +2733,19 @@ void MeshDataTest::positions2DIntoArrayInvalidSize() {
 
 template<class T> void MeshDataTest::positions3DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
     /* Needs to be sufficiently representable to have the test work also for
        half floats */
-    positionsView[0] = T::pad(Math::Vector3<U>{U(2.0f), U(1.0f), U(0.75f)});
-    positionsView[1] = T::pad(Math::Vector3<U>{U(0.0f), U(-1.0f), U(1.25f)});
-    positionsView[2] = T::pad(Math::Vector3<U>{U(-2.0f), U(3.0f), U(2.5f)});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector3<TT>{TT(2.0f), TT(1.0f), TT(0.75f)}),
+        T::pad(Math::Vector3<TT>{TT(0.0f), TT(-1.0f), TT(1.25f)}),
+        T::pad(Math::Vector3<TT>{TT(-2.0f), TT(3.0f), TT(2.5f)})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, positionsView}}};
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
     CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{2.0f, 1.0f, 0.75f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{0.0f, -1.0f, 1.25f})),
@@ -2742,13 +2756,16 @@ template<class T> void MeshDataTest::positions3DAsArray() {
 template<class T> void MeshDataTest::positions3DAsArrayPackedUnsigned() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector3<typename T::Type>{2, 1, 135});
-    positionsView[1] = T::pad(Math::Vector3<typename T::Type>{0, 15, 2});
-    positionsView[2] = T::pad(Math::Vector3<typename T::Type>{22, 3, 192});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector3<TT>{2, 1, 135}),
+        T::pad(Math::Vector3<TT>{0, 15, 2}),
+        T::pad(Math::Vector3<TT>{22, 3, 192})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, positionsView}}};
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
     CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{2.0f, 1.0f, 135.0f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{0.0f, 15.0f, 2.0f})),
@@ -2759,13 +2776,16 @@ template<class T> void MeshDataTest::positions3DAsArrayPackedUnsigned() {
 template<class T> void MeshDataTest::positions3DAsArrayPackedSigned() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector3<typename T::Type>{2, 1, -117});
-    positionsView[1] = T::pad(Math::Vector3<typename T::Type>{0, -15, 2});
-    positionsView[2] = T::pad(Math::Vector3<typename T::Type>{-22, 3, 86});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector3<TT>{2, 1, -117}),
+        T::pad(Math::Vector3<TT>{0, -15, 2}),
+        T::pad(Math::Vector3<TT>{-22, 3, 86})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, positionsView}}};
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
     CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{2.0f, 1.0f, -117.0f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{0.0f, -15.0f, 2.0f})),
@@ -2776,15 +2796,18 @@ template<class T> void MeshDataTest::positions3DAsArrayPackedSigned() {
 template<class T> void MeshDataTest::positions3DAsArrayPackedUnsignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector3<typename T::Type>{Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)});
-    positionsView[1] = T::pad(Math::Vector3<typename T::Type>{0, Math::pack<typename T::Type>(1.0f), 0});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector3<TT>{Math::pack<TT>(1.0f), 0, Math::pack<TT>(1.0f)}),
+        T::pad(Math::Vector3<TT>{0, Math::pack<TT>(1.0f), 0})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        positionsView}}};
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(positions)}
+    }};
     CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{1.0f, 0.0f, 1.0f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{0.0f, 1.0f, 0.0f}))
@@ -2794,15 +2817,18 @@ template<class T> void MeshDataTest::positions3DAsArrayPackedUnsignedNormalized(
 template<class T> void MeshDataTest::positions3DAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto positionsView = Containers::arrayCast<T>(vertexData);
-    positionsView[0] = T::pad(Math::Vector3<typename T::Type>{Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)});
-    positionsView[1] = T::pad(Math::Vector3<typename T::Type>{0, Math::pack<typename T::Type>(-1.0f), 0});
+    typedef typename T::Type TT;
+    T positions[]{
+        T::pad(Math::Vector3<TT>{Math::pack<TT>(1.0f), 0, Math::pack<TT>(1.0f)}),
+        T::pad(Math::Vector3<TT>{0, Math::pack<TT>(-1.0f), 0})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        positionsView}}};
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(positions)}
+    }};
     CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{1.0f, 0.0f, 1.0f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{0.0f, -1.0f, 0.0f}))
@@ -2812,8 +2838,10 @@ template<class T> void MeshDataTest::positions3DAsArrayPackedSignedNormalized() 
 void MeshDataTest::positions3DIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector3)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector3>(vertexData)}}};
+    Vector3 positions[3]{};
+    MeshData data{MeshPrimitive::Points, {}, positions, {
+        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2825,17 +2853,19 @@ void MeshDataTest::positions3DIntoArrayInvalidSize() {
 
 template<class T> void MeshDataTest::tangentsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto tangentView = Containers::arrayCast<T>(vertexData);
     /* Needs to be sufficiently representable to have the test work also for
        half floats */
-    tangentView[0] = T::pad(Math::Vector3<U>{U(2.0f), U(1.0f), U(0.75f)});
-    tangentView[1] = T::pad(Math::Vector3<U>{U(0.0f), U(-1.0f), U(1.25f)});
-    tangentView[2] = T::pad(Math::Vector3<U>{U(-2.0f), U(3.0f), U(2.5f)});
+    typedef typename T::Type TT;
+    T tangents[]{
+        T::pad(Math::Vector3<TT>{TT(2.0f), TT(1.0f), TT(0.75f)}),
+        T::pad(Math::Vector3<TT>{TT(0.0f), TT(-1.0f), TT(1.25f)}),
+        T::pad(Math::Vector3<TT>{TT(-2.0f), TT(3.0f), TT(2.5f)})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, tangentView}}};
+    MeshData data{MeshPrimitive::Points, {}, tangents, {
+        MeshAttributeData{MeshAttribute::Tangent, Containers::arrayView(tangents)}
+    }};
     CORRADE_COMPARE_AS(data.tangentsAsArray(), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
@@ -2843,17 +2873,19 @@ template<class T> void MeshDataTest::tangentsAsArray() {
 
 template<class T> void MeshDataTest::tangentsAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto tangentsView = Containers::arrayCast<T>(vertexData);
-    tangentsView[0] = T::pad(Math::Vector3<U>{Math::pack<U>(1.0f), 0, Math::pack<U>(1.0f)});
-    tangentsView[1] = T::pad(Math::Vector3<U>{0, Math::pack<U>(-1.0f), 0});
+    typedef typename T::Type TT;
+    T tangents[]{
+        T::pad(Math::Vector3<TT>{Math::pack<TT>(1.0f), 0, Math::pack<TT>(1.0f)}),
+        T::pad(Math::Vector3<TT>{0, Math::pack<TT>(-1.0f), 0})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        tangentsView}}};
+    MeshData data{MeshPrimitive::Points, {}, tangents, {
+        MeshAttributeData{MeshAttribute::Tangent,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(tangents)}
+    }};
     CORRADE_COMPARE_AS(data.tangentsAsArray(), Containers::arrayView<Vector3>({
         {1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}
     }), TestSuite::Compare::Container);
@@ -2862,8 +2894,10 @@ template<class T> void MeshDataTest::tangentsAsArrayPackedSignedNormalized() {
 void MeshDataTest::tangentsIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector3)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, Containers::arrayCast<Vector3>(vertexData)}}};
+    Vector3 tangents[3]{};
+    MeshData data{MeshPrimitive::Points, {}, tangents, {
+        MeshAttributeData{MeshAttribute::Tangent, Containers::arrayView(tangents)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2876,15 +2910,17 @@ void MeshDataTest::tangentsIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::bitangentSignsAsArray() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(Math::Vector4<T>)};
-    auto tangentView = Containers::arrayCast<Math::Vector4<T>>(vertexData);
     /* Needs to be sufficiently representable to have the test work also for
        half floats */
-    tangentView[0] = {T(2.0f), T(1.0f), T(0.75f), T(-1.0f)};
-    tangentView[1] = {T(0.0f), T(-1.0f), T(1.25f), T(1.0f)};
-    tangentView[2] = {T(-2.0f), T(3.0f), T(2.5f), T(-1.0f)};
+    Math::Vector4<T> tangents[]{
+        {T(2.0f), T(1.0f), T(0.75f), T(-1.0f)},
+        {T(0.0f), T(-1.0f), T(1.25f), T(1.0f)},
+        {T(-2.0f), T(3.0f), T(2.5f), T(-1.0f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, tangentView}}};
+    MeshData data{MeshPrimitive::Points, {}, tangents, {
+        MeshAttributeData{MeshAttribute::Tangent, Containers::arrayView(tangents)}
+    }};
     CORRADE_COMPARE_AS(data.bitangentSignsAsArray(), Containers::arrayView<Float>({
         -1.0f, 1.0f, -1.0f
     }), TestSuite::Compare::Container);
@@ -2893,15 +2929,17 @@ template<class T> void MeshDataTest::bitangentSignsAsArray() {
 template<class T> void MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(Math::Vector4<T>)};
-    auto bitangentsView = Containers::arrayCast<Math::Vector4<T>>(vertexData);
-    bitangentsView[0] = {Math::pack<T>(1.0f), 0, Math::pack<T>(1.0f), Math::pack<T>(-1.0f)};
-    bitangentsView[1] = {0, Math::pack<T>(-1.0f), 0, Math::pack<T>(1.0f)};
+    Math::Vector4<T> tangents[]{
+        {Math::pack<T>(1.0f), 0, Math::pack<T>(1.0f), Math::pack<T>(-1.0f)},
+        {0, Math::pack<T>(-1.0f), 0, Math::pack<T>(1.0f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<Math::Vector4<T>>()) + 1),
-        bitangentsView}}};
+    MeshData data{MeshPrimitive::Points, {}, tangents, {
+        MeshAttributeData{MeshAttribute::Tangent,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<Math::Vector4<T>>()) + 1),
+            Containers::arrayView(tangents)}
+    }};
     CORRADE_COMPARE_AS(data.bitangentSignsAsArray(), Containers::arrayView<Float>({
         -1.0f, 1.0f
     }), TestSuite::Compare::Container);
@@ -2910,8 +2948,10 @@ template<class T> void MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized
 void MeshDataTest::bitangentSignsAsArrayNotFourComponent() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector3s)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, VertexFormat::Vector3sNormalized, Containers::arrayCast<Vector3s>(vertexData)}}};
+    Vector3s tangents[3]{};
+    MeshData data{MeshPrimitive::Points, {}, tangents, {
+        MeshAttributeData{MeshAttribute::Tangent, VertexFormat::Vector3sNormalized, Containers::arrayView(tangents)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2924,8 +2964,10 @@ void MeshDataTest::bitangentSignsAsArrayNotFourComponent() {
 void MeshDataTest::bitangentSignsIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector4)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, Containers::arrayCast<Vector4>(vertexData)}}};
+    Vector4 tangents[3]{};
+    MeshData data{MeshPrimitive::Points, {}, tangents, {
+        MeshAttributeData{MeshAttribute::Tangent, Containers::arrayView(tangents)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2937,17 +2979,19 @@ void MeshDataTest::bitangentSignsIntoArrayInvalidSize() {
 
 template<class T> void MeshDataTest::bitangentsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto bitangentsView = Containers::arrayCast<T>(vertexData);
     /* Needs to be sufficiently representable to have the test work also for
        half floats */
-    bitangentsView[0] = {U(2.0f), U(1.0f), U(0.75f)};
-    bitangentsView[1] = {U(0.0f), U(-1.0f), U(1.25f)};
-    bitangentsView[2] = {U(-2.0f), U(3.0f), U(2.5f)};
+    typedef typename T::Type TT;
+    T bitangents[]{
+        {TT(2.0f), TT(1.0f), TT(0.75f)},
+        {TT(0.0f), TT(-1.0f), TT(1.25f)},
+        {TT(-2.0f), TT(3.0f), TT(2.5f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Bitangent, bitangentsView}}};
+    MeshData data{MeshPrimitive::Points, {}, bitangents, {
+        MeshAttributeData{MeshAttribute::Bitangent, Containers::arrayView(bitangents)}
+    }};
     CORRADE_COMPARE_AS(data.bitangentsAsArray(), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
@@ -2956,15 +3000,18 @@ template<class T> void MeshDataTest::bitangentsAsArray() {
 template<class T> void MeshDataTest::bitangentsAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto bitangentsView = Containers::arrayCast<T>(vertexData);
-    bitangentsView[0] = {Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)};
-    bitangentsView[1] = {0, Math::pack<typename T::Type>(-1.0f), 0};
+    typedef typename T::Type TT;
+    T bitangents[]{
+        {Math::pack<TT>(1.0f), 0, Math::pack<TT>(1.0f)},
+        {0, Math::pack<TT>(-1.0f), 0}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Bitangent,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        bitangentsView}}};
+    MeshData data{MeshPrimitive::Points, {}, bitangents, {
+        MeshAttributeData{MeshAttribute::Bitangent,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(bitangents)}
+    }};
     CORRADE_COMPARE_AS(data.bitangentsAsArray(), Containers::arrayView<Vector3>({
         {1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}
     }), TestSuite::Compare::Container);
@@ -2973,8 +3020,10 @@ template<class T> void MeshDataTest::bitangentsAsArrayPackedSignedNormalized() {
 void MeshDataTest::bitangentsIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector3)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Bitangent, Containers::arrayCast<Vector3>(vertexData)}}};
+    Vector3 bitangents[3]{};
+    MeshData data{MeshPrimitive::Points, {}, bitangents, {
+        MeshAttributeData{MeshAttribute::Bitangent, Containers::arrayView(bitangents)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -2986,17 +3035,19 @@ void MeshDataTest::bitangentsIntoArrayInvalidSize() {
 
 template<class T> void MeshDataTest::normalsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto normalsView = Containers::arrayCast<T>(vertexData);
     /* Needs to be sufficiently representable to have the test work also for
        half floats */
-    normalsView[0] = {U(2.0f), U(1.0f), U(0.75f)};
-    normalsView[1] = {U(0.0f), U(-1.0f), U(1.25f)};
-    normalsView[2] = {U(-2.0f), U(3.0f), U(2.5f)};
+    typedef typename T::Type TT;
+    T normals[]{
+        {TT(2.0f), TT(1.0f), TT(0.75f)},
+        {TT(0.0f), TT(-1.0f), TT(1.25f)},
+        {TT(-2.0f), TT(3.0f), TT(2.5f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Normal, normalsView}}};
+    MeshData data{MeshPrimitive::Points, {}, normals, {
+        MeshAttributeData{MeshAttribute::Normal, Containers::arrayView(normals)}
+    }};
     CORRADE_COMPARE_AS(data.normalsAsArray(), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
@@ -3005,15 +3056,18 @@ template<class T> void MeshDataTest::normalsAsArray() {
 template<class T> void MeshDataTest::normalsAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto normalsView = Containers::arrayCast<T>(vertexData);
-    normalsView[0] = {Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)};
-    normalsView[1] = {0, Math::pack<typename T::Type>(-1.0f), 0};
+    typedef typename T::Type TT;
+    T normals[]{
+        {Math::pack<TT>(1.0f), 0, Math::pack<TT>(1.0f)},
+        {0, Math::pack<TT>(-1.0f), 0}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Normal,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        normalsView}}};
+    MeshData data{MeshPrimitive::Points, {}, normals, {
+        MeshAttributeData{MeshAttribute::Normal,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(normals)}
+    }};
     CORRADE_COMPARE_AS(data.normalsAsArray(), Containers::arrayView<Vector3>({
         {1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}
     }), TestSuite::Compare::Container);
@@ -3022,8 +3076,10 @@ template<class T> void MeshDataTest::normalsAsArrayPackedSignedNormalized() {
 void MeshDataTest::normalsIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector3)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Normal, Containers::arrayCast<Vector3>(vertexData)}}};
+    Vector3 normals[3]{};
+    MeshData data{MeshPrimitive::Points, {}, normals, {
+        MeshAttributeData{MeshAttribute::Normal, Containers::arrayView(normals)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3035,15 +3091,17 @@ void MeshDataTest::normalsIntoArrayInvalidSize() {
 
 template<class T> void MeshDataTest::textureCoordinates2DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto textureCoordinatesView = Containers::arrayCast<T>(vertexData);
-    textureCoordinatesView[0] = {U(2.0f), U(1.0f)};
-    textureCoordinatesView[1] = {U(0.0f), U(-1.0f)};
-    textureCoordinatesView[2] = {U(-2.0f), U(3.0f)};
+    typedef typename T::Type TT;
+    T textureCoordinates[]{
+        {TT(2.0f), TT(1.0f)},
+        {TT(0.0f), TT(-1.0f)},
+        {TT(-2.0f), TT(3.0f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::TextureCoordinates, textureCoordinatesView}}};
+    MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
+        MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayView(textureCoordinates)}
+    }};
     CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
         {2.0f, 1.0f}, {0.0f, -1.0f}, {-2.0f, 3.0f},
     }), TestSuite::Compare::Container);
@@ -3052,72 +3110,84 @@ template<class T> void MeshDataTest::textureCoordinates2DAsArray() {
 template<class T> void MeshDataTest::textureCoordinates2DAsArrayPackedUnsigned() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto textureCoordinatesView = Containers::arrayCast<T>(vertexData);
-    textureCoordinatesView[0] = {2, 1};
-    textureCoordinatesView[1] = {0, 15};
-    textureCoordinatesView[2] = {22, 3};
+    T textureCoordinates[]{
+        {2, 1},
+        {0, 15},
+        {22, 3}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::TextureCoordinates, textureCoordinatesView}}};
-    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(),
-        Containers::arrayView<Vector2>({{2.0f, 1.0f}, {0.0f, 15.0f}, {22.0f, 3.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
+        MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayView(textureCoordinates)}
+    }};
+    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
+        {2.0f, 1.0f}, {0.0f, 15.0f}, {22.0f, 3.0f}
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void MeshDataTest::textureCoordinates2DAsArrayPackedSigned() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto textureCoordinatesView = Containers::arrayCast<T>(vertexData);
-    textureCoordinatesView[0] = {2, 1};
-    textureCoordinatesView[1] = {0, -15};
-    textureCoordinatesView[2] = {-22, 3};
+    T textureCoordinates[]{
+        {2, 1},
+        {0, -15},
+        {-22, 3}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::TextureCoordinates, textureCoordinatesView}}};
-    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(),
-        Containers::arrayView<Vector2>({{2.0f, 1.0f}, {0.0f, -15.0f}, {-22.0f, 3.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
+        MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayView(textureCoordinates)}
+    }};
+    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
+        {2.0f, 1.0f}, {0.0f, -15.0f}, {-22.0f, 3.0f}
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void MeshDataTest::textureCoordinates2DAsArrayPackedUnsignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto textureCoordinatesView = Containers::arrayCast<T>(vertexData);
-    textureCoordinatesView[0] = {Math::pack<typename T::Type>(1.0f), 0};
-    textureCoordinatesView[1] = {0, Math::pack<typename T::Type>(1.0f)};
+    typedef typename T::Type TT;
+    T textureCoordinates[]{
+        {Math::pack<TT>(1.0f), 0},
+        {0, Math::pack<TT>(1.0f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::TextureCoordinates,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        textureCoordinatesView}}};
-    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(),
-        Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, 1.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
+        MeshAttributeData{MeshAttribute::TextureCoordinates,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(textureCoordinates)}
+    }};
+    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
+        {1.0f, 0.0f}, {0.0f, 1.0f}
+    }), TestSuite::Compare::Container);
 }
 
 template<class T> void MeshDataTest::textureCoordinates2DAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto textureCoordinatesView = Containers::arrayCast<T>(vertexData);
-    textureCoordinatesView[0] = {Math::pack<typename T::Type>(1.0f), 0};
-    textureCoordinatesView[1] = {0, Math::pack<typename T::Type>(-1.0f)};
+    typedef typename T::Type TT;
+    T textureCoordinates[]{
+        {Math::pack<TT>(1.0f), 0},
+        {0, Math::pack<TT>(-1.0f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::TextureCoordinates,
-        /* Assuming the normalized enum is always after the non-normalized */
-        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
-        textureCoordinatesView}}};
-    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(),
-        Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, -1.0f}}),
-        TestSuite::Compare::Container);
+    MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
+        MeshAttributeData{MeshAttribute::TextureCoordinates,
+            /* Assuming the normalized enum is always after the non-normalized */
+            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            Containers::arrayView(textureCoordinates)}
+    }};
+    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
+        {1.0f, 0.0f}, {0.0f, -1.0f}
+    }), TestSuite::Compare::Container);
 }
 
 void MeshDataTest::textureCoordinates2DIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Vector2)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayCast<Vector2>(vertexData)}}};
+    Vector2 textureCoordinates[3];
+    MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
+        MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayView(textureCoordinates)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3129,17 +3199,19 @@ void MeshDataTest::textureCoordinates2DIntoArrayInvalidSize() {
 
 template<class T> void MeshDataTest::colorsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
-    typedef typename T::Type U;
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto colorsView = Containers::arrayCast<T>(vertexData);
     /* Can't use e.g. 0xff3366_rgbf because that's not representable in
        half-floats */
-    colorsView[0] = {U(2.0f), U(1.0f), U(0.75f)};
-    colorsView[1] = {U(0.0f), U(-1.0f), U(1.25f)};
-    colorsView[2] = {U(-2.0f), U(3.0f), U(2.5f)};
+    typedef typename T::Type TT;
+    T colors[]{
+        {TT(2.0f), TT(1.0f), TT(0.75f)},
+        {TT(0.0f), TT(-1.0f), TT(1.25f)},
+        {TT(-2.0f), TT(3.0f), TT(2.5f)}
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Color, colorsView}}};
+    MeshData data{MeshPrimitive::Points, {}, colors, {
+        MeshAttributeData{MeshAttribute::Color, Containers::arrayView(colors)}
+    }};
     CORRADE_COMPARE_AS(data.colorsAsArray(), Containers::arrayView<Color4>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
@@ -3148,12 +3220,15 @@ template<class T> void MeshDataTest::colorsAsArray() {
 template<class T> void MeshDataTest::colorsAsArrayPackedUnsignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    Containers::Array<char> vertexData{2*sizeof(T)};
-    auto colorsView = Containers::arrayCast<T>(vertexData);
-    colorsView[0] = T::pad(Math::Color4<typename T::Type>{Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f), 0});
-    colorsView[1] = T::pad(Math::Color4<typename T::Type>{0, Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)});
+    typedef typename T::Type TT;
+    T colors[]{
+        T::pad(Math::Color4<TT>{Math::pack<TT>(1.0f), 0, Math::pack<TT>(1.0f), 0}),
+        T::pad(Math::Color4<TT>{0, Math::pack<TT>(1.0f), 0, Math::pack<TT>(1.0f)})
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Color, colorsView}}};
+    MeshData data{MeshPrimitive::Points, {}, colors, {
+        MeshAttributeData{MeshAttribute::Color, Containers::arrayView(colors)}
+    }};
     CORRADE_COMPARE_AS(data.colorsAsArray(), Containers::arrayView<Color4>({
         Color4::pad(Math::Vector<T::Size, Float>::pad(Vector4{1.0f, 0.0f, 1.0f, 0.0f}), 1.0f),
         Color4::pad(Math::Vector<T::Size, Float>::pad(Vector4{0.0f, 1.0f, 0.0f, 1.0f}), 1.0f)
@@ -3163,8 +3238,10 @@ template<class T> void MeshDataTest::colorsAsArrayPackedUnsignedNormalized() {
 void MeshDataTest::colorsIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(Color4)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Color, Containers::arrayCast<Color4>(vertexData)}}};
+    Color4 colors[3]{};
+    MeshData data{MeshPrimitive::Points, {}, colors, {
+        MeshAttributeData{MeshAttribute::Color, Containers::arrayView(colors)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -3177,15 +3254,15 @@ void MeshDataTest::colorsIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::objectIdsAsArray() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    Containers::Array<char> vertexData{3*sizeof(T)};
-    auto objectIdsView = Containers::arrayCast<T>(vertexData);
-    /* Can't use e.g. 0xff3366_rgbf because that's not representable in
-       half-floats */
-    objectIdsView[0] = {157};
-    objectIdsView[1] = {24};
-    objectIdsView[2] = {1};
+    T objectIds[]{
+        157,
+        24,
+        1
+    };
 
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::ObjectId, objectIdsView}}};
+    MeshData data{MeshPrimitive::Points, {}, objectIds, {
+        MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayView(objectIds)}
+    }};
     CORRADE_COMPARE_AS(data.objectIdsAsArray(), Containers::arrayView<UnsignedInt>({
         157, 24, 1
     }), TestSuite::Compare::Container);
@@ -3194,8 +3271,10 @@ template<class T> void MeshDataTest::objectIdsAsArray() {
 void MeshDataTest::objectIdsIntoArrayInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::Array<char> vertexData{3*sizeof(UnsignedInt)};
-    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayCast<UnsignedInt>(vertexData)}}};
+    UnsignedInt objectIds[3]{};
+    MeshData data{MeshPrimitive::Points, {}, objectIds, {
+        MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayView(objectIds)}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
