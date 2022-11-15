@@ -2686,8 +2686,7 @@ template<class T> void MeshDataTest::positions2DAsArrayPackedUnsignedNormalized(
 
     MeshData data{MeshPrimitive::Points, {}, positions, {
         MeshAttributeData{MeshAttribute::Position,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(positions)}
     }};
     CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
@@ -2706,8 +2705,7 @@ template<class T> void MeshDataTest::positions2DAsArrayPackedSignedNormalized() 
 
     MeshData data{MeshPrimitive::Points, {}, positions, {
         MeshAttributeData{MeshAttribute::Position,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(positions)}
     }};
     CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
@@ -2804,8 +2802,7 @@ template<class T> void MeshDataTest::positions3DAsArrayPackedUnsignedNormalized(
 
     MeshData data{MeshPrimitive::Points, {}, positions, {
         MeshAttributeData{MeshAttribute::Position,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(positions)}
     }};
     CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
@@ -2825,8 +2822,7 @@ template<class T> void MeshDataTest::positions3DAsArrayPackedSignedNormalized() 
 
     MeshData data{MeshPrimitive::Points, {}, positions, {
         MeshAttributeData{MeshAttribute::Position,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(positions)}
     }};
     CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
@@ -2882,8 +2878,7 @@ template<class T> void MeshDataTest::tangentsAsArrayPackedSignedNormalized() {
 
     MeshData data{MeshPrimitive::Points, {}, tangents, {
         MeshAttributeData{MeshAttribute::Tangent,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(tangents)}
     }};
     CORRADE_COMPARE_AS(data.tangentsAsArray(), Containers::arrayView<Vector3>({
@@ -2936,8 +2931,7 @@ template<class T> void MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized
 
     MeshData data{MeshPrimitive::Points, {}, tangents, {
         MeshAttributeData{MeshAttribute::Tangent,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<Math::Vector4<T>>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), 4, true),
             Containers::arrayView(tangents)}
     }};
     CORRADE_COMPARE_AS(data.bitangentSignsAsArray(), Containers::arrayView<Float>({
@@ -3008,8 +3002,7 @@ template<class T> void MeshDataTest::bitangentsAsArrayPackedSignedNormalized() {
 
     MeshData data{MeshPrimitive::Points, {}, bitangents, {
         MeshAttributeData{MeshAttribute::Bitangent,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(bitangents)}
     }};
     CORRADE_COMPARE_AS(data.bitangentsAsArray(), Containers::arrayView<Vector3>({
@@ -3064,8 +3057,7 @@ template<class T> void MeshDataTest::normalsAsArrayPackedSignedNormalized() {
 
     MeshData data{MeshPrimitive::Points, {}, normals, {
         MeshAttributeData{MeshAttribute::Normal,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(normals)}
     }};
     CORRADE_COMPARE_AS(data.normalsAsArray(), Containers::arrayView<Vector3>({
@@ -3152,8 +3144,7 @@ template<class T> void MeshDataTest::textureCoordinates2DAsArrayPackedUnsignedNo
 
     MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
         MeshAttributeData{MeshAttribute::TextureCoordinates,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(textureCoordinates)}
     }};
     CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
@@ -3172,8 +3163,7 @@ template<class T> void MeshDataTest::textureCoordinates2DAsArrayPackedSignedNorm
 
     MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
         MeshAttributeData{MeshAttribute::TextureCoordinates,
-            /* Assuming the normalized enum is always after the non-normalized */
-            VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+            vertexFormat(Implementation::vertexFormatFor<T>(), T::Size, true),
             Containers::arrayView(textureCoordinates)}
     }};
     CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
