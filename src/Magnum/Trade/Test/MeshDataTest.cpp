@@ -1481,8 +1481,8 @@ void MeshDataTest::constructZeroIndices() {
     CORRADE_VERIFY(data.isIndexed());
     CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedInt);
     CORRADE_COMPARE(data.indexCount(), 0);
-    CORRADE_COMPARE(data.indices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 4}));
-    CORRADE_COMPARE(data.mutableIndices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 4}));
+    CORRADE_COMPARE(data.indices().size(), (Containers::Size2D{0, 4}));
+    CORRADE_COMPARE(data.mutableIndices().size(), (Containers::Size2D{0, 4}));
     CORRADE_COMPARE(data.vertexCount(), 3);
 }
 
@@ -1548,9 +1548,9 @@ void MeshDataTest::constructIndexless() {
     CORRADE_VERIFY(!data.isIndexed());
     CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.indices().data(), nullptr);
-    CORRADE_COMPARE(data.indices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 0}));
+    CORRADE_COMPARE(data.indices().size(), (Containers::Size2D{0, 0}));
     CORRADE_COMPARE(data.mutableIndices().data(), nullptr);
-    CORRADE_COMPARE(data.mutableIndices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 0}));
+    CORRADE_COMPARE(data.mutableIndices().size(), (Containers::Size2D{0, 0}));
 
     CORRADE_COMPARE(data.vertexCount(), 3);
     CORRADE_COMPARE(data.attributeCount(), 1);
@@ -2051,10 +2051,10 @@ void MeshDataTest::constructSpecialIndexStridesImplementationSpecificIndexType()
 
         CORRADE_COMPARE(mesh.indexStride(), 0);
 
-        CORRADE_COMPARE(mesh.indices().size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
-        CORRADE_COMPARE(mesh.mutableIndices().size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
-        CORRADE_COMPARE(mesh.indices().stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
-        CORRADE_COMPARE(mesh.mutableIndices().stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
+        CORRADE_COMPARE(mesh.indices().size(), (Containers::Size2D{4, 0}));
+        CORRADE_COMPARE(mesh.mutableIndices().size(), (Containers::Size2D{4, 0}));
+        CORRADE_COMPARE(mesh.indices().stride(), (Containers::Stride2D{0, 1}));
+        CORRADE_COMPARE(mesh.mutableIndices().stride(), (Containers::Stride2D{0, 1}));
         CORRADE_COMPARE(*reinterpret_cast<const UnsignedShort*>(mesh.indices().data()), 15);
         CORRADE_COMPARE(*reinterpret_cast<UnsignedShort*>(mesh.mutableIndices().data()), 15);
 
@@ -2156,10 +2156,10 @@ void MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexF
        element size is zero as well, meaning there's no way to access anything
        except for directly interpreting the data pointer. Which is actually as
        desired for implementation-specific vertex formats. */
-    CORRADE_COMPARE(mesh.attribute(0).size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
-    CORRADE_COMPARE(mesh.mutableAttribute(0).size(), (Containers::StridedDimensions<2, std::size_t>{4, 0}));
-    CORRADE_COMPARE(mesh.attribute(0).stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
-    CORRADE_COMPARE(mesh.mutableAttribute(0).stride(), (Containers::StridedDimensions<2, std::ptrdiff_t>{0, 1}));
+    CORRADE_COMPARE(mesh.attribute(0).size(), (Containers::Size2D{4, 0}));
+    CORRADE_COMPARE(mesh.mutableAttribute(0).size(), (Containers::Size2D{4, 0}));
+    CORRADE_COMPARE(mesh.attribute(0).stride(), (Containers::Stride2D{0, 1}));
+    CORRADE_COMPARE(mesh.mutableAttribute(0).stride(), (Containers::Stride2D{0, 1}));
     CORRADE_COMPARE(*reinterpret_cast<const UnsignedShort*>(mesh.attribute(0).data()), 15);
     CORRADE_COMPARE(*reinterpret_cast<UnsignedShort*>(mesh.mutableAttribute(0).data()), 15);
     CORRADE_COMPARE_AS((Containers::arrayCast<1, const UnsignedShort>(mesh.attribute(1))),

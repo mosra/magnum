@@ -871,8 +871,8 @@ template<class T> void ImageViewTest::pixels2D() {
     auto pixels = image.template pixels<Color3ub>();
     CORRADE_COMPARE(decltype(pixels)::Dimensions, 2);
     CORRADE_COMPARE(std::is_const<typename decltype(pixels)::Type>::value, std::is_const<T>::value);
-    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<Color3ub>::Size{4, 2}));
-    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<Color3ub>::Stride{20, 3}));
+    CORRADE_COMPARE(pixels.size(), (Containers::Size2D{4, 2}));
+    CORRADE_COMPARE(pixels.stride(), (Containers::Stride2D{20, 3}));
     CORRADE_COMPARE(pixels.data(), image.data() + 2*20 + 3*3);
 }
 
@@ -893,8 +893,8 @@ template<class T> void ImageViewTest::pixels3D() {
     auto pixels = image.template pixels<Color3ub>();
     CORRADE_COMPARE(decltype(pixels)::Dimensions, 3);
     CORRADE_COMPARE(std::is_const<typename decltype(pixels)::Type>::value, std::is_const<T>::value);
-    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<Color3ub>::Size{3, 4, 2}));
-    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<Color3ub>::Stride{140, 20, 3}));
+    CORRADE_COMPARE(pixels.size(), (Containers::Size3D{3, 4, 2}));
+    CORRADE_COMPARE(pixels.stride(), (Containers::Stride3D{140, 20, 3}));
     CORRADE_COMPARE(pixels.data(), image.data() + 140 + 2*20 + 3*3);
 }
 
@@ -905,12 +905,10 @@ void ImageViewTest::pixelsNullptr() {
     CORRADE_COMPARE(image.data().size(), 0);
 
     CORRADE_COMPARE(image.pixels().data(), nullptr);
-    CORRADE_COMPARE(image.pixels().size(),
-        Containers::StridedArrayView4D<const char>::Size{});
+    CORRADE_COMPARE(image.pixels().size(), Containers::Size4D{});
 
     CORRADE_COMPARE(image.pixels<Color3ub>().data(), nullptr);
-    CORRADE_COMPARE(image.pixels<Color3ub>().size(),
-        Containers::StridedArrayView3D<Color3ub>::Size{});
+    CORRADE_COMPARE(image.pixels<Color3ub>().size(), Containers::Size3D{});
 }
 
 }}}

@@ -68,7 +68,7 @@ template<UnsignedInt dimensions, class T, class Image, class Data> Containers::S
     /* Size in the last dimension is byte size of the pixel, the remaining
        dimensions are reverted (first images, then rows, then pixels, last
        pixel bytes) */
-    Containers::StridedDimensions<dimensions + 1, std::size_t> size{NoInit};
+    Containers::Size<dimensions + 1> size{NoInit};
     size[dimensions] = image.pixelSize();
     for(UnsignedInt i = dimensions; i != 0; --i)
         size[i - 1] = image.size()[dimensions - i];
@@ -78,7 +78,7 @@ template<UnsignedInt dimensions, class T, class Image, class Data> Containers::S
        (first image size, then row size, then pixel size, last 1). The
        data properties include pixel size in row size, so we have to take it
        out from the cumulative product. */
-    Containers::StridedDimensions<dimensions + 1, std::ptrdiff_t> stride{NoInit};
+    Containers::Stride<dimensions + 1> stride{NoInit};
     stride[dimensions] = 1;
     stride[dimensions - 1] = 1;
     for(UnsignedInt i = dimensions - 1; i != 0; --i)
