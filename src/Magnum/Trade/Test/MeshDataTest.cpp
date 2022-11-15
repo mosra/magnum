@@ -2624,17 +2624,25 @@ void MeshDataTest::indicesIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::positions2DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
+    /* Testing also that it picks the correct attribute */
     typedef typename T::Type TT;
-    T positions[]{
-        T::pad(Math::Vector2<TT>{TT(2.0f), TT(1.0f)}),
-        T::pad(Math::Vector2<TT>{TT(0.0f), TT(-1.0f)}),
-        T::pad(Math::Vector2<TT>{TT(-2.0f), TT(3.0f)})
+    struct Vertex {
+        Vector2 otherPosition;
+        UnsignedShort objectId;
+        T position;
+    } vertices[]{
+        {{}, 0, T::pad(Math::Vector2<TT>{TT(2.0f), TT(1.0f)})},
+        {{}, 0, T::pad(Math::Vector2<TT>{TT(0.0f), TT(-1.0f)})},
+        {{}, 0, T::pad(Math::Vector2<TT>{TT(-2.0f), TT(3.0f)})}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, positions, {
-        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Position, view.slice(&Vertex::otherPosition)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Position, view.slice(&Vertex::position)}
     }};
-    CORRADE_COMPARE_AS(data.positions2DAsArray(), Containers::arrayView<Vector2>({
+    CORRADE_COMPARE_AS(data.positions2DAsArray(1), Containers::arrayView<Vector2>({
         {2.0f, 1.0f}, {0.0f, -1.0f}, {-2.0f, 3.0f}
     }), TestSuite::Compare::Container);
 }
@@ -2732,19 +2740,27 @@ void MeshDataTest::positions2DIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::positions3DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    /* Needs to be sufficiently representable to have the test work also for
-       half floats */
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
     typedef typename T::Type TT;
-    T positions[]{
-        T::pad(Math::Vector3<TT>{TT(2.0f), TT(1.0f), TT(0.75f)}),
-        T::pad(Math::Vector3<TT>{TT(0.0f), TT(-1.0f), TT(1.25f)}),
-        T::pad(Math::Vector3<TT>{TT(-2.0f), TT(3.0f), TT(2.5f)})
+    struct Vertex {
+        Vector3 otherPosition;
+        UnsignedShort objectId;
+        T position;
+    } vertices[]{
+        {{}, 0, T::pad(Math::Vector3<TT>{TT(2.0f), TT(1.0f), TT(0.75f)})},
+        {{}, 0, T::pad(Math::Vector3<TT>{TT(0.0f), TT(-1.0f), TT(1.25f)})},
+        {{}, 0, T::pad(Math::Vector3<TT>{TT(-2.0f), TT(3.0f), TT(2.5f)})}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, positions, {
-        MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Position, view.slice(&Vertex::otherPosition)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Position, view.slice(&Vertex::position)}
     }};
-    CORRADE_COMPARE_AS(data.positions3DAsArray(), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.positions3DAsArray(1), Containers::arrayView<Vector3>({
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{2.0f, 1.0f, 0.75f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{0.0f, -1.0f, 1.25f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{-2.0f, 3.0f, 2.5f}))
@@ -2850,19 +2866,27 @@ void MeshDataTest::positions3DIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::tangentsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    /* Needs to be sufficiently representable to have the test work also for
-       half floats */
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
     typedef typename T::Type TT;
-    T tangents[]{
-        T::pad(Math::Vector3<TT>{TT(2.0f), TT(1.0f), TT(0.75f)}),
-        T::pad(Math::Vector3<TT>{TT(0.0f), TT(-1.0f), TT(1.25f)}),
-        T::pad(Math::Vector3<TT>{TT(-2.0f), TT(3.0f), TT(2.5f)})
+    struct Vertex {
+        Vector3 otherTangent;
+        UnsignedShort objectId;
+        T tangent;
+    } vertices[]{
+        {{}, 0, T::pad(Math::Vector3<TT>{TT(2.0f), TT(1.0f), TT(0.75f)})},
+        {{}, 0, T::pad(Math::Vector3<TT>{TT(0.0f), TT(-1.0f), TT(1.25f)})},
+        {{}, 0, T::pad(Math::Vector3<TT>{TT(-2.0f), TT(3.0f), TT(2.5f)})}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, tangents, {
-        MeshAttributeData{MeshAttribute::Tangent, Containers::arrayView(tangents)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Tangent, view.slice(&Vertex::otherTangent)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Tangent, view.slice(&Vertex::tangent)}
     }};
-    CORRADE_COMPARE_AS(data.tangentsAsArray(), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.tangentsAsArray(1), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -2905,18 +2929,26 @@ void MeshDataTest::tangentsIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::bitangentSignsAsArray() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    /* Needs to be sufficiently representable to have the test work also for
-       half floats */
-    Math::Vector4<T> tangents[]{
-        {T(2.0f), T(1.0f), T(0.75f), T(-1.0f)},
-        {T(0.0f), T(-1.0f), T(1.25f), T(1.0f)},
-        {T(-2.0f), T(3.0f), T(2.5f), T(-1.0f)}
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
+    struct Vertex {
+        Vector3 otherTangent;
+        UnsignedShort objectId;
+        Math::Vector4<T> tangent;
+    } vertices[]{
+        {{}, 0, {T(2.0f), T(1.0f), T(0.75f), T(-1.0f)}},
+        {{}, 0, {T(0.0f), T(-1.0f), T(1.25f), T(1.0f)}},
+        {{}, 0, {T(-2.0f), T(3.0f), T(2.5f), T(-1.0f)}}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, tangents, {
-        MeshAttributeData{MeshAttribute::Tangent, Containers::arrayView(tangents)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Tangent, view.slice(&Vertex::otherTangent)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Tangent, view.slice(&Vertex::tangent)}
     }};
-    CORRADE_COMPARE_AS(data.bitangentSignsAsArray(), Containers::arrayView<Float>({
+    CORRADE_COMPARE_AS(data.bitangentSignsAsArray(1), Containers::arrayView<Float>({
         -1.0f, 1.0f, -1.0f
     }), TestSuite::Compare::Container);
 }
@@ -2974,19 +3006,27 @@ void MeshDataTest::bitangentSignsIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::bitangentsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    /* Needs to be sufficiently representable to have the test work also for
-       half floats */
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
     typedef typename T::Type TT;
-    T bitangents[]{
-        {TT(2.0f), TT(1.0f), TT(0.75f)},
-        {TT(0.0f), TT(-1.0f), TT(1.25f)},
-        {TT(-2.0f), TT(3.0f), TT(2.5f)}
+    struct Vertex {
+        Vector3 otherBitangent;
+        UnsignedShort objectId;
+        T bitangent;
+    } vertices[]{
+        {{}, 0, {TT(2.0f), TT(1.0f), TT(0.75f)}},
+        {{}, 0, {TT(0.0f), TT(-1.0f), TT(1.25f)}},
+        {{}, 0, {TT(-2.0f), TT(3.0f), TT(2.5f)}}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, bitangents, {
-        MeshAttributeData{MeshAttribute::Bitangent, Containers::arrayView(bitangents)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Bitangent, view.slice(&Vertex::otherBitangent)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Bitangent, view.slice(&Vertex::bitangent)}
     }};
-    CORRADE_COMPARE_AS(data.bitangentsAsArray(), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.bitangentsAsArray(1), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -3029,19 +3069,27 @@ void MeshDataTest::bitangentsIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::normalsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    /* Needs to be sufficiently representable to have the test work also for
-       half floats */
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
     typedef typename T::Type TT;
-    T normals[]{
-        {TT(2.0f), TT(1.0f), TT(0.75f)},
-        {TT(0.0f), TT(-1.0f), TT(1.25f)},
-        {TT(-2.0f), TT(3.0f), TT(2.5f)}
+    struct Vertex {
+        Vector3 otherNormal;
+        UnsignedShort objectId;
+        T normal;
+    } vertices[]{
+        {{}, 0, {TT(2.0f), TT(1.0f), TT(0.75f)}},
+        {{}, 0, {TT(0.0f), TT(-1.0f), TT(1.25f)}},
+        {{}, 0, {TT(-2.0f), TT(3.0f), TT(2.5f)}}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, normals, {
-        MeshAttributeData{MeshAttribute::Normal, Containers::arrayView(normals)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Normal, view.slice(&Vertex::otherNormal)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Normal, view.slice(&Vertex::normal)}
     }};
-    CORRADE_COMPARE_AS(data.normalsAsArray(), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.normalsAsArray(1), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -3084,17 +3132,27 @@ void MeshDataTest::normalsIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::textureCoordinates2DAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
+    /* Testing also that it picks the correct attribute. Needs to be
+       sufficiently representable to have the test work also for half
+       floats. */
     typedef typename T::Type TT;
-    T textureCoordinates[]{
-        {TT(2.0f), TT(1.0f)},
-        {TT(0.0f), TT(-1.0f)},
-        {TT(-2.0f), TT(3.0f)}
+    struct Vertex {
+        Vector2 otherTextureCoordinate;
+        UnsignedShort objectId;
+        T textureCoordinate;
+    } vertices[]{
+        {{}, 0, {TT(2.0f), TT(1.0f)}},
+        {{}, 0, {TT(0.0f), TT(-1.0f)}},
+        {{}, 0, {TT(-2.0f), TT(3.0f)}}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, textureCoordinates, {
-        MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayView(textureCoordinates)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::TextureCoordinates, view.slice(&Vertex::otherTextureCoordinate)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::TextureCoordinates, view.slice(&Vertex::textureCoordinate)}
     }};
-    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(), Containers::arrayView<Vector2>({
+    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(1), Containers::arrayView<Vector2>({
         {2.0f, 1.0f}, {0.0f, -1.0f}, {-2.0f, 3.0f},
     }), TestSuite::Compare::Container);
 }
@@ -3190,19 +3248,26 @@ void MeshDataTest::textureCoordinates2DIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::colorsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
 
-    /* Can't use e.g. 0xff3366_rgbf because that's not representable in
-       half-floats */
+    /* Testing also that it picks the correct attribute. Can't use e.g.
+       0xff3366_rgbf because that's not representable in half-floats. */
     typedef typename T::Type TT;
-    T colors[]{
-        {TT(2.0f), TT(1.0f), TT(0.75f)},
-        {TT(0.0f), TT(-1.0f), TT(1.25f)},
-        {TT(-2.0f), TT(3.0f), TT(2.5f)}
+    struct Vertex {
+        Color4 otherColor;
+        UnsignedShort objectId;
+        T color;
+    } vertices[]{
+        {{}, 0, {TT(2.0f), TT(1.0f), TT(0.75f)}},
+        {{}, 0, {TT(0.0f), TT(-1.0f), TT(1.25f)}},
+        {{}, 0, {TT(-2.0f), TT(3.0f), TT(2.5f)}}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, colors, {
-        MeshAttributeData{MeshAttribute::Color, Containers::arrayView(colors)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Color, view.slice(&Vertex::otherColor)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)},
+        MeshAttributeData{MeshAttribute::Color, view.slice(&Vertex::color)}
     }};
-    CORRADE_COMPARE_AS(data.colorsAsArray(), Containers::arrayView<Color4>({
+    CORRADE_COMPARE_AS(data.colorsAsArray(1), Containers::arrayView<Color4>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -3244,16 +3309,24 @@ void MeshDataTest::colorsIntoArrayInvalidSize() {
 template<class T> void MeshDataTest::objectIdsAsArray() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    T objectIds[]{
-        157,
-        24,
-        1
+    /* Testing also that it picks the correct attribute */
+    struct Vertex {
+        UnsignedByte otherObjectId;
+        Vector2 position;
+        T objectId;
+    } vertices[]{
+        {0, {}, 157},
+        {0, {}, 24},
+        {0, {}, 1}
     };
+    auto view = Containers::stridedArrayView(vertices);
 
-    MeshData data{MeshPrimitive::Points, {}, objectIds, {
-        MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayView(objectIds)}
+    MeshData data{MeshPrimitive::Points, {}, vertices, {
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::otherObjectId)},
+        MeshAttributeData{MeshAttribute::Position, view.slice(&Vertex::position)},
+        MeshAttributeData{MeshAttribute::ObjectId, view.slice(&Vertex::objectId)}
     }};
-    CORRADE_COMPARE_AS(data.objectIdsAsArray(), Containers::arrayView<UnsignedInt>({
+    CORRADE_COMPARE_AS(data.objectIdsAsArray(1), Containers::arrayView<UnsignedInt>({
         157, 24, 1
     }), TestSuite::Compare::Container);
 }
