@@ -85,6 +85,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructArrayAttributeTypeErased();
     void constructArrayAttributeNullptr();
     void constructArrayAttributeOffsetOnly();
+    void constructArrayAttributeImplementationSpecificFormat();
     void constructArrayAttributeNotAllowed();
 
     void construct();
@@ -258,6 +259,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructArrayAttributeTypeErased,
               &MeshDataTest::constructArrayAttributeNullptr,
               &MeshDataTest::constructArrayAttributeOffsetOnly,
+              &MeshDataTest::constructArrayAttributeImplementationSpecificFormat,
               &MeshDataTest::constructArrayAttributeNotAllowed});
 
     addInstancedTests({&MeshDataTest::construct},
@@ -1129,6 +1131,19 @@ void MeshDataTest::constructArrayAttributeOffsetOnly() {
     CORRADE_COMPARE(cdata.arraySize(), 4);
 }
 
+void MeshDataTest::constructArrayAttributeImplementationSpecificFormat() {
+    Vector2 positions[]{{1.0f, 0.3f}, {0.5f, 0.7f}};
+
+    /* This should not fire any asserts */
+    MeshAttributeData a{meshAttributeCustom(35), vertexFormatWrap(0x3a), positions, 2};
+    CORRADE_COMPARE(a.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(a.format(), vertexFormatWrap(0x3a));
+    CORRADE_COMPARE(a.arraySize(), 2);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data()),
+        Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
+        TestSuite::Compare::Container);
+}
+
 void MeshDataTest::constructArrayAttributeNotAllowed() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -1144,23 +1159,21 @@ void MeshDataTest::constructArrayAttributeNotAllowed() {
     MeshAttributeData{meshAttributeCustom(35), positions2D};
     MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2, positions2Dchar, 3};
     MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2, 0, 3, 6*sizeof(Vector2), 3};
+    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), positions, 3};
+    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), 0, 3, 6*sizeof(Vector2), 3};
 
     /* This is not */
     std::ostringstream out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2b, positions, 3};
-    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), positions, 3};
     MeshAttributeData{MeshAttribute::Position, positions2D};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, positions2Dchar, 3};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 3, 6*sizeof(Vector2), 3};
-    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), 0, 3, 6*sizeof(Vector2), 3};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n"
-        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format\n"
         "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n"
         "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n"
-        "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n"
-        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format\n");
+        "Trade::MeshAttributeData: Trade::MeshAttribute::Position can't be an array attribute\n");
 }
 
 void MeshDataTest::construct() {
@@ -1895,14 +1908,17 @@ void MeshDataTest::constructImplementationSpecificVertexFormat() {
         MeshAttributeData{MeshAttribute::TextureCoordinates,
             vertexFormatWrap(0xdead3), attribute},
         MeshAttributeData{MeshAttribute::Color,
-            vertexFormatWrap(0xdead4), attribute}}};
+            vertexFormatWrap(0xdead4), attribute},
+        MeshAttributeData{meshAttributeCustom(35),
+            vertexFormatWrap(0xdead5), attribute, 27}}};
 
     /* Getting typeless attribute should work also */
     UnsignedInt format = 0xdead1;
     for(MeshAttribute name: {MeshAttribute::Position,
                              MeshAttribute::Normal,
                              MeshAttribute::TextureCoordinates,
-                             MeshAttribute::Color}) {
+                             MeshAttribute::Color,
+                             meshAttributeCustom(35)}) {
         CORRADE_ITERATION(name);
         CORRADE_COMPARE(data.attributeFormat(name), vertexFormatWrap(format++));
 

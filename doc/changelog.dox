@@ -627,6 +627,9 @@ See also:
     attribute strides for better data layout flexibility. This is however not
     commonly supported by GPU APIs and tools like @ref MeshTools::compile()
     assert in that case.
+-   @ref Trade::MeshData now allows array attributes to have
+    implementation-specific vertex formats as well. The restriction didn't make
+    sense, as there was nothing in the design preventing them from being used.
 -   Added @ref Trade::MeshData::findAttributeId() for an ability to check that
     an attribute exists and retrieve its ID in a single step, avoiding a double
     lookup compared to @relativeref{Trade::MeshData,hasAttribute()} +

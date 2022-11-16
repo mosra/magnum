@@ -2287,8 +2287,7 @@ namespace Implementation {
 }
 
 constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, const UnsignedShort arraySize) noexcept:
-    _format{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
-        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), format)},
+    _format{format},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
     _isOffsetOnly{false}, _vertexCount{UnsignedInt(data.size())},
@@ -2300,8 +2299,7 @@ constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribu
     _data{data.data()} {}
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride, UnsignedShort arraySize) noexcept:
-    _format{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
-        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), format)},
+    _format{format},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
     _isOffsetOnly{true}, _vertexCount{vertexCount},
