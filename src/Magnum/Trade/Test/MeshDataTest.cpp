@@ -937,8 +937,8 @@ void MeshDataTest::constructAttributeImplementationSpecificFormat() {
     Vector2 positions[]{{1.0f, 0.3f}, {0.5f, 0.7f}};
 
     /* This should not fire any asserts */
-    MeshAttributeData a{MeshAttribute::TextureCoordinates, vertexFormatWrap(0x3a), positions};
-    CORRADE_COMPARE(a.name(), MeshAttribute::TextureCoordinates);
+    MeshAttributeData a{MeshAttribute::Position, vertexFormatWrap(0x3a), positions};
+    CORRADE_COMPARE(a.name(), MeshAttribute::Position);
     CORRADE_COMPARE(a.format(), vertexFormatWrap(0x3a));
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data()),
         Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
@@ -1148,8 +1148,8 @@ void MeshDataTest::constructArrayAttributeNotAllowed() {
     /* This is not */
     std::ostringstream out;
     Error redirectError{&out};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2b, Containers::arrayView(positionData), 3};
-    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), Containers::arrayView(positionData), 3};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2b, positions, 3};
+    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), positions, 3};
     MeshAttributeData{MeshAttribute::Position, positions2D};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, positions2Dchar, 3};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 3, 6*sizeof(Vector2), 3};
