@@ -145,6 +145,7 @@ typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<UnsignedInt> Vector2ui;
 typedef Math::Vector2<Int> Vector2i;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector4<UnsignedShort> Vector4us;
 typedef Math::Vector4<Float> Vector4;
 
 void PackingBatchTest::unpackUnsignedByte() {
@@ -641,12 +642,18 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Math::Vector2<T> data[2]{};
+    Math::Vector4<T> dataNonContiguous[2]{};
     Vector2 resultWrongCount[1]{};
+    Vector2 result[2]{};
     Vector3 resultWrongVectorSize[2]{};
     Vector4 resultNonContiguous[2]{};
 
     auto src = Corrade::Containers::arrayCast<2, T>(
         Corrade::Containers::arrayView(data));
+    auto srcNonContiguous = Corrade::Containers::arrayCast<2, T>(
+        Corrade::Containers::arrayView(dataNonContiguous)).every({1, 2});
+    auto dst = Corrade::Containers::arrayCast<2, Float>(
+        Corrade::Containers::arrayView(result));
     auto dstWrongCount = Corrade::Containers::arrayCast<2, Float>(
         Corrade::Containers::arrayView(resultWrongCount));
     auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, Float>(
@@ -659,28 +666,38 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
     unpackInto(src, dstWrongCount);
     unpackInto(src, dstWrongVectorSize);
     unpackInto(src, dstNotContiguous);
+    unpackInto(srcNonContiguous, dst);
     packInto(dstWrongCount, src);
     packInto(dstWrongVectorSize, src);
     packInto(dstNotContiguous, src);
+    packInto(dst, srcNonContiguous);
     CORRADE_COMPARE(out.str(),
         "Math::unpackInto(): wrong destination size, got {1, 2} but expected {2, 2}\n"
         "Math::unpackInto(): wrong destination size, got {2, 3} but expected {2, 2}\n"
-        "Math::unpackInto(): second view dimension is not contiguous\n"
+        "Math::unpackInto(): second destination view dimension is not contiguous\n"
+        "Math::unpackInto(): second source view dimension is not contiguous\n"
         "Math::packInto(): wrong destination size, got {2, 2} but expected {1, 2}\n"
         "Math::packInto(): wrong destination size, got {2, 2} but expected {2, 3}\n"
-        "Math::packInto(): second view dimension is not contiguous\n");
+        "Math::packInto(): second source view dimension is not contiguous\n"
+        "Math::packInto(): second destination view dimension is not contiguous\n");
 }
 
 void PackingBatchTest::assertionsPackUnpackHalf() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Vector2us data[2]{};
+    Vector4us dataNonContiguous[2]{};
+    Vector2 result[2]{};
     Vector2 resultWrongCount[1]{};
     Vector3 resultWrongVectorSize[2]{};
     Vector4 resultNonContiguous[2]{};
 
     auto src = Corrade::Containers::arrayCast<2, UnsignedShort>(
         Corrade::Containers::arrayView(data));
+    auto srcNonContiguous = Corrade::Containers::arrayCast<2, UnsignedShort>(
+        Corrade::Containers::arrayView(dataNonContiguous)).every({1, 2});
+    auto dst = Corrade::Containers::arrayCast<2, Float>(
+        Corrade::Containers::arrayView(result));
     auto dstWrongCount = Corrade::Containers::arrayCast<2, Float>(
         Corrade::Containers::arrayView(resultWrongCount));
     auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, Float>(
@@ -693,16 +710,20 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
     unpackHalfInto(src, dstWrongCount);
     unpackHalfInto(src, dstWrongVectorSize);
     unpackHalfInto(src, dstNotContiguous);
+    unpackHalfInto(srcNonContiguous, dst);
     packHalfInto(dstWrongCount, src);
     packHalfInto(dstWrongVectorSize, src);
     packHalfInto(dstNotContiguous, src);
+    packHalfInto(dst, srcNonContiguous);
     CORRADE_COMPARE(out.str(),
         "Math::unpackHalfInto(): wrong destination size, got {1, 2} but expected {2, 2}\n"
         "Math::unpackHalfInto(): wrong destination size, got {2, 3} but expected {2, 2}\n"
-        "Math::unpackHalfInto(): second view dimension is not contiguous\n"
+        "Math::unpackHalfInto(): second destination view dimension is not contiguous\n"
+        "Math::unpackHalfInto(): second source view dimension is not contiguous\n"
         "Math::packHalfInto(): wrong destination size, got {2, 2} but expected {1, 2}\n"
         "Math::packHalfInto(): wrong destination size, got {2, 2} but expected {2, 3}\n"
-        "Math::packHalfInto(): second view dimension is not contiguous\n");
+        "Math::packHalfInto(): second source view dimension is not contiguous\n"
+        "Math::packHalfInto(): second destination view dimension is not contiguous\n");
 }
 
 template<class U, class T> void PackingBatchTest::assertionsCast() {
@@ -735,10 +756,10 @@ template<class U, class T> void PackingBatchTest::assertionsCast() {
     CORRADE_COMPARE(out.str(),
         "Math::castInto(): wrong destination size, got {1, 2} but expected {2, 2}\n"
         "Math::castInto(): wrong destination size, got {2, 3} but expected {2, 2}\n"
-        "Math::castInto(): second view dimension is not contiguous\n"
+        "Math::castInto(): second destination view dimension is not contiguous\n"
         "Math::castInto(): wrong destination size, got {2, 2} but expected {1, 2}\n"
         "Math::castInto(): wrong destination size, got {2, 2} but expected {2, 3}\n"
-        "Math::castInto(): second view dimension is not contiguous\n");
+        "Math::castInto(): second source view dimension is not contiguous\n");
 }
 
 }}}}

@@ -38,8 +38,10 @@ namespace {
 template<class T> inline void unpackUnsignedIntoImplementation(const Corrade::Containers::StridedArrayView2D<const T>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::unpackInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.template isContiguous<1>() && dst.isContiguous<1>(),
-        "Math::unpackInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(src.template isContiguous<1>(),
+        "Math::unpackInto(): second source view dimension is not contiguous", );
+    CORRADE_ASSERT(dst.isContiguous<1>(),
+        "Math::unpackInto(): second destination view dimension is not contiguous", );
 
     /** @todo SSE/NEON implementations exploiting second dimension size/stride,
         contiguity etc */
@@ -77,8 +79,10 @@ namespace {
 template<class T> inline void unpackSignedIntoImplementation(const Corrade::Containers::StridedArrayView2D<const T>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::unpackInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.template isContiguous<1>() && dst.isContiguous<1>(),
-        "Math::unpackInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(src.template isContiguous<1>(),
+        "Math::unpackInto(): second source view dimension is not contiguous", );
+    CORRADE_ASSERT(dst.isContiguous<1>(),
+        "Math::unpackInto(): second destination view dimension is not contiguous", );
 
     /** @todo SSE/NEON implementations exploiting second dimension size/stride,
         contiguity etc */
@@ -119,8 +123,10 @@ namespace {
 template<class T> inline void packIntoImplementation(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<T>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::packInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.isContiguous<1>() && dst.template isContiguous<1>(),
-        "Math::packInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(src.isContiguous<1>(),
+        "Math::packInto(): second source view dimension is not contiguous", );
+    CORRADE_ASSERT(dst.template isContiguous<1>(),
+        "Math::packInto(): second destination view dimension is not contiguous", );
 
     /** @todo SSE/NEON implementations exploiting second dimension size/stride,
         contiguity etc */
@@ -167,8 +173,10 @@ namespace {
 template<class T, class U> inline void castIntoImplementation(const Corrade::Containers::StridedArrayView2D<const T>& src, const Corrade::Containers::StridedArrayView2D<U>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::castInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.template isContiguous<1>() && dst.template isContiguous<1>(),
-        "Math::castInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(src.template isContiguous<1>(),
+        "Math::castInto(): second source view dimension is not contiguous", );
+    CORRADE_ASSERT(dst.template isContiguous<1>(),
+        "Math::castInto(): second destination view dimension is not contiguous", );
 
     /** @todo SSE/NEON implementations exploiting second dimension size/stride,
         contiguity etc */
@@ -401,8 +409,10 @@ static_assert(sizeof(HalfBaseTable) + sizeof(HalfShiftTable) == 1536,
 void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::unpackHalfInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.isContiguous<1>() && dst.isContiguous<1>(),
-        "Math::unpackHalfInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(src.isContiguous<1>(),
+        "Math::unpackHalfInto(): second source view dimension is not contiguous", );
+    CORRADE_ASSERT(dst.isContiguous<1>(),
+        "Math::unpackHalfInto(): second destination view dimension is not contiguous", );
 
     /* Caching values to avoid inline function calls in debug builds */
     const char* srcPtr = reinterpret_cast<const char*>(src.data());
@@ -426,8 +436,10 @@ void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const Unsigned
 void packHalfInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::packHalfInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.isContiguous<1>() && dst.isContiguous<1>(),
-        "Math::packHalfInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(src.isContiguous<1>(),
+        "Math::packHalfInto(): second source view dimension is not contiguous", );
+    CORRADE_ASSERT(dst.isContiguous<1>(),
+        "Math::packHalfInto(): second destination view dimension is not contiguous", );
 
     /* Caching values to avoid inline function calls in debug builds */
     const char* srcPtr = reinterpret_cast<const char*>(src.data());
