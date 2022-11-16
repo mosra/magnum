@@ -1471,8 +1471,8 @@ void MeshDataTest::construct() {
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::TextureCoordinates, 0)[0], (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::TextureCoordinates, 1)[1], (Vector2{0.250f, 0.375f}));
         /* Array */
-        CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][0], 22);
-        CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][1], -1);
+        CORRADE_COMPARE(data.mutableAttribute<Short[]>(meshAttributeCustom(13))[2][0], 22);
+        CORRADE_COMPARE(data.mutableAttribute<Short[]>(meshAttributeCustom(13))[2][1], -1);
     }
 }
 
