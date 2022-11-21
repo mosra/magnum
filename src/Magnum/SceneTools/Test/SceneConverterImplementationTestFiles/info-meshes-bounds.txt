@@ -1,5 +1,5 @@
 Mesh 0:
-  Level 0: 2 vertices @ Lines (0.1 kB, {})
+  Level 0: 2 vertices @ Lines (0.2 kB, {})
     Position @ Vector3, offset 0, stride 12
       Bounds: ({0.1, -0.1, -0.2}, {0.2, 0, 0.2})
     Tangent @ Vector3, offset 24, stride 12
@@ -17,6 +17,10 @@ Mesh 0:
       Bounds: ({0.6, 0.2, 0.2, 0}, {1, 0.4, 0.4, 0.2})
     ObjectId @ UnsignedInt, offset 132, stride 4
       Bounds: (15, 337)
+    JointIds @ UnsignedByte[3], offset 140, stride 3
+      Bounds: (6, 27)
+    Weights @ Half[3], offset 146, stride 6
+      Bounds: (0.125, 0.75)
     3 indices @ UnsignedByte, offset 0, stride 1 (0.0 kB, {})
       Bounds: (3, 176)
-Total mesh data size: 0.1 kB
+Total mesh data size: 0.2 kB

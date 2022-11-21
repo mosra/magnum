@@ -481,6 +481,18 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                     case Trade::MeshAttribute::Color:
                         bounds = calculateBounds(mesh->colorsAsArray(mesh->attributeId(k)));
                         break;
+                    /* These two are arrays, and thus the bounds should be
+                       calculated across the array elements as well. But as
+                       the data are returned in a flattened array, it's done
+                       implicitly without having to additionally do some
+                       `vec.minmax()` like in case of vectors. Yay for
+                       accidental timesavers! */
+                    case Trade::MeshAttribute::JointIds:
+                        bounds = calculateBounds(mesh->jointIdsAsArray(mesh->attributeId(k)));
+                        break;
+                    case Trade::MeshAttribute::Weights:
+                        bounds = calculateBounds(mesh->weightsAsArray(mesh->attributeId(k)));
+                        break;
                     case Trade::MeshAttribute::ObjectId:
                         bounds = calculateBounds(mesh->objectIdsAsArray(mesh->attributeId(k)));
                         break;

@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/CubicHermite.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 
@@ -744,6 +745,8 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
                     Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertexData->textureCoordinates)},
                     Trade::MeshAttributeData{Trade::MeshAttribute::Color, Containers::arrayView(vertexData->color)},
                     Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, Containers::arrayView(vertexData->objectIdSecondary)},
+                    Trade::MeshAttributeData{Trade::MeshAttribute::JointIds, VertexFormat::UnsignedByte, Containers::arrayView(vertexData->jointIds), 3},
+                    Trade::MeshAttributeData{Trade::MeshAttribute::Weights, VertexFormat::Half, Containers::arrayView(vertexData->weights), 3},
                 }};
         }
 
@@ -763,6 +766,8 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
             Vector2 textureCoordinates[2];
             Vector4 color[2];
             UnsignedInt objectIdSecondary[2];
+            Vector3ub jointIds[2];
+            Vector3h weights[2];
         } vertexData[1]{{
             {{0.1f, -0.1f, 0.2f}, {0.2f, 0.0f, -0.2f}},
             {{0.2f, -0.2f, 0.8f}, {0.3f, 0.8f, 0.2f}},
@@ -772,6 +777,8 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
             {{0.5f, 0.5f}, {1.5f, 0.5f}},
             {0x99336600_rgbaf, 0xff663333_rgbaf},
             {15, 337},
+            {{22, 6, 27}, {15, 12, 23}},
+            {{0.5_h, 0.25_h, 0.25_h}, {0.125_h, 0.75_h, 0.125_h}}
         }};
     } importer;
 
