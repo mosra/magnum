@@ -167,7 +167,31 @@ const struct {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
             VertexFormat::Vector2, 4*sizeof(Float), 10, 6*sizeof(Float)}
         /* Fit into the epsilon again */
-    }), 0.0f, 10.0f, 10.0f*Math::TypeTraits<Float>::epsilon(), 7, false}
+    }), 0.0f, 10.0f, 10.0f*Math::TypeTraits<Float>::epsilon(), 7, false},
+    /* Nothing special here, just verifying these (array) attributes get
+       handled properly */
+    {"jointId[3] + weight[3], texcoord", Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            /* It's a float, but interpreting as UnsignedInt. The first 2
+               floats out of 6 are bit-exact so integer comparison should work
+               as well; the second 2 are then with the epsilon.  */
+            VertexFormat::UnsignedInt, 0, 10, 6*sizeof(Float), 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float, 2*sizeof(Float), 10, 6*sizeof(Float), 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            VertexFormat::Vector2, 4*sizeof(Float), 10, 6*sizeof(Float)}
+    }), 0.0f, 1.0f, Math::TypeTraits<Float>::epsilon(), 7, false},
+    {"jointId[3] + weight[3], epsilon 0", Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            /* It's a float, but interpreting as UnsignedInt. The first 2
+               floats out of 6 are bit-exact so integer comparison should work
+               as well; the second 2 are then with the epsilon.  */
+            VertexFormat::UnsignedInt, 0, 10, 6*sizeof(Float), 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float, 2*sizeof(Float), 10, 6*sizeof(Float), 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            VertexFormat::Vector2, 4*sizeof(Float), 10, 6*sizeof(Float)}
+    }), 0.0f, 1.0f, 0.0f, 9, false},
 };
 
 RemoveDuplicatesTest::RemoveDuplicatesTest() {

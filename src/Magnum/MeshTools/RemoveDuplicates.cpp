@@ -520,6 +520,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
                    applies), use epsilon as-is */
                 case Trade::MeshAttribute::TextureCoordinates:
                 case Trade::MeshAttribute::Color:
+                case Trade::MeshAttribute::Weights:
                     attributeEpsilon = floatEpsilon;
                     break;
 
@@ -538,6 +539,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
                 /* These shouldn't be floating point */
                 /* LCOV_EXCL_START */
                 case Trade::MeshAttribute::ObjectId:
+                case Trade::MeshAttribute::JointIds:
                     CORRADE_INTERNAL_ASSERT_UNREACHABLE();
                 /* LCOV_EXCL_STOP */
             }
