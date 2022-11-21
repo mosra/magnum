@@ -99,6 +99,11 @@ const struct {
 
 const struct {
     const char* name;
+    /* The attributes are expected to be offsets into the `floats` array in the
+       test, which consists of 10 times 6 floats, so count should be always 10
+       and size be always 6*sizeof(Float). And all six floats in the array need
+       to be covered by some attribute as the output stride is expected to be
+       the same. */
     Containers::Array<Trade::MeshAttributeData> attributes;
     Float offset, scale, epsilon;
     UnsignedInt vertexCount;
