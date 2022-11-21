@@ -1,5 +1,5 @@
 Mesh 0:
-  Level 0: 2 vertices @ Lines (0.2 kB, {})
+  Level 0: 2 vertices @ Lines (0.1 kB, {})
     Position @ Vector3, offset 0, stride 12
       Bounds: ({0.1, -0.1, -0.2}, {0.2, 0, 0.2})
     Tangent @ Vector3, offset 24, stride 12
@@ -8,14 +8,15 @@ Mesh 0:
       Bounds: ({0.3, 0.2, 0}, {0.4, 0.9, 1})
     ObjectId @ UnsignedShort, offset 72, stride 2
       Bounds: (12, 155)
-    Normal @ Vector3, offset 76, stride 12
-      Bounds: ({0, 0, 0}, {1, 1, 1})
-    TextureCoordinates @ Vector2, offset 100, stride 8
+    Normal @ Vector3bNormalized, offset 76, stride 3
+      Bounds: ({-1, 0, 0}, {0, 1, 1})
+    Custom(25:NormalButCustomSoNoBoundsPrinted) @ Vector3b, offset 76, stride 3
+    TextureCoordinates @ Vector2, offset 84, stride 8
       Bounds: ({0.5, 0.5}, {1.5, 0.5})
-    Color @ Vector4, offset 116, stride 16
+    Color @ Vector4, offset 100, stride 16
       Bounds: ({0.6, 0.2, 0.2, 0}, {1, 0.4, 0.4, 0.2})
-    ObjectId @ UnsignedInt, offset 148, stride 4
+    ObjectId @ UnsignedInt, offset 132, stride 4
       Bounds: (15, 337)
     3 indices @ UnsignedByte, offset 0, stride 1 (0.0 kB, {})
       Bounds: (3, 176)
-Total mesh data size: 0.2 kB
+Total mesh data size: 0.1 kB

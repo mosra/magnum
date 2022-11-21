@@ -735,11 +735,21 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
                     Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, Containers::arrayView(vertexData->tangent)},
                     Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, Containers::arrayView(vertexData->bitangent)},
                     Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, Containers::arrayView(vertexData->objectId)},
-                    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(vertexData->normal)},
+                    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3bNormalized, Containers::arrayView(vertexData->normal)},
+                    /* This has the same data as Normal, but it won't have its
+                       bounds printed as it's custom -- there it's unknown what
+                       the canonical type should be and printing a range of
+                       an arbitrary packed type is useless in most cases */
+                    Trade::MeshAttributeData{Trade::meshAttributeCustom(25), Containers::arrayView(vertexData->normal)},
                     Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::arrayView(vertexData->textureCoordinates)},
                     Trade::MeshAttributeData{Trade::MeshAttribute::Color, Containers::arrayView(vertexData->color)},
                     Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, Containers::arrayView(vertexData->objectIdSecondary)},
                 }};
+        }
+
+        Containers::String doMeshAttributeName(UnsignedShort name) override {
+            if(name == 25) return "NormalButCustomSoNoBoundsPrinted";
+            return "";
         }
 
         UnsignedByte indexData[3]{15, 3, 176};
@@ -749,7 +759,7 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
             Vector3 tangent[2];
             Vector3 bitangent[2];
             UnsignedShort objectId[2];
-            Vector3 normal[2];
+            Vector3b normal[2];
             Vector2 textureCoordinates[2];
             Vector4 color[2];
             UnsignedInt objectIdSecondary[2];
@@ -758,7 +768,7 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
             {{0.2f, -0.2f, 0.8f}, {0.3f, 0.8f, 0.2f}},
             {{0.4f, 0.2f, 1.0f}, {0.3f, 0.9f, 0.0f}},
             {155, 12},
-            {{0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 1.0f}},
+            {{0, 127, 0}, {-127, 0, 127}},
             {{0.5f, 0.5f}, {1.5f, 0.5f}},
             {0x99336600_rgbaf, 0xff663333_rgbaf},
             {15, 337},
