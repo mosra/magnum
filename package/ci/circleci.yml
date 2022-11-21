@@ -621,12 +621,13 @@ workflows:
     # dependencies especially for the macOS jobs that take the most credits.
     jobs:
     - linux-gl
+    - linux-vulkan
+    - linux-nondeprecated
     - linux-arm64:
         requires:
         - linux-gl
         - linux-vulkan
-    - linux-vulkan
-    - linux-nondeprecated
+        - linux-nondeprecated
     - linux-gles2:
         requires:
         - linux-gl
