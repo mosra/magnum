@@ -2464,7 +2464,7 @@ void MeshDataTest::constructInconsistentJointIdWeightArraySizes() {
         /* Weights required to be here by the constructor */
         Float weights[2];
         UnsignedByte jointIds[2];
-        Half secondaryWeights[3];
+        UnsignedShort secondaryWeights[3]; /* Half together with {} makes GCC 4.8 crash */
         UnsignedShort secondaryJointIds[4];
     } vertices[3]{};
     auto view = Containers::stridedArrayView(vertices);
@@ -3573,7 +3573,7 @@ void MeshDataTest::weightsIntoArrayInvalidSizeStride() {
     struct Vertex {
         /* Joint IDs required to be here by the constructor */
         UnsignedInt jointIds[2];
-        Half weights[2];
+        UnsignedShort weights[2]; /* Half together with {} makes GCC 4.8 crash */
     } vertices[3]{};
     auto view = Containers::stridedArrayView(vertices);
 
