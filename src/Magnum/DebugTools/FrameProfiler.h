@@ -735,14 +735,14 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      *
      * If the value is invalid, returns an empty string.
      */
-    static std::string toString(Magnum::DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum value as a string
      *
      * If the string is invalid, returns a zero (invalid) value.
      */
-    static Magnum::DebugTools::FrameProfilerGL::Value fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::DebugTools::FrameProfilerGL::Value fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 
 /**
@@ -758,7 +758,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      * Writes the enum set as a sequence of flag names separated by spaces. If
      * the value is invalid, returns an empty string.
      */
-    static std::string toString(Magnum::DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum set value as a string
@@ -766,7 +766,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      * Assumes the string is a sequence of flag names separated by spaces. If
      * the value is invalid, returns an empty set.
      */
-    static Magnum::DebugTools::FrameProfilerGL::Values fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::DebugTools::FrameProfilerGL::Values fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 #endif
 
