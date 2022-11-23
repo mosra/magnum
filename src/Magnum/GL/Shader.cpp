@@ -27,6 +27,7 @@
 #include "Shader.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/GrowableArray.h>
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Reference.h>
 #endif
@@ -57,7 +58,7 @@ namespace Magnum { namespace GL {
 
 namespace {
 
-std::string shaderName(const Shader::Type type) {
+Containers::String shaderName(const Shader::Type type) {
     switch(type) {
         case Shader::Type::Vertex:                  return "vertex";
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -661,25 +662,25 @@ Shader::Shader(const Version version, const Type type): _type{type}, _flags{Obje
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
-        case Version::GL210: _sources.emplace_back("#version 120\n"); return;
-        case Version::GL300: _sources.emplace_back("#version 130\n"); return;
-        case Version::GL310: _sources.emplace_back("#version 140\n"); return;
-        case Version::GL320: _sources.emplace_back("#version 150\n"); return;
-        case Version::GL330: _sources.emplace_back("#version 330\n"); return;
-        case Version::GL400: _sources.emplace_back("#version 400\n"); return;
-        case Version::GL410: _sources.emplace_back("#version 410\n"); return;
-        case Version::GL420: _sources.emplace_back("#version 420\n"); return;
-        case Version::GL430: _sources.emplace_back("#version 430\n"); return;
-        case Version::GL440: _sources.emplace_back("#version 440\n"); return;
-        case Version::GL450: _sources.emplace_back("#version 450\n"); return;
-        case Version::GL460: _sources.emplace_back("#version 460\n"); return;
+        case Version::GL210: Containers::arrayAppend(_sources, "#version 120\n"); return;
+        case Version::GL300: Containers::arrayAppend(_sources, "#version 130\n"); return;
+        case Version::GL310: Containers::arrayAppend(_sources, "#version 140\n"); return;
+        case Version::GL320: Containers::arrayAppend(_sources, "#version 150\n"); return;
+        case Version::GL330: Containers::arrayAppend(_sources, "#version 330\n"); return;
+        case Version::GL400: Containers::arrayAppend(_sources, "#version 400\n"); return;
+        case Version::GL410: Containers::arrayAppend(_sources, "#version 410\n"); return;
+        case Version::GL420: Containers::arrayAppend(_sources, "#version 420\n"); return;
+        case Version::GL430: Containers::arrayAppend(_sources, "#version 430\n"); return;
+        case Version::GL440: Containers::arrayAppend(_sources, "#version 440\n"); return;
+        case Version::GL450: Containers::arrayAppend(_sources, "#version 450\n"); return;
+        case Version::GL460: Containers::arrayAppend(_sources, "#version 460\n"); return;
         #endif
         /* `#version 100` really is GLSL ES 1.00 and *not* GLSL 1.00. What a mess. */
-        case Version::GLES200: _sources.emplace_back("#version 100\n"); return;
-        case Version::GLES300: _sources.emplace_back("#version 300 es\n"); return;
+        case Version::GLES200: Containers::arrayAppend(_sources, "#version 100\n"); return;
+        case Version::GLES300: Containers::arrayAppend(_sources, "#version 300 es\n"); return;
         #ifndef MAGNUM_TARGET_WEBGL
-        case Version::GLES310: _sources.emplace_back("#version 310 es\n"); return;
-        case Version::GLES320: _sources.emplace_back("#version 320 es\n"); return;
+        case Version::GLES310: Containers::arrayAppend(_sources, "#version 310 es\n"); return;
+        case Version::GLES320: Containers::arrayAppend(_sources, "#version 320 es\n"); return;
         #endif
 
         /* The user is responsible for (not) adding #version directive */
@@ -721,10 +722,10 @@ Shader& Shader::setLabel(const Containers::StringView label) {
 }
 #endif
 
-std::vector<std::string> Shader::sources() const { return _sources; }
+const Containers::Array<Containers::String>& Shader::sources() const { return _sources; }
 
-Shader& Shader::addSource(std::string source) {
-    if(!source.empty()) {
+Shader& Shader::addSource(Containers::StringView source) {
+    if(!source.isEmpty()) {
         auto addSource = Context::current().state().shader.addSourceImplementation;
 
         /* Fix line numbers, so line 41 of third added file is marked as 3(41)
@@ -738,7 +739,7 @@ Shader& Shader::addSource(std::string source) {
            order to avoid complex logic in compile() where we assert for at
            least some user-provided source, an empty string is added here
            instead. */
-        if(!_sources.empty()) (this->*addSource)(
+        if(!_sources.isEmpty()) (this->*addSource)(
            /* GLSL < 330 interprets #line 0 as the next line being line 1,
               while GLSL >= 330 which interprets #line 1 as next line being
               line 1; the latter is consistent with the C preprocessor. GLSL ES
@@ -757,12 +758,12 @@ Shader& Shader::addSource(std::string source) {
     return *this;
 }
 
-void Shader::addSourceImplementationDefault(std::string source) {
-    _sources.push_back(std::move(source));
+void Shader::addSourceImplementationDefault(Containers::StringView source) {
+    Containers::arrayAppend(_sources, source);
 }
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
-void Shader::addSourceImplementationEmscriptenPthread(std::string source) {
+void Shader::addSourceImplementationEmscriptenPthread(Containers::String source) {
     /* See the "emscripten-pthreads-broken-unicode-shader-sources"
        workaround description for details */
     for(char& c: source) if(c < 0) c = ' ';
@@ -770,7 +771,7 @@ void Shader::addSourceImplementationEmscriptenPthread(std::string source) {
 }
 #endif
 
-Shader& Shader::addFile(const std::string& filename) {
+Shader& Shader::addFile(Containers::StringView filename) {
     const Containers::Optional<Containers::String> string = Utility::Path::readString(filename);
     CORRADE_ASSERT(string, "GL::Shader::addFile(): can't read" << filename, *this);
     addSource(*string);
@@ -806,10 +807,9 @@ bool Shader::checkCompile() {
 
     /* Error or warning message. The string is returned null-terminated,
        strip the \0 at the end afterwards. */
-    std::string message(logLength, '\0');
+    Containers::String message(ValueInit, Math::max(logLength, 1) - 1);
     if(message.size() > 1)
         glGetShaderInfoLog(_id, message.size(), nullptr, &message[0]);
-    message.resize(Math::max(logLength, 1)-1);
 
     /* Some drivers are chatty and can't keep shut when there's nothing to
        be said, handle that as well. */
@@ -856,10 +856,10 @@ bool Shader::isCompileFinished() {
     return success == GL_TRUE;
 }
 
-void Shader::cleanLogImplementationNoOp(std::string&) {}
+void Shader::cleanLogImplementationNoOp(Containers::String&) {}
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-void Shader::cleanLogImplementationIntelWindows(std::string& message) {
+void Shader::cleanLogImplementationIntelWindows(Containers::String& message) {
     if(message == "No errors.\n") message = {};
 }
 #endif

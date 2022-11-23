@@ -861,7 +861,7 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -885,7 +885,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -932,7 +932,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -966,7 +966,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync()
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

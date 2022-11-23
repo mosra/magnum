@@ -46,9 +46,9 @@ struct ShaderProgramState {
     void reset();
 
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(Containers::ArrayView<const std::string>, AbstractShaderProgram::TransformFeedbackBufferMode);
+    void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(Containers::ArrayView<const Containers::String>, AbstractShaderProgram::TransformFeedbackBufferMode);
     #endif
-    void(*cleanLogImplementation)(std::string&);
+    void(*cleanLogImplementation)(Containers::String&);
     /* This is a direct pointer to a GL function, so needs a __stdcall on
        Windows to compile properly on 32 bits */
     void(APIENTRY *completionStatusImplementation)(GLuint, GLenum, GLint* value);

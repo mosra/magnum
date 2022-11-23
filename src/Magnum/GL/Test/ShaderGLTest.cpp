@@ -123,9 +123,9 @@ void ShaderGLTest::construct() {
         CORRADE_VERIFY(shader.id() > 0);
         CORRADE_COMPARE(shader.type(), Shader::Type::Fragment);
         #ifndef MAGNUM_TARGET_GLES
-        CORRADE_COMPARE(shader.sources(), std::vector<std::string>{"#version 130\n"});
+        CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {"#version 130\n"}}));
         #else
-        CORRADE_COMPARE(shader.sources(), std::vector<std::string>{"#version 300 es\n"});
+        CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {"#version 300 es\n"})});
         #endif
     }
 
@@ -134,7 +134,7 @@ void ShaderGLTest::construct() {
 
 void ShaderGLTest::constructNoVersion() {
     const Shader shader(Version::None, Shader::Type::Fragment);
-    CORRADE_VERIFY(shader.sources().empty());
+    CORRADE_VERIFY(shader.sources().isEmpty());
 }
 
 void ShaderGLTest::constructMove() {
@@ -154,9 +154,9 @@ void ShaderGLTest::constructMove() {
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.type(), Shader::Type::Fragment);
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(b.sources(), std::vector<std::string>{"#version 130\n"});
+    CORRADE_COMPARE(b.sources(), (Containers::Array<Containers::String>{InPlaceInit, {"#version 130\n"}}));
     #else
-    CORRADE_COMPARE(b.sources(), std::vector<std::string>{"#version 300 es\n"});
+    CORRADE_COMPARE(b.sources(), (Containers::Array<Containers::String>{InPlaceInit, {"#version 300 es\n"}}));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -173,9 +173,9 @@ void ShaderGLTest::constructMove() {
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.type(), Shader::Type::Fragment);
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(c.sources(), std::vector<std::string>{"#version 130\n"});
+    CORRADE_COMPARE(c.sources(), (Containers::Array<Containers::String>{InPlaceInit, {"#version 130\n"}}));
     #else
-    CORRADE_COMPARE(c.sources(), std::vector<std::string>{"#version 300 es\n"});
+    CORRADE_COMPARE(c.sources(), (Containers::Array<Containers::String>{InPlaceInit, {"#version 300 es\n"}}));
     #endif
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Shader>::value);
@@ -232,7 +232,7 @@ void ShaderGLTest::addSource() {
           .addSource("void main() {}\n");
 
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+    CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {
         "#version 120\n",
         /* On (desktop) GLSL < 330 the #line affect next line, not current
            line; see compileFailure() for a correctness verification */
@@ -240,15 +240,15 @@ void ShaderGLTest::addSource() {
         "#define FOO BAR\n",
         "#line 0 2\n",
         "void main() {}\n"
-    }));
+    }}));
     #else
-    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+    CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {
         "#version 100\n",
         "#line 1 1\n",
         "#define FOO BAR\n",
         "#line 1 2\n",
         "void main() {}\n"
-    }));
+    }}));
     #endif
 }
 
@@ -264,7 +264,7 @@ void ShaderGLTest::addSourceNoVersion() {
           .addSource("void main() {}\n");
 
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+    CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {
         "",
         /* Here, even though there's #version 120 eventually added by the user,
            it assumes the specified version was new GLSL, not old. Explicitly
@@ -275,16 +275,16 @@ void ShaderGLTest::addSourceNoVersion() {
         "#define FOO BAR\n",
         "#line 1 2\n",
         "void main() {}\n"
-    }));
+    }}));
     #else
-    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+    CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {
         "",
         "#version 100\n",
         "#line 1 1\n",
         "#define FOO BAR\n",
         "#line 1 2\n",
         "void main() {}\n"
-    }));
+    }}));
     #endif
 }
 
@@ -298,19 +298,19 @@ void ShaderGLTest::addFile() {
     shader.addFile(Utility::Path::join(SHADERGLTEST_FILES_DIR, "shader.glsl"));
 
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+    CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {
         "#version 120\n",
         /* On (desktop) GLSL < 330 the #line affect next line, not current
            line; see compileFailure() for a correctness verification */
         "#line 0 1\n",
         "void main() {}\n"
-    }));
+    }}));
     #else
-    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+    CORRADE_COMPARE(shader.sources(), (Containers::Array<Containers::String>{InPlaceInit, {
         "#version 100\n",
         "#line 1 1\n",
         "void main() {}\n"
-    }));
+    }}));
     #endif
 }
 

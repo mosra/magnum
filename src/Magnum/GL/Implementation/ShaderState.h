@@ -52,8 +52,8 @@ struct ShaderState {
         #endif
     };
 
-    void(Shader::*addSourceImplementation)(std::string);
-    void(*cleanLogImplementation)(std::string&);
+    void(Shader::*addSourceImplementation)(Containers::StringView);
+    void(*cleanLogImplementation)(Containers::String&);
     /* This is a direct pointer to a GL function, so needs a __stdcall on
        Windows to compile properly on 32 bits */
     void(APIENTRY *completionStatusImplementation)(GLuint, GLenum, GLint* value);

@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
@@ -281,7 +282,7 @@ void AbstractShaderProgramGLTest::create() {
 
     program.bindAttributeLocation(0, "position");
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
@@ -356,7 +357,7 @@ void AbstractShaderProgramGLTest::createAsync() {
 
     CORRADE_VERIFY(program.checkLink({vert, frag}));
     CORRADE_VERIFY(program.isLinkFinished());
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     {
@@ -418,7 +419,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     program.bindFragmentDataLocation(0, "first");
     program.bindFragmentDataLocation(1, "second");
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
@@ -477,7 +478,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     program.bindFragmentDataLocationIndexed(0, 0, "first");
     program.bindFragmentDataLocationIndexed(0, 1, "second");
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
@@ -921,7 +922,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);

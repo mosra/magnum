@@ -30,9 +30,10 @@
  * @brief Class @ref Magnum::GL::Shader
  */
 
-#include <string>
-#include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringView.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -646,7 +647,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Type type() const { return _type; }
 
         /** @brief Shader sources */
-        std::vector<std::string> sources() const;
+        const Containers::Array<Containers::String>& sources() const;
 
         /**
          * @brief Add shader source
@@ -658,7 +659,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @ref GL-Shader-errors "compilation error reporting".
          * @see @ref addFile()
          */
-        Shader& addSource(std::string source);
+        Shader& addSource(Containers::StringView source);
 
         /**
          * @brief Add shader source file
@@ -668,7 +669,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * The file must exist and must be readable. Calls @ref addSource()
          * with the contents.
          */
-        Shader& addFile(const std::string& filename);
+        Shader& addFile(Containers::StringView filename);
 
         /**
          * @brief Compile the shader
@@ -745,14 +746,14 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
     private:
         explicit Shader(Type type, GLuint id, ObjectFlags flags) noexcept;
 
-        void MAGNUM_GL_LOCAL addSourceImplementationDefault(std::string source);
+        void MAGNUM_GL_LOCAL addSourceImplementationDefault(Containers::StringView source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
-        void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(std::string source);
+        void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(Containers::StringView source);
         #endif
 
-        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(Containers::String& message);
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(Containers::String& message);
         #endif
 
         MAGNUM_GL_LOCAL static void APIENTRY completionStatusImplementationFallback(GLuint, GLenum, GLint*);
@@ -765,7 +766,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         bool _offsetLineByOneOnOldGlsl;
         #endif
 
-        std::vector<std::string> _sources;
+        Containers::Array<Containers::String> _sources;
 };
 
 /** @debugoperatorclassenum{Shader,Shader::Type} */

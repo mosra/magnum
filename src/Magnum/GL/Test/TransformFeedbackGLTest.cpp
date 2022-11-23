@@ -23,9 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/Triple.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -618,11 +620,11 @@ void TransformFeedbackGLTest::draw() {
                 "    vertexOutput = vec2(0.3);\n"
                 "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
                 "}\n");
-            if(stream) geom.addSource(
+            if(stream) geom.addSource(Utility::format(
                 "#extension GL_ARB_gpu_shader5: require\n"
-                "#define STREAM " + std::to_string(stream) + "\n" +
-                "layout(stream = 0) out mediump float otherOutput;\n" +
-                "layout(stream = STREAM) out mediump vec2 geomOutput;\n");
+                "#define STREAM {}\n"
+                "layout(stream = 0) out mediump float otherOutput;\n"
+                "layout(stream = STREAM) out mediump vec2 geomOutput;\n", stream));
             else geom.addSource(
                 "out mediump vec2 geomOutput;\n");
             geom.addSource(
