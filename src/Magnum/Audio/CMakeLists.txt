@@ -130,8 +130,12 @@ endif()
 add_library(Magnum::Audio ALIAS MagnumAudio)
 
 if(MAGNUM_WITH_AL_INFO)
+    find_package(Corrade REQUIRED Main)
+
     add_executable(magnum-al-info al-info.cpp)
-    target_link_libraries(magnum-al-info PRIVATE MagnumAudio)
+    target_link_libraries(magnum-al-info PRIVATE
+        Corrade::Main
+        MagnumAudio)
 
     if(NOT MAGNUM_TARGET_EMSCRIPTEN)
         install(TARGETS magnum-al-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})

@@ -88,8 +88,11 @@ install(TARGETS MagnumShaderTools
 install(FILES ${MagnumShaderTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/ShaderTools)
 
 if(MAGNUM_WITH_SHADERCONVERTER)
+    find_package(Corrade REQUIRED Main)
+
     add_executable(magnum-shaderconverter shaderconverter.cpp)
     target_link_libraries(magnum-shaderconverter PRIVATE
+        Corrade::Main
         Magnum
         MagnumShaderTools
         ${MAGNUM_SHADERCONVERTER_STATIC_PLUGINS})

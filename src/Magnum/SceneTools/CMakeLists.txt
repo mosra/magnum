@@ -93,8 +93,11 @@ install(TARGETS MagnumSceneTools
 install(FILES ${MagnumSceneTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/SceneTools)
 
 if(MAGNUM_WITH_SCENECONVERTER)
+    find_package(Corrade REQUIRED Main)
+
     add_executable(magnum-sceneconverter sceneconverter.cpp)
     target_link_libraries(magnum-sceneconverter PRIVATE
+        Corrade::Main
         Magnum
         MagnumMeshTools
         MagnumSceneTools

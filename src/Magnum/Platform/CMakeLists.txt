@@ -913,8 +913,12 @@ if(MAGNUM_WITH_GL_INFO)
         message(SEND_ERROR "magnum-gl-info is available only if MAGNUM_TARGET_GL is enabled")
     endif()
 
+    find_package(Corrade REQUIRED Main)
+
     add_executable(magnum-gl-info gl-info.cpp)
-    target_link_libraries(magnum-gl-info PRIVATE MagnumGL)
+    target_link_libraries(magnum-gl-info PRIVATE
+        Corrade::Main
+        MagnumGL)
     if(MAGNUM_TARGET_EGL)
         target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)

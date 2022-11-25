@@ -92,8 +92,11 @@ if(MAGNUM_WITH_DISTANCEFIELDCONVERTER)
         message(SEND_ERROR "magnum-distancefieldconverter is available only if MAGNUM_TARGET_GL is enabled")
     endif()
 
+    find_package(Corrade REQUIRED Main)
+
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
     target_link_libraries(magnum-distancefieldconverter PRIVATE
+        Corrade::Main
         Magnum
         MagnumTextureTools
         MagnumTrade

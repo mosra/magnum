@@ -112,8 +112,11 @@ if(MAGNUM_WITH_FONTCONVERTER)
         message(SEND_ERROR "magnum-fontconverter is available only if MAGNUM_TARGET_GL is enabled")
     endif()
 
+    find_package(Corrade REQUIRED Main)
+
     add_executable(magnum-fontconverter fontconverter.cpp)
     target_link_libraries(magnum-fontconverter PRIVATE
+        Corrade::Main
         Magnum
         MagnumText
         MagnumTrade

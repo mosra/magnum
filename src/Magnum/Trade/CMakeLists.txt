@@ -151,11 +151,14 @@ install(TARGETS MagnumTrade
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
 if(MAGNUM_WITH_IMAGECONVERTER)
+    find_package(Corrade REQUIRED Main)
+
     set(THREADS_PREFER_PTHREAD_FLAG TRUE)
     find_package(Threads REQUIRED)
 
     add_executable(magnum-imageconverter imageconverter.cpp)
     target_link_libraries(magnum-imageconverter PRIVATE
+        Corrade::Main
         Magnum
         MagnumTrade
         # BasisImageConverter uses these, and linking pthread to just the

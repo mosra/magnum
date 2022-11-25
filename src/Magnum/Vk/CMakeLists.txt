@@ -190,8 +190,12 @@ install(TARGETS MagnumVk
 install(FILES ${MagnumVk_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
 
 if(MAGNUM_WITH_VK_INFO)
+    find_package(Corrade REQUIRED Main)
+
     add_executable(magnum-vk-info vk-info.cpp)
-    target_link_libraries(magnum-vk-info PRIVATE MagnumVk)
+    target_link_libraries(magnum-vk-info PRIVATE
+        Corrade::Main
+        MagnumVk)
 
     install(TARGETS magnum-vk-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
