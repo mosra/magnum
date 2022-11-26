@@ -225,7 +225,7 @@ OpenGL function                         | Matching API
 @fn_gl{GetShader}, \n @fn_gl{GetShaderInfoLog} | @ref GL::Shader::compile()
 @fn_gl{GetShaderPrecisionFormat}        | |
 @fn_gl{GetShaderSource}                 | not queryable but tracked in @ref GL::Shader::sources()
-@fn_gl{GetString}                       | @ref GL::Context::supportedExtensions(), \n @ref GL::Context::rendererString(), \n @ref GL::Context::shadingLanguageVersionString(), \n @ref GL::Context::vendorString(), \n @ref GL::Context::versionString()
+@fn_gl{GetString}                       | @ref GL::Context::extensionStrings(), \n @ref GL::Context::rendererString(), \n @ref GL::Context::shadingLanguageVersionString(), \n @ref GL::Context::vendorString(), \n @ref GL::Context::versionString()
 @fn_gl{GetSubroutineIndex}              | |
 @fn_gl{GetSubroutineUniformLocation}    | |
 @fn_gl{GetSync}                         | |
@@ -536,7 +536,7 @@ glGet() parameter                       | Matching API
 @def_gl{MIN_PROGRAM_TEXEL_OFFSET}, \n @def_gl{MAX_PROGRAM_TEXEL_OFFSET} | @ref GL::AbstractShaderProgram::minTexelOffset(), \n @ref GL::AbstractShaderProgram::maxTexelOffset()
 @def_gl{MIN_PROGRAM_TEXTURE_GATHER_OFFSET}, \n @def_gl{MAX_PROGRAM_TEXTURE_GATHER_OFFSET} | |
 @def_gl{MIN_SAMPLE_SHADING_VALUE}       | |
-@def_gl{NUM_EXTENSIONS}                 | @ref GL::Context::supportedExtensions()
+@def_gl{NUM_EXTENSIONS}                 | @ref GL::Context::extensionStrings()
 @def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
 @def_gl{NUM_SHADER_BINARY_FORMATS}, \n @def_gl{SHADER_BINARY_FORMATS} | |
 @def_gl{NUM_SPIR_V_EXTENSIONS}          | |

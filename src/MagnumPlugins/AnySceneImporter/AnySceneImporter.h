@@ -141,11 +141,11 @@ is emitted in case an option set is not present in the default configuration of
 the target plugin.
 
 Calls to the @ref animation(), @ref scene(), @ref light(), @ref camera(),
-@ref object2D(), @ref object3D(), @ref skin2D(), @ref skin3D(), @ref mesh(),
-@ref material(), @ref texture(), @ref image1D(), @ref image2D(), @ref image3D()
-and corresponding count-/name-related functions are then proxied to the
-concrete implementation. The @ref close() function closes and discards the
-internally instantiated plugin; @ref isOpened() works as usual.
+@ref skin2D(), @ref skin3D(), @ref mesh(), @ref material(), @ref texture(),
+@ref image1D(), @ref image2D(), @ref image3D() and corresponding
+count-/name-related functions are then proxied to the concrete implementation.
+The @ref close() function closes and discards the internally instantiated
+plugin; @ref isOpened() works as usual.
 
 While the @ref meshAttributeName(), @ref meshAttributeForName(),
 @ref sceneFieldName() and @ref sceneFieldForName() APIs can be called without a

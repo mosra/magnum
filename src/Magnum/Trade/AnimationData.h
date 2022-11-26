@@ -554,8 +554,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * @ref AnimationTrackTargetType::Scaling2D,
          * @ref AnimationTrackTargetType::Scaling3D specifies object which
          * property is modified.
-         * @see @ref trackCount(), @ref AbstractImporter::object2D(),
-         *      @ref AbstractImporter::object3D()
+         * @see @ref trackCount(), @ref AbstractImporter::scene()
          */
         UnsignedLong trackTarget(UnsignedInt id) const;
 

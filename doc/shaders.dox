@@ -233,8 +233,8 @@ using the usual vertex color attribute, only instanced:
 Unless the shader requires a texture to work (which is the case of
 @ref Shaders::VectorGL and @ref Shaders::DistanceFieldVectorGL), by default all
 shaders are just colored. Enabling a texture is done via a flag (such as
-@ref Shaders::Phong::Flag::DiffuseTexture) and then the texture is bound via an
-appropriate `bind*Texture()` call. In most cases the texture value is
+@ref Shaders::PhongGL::Flag::DiffuseTexture) and then the texture is bound via
+an appropriate `bind*Texture()` call. In most cases the texture value is
 multiplied with the corresponding color uniform.
 
 @snippet MagnumShaders-gl.cpp shaders-textures

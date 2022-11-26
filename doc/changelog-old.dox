@@ -818,9 +818,9 @@ a high-level overview.
     @cpp Trade::MeshData3D @ce
 -   @ref Trade::AbstractImageConverter member functions were changed to
     non-@cpp const @ce to make implementation of complex converter plugins possible
--   New @ref Trade::AbstractImageConverter::exportToCompressedImage() plugin
-    interface and @ref Trade::AbstractImageConverter::exportToData(),
-    @ref Trade::AbstractImageConverter::exportToFile() taking
+-   New @cpp Trade::AbstractImageConverter::exportToCompressedImage() @ce
+    plugin interface and @cpp Trade::AbstractImageConverter::exportToData() @ce,
+    @cpp Trade::AbstractImageConverter::exportToFile() @ce taking
     @ref CompressedImageView as a parameter
 -   Providing access to plugin manager in @ref Trade::AbstractImporter,
     @ref Trade::AbstractImageConverter and @ref Audio::AbstractImporter plugin
@@ -865,7 +865,7 @@ a high-level overview.
 -   R-value @ref Image "Image*" no longer restricts conversion to
     @ref ImageView as it is a valid use case (for example passing output from
     @ref GL::Framebuffer::read() "Framebuffer::read()" directly to
-    @ref Trade::AbstractImageConverter::exportToFile())
+    @cpp Trade::AbstractImageConverter::exportToFile() @ce)
 -   It's no longer possible to call @ref Image::data() "Image*::data()" on
     r-value instances as that would cause accessing freed data. Use
     @ref Image::release() instead.

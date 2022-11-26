@@ -662,9 +662,8 @@ class MAGNUM_GL_EXPORT Context {
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. Note that this function returns list of all extensions
          * reported by the driver (even those not supported by Magnum), see
-         * @ref supportedExtensions(), @ref Extension::extensions() or
-         * @ref isExtensionSupported() for alternatives. The returned views are
-         * always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * @ref Extension::extensions() or @ref isExtensionSupported() for
+         * alternatives. The returned views are always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
          * and @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @fn_gl{Get} with @def_gl_keyword{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl_keyword{EXTENSIONS}
@@ -772,7 +771,7 @@ class MAGNUM_GL_EXPORT Context {
          * Can be used e.g. for listing extensions available on current
          * hardware, but for general usage prefer @ref isExtensionSupported() const,
          * as it does most operations in compile time.
-         * @see @ref supportedExtensions(), @ref Extension::extensions(),
+         * @see @ref extensionStrings(), @ref Extension::extensions(),
          *      @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
          */
         bool isExtensionSupported(const Extension& extension) const {

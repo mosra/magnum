@@ -97,7 +97,7 @@ template<UnsignedInt location, class T> class Attribute {
              * @m_since{2020,06}
              *
              * Is @cpp 1 @ce for non-matrix attributes.
-             * @see @ref vectorSize()
+             * @see @ref vectorStride()
              */
             Vectors = Implementation::Attribute<T>::Vectors,
 

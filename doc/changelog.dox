@@ -261,7 +261,7 @@ See also:
     transformation, instanced texture offset and texture arrays
 -   Support for instanced drawing in @ref Shaders::MeshVisualizerGL2D and
     @ref Shaders::MeshVisualizerGL3D for better feature parity with the other
-    sahders
+    shaders
 -   Added @ref Shaders::PhongGL::setNormalTextureScale(), consuming the
     recently added @ref Trade::MaterialAttribute::NormalTextureScale material
     attribute
@@ -833,13 +833,13 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
--   The (mutually exclusive) @ref MAGNUM_TARGET_HEADLESS and
-    @ref MAGNUM_TARGET_DESKTOP_GLES options, CMake variables and preprocessor
-    variables are deprecated in favor of @ref MAGNUM_TARGET_EGL. It's enabled
-    by default on GLES and disabled by default on desktop GL --- disabling it
-    on GLES will force creation of a GLES context using the GLX / WGL libraries
-    (if available); enabling it on desktop GL will allow running windowless
-    applications on headless machines.
+-   The (mutually exclusive) @cpp MAGNUM_TARGET_HEADLESS @ce and
+    @cpp MAGNUM_TARGET_DESKTOP_GLES @ce options, CMake variables and
+    preprocessor variables are deprecated in favor of @ref MAGNUM_TARGET_EGL.
+    It's enabled by default on GLES and disabled by default on desktop GL ---
+    disabling it on GLES will force creation of a GLES context using the GLX /
+    WGL libraries (if available); enabling it on desktop GL will allow running
+    windowless applications on headless machines.
 -   All @ref building-features "CMake build options" are now prefixed with
     `MAGNUM_`. For backwards compatibility, unless @ref MAGNUM_BUILD_DEPRECATED
     is disabled and unless a prefixed option is already set during the initial
@@ -1212,12 +1212,11 @@ See also:
     implement through the redesigned @ref Trade::MaterialData APIs. However
     these APIs were mainly used to populate the contents in asset importers, so
     this shouldn't cause any breakages in user code.
--   @ref Trade::MaterialData::flags() now calculates the output on-the-fly
-    based on what attributes are present. This means that arbitrary extra bits
-    passed to the constructor from @cpp AbstractMaterialData @ce subclasses are
-    now discarded, and thus subclasses have to override the
-    @ref Trade::MaterialData::flags() "flags()" function to keep the same
-    behavior.
+-   The deprecated @ref Trade::MaterialData::flags() now calculates the output
+    on-the-fly based on what attributes are present. This means that arbitrary
+    extra bits passed to the constructor from @cpp AbstractMaterialData @ce
+    subclasses are now discarded, and thus subclasses have to override the
+    @cpp flags() @ce function to keep the same behavior.
 -   @ref Trade::MaterialData, which the deprecated
     @cpp Trade::AbstractMaterialData @ce aliases to, doesn't have a
     @cpp virtual @ce destructor as subclasses with extra data members aren't a

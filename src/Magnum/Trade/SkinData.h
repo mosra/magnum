@@ -96,8 +96,7 @@ template<UnsignedInt dimensions> class SkinData {
          * @brief Joint IDs
          *
          * IDs of objects that act as joints.
-         * @see @ref AbstractImporter::object2D(),
-         *      @ref AbstractImporter::object3D(), @ref releaseJointData()
+         * @see @ref AbstractImporter::scene(), @ref releaseJointData()
          */
         Containers::ArrayView<const UnsignedInt> joints() const { return _jointData; }
 
