@@ -96,11 +96,12 @@ struct MeshVisualizerDrawUniform2D {
      * References a particular material from a
      * @ref MeshVisualizerMaterialUniform array. Useful when an UBO with
      * more than one material is supplied or in a multi-draw scenario. Should
-     * be less than the material count passed to the @ref MeshVisualizerGL2D::MeshVisualizerGL2D(Flags, UnsignedInt, UnsignedInt)
-     * / @ref MeshVisualizerGL3D::MeshVisualizerGL3D(Flags, UnsignedInt, UnsignedInt)
-     * constructor, if material count is @cpp 1 @ce, this field is assumed to
-     * be @cpp 0 @ce and isn't even read by the shader. Default value is
-     * @cpp 0 @ce, meaning the first material gets used.
+     * be less than the material count passed to
+     * @ref MeshVisualizerGL2D::Configuration::setMaterialCount() /
+     * @ref MeshVisualizerGL3D::Configuration::setMaterialCount(), if material
+     * count is @cpp 1 @ce, this field is assumed to be @cpp 0 @ce and isn't
+     * even read by the shader. Default value is @cpp 0 @ce, meaning the first
+     * material gets used.
      */
 
     /* This field is an UnsignedInt in the shader and materialId is extracted

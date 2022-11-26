@@ -45,9 +45,9 @@ namespace Magnum { namespace Shaders {
 Uses ambient, diffuse and specular color or texture. For a colored mesh you
 need to provide the @ref Position and @ref Normal attributes in your triangle
 mesh. By default, the shader renders the mesh with a white color in an identity
-transformation. Use @ref setTransformationMatrix(), @ref setNormalMatrix(),
-@ref setProjectionMatrix(), @ref setLightPosition() and others to configure
-the shader.
+transformation. Use @ref setProjectionMatrix(). @ref setTransformationMatrix(),
+@ref setNormalMatrix(), @ref setLightPosition() and others to configure the
+shader.
 
 @image html shaders-phong.png width=256px
 
@@ -271,14 +271,15 @@ with one default light, would look like this:
 @snippet MagnumShaders-gl.cpp PhongGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
-@ref Flag::TextureArrays) and supply desired light, material and draw count in
-the @ref PhongGL(Flags, UnsignedInt, UnsignedInt, UnsignedInt) constructor. For
-every draw then specify material references and texture offsets/layers. With
-@ref Flag::LightCulling it's also possible to perform per-draw light culling by
-supplying a subrange into the @ref PhongLightUniform array using
-@ref PhongDrawUniform::lightOffset and @relativeref{PhongDrawUniform,lightCount}.
-Besides that, the usage is similar for all shaders, see
-@ref shaders-usage-multidraw for an example.
+@ref Flag::TextureArrays) and supply desired light, material and draw count via
+@ref Configuration::setLightCount(),
+@relativeref{Configuration,setMaterialCount()}
+and @relativeref{Configuration,setDrawCount()}. For every draw then specify
+material references and texture offsets/layers. With @ref Flag::LightCulling
+it's also possible to perform per-draw light culling by supplying a subrange
+into the @ref PhongLightUniform array using @ref PhongDrawUniform::lightOffset
+and @relativeref{PhongDrawUniform,lightCount}. Besides that, the usage is
+similar for all shaders, see @ref shaders-usage-multidraw for an example.
 
 @requires_gl30 Extension @gl_extension{EXT,texture_array} for texture arrays.
 @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
@@ -313,7 +314,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Normal direction
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3".
+         * @ref Magnum::Vector3 "Vector3". Used only if @ref lightCount() isn't
+         * @cpp 0 @ce.
          */
         typedef GenericGL3D::Normal Normal;
 
@@ -326,7 +328,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * attribute. If only a three-component attribute is used and
          * @ref Flag::Bitangent is not enabled, it's the same as if
          * @ref Tangent4 was specified with the fourth component always being
-         * @cpp 1.0f @ce. Used only if @ref Flag::NormalTexture is set.
+         * @cpp 1.0f @ce. Used only if @ref Flag::NormalTexture is set and
+         * @ref lightCount() isn't @cpp 0 @ce.
          * @see @ref Shaders-PhongGL-normal-mapping
          */
         typedef GenericGL3D::Tangent Tangent;
@@ -339,7 +342,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref Magnum::Vector4 "Vector4". Use either this or the @ref Tangent
          * attribute. If @ref Flag::Bitangent is set, the fourth component is
          * ignored and bitangents are taken from the @ref Bitangent attribute
-         * instead. Used only if @ref Flag::NormalTexture is set.
+         * instead. Used only if @ref Flag::NormalTexture is set and
+         * @ref lightCount() isn't @cpp 0 @ce.
          * @see @ref Shaders-PhongGL-normal-mapping
          */
         typedef GenericGL3D::Tangent4 Tangent4;
@@ -351,7 +355,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref shaders-generic "Generic attribute",
          * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
          * attribute. Used only if both @ref Flag::NormalTexture and
-         * @ref Flag::Bitangent are set.
+         * @ref Flag::Bitangent are set and @ref lightCount() isn't @cpp 0 @ce.
          * @see @ref Shaders-PhongGL-normal-mapping
          */
         typedef GenericGL3D::Bitangent Bitangent;
@@ -496,7 +500,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         /**
          * @brief Flag
          *
-         * @see @ref Flags, @ref flags()
+         * @see @ref Flags, @ref flags(), @ref Configuration::setFlags()
          */
         enum class Flag: UnsignedInt {
             /**
@@ -865,15 +869,27 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         /** @brief Move assignment */
         PhongGL& operator=(PhongGL&&) noexcept = default;
 
-        /** @brief Flags */
+        /**
+         * @brief Flags
+         *
+         * @see @ref Configuration::setFlags()
+         */
         Flags flags() const { return _flags; }
 
         /**
          * @brief Light count
          *
+         * If @ref Flag::UniformBuffers is not set, this is the number of
+         * light properties accepted by @ref setLightPositions() /
+         * @ref setLightPosition(), @ref setLightColors() /
+         * @ref setLightColor(), @ref setLightSpecularColors() /
+         * @ref setSpecularColor() and @ref setLightRanges() /
+         * @ref setLightRange().
+         *
          * If @ref Flag::UniformBuffers is set, this is the statically defined
-         * size of the @ref PhongLightUniform uniform buffer.
-         * @see @ref bindLightBuffer()
+         * size of the @ref PhongLightUniform uniform buffer bound with
+         * @ref bindLightBuffer().
+         * @see @ref Configuration::setLightCount()
          */
         UnsignedInt lightCount() const { return _lightCount; }
 
@@ -883,8 +899,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @m_since_latest
          *
          * Statically defined size of the @ref PhongMaterialUniform uniform
-         * buffer. Has use only if @ref Flag::UniformBuffers is set.
-         * @see @ref bindMaterialBuffer()
+         * buffer bound with @ref bindMaterialBuffer(). Has use only if
+         * @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -894,10 +911,12 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Draw count
          * @m_since_latest
          *
-         * Statically defined size of each of the @ref ProjectionUniform3D,
-         * @ref TransformationUniform3D, @ref PhongDrawUniform and
-         * @ref TextureTransformationUniform uniform buffers. Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * Statically defined size of each of the @ref TransformationUniform3D,
+         * @ref PhongDrawUniform and @ref TextureTransformationUniform uniform
+         * buffers bound with @ref bindTransformationBuffer(),
+         * @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer().
+         * Has use only if @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -1798,6 +1817,7 @@ class PhongGL::Configuration {
          * @brief Set flags
          *
          * No flags are set by default.
+         * @see @ref PhongGL::flags()
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -1810,13 +1830,6 @@ class PhongGL::Configuration {
         /**
          * @brief Set light count
          *
-         * If @ref Flag::UniformBuffers is set, describes size of a
-         * @ref PhongLightUniform buffer bound with @ref bindLightBuffer(); as
-         * uniform buffers are required to have a statically defined size. The
-         * per-draw lights are then specified via
-         * @ref PhongDrawUniform::lightOffset and
-         * @ref PhongDrawUniform::lightCount.
-         *
          * If @ref Flag::UniformBuffers isn't set, describes how many lights
          * get applied to each draw, and corresponds to the range / array size
          * accepted by @ref setLightPosition() / @ref setLightPositions(),
@@ -1824,9 +1837,17 @@ class PhongGL::Configuration {
          * @ref setLightSpecularColor() / @ref setLightSpecularColors() and
          * @ref setLightRange() / @ref setLightRanges().
          *
+         * If @ref Flag::UniformBuffers is set, describes size of a
+         * @ref PhongLightUniform buffer bound with @ref bindLightBuffer(); as
+         * uniform buffers are required to have a statically defined size. The
+         * per-draw lights are then specified via
+         * @ref PhongDrawUniform::lightOffset and
+         * @ref PhongDrawUniform::lightCount.
+         *
          * Can be set to @cpp 0 @ce, in which case only the ambient
          * contribution to the color is used. Default value is @cpp 1 @ce.
-         * @see @ref setFlags(), @ref setMaterialCount(), @ref setDrawCount()
+         * @see @ref setFlags(), @ref setMaterialCount(), @ref setDrawCount(),
+         *      @ref PhongGL::lightCount()
          */
         Configuration& setLightCount(UnsignedInt count) {
             _lightCount = count;
@@ -1847,7 +1868,8 @@ class PhongGL::Configuration {
          * via @ref PhongDrawUniform::materialId. Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setLightCount(), @ref setDrawCount()
+         * @see @ref setFlags(), @ref setLightCount(), @ref setDrawCount(),
+         *      @ref PhongGL::materialCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -1864,16 +1886,16 @@ class PhongGL::Configuration {
          * @brief Set draw count
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
-         * @ref ProjectionUniform3D / @ref TransformationUniform3D /
-         * @ref PhongDrawUniform / @ref TextureTransformationUniform buffer
-         * bound with @ref bindProjectionBuffer(),
+         * @ref TransformationUniform3D / @ref PhongDrawUniform /
+         * @ref TextureTransformationUniform buffer bound with
          * @ref bindTransformationBuffer(), @ref bindDrawBuffer() and
          * @ref bindTextureTransformationBuffer(); as uniform buffers are
          * required to have a statically defined size. The draw offset is then
          * set via @ref setDrawOffset(). Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setLightCount(), @ref setMaterialCount()
+         * @see @ref setFlags(), @ref setLightCount(), @ref setMaterialCount(),
+         *      @ref PhongGL::drawCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.

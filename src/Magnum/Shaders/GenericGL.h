@@ -226,7 +226,7 @@ recommended to so. If the custom shader diverges from predefined locations of
 common attributes, meshes configured for the builtin shaders (for example with
 @ref MeshTools::compile()) won't work with it and the mesh attribute
 configuration has to be done manually. It also becomes impossible to render a
-mesh configured for a custom shader with for example @ref MeshVisualizer.
+mesh configured for a custom shader with for example @ref MeshVisualizerGL3D.
 
 If you're using @ref GL::AbstractShaderProgram::bindAttributeLocation(), it's
 rather easy, as you can simply use the @ref GL::Attribute::Location of given

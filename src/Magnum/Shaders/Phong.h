@@ -132,10 +132,10 @@ struct PhongDrawUniform {
      * References a particular material from a @ref PhongMaterialUniform array.
      * Useful when a UBO with more than one material is supplied or in a
      * multi-draw scenario. Should be less than the material count passed to
-     * the @ref PhongGL::PhongGL(Flags, UnsignedInt, UnsignedInt, UnsignedInt)
-     * constructor, if material count is @cpp 1 @ce, this field is assumed to
-     * be @cpp 0 @ce and isn't even read by the shader. Default value is
-     * @cpp 0 @ce, meaning the first material gets used.
+     * @ref PhongGL::Configuration::setMaterialCount(), if material count is
+     * @cpp 1 @ce, this field is assumed to be @cpp 0 @ce and isn't even read
+     * by the shader. Default value is @cpp 0 @ce, meaning the first material
+     * gets used.
      */
 
     /* This field is an UnsignedInt in the shader and materialId is extracted

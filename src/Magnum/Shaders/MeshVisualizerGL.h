@@ -254,7 +254,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         /**
          * @brief Flag
          *
-         * @see @ref Flags, @ref MeshVisualizerGL2D()
+         * @see @ref Flags, @ref flags(), @ref Configuration::setFlags()
          */
         enum class Flag: UnsignedInt {
             /**
@@ -537,7 +537,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         /** @brief Move assignment */
         MeshVisualizerGL2D& operator=(MeshVisualizerGL2D&&) noexcept = default;
 
-        /** @brief Flags */
+        /**
+         * @brief Flags
+         *
+         * @see @ref Configuration::setFlags()
+         */
         Flags flags() const {
             return Flag(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
         }
@@ -548,8 +552,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @m_since_latest
          *
          * Statically defined size of the @ref MeshVisualizerMaterialUniform
-         * uniform buffer. Has use only if @ref Flag::UniformBuffers is set.
-         * @see @ref bindMaterialBuffer()
+         * uniform buffer bound with @ref bindMaterialBuffer(). Has use only if
+         * @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -561,8 +566,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          *
          * Statically defined size of each of the
          * @ref TransformationProjectionUniform2D and
-         * @ref MeshVisualizerDrawUniform2D uniform buffers. Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref MeshVisualizerDrawUniform2D uniform buffers bound with
+         * @ref bindTransformationProjectionBuffer() and @ref bindDrawBuffer().
+         * Has use only if @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -879,6 +886,7 @@ class MeshVisualizerGL2D::Configuration {
          * @ref Flag::VertexId, @ref Flag::PrimitiveId or
          * @ref Flag::PrimitiveIdFromVertexId is expected to be enabled. No
          * flags are set by default.
+         * @see @ref MeshVisualizerGL2D::flags()
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -900,7 +908,8 @@ class MeshVisualizerGL2D::Configuration {
          * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setDrawCount()
+         * @see @ref setFlags(), @ref setDrawCount(),
+         *      @ref MeshVisualizerGL2D::materialCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -926,7 +935,8 @@ class MeshVisualizerGL2D::Configuration {
          * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setMaterialCount()
+         * @see @ref setFlags(), @ref setMaterialCount(),
+         *      @ref MeshVisualizerGL2D::drawCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -971,8 +981,9 @@ class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
 
 Visualizes wireframe, per-vertex/per-instance object ID, primitive ID or
 tangent space of 3D meshes. You need to provide the @ref Position attribute in
-your triangle mesh at the very least. Use @ref setTransformationProjectionMatrix(),
-@ref setColor() and others to configure the shader.
+your triangle mesh at the very least. Use @ref setProjectionMatrix(),
+@ref setTransformationMatrix(), @ref setColor() and others to configure the
+shader.
 
 @m_class{m-row}
 
@@ -1183,9 +1194,10 @@ here as well, as it's assumed to be set globally and rarely changed:
 @snippet MagnumShaders-gl.cpp MeshVisualizerGL3D-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw, supply desired material
-and draw count in the @ref MeshVisualizerGL3D(Flags, UnsignedInt, UnsignedInt)
-constructor and specify material references for every draw. The usage is
-similar for all shaders, see @ref shaders-usage-multidraw for an example.
+and draw count via @ref Configuration::setMaterialCount() and
+@relativeref{Configuration,setDrawCount()} and specify material references for
+every draw. The usage is similar for all shaders, see
+@ref shaders-usage-multidraw for an example.
 
 @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
     buffers.
@@ -1390,7 +1402,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         /**
          * @brief Flag
          *
-         * @see @ref Flags, @ref MeshVisualizer()
+         * @see @ref Flags, @ref flags(), @ref Configuration::setFlags()
          */
         enum class Flag: UnsignedInt {
             /**
@@ -1825,7 +1837,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         /** @brief Move assignment */
         MeshVisualizerGL3D& operator=(MeshVisualizerGL3D&&) noexcept = default;
 
-        /** @brief Flags */
+        /**
+         * @brief Flags
+         *
+         * @see @ref Configuration::setFlags()
+         */
         Flags flags() const {
             return Flag(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
         }
@@ -1836,8 +1852,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_since_latest
          *
          * Statically defined size of the @ref MeshVisualizerMaterialUniform
-         * uniform buffer. Has use only if @ref Flag::UniformBuffers is set.
-         * @see @ref bindMaterialBuffer()
+         * uniform buffer bound with @ref bindMaterialBuffer(). Has use only if
+         * @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -1848,9 +1865,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_since_latest
          *
          * Statically defined size of each of the
-         * @ref TransformationProjectionUniform3D and
-         * @ref MeshVisualizerDrawUniform3D uniform buffers. Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref TransformationUniform3D and
+         * @ref MeshVisualizerDrawUniform3D uniform buffers, bound with
+         * @ref bindTransformationBuffer() and @ref bindDrawBuffer(). Has use
+         * only if @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -2446,6 +2465,7 @@ class MeshVisualizerGL3D::Configuration {
          * @ref Flag::ObjectId, @ref Flag::VertexId, @ref Flag::PrimitiveId or
          * @ref Flag::PrimitiveIdFromVertexId is expected to be enabled. No
          * flags are set by default.
+         * @see @ref MeshVisualizerGL3D::flags()
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -2467,7 +2487,8 @@ class MeshVisualizerGL3D::Configuration {
          * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setDrawCount()
+         * @see @ref setFlags(), @ref setDrawCount(),
+         *      @ref MeshVisualizerGL3D::materialCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -2484,16 +2505,16 @@ class MeshVisualizerGL3D::Configuration {
          * @brief Set draw count
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
-         * @ref ProjectionUniform3D / @ref TransformationUniform3D
-         * @ref MeshVisualizerDrawUniform3D / @ref TextureTransformationUniform
-         * buffer bound with @ref bindProjectionBuffer(),
+         * @ref TransformationUniform3D / @ref MeshVisualizerDrawUniform3D /
+         * @ref TextureTransformationUniform buffer bound with
          * @ref bindTransformationBuffer(), @ref bindDrawBuffer() and
          * @ref bindTextureTransformationBuffer(); as uniform buffers are
          * required to have a statically defined size. The draw offset is then
          * set via @ref setDrawOffset(). Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setMaterialCount()
+         * @see @ref setFlags(), @ref setMaterialCount(),
+         *      @ref MeshVisualizerGL3D::drawCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.

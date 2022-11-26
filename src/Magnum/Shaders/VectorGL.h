@@ -96,11 +96,11 @@ setup equivalent to the above would look like this:
 @snippet MagnumShaders-gl.cpp VectorGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw, supply desired material
-and draw count in the @ref VectorGL(Flags, UnsignedInt, UnsignedInt)
-constructor and specify material references and texture offsets for every draw.
-Texture arrays aren't currently supported for this shader. Besides that, the
-usage is similar for all shaders, see @ref shaders-usage-multidraw for an
-example.
+and draw count via @ref Configuration::setMaterialCount() and
+@relativeref{Configuration,setDrawCount()} and specify material references and
+texture offsets for every draw. Texture arrays aren't currently supported for
+this shader. Besides that, the usage is similar for all shaders, see
+@ref shaders-usage-multidraw for an example.
 
 @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
     buffers.
@@ -151,7 +151,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @brief Flag
          * @m_since{2020,06}
          *
-         * @see @ref Flags, @ref flags()
+         * @see @ref Flags, @ref flags(), @ref Configuration::setFlags()
          */
         enum class Flag: UnsignedByte {
             /**
@@ -327,6 +327,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         /**
          * @brief Flags
          * @m_since{2020,06}
+         *
+         * @see @ref Configuration::setFlags()
          */
         Flags flags() const { return _flags; }
 
@@ -336,8 +338,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @m_since_latest
          *
          * Statically defined size of the @ref VectorMaterialUniform uniform
-         * buffer. Has use only if @ref Flag::UniformBuffers is set.
-         * @see @ref bindMaterialBuffer()
+         * buffer bound with @ref bindMaterialBuffer(). Has use only if
+         * @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -350,8 +353,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * Statically defined size of each of the
          * @ref TransformationProjectionUniform2D /
          * @ref TransformationProjectionUniform3D, @ref VectorDrawUniform and
-         * @ref TextureTransformationUniform uniform buffers. Has use only if
+         * @ref TextureTransformationUniform uniform buffers bound with
+         * @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer() and
+         * @ref bindTextureTransformationBuffer(). Has use only if
          * @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -599,6 +605,7 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
          * @brief Set flags
          *
          * No flags are set by default.
+         * @see @ref VectorGL::flags()
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -619,7 +626,8 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
          * via @ref VectorDrawUniform::materialId. Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setDrawCount()
+         * @see @ref setFlags(), @ref setDrawCount(),
+         *      @ref VectorGL::materialCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -646,7 +654,8 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
          * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setMaterialCount()
+         * @see @ref setFlags(), @ref setMaterialCount(),
+         *      @ref VectorGL::drawCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.

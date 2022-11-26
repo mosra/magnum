@@ -180,10 +180,11 @@ can be supplied as well. A uniform buffer setup equivalent to the
 @snippet MagnumShaders-gl.cpp FlatGL-ubo
 
 For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
-@ref Flag::TextureArrays), supply desired material and draw count in the
-@ref FlatGL(Flags, UnsignedInt, UnsignedInt) constructor and specify material
-references and texture offsets/layers for every draw. The usage is similar for
-all shaders, see @ref shaders-usage-multidraw for an example.
+@ref Flag::TextureArrays), supply desired material and draw count via
+@ref Configuration::setMaterialCount() and
+@relativeref{Configuration,setDrawCount()} and specify material references and
+texture offsets/layers for every draw. The usage is similar for all shaders,
+see @ref shaders-usage-multidraw for an example.
 
 @requires_gl30 Extension @gl_extension{EXT,texture_array} for texture arrays.
 @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
@@ -341,7 +342,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         /**
          * @brief Flag
          *
-         * @see @ref Flags, @ref flags()
+         * @see @ref Flags, @ref flags(), @ref Configuration::setFlags()
          */
         enum class Flag: UnsignedShort {
             /**
@@ -652,7 +653,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         /** @brief Move assignment */
         FlatGL<dimensions>& operator=(FlatGL<dimensions>&&) noexcept = default;
 
-        /** @brief Flags */
+        /**
+         * @brief Flags
+         *
+         * @see @ref Configuration::setFlags()
+         */
         Flags flags() const { return _flags; }
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -661,8 +666,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @m_since_latest
          *
          * Statically defined size of the @ref FlatMaterialUniform uniform
-         * buffer. Has use only if @ref Flag::UniformBuffers is set.
-         * @see @ref bindMaterialBuffer()
+         * buffer bound with @ref bindMaterialBuffer(). Has use only if
+         * @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -675,8 +681,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * Statically defined size of each of the
          * @ref TransformationProjectionUniform2D /
          * @ref TransformationProjectionUniform3D, @ref FlatDrawUniform and
-         * @ref TextureTransformationUniform uniform buffers. Has use only if
+         * @ref TextureTransformationUniform uniform buffers bound with
+         * @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer() and
+         * @ref bindTextureTransformationBuffer(). Has use only if
          * @ref Flag::UniformBuffers is set.
+         * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
@@ -1058,6 +1067,7 @@ template<UnsignedInt dimensions> class FlatGL<dimensions>::Configuration {
          * @brief Set flags
          *
          * No flags are set by default.
+         * @see @ref FlatGL::flags()
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -1078,7 +1088,8 @@ template<UnsignedInt dimensions> class FlatGL<dimensions>::Configuration {
          * via @ref FlatDrawUniform::materialId. Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setDrawCount()
+         * @see @ref setFlags(), @ref setDrawCount(),
+         *      @ref FlatGL::materialCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
@@ -1105,7 +1116,8 @@ template<UnsignedInt dimensions> class FlatGL<dimensions>::Configuration {
          * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
-         * @see @ref setFlags(), @ref setMaterialCount()
+         * @see @ref setFlags(), @ref setMaterialCount(),
+         *      @ref FlatGL::drawCount()
          * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
