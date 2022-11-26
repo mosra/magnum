@@ -94,8 +94,15 @@ future). To preserve backward compatibility, Magnum is by default built with
 deprecated API included.
 @see @ref building, @ref cmake
 */
+/* This macro is enabled by default in Doxyfile, but we may still want to
+   temporarily remove it from there to catch outdated links. This makes it work
+   in both cases. */
+#ifdef MAGNUM_BUILD_DEPRECATED
 #define MAGNUM_BUILD_DEPRECATED
-/* (enabled by default) */
+#else
+#define MAGNUM_BUILD_DEPRECATED
+#undef MAGNUM_BUILD_DEPRECATED
+#endif
 
 /**
 @brief Static library build
