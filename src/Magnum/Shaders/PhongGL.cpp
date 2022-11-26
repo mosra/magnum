@@ -283,9 +283,9 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             "#define LIGHT_SPECULAR_COLORS_LOCATION {}\n"
             "#define LIGHT_RANGES_LOCATION {}\n",
             configuration.lightCount(),
-            out._lightPositionsUniform + configuration.lightCount(),
-            out._lightPositionsUniform + 2*configuration.lightCount(),
-            out._lightPositionsUniform + 3*configuration.lightCount()));
+            out._lightColorsUniform,
+            out._lightSpecularColorsUniform,
+            out._lightRangesUniform));
     }
     #ifndef MAGNUM_TARGET_GLES
     if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount())
