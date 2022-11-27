@@ -37,6 +37,10 @@ constexpr struct VertexSolid {
     Vector3 position;
     Vector3 normal;
 } VerticesSolid[] {
+    /* 3--1
+       | /|
+       |/ |
+       2--0 */
     {{ 1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{ 1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},

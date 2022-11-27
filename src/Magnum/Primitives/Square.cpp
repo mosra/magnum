@@ -38,6 +38,10 @@ namespace {
 constexpr struct VertexSolid {
     Vector2 position;
 } VerticesSolid[] {
+    /* 3--1
+       | /|
+       |/ |
+       2--0 */
     {{ 1.0f, -1.0f}},
     {{ 1.0f,  1.0f}},
     {{-1.0f, -1.0f}},
