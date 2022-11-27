@@ -39,7 +39,7 @@ struct PhongTest: TestSuite::Tester {
     void drawUniformConstructDefault();
     void drawUniformConstructNoInit();
     void drawUniformSetters();
-    void drawUniformMaterialIdPacking();
+    void drawUniformPacking();
 
     void materialUniformConstructDefault();
     void materialUniformConstructNoInit();
@@ -58,7 +58,7 @@ PhongTest::PhongTest() {
               &PhongTest::drawUniformConstructDefault,
               &PhongTest::drawUniformConstructNoInit,
               &PhongTest::drawUniformSetters,
-              &PhongTest::drawUniformMaterialIdPacking,
+              &PhongTest::drawUniformPacking,
 
               &PhongTest::materialUniformConstructDefault,
               &PhongTest::materialUniformConstructNoInit,
@@ -115,8 +115,8 @@ void PhongTest::drawUniformConstructDefault() {
     CORRADE_COMPARE(b.objectId, 0);
     CORRADE_COMPARE(a.lightOffset, 0);
     CORRADE_COMPARE(b.lightOffset, 0);
-    CORRADE_COMPARE(a.lightCount, 0xffffffffu);
-    CORRADE_COMPARE(b.lightCount, 0xffffffffu);
+    CORRADE_COMPARE(a.lightCount, 0xffffu);
+    CORRADE_COMPARE(b.lightCount, 0xffffu);
 
     constexpr PhongDrawUniform ca;
     constexpr PhongDrawUniform cb{DefaultInit};
@@ -136,8 +136,8 @@ void PhongTest::drawUniformConstructDefault() {
     CORRADE_COMPARE(cb.objectId, 0);
     CORRADE_COMPARE(ca.lightOffset, 0);
     CORRADE_COMPARE(cb.lightOffset, 0);
-    CORRADE_COMPARE(ca.lightCount, 0xffffffffu);
-    CORRADE_COMPARE(cb.lightCount, 0xffffffffu);
+    CORRADE_COMPARE(ca.lightCount, 0xffffu);
+    CORRADE_COMPARE(cb.lightCount, 0xffffu);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<PhongDrawUniform>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<PhongDrawUniform, DefaultInitT>::value);
@@ -189,12 +189,20 @@ void PhongTest::drawUniformSetters() {
     CORRADE_COMPARE(a.lightCount, 13);
 }
 
-void PhongTest::drawUniformMaterialIdPacking() {
+void PhongTest::drawUniformPacking() {
     PhongDrawUniform a;
-    a.setMaterialId(13765);
+    a.setMaterialId(13765)
+     /* second 16 bits unused */
+     .setLightOffsetCount(13766, 63573);
     /* The normalMatrix field is 3x4 floats, materialId should be right after
        in the low 16 bits on both LE and BE */
     CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[12] & 0xffff, 13765);
+    /* second 16 bits unused */
+
+    /* lightOffset should be in the low 16 bits on both LE and BE, lightCount
+       in the high */
+    CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[14] & 0xffff, 13766);
+    CORRADE_COMPARE((reinterpret_cast<UnsignedInt*>(&a)[14] >> 16) & 0xffff, 63573);
 }
 
 void PhongTest::materialUniformConstructDefault() {

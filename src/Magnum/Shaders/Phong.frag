@@ -183,11 +183,10 @@ uniform highp uint drawOffset
 struct DrawUniform {
     /* Can't be a mat3 because of ANGLE, see Phong.vert for details */
     mediump mat3x4 normalMatrix;
-    highp uvec4 materialIdReservedObjectIdLightOffsetLightCount;
-    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCount.x
-    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCount.y
-    #define draw_lightOffset materialIdReservedObjectIdLightOffsetLightCount.z
-    #define draw_lightCount materialIdReservedObjectIdLightOffsetLightCount.w
+    highp uvec4 materialIdReservedObjectIdLightOffsetLightCountReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCountReserved.x
+    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCountReserved.y
+    #define draw_lightOffsetLightCount materialIdReservedObjectIdLightOffsetLightCountReserved.z
 };
 
 layout(std140
@@ -382,7 +381,10 @@ void main() {
     lowp const float alphaMask = materials[materialId].material_alphaMask;
     #endif
     #if LIGHT_COUNT
-    mediump const uint lightOffset = draws[drawId].draw_lightOffset;
+    mediump const uint lightOffset = draws[drawId].draw_lightOffsetLightCount & 0xffffu;
+    #ifdef LIGHT_CULLING
+    mediump const uint lightCount = draws[drawId].draw_lightOffsetLightCount >> 16 & 0xffffu;
+    #endif
     #endif
     #endif
 
@@ -444,7 +446,7 @@ void main() {
     #ifndef LIGHT_CULLING
     for(int i = 0; i < LIGHT_COUNT; ++i)
     #else
-    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), draws[drawId].draw_lightCount); i < actualLightCount; ++i)
+    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), lightCount); i < actualLightCount; ++i)
     #endif
     {
         lowp const vec3 lightColor =

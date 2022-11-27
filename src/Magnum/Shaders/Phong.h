@@ -55,7 +55,13 @@ separate @ref PhongMaterialUniform structure, referenced by @ref materialId.
 */
 struct PhongDrawUniform {
     /** @brief Construct with default parameters */
-    constexpr explicit PhongDrawUniform(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}, materialId{0}, objectId{0}, lightOffset{0}, lightCount{0xffffffffu} {}
+    constexpr explicit PhongDrawUniform(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}, materialId{0}, objectId{0},
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        lightOffset{0}, lightCount{0xffffu}
+        #else
+        lightCount{0xffffu}, lightOffset{0}
+        #endif
+        {}
 
     /** @brief Construct without initializing the contents */
     explicit PhongDrawUniform(NoInitT) noexcept: normalMatrix{NoInit} {}
@@ -168,7 +174,7 @@ struct PhongDrawUniform {
      */
     UnsignedInt objectId;
 
-    /**
+    /** @var lightOffset
      * @brief Light offset
      *
      * References the first light in the @ref PhongLightUniform array. Should
@@ -178,20 +184,34 @@ struct PhongDrawUniform {
      * Used only if @ref PhongGL::Flag::LightCulling is enabled, otherwise
      * light offset is implicitly @cpp 0 @ce.
      */
-    UnsignedInt lightOffset;
 
-    /**
+    /** @var lightCount
      * @brief Light count
      *
      * Specifies how many lights after the @p lightOffset are used from the
      * @ref PhongLightUniform array. Gets clamped by the shader so it's
      * together with @ref lightOffset not larger than the light count passed to
-     * @ref PhongGL constructor. Default value is @cpp 0xffffffffu @ce.
+     * @ref PhongGL constructor. Default value is @cpp 0xffffu @ce.
      *
      * Used only if @ref PhongGL::Flag::LightCulling is enabled, otherwise
      * light count is implicitly @ref PhongGL::lightCount().
      */
-    UnsignedInt lightCount;
+
+    /* This field is an UnsignedInt in the shader and lightOffset is extracted
+       as (value & 0xffff), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    UnsignedShort lightOffset;
+    UnsignedShort lightCount;
+    #else
+    UnsignedShort lightCount;
+    UnsignedShort lightOffset;
+    #endif
+
+    /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
+       I MADE THOSE UNNAMED, YOU DUMB FOOL */
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    Int:32;
+    #endif
 };
 
 /**

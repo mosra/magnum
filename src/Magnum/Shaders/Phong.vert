@@ -132,11 +132,10 @@ struct DrawUniform {
        2. Forget to actually implement and test the damn thing.
     */
     mediump mat3x4 normalMatrix;
-    highp uvec4 materialIdReservedObjectIdLightOffsetLightCount;
-    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCount.x
-    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCount.y
-    #define draw_lightOffset materialIdReservedObjectIdLightOffsetLightCount.z
-    #define draw_lightCount materialIdReservedObjectIdLightOffsetLightCount.w
+    highp uvec4 materialIdReservedObjectIdLightOffsetLightCountReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCountReserved.x
+    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCountReserved.y
+    #define draw_lightOffsetLightCount materialIdReservedObjectIdLightOffsetLightCountReserved.z
 };
 
 layout(std140
