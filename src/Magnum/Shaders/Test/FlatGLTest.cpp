@@ -243,24 +243,40 @@ constexpr struct {
     FlatGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
 } ConstructUniformBuffersData[]{
-    {"classic fallback", {}, 1, 1},
-    {"", FlatGL2D::Flag::UniformBuffers, 1, 1},
+    {"classic fallback", {},
+        1, 1},
+    {"", FlatGL2D::Flag::UniformBuffers,
+        1, 1},
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
        and 3+1 in 2D, per-material 2 */
-    {"multiple materials, draws", FlatGL2D::Flag::UniformBuffers, 8, 48},
-    {"textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured, 1, 1},
-    {"textured + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
-    {"texture arrays + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation, 1, 1},
-    {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask, 1, 1},
-    {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId, 1, 1},
-    {"object ID texture", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture, 1, 1},
-    {"object ID texture array", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation, 1, 1},
-    {"object ID texture + instanced texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedTextureOffset, 1, 1},
-    {"object ID texture array + instanced texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset, 1, 1},
-    {"instanced object ID texture array + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation, 1, 1},
-    {"object ID texture + textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::Textured, 1, 1},
-    {"instanced texture array offset + layer", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset, 1, 1},
-    {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId, 8, 48}
+    {"multiple materials, draws", FlatGL2D::Flag::UniformBuffers,
+        8, 48},
+    {"textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured,
+        1, 1},
+    {"textured + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation,
+        1, 1},
+    {"texture arrays + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation,
+        1, 1},
+    {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask,
+        1, 1},
+    {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId,
+        1, 1},
+    {"object ID texture", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture,
+        1, 1},
+    {"object ID texture array", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation,
+        1, 1},
+    {"object ID texture + instanced texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedTextureOffset,
+        1, 1},
+    {"object ID texture array + instanced texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset,
+        1, 1},
+    {"instanced object ID texture array + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation,
+        1, 1},
+    {"object ID texture + textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::Textured,
+        1, 1},
+    {"instanced texture array offset + layer", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset,
+        1, 1},
+    {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId,
+        8, 48}
 };
 #endif
 

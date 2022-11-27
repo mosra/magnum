@@ -273,34 +273,52 @@ constexpr struct {
     MeshVisualizerGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
 } ConstructUniformBuffersData2D[] {
-    {"classic fallback", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
-    {"", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
+    {"classic fallback", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        1, 1},
+    {"", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        1, 1},
     /* SwiftShader has 256 uniform vectors at most, per-2D-draw is 4,
        per-material 4, two need to be left for drawOffset + viewportSize */
-    {"multiple materials, draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 8, 55},
-    {"multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::VertexId, 8, 55},
+    {"multiple materials, draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        8, 55},
+    {"multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::VertexId,
+        8, 55},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"multidraw with wireframe and primitive ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::PrimitiveId, 8, 55},
+    {"multidraw with wireframe and primitive ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::PrimitiveId,
+        8, 55},
     #endif
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
-    {"wireframe", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe, 1, 1},
+    {"wireframe", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe,
+        1, 1},
     #endif
-    {"wireframe w/o GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 1},
-    {"object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectId, 1, 1},
-    {"instanced object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::InstancedObjectId, 1, 1},
-    {"object ID texture", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture, 1, 1},
-    {"object ID texture array", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation, 1, 1},
-    {"object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset, 1, 1},
-    {"object ID texture array + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::InstancedTextureOffset, 1, 1},
-    {"instanced object ID texture array + texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation, 1, 1},
-    {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset, 1, 1},
-    {"vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId, 1, 1},
+    {"wireframe w/o GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        1, 1},
+    {"object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectId,
+        1, 1},
+    {"instanced object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::InstancedObjectId,
+        1, 1},
+    {"object ID texture", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture,
+        1, 1},
+    {"object ID texture array", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation,
+        1, 1},
+    {"object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
+        1, 1},
+    {"object ID texture array + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
+        1, 1},
+    {"instanced object ID texture array + texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation,
+        1, 1},
+    {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
+        1, 1},
+    {"vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId,
+        1, 1},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"primitive ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveId, 1, 1},
+    {"primitive ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveId,
+        1, 1},
     #endif
-    {"primitive ID from vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId, 1, 1}
+    {"primitive ID from vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
+        1, 1}
 };
 #endif
 
