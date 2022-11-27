@@ -1424,7 +1424,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& setDrawOffset(UnsignedInt offset);
 
         /**
-         * @brief Set a projection uniform buffer
+         * @brief Bind a projection uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1445,7 +1445,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a transformation uniform buffer
+         * @brief Bind a transformation uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1466,7 +1466,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a draw uniform buffer
+         * @brief Bind a draw uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1487,7 +1487,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a texture transformation uniform buffer
+         * @brief Bind a texture transformation uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1507,7 +1507,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a material uniform buffer
+         * @brief Bind a material uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1528,7 +1528,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a light uniform buffer
+         * @brief Bind a light uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *

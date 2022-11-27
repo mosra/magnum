@@ -505,7 +505,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         DistanceFieldVectorGL<dimensions>& setDrawOffset(UnsignedInt offset);
 
         /**
-         * @brief Set a transformation and projection uniform buffer
+         * @brief Bind a transformation and projection uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -526,7 +526,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         DistanceFieldVectorGL<dimensions>& bindTransformationProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a draw uniform buffer
+         * @brief Bind a draw uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -547,7 +547,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         DistanceFieldVectorGL<dimensions>& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a texture transformation uniform buffer
+         * @brief Bind a texture transformation uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -567,7 +567,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         DistanceFieldVectorGL<dimensions>& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a material uniform buffer
+         * @brief Bind a material uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *

@@ -374,7 +374,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          */
 
         /**
-         * @brief Set a draw offset
+         * @brief Bind a draw offset
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -397,7 +397,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         VertexColorGL<dimensions>& setDrawOffset(UnsignedInt offset);
 
         /**
-         * @brief Set a transformation and projection uniform buffer
+         * @brief Bind a transformation and projection uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *

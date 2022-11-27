@@ -751,7 +751,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Set a transformation and projection uniform buffer
+         * @brief Bind a transformation and projection uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -771,7 +771,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         MeshVisualizerGL2D& bindTransformationProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a draw uniform buffer
+         * @brief Bind a draw uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -801,7 +801,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Set a material uniform buffer
+         * @brief Bind a material uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2229,7 +2229,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Set a projection uniform buffer
+         * @brief Bind a projection uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2250,7 +2250,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a transformation uniform buffer
+         * @brief Bind a transformation uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2270,7 +2270,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a draw uniform buffer
+         * @brief Bind a draw uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2291,7 +2291,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Set a texture transformation uniform buffer for an object ID texture
+         * @brief Bind a texture transformation uniform buffer for an object ID texture
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2319,7 +2319,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Set a material uniform buffer
+         * @brief Bind a material uniform buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
