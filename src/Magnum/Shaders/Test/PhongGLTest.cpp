@@ -1437,11 +1437,11 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setAmbientColor({})
           .setDiffuseColor({})
           .setNormalTextureScale({})
@@ -1488,11 +1488,11 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
 void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Buffer buffer;
     PhongGL shader;
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindProjectionBuffer(buffer)
           .bindProjectionBuffer(buffer, 0, 16)
           .bindTransformationBuffer(buffer)
@@ -1534,12 +1534,12 @@ void PhongGLTest::bindTexturesInvalid() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Texture2D texture;
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(data.flags)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindAmbientTexture(texture)
           .bindDiffuseTexture(texture)
           .bindSpecularTexture(texture)
@@ -1564,18 +1564,17 @@ void PhongGLTest::bindTextureArraysInvalid() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Texture2DArray textureArray;
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(data.flags)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindAmbientTexture(textureArray)
           .bindDiffuseTexture(textureArray)
           .bindSpecularTexture(textureArray)
           .bindNormalTexture(textureArray)
           .bindObjectIdTexture(textureArray);
-
     CORRADE_COMPARE(out.str(), data.message);
 }
 #endif
@@ -1583,12 +1582,11 @@ void PhongGLTest::bindTextureArraysInvalid() {
 void PhongGLTest::setAlphaMaskNotEnabled() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    PhongGL shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    PhongGL shader;
     shader.setAlphaMask(0.75f);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
@@ -1596,12 +1594,12 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
 void PhongGLTest::setSpecularDisabled() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Texture2D texture;
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::NoSpecular)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setSpecularColor({})
         .setShininess({})
         /* {{}} makes GCC 4.8 warn about zero as null pointer constant */
@@ -1617,12 +1615,11 @@ void PhongGLTest::setSpecularDisabled() {
 void PhongGLTest::setTextureMatrixNotEnabled() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    PhongGL shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    PhongGL shader;
     shader.setTextureMatrix({});
-
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
@@ -1630,12 +1627,11 @@ void PhongGLTest::setTextureMatrixNotEnabled() {
 void PhongGLTest::setNormalTextureScaleNotEnabled() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    PhongGL shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    PhongGL shader;
     shader.setNormalTextureScale({});
-
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled\n");
 }
@@ -1644,12 +1640,11 @@ void PhongGLTest::setNormalTextureScaleNotEnabled() {
 void PhongGLTest::setTextureLayerNotArray() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    PhongGL shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    PhongGL shader;
     shader.setTextureLayer(37);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
 }
@@ -1664,12 +1659,12 @@ void PhongGLTest::bindTextureTransformBufferNotEnabled() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
     CORRADE_COMPARE(out.str(),
@@ -1682,12 +1677,11 @@ void PhongGLTest::bindTextureTransformBufferNotEnabled() {
 void PhongGLTest::setObjectIdNotEnabled() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    PhongGL shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    PhongGL shader;
     shader.setObjectId(33376);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
@@ -1696,10 +1690,11 @@ void PhongGLTest::setObjectIdNotEnabled() {
 void PhongGLTest::setWrongLightCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
     PhongGL shader{PhongGL::Configuration{}
         .setLightCount(5)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader
         .setLightColors({Color3{}})
         .setLightPositions({Vector4{}})
@@ -1713,10 +1708,11 @@ void PhongGLTest::setWrongLightCount() {
 void PhongGLTest::setWrongLightId() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
     PhongGL shader{PhongGL::Configuration{}
         .setLightCount(3)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader
         .setLightColor(3, Color3{})
         .setLightPosition(3, Vector4{})
@@ -1736,13 +1732,14 @@ void PhongGLTest::setWrongDrawOffset() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers)
         .setLightCount(1)
         .setMaterialCount(2)
         .setDrawCount(5)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");

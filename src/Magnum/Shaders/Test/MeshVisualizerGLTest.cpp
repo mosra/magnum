@@ -1957,11 +1957,11 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
@@ -1992,11 +1992,11 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setProjectionMatrix({})
         .setTransformationMatrix({})
         .setTextureMatrix({})
@@ -2037,12 +2037,12 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
 void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Buffer buffer;
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
           .bindDrawBuffer(buffer)
@@ -2067,12 +2067,12 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
 void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Buffer buffer;
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindProjectionBuffer(buffer)
           .bindProjectionBuffer(buffer, 0, 16)
           .bindTransformationBuffer(buffer)
@@ -2153,14 +2153,13 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid2D() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Texture2DArray textureArray;
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags2D)};
-    shader.bindObjectIdTexture(textureArray);
 
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.bindObjectIdTexture(textureArray);
     CORRADE_COMPARE(out.str(), data.message);
 }
 
@@ -2175,14 +2174,13 @@ void MeshVisualizerGLTest::bindObjectIdTextureArrayInvalid3D() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Texture2DArray textureArray;
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags3D)};
-    shader.bindObjectIdTexture(textureArray);
 
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.bindObjectIdTexture(textureArray);
     CORRADE_COMPARE(out.str(), data.message);
 }
 #endif
@@ -2374,14 +2372,13 @@ void MeshVisualizerGLTest::setObjectIdNotEnabled3D() {
 void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Texture2D texture;
     MeshVisualizerGL2D shader{NoCreate};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setColorMapTransformation({}, {})
         .bindColorMapTexture(texture);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
         "Shaders::MeshVisualizerGL::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
@@ -2390,14 +2387,13 @@ void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
 void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Texture2D texture;
     MeshVisualizerGL3D shader{NoCreate};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setColorMapTransformation({}, {})
         .bindColorMapTexture(texture);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
         "Shaders::MeshVisualizerGL::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
@@ -2416,15 +2412,14 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
         CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::Wireframe)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setNormalMatrix({})
         .setLineWidth({})
         .setLineLength({});
-
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL3D::setNormalMatrix(): the shader was not created with TBN direction enabled\n"
         "Shaders::MeshVisualizerGL3D::setLineWidth(): the shader was not created with TBN direction enabled\n"
@@ -2441,12 +2436,13 @@ void MeshVisualizerGLTest::setWrongDrawOffset2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
         .setMaterialCount(2)
         .setDrawCount(5)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
@@ -2460,14 +2456,14 @@ void MeshVisualizerGLTest::setWrongDrawOffset3D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
         .setMaterialCount(2)
         .setDrawCount(5)};
-    shader
-        .setDrawOffset(5);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
 }

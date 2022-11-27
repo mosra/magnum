@@ -1097,11 +1097,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnable
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
         .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
@@ -1122,11 +1122,11 @@ template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEna
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Buffer buffer;
     FlatGL<dimensions> shader;
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
           .bindDrawBuffer(buffer)
@@ -1161,12 +1161,12 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTexturesInvalid() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
+    GL::Texture2D texture;
     FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
         .setFlags(data.flags)};
-    GL::Texture2D texture;
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindTexture(texture);
     #ifndef MAGNUM_TARGET_GLES2
     shader.bindObjectIdTexture(texture);
@@ -1187,12 +1187,12 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureArraysInvalid() {
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
+    GL::Texture2DArray textureArray;
     FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
         .setFlags(data.flags)};
-    GL::Texture2DArray textureArray;
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindTexture(textureArray);
     shader.bindObjectIdTexture(textureArray);
     CORRADE_COMPARE(out.str(), data.message);
@@ -1204,12 +1204,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    FlatGL<dimensions> shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    FlatGL<dimensions> shader;
     shader.setAlphaMask(0.75f);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
@@ -1219,12 +1218,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    FlatGL<dimensions> shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    FlatGL<dimensions> shader;
     shader.setTextureMatrix({});
-
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
@@ -1235,12 +1233,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setTextureLayerNotArray() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    FlatGL<dimensions> shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    FlatGL<dimensions> shader;
     shader.setTextureLayer(37);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setTextureLayer(): the shader was not created with texture arrays enabled\n");
 }
@@ -1257,12 +1254,12 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureTransformBufferNotE
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Buffer buffer{GL::Buffer::TargetHint::Uniform};
     FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
         .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindTextureTransformationBuffer(buffer)
           .bindTextureTransformationBuffer(buffer, 0, 16);
     CORRADE_COMPARE(out.str(),
@@ -1277,12 +1274,11 @@ template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    FlatGL<dimensions> shader;
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    FlatGL<dimensions> shader;
     shader.setObjectId(33376);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setObjectId(): the shader was not created with object ID enabled\n");
 }
@@ -1299,12 +1295,13 @@ template<UnsignedInt dimensions> void FlatGLTest::setWrongDrawOffset() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
     FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
         .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)
         .setMaterialCount(2)
         .setDrawCount(5)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");

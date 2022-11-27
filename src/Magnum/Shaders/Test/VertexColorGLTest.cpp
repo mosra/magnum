@@ -499,11 +499,11 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setUniformUniformBuffer
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
         .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.setTransformationProjectionMatrix({});
     CORRADE_COMPARE(out.str(),
         "Shaders::VertexColorGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n");
@@ -514,11 +514,11 @@ template<UnsignedInt dimensions> void VertexColorGLTest::bindBufferUniformBuffer
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     GL::Buffer buffer;
     VertexColorGL<dimensions> shader;
+
+    std::ostringstream out;
+    Error redirectError{&out};
     shader.bindTransformationProjectionBuffer(buffer)
           .bindTransformationProjectionBuffer(buffer, 0, 16)
           .setDrawOffset(0);
@@ -538,12 +538,13 @@ template<UnsignedInt dimensions> void VertexColorGLTest::setWrongDrawOffset() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    VertexColorGL<dimensions> shader{typename VertexColorGL<dimensions>::Configuration{}
+        .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)
+        .setDrawCount(5)};
+
     std::ostringstream out;
     Error redirectError{&out};
-    VertexColorGL<dimensions>{typename VertexColorGL<dimensions>::Configuration{}
-        .setFlags(VertexColorGL<dimensions>::Flag::UniformBuffers)
-        .setDrawCount(5)}
-        .setDrawOffset(5);
+    shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
         "Shaders::VertexColorGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
 }
