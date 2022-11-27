@@ -26,12 +26,14 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
@@ -85,6 +87,9 @@ struct PhongGLTest: GL::OpenGLTester {
     explicit PhongGLTest();
 
     void construct();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructSkinning();
+    #endif
     void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     void constructUniformBuffers();
@@ -101,6 +106,9 @@ struct PhongGLTest: GL::OpenGLTester {
     void constructUniformBuffersInvalid();
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    void setPerVertexJointCountInvalid();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void setUniformUniformBuffersEnabled();
     void bindBufferUniformBuffersNotEnabled();
@@ -121,6 +129,9 @@ struct PhongGLTest: GL::OpenGLTester {
     void setObjectIdNotEnabled();
     #endif
     void setWrongLightCountOrId();
+    #ifndef MAGNUM_TARGET_GLES2
+    void setWrongJointCountOrId();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void setWrongDrawOffset();
     #endif
@@ -163,10 +174,18 @@ struct PhongGLTest: GL::OpenGLTester {
 
     template<PhongGL::Flag flag = PhongGL::Flag{}> void renderZeroLights();
 
+    #ifndef MAGNUM_TARGET_GLES2
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderSkinning();
+    #endif
+
     template<PhongGL::Flag flag = PhongGL::Flag{}> void renderInstanced();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<PhongGL::Flag flag = PhongGL::Flag{}> void renderInstancedSkinning();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     void renderMulti();
+    void renderMultiSkinning();
     #endif
 
     private:
@@ -267,59 +286,93 @@ constexpr struct {
 };
 
 #ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    PhongGL::Flags flags;
+    UnsignedInt lightCount, jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+} ConstructSkinningData[]{
+    {"no skinning", {},
+        1, 0, 0, 0},
+    {"one set", {},
+        1, 16, 4, 0},
+    {"two partial sets", {},
+        1, 32, 2, 3},
+    {"secondary set only", {},
+        1, 12, 0, 4},
+    {"dynamic per-vertex sets", PhongGL::Flag::DynamicPerVertexJointCount,
+        1, 16, 4, 3},
+    {"zero lights, one set", {},
+        0, 15, 4, 0},
+    {"multiple lights, one set", {},
+        3, 15, 4, 0},
+    {"multiple lights, two sets, dynamic per-vertex sets",
+        PhongGL::Flag::DynamicPerVertexJointCount,
+        5, 10, 4, 4}
+};
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
     UnsignedInt lightCount, materialCount, drawCount;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
 } ConstructUniformBuffersData[]{
     {"classic fallback", {},
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"", PhongGL::Flag::UniformBuffers,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
        per-material 4, per-light 4 plus 4 for projection */
     {"multiple lights, materials, draws", PhongGL::Flag::UniformBuffers,
-        8, 8, 24},
+        8, 8, 24, 0, 0, 0},
     {"multiple lights, materials, draws + light culling", PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling,
-        8, 8, 24},
+        8, 8, 24, 0, 0, 0},
     {"zero lights", PhongGL::Flag::UniformBuffers,
-        0, 16, 24},
+        0, 16, 24, 0, 0, 0},
     {"ambient + diffuse + specular texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"ambient + diffuse + specular texture + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"ambient + diffuse + specular texture array + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"normal texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"object ID texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"object ID texture array", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"object ID texture + instanced texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedTextureOffset,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"object ID texture array + instanced texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::InstancedTextureOffset,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"instanced object ID texture array + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"object ID texture + diffuse texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::DiffuseTexture,
-        1, 1, 1},
+        1, 1, 1, 0, 0, 0},
     {"no specular", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NoSpecular,
-        1, 1, 1},
-    {"multidraw with all the things", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::LightCulling,
-        8, 16, 24},
+        1, 1, 1, 0, 0, 0},
+    {"skinning", PhongGL::Flag::UniformBuffers,
+        1, 1, 1, 32, 3, 2},
+    {"skinning, dynamic per-vertex sets", PhongGL::Flag::UniformBuffers|PhongGL::Flag::DynamicPerVertexJointCount,
+        1, 1, 1, 32, 3, 4},
+    {"multidraw with all the things except secondary per-vertex sets", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::LightCulling|PhongGL::Flag::DynamicPerVertexJointCount,
+        8, 16, 24, 16, 4, 0},
+    {"multidraw with all the things except instancing", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::LightCulling|PhongGL::Flag::DynamicPerVertexJointCount,
+        8, 16, 24, 16, 3, 4},
 };
 #endif
 
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
     const char* message;
 } ConstructInvalidData[] {
     {"texture transformation but not textured",
@@ -330,20 +383,34 @@ constexpr struct {
             |PhongGL::Flag::ObjectId
             #endif
             ,
+        0, 0, 0,
         "texture transformation enabled but the shader is not textured"},
     #ifndef MAGNUM_TARGET_GLES2
     {"texture arrays but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
         PhongGL::Flag::TextureArrays|PhongGL::Flag::ObjectId,
+        0, 0, 0,
         "texture arrays enabled but the shader is not textured"},
     {"conflicting bitangent and instanced object id attribute",
         PhongGL::Flag::Bitangent|PhongGL::Flag::InstancedObjectId,
+        0, 0, 0,
         "Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
     #endif
     {"specular texture but no specular",
         PhongGL::Flag::SpecularTexture|PhongGL::Flag::NoSpecular,
-        "specular texture requires the shader to not have specular disabled"}
+        0, 0, 0,
+        "specular texture requires the shader to not have specular disabled"},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"dynamic per-vertex joint count but no static per-vertex joint count",
+        PhongGL::Flag::DynamicPerVertexJointCount,
+        0, 0, 0,
+        "dynamic per-vertex joint count enabled for zero joints"},
+    {"instancing together with secondary per-vertex sets",
+        PhongGL::Flag::InstancedTransformation,
+        10, 4, 1,
+        "TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead"}
+    #endif
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -765,6 +832,81 @@ const struct {
 };
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+/* Same as in FlatGL and MeshVisualizerGL tests */
+const struct {
+    const char* name;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+    UnsignedInt dynamicPerVertexJointCount, dynamicSecondaryPerVertexJointCount;
+    PhongGL::Flags flags;
+    Containers::Array<Containers::Pair<UnsignedInt, GL::DynamicAttribute>> attributes;
+    bool setDynamicPerVertexJointCount, setJointMatrices, setJointMatricesOneByOne;
+    const char* expected;
+} RenderSkinningData[]{
+    {"no skinning", 0, 0, 0, 0, 0, {}, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
+        }}, false, false, false,
+        "skinning-default.tga"},
+    {"default joint matrices", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
+        }}, false, false, false,
+        "skinning-default.tga"},
+    {"single set", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
+        }}, false, true, true,
+        "skinning.tga"},
+    {"single set, dynamic, left at defaults", 5, 3, 0, 0, 0, PhongGL::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, dynamic", 5, 4, 0, 3, 0, PhongGL::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
+        }}, true, true, false,
+        "skinning.tga"},
+    {"two sets", 5, 1, 2, 0, 0, {}, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::One}},
+            {4, PhongGL::SecondaryJointIds{PhongGL::SecondaryJointIds::Components::Two}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::One}},
+            {4*4, PhongGL::SecondaryWeights{PhongGL::SecondaryWeights::Components::Two}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"two sets, dynamic, left at defaults", 5, 1, 2, 0, 0, PhongGL::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::One}},
+            {4, PhongGL::SecondaryJointIds{PhongGL::SecondaryJointIds::Components::Two}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::One}},
+            {4*4, PhongGL::SecondaryWeights{PhongGL::SecondaryWeights::Components::Two}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"two sets, dynamic", 5, 4, 4, 1, 2, PhongGL::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::One}},
+            {4, PhongGL::SecondaryJointIds{PhongGL::SecondaryJointIds::Components::Two}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::One}},
+            {4*4, PhongGL::SecondaryWeights{PhongGL::SecondaryWeights::Components::Two}},
+        }}, true, true, false,
+        "skinning.tga"},
+    {"only secondary set", 5, 0, 3, 0, 0, {}, {InPlaceInit, {
+            {0, PhongGL::SecondaryJointIds{PhongGL::SecondaryJointIds::Components::Three}},
+            {3*4, PhongGL::SecondaryWeights{PhongGL::SecondaryWeights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"only secondary set, dynamic", 5, 4, 4, 0, 3, PhongGL::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, PhongGL::SecondaryJointIds{PhongGL::SecondaryJointIds::Components::Three}},
+            {3*4, PhongGL::SecondaryWeights{PhongGL::SecondaryWeights::Components::Three}},
+        }}, true, true, false,
+        "skinning.tga"},
+};
+#endif
+
 constexpr struct {
     const char* name;
     const char* expected;
@@ -944,11 +1086,31 @@ constexpr struct {
         50.34f, 0.131f},
     /** @todo test normal and per-draw scaling when there's usable texture */
 };
+
+/* Same as in FlatGL and MeshVisualizerGL tests */
+const struct {
+    const char* name;
+    PhongGL::Flags flags;
+    UnsignedInt materialCount, drawCount, jointCount;
+    UnsignedInt uniformIncrement;
+} RenderMultiSkinningData[]{
+    {"bind with offset",
+        {}, 1, 1, 4, 16},
+    {"draw offset",
+        {}, 2, 3, 9, 1},
+    {"multidraw",
+        PhongGL::Flag::MultiDraw, 2, 3, 9, 1}
+};
 #endif
 
 PhongGLTest::PhongGLTest() {
     addInstancedTests({&PhongGLTest::construct},
         Containers::arraySize(ConstructData));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&PhongGLTest::constructSkinning},
+        Containers::arraySize(ConstructSkinningData));
+    #endif
 
     addTests({&PhongGLTest::constructAsync});
 
@@ -976,7 +1138,8 @@ PhongGLTest::PhongGLTest() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    addTests({&PhongGLTest::setUniformUniformBuffersEnabled,
+    addTests({&PhongGLTest::setPerVertexJointCountInvalid,
+              &PhongGLTest::setUniformUniformBuffersEnabled,
               &PhongGLTest::bindBufferUniformBuffersNotEnabled});
     #endif
 
@@ -1003,6 +1166,9 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::setObjectIdNotEnabled,
         #endif
         &PhongGLTest::setWrongLightCountOrId,
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::setWrongJointCountOrId,
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::setWrongDrawOffset
         #endif
@@ -1145,6 +1311,16 @@ PhongGLTest::PhongGLTest() {
         #endif
     );
 
+    #ifndef MAGNUM_TARGET_GLES2
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<PhongGLTest>({
+        &PhongGLTest::renderSkinning,
+        &PhongGLTest::renderSkinning<PhongGL::Flag::UniformBuffers>},
+        Containers::arraySize(RenderSkinningData),
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
+    #endif
+
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderInstanced,
@@ -1163,10 +1339,24 @@ PhongGLTest::PhongGLTest() {
     );
 
     #ifndef MAGNUM_TARGET_GLES2
+    /* MSVC needs explicit type due to default template args */
+    addTests<PhongGLTest>({
+        &PhongGLTest::renderInstancedSkinning,
+        &PhongGLTest::renderInstancedSkinning<PhongGL::Flag::UniformBuffers>},
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&PhongGLTest::renderMulti},
         Containers::arraySize(RenderMultiData),
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown);
+
+    addInstancedTests({&PhongGLTest::renderMultiSkinning},
+        Containers::arraySize(RenderMultiSkinningData),
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
     #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
@@ -1220,10 +1410,43 @@ void PhongGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::constructSkinning() {
+    auto&& data = ConstructSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags)
+        .setLightCount(data.lightCount)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 void PhongGLTest::constructAsync() {
     PhongGL::CompileState state = PhongGL::compile(PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset)
-        .setLightCount(3));
+        .setLightCount(3)
+        /* Skinning properties tested in constructUniformBuffersAsync(), as
+           there we don't need to bother with ES2 */
+    );
     CORRADE_COMPARE(state.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
     CORRADE_COMPARE(state.lightCount(), 3);
 
@@ -1253,7 +1476,7 @@ void PhongGLTest::constructUniformBuffers() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & PhongGL::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
-    if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    if((data.flags & PhongGL::Flag::ObjectId || data.jointCount) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
@@ -1276,11 +1499,15 @@ void PhongGLTest::constructUniformBuffers() {
         .setFlags(data.flags)
         .setLightCount(data.lightCount)
         .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
+        .setDrawCount(data.drawCount)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1296,27 +1523,37 @@ void PhongGLTest::constructUniformBuffersAsync() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     PhongGL::CompileState state = PhongGL::compile(PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling)
-        .setLightCount(8)
-        .setMaterialCount(8)
-        .setDrawCount(24));
+        /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
+           per-material 4, per-light 4, per joint 4 plus 4 for projection */
+        .setLightCount(2)
+        .setMaterialCount(5)
+        .setDrawCount(24)
+        .setJointCount(7, 3, 4));
     CORRADE_COMPARE(state.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
-    CORRADE_COMPARE(state.lightCount(), 8);
-    CORRADE_COMPARE(state.materialCount(), 8);
+    CORRADE_COMPARE(state.lightCount(), 2);
+    CORRADE_COMPARE(state.materialCount(), 5);
     CORRADE_COMPARE(state.drawCount(), 24);
+    CORRADE_COMPARE(state.jointCount(), 7);
+    CORRADE_COMPARE(state.perVertexJointCount(), 3);
+    CORRADE_COMPARE(state.secondaryPerVertexJointCount(), 4);
 
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
     PhongGL shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
-    CORRADE_COMPARE(shader.lightCount(), 8);
-    CORRADE_COMPARE(shader.materialCount(), 8);
+    CORRADE_COMPARE(shader.lightCount(), 2);
+    CORRADE_COMPARE(shader.materialCount(), 5);
     CORRADE_COMPARE(shader.drawCount(), 24);
-    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_COMPARE(shader.jointCount(), 7);
+    CORRADE_COMPARE(shader.perVertexJointCount(), 3);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), 4);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1332,7 +1569,10 @@ void PhongGLTest::constructUniformBuffersAsync() {
 void PhongGLTest::constructMove() {
     PhongGL a{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::AlphaMask)
-        .setLightCount(3)};
+        .setLightCount(3)
+        /* Skinning properties tested in constructMoveUniformBuffers(), as
+           there we don't need to bother with ES2 */
+    };
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1357,13 +1597,16 @@ void PhongGLTest::constructMoveUniformBuffers() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     PhongGL a{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers)
         .setLightCount(3)
         .setMaterialCount(2)
-        .setDrawCount(5)};
+        .setDrawCount(5)
+        .setJointCount(16, 4, 3)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1375,6 +1618,9 @@ void PhongGLTest::constructMoveUniformBuffers() {
     CORRADE_COMPARE(b.lightCount(), 3);
     CORRADE_COMPARE(b.materialCount(), 2);
     CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_COMPARE(b.jointCount(), 16);
+    CORRADE_COMPARE(b.perVertexJointCount(), 4);
+    CORRADE_COMPARE(b.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!a.id());
 
     PhongGL c{NoCreate};
@@ -1384,6 +1630,9 @@ void PhongGLTest::constructMoveUniformBuffers() {
     CORRADE_COMPARE(c.lightCount(), 3);
     CORRADE_COMPARE(c.materialCount(), 2);
     CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_COMPARE(c.jointCount(), 16);
+    CORRADE_COMPARE(c.perVertexJointCount(), 4);
+    CORRADE_COMPARE(c.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!b.id());
 }
 #endif
@@ -1397,7 +1646,11 @@ void PhongGLTest::constructInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
     PhongGL{PhongGL::Configuration{}
-        .setFlags(data.flags)};
+        .setFlags(data.flags)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
+        #endif
+    };
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::PhongGL: {}\n", data.message));
 }
@@ -1427,6 +1680,32 @@ void PhongGLTest::constructUniformBuffersInvalid() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::setPerVertexJointCountInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    PhongGL a{PhongGL::Configuration{}};
+    PhongGL b{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::DynamicPerVertexJointCount)
+        .setJointCount(16, 3, 2)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    a.setPerVertexJointCount(3, 2);
+    b.setPerVertexJointCount(4);
+    b.setPerVertexJointCount(3, 3);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled\n"
+        "Shaders::PhongGL::setPerVertexJointCount(): expected at most 3 per-vertex joints, got 4\n"
+        "Shaders::PhongGL::setPerVertexJointCount(): expected at most 2 secondary per-vertex joints, got 3\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setUniformUniformBuffersEnabled() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -1440,26 +1719,31 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setAmbientColor({})
-          .setDiffuseColor({})
-          .setNormalTextureScale({})
-          .setSpecularColor({})
-          .setShininess({})
-          .setAlphaMask({})
-          .setObjectId({})
-          .setTransformationMatrix({})
-          .setNormalMatrix({})
-          .setProjectionMatrix({})
-          .setTextureMatrix({})
-          .setTextureLayer({})
-          .setLightPositions(std::initializer_list<Vector4>{})
-          .setLightPosition(0, Vector4{})
-          .setLightColors(std::initializer_list<Color3>{})
-          .setLightColor(0, Color3{})
-          .setLightSpecularColors({})
-          .setLightSpecularColor(0, {})
-          .setLightRanges({})
-          .setLightRange(0, {});
+    shader
+        /* setPerVertexJointCount() works on both UBOs and classic */
+        .setAmbientColor({})
+        .setDiffuseColor({})
+        .setNormalTextureScale({})
+        .setSpecularColor({})
+        .setShininess({})
+        .setAlphaMask({})
+        .setObjectId({})
+        .setTransformationMatrix({})
+        .setNormalMatrix({})
+        .setProjectionMatrix({})
+        .setTextureMatrix({})
+        .setTextureLayer({})
+        .setLightPositions(std::initializer_list<Vector4>{})
+        .setLightPosition(0, Vector4{})
+        .setLightColors(std::initializer_list<Color3>{})
+        .setLightColor(0, Color3{})
+        .setLightSpecularColors({})
+        .setLightSpecularColor(0, {})
+        .setLightRanges({})
+        .setLightRange(0, {})
+        .setJointMatrices({})
+        .setJointMatrix(0, {})
+        .setPerInstanceJointCount(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setAmbientColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setDiffuseColor(): the shader was created with uniform buffers enabled\n"
@@ -1480,7 +1764,10 @@ void PhongGLTest::setUniformUniformBuffersEnabled() {
         "Shaders::PhongGL::setLightSpecularColors(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setLightSpecularColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::PhongGL::setLightRanges(): the shader was created with uniform buffers enabled\n"
-        "Shaders::PhongGL::setLightRange(): the shader was created with uniform buffers enabled\n");
+        "Shaders::PhongGL::setLightRange(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setJointMatrices(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setJointMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::PhongGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled\n");
 }
 
 void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
@@ -1503,6 +1790,8 @@ void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
           .bindMaterialBuffer(buffer, 0, 16)
           .bindLightBuffer(buffer)
           .bindLightBuffer(buffer, 0, 16)
+          .bindJointBuffer(buffer)
+          .bindJointBuffer(buffer, 0, 16)
           .setDrawOffset(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -1517,6 +1806,8 @@ void PhongGLTest::bindBufferUniformBuffersNotEnabled() {
         "Shaders::PhongGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::PhongGL::bindLightBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::PhongGL::bindLightBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::PhongGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::PhongGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
 }
 #endif
@@ -1708,6 +1999,23 @@ void PhongGLTest::setWrongLightCountOrId() {
         "Shaders::PhongGL::setLightPosition(): light ID 5 is out of bounds for 5 lights\n"
         "Shaders::PhongGL::setLightRange(): light ID 5 is out of bounds for 5 lights\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::setWrongJointCountOrId() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setJointCount(5, 1)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setJointMatrices({Matrix4{}})
+        .setJointMatrix(5, Matrix4{});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::PhongGL::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::PhongGL::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setWrongDrawOffset() {
@@ -3667,6 +3975,143 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<PhongGL::Flag flag> void PhongGLTest::renderSkinning() {
+    auto&& data = RenderSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(data.jointCount && GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Tests just 2D movement, no lights, no normals, as that should be pretty
+       independent of the skinning process. That also makes it easy to reuse
+       for Flat2D/3D and MeshVisualizer shaders. */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Top right corner gets moved to the right and up, top left just up,
+           bottom right just right, bottom left corner gets slightly scaled.
+
+           3--1
+           | /|
+           |/ |
+           2--0 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 2, 0}, {1.0f, 50.0f, 0.5f}},
+        {{ 1.0f,  1.0f, 0.0f}, {1, 0, 0}, {0.5f, 0.5f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {3, 4, 4}, {0.5f, 0.25f, 0.25f}},
+        {{-1.0f,  1.0f, 0.0f}, {1, 0, 4}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix4 jointMatrices[]{
+        Matrix4::translation(Vector3::xAxis(0.5f)),
+        Matrix4::translation(Vector3::yAxis(0.5f)),
+        Matrix4{Math::ZeroInit},
+        Matrix4::scaling(Vector3{2.0f}),
+        Matrix4{Math::IdentityInit},
+    };
+
+    GL::Buffer buffer{vertices};
+
+    GL::Mesh mesh{MeshPrimitive::TriangleStrip};
+    mesh.setCount(4);
+    mesh.addVertexBuffer(buffer, 0, sizeof(Vertex), GL::DynamicAttribute{PhongGL::Position{}});
+    for(auto&& attribute: data.attributes)
+        mesh.addVertexBuffer(buffer, 3*4 + attribute.first(), sizeof(Vertex), attribute.second());
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags|flag)
+        .setLightCount(0)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    if(data.setDynamicPerVertexJointCount)
+        shader.setPerVertexJointCount(data.dynamicPerVertexJointCount, data.dynamicSecondaryPerVertexJointCount);
+
+    if(flag == PhongGL::Flag{}) {
+        if(data.setJointMatricesOneByOne) {
+            shader
+                .setJointMatrix(0, jointMatrices[0])
+                .setJointMatrix(1, jointMatrices[1])
+                .setJointMatrix(2, jointMatrices[2])
+                .setJointMatrix(3, jointMatrices[3])
+                .setJointMatrix(4, jointMatrices[4]);
+        } else if(data.setJointMatrices)
+            shader.setJointMatrices(jointMatrices);
+        shader
+            .setAmbientColor(0xffffff_rgbf)
+            .setTransformationMatrix(Matrix4::scaling(Vector3{0.5f}))
+            .draw(mesh);
+    } else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(Matrix4::scaling(Vector3{0.5f}))
+        }};
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[0] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[1] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[2] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[3] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[4] : Matrix4{}),
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(0xffffff_rgbf)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join({_testDir, "TestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+#endif
+
 template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     auto&& data = RenderInstancedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -4078,6 +4523,142 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+template<PhongGL::Flag flag> void PhongGLTest::renderInstancedSkinning() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == PhongGL::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Similarly to renderSkinning() tests just 2D movement, differently and
+       clearly distinguisable for each instance */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           3--1
+           | /|
+           |/ |
+           2--0 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 0, 0}, {1.0f, 0.0f, 0.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 3, 0}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0, 0, 1}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {4, 0, 0}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix4 instanceTransformations[]{
+        Matrix4::translation({-1.5f, -1.5f, 0.0f}),
+        Matrix4::translation({ 1.5f, -1.5f, 0.0f}),
+        Matrix4::translation({ 0.0f,  1.5f, 0.0f})
+    };
+
+    Matrix4 jointMatrices[]{
+        /* First instance moves bottom left corner */
+        {},
+        Matrix4::translation({-0.5f, -0.5f, 0.0f}),
+        {},
+        {},
+        {},
+
+        /* Second instance moves bottom right corner */
+        Matrix4::translation({0.5f, -0.5f, 0.0f}),
+        {},
+        {},
+        {},
+        {},
+
+        /* Third instance moves both top corners */
+        {},
+        {},
+        {},
+        Matrix4::translation({0.5f, 0.5f, 0.0f}),
+        Matrix4::translation({-0.5f, 0.5f, 0.0f}),
+    };
+
+    GL::Mesh mesh{MeshPrimitive::TriangleStrip};
+    mesh.setCount(4)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            PhongGL::Position{},
+            PhongGL::JointIds{PhongGL::JointIds::Components::Three},
+            PhongGL::Weights{PhongGL::Weights::Components::Three})
+        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+            PhongGL::TransformationMatrix{})
+        .setInstanceCount(3);
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::InstancedTransformation|flag)
+        .setLightCount(0)
+        .setJointCount(15, 3, 0)};
+
+    if(flag == PhongGL::Flag{}) {
+        shader
+            .setJointMatrices(jointMatrices)
+            .setPerInstanceJointCount(5)
+            .setAmbientColor(0xffffff_rgbf)
+            .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f}))
+            .draw(mesh);
+    } else if(flag == PhongGL::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f}))
+        }};
+        TransformationUniform3D jointMatricesUniformData[Containers::arraySize(jointMatrices)];
+        Utility::copy(jointMatrices, Containers::stridedArrayView(jointMatricesUniformData).slice(&TransformationUniform3D::transformationMatrix));
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform,
+            jointMatricesUniformData
+        };
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongDrawUniform{}
+                .setPerInstanceJointCount(5)
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            PhongMaterialUniform{}
+                .setAmbientColor(0xffffff_rgbf)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "TestFiles/skinning-instanced.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::renderMulti() {
     auto&& data = RenderMultiData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -4466,6 +5047,246 @@ void PhongGLTest::renderMulti() {
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]); /* Plane */
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]); /* Circle */
     }
+}
+
+void PhongGLTest::renderMultiSkinning() {
+    auto&& data = RenderMultiSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= PhongGL::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(PhongGL::Flag::UniformBuffers|data.flags)
+        .setLightCount(0)
+        .setDrawCount(data.drawCount)
+        .setMaterialCount(data.materialCount)
+        .setJointCount(data.jointCount, 2, 0)};
+
+    /* Similarly to renderSkinning() tests just 2D movement, differently and
+       clearly distinguisable for each draw */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[2];
+        Float weights[2];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           3--1    5 9--8
+           | /|   /| | /
+           |/ |  / | |/
+           2--0 6--4 7 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 0}, {1.0f, 0.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 2}, {0.0f, 1.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {1, 2}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {0, 3}, {0.0f, 1.0f}},
+
+        {{ 1.0f, -1.0f, 0.0f}, {0, 3}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {2, 1}, {1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0, 0}, {1.0f, 0.0f}},
+
+        {{-1.0f, -1.0f, 0.0f}, {0, 1}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {1, 0}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {2, 2}, {0.5f, 0.5f}}
+    };
+
+    UnsignedInt indices[]{
+        0, 1, 2,
+        2, 1, 3,
+
+        4, 5, 6,
+
+        7, 8, 9
+    };
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(12)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            PhongGL::Position{},
+            PhongGL::JointIds{PhongGL::JointIds::Components::Two},
+            PhongGL::Weights{PhongGL::Weights::Components::Two})
+        .setIndexBuffer(GL::Buffer{indices}, 0, MeshIndexType::UnsignedInt);
+    GL::MeshView square{mesh};
+    square.setCount(6);
+    GL::MeshView triangle1{mesh};
+    triangle1.setCount(3)
+        .setIndexRange(6);
+    GL::MeshView triangle2{mesh};
+    triangle2.setCount(3)
+        .setIndexRange(9);
+
+    GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+        ProjectionUniform3D{}
+    }};;
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<PhongMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = PhongMaterialUniform{}
+        .setAmbientColor(0x33ffff_rgbf);
+    materialData[1*data.uniformIncrement] = PhongMaterialUniform{}
+        .setAmbientColor(0xffff33_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f})*
+                                 Matrix4::translation({ 0.0f, -1.5f, 0.0f}));
+    transformationData[1*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f})*
+                                 Matrix4::translation({ 1.5f,  1.5f, 0.0f}));
+    transformationData[2*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f})*
+                                 Matrix4::translation({-1.5f,  1.5f, 0.0f}));
+    GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
+
+    Containers::Array<TransformationUniform3D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    /* First draw moves both bottom corners */
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({ 0.5f, -0.5f, 0.0f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 1] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({-0.5f, -0.5f, 0.0f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 2] =  TransformationUniform3D{};
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 3] = TransformationUniform3D{};
+    /* Second draw overlaps with the first with two identity matrices (unless
+       the padding prevents that); moves top right corner */
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 0] = TransformationUniform3D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 1] = TransformationUniform3D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 2] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({ 0.5f, 0.5f, 0.0f}));
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 3] = TransformationUniform3D{};
+    /* Third draw moves top left corner */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 0] = TransformationUniform3D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 1] = TransformationUniform3D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 2] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({-0.5f, 0.5f, 0.0f}));
+    /* This one is unused but has to be here in order to be able to bind the
+       last three-component part while JOINT_COUNT is set to 4 */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 3] = TransformationUniform3D{};
+    GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
+        jointData};
+
+    Containers::Array<PhongDrawUniform> drawData{2*data.uniformIncrement + 1};
+    /* Material / joint offsets are zero if we have single draw, as those are
+       done with UBO offset bindings instead */
+    drawData[0*data.uniformIncrement] = PhongDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+    drawData[1*data.uniformIncrement] = PhongDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        /* Overlaps with the first joint set with two matrices, unless the
+           padding in the single-draw case prevents that */
+        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+    drawData[2*data.uniformIncrement] = PhongDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    shader.bindProjectionBuffer(projectionUniform);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(PhongMaterialUniform),
+            sizeof(PhongMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(PhongDrawUniform),
+            sizeof(PhongDrawUniform));
+        shader.draw(square);
+
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(PhongMaterialUniform),
+            sizeof(PhongMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(PhongDrawUniform),
+            sizeof(PhongDrawUniform));
+        shader.draw(triangle1);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(PhongMaterialUniform),
+            sizeof(PhongMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(PhongDrawUniform),
+            sizeof(PhongDrawUniform));
+        shader.draw(triangle2);
+
+    /* Otherwise using the draw offset / multidraw */
+    } else {
+        shader.bindMaterialBuffer(materialUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindJointBuffer(jointUniform)
+            .bindDrawBuffer(drawUniform);
+
+        if(data.flags >= PhongGL::Flag::MultiDraw)
+            shader.draw({square, triangle1, triangle2});
+        else {
+            shader.setDrawOffset(0)
+                .draw(square);
+            shader.setDrawOffset(1)
+                .draw(triangle1);
+            shader.setDrawOffset(2)
+                .draw(triangle2);
+        }
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "TestFiles/skinning-multi.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
 }
 #endif
 

@@ -26,11 +26,13 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
@@ -86,6 +88,9 @@ struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
     template<UnsignedInt dimensions> void construct();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void constructSkinning();
+    #endif
     template<UnsignedInt dimensions> void constructAsync();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void constructUniformBuffers();
@@ -103,6 +108,9 @@ struct FlatGLTest: GL::OpenGLTester {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setPerVertexJointCountInvalid();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void setUniformUniformBuffersEnabled();
     template<UnsignedInt dimensions> void bindBufferUniformBuffersNotEnabled();
     #endif
@@ -118,6 +126,7 @@ struct FlatGLTest: GL::OpenGLTester {
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void setObjectIdNotEnabled();
+    template<UnsignedInt dimensions> void setWrongJointCountOrId();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void setWrongDrawOffset();
@@ -152,12 +161,23 @@ struct FlatGLTest: GL::OpenGLTester {
     template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderObjectId3D();
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderSkinning2D();
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderSkinning3D();
+    #endif
+
     template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderInstanced2D();
     template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderInstanced3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderInstancedSkinning2D();
+    template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderInstancedSkinning3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     void renderMulti2D();
     void renderMulti3D();
+    void renderMultiSkinning2D();
+    void renderMultiSkinning3D();
     #endif
 
     private:
@@ -238,51 +258,78 @@ constexpr struct {
 };
 
 #ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    FlatGL2D::Flags flags;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+} ConstructSkinningData[]{
+    {"no skinning", {},
+        0, 0, 0},
+    {"one set", {},
+        16, 4, 0},
+    {"two partial sets", {},
+        32, 2, 3},
+    {"secondary set only", {},
+        12, 0, 4},
+    {"dynamic per-vertex sets", FlatGL2D::Flag::DynamicPerVertexJointCount,
+        16, 4, 3},
+};
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 constexpr struct {
     const char* name;
     FlatGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
 } ConstructUniformBuffersData[]{
     {"classic fallback", {},
-        1, 1},
+        1, 1, 0, 0, 0},
     {"", FlatGL2D::Flag::UniformBuffers,
-        1, 1},
+        1, 1, 0, 0, 0},
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
        and 3+1 in 2D, per-material 2 */
     {"multiple materials, draws", FlatGL2D::Flag::UniformBuffers,
-        8, 48},
+        8, 48, 0, 0, 0},
     {"textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"textured + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"texture arrays + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"alpha mask", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectId,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture array", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture + instanced texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture array + instanced texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"instanced object ID texture array + texture transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture + textured", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::Textured,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"instanced texture array offset + layer", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::InstancedTextureOffset,
-        1, 1},
-    {"multidraw with all the things", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId,
-        8, 48}
+        1, 1, 0, 0, 0},
+    {"skinning", FlatGL2D::Flag::UniformBuffers,
+        1, 1, 32, 3, 2},
+    {"skinning, dynamic per-vertex sets", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::DynamicPerVertexJointCount,
+        1, 1, 32, 3, 4},
+    {"multidraw with all the things except secondary per-vertex sets", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::DynamicPerVertexJointCount,
+        8, 48, 16, 4, 0},
+    {"multidraw with all the things except instancing", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::DynamicPerVertexJointCount,
+        8, 48, 16, 3, 4}
 };
 #endif
 
 constexpr struct {
     const char* name;
     FlatGL2D::Flags flags;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
     const char* message;
 } ConstructInvalidData[]{
     {"texture transformation but not textured",
@@ -293,13 +340,23 @@ constexpr struct {
             |FlatGL2D::Flag::ObjectId
             #endif
             ,
+        0, 0, 0,
         "texture transformation enabled but the shader is not textured"},
     #ifndef MAGNUM_TARGET_GLES2
     {"texture arrays but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
         FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::ObjectId,
-        "texture arrays enabled but the shader is not textured"}
+        0, 0, 0,
+        "texture arrays enabled but the shader is not textured"},
+    {"dynamic per-vertex joint count but no static per-vertex joint count",
+        FlatGL2D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0,
+        "dynamic per-vertex joint count enabled for zero joints"},
+    {"instancing together with secondary per-vertex sets",
+        FlatGL2D::Flag::InstancedTransformation,
+        10, 4, 1,
+        "TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead"}
     #endif
 };
 
@@ -460,6 +517,81 @@ const struct {
 };
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+/* Same as in PhongGL and MeshVisualizerGL tests */
+const struct {
+    const char* name;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+    UnsignedInt dynamicPerVertexJointCount, dynamicSecondaryPerVertexJointCount;
+    FlatGL2D::Flags flags;
+    Containers::Array<Containers::Pair<UnsignedInt, GL::DynamicAttribute>> attributes;
+    bool setDynamicPerVertexJointCount, setJointMatrices, setJointMatricesOneByOne;
+    const char* expected;
+} RenderSkinningData[]{
+    {"no skinning", 0, 0, 0, 0, 0, {}, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
+        }}, false, false, false,
+        "skinning-default.tga"},
+    {"default joint matrices", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
+        }}, false, false, false,
+        "skinning-default.tga"},
+    {"single set", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
+        }}, false, true, true,
+        "skinning.tga"},
+    {"single set, dynamic, left at defaults", 5, 3, 0, 0, 0, FlatGL2D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, dynamic", 5, 4, 0, 3, 0, FlatGL2D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
+        }}, true, true, false,
+        "skinning.tga"},
+    {"two sets", 5, 1, 2, 0, 0, {}, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::One}},
+            {4, FlatGL2D::SecondaryJointIds{FlatGL2D::SecondaryJointIds::Components::Two}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::One}},
+            {4*4, FlatGL2D::SecondaryWeights{FlatGL2D::SecondaryWeights::Components::Two}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"two sets, dynamic, left at defaults", 5, 1, 2, 0, 0, FlatGL2D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::One}},
+            {4, FlatGL2D::SecondaryJointIds{FlatGL2D::SecondaryJointIds::Components::Two}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::One}},
+            {4*4, FlatGL2D::SecondaryWeights{FlatGL2D::SecondaryWeights::Components::Two}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"two sets, dynamic", 5, 4, 4, 1, 2, FlatGL2D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::One}},
+            {4, FlatGL2D::SecondaryJointIds{FlatGL2D::SecondaryJointIds::Components::Two}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::One}},
+            {4*4, FlatGL2D::SecondaryWeights{FlatGL2D::SecondaryWeights::Components::Two}},
+        }}, true, true, false,
+        "skinning.tga"},
+    {"only secondary set", 5, 0, 3, 0, 0, {}, {InPlaceInit, {
+            {0, FlatGL2D::SecondaryJointIds{FlatGL2D::SecondaryJointIds::Components::Three}},
+            {3*4, FlatGL2D::SecondaryWeights{FlatGL2D::SecondaryWeights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"only secondary set, dynamic", 5, 4, 4, 0, 3, FlatGL2D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, FlatGL2D::SecondaryJointIds{FlatGL2D::SecondaryJointIds::Components::Three}},
+            {3*4, FlatGL2D::SecondaryWeights{FlatGL2D::SecondaryWeights::Components::Three}},
+        }}, true, true, false,
+        "skinning.tga"},
+};
+#endif
+
 constexpr struct {
     const char* name;
     const char* expected2D;
@@ -613,6 +745,21 @@ constexpr struct {
            while the 2D array has a black area around) */
         65.0f, 0.15f}
 };
+
+/* Same as in PhongGL and MeshVisualizerGL tests */
+const struct {
+    const char* name;
+    FlatGL2D::Flags flags;
+    UnsignedInt materialCount, drawCount, jointCount;
+    UnsignedInt uniformIncrement;
+} RenderMultiSkinningData[]{
+    {"bind with offset",
+        {}, 1, 1, 4, 16},
+    {"draw offset",
+        {}, 2, 3, 9, 1},
+    {"multidraw",
+        FlatGL2D::Flag::MultiDraw, 2, 3, 9, 1}
+};
 #endif
 
 FlatGLTest::FlatGLTest() {
@@ -620,6 +767,13 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::construct<2>,
         &FlatGLTest::construct<3>},
         Containers::arraySize(ConstructData));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests<FlatGLTest>({
+        &FlatGLTest::constructSkinning<2>,
+        &FlatGLTest::constructSkinning<3>},
+        Containers::arraySize(ConstructSkinningData));
+    #endif
 
     addTests<FlatGLTest>({
         &FlatGLTest::constructAsync<2>,
@@ -660,6 +814,8 @@ FlatGLTest::FlatGLTest() {
 
     addTests<FlatGLTest>({
         #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::setPerVertexJointCountInvalid<2>,
+        &FlatGLTest::setPerVertexJointCountInvalid<3>,
         &FlatGLTest::setUniformUniformBuffersEnabled<2>,
         &FlatGLTest::setUniformUniformBuffersEnabled<3>,
         &FlatGLTest::bindBufferUniformBuffersNotEnabled<2>,
@@ -695,6 +851,8 @@ FlatGLTest::FlatGLTest() {
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::setObjectIdNotEnabled<2>,
         &FlatGLTest::setObjectIdNotEnabled<3>,
+        &FlatGLTest::setWrongJointCountOrId<2>,
+        &FlatGLTest::setWrongJointCountOrId<3>,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::setWrongDrawOffset<2>,
@@ -803,6 +961,18 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderObjectIdTeardown);
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<FlatGLTest>({
+        &FlatGLTest::renderSkinning2D,
+        &FlatGLTest::renderSkinning2D<FlatGL2D::Flag::UniformBuffers>,
+        &FlatGLTest::renderSkinning3D,
+        &FlatGLTest::renderSkinning3D<FlatGL3D::Flag::UniformBuffers>},
+        Containers::arraySize(RenderSkinningData),
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
+    #endif
+
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderInstanced2D,
@@ -825,11 +995,28 @@ FlatGLTest::FlatGLTest() {
         );
 
     #ifndef MAGNUM_TARGET_GLES2
+    /* MSVC needs explicit type due to default template args */
+    addTests<FlatGLTest>({
+        &FlatGLTest::renderInstancedSkinning2D,
+        &FlatGLTest::renderInstancedSkinning2D<FlatGL2D::Flag::UniformBuffers>,
+        &FlatGLTest::renderInstancedSkinning3D,
+        &FlatGLTest::renderInstancedSkinning3D<FlatGL3D::Flag::UniformBuffers>},
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&FlatGLTest::renderMulti2D,
                        &FlatGLTest::renderMulti3D},
         Containers::arraySize(RenderMultiData),
         &FlatGLTest::renderObjectIdSetup,
         &FlatGLTest::renderObjectIdTeardown);
+
+    addInstancedTests({&FlatGLTest::renderMultiSkinning2D,
+                       &FlatGLTest::renderMultiSkinning3D},
+        Containers::arraySize(RenderMultiSkinningData),
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
     #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
@@ -883,11 +1070,43 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::constructSkinning() {
+    auto&& data = ConstructSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(data.flags)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(typename FlatGL<dimensions>::Configuration{}
-        .setFlags(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation));
+        .setFlags(FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation)
+        /* Skinning properties tested in constructUniformBuffersAsync(), as
+           there we don't need to bother with ES2 */
+    );
     CORRADE_COMPARE(state.flags(),  FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
 
     while(!state.isLinkFinished())
@@ -917,7 +1136,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & FlatGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
-    if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    if((data.flags & FlatGL2D::Flag::ObjectId || data.jointCount) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
@@ -939,10 +1158,14 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
     FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
         .setFlags(data.flags)
         .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
+        .setDrawCount(data.drawCount)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -960,23 +1183,32 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync()
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     typename FlatGL<dimensions>::CompileState state = FlatGL<dimensions>::compile(typename FlatGL<dimensions>::Configuration{}
         .setFlags(FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask)
-        .setMaterialCount(8)
-        .setDrawCount(48));
+        .setMaterialCount(5)
+        .setDrawCount(36)
+        .setJointCount(7, 3, 4));
     CORRADE_COMPARE(state.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
-    CORRADE_COMPARE(state.materialCount(), 8);
-    CORRADE_COMPARE(state.drawCount(), 48);
+    CORRADE_COMPARE(state.materialCount(), 5);
+    CORRADE_COMPARE(state.drawCount(), 36);
+    CORRADE_COMPARE(state.jointCount(), 7);
+    CORRADE_COMPARE(state.perVertexJointCount(), 3);
+    CORRADE_COMPARE(state.secondaryPerVertexJointCount(), 4);
 
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
     FlatGL<dimensions> shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
-    CORRADE_COMPARE(shader.materialCount(), 8);
-    CORRADE_COMPARE(shader.drawCount(), 48);
+    CORRADE_COMPARE(shader.materialCount(), 5);
+    CORRADE_COMPARE(shader.drawCount(), 36);
+    CORRADE_COMPARE(shader.jointCount(), 7);
+    CORRADE_COMPARE(shader.perVertexJointCount(), 3);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), 4);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -994,7 +1226,10 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
     FlatGL<dimensions> a{typename FlatGL<dimensions>::Configuration{}
-        .setFlags(FlatGL<dimensions>::Flag::Textured)};
+        .setFlags(FlatGL<dimensions>::Flag::Textured)
+        /* Skinning properties tested in constructMoveUniformBuffers(), as
+           there we don't need to bother with ES2 */
+    };
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1019,12 +1254,15 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     FlatGL<dimensions> a{typename FlatGL<dimensions>::Configuration{}
         .setFlags(FlatGL<dimensions>::Flag::UniformBuffers)
         .setMaterialCount(2)
-        .setDrawCount(5)};
+        .setDrawCount(5)
+        .setJointCount(16, 4, 3)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1035,6 +1273,9 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
     CORRADE_COMPARE(b.flags(), FlatGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(b.materialCount(), 2);
     CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_COMPARE(b.jointCount(), 16);
+    CORRADE_COMPARE(b.perVertexJointCount(), 4);
+    CORRADE_COMPARE(b.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!a.id());
 
     FlatGL<dimensions> c{NoCreate};
@@ -1043,6 +1284,9 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
     CORRADE_COMPARE(c.flags(), FlatGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(c.materialCount(), 2);
     CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_COMPARE(c.jointCount(), 16);
+    CORRADE_COMPARE(c.perVertexJointCount(), 4);
+    CORRADE_COMPARE(c.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!b.id());
 }
 #endif
@@ -1057,7 +1301,11 @@ template<UnsignedInt dimensions> void FlatGLTest::constructInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
     FlatGL<dimensions>{typename FlatGL<dimensions>::Configuration{}
-        .setFlags(data.flags)};
+        .setFlags(data.flags)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
+        #endif
+    };
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Shaders::FlatGL: {}\n", data.message));
 }
@@ -1087,6 +1335,34 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersInvalid
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::setPerVertexJointCountInvalid() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    FlatGL<dimensions> a{typename FlatGL<dimensions>::Configuration{}};
+    FlatGL<dimensions> b{typename FlatGL<dimensions>::Configuration{}
+        .setFlags(FlatGL<dimensions>::Flag::DynamicPerVertexJointCount)
+        .setJointCount(16, 3, 2)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    a.setPerVertexJointCount(3, 2);
+    b.setPerVertexJointCount(4);
+    b.setPerVertexJointCount(3, 3);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled\n"
+        "Shaders::FlatGL::setPerVertexJointCount(): expected at most 3 per-vertex joints, got 4\n"
+        "Shaders::FlatGL::setPerVertexJointCount(): expected at most 2 secondary per-vertex joints, got 3\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnabled() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));
 
@@ -1102,19 +1378,27 @@ template<UnsignedInt dimensions> void FlatGLTest::setUniformUniformBuffersEnable
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setTransformationProjectionMatrix({})
+    shader
+        /* setPerVertexJointCount() works on both UBOs and classic */
+        .setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
         .setColor({})
         .setAlphaMask({})
-        .setObjectId({});
+        .setObjectId({})
+        .setJointMatrices({})
+        .setJointMatrix(0, {})
+        .setPerInstanceJointCount(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setTextureLayer(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::FlatGL::setAlphaMask(): the shader was created with uniform buffers enabled\n"
-        "Shaders::FlatGL::setObjectId(): the shader was created with uniform buffers enabled\n");
+        "Shaders::FlatGL::setObjectId(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setJointMatrices(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setJointMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::FlatGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled\n");
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEnabled() {
@@ -1135,6 +1419,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEna
           .bindTextureTransformationBuffer(buffer, 0, 16)
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
+          .bindJointBuffer(buffer)
+          .bindJointBuffer(buffer, 0, 16)
           .setDrawOffset(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -1145,6 +1431,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindBufferUniformBuffersNotEna
         "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::FlatGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::FlatGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::FlatGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::FlatGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
 }
 #endif
@@ -1281,6 +1569,30 @@ template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
     shader.setObjectId(33376);
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setObjectId(): the shader was not created with object ID enabled\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::setWrongJointCountOrId() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    FlatGL<dimensions> shader{typename FlatGL<dimensions>::Configuration{}
+        .setJointCount(5, 1)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setJointMatrices({MatrixTypeFor<dimensions, Float>{}});
+    shader.setJointMatrix(5, MatrixTypeFor<dimensions, Float>{});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::FlatGL::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::FlatGL::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
 }
 #endif
 
@@ -2818,6 +3130,261 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning2D() {
+    auto&& data = RenderSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(data.jointCount && GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Same as in PhongGLTest::renderSkinning(), except in 2D, and same as in
+       MeshVisualizerGLTest::renderSkinning2D() */
+    struct Vertex {
+        Vector2 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Top right corner gets moved to the right and up, top left just up,
+           bottom right just right, bottom left corner gets slightly scaled.
+
+           3--1
+           | /|
+           |/ |
+           2--0 */
+        {{ 1.0f, -1.0f}, {0, 2, 0}, {1.0f, 50.0f, 0.5f}},
+        {{ 1.0f,  1.0f}, {1, 0, 0}, {0.5f, 0.5f, 0.0f}},
+        {{-1.0f, -1.0f}, {3, 4, 4}, {0.5f, 0.25f, 0.25f}},
+        {{-1.0f,  1.0f}, {1, 0, 4}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix3 jointMatrices[]{
+        Matrix3::translation(Vector2::xAxis(0.5f)),
+        Matrix3::translation(Vector2::yAxis(0.5f)),
+        Matrix3{Math::ZeroInit},
+        Matrix3::scaling(Vector2{2.0f}),
+        Matrix3{Math::IdentityInit},
+    };
+
+    GL::Buffer buffer{vertices};
+
+    GL::Mesh mesh{MeshPrimitive::TriangleStrip};
+    mesh.setCount(4);
+    mesh.addVertexBuffer(buffer, 0, sizeof(Vertex), GL::DynamicAttribute{FlatGL2D::Position{}});
+    for(auto&& attribute: data.attributes)
+        mesh.addVertexBuffer(buffer, 2*4 + attribute.first(), sizeof(Vertex), attribute.second());
+
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(data.flags|flag)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    if(data.setDynamicPerVertexJointCount)
+        shader.setPerVertexJointCount(data.dynamicPerVertexJointCount, data.dynamicSecondaryPerVertexJointCount);
+
+    if(flag == FlatGL2D::Flag{}) {
+        if(data.setJointMatricesOneByOne) {
+            shader
+                .setJointMatrix(0, jointMatrices[0])
+                .setJointMatrix(1, jointMatrices[1])
+                .setJointMatrix(2, jointMatrices[2])
+                .setJointMatrix(3, jointMatrices[3])
+                .setJointMatrix(4, jointMatrices[4]);
+        } else if(data.setJointMatrices)
+            shader.setJointMatrices(jointMatrices);
+        shader
+            .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
+            .draw(mesh);
+    } else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
+        }};
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[0] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[1] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[2] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[3] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[4] : Matrix3{}),
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join({_testDir, "TestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning3D() {
+    auto&& data = RenderSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(data.jointCount && GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Same as in PhongGLTest::renderSkinning() */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Top right corner gets moved to the right and up, top left just up,
+           bottom right just right, bottom left corner gets slightly scaled.
+
+           3--1
+           | /|
+           |/ |
+           2--0 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 2, 0}, {1.0f, 50.0f, 0.5f}},
+        {{ 1.0f,  1.0f, 0.0f}, {1, 0, 0}, {0.5f, 0.5f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {3, 4, 4}, {0.5f, 0.25f, 0.25f}},
+        {{-1.0f,  1.0f, 0.0f}, {1, 0, 4}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix4 jointMatrices[]{
+        Matrix4::translation(Vector3::xAxis(0.5f)),
+        Matrix4::translation(Vector3::yAxis(0.5f)),
+        Matrix4{Math::ZeroInit},
+        Matrix4::scaling(Vector3{2.0f}),
+        Matrix4{Math::IdentityInit},
+    };
+
+    GL::Buffer buffer{vertices};
+
+    GL::Mesh mesh{MeshPrimitive::TriangleStrip};
+    mesh.setCount(4);
+    mesh.addVertexBuffer(buffer, 0, sizeof(Vertex), GL::DynamicAttribute{FlatGL3D::Position{}});
+    for(auto&& attribute: data.attributes)
+        mesh.addVertexBuffer(buffer, 3*4 + attribute.first(), sizeof(Vertex), attribute.second());
+
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(data.flags|flag)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    if(data.setDynamicPerVertexJointCount)
+        shader.setPerVertexJointCount(data.dynamicPerVertexJointCount, data.dynamicSecondaryPerVertexJointCount);
+
+    if(flag == FlatGL3D::Flag{}) {
+        if(data.setJointMatricesOneByOne) {
+            shader
+                .setJointMatrix(0, jointMatrices[0])
+                .setJointMatrix(1, jointMatrices[1])
+                .setJointMatrix(2, jointMatrices[2])
+                .setJointMatrix(3, jointMatrices[3])
+                .setJointMatrix(4, jointMatrices[4]);
+        } else if(data.setJointMatrices)
+            shader.setJointMatrices(jointMatrices);
+        shader
+            .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.5f}))
+            .draw(mesh);
+    } else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.5f}))
+        }};
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[0] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[1] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[2] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[3] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[4] : Matrix4{}),
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join({_testDir, "TestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+#endif
+
 template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     auto&& data = RenderInstancedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -3442,6 +4009,263 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     }
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == FlatGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Similarly to renderSkinning2D() tests just 2D movement, differently and
+       clearly distinguisable for each instance */
+    struct Vertex {
+        Vector2 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           3--1
+           | /|
+           |/ |
+           2--0 */
+        {{ 1.0f, -1.0f}, {0, 0, 0}, {1.0f, 0.0f, 0.0f}},
+        {{ 1.0f,  1.0f}, {0, 3, 0}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f, -1.0f}, {0, 0, 1}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f,  1.0f}, {4, 0, 0}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix3 instanceTransformations[]{
+        Matrix3::translation({-1.5f, -1.5f}),
+        Matrix3::translation({ 1.5f, -1.5f}),
+        Matrix3::translation({ 0.0f,  1.5f})
+    };
+
+    Matrix3 jointMatrices[]{
+        /* First instance moves bottom left corner */
+        {},
+        Matrix3::translation({-0.5f, -0.5f}),
+        {},
+        {},
+        {},
+
+        /* Second instance moves bottom right corner */
+        Matrix3::translation({0.5f, -0.5f}),
+        {},
+        {},
+        {},
+        {},
+
+        /* Third instance moves both top corners */
+        {},
+        {},
+        {},
+        Matrix3::translation({0.5f, 0.5f}),
+        Matrix3::translation({-0.5f, 0.5f}),
+    };
+
+    GL::Mesh mesh{MeshPrimitive::TriangleStrip};
+    mesh.setCount(4)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            FlatGL2D::Position{},
+            FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three},
+            FlatGL2D::Weights{FlatGL2D::Weights::Components::Three})
+        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+            FlatGL2D::TransformationMatrix{})
+        .setInstanceCount(3);
+
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(FlatGL2D::Flag::InstancedTransformation|flag)
+        .setJointCount(15, 3, 0)};
+
+    if(flag == FlatGL2D::Flag{}) {
+        shader
+            .setJointMatrices(jointMatrices)
+            .setPerInstanceJointCount(5)
+            .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.3f}))
+            .draw(mesh);
+    } else if(flag == FlatGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.3f}))
+        }};
+        TransformationUniform2D jointMatricesUniformData[Containers::arraySize(jointMatrices)];
+        Utility::copy( /* This API is so powerful it should be outlawed!! */
+            Containers::arrayCast<2, const Vector3>(Containers::stridedArrayView(jointMatrices)), Containers::arrayCast<2, Vector4>(Containers::stridedArrayView(jointMatricesUniformData).slice(&TransformationUniform2D::transformationMatrix)).slice(&Vector4::xyz));
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform,
+            jointMatricesUniformData
+        };
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setPerInstanceJointCount(5)
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "TestFiles/skinning-instanced.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == FlatGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Similarly to renderSkinning3D() tests just 2D movement, differently and
+       clearly distinguisable for each instance */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           3--1
+           | /|
+           |/ |
+           2--0 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 0, 0}, {1.0f, 0.0f, 0.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 3, 0}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0, 0, 1}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {4, 0, 0}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix4 instanceTransformations[]{
+        Matrix4::translation({-1.5f, -1.5f, 0.0f}),
+        Matrix4::translation({ 1.5f, -1.5f, 0.0f}),
+        Matrix4::translation({ 0.0f,  1.5f, 0.0f})
+    };
+
+    Matrix4 jointMatrices[]{
+        /* First instance moves bottom left corner */
+        {},
+        Matrix4::translation({-0.5f, -0.5f, 0.0f}),
+        {},
+        {},
+        {},
+
+        /* Second instance moves bottom right corner */
+        Matrix4::translation({0.5f, -0.5f, 0.0f}),
+        {},
+        {},
+        {},
+        {},
+
+        /* Third instance moves both top corners */
+        {},
+        {},
+        {},
+        Matrix4::translation({0.5f, 0.5f, 0.0f}),
+        Matrix4::translation({-0.5f, 0.5f, 0.0f}),
+    };
+
+    GL::Mesh mesh{MeshPrimitive::TriangleStrip};
+    mesh.setCount(4)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            FlatGL3D::Position{},
+            FlatGL3D::JointIds{FlatGL3D::JointIds::Components::Three},
+            FlatGL3D::Weights{FlatGL3D::Weights::Components::Three})
+        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+            FlatGL3D::TransformationMatrix{})
+        .setInstanceCount(3);
+
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(FlatGL3D::Flag::InstancedTransformation|flag)
+        .setJointCount(15, 3, 0)};
+
+    if(flag == FlatGL3D::Flag{}) {
+        shader
+            .setJointMatrices(jointMatrices)
+            .setPerInstanceJointCount(5)
+            .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.3f}))
+            .draw(mesh);
+    } else if(flag == FlatGL3D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform3D{}
+                .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.3f}))
+        }};
+        TransformationUniform3D jointMatricesUniformData[Containers::arraySize(jointMatrices)];
+        Utility::copy(jointMatrices, Containers::stridedArrayView(jointMatricesUniformData).slice(&TransformationUniform3D::transformationMatrix));
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform,
+            jointMatricesUniformData
+        };
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatDrawUniform{}
+                .setPerInstanceJointCount(5)
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            FlatMaterialUniform{}
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "TestFiles/skinning-instanced.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void FlatGLTest::renderMulti2D() {
@@ -4127,6 +4951,478 @@ void FlatGLTest::renderMulti3D() {
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[24][56], data.expectedId[1]); /* Plane */
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[56][40], data.expectedId[2]); /* Circle */
     }
+}
+
+void FlatGLTest::renderMultiSkinning2D() {
+    auto&& data = RenderMultiSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= FlatGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
+    FlatGL2D shader{FlatGL2D::Configuration{}
+        .setFlags(FlatGL2D::Flag::UniformBuffers|data.flags)
+        .setDrawCount(data.drawCount)
+        .setMaterialCount(data.materialCount)
+        .setJointCount(data.jointCount, 2, 0)};
+
+    /* Similarly to renderSkinning2D() tests just 2D movement, differently and
+       clearly distinguisable for each draw */
+    struct Vertex {
+        Vector2 position;
+        UnsignedInt jointIds[2];
+        Float weights[2];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           3--1    5 9--8
+           | /|   /| | /
+           |/ |  / | |/
+           2--0 6--4 7 */
+        {{ 1.0f, -1.0f}, {0, 0}, {1.0f, 0.0f}},
+        {{ 1.0f,  1.0f}, {0, 2}, {0.0f, 1.0f}},
+        {{-1.0f, -1.0f}, {1, 2}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f}, {0, 3}, {0.0f, 1.0f}},
+
+        {{ 1.0f, -1.0f}, {0, 3}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f}, {2, 1}, {1.0f, 0.0f}},
+        {{-1.0f, -1.0f}, {0, 0}, {1.0f, 0.0f}},
+
+        {{-1.0f, -1.0f}, {0, 1}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f}, {1, 0}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f}, {2, 2}, {0.5f, 0.5f}}
+    };
+
+    UnsignedInt indices[]{
+        0, 1, 2,
+        2, 1, 3,
+
+        4, 5, 6,
+
+        7, 8, 9
+    };
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(12)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            FlatGL2D::Position{},
+            FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Two},
+            FlatGL2D::Weights{FlatGL2D::Weights::Components::Two})
+        .setIndexBuffer(GL::Buffer{indices}, 0, MeshIndexType::UnsignedInt);
+    GL::MeshView square{mesh};
+    square.setCount(6);
+    GL::MeshView triangle1{mesh};
+    triangle1.setCount(3)
+        .setIndexRange(6);
+    GL::MeshView triangle2{mesh};
+    triangle2.setCount(3)
+        .setIndexRange(9);
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<FlatMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = FlatMaterialUniform{}
+        .setColor(0x33ffff_rgbf);
+    materialData[1*data.uniformIncrement] = FlatMaterialUniform{}
+        .setColor(0xffff33_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::scaling(Vector2{0.3f})*
+            Matrix3::translation({ 0.0f, -1.5f}));
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::scaling(Vector2{0.3f})*
+            Matrix3::translation({ 1.5f,  1.5f}));
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::scaling(Vector2{0.3f})*
+            Matrix3::translation({-1.5f,  1.5f}));
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<TransformationUniform2D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    /* First draw moves both bottom corners */
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({ 0.5f, -0.5f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 1] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({-0.5f, -0.5f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 2] =  TransformationUniform2D{};
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 3] = TransformationUniform2D{};
+    /* Second draw overlaps with the first with two identity matrices (unless
+       the padding prevents that); moves top right corner */
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 0] = TransformationUniform2D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 1] = TransformationUniform2D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 2] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({ 0.5f, 0.5f}));
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 3] = TransformationUniform2D{};
+    /* Third draw moves top left corner */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 0] = TransformationUniform2D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 1] = TransformationUniform2D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 2] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({-0.5f, 0.5f}));
+    /* This one is unused but has to be here in order to be able to bind the
+       last three-component part while JOINT_COUNT is set to 4 */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 3] = TransformationUniform2D{};
+    GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
+        jointData};
+
+    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    /* Material / joint offsets are zero if we have single draw, as those are
+       done with UBO offset bindings instead */
+    drawData[0*data.uniformIncrement] = FlatDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+    drawData[1*data.uniformIncrement] = FlatDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        /* Overlaps with the first joint set with two matrices, unless the
+           padding in the single-draw case prevents that */
+        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+    drawData[2*data.uniformIncrement] = FlatDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(FlatMaterialUniform),
+            sizeof(FlatMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindJointBuffer(jointUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform2D),
+            data.jointCount*sizeof(TransformationUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        shader.draw(square);
+
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(FlatMaterialUniform),
+            sizeof(FlatMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindJointBuffer(jointUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform2D),
+            data.jointCount*sizeof(TransformationUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        shader.draw(triangle1);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(FlatMaterialUniform),
+            sizeof(FlatMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindJointBuffer(jointUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform2D),
+            data.jointCount*sizeof(TransformationUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        shader.draw(triangle2);
+
+    /* Otherwise using the draw offset / multidraw */
+    } else {
+        shader.bindMaterialBuffer(materialUniform)
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindJointBuffer(jointUniform)
+            .bindDrawBuffer(drawUniform);
+
+        if(data.flags >= FlatGL2D::Flag::MultiDraw)
+            shader.draw({square, triangle1, triangle2});
+        else {
+            shader.setDrawOffset(0)
+                .draw(square);
+            shader.setDrawOffset(1)
+                .draw(triangle1);
+            shader.setDrawOffset(2)
+                .draw(triangle2);
+        }
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "TestFiles/skinning-multi.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+void FlatGLTest::renderMultiSkinning3D() {
+    auto&& data = RenderMultiSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags >= FlatGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
+    FlatGL3D shader{FlatGL3D::Configuration{}
+        .setFlags(FlatGL3D::Flag::UniformBuffers|data.flags)
+        .setDrawCount(data.drawCount)
+        .setMaterialCount(data.materialCount)
+        .setJointCount(data.jointCount, 2, 0)};
+
+    /* Similarly to renderSkinning3D() tests just 2D movement, differently and
+       clearly distinguisable for each draw */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[2];
+        Float weights[2];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           3--1    5 9--8
+           | /|   /| | /
+           |/ |  / | |/
+           2--0 6--4 7 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 0}, {1.0f, 0.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 2}, {0.0f, 1.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {1, 2}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {0, 3}, {0.0f, 1.0f}},
+
+        {{ 1.0f, -1.0f, 0.0f}, {0, 3}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {2, 1}, {1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0, 0}, {1.0f, 0.0f}},
+
+        {{-1.0f, -1.0f, 0.0f}, {0, 1}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {1, 0}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {2, 2}, {0.5f, 0.5f}}
+    };
+
+    UnsignedInt indices[]{
+        0, 1, 2,
+        2, 1, 3,
+
+        4, 5, 6,
+
+        7, 8, 9
+    };
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(12)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            FlatGL3D::Position{},
+            FlatGL3D::JointIds{FlatGL3D::JointIds::Components::Two},
+            FlatGL3D::Weights{FlatGL3D::Weights::Components::Two})
+        .setIndexBuffer(GL::Buffer{indices}, 0, MeshIndexType::UnsignedInt);
+    GL::MeshView square{mesh};
+    square.setCount(6);
+    GL::MeshView triangle1{mesh};
+    triangle1.setCount(3)
+        .setIndexRange(6);
+    GL::MeshView triangle2{mesh};
+    triangle2.setCount(3)
+        .setIndexRange(9);
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<FlatMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = FlatMaterialUniform{}
+        .setColor(0x33ffff_rgbf);
+    materialData[1*data.uniformIncrement] = FlatMaterialUniform{}
+        .setColor(0xffff33_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    Containers::Array<TransformationProjectionUniform3D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::scaling(Vector3{0.3f})*
+            Matrix4::translation({ 0.0f, -1.5f, 0.0f}));
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::scaling(Vector3{0.3f})*
+            Matrix4::translation({ 1.5f,  1.5f, 0.0f}));
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform3D{}
+        .setTransformationProjectionMatrix(
+            Matrix4::scaling(Vector3{0.3f})*
+            Matrix4::translation({-1.5f,  1.5f, 0.0f}));
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<TransformationUniform3D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    /* First draw moves both bottom corners */
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({ 0.5f, -0.5f, 0.0f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 1] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({-0.5f, -0.5f, 0.0f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 2] =  TransformationUniform3D{};
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 3] = TransformationUniform3D{};
+    /* Second draw overlaps with the first with two identity matrices (unless
+       the padding prevents that); moves top right corner */
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 0] = TransformationUniform3D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 1] = TransformationUniform3D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 2] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({ 0.5f, 0.5f, 0.0f}));
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 3] = TransformationUniform3D{};
+    /* Third draw moves top left corner */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 0] = TransformationUniform3D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 1] = TransformationUniform3D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 2] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({-0.5f, 0.5f, 0.0f}));
+    /* This one is unused but has to be here in order to be able to bind the
+       last three-component part while JOINT_COUNT is set to 4 */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 3] = TransformationUniform3D{};
+    GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
+        jointData};
+
+    Containers::Array<FlatDrawUniform> drawData{2*data.uniformIncrement + 1};
+    /* Material / joint offsets are zero if we have single draw, as those are
+       done with UBO offset bindings instead */
+    drawData[0*data.uniformIncrement] = FlatDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+    drawData[1*data.uniformIncrement] = FlatDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        /* Overlaps with the first joint set with two matrices, unless the
+           padding in the single-draw case prevents that */
+        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+    drawData[2*data.uniformIncrement] = FlatDrawUniform{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(FlatMaterialUniform),
+            sizeof(FlatMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
+            sizeof(TransformationProjectionUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        shader.draw(square);
+
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(FlatMaterialUniform),
+            sizeof(FlatMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
+            sizeof(TransformationProjectionUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        shader.draw(triangle1);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(FlatMaterialUniform),
+            sizeof(FlatMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
+            sizeof(TransformationProjectionUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(FlatDrawUniform),
+            sizeof(FlatDrawUniform));
+        shader.draw(triangle2);
+
+    /* Otherwise using the draw offset / multidraw */
+    } else {
+        shader.bindMaterialBuffer(materialUniform)
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindJointBuffer(jointUniform)
+            .bindDrawBuffer(drawUniform);
+
+        if(data.flags >= FlatGL3D::Flag::MultiDraw)
+            shader.draw({square, triangle1, triangle2});
+        else {
+            shader.setDrawOffset(0)
+                .draw(square);
+            shader.setDrawOffset(1)
+                .draw(triangle1);
+            shader.setDrawOffset(2)
+                .draw(triangle2);
+        }
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "TestFiles/skinning-multi.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
 }
 #endif
 

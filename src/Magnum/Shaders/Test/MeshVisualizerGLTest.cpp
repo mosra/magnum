@@ -27,10 +27,12 @@
 #include <numeric>
 #include <sstream>
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
@@ -92,6 +94,10 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
     void construct2D();
     void construct3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void constructSkinning2D();
+    void constructSkinning3D();
+    #endif
     void constructAsync2D();
     void constructAsync3D();
     #ifndef MAGNUM_TARGET_GLES2
@@ -115,6 +121,10 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void constructUniformBuffersInvalid3D();
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    void setPerVertexJointCountInvalid2D();
+    void setPerVertexJointCountInvalid3D();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void setUniformUniformBuffersEnabled2D();
     void setUniformUniformBuffersEnabled3D();
@@ -145,6 +155,10 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void setTangentBitangentNormalNotEnabled3D();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void setWrongJointCountOrId2D();
+    void setWrongJointCountOrId3D();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     void setWrongDrawOffset2D();
@@ -183,12 +197,21 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderTangentBitangentNormal();
     #endif
 
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderSkinningWireframe2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderSkinningWireframe3D();
+
     template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderInstanced2D();
     template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderInstanced3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<MeshVisualizerGL2D::Flag flag = MeshVisualizerGL2D::Flag{}> void renderInstancedSkinningWireframe2D();
+    template<MeshVisualizerGL3D::Flag flag = MeshVisualizerGL3D::Flag{}> void renderInstancedSkinningWireframe3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     void renderMulti2D();
     void renderMulti3D();
+    void renderMultiSkinningWireframe2D();
+    void renderMultiSkinningWireframe3D();
     #endif
 
     private:
@@ -306,131 +329,169 @@ constexpr struct {
 };
 
 #ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    MeshVisualizerGL2D::Flags flags2D;
+    MeshVisualizerGL3D::Flags flags3D;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+} ConstructSkinningData[]{
+    {"no skinning", {}, {},
+        0, 0, 0},
+    {"one set", {}, {},
+        16, 4, 0},
+    {"two partial sets", {}, {},
+        32, 2, 3},
+    {"secondary set only", {}, {},
+        12, 0, 4},
+    {"dynamic per-vertex sets",
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        16, 4, 3},
+};
+
 constexpr struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
 } ConstructUniformBuffersData2D[] {
     {"classic fallback", MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        1, 1},
+        1, 1, 0, 0, 0},
     /* SwiftShader has 256 uniform vectors at most, per-2D-draw is 4,
        per-material 4, two need to be left for drawOffset + viewportSize */
     {"multiple materials, draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        8, 55},
+        8, 55, 0, 0, 0},
+    {"skinning", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe,
+        1, 1, 32, 3, 2},
+    {"skinning, dynamic per-vertex sets", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        1, 1, 32, 3, 4},
     {"multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::VertexId,
-        8, 55},
+        8, 55, 0, 0, 0},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw with wireframe and primitive ID", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::PrimitiveId,
-        8, 55},
+        8, 55, 0, 0, 0},
     #endif
+    {"multidraw with wireframe w/o GS, instancing and dynamic primary skinning per-vertex sets", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::InstancedTransformation|MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        8, 55, 16, 4, 0},
+    {"multidraw with wireframe w/o GS and dynamic primary+secondary skinning per-vertex sets", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        8, 55, 16, 3, 4},
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
     {"wireframe", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe,
-        1, 1},
+        1, 1, 0, 0, 0},
     #endif
     {"wireframe w/o GS", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectId,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"instanced object ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::InstancedObjectId,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture array", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture array + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"instanced object ID texture array + texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::VertexId,
-        1, 1},
+        1, 1, 0, 0, 0},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveId,
-        1, 1},
+        1, 1, 0, 0, 0},
     #endif
     {"primitive ID from vertex ID", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
-        1, 1}
+        1, 1, 0, 0, 0}
 };
 
 constexpr struct {
     const char* name;
     MeshVisualizerGL3D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
 } ConstructUniformBuffersData3D[] {
     {"classic fallback", MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        1, 1},
+        1, 1, 0, 0, 0},
     /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
        per-material 4, plus 4 for projection */
     {"multiple materials, draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        6, 28},
+        6, 28, 0, 0, 0},
+    {"skinning", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe,
+        1, 1, 32, 3, 2},
+    {"skinning, dynamic per-vertex sets", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        1, 1, 32, 3, 4},
     {"multidraw with wireframe w/o GS and vertex ID", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::VertexId,
-        6, 28},
+        6, 28, 0, 0, 0},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw with wireframe, primitive ID and TBN", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::PrimitiveId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        6, 28},
+        6, 28, 0, 0, 0},
     #endif
+    {"multidraw with wireframe w/o GS, instancing and dynamic primary skinning per-vertex sets", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::InstancedTransformation|MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        8, 55, 16, 4, 0},
+    {"multidraw with wireframe w/o GS and dynamic primary+secondary skinning per-vertex sets", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        8, 55, 16, 3, 4},
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
     {"wireframe", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe,
-        1, 1},
+        1, 1, 0, 0, 0},
     #endif
     {"wireframe w/o GS", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectId,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"instanced object ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::InstancedObjectId,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture array", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture + instanced texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"object ID texture array + instanced texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"instanced object ID texture array + texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::TextureTransformation,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"wireframe + object ID texture + instanced texture transformation", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::InstancedTextureOffset,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::VertexId,
-        1, 1},
+        1, 1, 0, 0, 0},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::PrimitiveId,
-        1, 1},
+        1, 1, 0, 0, 0},
     #endif
     {"primitive ID from vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
-        1, 1},
+        1, 1, 0, 0, 0},
     #ifndef MAGNUM_TARGET_WEBGL
     {"tangent direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"bitangent direction from tangent", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"bitangent direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::BitangentDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"normal direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::NormalDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"tbn direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"tbn direction with bitangent from tangent", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"wireframe + vertex ID", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"wireframe + T/N direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"wireframe + instanced object ID + T/N direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        1, 1},
+        1, 1, 0, 0, 0},
     {"wireframe + vertex ID + T/B direction", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection,
-        1, 1}
+        1, 1, 0, 0, 0}
     #endif
 };
 #endif
@@ -438,10 +499,12 @@ constexpr struct {
 constexpr struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
     const char* message;
 } ConstructInvalidData2D[] {
     {"no feature enabled",
         MeshVisualizerGL2D::Flag::NoGeometryShader, /* not a feature flag */
+        0, 0, 0,
         #ifndef MAGNUM_TARGET_GLES2
         "2D: at least one visualization feature has to be enabled"
         #else
@@ -451,33 +514,48 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive ID",
         MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
+        0, 0, 0,
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both instanced object and primitive ID",
         MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId,
+        0, 0, 0,
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both object and vertex ID",
         MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::VertexId,
+        0, 0, 0,
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"texture transformation but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectId,
+        0, 0, 0,
         ": texture transformation enabled but the shader is not textured"},
     {"texture arrays but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
         MeshVisualizerGL2D::Flag::TextureArrays|MeshVisualizerGL2D::Flag::ObjectId,
-        ": texture arrays enabled but the shader is not textured"}
+        0, 0, 0,
+        ": texture arrays enabled but the shader is not textured"},
+    {"dynamic per-vertex joint count but no static per-vertex joint count",
+        MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0,
+        "2D: dynamic per-vertex joint count enabled for zero joints"},
+    {"instancing together with secondary per-vertex sets",
+        MeshVisualizerGL2D::Flag::ObjectId|MeshVisualizerGL2D::Flag::InstancedTransformation,
+        10, 4, 1,
+        "2D: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead"}
     #endif
 };
 
 constexpr struct {
     const char* name;
     MeshVisualizerGL3D::Flags flags;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
     const char* message;
 } ConstructInvalidData3D[] {
     {"no feature enabled",
         MeshVisualizerGL3D::Flag::NoGeometryShader, /* not a feature flag */
+        0, 0, 0,
         #ifndef MAGNUM_TARGET_GLES2
         "3D: at least one visualization feature has to be enabled"
         #else
@@ -487,34 +565,52 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive ID",
         MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
+        0, 0, 0,
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both instanced object and primitive ID",
         MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
+        0, 0, 0,
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"both vertex and primitive ID",
         MeshVisualizerGL3D::Flag::VertexId|MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId,
+        0, 0, 0,
         ": Flag::ObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
     {"texture transformation but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectId,
+        0, 0, 0,
         ": texture transformation enabled but the shader is not textured"},
     {"texture arrays but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
         MeshVisualizerGL3D::Flag::TextureArrays|MeshVisualizerGL3D::Flag::ObjectId,
+        0, 0, 0,
         ": texture arrays enabled but the shader is not textured"},
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"geometry shader disabled but needed",
         MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::NormalDirection,
+        0, 0, 0,
         "3D: geometry shader has to be enabled when rendering TBN direction"},
     {"conflicting bitangent input",
         MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::BitangentDirection,
+        0, 0, 0,
         "3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive"},
     {"conflicting bitangent and instanced object ID attribute",
         MeshVisualizerGL3D::Flag::BitangentDirection|MeshVisualizerGL3D::Flag::InstancedObjectId,
+        0, 0, 0,
         "3D: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    {"dynamic per-vertex joint count but no static per-vertex joint count",
+        MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0,
+        "3D: dynamic per-vertex joint count enabled for zero joints"},
+    {"instancing together with secondary per-vertex sets",
+        MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::InstancedTransformation,
+        10, 4, 1,
+        "3D: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead"}
     #endif
 };
 
@@ -812,6 +908,91 @@ constexpr struct {
 };
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+/* Same as in FlatGL and PhongGL tests */
+const struct {
+    const char* name;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+    UnsignedInt dynamicPerVertexJointCount, dynamicSecondaryPerVertexJointCount;
+    MeshVisualizerGL2D::Flags flags2D;
+    MeshVisualizerGL3D::Flags flags3D;
+    Containers::Array<Containers::Pair<UnsignedInt, GL::DynamicAttribute>> attributes;
+    bool setDynamicPerVertexJointCount, setJointMatrices, setJointMatricesOneByOne;
+    const char* expected;
+} RenderSkinningData[]{
+    {"no skinning", 0, 0, 0, 0, 0, {}, {}, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
+        }}, false, false, false,
+        "skinning-default.tga"},
+    {"default joint matrices", 5, 3, 0, 0, 0, {}, {}, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
+        }}, false, false, false,
+        "skinning-default.tga"},
+    {"single set", 5, 3, 0, 0, 0, {}, {}, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, joint matrices one by one", 5, 3, 0, 0, 0, {}, {}, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
+        }}, false, true, true,
+        "skinning.tga"},
+    {"single set, dynamic, left at defaults", 5, 3, 0, 0, 0,
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, dynamic", 5, 4, 0, 3, 0,
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
+        }}, true, true, false,
+        "skinning.tga"},
+    {"two sets", 5, 1, 2, 0, 0, {}, {}, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::One}},
+            {4, MeshVisualizerGL2D::SecondaryJointIds{MeshVisualizerGL2D::SecondaryJointIds::Components::Two}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::One}},
+            {4*4, MeshVisualizerGL2D::SecondaryWeights{MeshVisualizerGL2D::SecondaryWeights::Components::Two}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"two sets, dynamic, left at defaults", 5, 1, 2, 0, 0,
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::One}},
+            {4, MeshVisualizerGL2D::SecondaryJointIds{MeshVisualizerGL2D::SecondaryJointIds::Components::Two}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::One}},
+            {4*4, MeshVisualizerGL2D::SecondaryWeights{MeshVisualizerGL2D::SecondaryWeights::Components::Two}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"two sets, dynamic", 5, 4, 4, 1, 2,
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount, MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::One}},
+            {4, MeshVisualizerGL2D::SecondaryJointIds{MeshVisualizerGL2D::SecondaryJointIds::Components::Two}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::One}},
+            {4*4, MeshVisualizerGL2D::SecondaryWeights{MeshVisualizerGL2D::SecondaryWeights::Components::Two}},
+        }}, true, true, false,
+        "skinning.tga"},
+    {"only secondary set", 5, 0, 3, 0, 0, {}, {}, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::SecondaryJointIds{MeshVisualizerGL2D::SecondaryJointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::SecondaryWeights{MeshVisualizerGL2D::SecondaryWeights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"only secondary set, dynamic", 5, 4, 4, 0, 3,
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::SecondaryJointIds{MeshVisualizerGL2D::SecondaryJointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::SecondaryWeights{MeshVisualizerGL2D::SecondaryWeights::Components::Three}},
+        }}, true, true, false,
+        "skinning.tga"},
+};
+#endif
+
 const struct {
     const char* name;
     const char* expected;
@@ -1092,6 +1273,23 @@ constexpr struct {
         2, 3, 1,
         0.0f, 0.0f},
 };
+
+/* Same as in FlatGL and PhongGL tests */
+const struct {
+    const char* name;
+    MeshVisualizerGL2D::Flags flags2D;
+    MeshVisualizerGL3D::Flags flags3D;
+    UnsignedInt materialCount, drawCount, jointCount;
+    UnsignedInt uniformIncrement;
+} RenderMultiSkinningData[]{
+    {"bind with offset",
+        {}, {}, 1, 1, 4, 16},
+    {"draw offset",
+        {}, {}, 2, 3, 9, 1},
+    {"multidraw",
+        MeshVisualizerGL2D::Flag::MultiDraw,
+        MeshVisualizerGL3D::Flag::MultiDraw, 2, 3, 9, 1}
+};
 #endif
 
 MeshVisualizerGLTest::MeshVisualizerGLTest() {
@@ -1099,6 +1297,12 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         Containers::arraySize(ConstructData2D));
     addInstancedTests({&MeshVisualizerGLTest::construct3D},
         Containers::arraySize(ConstructData3D));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::constructSkinning2D,
+                       &MeshVisualizerGLTest::constructSkinning3D},
+        Containers::arraySize(ConstructSkinningData));
+    #endif
 
     addTests({&MeshVisualizerGLTest::constructAsync2D,
               &MeshVisualizerGLTest::constructAsync3D});
@@ -1130,13 +1334,14 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffersInvalid2D},
         Containers::arraySize(ConstructUniformBuffersInvalidData2D));
-
     addInstancedTests({&MeshVisualizerGLTest::constructUniformBuffersInvalid3D},
         Containers::arraySize(ConstructUniformBuffersInvalidData3D));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    addTests({&MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D,
+    addTests({&MeshVisualizerGLTest::setPerVertexJointCountInvalid2D,
+              &MeshVisualizerGLTest::setPerVertexJointCountInvalid3D,
+              &MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D,
               &MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D,
               &MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D,
               &MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D});
@@ -1172,6 +1377,8 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
+        &MeshVisualizerGLTest::setWrongJointCountOrId2D,
+        &MeshVisualizerGLTest::setWrongJointCountOrId3D,
         &MeshVisualizerGLTest::setWrongDrawOffset2D,
         &MeshVisualizerGLTest::setWrongDrawOffset3D
         #endif
@@ -1312,6 +1519,18 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderTeardown);
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    /* MSVC needs explicit type due to default template args */
+    addInstancedTests<MeshVisualizerGLTest>({
+        &MeshVisualizerGLTest::renderSkinningWireframe2D,
+        &MeshVisualizerGLTest::renderSkinningWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderSkinningWireframe3D,
+        &MeshVisualizerGLTest::renderSkinningWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
+        Containers::arraySize(RenderSkinningData),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
+
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderInstanced2D,
@@ -1322,8 +1541,6 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         Containers::arraySize(RenderInstancedData2D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
-
-    /* MSVC needs explicit type due to default template args */
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderInstanced3D,
         #ifndef MAGNUM_TARGET_GLES2
@@ -1335,13 +1552,29 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
+    /* MSVC needs explicit type due to default template args */
+    addTests<MeshVisualizerGLTest>({
+        &MeshVisualizerGLTest::renderInstancedSkinningWireframe2D,
+        &MeshVisualizerGLTest::renderInstancedSkinningWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderInstancedSkinningWireframe3D,
+        &MeshVisualizerGLTest::renderInstancedSkinningWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&MeshVisualizerGLTest::renderMulti2D},
         Containers::arraySize(RenderMultiData2D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
-
     addInstancedTests({&MeshVisualizerGLTest::renderMulti3D},
         Containers::arraySize(RenderMultiData3D),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+
+    addInstancedTests({&MeshVisualizerGLTest::renderMultiSkinningWireframe2D,
+                       &MeshVisualizerGLTest::renderMultiSkinningWireframe3D},
+        Containers::arraySize(RenderMultiSkinningData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1504,9 +1737,72 @@ void MeshVisualizerGLTest::construct3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::constructSkinning2D() {
+    auto&& data = ConstructSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        /* At least one visualization feature has to be enabled; disable GS so
+           we don't need to check for it on ES */
+        .setFlags(data.flags2D|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    CORRADE_COMPARE(shader.flags(), data.flags2D|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MeshVisualizerGLTest::constructSkinning3D() {
+    auto&& data = ConstructSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        /* At least one visualization feature has to be enabled; disable GS so
+           we don't need to check for it on ES */
+        .setFlags(data.flags3D|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    CORRADE_COMPARE(shader.flags(), data.flags3D|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
+    CORRADE_VERIFY(shader.id());
+    {
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
 void MeshVisualizerGLTest::constructAsync2D() {
     MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Configuration{}
-        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader));
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        /* Skinning properties tested in constructUniformBuffersAsync2D(), as
+           there we don't need to bother with ES2 */
+    );
     CORRADE_COMPARE(state.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
 
     while(!state.isLinkFinished())
@@ -1528,7 +1824,10 @@ void MeshVisualizerGLTest::constructAsync2D() {
 
 void MeshVisualizerGLTest::constructAsync3D() {
     MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Configuration{}
-        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader));
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        /* Skinning properties tested in constructUniformBuffersAsync3D(), as
+           there we don't need to bother with ES2 */
+    );
     CORRADE_COMPARE(state.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
 
     while(!state.isLinkFinished())
@@ -1554,7 +1853,7 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & MeshVisualizerGL2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    if((data.flags & MeshVisualizerGL2D::Flag::InstancedObjectId || data.jointCount) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
@@ -1616,10 +1915,14 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
     MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags)
         .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
+        .setDrawCount(data.drawCount)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1636,7 +1939,7 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if((data.flags & MeshVisualizerGL3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    if((data.flags & MeshVisualizerGL3D::Flag::InstancedObjectId || data.jointCount) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
@@ -1698,10 +2001,14 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags)
         .setMaterialCount(data.materialCount)
-        .setDrawCount(data.drawCount)};
+        .setDrawCount(data.drawCount)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
+    CORRADE_COMPARE(shader.jointCount(), data.jointCount);
+    CORRADE_COMPARE(shader.perVertexJointCount(), data.perVertexJointCount);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), data.secondaryPerVertexJointCount);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1717,15 +2024,21 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     MeshVisualizerGL2D::CompileState state = MeshVisualizerGL2D::compile(MeshVisualizerGL2D::Configuration{}
         .setFlags( MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
         .setMaterialCount(8)
-        .setDrawCount(55));
+        .setDrawCount(48)
+        .setJointCount(7, 3, 4));
     CORRADE_COMPARE(state.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(state.materialCount(), 8);
-    CORRADE_COMPARE(state.drawCount(), 55);
+    CORRADE_COMPARE(state.drawCount(), 48);
+    CORRADE_COMPARE(state.jointCount(), 7);
+    CORRADE_COMPARE(state.perVertexJointCount(), 3);
+    CORRADE_COMPARE(state.secondaryPerVertexJointCount(), 4);
 
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
@@ -1733,8 +2046,10 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync2D() {
     MeshVisualizerGL2D shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(shader.materialCount(), 8);
-    CORRADE_COMPARE(shader.drawCount(), 55);
-    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_COMPARE(shader.drawCount(), 48);
+    CORRADE_COMPARE(shader.jointCount(), 7);
+    CORRADE_COMPARE(shader.perVertexJointCount(), 3);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), 4);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1755,10 +2070,14 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync3D() {
     MeshVisualizerGL3D::CompileState state = MeshVisualizerGL3D::compile(MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
         .setMaterialCount(6)
-        .setDrawCount(28));
+        .setDrawCount(24)
+        .setJointCount(7, 3, 4));
     CORRADE_COMPARE(state.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(state.materialCount(), 6);
-    CORRADE_COMPARE(state.drawCount(), 28);
+    CORRADE_COMPARE(state.drawCount(), 24);
+    CORRADE_COMPARE(state.jointCount(), 7);
+    CORRADE_COMPARE(state.perVertexJointCount(), 3);
+    CORRADE_COMPARE(state.secondaryPerVertexJointCount(), 4);
 
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
@@ -1766,8 +2085,10 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync3D() {
     MeshVisualizerGL3D shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(state.materialCount(), 6);
-    CORRADE_COMPARE(state.drawCount(), 28);
-    CORRADE_VERIFY(shader.isLinkFinished());
+    CORRADE_COMPARE(state.drawCount(), 24);
+    CORRADE_COMPARE(shader.jointCount(), 7);
+    CORRADE_COMPARE(shader.perVertexJointCount(), 3);
+    CORRADE_COMPARE(shader.secondaryPerVertexJointCount(), 4);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1782,7 +2103,10 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync3D() {
 
 void MeshVisualizerGLTest::constructMove2D() {
     MeshVisualizerGL2D a{MeshVisualizerGL2D::Configuration{}
-        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        /* Skinning properties tested in constructMoveUniformBuffers2D(), as
+           there we don't need to bother with ES2 */
+    };
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1802,7 +2126,10 @@ void MeshVisualizerGLTest::constructMove2D() {
 
 void MeshVisualizerGLTest::constructMove3D() {
     MeshVisualizerGL3D a{MeshVisualizerGL3D::Configuration{}
-        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        /* Skinning properties tested in constructMoveUniformBuffers3D(), as
+           there we don't need to bother with ES2 */
+    };
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1825,12 +2152,15 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     MeshVisualizerGL2D a{MeshVisualizerGL2D::Configuration{}
         .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
         .setMaterialCount(2)
-        .setDrawCount(5)};
+        .setDrawCount(5)
+        .setJointCount(16, 4, 3)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1841,6 +2171,9 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
     CORRADE_COMPARE(b.flags(), MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(b.materialCount(), 2);
     CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_COMPARE(b.jointCount(), 16);
+    CORRADE_COMPARE(b.perVertexJointCount(), 4);
+    CORRADE_COMPARE(b.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!a.id());
 
     MeshVisualizerGL2D c{NoCreate};
@@ -1849,6 +2182,9 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
     CORRADE_COMPARE(c.flags(), MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(c.materialCount(), 2);
     CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_COMPARE(c.jointCount(), 16);
+    CORRADE_COMPARE(c.perVertexJointCount(), 4);
+    CORRADE_COMPARE(c.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!b.id());
 }
 
@@ -1856,12 +2192,15 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     MeshVisualizerGL3D a{MeshVisualizerGL3D::Configuration{}
         .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
         .setMaterialCount(2)
-        .setDrawCount(5)};
+        .setDrawCount(5)
+        .setJointCount(16, 4, 3)};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -1872,6 +2211,9 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
     CORRADE_COMPARE(b.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(b.materialCount(), 2);
     CORRADE_COMPARE(b.drawCount(), 5);
+    CORRADE_COMPARE(b.jointCount(), 16);
+    CORRADE_COMPARE(b.perVertexJointCount(), 4);
+    CORRADE_COMPARE(b.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!a.id());
 
     MeshVisualizerGL3D c{NoCreate};
@@ -1880,6 +2222,9 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
     CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(c.materialCount(), 2);
     CORRADE_COMPARE(c.drawCount(), 5);
+    CORRADE_COMPARE(c.jointCount(), 16);
+    CORRADE_COMPARE(c.perVertexJointCount(), 4);
+    CORRADE_COMPARE(c.secondaryPerVertexJointCount(), 3);
     CORRADE_VERIFY(!b.id());
 }
 #endif
@@ -1893,7 +2238,11 @@ void MeshVisualizerGLTest::constructInvalid2D() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshVisualizerGL2D{MeshVisualizerGL2D::Configuration{}
-        .setFlags(data.flags)};
+        .setFlags(data.flags)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
+        #endif
+    };
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
@@ -1906,7 +2255,11 @@ void MeshVisualizerGLTest::constructInvalid3D() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshVisualizerGL3D{MeshVisualizerGL3D::Configuration{}
-        .setFlags(data.flags)};
+        .setFlags(data.flags)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
+        #endif
+    };
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL{}\n", data.message));
 }
 
@@ -1953,6 +2306,62 @@ void MeshVisualizerGLTest::constructUniformBuffersInvalid3D() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::setPerVertexJointCountInvalid2D() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    /* At least one visualization feature has to be enabled; disable GS so we
+       don't need to check for it on ES */
+    MeshVisualizerGL2D a{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)};
+    MeshVisualizerGL2D b{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setJointCount(16, 3, 2)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    a.setPerVertexJointCount(3, 2);
+    b.setPerVertexJointCount(4);
+    b.setPerVertexJointCount(3, 3);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled\n"
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 3 per-vertex joints, got 4\n"
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 2 secondary per-vertex joints, got 3\n");
+}
+
+void MeshVisualizerGLTest::setPerVertexJointCountInvalid3D() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    /* At least one visualization feature has to be enabled; disable GS so we
+       don't need to check for it on ES */
+    MeshVisualizerGL3D a{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)};
+    MeshVisualizerGL3D b{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setJointCount(16, 3, 2)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    a.setPerVertexJointCount(3, 2);
+    b.setPerVertexJointCount(4);
+    b.setPerVertexJointCount(3, 3);
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled\n"
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 3 per-vertex joints, got 4\n"
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most 2 secondary per-vertex joints, got 3\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -1966,7 +2375,9 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setTransformationProjectionMatrix({})
+    shader
+        /* setPerVertexJointCount() works on both UBOs and classic */
+        .setTransformationProjectionMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
         /* setViewportSize() works on both UBOs and classic */
@@ -1975,7 +2386,10 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
         .setWireframeColor({})
         .setWireframeWidth({})
         .setColorMapTransformation({}, {})
-        .setSmoothness({});
+        .setSmoothness({})
+        .setJointMatrices({})
+        .setJointMatrix(0, {})
+        .setPerInstanceJointCount(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL2D::setTransformationProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setTextureMatrix(): the shader was created with uniform buffers enabled\n"
@@ -1985,7 +2399,10 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled2D() {
         "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was created with uniform buffers enabled\n"
-        "Shaders::MeshVisualizerGL2D::setSmoothness(): the shader was created with uniform buffers enabled\n");
+        "Shaders::MeshVisualizerGL2D::setSmoothness(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL2D::setJointMatrices(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL2D::setJointMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled\n");
 }
 
 void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
@@ -2001,7 +2418,9 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setProjectionMatrix({})
+    shader
+        /* setPerVertexJointCount() works on both UBOs and classic */
+        .setProjectionMatrix({})
         .setTransformationMatrix({})
         .setTextureMatrix({})
         .setTextureLayer({})
@@ -2011,7 +2430,10 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
         .setWireframeColor({})
         .setWireframeWidth({})
         .setColorMapTransformation({}, {})
-        .setSmoothness({});
+        .setSmoothness({})
+        .setJointMatrices({})
+        .setJointMatrix(0, {})
+        .setPerInstanceJointCount(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL3D::setProjectionMatrix(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL3D::setTransformationMatrix(): the shader was created with uniform buffers enabled\n"
@@ -2022,7 +2444,10 @@ void MeshVisualizerGLTest::setUniformUniformBuffersEnabled3D() {
         "Shaders::MeshVisualizerGL::setWireframeColor(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setColorMapTransformation(): the shader was created with uniform buffers enabled\n"
-        "Shaders::MeshVisualizerGL3D::setSmoothness(): the shader was created with uniform buffers enabled\n");
+        "Shaders::MeshVisualizerGL3D::setSmoothness(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::setJointMatrices(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL3D::setJointMatrix(): the shader was created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled\n");
 
     out.str({});
 
@@ -2055,6 +2480,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
           .bindTextureTransformationBuffer(buffer, 0, 16)
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
+          .bindJointBuffer(buffer)
+          .bindJointBuffer(buffer, 0, 16)
           .setDrawOffset(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -2065,6 +2492,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled2D() {
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
 }
 
@@ -2087,6 +2516,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
           .bindTextureTransformationBuffer(buffer, 0, 16)
           .bindMaterialBuffer(buffer)
           .bindMaterialBuffer(buffer, 0, 16)
+          .bindJointBuffer(buffer)
+          .bindJointBuffer(buffer, 0, 16)
           .setDrawOffset(0);
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled\n"
@@ -2099,6 +2530,8 @@ void MeshVisualizerGLTest::bindBufferUniformBuffersNotEnabled3D() {
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
+        "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled\n"
         "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled\n");
 }
 #endif
@@ -2428,6 +2861,54 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
         "Shaders::MeshVisualizerGL3D::setNormalMatrix(): the shader was not created with TBN direction enabled\n"
         "Shaders::MeshVisualizerGL3D::setLineWidth(): the shader was not created with TBN direction enabled\n"
         "Shaders::MeshVisualizerGL3D::setLineLength(): the shader was not created with TBN direction enabled\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::setWrongJointCountOrId2D() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    /* At least one visualization feature has to be enabled; disable GS so we
+       don't need to check for it on ES */
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setJointCount(5, 1)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setJointMatrices({Matrix3{}});
+    shader.setJointMatrix(5, Matrix3{});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
+}
+
+void MeshVisualizerGLTest::setWrongJointCountOrId3D() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    /* At least one visualization feature has to be enabled; disable GS so we
+       don't need to check for it on ES */
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setJointCount(5, 1)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.setJointMatrices({Matrix4{}});
+    shader.setJointMatrix(5, Matrix4{});
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
 }
 #endif
 
@@ -4250,6 +4731,278 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderSkinningWireframe2D() {
+    auto&& data = RenderSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Same as in FlatGLTest::renderSkinning2D(), except that the shared
+       vertices are duplicated in order to work with GS-less wireframe */
+    struct Vertex {
+        Vector2 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Top right corner gets moved to the right and up, top left just up,
+           bottom right just right, bottom left corner gets slightly scaled.
+
+           5--4 1
+           | / /|
+           |/ / |
+           3 2--0 */
+        {{ 1.0f, -1.0f}, {0, 2, 0}, {0.25f, 0.0f, 0.75f}},
+        {{ 1.0f,  1.0f}, {1, 0, 0}, {0.5f, 0.5f, 0.0f}},
+        {{-1.0f, -1.0f}, {3, 4, 4}, {0.5f, 0.25f, 0.25f}},
+        {{-1.0f, -1.0f}, {3, 4, 4}, {0.5f, 0.25f, 0.25f}},
+        {{ 1.0f,  1.0f}, {1, 0, 0}, {0.5f, 0.5f, 0.0f}},
+        {{-1.0f,  1.0f}, {1, 0, 4}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix3 jointMatrices[]{
+        Matrix3::translation(Vector2::xAxis(0.5f)),
+        Matrix3::translation(Vector2::yAxis(0.5f)),
+        Matrix3{Math::ZeroInit},
+        Matrix3::scaling(Vector2{2.0f}),
+        Matrix3{Math::IdentityInit},
+    };
+
+    GL::Buffer buffer{vertices};
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(6);
+    mesh.addVertexBuffer(buffer, 0, sizeof(Vertex), GL::DynamicAttribute{MeshVisualizerGL2D::Position{}});
+    for(auto&& attribute: data.attributes)
+        mesh.addVertexBuffer(buffer, 2*4 + attribute.first(), sizeof(Vertex), attribute.second());
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(data.flags2D|flag|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    if(data.setDynamicPerVertexJointCount)
+        shader.setPerVertexJointCount(data.dynamicPerVertexJointCount, data.dynamicSecondaryPerVertexJointCount);
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        if(data.setJointMatricesOneByOne) {
+            shader
+                .setJointMatrix(0, jointMatrices[0])
+                .setJointMatrix(1, jointMatrices[1])
+                .setJointMatrix(2, jointMatrices[2])
+                .setJointMatrix(3, jointMatrices[3])
+                .setJointMatrix(4, jointMatrices[4]);
+        } else if(data.setJointMatrices)
+            shader.setJointMatrices(jointMatrices);
+        shader
+            .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .draw(mesh);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
+        }};
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[0] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[1] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[2] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[3] : Matrix3{}),
+            TransformationUniform2D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[4] : Matrix3{}),
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+                .setColor(0xffff99_rgbf)
+                .setWireframeColor(0x9999ff_rgbf)
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderSkinningWireframe3D() {
+    auto&& data = RenderSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.jointCount && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Same as in FlatGLTest::renderSkinning3D(), except that the shared
+       vertices are duplicated in order to work with GS-less wireframe */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Top right corner gets moved to the right and up, top left just up,
+           bottom right just right, bottom left corner gets slightly scaled.
+
+           5--4 1
+           | / /|
+           |/ / |
+           3 2--0 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 2, 0}, {0.25f, 0.0f, 0.75f}},
+        {{ 1.0f,  1.0f, 0.0f}, {1, 0, 0}, {0.5f, 0.5f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {3, 4, 4}, {0.5f, 0.25f, 0.25f}},
+        {{-1.0f, -1.0f, 0.0f}, {3, 4, 4}, {0.5f, 0.25f, 0.25f}},
+        {{ 1.0f,  1.0f, 0.0f}, {1, 0, 0}, {0.5f, 0.5f, 0.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {1, 0, 4}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix4 jointMatrices[]{
+        Matrix4::translation(Vector3::xAxis(0.5f)),
+        Matrix4::translation(Vector3::yAxis(0.5f)),
+        Matrix4{Math::ZeroInit},
+        Matrix4::scaling(Vector3{2.0f}),
+        Matrix4{Math::IdentityInit},
+    };
+
+    GL::Buffer buffer{vertices};
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(6);
+    mesh.addVertexBuffer(buffer, 0, sizeof(Vertex), GL::DynamicAttribute{MeshVisualizerGL3D::Position{}});
+    for(auto&& attribute: data.attributes)
+        mesh.addVertexBuffer(buffer, 3*4 + attribute.first(), sizeof(Vertex), attribute.second());
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(data.flags3D|flag|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
+    if(data.setDynamicPerVertexJointCount)
+        shader.setPerVertexJointCount(data.dynamicPerVertexJointCount, data.dynamicSecondaryPerVertexJointCount);
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        if(data.setJointMatricesOneByOne) {
+            shader
+                .setJointMatrix(0, jointMatrices[0])
+                .setJointMatrix(1, jointMatrices[1])
+                .setJointMatrix(2, jointMatrices[2])
+                .setJointMatrix(3, jointMatrices[3])
+                .setJointMatrix(4, jointMatrices[4]);
+        } else if(data.setJointMatrices)
+            shader.setJointMatrices(jointMatrices);
+        shader
+            .setTransformationMatrix(Matrix4::scaling(Vector3{0.5f}))
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .draw(mesh);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(Matrix4::scaling(Vector3{0.5f}))
+        }};
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[0] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[1] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[2] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[3] : Matrix4{}),
+            TransformationUniform3D{}
+                .setTransformationMatrix(data.setJointMatrices ?
+                    jointMatrices[4] : Matrix4{}),
+        }};
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+                .setColor(0xffff99_rgbf)
+                .setWireframeColor(0x9999ff_rgbf)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+#endif
+
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanced2D() {
     auto&& data = RenderInstancedData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -4797,6 +5550,281 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstancedSkinningWireframe2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Similarly to renderSkinning2D() tests just 2D movement, differently and
+       clearly distinguisable for each instance */
+    struct Vertex {
+        Vector2 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           5--4 1
+           | / /|
+           |/ / |
+           3 2--0 */
+        {{ 1.0f, -1.0f}, {0, 0, 0}, {1.0f, 0.0f, 0.0f}},
+        {{ 1.0f,  1.0f}, {0, 3, 0}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f, -1.0f}, {0, 0, 1}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f, -1.0f}, {0, 0, 1}, {0.0f, 0.0f, 1.0f}},
+        {{ 1.0f,  1.0f}, {0, 3, 0}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f,  1.0f}, {4, 0, 0}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix3 instanceTransformations[]{
+        Matrix3::translation({-1.5f, -1.5f}),
+        Matrix3::translation({ 1.5f, -1.5f}),
+        Matrix3::translation({ 0.0f,  1.5f})
+    };
+
+    Matrix3 jointMatrices[]{
+        /* First instance moves bottom left corner */
+        {},
+        Matrix3::translation({-0.5f, -0.5f}),
+        {},
+        {},
+        {},
+
+        /* Second instance moves bottom right corner */
+        Matrix3::translation({0.5f, -0.5f}),
+        {},
+        {},
+        {},
+        {},
+
+        /* Third instance moves both top corners */
+        {},
+        {},
+        {},
+        Matrix3::translation({0.5f, 0.5f}),
+        Matrix3::translation({-0.5f, 0.5f}),
+    };
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(6)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            MeshVisualizerGL2D::Position{},
+            MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three},
+            MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three})
+        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+            MeshVisualizerGL2D::TransformationMatrix{})
+        .setInstanceCount(3);
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::InstancedTransformation|flag|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setJointCount(15, 3, 0)};
+
+    if(flag == MeshVisualizerGL2D::Flag{}) {
+        shader
+            .setJointMatrices(jointMatrices)
+            .setPerInstanceJointCount(5)
+            .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.3f}))
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .draw(mesh);
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+        GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationProjectionUniform2D{}
+                .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.3f}))
+        }};
+        TransformationUniform2D jointMatricesUniformData[Containers::arraySize(jointMatrices)];
+        Utility::copy( /* This API is so powerful it should be outlawed!! */
+            Containers::arrayCast<2, const Vector3>(Containers::stridedArrayView(jointMatrices)), Containers::arrayCast<2, Vector4>(Containers::stridedArrayView(jointMatricesUniformData).slice(&TransformationUniform2D::transformationMatrix)).slice(&Vector4::xyz));
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform,
+            jointMatricesUniformData
+        };
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform2D{}
+                .setPerInstanceJointCount(5)
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+                .setColor(0xffff99_rgbf)
+                .setWireframeColor(0x9999ff_rgbf)
+        }};
+        shader
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-instanced.tga"),
+        /* SwiftShader has minor differences in the output */
+        (DebugTools::CompareImageToFile{_manager, 0.68f, 0.005f}));
+}
+
+template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstancedSkinningWireframe3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        setTestCaseTemplateName("Flag::UniformBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+            CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+        #endif
+    }
+
+    /* Similarly to renderSkinning3D() tests just 2D movement, differently and
+       clearly distinguisable for each instance */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[3];
+        Float weights[3];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           5--4 1
+           | / /|
+           |/ / |
+           3 2--0 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 0, 0}, {1.0f, 0.0f, 0.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 3, 0}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0, 0, 1}, {0.0f, 0.0f, 1.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0, 0, 1}, {0.0f, 0.0f, 1.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 3, 0}, {0.0f, 1.0f, 0.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {4, 0, 0}, {1.0f, 0.0f, 0.0f}},
+    };
+
+    Matrix4 instanceTransformations[]{
+        Matrix4::translation({-1.5f, -1.5f, 0.0f}),
+        Matrix4::translation({ 1.5f, -1.5f, 0.0f}),
+        Matrix4::translation({ 0.0f,  1.5f, 0.0f})
+    };
+
+    Matrix4 jointMatrices[]{
+        /* First instance moves bottom left corner */
+        {},
+        Matrix4::translation({-0.5f, -0.5f, 0.0f}),
+        {},
+        {},
+        {},
+
+        /* Second instance moves bottom right corner */
+        Matrix4::translation({0.5f, -0.5f, 0.0f}),
+        {},
+        {},
+        {},
+        {},
+
+        /* Third instance moves both top corners */
+        {},
+        {},
+        {},
+        Matrix4::translation({0.5f, 0.5f, 0.0f}),
+        Matrix4::translation({-0.5f, 0.5f, 0.0f}),
+    };
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(6)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            MeshVisualizerGL3D::Position{},
+            MeshVisualizerGL3D::JointIds{MeshVisualizerGL3D::JointIds::Components::Three},
+            MeshVisualizerGL3D::Weights{MeshVisualizerGL3D::Weights::Components::Three})
+        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+            MeshVisualizerGL3D::TransformationMatrix{})
+        .setInstanceCount(3);
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::InstancedTransformation|flag|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setJointCount(15, 3, 0)};
+
+    if(flag == MeshVisualizerGL3D::Flag{}) {
+        shader
+            .setJointMatrices(jointMatrices)
+            .setPerInstanceJointCount(5)
+            .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f}))
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .draw(mesh);
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+        GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+            ProjectionUniform3D{}
+        }};
+        GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, {
+            TransformationUniform3D{}
+                .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f}))
+        }};
+        TransformationUniform3D jointMatricesUniformData[Containers::arraySize(jointMatrices)];
+        Utility::copy(jointMatrices, Containers::stridedArrayView(jointMatricesUniformData).slice(&TransformationUniform3D::transformationMatrix));
+        GL::Buffer jointMatricesUniform{GL::Buffer::TargetHint::Uniform,
+            jointMatricesUniformData
+        };
+        GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerDrawUniform3D{}
+                .setPerInstanceJointCount(5)
+        }};
+        GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, {
+            MeshVisualizerMaterialUniform{}
+                .setColor(0xffff99_rgbf)
+                .setWireframeColor(0x9999ff_rgbf)
+        }};
+        shader
+            .bindProjectionBuffer(projectionUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindDrawBuffer(drawUniform)
+            .bindMaterialBuffer(materialUniform)
+            .bindJointBuffer(jointMatricesUniform)
+            .draw(mesh);
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-instanced.tga"),
+        /* SwiftShader has minor differences in the output */
+        (DebugTools::CompareImageToFile{_manager, 0.68f, 0.005f}));
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::renderMulti2D() {
@@ -5454,6 +6482,476 @@ void MeshVisualizerGLTest::renderMulti3D() {
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
+}
+
+void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
+    auto&& data = RenderMultiSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags2D >= MeshVisualizerGL2D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
+    MeshVisualizerGL2D shader{MeshVisualizerGL2D::Configuration{}
+        .setFlags(MeshVisualizerGL2D::Flag::UniformBuffers|data.flags2D|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader)
+        .setDrawCount(data.drawCount)
+        .setMaterialCount(data.materialCount)
+        .setJointCount(data.jointCount, 2, 0)};
+
+    /* Similarly to renderSkinning2D() tests just 2D movement, differently and
+       clearly distinguisable for each draw */
+    struct Vertex {
+        Vector2 position;
+        UnsignedInt jointIds[2];
+        Float weights[2];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           5--4 1    7 11--10
+           | / /|   /|  | /
+           |/ / |  / |  |/
+           3 2--0 8--6  9 */
+        {{ 1.0f, -1.0f}, {0, 0}, {1.0f, 0.0f}},
+        {{ 1.0f,  1.0f}, {0, 2}, {0.0f, 1.0f}},
+        {{-1.0f, -1.0f}, {1, 2}, {1.0f, 0.0f}},
+        {{-1.0f, -1.0f}, {1, 2}, {1.0f, 0.0f}},
+        {{ 1.0f,  1.0f}, {0, 2}, {0.0f, 1.0f}},
+        {{-1.0f,  1.0f}, {0, 3}, {0.0f, 1.0f}},
+
+        {{ 1.0f, -1.0f}, {0, 3}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f}, {2, 1}, {1.0f, 0.0f}},
+        {{-1.0f, -1.0f}, {0, 0}, {1.0f, 0.0f}},
+
+        {{-1.0f, -1.0f}, {0, 1}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f}, {1, 0}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f}, {2, 2}, {0.5f, 0.5f}}
+    };
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(12)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            MeshVisualizerGL2D::Position{},
+            MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Two},
+            MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Two});
+    GL::MeshView square{mesh};
+    square.setCount(6);
+    GL::MeshView triangle1{mesh};
+    triangle1.setCount(3)
+        .setBaseVertex(6);
+    GL::MeshView triangle2{mesh};
+    triangle2.setCount(3)
+        .setBaseVertex(9);
+
+    GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+        ProjectionUniform3D{}
+    }};;
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xffffcc_rgbf)
+        .setWireframeColor(0xcc0000_rgbf);
+    materialData[1*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xccffff_rgbf)
+        .setWireframeColor(0x0000cc_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    Containers::Array<TransformationProjectionUniform2D> transformationProjectionData{2*data.uniformIncrement + 1};
+    transformationProjectionData[0*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::scaling(Vector2{0.3f})*
+            Matrix3::translation({ 0.0f, -1.5f}));
+    transformationProjectionData[1*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::scaling(Vector2{0.3f})*
+            Matrix3::translation({ 1.5f,  1.5f}));
+    transformationProjectionData[2*data.uniformIncrement] = TransformationProjectionUniform2D{}
+        .setTransformationProjectionMatrix(
+            Matrix3::scaling(Vector2{0.3f})*
+            Matrix3::translation({-1.5f,  1.5f}));
+    GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, transformationProjectionData};
+
+    Containers::Array<TransformationUniform2D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    /* First draw moves both bottom corners */
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({ 0.5f, -0.5f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 1] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({-0.5f, -0.5f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 2] =  TransformationUniform2D{};
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 3] = TransformationUniform2D{};
+    /* Second draw overlaps with the first with two identity matrices (unless
+       the padding prevents that); moves top right corner */
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 0] = TransformationUniform2D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 1] = TransformationUniform2D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 2] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({ 0.5f, 0.5f}));
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 3] = TransformationUniform2D{};
+    /* Third draw moves top left corner */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 0] = TransformationUniform2D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 1] = TransformationUniform2D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 2] = TransformationUniform2D{}
+        .setTransformationMatrix(Matrix3::translation({-0.5f, 0.5f}));
+    /* This one is unused but has to be here in order to be able to bind the
+       last three-component part while JOINT_COUNT is set to 4 */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 3] = TransformationUniform2D{};
+    GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
+        jointData};
+
+    Containers::Array<MeshVisualizerDrawUniform2D> drawData{2*data.uniformIncrement + 1};
+    /* Material / joint offsets are zero if we have single draw, as those are
+       done with UBO offset bindings instead */
+    drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+    drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        /* Overlaps with the first joint set with two matrices, unless the
+           padding in the single-draw case prevents that */
+        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+    drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            0*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindJointBuffer(jointUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform2D),
+            data.jointCount*sizeof(TransformationUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
+            sizeof(MeshVisualizerDrawUniform2D));
+        shader.draw(square);
+
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            1*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindJointBuffer(jointUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform2D),
+            data.jointCount*sizeof(TransformationUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
+            sizeof(MeshVisualizerDrawUniform2D));
+        shader.draw(triangle1);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
+            2*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
+            sizeof(TransformationProjectionUniform2D));
+        shader.bindJointBuffer(jointUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform2D),
+            data.jointCount*sizeof(TransformationUniform2D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
+            sizeof(MeshVisualizerDrawUniform2D));
+        shader.draw(triangle2);
+
+    /* Otherwise using the draw offset / multidraw */
+    } else {
+        shader.bindMaterialBuffer(materialUniform)
+            .bindTransformationProjectionBuffer(transformationProjectionUniform)
+            .bindJointBuffer(jointUniform)
+            .bindDrawBuffer(drawUniform);
+
+        if(data.flags2D >= MeshVisualizerGL2D::Flag::MultiDraw)
+            shader.draw({square, triangle1, triangle2});
+        else {
+            shader.setDrawOffset(0)
+                .draw(square);
+            shader.setDrawOffset(1)
+                .draw(triangle1);
+            shader.setDrawOffset(2)
+                .draw(triangle2);
+        }
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-multi.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
+    auto&& data = RenderMultiSkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    if(data.flags3D >= MeshVisualizerGL3D::Flag::MultiDraw) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_draw_parameters::string() << "is not supported.");
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::ANGLE::multi_draw::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw>())
+            CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw::string() << "is not supported.");
+        #endif
+    }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
+        CORRADE_SKIP("UBOs with dynamically indexed (joint) arrays are a crashy dumpster fire on SwiftShader, can't test.");
+    #endif
+
+    MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
+        .setFlags(MeshVisualizerGL3D::Flag::UniformBuffers|data.flags3D|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader)
+        .setDrawCount(data.drawCount)
+        .setMaterialCount(data.materialCount)
+        .setJointCount(data.jointCount, 2, 0)};
+
+    /* Similarly to renderSkinning3D() tests just 2D movement, differently and
+       clearly distinguisable for each draw */
+    struct Vertex {
+        Vector3 position;
+        UnsignedInt jointIds[2];
+        Float weights[2];
+    } vertices[]{
+        /* Each corner affected by exactly one matrix, but at different item
+           in the array
+
+           5--4 1    7 11--10
+           | / /|   /|  | /
+           |/ / |  / |  |/
+           3 2--0 8--6  9 */
+        {{ 1.0f, -1.0f, 0.0f}, {0, 0}, {1.0f, 0.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 2}, {0.0f, 1.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {1, 2}, {1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {1, 2}, {1.0f, 0.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {0, 2}, {0.0f, 1.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {0, 3}, {0.0f, 1.0f}},
+
+        {{ 1.0f, -1.0f, 0.0f}, {0, 3}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {2, 1}, {1.0f, 0.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0, 0}, {1.0f, 0.0f}},
+
+        {{-1.0f, -1.0f, 0.0f}, {0, 1}, {0.0f, 1.0f}},
+        {{ 1.0f,  1.0f, 0.0f}, {1, 0}, {1.0f, 0.0f}},
+        {{-1.0f,  1.0f, 0.0f}, {2, 2}, {0.5f, 0.5f}}
+    };
+
+    GL::Mesh mesh{MeshPrimitive::Triangles};
+    mesh.setCount(12)
+        .addVertexBuffer(GL::Buffer{vertices}, 0,
+            MeshVisualizerGL3D::Position{},
+            MeshVisualizerGL3D::JointIds{MeshVisualizerGL3D::JointIds::Components::Two},
+            MeshVisualizerGL3D::Weights{MeshVisualizerGL3D::Weights::Components::Two});
+    GL::MeshView square{mesh};
+    square.setCount(6);
+    GL::MeshView triangle1{mesh};
+    triangle1.setCount(3)
+        .setBaseVertex(6);
+    GL::MeshView triangle2{mesh};
+    triangle2.setCount(3)
+        .setBaseVertex(9);
+
+    GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
+        ProjectionUniform3D{}
+    }};;
+
+    /* Some drivers have uniform offset alignment as high as 256, which means
+       the subsequent sets of uniforms have to be aligned to a multiply of it.
+       The data.uniformIncrement is set high enough to ensure that, in the
+       non-offset-bind case this value is 1. */
+
+    Containers::Array<MeshVisualizerMaterialUniform> materialData{data.uniformIncrement + 1};
+    materialData[0*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xffffcc_rgbf)
+        .setWireframeColor(0xcc0000_rgbf);
+    materialData[1*data.uniformIncrement] = MeshVisualizerMaterialUniform{}
+        .setColor(0xccffff_rgbf)
+        .setWireframeColor(0x0000cc_rgbf);
+    GL::Buffer materialUniform{GL::Buffer::TargetHint::Uniform, materialData};
+
+    Containers::Array<TransformationUniform3D> transformationData{2*data.uniformIncrement + 1};
+    transformationData[0*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::scaling(Vector3{0.3f})*
+            Matrix4::translation({ 0.0f, -1.5f, 0.0f}));
+    transformationData[1*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::scaling(Vector3{0.3f})*
+            Matrix4::translation({ 1.5f,  1.5f, 0.0f}));
+    transformationData[2*data.uniformIncrement] = TransformationUniform3D{}
+        .setTransformationMatrix(
+            Matrix4::scaling(Vector3{0.3f})*
+            Matrix4::translation({-1.5f,  1.5f, 0.0f}));
+    GL::Buffer transformationUniform{GL::Buffer::TargetHint::Uniform, transformationData};
+
+    Containers::Array<TransformationUniform3D> jointData{Math::max(2*data.uniformIncrement + 4, 10u)};
+    /* First draw moves both bottom corners */
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 0] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({ 0.5f, -0.5f, 0.0f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 1] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({-0.5f, -0.5f, 0.0f}));
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 2] =  TransformationUniform3D{};
+    jointData[Math::max(0*data.uniformIncrement, 0u) + 3] = TransformationUniform3D{};
+    /* Second draw overlaps with the first with two identity matrices (unless
+       the padding prevents that); moves top right corner */
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 0] = TransformationUniform3D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 1] = TransformationUniform3D{};
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 2] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({ 0.5f, 0.5f, 0.0f}));
+    jointData[Math::max(1*data.uniformIncrement, 2u) + 3] = TransformationUniform3D{};
+    /* Third draw moves top left corner */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 0] = TransformationUniform3D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 1] = TransformationUniform3D{};
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 2] = TransformationUniform3D{}
+        .setTransformationMatrix(Matrix4::translation({-0.5f, 0.5f, 0.0f}));
+    /* This one is unused but has to be here in order to be able to bind the
+       last three-component part while JOINT_COUNT is set to 4 */
+    jointData[Math::max(2*data.uniformIncrement, 6u) + 3] = TransformationUniform3D{};
+    GL::Buffer jointUniform{GL::Buffer::TargetHint::Uniform,
+        jointData};
+
+    Containers::Array<MeshVisualizerDrawUniform3D> drawData{2*data.uniformIncrement + 1};
+    /* Material / joint offsets are zero if we have single draw, as those are
+       done with UBO offset bindings instead */
+    drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+    drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        /* Overlaps with the first joint set with two matrices, unless the
+           padding in the single-draw case prevents that */
+        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+    drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
+        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+    GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    shader.bindProjectionBuffer(projectionUniform);
+
+    /* Just one draw, rebinding UBOs each time */
+    if(data.drawCount == 1) {
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            0*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
+            sizeof(MeshVisualizerDrawUniform3D));
+        shader.draw(square);
+
+        shader.bindMaterialBuffer(materialUniform,
+            0*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            1*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
+            sizeof(MeshVisualizerDrawUniform3D));
+        shader.draw(triangle1);
+
+        shader.bindMaterialBuffer(materialUniform,
+            1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
+            sizeof(MeshVisualizerMaterialUniform));
+        shader.bindTransformationBuffer(transformationUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            sizeof(TransformationUniform3D));
+        shader.bindJointBuffer(jointUniform,
+            2*data.uniformIncrement*sizeof(TransformationUniform3D),
+            data.jointCount*sizeof(TransformationUniform3D));
+        shader.bindDrawBuffer(drawUniform,
+            2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
+            sizeof(MeshVisualizerDrawUniform3D));
+        shader.draw(triangle2);
+
+    /* Otherwise using the draw offset / multidraw */
+    } else {
+        shader.bindMaterialBuffer(materialUniform)
+            .bindTransformationBuffer(transformationUniform)
+            .bindJointBuffer(jointUniform)
+            .bindDrawBuffer(drawUniform);
+
+        if(data.flags3D >= MeshVisualizerGL3D::Flag::MultiDraw)
+            shader.draw({square, triangle1, triangle2});
+        else {
+            shader.setDrawOffset(0)
+                .draw(square);
+            shader.setDrawOffset(1)
+                .draw(triangle1);
+            shader.setDrawOffset(2)
+                .draw(triangle2);
+        }
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-multi.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
 }
 #endif
 

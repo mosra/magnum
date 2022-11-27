@@ -48,6 +48,8 @@
 
 namespace Magnum { namespace Shaders {
 
+using namespace Containers::Literals;
+
 namespace {
     enum: Int {
         /* First four taken by Phong (A/D/S/N) */
@@ -57,6 +59,9 @@ namespace {
 
     #ifndef MAGNUM_TARGET_GLES2
     enum: Int {
+        /* Projection, transformation, texture transformation and joints is
+           slots 0, 1, 3, 6 in all shaders so shaders can be switched without
+           rebinding everything */
         ProjectionBufferBinding = 0,
         /* Not using the zero binding to avoid conflicts with
            ProjectionBufferBinding from the 3D variant which can likely stay
@@ -66,6 +71,8 @@ namespace {
         DrawBufferBinding = 2,
         TextureTransformationBufferBinding = 3,
         MaterialBufferBinding = 4,
+        /* 5 unused */
+        JointBufferBinding = 6,
     };
     #endif
 }
@@ -142,7 +149,11 @@ void MeshVisualizerGLBase::assertExtensions(const FlagsBase flags) {
 
 GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs, const FlagsBase flags
     #ifndef MAGNUM_TARGET_GLES2
-    , const UnsignedInt materialCount, UnsignedInt const drawCount
+    , const UnsignedInt
+        #ifndef MAGNUM_TARGET_GLES
+        dimensions /* used for a uniform initializer, which isn't on GLSL ES */
+        #endif
+    , const UnsignedInt jointCount, const UnsignedInt perVertexJointCount, const UnsignedInt secondaryPerVertexJointCount, const UnsignedInt materialCount, const UnsignedInt drawCount, const UnsignedInt perInstanceJointCountUniform, const UnsignedInt perVertexJointCountUniform
     #endif
 ) {
     GL::Context& context = GL::Context::current();
@@ -184,6 +195,31 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
+    if(jointCount) {
+        vert.addSource(Utility::formatString(
+            "#define JOINT_COUNT {}\n"
+            "#define PER_VERTEX_JOINT_COUNT {}u\n"
+            "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
+            #ifndef MAGNUM_TARGET_GLES
+            "#define JOINT_MATRIX_INITIALIZER {}\n"
+            #endif
+            "#define PER_INSTANCE_JOINT_COUNT_LOCATION {}\n",
+            jointCount,
+            perVertexJointCount,
+            secondaryPerVertexJointCount,
+            #ifndef MAGNUM_TARGET_GLES
+            ((dimensions == 2 ? "mat3(1.0), "_s : "mat4(1.0), "_s)*jointCount).exceptSuffix(2),
+            #endif
+            perInstanceJointCountUniform));
+    }
+    if(flags >= FlagBase::DynamicPerVertexJointCount) {
+        vert.addSource(Utility::formatString(
+            "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
+            "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
+            perVertexJointCountUniform));
+    }
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     if(flags >= FlagBase::UniformBuffers) {
         vert.addSource(Utility::formatString(
             "#define UNIFORM_BUFFERS\n"
@@ -221,6 +257,19 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
 
     return version;
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGLBase& MeshVisualizerGLBase::setPerVertexJointCount(const UnsignedInt count, const UnsignedInt secondaryCount) {
+    CORRADE_ASSERT(_flags >= FlagBase::DynamicPerVertexJointCount,
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled", *this);
+    CORRADE_ASSERT(count <= _perVertexJointCount,
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most" << _perVertexJointCount << "per-vertex joints, got" << count, *this);
+    CORRADE_ASSERT(secondaryCount <= _secondaryPerVertexJointCount,
+        "Shaders::MeshVisualizerGL::setPerVertexJointCount(): expected at most" << _secondaryPerVertexJointCount << "secondary per-vertex joints, got" << secondaryCount, *this);
+    setUniform(_perVertexJointCountUniform, Vector2ui{count, secondaryCount});
+    return *this;
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 MeshVisualizerGLBase& MeshVisualizerGLBase::setTextureMatrix(const Matrix3& matrix) {
@@ -300,6 +349,13 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::setColorMapTransformation(const Floa
     setUniform(_colorMapOffsetScaleUniform, Vector2{offset, scale});
     return *this;
 }
+
+MeshVisualizerGLBase& MeshVisualizerGLBase::setPerInstanceJointCount(const UnsignedInt count) {
+    CORRADE_ASSERT(!(_flags >= FlagBase::UniformBuffers),
+        "Shaders::MeshVisualizerGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled", *this);
+    setUniform(_perInstanceJointCountUniform, count);
+    return *this;
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -341,6 +397,20 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::bindMaterialBuffer(GL::Buffer& buffe
     CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
     buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
+    return *this;
+}
+
+MeshVisualizerGLBase& MeshVisualizerGLBase::bindJointBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
+        "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding);
+    return *this;
+}
+
+MeshVisualizerGLBase& MeshVisualizerGLBase::bindJointBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
+        "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -398,12 +468,35 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         "Shaders::MeshVisualizerGL2D: draw count can't be zero", CompileState{NoCreate});
     #endif
 
+    /* Has to be here and not in the base class in order to have it exit the
+       constructor when testing for asserts -- GLSL compilation would fail
+       otherwise */
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+        "Shaders::MeshVisualizerGL2D: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
+    CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
+        "Shaders::MeshVisualizerGL2D: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
+    #endif
+
+    MeshVisualizerGL2D out{NoInit};
+    out._flags = baseFlags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._jointCount = configuration.jointCount();
+    out._perVertexJointCount = configuration.perVertexJointCount();
+    out._secondaryPerVertexJointCount = configuration.secondaryPerVertexJointCount();
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
+    out._perInstanceJointCountUniform = out._jointMatricesUniform + configuration.jointCount();
+    out._perVertexJointCountUniform = configuration.flags() >= Flag::UniformBuffers ?
+        2 : out._perInstanceJointCountUniform + 1;
+    #endif
+
     Utility::Resource rs{"MagnumShadersGL"};
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
         #ifndef MAGNUM_TARGET_GLES2
-        , configuration.materialCount(), configuration.drawCount()
+        , 2, configuration.jointCount(), configuration.perVertexJointCount(), configuration.secondaryPerVertexJointCount(), configuration.materialCount(), configuration.drawCount(), out._perInstanceJointCountUniform, out._perVertexJointCountUniform
         #endif
     );
     Containers::Optional<GL::Shader> geom;
@@ -466,13 +559,6 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
     frag.submitCompile();
     if(geom) geom->submitCompile();
 
-    MeshVisualizerGL2D out{NoInit};
-    out._flags = baseFlags;
-    #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = configuration.materialCount();
-    out._drawCount = configuration.drawCount();
-    #endif
-
     out.attachShaders({vert, frag});
     if(geom) out.attachShader(*geom);
 
@@ -502,6 +588,19 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         #endif
         {
             out.bindAttributeLocation(VertexIndex::Location, "vertexIndex");
+        }
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Configuration::setJointCount() checks that jointCount and
+           perVertexJointCount / secondaryPerVertexJointCount are either all
+           zero or non-zero so we don't need to check for jointCount() here */
+        if(configuration.perVertexJointCount()) {
+            out.bindAttributeLocation(Weights::Location, "weights");
+            out.bindAttributeLocation(JointIds::Location, "jointIds");
+        }
+        if(configuration.secondaryPerVertexJointCount()) {
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
         }
         #endif
     }
@@ -551,6 +650,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
             _viewportSizeUniform = uniformLocation("viewportSize");
 
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags() >= Flag::DynamicPerVertexJointCount)
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
         if(flags() >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
@@ -581,6 +682,12 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
             if(flags() & Flag::ObjectId)
                 _objectIdUniform = uniformLocation("objectId");
             #endif
+            #ifndef MAGNUM_TARGET_GLES2
+            if(_jointCount) {
+                _jointMatricesUniform = uniformLocation("jointMatrices");
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+            }
+            #endif
         }
     }
 
@@ -601,6 +708,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
             if(flags() & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+            if(_jointCount)
+                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
         }
         #endif
     }
@@ -608,6 +717,10 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags() >= Flag::DynamicPerVertexJointCount)
+        setPerVertexJointCount(_perVertexJointCount, _secondaryPerVertexJointCount);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(flags() >= Flag::UniformBuffers) {
         /* Viewport size is zero by default */
@@ -631,6 +744,12 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
         #ifndef MAGNUM_TARGET_GLES2
         if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId))
             setColorMapTransformation(1.0f/512.0f, 1.0f/256.0f);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        if(_jointCount) {
+            setJointMatrices(Containers::Array<Matrix3>{DirectInit, _jointCount, Math::IdentityInit});
+            /* Per-instance joint count is zero by default */
+        }
         #endif
     }
     #endif
@@ -681,6 +800,30 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::setSmoothness(const Float smoothness) {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL2D& MeshVisualizerGL2D::setJointMatrices(const Containers::ArrayView<const Matrix3> matrices) {
+    CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
+        "Shaders::MeshVisualizerGL2D::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_jointCount == matrices.size(),
+        "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    return *this;
+}
+
+MeshVisualizerGL2D& MeshVisualizerGL2D::setJointMatrices(const std::initializer_list<Matrix3> matrices) {
+    return setJointMatrices(Containers::arrayView(matrices));
+}
+
+MeshVisualizerGL2D& MeshVisualizerGL2D::setJointMatrix(const UnsignedInt id, const Matrix3& matrix) {
+    CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
+        "Shaders::MeshVisualizerGL2D::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(id < _jointCount,
+        "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+    setUniform(_jointMatricesUniform + id, matrix);
+    return *this;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 MeshVisualizerGL2D& MeshVisualizerGL2D::bindTransformationProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
@@ -706,6 +849,21 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::bindDrawBuffer(GL::Buffer& buffer, const
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
     buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    return *this;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL2D::Configuration& MeshVisualizerGL2D::Configuration::setJointCount(UnsignedInt count, UnsignedInt perVertexCount, UnsignedInt secondaryPerVertexCount) {
+    CORRADE_ASSERT(perVertexCount <= 4,
+        "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
+    CORRADE_ASSERT(secondaryPerVertexCount <= 4,
+        "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
+    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
+        "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+    _jointCount = count;
+    _perVertexJointCount = perVertexCount;
+    _secondaryPerVertexJointCount = secondaryPerVertexCount;
     return *this;
 }
 #endif
@@ -744,12 +902,35 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         "Shaders::MeshVisualizerGL3D: draw count can't be zero", CompileState{NoCreate});
     #endif
 
+    /* Has to be here and not in the base class in order to have it exit the
+       constructor when testing for asserts -- GLSL compilation would fail
+       otherwise */
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+        "Shaders::MeshVisualizerGL3D: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
+    CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
+        "Shaders::MeshVisualizerGL3D: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
+    #endif
+
+    MeshVisualizerGL3D out{NoInit};
+    out._flags = baseFlags;
+    #ifndef MAGNUM_TARGET_GLES2
+    out._jointCount = configuration.jointCount();
+    out._perVertexJointCount = configuration.perVertexJointCount();
+    out._secondaryPerVertexJointCount = configuration.secondaryPerVertexJointCount();
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
+    out._perInstanceJointCountUniform = out._jointMatricesUniform + configuration.jointCount();
+    out._perVertexJointCountUniform = configuration.flags() >= Flag::UniformBuffers ?
+        2 : out._perInstanceJointCountUniform + 1;
+    #endif
+
     Utility::Resource rs{"MagnumShadersGL"};
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
         #ifndef MAGNUM_TARGET_GLES2
-        , configuration.materialCount(), configuration.drawCount()
+        , 3, configuration.jointCount(), configuration.perVertexJointCount(), configuration.secondaryPerVertexJointCount(), configuration.materialCount(), configuration.drawCount(), out._perInstanceJointCountUniform, out._perVertexJointCountUniform
         #endif
     );
     Containers::Optional<GL::Shader> geom;
@@ -846,13 +1027,6 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
     frag.submitCompile();
     if(geom) geom->submitCompile();
 
-    MeshVisualizerGL3D out{NoInit};
-    out._flags = baseFlags;
-    #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = configuration.materialCount();
-    out._drawCount = configuration.drawCount();
-    #endif
-
     out.attachShaders({vert, frag});
     if(geom) out.attachShader(*geom);
 
@@ -897,6 +1071,19 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         #endif
         {
             out.bindAttributeLocation(VertexIndex::Location, "vertexIndex");
+        }
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Configuration::setJointCount() checks that jointCount and
+           perVertexJointCount / secondaryPerVertexJointCount are either all
+           zero or non-zero so we don't need to check for jointCount() here */
+        if(configuration.perVertexJointCount()) {
+            out.bindAttributeLocation(Weights::Location, "weights");
+            out.bindAttributeLocation(JointIds::Location, "jointIds");
+        }
+        if(configuration.secondaryPerVertexJointCount()) {
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
         }
         #endif
     }
@@ -950,6 +1137,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
             _viewportSizeUniform = uniformLocation("viewportSize");
 
         #ifndef MAGNUM_TARGET_GLES2
+        if(flags() >= Flag::DynamicPerVertexJointCount)
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
         if(flags() >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
@@ -994,6 +1183,12 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
                 _lineLengthUniform = uniformLocation("lineLength");
             }
             #endif
+            #ifndef MAGNUM_TARGET_GLES2
+            if(_jointCount) {
+                _jointMatricesUniform = uniformLocation("jointMatrices");
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+            }
+            #endif
         }
     }
 
@@ -1015,6 +1210,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
             if(flags() & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+            if(_jointCount)
+                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
         }
         #endif
     }
@@ -1022,6 +1219,10 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags() >= Flag::DynamicPerVertexJointCount)
+        setPerVertexJointCount(_perVertexJointCount, _secondaryPerVertexJointCount);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(flags() >= Flag::UniformBuffers) {
         /* Viewport size is zero by default */
@@ -1058,6 +1259,12 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
             setNormalMatrix(Matrix3x3{Math::IdentityInit});
             setLineWidth(1.0f);
             setLineLength(1.0f);
+        }
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        if(_jointCount) {
+            setJointMatrices(Containers::Array<Matrix4>{DirectInit, _jointCount, Math::IdentityInit});
+            /* Per-instance joint count is zero by default */
         }
         #endif
     }
@@ -1162,6 +1369,30 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::setSmoothness(const Float smoothness) {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL3D& MeshVisualizerGL3D::setJointMatrices(const Containers::ArrayView<const Matrix4> matrices) {
+    CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
+        "Shaders::MeshVisualizerGL3D::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_jointCount == matrices.size(),
+        "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    return *this;
+}
+
+MeshVisualizerGL3D& MeshVisualizerGL3D::setJointMatrices(const std::initializer_list<Matrix4> matrices) {
+    return setJointMatrices(Containers::arrayView(matrices));
+}
+
+MeshVisualizerGL3D& MeshVisualizerGL3D::setJointMatrix(const UnsignedInt id, const Matrix4& matrix) {
+    CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
+        "Shaders::MeshVisualizerGL3D::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(id < _jointCount,
+        "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+    setUniform(_jointMatricesUniform + id, matrix);
+    return *this;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 MeshVisualizerGL3D& MeshVisualizerGL3D::bindProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
@@ -1205,6 +1436,21 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::bindDrawBuffer(GL::Buffer& buffer, const
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerGL3D::Configuration& MeshVisualizerGL3D::Configuration::setJointCount(UnsignedInt count, UnsignedInt perVertexCount, UnsignedInt secondaryPerVertexCount) {
+    CORRADE_ASSERT(perVertexCount <= 4,
+        "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
+    CORRADE_ASSERT(secondaryPerVertexCount <= 4,
+        "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
+    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
+        "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+    _jointCount = count;
+    _perVertexJointCount = perVertexCount;
+    _secondaryPerVertexJointCount = secondaryPerVertexCount;
+    return *this;
+}
+#endif
+
 Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
     #ifndef MAGNUM_TARGET_GLES2
     /* Special case coming from the Flags printer. As both flags are a superset
@@ -1240,6 +1486,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
         _c(UniformBuffers)
         _c(MultiDraw)
         _c(TextureArrays)
+        _c(DynamicPerVertexJointCount)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -1289,6 +1536,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
         _c(UniformBuffers)
         _c(MultiDraw)
         _c(TextureArrays)
+        _c(DynamicPerVertexJointCount)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -1325,6 +1573,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
         MeshVisualizerGL2D::Flag::MultiDraw, /* Superset of UniformBuffers */
         MeshVisualizerGL2D::Flag::UniformBuffers,
         MeshVisualizerGL2D::Flag::TextureArrays,
+        MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
         #endif
         #endif
     });
@@ -1364,6 +1613,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
         MeshVisualizerGL3D::Flag::MultiDraw, /* Superset of UniformBuffers */
         MeshVisualizerGL3D::Flag::UniformBuffers,
         MeshVisualizerGL3D::Flag::TextureArrays,
+        MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
         #endif
         #endif
     });

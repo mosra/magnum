@@ -48,6 +48,19 @@
 #define const
 #endif
 
+/* Both classic uniforms and uniform buffers */
+
+#ifdef DYNAMIC_PER_VERTEX_JOINT_COUNT
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = PER_VERTEX_JOINT_COUNT_LOCATION)
+#endif
+uniform mediump uvec2 perVertexJointCount
+    #ifndef GL_ES
+    = uvec2(PER_VERTEX_JOINT_COUNT, SECONDARY_PER_VERTEX_JOINT_COUNT)
+    #endif
+    ;
+#endif
+
 /* Uniforms */
 
 #ifndef UNIFORM_BUFFERS
@@ -133,6 +146,32 @@ layout(location = 8)
 uniform highp uint textureLayer; /* defaults to zero */
 #endif
 
+#ifdef JOINT_COUNT
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 14)
+#endif
+#ifdef TWO_DIMENSIONS
+uniform mat3 jointMatrices[JOINT_COUNT]
+    #ifndef GL_ES
+    = mat3[](JOINT_MATRIX_INITIALIZER)
+    #endif
+    ;
+#elif defined(THREE_DIMENSIONS)
+uniform mat4 jointMatrices[JOINT_COUNT]
+    #ifndef GL_ES
+    = mat4[](JOINT_MATRIX_INITIALIZER)
+    #endif
+    ;
+#else
+#error
+#endif
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = PER_INSTANCE_JOINT_COUNT_LOCATION)
+#endif
+uniform uint perInstanceJointCount; /* defaults to zero */
+#endif
+
 /* Uniform buffers */
 
 #else
@@ -206,9 +245,10 @@ struct DrawUniform {
     #elif !defined(TWO_DIMENSIONS)
     #error
     #endif
-    highp uvec4 materialIdReservedObjectIdReservedReserved;
-    #define draw_materialIdReserved materialIdReservedObjectIdReservedReserved.x
-    #define draw_objectId materialIdReservedObjectIdReservedReserved.y
+    highp uvec4 materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved.x
+    #define draw_objectId materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved.y
+    #define draw_jointOffsetPerInstanceJointCount materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved.z
 };
 
 layout(std140
@@ -242,6 +282,26 @@ layout(std140
 ) uniform Material {
     MaterialUniform materials[MATERIAL_COUNT];
 };
+
+#ifdef JOINT_COUNT
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 6
+    #endif
+) uniform Joint {
+    highp
+        #ifdef TWO_DIMENSIONS
+        /* Can't be a mat3 because of ANGLE, see DrawUniform in Phong.vert for
+           details */
+        mat3x4
+        #elif defined(THREE_DIMENSIONS)
+        mat4
+        #else
+        #error
+        #endif
+    jointMatrices[JOINT_COUNT];
+};
+#endif
 #endif
 
 /* Inputs */
@@ -283,6 +343,32 @@ in highp vec3 normal;
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 textureCoordinates;
+#endif
+
+#ifdef JOINT_COUNT
+#if PER_VERTEX_JOINT_COUNT
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = WEIGHTS_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec4 weights;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = JOINTIDS_ATTRIBUTE_LOCATION)
+#endif
+in mediump uvec4 jointIds;
+#endif
+
+#if SECONDARY_PER_VERTEX_JOINT_COUNT
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = SECONDARY_WEIGHTS_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec4 secondaryWeights;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = SECONDARY_JOINTIDS_ATTRIBUTE_LOCATION)
+#endif
+in mediump uvec4 secondaryJointIds;
+#endif
 #endif
 
 #ifdef INSTANCED_TEXTURE_OFFSET
@@ -442,6 +528,49 @@ void main() {
     highp const uint textureLayer = floatBitsToUint(textureTransformations[drawId].textureTransformation_layer);
     #endif
     #endif
+    #ifdef JOINT_COUNT
+    mediump const uint jointOffset = (draws[drawId].draw_jointOffsetPerInstanceJointCount & 0xffffu) + uint(gl_InstanceID)*(draws[drawId].draw_jointOffsetPerInstanceJointCount >> 16 & 0xffffu);
+    #endif
+    #else
+    #ifdef JOINT_COUNT
+    mediump const uint jointOffset = uint(gl_InstanceID)*perInstanceJointCount;
+    #endif
+    #endif
+
+    #ifdef JOINT_COUNT
+    #ifdef TWO_DIMENSIONS
+    mat3 skinMatrix = mat3(0.0);
+    #elif defined(THREE_DIMENSIONS)
+    mat4 skinMatrix = mat4(0.0);
+    #else
+    #error
+    #endif
+    #if PER_VERTEX_JOINT_COUNT
+    for(uint i = 0u; i != PER_VERTEX_JOINT_COUNT
+        #ifdef DYNAMIC_PER_VERTEX_JOINT_COUNT
+        && i != perVertexJointCount.x
+        #endif
+    ; ++i)
+        skinMatrix += weights[i]*
+            #ifdef TWO_DIMENSIONS
+            mat3 /* need to slice because it's a mat3x4 due to ANGLE, see
+                    DrawUniform in Phong.vert for details */
+            #endif
+            (jointMatrices[jointOffset + jointIds[i]]);
+    #endif
+    #if SECONDARY_PER_VERTEX_JOINT_COUNT
+    for(uint i = 0u; i != SECONDARY_PER_VERTEX_JOINT_COUNT
+        #ifdef DYNAMIC_PER_VERTEX_JOINT_COUNT
+        && i != perVertexJointCount.y
+        #endif
+    ; ++i)
+        skinMatrix += secondaryWeights[i]*
+            #ifdef TWO_DIMENSIONS
+            mat3 /* need to slice because it's a mat3x4 due to ANGLE, see
+                    DrawUniform in Phong.vert for details */
+            #endif
+            (jointMatrices[jointOffset + secondaryJointIds[i]]);
+    #endif
     #endif
 
     #ifdef TWO_DIMENSIONS
@@ -449,11 +578,17 @@ void main() {
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
         #endif
+        #ifdef JOINT_COUNT
+        skinMatrix*
+        #endif
         vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)
     highp const vec4 transformedPosition4 = transformationMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
+        #endif
+        #ifdef JOINT_COUNT
+        skinMatrix*
         #endif
         position;
     gl_Position = projectionMatrix*transformedPosition4;

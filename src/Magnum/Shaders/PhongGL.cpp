@@ -53,6 +53,8 @@
 
 namespace Magnum { namespace Shaders {
 
+using namespace Containers::Literals;
+
 namespace {
     enum: Int {
         AmbientTextureUnit = 0,
@@ -65,12 +67,16 @@ namespace {
 
     #ifndef MAGNUM_TARGET_GLES2
     enum: Int {
+        /* Projection, transformation, texture transformation and joints is
+           slots 0, 1, 3, 6 in all shaders so shaders can be switched without
+           rebinding everything */
         ProjectionBufferBinding = 0,
         TransformationBufferBinding = 1,
         DrawBufferBinding = 2,
         TextureTransformationBufferBinding = 3,
         MaterialBufferBinding = 4,
-        LightBufferBinding = 5
+        LightBufferBinding = 5,
+        JointBufferBinding = 6,
     };
     #endif
 }
@@ -111,6 +117,13 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
 
     CORRADE_ASSERT(!(configuration.flags() & Flag::SpecularTexture) || !(configuration.flags() & (Flag::NoSpecular)),
         "Shaders::PhongGL: specular texture requires the shader to not have specular disabled", CompileState{NoCreate});
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+        "Shaders::PhongGL: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
+    CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
+        "Shaders::PhongGL: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(configuration.flags() >= Flag::UniformBuffers)
@@ -155,12 +168,21 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     PhongGL out{NoInit};
     out._flags = configuration.flags();
     out._lightCount = configuration.lightCount();
-    out._lightColorsUniform = out._lightPositionsUniform + Int(configuration.lightCount());
-    out._lightSpecularColorsUniform = out._lightPositionsUniform + 2*Int(configuration.lightCount());
-    out._lightRangesUniform = out._lightPositionsUniform + 3*Int(configuration.lightCount());
     #ifndef MAGNUM_TARGET_GLES2
+    out._jointCount = configuration.jointCount();
+    out._perVertexJointCount = configuration.perVertexJointCount();
+    out._secondaryPerVertexJointCount = configuration.secondaryPerVertexJointCount();
     out._materialCount = configuration.materialCount();
     out._drawCount = configuration.drawCount();
+    #endif
+    out._lightColorsUniform = out._lightPositionsUniform + Int(configuration.lightCount());
+    out._lightSpecularColorsUniform = out._lightColorsUniform + Int(configuration.lightCount());
+    out._lightRangesUniform = out._lightSpecularColorsUniform + Int(configuration.lightCount());
+    #ifndef MAGNUM_TARGET_GLES2
+    out._jointMatricesUniform = out._lightRangesUniform + Int(configuration.lightCount());
+    out._perInstanceJointCountUniform = out._jointMatricesUniform + configuration.jointCount();
+    out._perVertexJointCountUniform = configuration.flags() >= Flag::UniformBuffers ?
+        1 : out._perInstanceJointCountUniform + 1;
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -233,6 +255,33 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         #endif
         .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
+    #ifndef MAGNUM_TARGET_GLES2
+    if(configuration.jointCount()) {
+        vert.addSource(Utility::formatString(
+            "#define JOINT_COUNT {}\n"
+            "#define PER_VERTEX_JOINT_COUNT {}u\n"
+            "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
+            "#define JOINT_MATRICES_LOCATION {}\n"
+            #ifndef MAGNUM_TARGET_GLES
+            "#define JOINT_MATRIX_INITIALIZER {}\n"
+            #endif
+            "#define PER_INSTANCE_JOINT_COUNT_LOCATION {}\n",
+            configuration.jointCount(),
+            configuration.perVertexJointCount(),
+            configuration.secondaryPerVertexJointCount(),
+            out._jointMatricesUniform,
+            #ifndef MAGNUM_TARGET_GLES
+            ("mat4(1.0), "_s*configuration.jointCount()).exceptSuffix(2),
+            #endif
+            out._perInstanceJointCountUniform));
+    }
+    if(configuration.flags() >= Flag::DynamicPerVertexJointCount) {
+        vert.addSource(Utility::formatString(
+            "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
+            "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
+            out._perVertexJointCountUniform));
+    }
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::formatString(
@@ -337,6 +386,19 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         }
         if(configuration.flags() >= Flag::InstancedTextureOffset)
             out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Configuration::setJointCount() checks that jointCount and
+           perVertexJointCount / secondaryPerVertexJointCount are either all
+           zero or non-zero so we don't need to check for jointCount() here */
+        if(configuration.perVertexJointCount()) {
+            out.bindAttributeLocation(Weights::Location, "weights");
+            out.bindAttributeLocation(JointIds::Location, "jointIds");
+        }
+        if(configuration.secondaryPerVertexJointCount()) {
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
+        }
+        #endif
     }
     #endif
 
@@ -382,6 +444,8 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
+        if(_flags >= Flag::DynamicPerVertexJointCount)
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
         if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
@@ -415,6 +479,12 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
             #ifndef MAGNUM_TARGET_GLES2
             if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
             #endif
+            #ifndef MAGNUM_TARGET_GLES2
+            if(_jointCount) {
+                _jointMatricesUniform = uniformLocation("jointMatrices");
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+            }
+            #endif
         }
     }
 
@@ -439,12 +509,18 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
             if(_lightCount)
                 setUniformBlockBinding(uniformBlockIndex("Light"), LightBufferBinding);
+            if(_jointCount)
+                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
         }
         #endif
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    if(_flags >= Flag::DynamicPerVertexJointCount)
+        setPerVertexJointCount(_perVertexJointCount, _secondaryPerVertexJointCount);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
@@ -478,6 +554,12 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
         /* Texture layer is zero by default */
         if(_flags & Flag::AlphaMask) setAlphaMask(0.5f);
         /* Object ID is zero by default */
+        #ifndef MAGNUM_TARGET_GLES2
+        if(_jointCount) {
+            setJointMatrices(Containers::Array<Matrix4>{DirectInit, _jointCount, Math::IdentityInit});
+            /* Per-instance joint count is zero by default */
+        }
+        #endif
     }
     #endif
 }
@@ -498,6 +580,19 @@ PhongGL::PhongGL(const Flags flags, const UnsignedInt lightCount, const Unsigned
     .setMaterialCount(materialCount)
     .setDrawCount(drawCount))} {}
 #endif
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+PhongGL& PhongGL::setPerVertexJointCount(const UnsignedInt count, const UnsignedInt secondaryCount) {
+    CORRADE_ASSERT(_flags >= Flag::DynamicPerVertexJointCount,
+        "Shaders::PhongGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled", *this);
+    CORRADE_ASSERT(count <= _perVertexJointCount,
+        "Shaders::PhongGL::setPerVertexJointCount(): expected at most" << _perVertexJointCount << "per-vertex joints, got" << count, *this);
+    CORRADE_ASSERT(secondaryCount <= _secondaryPerVertexJointCount,
+        "Shaders::PhongGL::setPerVertexJointCount(): expected at most" << _secondaryPerVertexJointCount << "secondary per-vertex joints, got" << secondaryCount, *this);
+    setUniform(_perVertexJointCountUniform, Vector2ui{count, secondaryCount});
+    return *this;
+}
 #endif
 
 PhongGL& PhongGL::setAmbientColor(const Magnum::Color4& color) {
@@ -787,6 +882,37 @@ PhongGL& PhongGL::setLightRange(const UnsignedInt id, const Float range) {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
+PhongGL& PhongGL::setJointMatrices(const Containers::ArrayView<const Matrix4> matrices) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::PhongGL::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_jointCount == matrices.size(),
+        "Shaders::PhongGL::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    return *this;
+}
+
+PhongGL& PhongGL::setJointMatrices(const std::initializer_list<Matrix4> matrices) {
+    return setJointMatrices(Containers::arrayView(matrices));
+}
+
+PhongGL& PhongGL::setJointMatrix(const UnsignedInt id, const Matrix4& matrix) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::PhongGL::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(id < _jointCount,
+        "Shaders::PhongGL::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+    setUniform(_jointMatricesUniform + id, matrix);
+    return *this;
+}
+
+PhongGL& PhongGL::setPerInstanceJointCount(const UnsignedInt count) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::PhongGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled", *this);
+    setUniform(_perInstanceJointCountUniform, count);
+    return *this;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 PhongGL& PhongGL::setDrawOffset(const UnsignedInt offset) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
@@ -881,6 +1007,20 @@ PhongGL& PhongGL::bindLightBuffer(GL::Buffer& buffer, const GLintptr offset, con
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindLightBuffer(): the shader was not created with uniform buffers enabled", *this);
     buffer.bind(GL::Buffer::Target::Uniform, LightBufferBinding, offset, size);
+    return *this;
+}
+
+PhongGL& PhongGL::bindJointBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::PhongGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding);
+    return *this;
+}
+
+PhongGL& PhongGL::bindJointBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::PhongGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -1006,6 +1146,21 @@ PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, G
     return *this;
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+PhongGL::Configuration& PhongGL::Configuration::setJointCount(UnsignedInt count, UnsignedInt perVertexCount, UnsignedInt secondaryPerVertexCount) {
+    CORRADE_ASSERT(perVertexCount <= 4,
+        "Shaders::PhongGL::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
+    CORRADE_ASSERT(secondaryPerVertexCount <= 4,
+        "Shaders::PhongGL::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
+    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
+        "Shaders::PhongGL::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+    _jointCount = count;
+    _perVertexJointCount = perVertexCount;
+    _secondaryPerVertexJointCount = secondaryPerVertexCount;
+    return *this;
+}
+#endif
+
 Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
     #ifndef MAGNUM_TARGET_GLES2
     /* Special case coming from the Flags printer. As both flags are a superset
@@ -1042,6 +1197,9 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
         _c(LightCulling)
         #endif
         _c(NoSpecular)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(DynamicPerVertexJointCount)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -1076,7 +1234,10 @@ Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
         PhongGL::Flag::TextureArrays,
         PhongGL::Flag::LightCulling,
         #endif
-        PhongGL::Flag::NoSpecular
+        PhongGL::Flag::NoSpecular,
+        #ifndef MAGNUM_TARGET_GLES2
+        PhongGL::Flag::DynamicPerVertexJointCount,
+        #endif
     });
 }
 

@@ -88,9 +88,10 @@ uniform highp uint drawOffset
 #endif
 
 struct DrawUniform {
-    highp uvec4 materialIdReservedObjectIdReservedReserved;
-    #define draw_materialIdReserved materialIdReservedObjectIdReservedReserved.x
-    #define draw_objectId materialIdReservedObjectIdReservedReserved.y
+    highp uvec4 materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved;
+    #define draw_materialIdReserved materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved.x
+    #define draw_objectId materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved.y
+    #define draw_jointOffsetPerInstanceJointCount materialIdReservedObjectIdJointOffsetPerInstanceJointCountReserved.z
 };
 
 layout(std140

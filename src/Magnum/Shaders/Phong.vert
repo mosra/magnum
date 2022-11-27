@@ -48,6 +48,19 @@
 #define const
 #endif
 
+/* Both classic uniforms and uniform buffers */
+
+#ifdef DYNAMIC_PER_VERTEX_JOINT_COUNT
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = PER_VERTEX_JOINT_COUNT_LOCATION)
+#endif
+uniform mediump uvec2 perVertexJointCount
+    #ifndef GL_ES
+    = uvec2(PER_VERTEX_JOINT_COUNT, SECONDARY_PER_VERTEX_JOINT_COUNT)
+    #endif
+    ;
+#endif
+
 /* Uniforms */
 
 #ifndef UNIFORM_BUFFERS
@@ -99,6 +112,22 @@ layout(location = 4)
 uniform highp uint textureLayer; /* defaults to zero */
 #endif
 
+#ifdef JOINT_COUNT
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = JOINT_MATRICES_LOCATION)
+#endif
+uniform mat4 jointMatrices[JOINT_COUNT]
+    #ifndef GL_ES
+    = mat4[](JOINT_MATRIX_INITIALIZER)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = PER_INSTANCE_JOINT_COUNT_LOCATION)
+#endif
+uniform uint perInstanceJointCount; /* defaults to zero */
+#endif
+
 /* Uniform buffers */
 
 #else
@@ -132,10 +161,11 @@ struct DrawUniform {
        2. Forget to actually implement and test the damn thing.
     */
     mediump mat3x4 normalMatrix;
-    highp uvec4 materialIdReservedObjectIdLightOffsetLightCountReserved;
-    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCountReserved.x
-    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCountReserved.y
-    #define draw_lightOffsetLightCount materialIdReservedObjectIdLightOffsetLightCountReserved.z
+    highp uvec4 materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount;
+    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.x
+    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.y
+    #define draw_lightOffsetLightCount materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.z
+    #define draw_jointOffsetPerInstanceJointCount materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.w
 };
 
 layout(std140
@@ -161,6 +191,16 @@ layout(std140
 ) uniform Transformation {
     highp mat4 transformationMatrices[DRAW_COUNT];
 };
+
+#ifdef JOINT_COUNT
+layout(std140
+    #ifdef EXPLICIT_BINDING
+    , binding = 6
+    #endif
+) uniform Joint {
+    highp mat4 jointMatrices[JOINT_COUNT];
+};
+#endif
 
 #ifdef TEXTURE_TRANSFORMATION
 struct TextureTransformationUniform {
@@ -226,6 +266,32 @@ in mediump vec2 textureCoordinates;
 layout(location = COLOR_ATTRIBUTE_LOCATION)
 #endif
 in lowp vec4 vertexColor;
+#endif
+
+#ifdef JOINT_COUNT
+#if PER_VERTEX_JOINT_COUNT
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = WEIGHTS_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec4 weights;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = JOINTIDS_ATTRIBUTE_LOCATION)
+#endif
+in mediump uvec4 jointIds;
+#endif
+
+#if SECONDARY_PER_VERTEX_JOINT_COUNT
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = SECONDARY_WEIGHTS_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec4 secondaryWeights;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = SECONDARY_JOINTIDS_ATTRIBUTE_LOCATION)
+#endif
+in mediump uvec4 secondaryJointIds;
+#endif
 #endif
 
 #ifdef INSTANCED_OBJECT_ID
@@ -323,12 +389,42 @@ void main() {
     highp const uint textureLayer = floatBitsToUint(textureTransformations[drawId].textureTransformation_layer);
     #endif
     #endif
+    #ifdef JOINT_COUNT
+    mediump const uint jointOffset = (draws[drawId].draw_jointOffsetPerInstanceJointCount & 0xffffu) + uint(gl_InstanceID)*(draws[drawId].draw_jointOffsetPerInstanceJointCount >> 16 & 0xffffu);
+    #endif
+    #else
+    #ifdef JOINT_COUNT
+    mediump const uint jointOffset = uint(gl_InstanceID)*perInstanceJointCount;
+    #endif
+    #endif
+
+    #ifdef JOINT_COUNT
+    mat4 skinMatrix = mat4(0.0);
+    #if PER_VERTEX_JOINT_COUNT
+    for(uint i = 0u; i != PER_VERTEX_JOINT_COUNT
+        #ifdef DYNAMIC_PER_VERTEX_JOINT_COUNT
+        && i != perVertexJointCount.x
+        #endif
+    ; ++i)
+        skinMatrix += weights[i]*jointMatrices[jointOffset + jointIds[i]];
+    #endif
+    #if SECONDARY_PER_VERTEX_JOINT_COUNT
+    for(uint i = 0u; i != SECONDARY_PER_VERTEX_JOINT_COUNT
+        #ifdef DYNAMIC_PER_VERTEX_JOINT_COUNT
+        && i != perVertexJointCount.y
+        #endif
+    ; ++i)
+        skinMatrix += secondaryWeights[i]*jointMatrices[jointOffset + secondaryJointIds[i]];
+    #endif
     #endif
 
     /* Transformed vertex position */
     highp vec4 transformedPosition4 = transformationMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
+        #endif
+        #ifdef JOINT_COUNT
+        skinMatrix*
         #endif
         position;
     #ifndef HAS_LIGHTS

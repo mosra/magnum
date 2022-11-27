@@ -57,9 +57,9 @@ struct PhongDrawUniform {
     /** @brief Construct with default parameters */
     constexpr explicit PhongDrawUniform(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}, materialId{0}, objectId{0},
         #ifndef CORRADE_TARGET_BIG_ENDIAN
-        lightOffset{0}, lightCount{0xffffu}
+        lightOffset{0}, lightCount{0xffffu}, jointOffset{0}, perInstanceJointCount{0}
         #else
-        lightCount{0xffffu}, lightOffset{0}
+        lightCount{0xffffu}, lightOffset{0}, perInstanceJointCount{0}, jointOffset{0}
         #endif
         {}
 
@@ -116,6 +116,24 @@ struct PhongDrawUniform {
     }
 
     /**
+     * @brief Set the @ref jointOffset field
+     * @return Reference to self (for method chaining)
+     */
+    PhongDrawUniform& setJointOffset(UnsignedInt offset) {
+        jointOffset = offset;
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref perInstanceJointCount field
+     * @return Reference to self (for method chaining)
+     */
+    PhongDrawUniform& setPerInstanceJointCount(UnsignedInt count) {
+        perInstanceJointCount = count;
+        return *this;
+    }
+
+    /**
      * @}
      */
 
@@ -151,10 +169,10 @@ struct PhongDrawUniform {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved */
     #endif
     #else
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved */
     UnsignedShort materialId;
     #endif
 
@@ -207,10 +225,37 @@ struct PhongDrawUniform {
     UnsignedShort lightOffset;
     #endif
 
-    /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
-       I MADE THOSE UNNAMED, YOU DUMB FOOL */
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32;
+    /** @var jointOffset
+     * @brief Joint offset
+     *
+     * Offset added to joint IDs in the @ref PhongGL::JointIds and
+     * @ref PhongGL::SecondaryJointIds attributes. Useful when a UBO with joint
+     * matrices for more than one skin is supplied or in a multi-draw scenario.
+     * Should be less than the joint count passed to
+     * @ref PhongGL::Configuration::setJointCount(). Default value is
+     * @cpp 0 @ce, meaning no offset is added to joint IDs.
+     */
+
+    /** @var perInstanceJointCount
+     * @brief Per-instance joint count
+     *
+     * Offset added to joint IDs in the @ref PhongGL::JointIds and
+     * @ref PhongGL::SecondaryJointIds atttributes in instanced draws. Should
+     * be less than the joint count passed to
+     * @ref PhongGL::Configuration::setJointCount(). Default value is
+     * @cpp 0 @ce, meaning every instance will use the same joint matrices,
+     * setting it to a non-zero value causes the joint IDs to be interpreted as
+     * @glsl gl_InstanceID*count + jointId @ce.
+     */
+
+    /* This field is an UnsignedInt in the shader and jointOffset is extracted
+       as (value & 0xffff), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    UnsignedShort jointOffset;
+    UnsignedShort perInstanceJointCount;
+    #else
+    UnsignedShort perInstanceJointCount;
+    UnsignedShort jointOffset;
     #endif
 };
 

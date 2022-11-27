@@ -90,6 +90,10 @@ void FlatTest::drawUniformConstructDefault() {
     CORRADE_COMPARE(b.materialId, 0);
     CORRADE_COMPARE(a.objectId, 0);
     CORRADE_COMPARE(b.objectId, 0);
+    CORRADE_COMPARE(a.jointOffset, 0);
+    CORRADE_COMPARE(b.jointOffset, 0);
+    CORRADE_COMPARE(a.perInstanceJointCount, 0);
+    CORRADE_COMPARE(b.perInstanceJointCount, 0);
 
     constexpr FlatDrawUniform ca;
     constexpr FlatDrawUniform cb{DefaultInit};
@@ -97,6 +101,10 @@ void FlatTest::drawUniformConstructDefault() {
     CORRADE_COMPARE(cb.materialId, 0);
     CORRADE_COMPARE(ca.objectId, 0);
     CORRADE_COMPARE(cb.objectId, 0);
+    CORRADE_COMPARE(ca.jointOffset, 0);
+    CORRADE_COMPARE(cb.jointOffset, 0);
+    CORRADE_COMPARE(ca.perInstanceJointCount, 0);
+    CORRADE_COMPARE(cb.perInstanceJointCount, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<FlatDrawUniform>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<FlatDrawUniform, DefaultInitT>::value);
@@ -110,6 +118,7 @@ void FlatTest::drawUniformConstructNoInit() {
     FlatDrawUniform a;
     a.materialId = 5;
     a.objectId = 7;
+    a.perInstanceJointCount = 9;
 
     new(&a) FlatDrawUniform{NoInit};
     {
@@ -121,6 +130,7 @@ void FlatTest::drawUniformConstructNoInit() {
         #endif
         CORRADE_COMPARE(a.materialId, 5);
         CORRADE_COMPARE(a.objectId, 7);
+        CORRADE_COMPARE(a.perInstanceJointCount, 9);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<FlatDrawUniform, NoInitT>::value);
@@ -132,17 +142,29 @@ void FlatTest::drawUniformConstructNoInit() {
 void FlatTest::drawUniformSetters() {
     FlatDrawUniform a;
     a.setMaterialId(5)
-     .setObjectId(7);
+     .setObjectId(7)
+     .setJointOffset(6)
+     .setPerInstanceJointCount(8);
     CORRADE_COMPARE(a.materialId, 5);
     CORRADE_COMPARE(a.objectId, 7);
+    CORRADE_COMPARE(a.jointOffset, 6);
+    CORRADE_COMPARE(a.perInstanceJointCount, 8);
 }
 
 void FlatTest::drawUniformMaterialIdPacking() {
     FlatDrawUniform a;
-    a.setMaterialId(13765);
+    a.setMaterialId(13765)
+     /* second 16 bits unused */
+     .setJointOffset(13767)
+     .setPerInstanceJointCount(63574);
     /* materialId should be right at the beginning, in the low 16 bits on both
        LE and BE */
     CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[0] & 0xffff, 13765);
+    /* second 16 bits unused */
+
+    /* jointOffset in the low, perInstanceJointCount in the high */
+    CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[2] & 0xffff, 13767);
+    CORRADE_COMPARE((reinterpret_cast<UnsignedInt*>(&a)[2] >> 16) & 0xffff, 63574);
 }
 
 void FlatTest::materialUniformConstructDefault() {

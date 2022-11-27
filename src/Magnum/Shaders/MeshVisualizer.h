@@ -54,7 +54,13 @@ separate @ref MeshVisualizerMaterialUniform structure, referenced by
 */
 struct MeshVisualizerDrawUniform2D {
     /** @brief Construct with default parameters */
-    constexpr explicit MeshVisualizerDrawUniform2D(DefaultInitT = DefaultInit) noexcept: materialId{0}, objectId{0} {}
+    constexpr explicit MeshVisualizerDrawUniform2D(DefaultInitT = DefaultInit) noexcept: materialId{0}, objectId{0},
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        jointOffset{0}, perInstanceJointCount{0}
+        #else
+        perInstanceJointCount{0}, jointOffset{0}
+        #endif
+        {}
 
     /** @brief Construct without initializing the contents */
     explicit MeshVisualizerDrawUniform2D(NoInitT) noexcept {}
@@ -87,6 +93,24 @@ struct MeshVisualizerDrawUniform2D {
     }
 
     /**
+     * @brief Set the @ref jointOffset field
+     * @return Reference to self (for method chaining)
+     */
+    MeshVisualizerDrawUniform2D& setJointOffset(UnsignedInt offset) {
+        jointOffset = offset;
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref perInstanceJointCount field
+     * @return Reference to self (for method chaining)
+     */
+    MeshVisualizerDrawUniform2D& setPerInstanceJointCount(UnsignedInt count) {
+        perInstanceJointCount = count;
+        return *this;
+    }
+
+    /**
      * @}
      */
 
@@ -111,10 +135,10 @@ struct MeshVisualizerDrawUniform2D {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved */
     #endif
     #else
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved */
     UnsignedShort materialId;
     #endif
 
@@ -133,10 +157,42 @@ struct MeshVisualizerDrawUniform2D {
      */
     UnsignedInt objectId;
 
+    /** @var jointOffset
+     * @brief Joint offset
+     *
+     * Offset added to joint IDs in the @ref MeshVisualizerGL2D::JointIds and
+     * @ref MeshVisualizerGL2D::SecondaryJointIds attributes. Useful when a UBO
+     * with joint matrices for more than one skin is supplied or in a
+     * multi-draw scenario. Should be less than the joint count passed to
+     * @ref MeshVisualizerGL2D::Configuration::setJointCount(). Default value
+     * is @cpp 0 @ce, meaning no offset is added to joint IDs.
+     */
+
+    /** @var perInstanceJointCount
+     * @brief Per-instance joint count
+     *
+     * Offset added to joint IDs in the @ref MeshVisualizerGL2D::JointIds and
+     * @ref MeshVisualizerGL2D::SecondaryJointIds atttributes in instanced
+     * draws. Should be less than the joint count passed to
+     * @ref MeshVisualizerGL2D::Configuration::setJointCount(). Default value
+     * is @cpp 0 @ce, meaning every instance will use the same joint matrices,
+     * setting it to a non-zero value causes the joint IDs to be interpreted as
+     * @glsl gl_InstanceID*count + jointId @ce.
+     */
+
+    /* This field is an UnsignedInt in the shader and jointOffset is extracted
+       as (value & 0xffff), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    UnsignedShort jointOffset;
+    UnsignedShort perInstanceJointCount;
+    #else
+    UnsignedShort perInstanceJointCount;
+    UnsignedShort jointOffset;
+    #endif
+
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32;
     Int:32;
     #endif
 };
@@ -153,7 +209,13 @@ shared among multiple draw calls and thus are provided in a separate
 */
 struct MeshVisualizerDrawUniform3D {
     /** @brief Construct with default parameters */
-    constexpr explicit MeshVisualizerDrawUniform3D(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}, materialId{0}, objectId{0} {}
+    constexpr explicit MeshVisualizerDrawUniform3D(DefaultInitT = DefaultInit) noexcept: normalMatrix{Math::IdentityInit}, materialId{0}, objectId{0},
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        jointOffset{0}, perInstanceJointCount{0}
+        #else
+        perInstanceJointCount{0}, jointOffset{0}
+        #endif
+        {}
 
     /** @brief Construct without initializing the contents */
     explicit MeshVisualizerDrawUniform3D(NoInitT) noexcept: normalMatrix{NoInit} {}
@@ -198,6 +260,24 @@ struct MeshVisualizerDrawUniform3D {
     }
 
     /**
+     * @brief Set the @ref jointOffset field
+     * @return Reference to self (for method chaining)
+     */
+    MeshVisualizerDrawUniform3D& setJointOffset(UnsignedInt offset) {
+        jointOffset = offset;
+        return *this;
+    }
+
+    /**
+     * @brief Set the @ref perInstanceJointCount field
+     * @return Reference to self (for method chaining)
+     */
+    MeshVisualizerDrawUniform3D& setPerInstanceJointCount(UnsignedInt count) {
+        perInstanceJointCount = count;
+        return *this;
+    }
+
+    /**
      * @}
      */
 
@@ -228,10 +308,10 @@ struct MeshVisualizerDrawUniform3D {
     /* warning: Member __pad0__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved */
     #endif
     #else
-    UnsignedShort:16; /* reserved for skinOffset */
+    UnsignedShort:16; /* reserved */
     UnsignedShort materialId;
     #endif
 
@@ -250,10 +330,42 @@ struct MeshVisualizerDrawUniform3D {
      */
     UnsignedInt objectId;
 
+    /** @var jointOffset
+     * @brief Joint offset
+     *
+     * Offset added to joint IDs in the @ref MeshVisualizerGL2D::JointIds and
+     * @ref MeshVisualizerGL2D::SecondaryJointIds attributes. Useful when a UBO
+     * with joint matrices for more than one skin is supplied or in a
+     * multi-draw scenario. Should be less than the joint count passed to
+     * @ref MeshVisualizerGL2D::Configuration::setJointCount(). Default value
+     * is @cpp 0 @ce, meaning no offset is added to joint IDs.
+     */
+
+    /** @var perInstanceJointCount
+     * @brief Per-instance joint count
+     *
+     * Offset added to joint IDs in the @ref MeshVisualizerGL2D::JointIds and
+     * @ref MeshVisualizerGL2D::SecondaryJointIds atttributes in instanced
+     * draws. Should be less than the joint count passed to
+     * @ref MeshVisualizerGL2D::Configuration::setJointCount(). Default value
+     * is @cpp 0 @ce, meaning every instance will use the same joint matrices,
+     * setting it to a non-zero value causes the joint IDs to be interpreted as
+     * @glsl gl_InstanceID*count + jointId @ce.
+     */
+
+    /* This field is an UnsignedInt in the shader and jointOffset is extracted
+       as (value & 0xffff), so the order has to be different on BE */
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    UnsignedShort jointOffset;
+    UnsignedShort perInstanceJointCount;
+    #else
+    UnsignedShort perInstanceJointCount;
+    UnsignedShort jointOffset;
+    #endif
+
     /* warning: Member __pad1__ is not documented. FFS DOXYGEN WHY DO YOU THINK
        I MADE THOSE UNNAMED, YOU DUMB FOOL */
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    Int:32;
     Int:32;
     #endif
 };

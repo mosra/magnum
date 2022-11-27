@@ -27,7 +27,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Shaders/FlatGL.h"
 
@@ -38,6 +38,10 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct FlatGL_Test: TestSuite::Tester {
     explicit FlatGL_Test();
 
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void configurationSetJointCountInvalid();
+    #endif
+
     template<UnsignedInt dimensions> void constructNoCreate();
     template<UnsignedInt dimensions> void constructCopy();
 
@@ -46,7 +50,38 @@ struct FlatGL_Test: TestSuite::Tester {
     void debugFlagsSupersets();
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+    const char* message;
+} ConfigurationSetJointCountInvalidData[] {
+    {"per-vertex joint count too large",
+        10, 5, 0,
+        "expected at most 4 per-vertex joints, got 5"},
+    {"secondary per-vertex joint count too large",
+        10, 0, 5,
+        "expected at most 4 secondary per-vertex joints, got 5"},
+    {"joint count but no per-vertex joint count",
+        10, 0, 0,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+    {"per-vertex joint count but no joint count",
+        0, 2, 0,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+    {"secondary per-vertex joint count but no joint count",
+        0, 0, 3,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+};
+#endif
+
 FlatGL_Test::FlatGL_Test() {
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests<FlatGL_Test>({
+        &FlatGL_Test::configurationSetJointCountInvalid<2>,
+        &FlatGL_Test::configurationSetJointCountInvalid<3>},
+        Containers::arraySize(ConfigurationSetJointCountInvalidData));
+    #endif
+
     addTests({&FlatGL_Test::constructNoCreate<2>,
               &FlatGL_Test::constructNoCreate<3>,
 
@@ -57,6 +92,23 @@ FlatGL_Test::FlatGL_Test() {
               &FlatGL_Test::debugFlags,
               &FlatGL_Test::debugFlagsSupersets});
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGL_Test::configurationSetJointCountInvalid() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    typename FlatGL<dimensions>::Configuration configuration;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::FlatGL::Configuration::setJointCount(): {}\n", data.message));
+}
+#endif
 
 template<UnsignedInt dimensions> void FlatGL_Test::constructNoCreate() {
     setTestCaseTemplateName(Utility::format("{}", dimensions));

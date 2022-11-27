@@ -49,6 +49,8 @@
 
 namespace Magnum { namespace Shaders {
 
+using namespace Containers::Literals;
+
 namespace {
     enum: Int {
         TextureUnit = 0,
@@ -58,13 +60,17 @@ namespace {
 
     #ifndef MAGNUM_TARGET_GLES2
     enum: Int {
-        /* Not using the zero binding to avoid conflicts with
-           ProjectionBufferBinding from other shaders which can likely stay
-           bound to the same buffer for the whole time */
+        /* Texture transformation and joints is slots 3 and 6 in all shaders so
+           haders can be switched without rebinding everything. Not using the
+           zero binding to avoid conflicts with ProjectionBufferBinding from
+           other shaders which can likely stay bound to the same buffer for the
+           whole time. */
         TransformationProjectionBufferBinding = 1,
         DrawBufferBinding = 2,
         TextureTransformationBufferBinding = 3,
-        MaterialBufferBinding = 4
+        MaterialBufferBinding = 4,
+        /* 5 unused */
+        JointBufferBinding = 6,
     };
     #endif
 }
@@ -94,6 +100,13 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         "Shaders::FlatGL: texture arrays enabled but the shader is not textured", CompileState{NoCreate});
     CORRADE_ASSERT(!(configuration.flags() & Flag::UniformBuffers) || !(configuration.flags() & Flag::TextureArrays) || configuration.flags() >= (Flag::TextureArrays|Flag::TextureTransformation),
         "Shaders::FlatGL: texture arrays require texture transformation enabled as well if uniform buffers are used", CompileState{NoCreate});
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+        "Shaders::FlatGL: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
+    CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
+        "Shaders::FlatGL: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -131,6 +144,19 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
+    FlatGL<dimensions> out{NoInit};
+    out._flags = configuration.flags();
+    #ifndef MAGNUM_TARGET_GLES2
+    out._jointCount = configuration.jointCount();
+    out._perVertexJointCount = configuration.perVertexJointCount();
+    out._secondaryPerVertexJointCount = configuration.secondaryPerVertexJointCount();
+    out._materialCount = configuration.materialCount();
+    out._drawCount = configuration.drawCount();
+    out._perInstanceJointCountUniform = out._jointMatricesUniform + configuration.jointCount();
+    out._perVertexJointCountUniform = configuration.flags() >= Flag::UniformBuffers ?
+        1 : out._perInstanceJointCountUniform + 1;
+    #endif
+
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
@@ -150,6 +176,31 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         #endif
         .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
+    #ifndef MAGNUM_TARGET_GLES2
+    if(configuration.jointCount()) {
+        vert.addSource(Utility::formatString(
+            "#define JOINT_COUNT {}\n"
+            "#define PER_VERTEX_JOINT_COUNT {}u\n"
+            "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
+            #ifndef MAGNUM_TARGET_GLES
+            "#define JOINT_MATRIX_INITIALIZER {}\n"
+            #endif
+            "#define PER_INSTANCE_JOINT_COUNT_LOCATION {}\n",
+            configuration.jointCount(),
+            configuration.perVertexJointCount(),
+            configuration.secondaryPerVertexJointCount(),
+            #ifndef MAGNUM_TARGET_GLES
+            ((dimensions == 2 ? "mat3(1.0), "_s : "mat4(1.0), "_s)*configuration.jointCount()).exceptSuffix(2),
+            #endif
+            out._perInstanceJointCountUniform));
+    }
+    if(configuration.flags() >= Flag::DynamicPerVertexJointCount) {
+        vert.addSource(Utility::formatString(
+            "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
+            "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
+            out._perVertexJointCountUniform));
+    }
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::formatString(
@@ -190,13 +241,6 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     vert.submitCompile();
     frag.submitCompile();
 
-    FlatGL<dimensions> out{NoInit};
-    out._flags = configuration.flags();
-    #ifndef MAGNUM_TARGET_GLES2
-    out._materialCount = configuration.materialCount();
-    out._drawCount = configuration.drawCount();
-    #endif
-
     out.attachShaders({vert, frag});
 
     /* ES3 has this done in the shader directly and doesn't even provide
@@ -227,6 +271,19 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
             out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
         if(configuration.flags() >= Flag::InstancedTextureOffset)
             out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Configuration::setJointCount() checks that jointCount and
+           perVertexJointCount / secondaryPerVertexJointCount are either all
+           zero or non-zero so we don't need to check for jointCount() here */
+        if(configuration.perVertexJointCount()) {
+            out.bindAttributeLocation(Weights::Location, "weights");
+            out.bindAttributeLocation(JointIds::Location, "jointIds");
+        }
+        if(configuration.secondaryPerVertexJointCount()) {
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
+        }
+        #endif
     }
     #endif
 
@@ -270,6 +327,8 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
+        if(_flags >= Flag::DynamicPerVertexJointCount)
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
         if(_flags >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
@@ -287,6 +346,12 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
             #ifndef MAGNUM_TARGET_GLES2
             if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
             #endif
+            #ifndef MAGNUM_TARGET_GLES2
+            if(_jointCount) {
+                _jointMatricesUniform = uniformLocation("jointMatrices");
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+            }
+            #endif
         }
     }
 
@@ -303,12 +368,18 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
             if(_flags & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+            if(_jointCount)
+                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
         }
         #endif
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
+    if(_flags >= Flag::DynamicPerVertexJointCount)
+        setPerVertexJointCount(_perVertexJointCount, _secondaryPerVertexJointCount);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(_flags >= Flag::UniformBuffers) {
         /* Draw offset is zero by default */
@@ -322,6 +393,12 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
         setColor(Magnum::Color4{1.0f});
         if(_flags & Flag::AlphaMask) setAlphaMask(0.5f);
         /* Object ID is zero by default */
+        #ifndef MAGNUM_TARGET_GLES2
+        if(_jointCount) {
+            setJointMatrices(Containers::Array<MatrixTypeFor<dimensions, Float>>{DirectInit, _jointCount, Math::IdentityInit});
+            /* Per-instance joint count is zero by default */
+        }
+        #endif
     }
     #endif
 }
@@ -343,6 +420,19 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags, c
 #endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(NoInitT) {}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setPerVertexJointCount(const UnsignedInt count, const UnsignedInt secondaryCount) {
+    CORRADE_ASSERT(_flags >= Flag::DynamicPerVertexJointCount,
+        "Shaders::FlatGL::setPerVertexJointCount(): the shader was not created with dynamic per-vertex joint count enabled", *this);
+    CORRADE_ASSERT(count <= _perVertexJointCount,
+        "Shaders::FlatGL::setPerVertexJointCount(): expected at most" << _perVertexJointCount << "per-vertex joints, got" << count, *this);
+    CORRADE_ASSERT(secondaryCount <= _secondaryPerVertexJointCount,
+        "Shaders::FlatGL::setPerVertexJointCount(): expected at most" << _secondaryPerVertexJointCount << "secondary per-vertex joints, got" << secondaryCount, *this);
+    setUniform(_perVertexJointCountUniform, Vector2ui{count, secondaryCount});
+    return *this;
+}
+#endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     #ifndef MAGNUM_TARGET_GLES2
@@ -402,6 +492,35 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setObje
     CORRADE_ASSERT(_flags & Flag::ObjectId,
         "Shaders::FlatGL::setObjectId(): the shader was not created with object ID enabled", *this);
     setUniform(_objectIdUniform, id);
+    return *this;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setJointMatrices(const Containers::ArrayView<const MatrixTypeFor<dimensions, Float>> matrices) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::FlatGL::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(_jointCount == matrices.size(),
+        "Shaders::FlatGL::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    return *this;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setJointMatrices(const std::initializer_list<MatrixTypeFor<dimensions, Float>> matrices) {
+    return setJointMatrices(Containers::arrayView(matrices));
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setJointMatrix(const UnsignedInt id, const MatrixTypeFor<dimensions, Float>& matrix) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::FlatGL::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
+    CORRADE_ASSERT(id < _jointCount,
+        "Shaders::FlatGL::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+    setUniform(_jointMatricesUniform + id, matrix);
+    return *this;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setPerInstanceJointCount(const UnsignedInt count) {
+    CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
+        "Shaders::FlatGL::setPerInstanceJointCount(): the shader was created with uniform buffers enabled", *this);
+    setUniform(_perInstanceJointCountUniform, count);
     return *this;
 }
 #endif
@@ -475,6 +594,20 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindMat
     buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindJointBuffer(GL::Buffer& buffer) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::FlatGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding);
+    return *this;
+}
+
+template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindJointBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
+        "Shaders::FlatGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
+    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
+    return *this;
+}
 #endif
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTexture(GL::Texture2D& texture) {
@@ -521,6 +654,21 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindObj
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> typename FlatGL<dimensions>::Configuration& FlatGL<dimensions>::Configuration::setJointCount(UnsignedInt count, UnsignedInt perVertexCount, UnsignedInt secondaryPerVertexCount) {
+    CORRADE_ASSERT(perVertexCount <= 4,
+        "Shaders::FlatGL::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
+    CORRADE_ASSERT(secondaryPerVertexCount <= 4,
+        "Shaders::FlatGL::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
+    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
+        "Shaders::FlatGL::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+    _jointCount = count;
+    _perVertexJointCount = perVertexCount;
+    _secondaryPerVertexJointCount = secondaryPerVertexCount;
+    return *this;
+}
+#endif
+
 template class MAGNUM_SHADERS_EXPORT FlatGL<2>;
 template class MAGNUM_SHADERS_EXPORT FlatGL<3>;
 
@@ -555,6 +703,7 @@ Debug& operator<<(Debug& debug, const FlatGLFlag value) {
         _c(UniformBuffers)
         _c(MultiDraw)
         _c(TextureArrays)
+        _c(DynamicPerVertexJointCount)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -583,7 +732,8 @@ Debug& operator<<(Debug& debug, const FlatGLFlags value) {
         #ifndef MAGNUM_TARGET_GLES2
         FlatGLFlag::MultiDraw, /* Superset of UniformBuffers */
         FlatGLFlag::UniformBuffers,
-        FlatGLFlag::TextureArrays
+        FlatGLFlag::TextureArrays,
+        FlatGLFlag::DynamicPerVertexJointCount,
         #endif
     });
 }

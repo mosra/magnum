@@ -183,10 +183,11 @@ uniform highp uint drawOffset
 struct DrawUniform {
     /* Can't be a mat3 because of ANGLE, see Phong.vert for details */
     mediump mat3x4 normalMatrix;
-    highp uvec4 materialIdReservedObjectIdLightOffsetLightCountReserved;
-    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCountReserved.x
-    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCountReserved.y
-    #define draw_lightOffsetLightCount materialIdReservedObjectIdLightOffsetLightCountReserved.z
+    highp uvec4 materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount;
+    #define draw_materialIdReserved materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.x
+    #define draw_objectId materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.y
+    #define draw_lightOffsetLightCount materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.z
+    #define draw_jointOffsetPerInstanceJointCount materialIdReservedObjectIdLightOffsetLightCountJointOffsetPerInstanceJointCount.w
 };
 
 layout(std140

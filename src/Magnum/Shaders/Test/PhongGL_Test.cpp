@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Shaders/PhongGL.h"
 
@@ -36,6 +37,10 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct PhongGL_Test: TestSuite::Tester {
     explicit PhongGL_Test();
 
+    #ifndef MAGNUM_TARGET_GLES2
+    void configurationSetJointCountInvalid();
+    #endif
+
     void constructNoCreate();
     void constructCopy();
 
@@ -44,7 +49,36 @@ struct PhongGL_Test: TestSuite::Tester {
     void debugFlagsSupersets();
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+    const char* message;
+} ConfigurationSetJointCountInvalidData[] {
+    {"per-vertex joint count too large",
+        10, 5, 0,
+        "expected at most 4 per-vertex joints, got 5"},
+    {"secondary per-vertex joint count too large",
+        10, 0, 5,
+        "expected at most 4 secondary per-vertex joints, got 5"},
+    {"joint count but no per-vertex joint count",
+        10, 0, 0,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+    {"per-vertex joint count but no joint count",
+        0, 2, 0,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+    {"secondary per-vertex joint count but no joint count",
+        0, 0, 3,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+};
+#endif
+
 PhongGL_Test::PhongGL_Test() {
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&PhongGL_Test::configurationSetJointCountInvalid},
+        Containers::arraySize(ConfigurationSetJointCountInvalidData));
+    #endif
+
     addTests({&PhongGL_Test::constructNoCreate,
               &PhongGL_Test::constructCopy,
 
@@ -52,6 +86,22 @@ PhongGL_Test::PhongGL_Test() {
               &PhongGL_Test::debugFlags,
               &PhongGL_Test::debugFlagsSupersets});
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGL_Test::configurationSetJointCountInvalid() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    PhongGL::Configuration configuration;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::PhongGL::Configuration::setJointCount(): {}\n", data.message));
+}
+#endif
 
 void PhongGL_Test::constructNoCreate() {
     {

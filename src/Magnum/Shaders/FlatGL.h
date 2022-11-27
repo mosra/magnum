@@ -55,7 +55,8 @@ namespace Implementation {
         #ifndef MAGNUM_TARGET_GLES2
         UniformBuffers = 1 << 8,
         MultiDraw = UniformBuffers|(1 << 9),
-        TextureArrays = 1 << 10
+        TextureArrays = 1 << 10,
+        DynamicPerVertexJointCount = 1 << 12
         #endif
     };
     typedef Containers::EnumSet<FlatGLFlag> FlatGLFlags;
@@ -142,6 +143,26 @@ will contain a sum of the per-vertex ID, texture ID and ID coming from
 @requires_webgl20 Object ID output requires integer support in shaders, which
     is not available in WebGL 1.0.
 
+@section Shaders-FlatGL-skinning Skinning
+
+To render skinned meshes, bind up to two sets of up to four-component joint ID
+and weight attributes to @ref JointIds / @ref SecondaryJointIds and
+@ref Weights / @ref SecondaryWeights, set an appropriate joint count and
+per-vertex primary and secondary joint count in
+@ref Configuration::setJointCount() and upload appropriate joint matrices with
+@ref setJointMatrices().
+
+To avoid having to compile multiple shader variants for different per-vertex
+joint counts, enable @ref Flag::DynamicPerVertexJointCount, set the maximum
+per-vertex joint count in @ref Configuration::setJointCount() and then adjust
+the actual per-draw joint count with @ref setPerVertexJointCount().
+
+@requires_gl30 Extension @gl_extension{EXT,texture_integer}
+@requires_gles30 Skinning requires integer support in shaders, which is not
+    available in OpenGL ES 2.0.
+@requires_webgl20 Skinning requires integer support in shaders, which is not
+    available in WebGL 1.0.
+
 @section Shaders-FlatGL-instancing Instanced rendering
 
 Enabling @ref Flag::InstancedTransformation will turn the shader into an
@@ -156,6 +177,12 @@ The snippet below shows adding a buffer with per-instance transformation and
 color to a mesh:
 
 @snippet MagnumShaders-gl.cpp FlatGL-usage-instancing
+
+For instanced skinning the joint buffer is assumed to contain joint
+transformations for all instances. By default all instances use the same joint
+transformations, seting @ref setPerInstanceJointCount() will cause the shader
+to offset the per-vertex joint IDs with
+@glsl gl_InstanceID*perInstanceJointCount @ce.
 
 @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
 @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
@@ -189,6 +216,17 @@ For a multidraw workflow enable @ref Flag::MultiDraw (and possibly
 texture offsets/layers for every draw. The usage is similar for all shaders,
 see @ref shaders-usage-multidraw for an example.
 
+For skinning, joint matrices are supplied via a @ref TransformationUniform2D /
+@ref TransformationUniform3D buffer bound with @ref bindJointBuffer(). In an
+instanced scenario the per-instance joint count is supplied via
+@ref FlatDrawUniform::perInstanceJointCount, a per-draw joint offset for the
+multidraw scenario is supplied via @ref FlatDrawUniform::jointOffset.
+Altogether for a particular draw, each per-vertex joint ID is offset with
+@glsl gl_InstanceID*perInstanceJointCount + jointOffset @ce. The
+@ref setPerVertexJointCount() stays as an immediate uniform in the UBO and
+multidraw scenario as well, as it is tied to a particular mesh layout and thus
+doesn't need to vary per draw.
+
 @requires_gl30 Extension @gl_extension{EXT,texture_array} for texture arrays.
 @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object} for uniform
     buffers.
@@ -207,7 +245,8 @@ see @ref shaders-usage-multidraw for an example.
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::AbstractShaderProgram {
     public:
-        class Configuration;
+        /* MSVC needs dllexport here as well */
+        class MAGNUM_SHADERS_EXPORT Configuration;
         class CompileState;
 
         /**
@@ -247,6 +286,64 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @ref Flag::VertexColor is set.
          */
         typedef typename GenericGL<dimensions>::Color4 Color4;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Joint ids
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
+         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        typedef GenericGL3D::JointIds JointIds;
+
+        /**
+         * @brief Weights
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
+         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        typedef GenericGL3D::Weights Weights;
+
+        /**
+         * @brief Secondary joint ids
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
+         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        typedef GenericGL3D::SecondaryJointIds SecondaryJointIds;
+
+        /**
+         * @brief Secondary weights
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
+         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        typedef GenericGL3D::SecondaryWeights SecondaryWeights;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -532,7 +629,30 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * @requires_webgl20 Texture arrays are not available in WebGL 1.0.
              * @m_since_latest
              */
-            TextureArrays = 1 << 10
+            TextureArrays = 1 << 10,
+
+            /**
+             * Dynamic per-vertex joint count for skinning. Uses only the first
+             * M / N primary / secondary components defined by
+             * @ref setPerVertexJointCount() instead of
+             * all primary / secondary components defined by
+             * @ref Configuration::setJointCount() at shader compilation time.
+             * Useful in order to avoid having a shader permutation defined for
+             * every possible joint count. Unfortunately it's not possible to
+             * make use of default values for unspecified input components as
+             * the last component is always @cpp 1.0 @ce instead of
+             * @cpp 0.0 @ce, on the other hand dynamically limiting the joint
+             * count can reduce the time spent executing the vertex shader
+             * compared to going through the full set of per-vertex joints
+             * always.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Skinning requires integer support in shaders,
+             *      which is not available in OpenGL ES 2.0.
+             * @requires_webgl20 Skinning requires integer support in shaders,
+             *      which is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            DynamicPerVertexJointCount = 1 << 12,
             #endif
         };
 
@@ -665,6 +785,48 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
+         * @brief Joint count
+         * @m_since_latest
+         *
+         * If @ref Flag::UniformBuffers is not set, this is the number of joint
+         * matrices accepted by @ref setJointMatrices() / @ref setJointMatrix().
+         * If @ref Flag::UniformBuffers is set, this is the statically defined
+         * size of the @ref TransformationUniform2D /
+         * @ref TransformationUniform3D uniform buffer bound with
+         * @ref bindJointBuffer().
+         * @see @ref Configuration::setJointCount()
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt jointCount() const { return _jointCount; }
+
+        /**
+         * @brief Per-vertex joint count
+         * @m_since_latest
+         *
+         * Returns the value set with @ref Configuration::setJointCount(). If
+         * @ref Flag::DynamicPerVertexJointCount is set, the count can be
+         * additionally modified per-draw using @ref setPerVertexJointCount().
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt perVertexJointCount() const { return _perVertexJointCount; }
+
+        /**
+         * @brief Secondary per-vertex joint count
+         * @m_since_latest
+         *
+         * Returns the value set with @ref Configuration::setJointCount(). If
+         * @ref Flag::DynamicPerVertexJointCount is set, the count can be
+         * additionally modified per-draw using @ref setPerVertexJointCount().
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt secondaryPerVertexJointCount() const { return _secondaryPerVertexJointCount; }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
          * @brief Material count
          * @m_since_latest
          *
@@ -693,6 +855,34 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
          */
         UnsignedInt drawCount() const { return _drawCount; }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set dynamic per-vertex skinning joint count
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Allows reducing the count of iterated joints for a particular draw
+         * call, making it possible to use a single shader with meshes that
+         * contain different count of per-vertex joints. See
+         * @ref Flag::DynamicPerVertexJointCount for more information. As the
+         * joint count is tied to the mesh layout, this is a per-draw-call
+         * setting even in case of @ref Flag::UniformBuffers instead of being
+         * a value in @ref FlatDrawUniform. Initial value is the same as
+         * @ref perVertexJointCount() and @ref secondaryPerVertexJointCount().
+         *
+         * Expects that @ref Flag::DynamicPerVertexJointCount is set,
+         * @p count is not larger than @ref perVertexJointCount() and
+         * @p secondaryCount not larger than @ref secondaryPerVertexJointCount().
+         * @see @ref Configuration::setJointCount()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders, which
+         *      is not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& setPerVertexJointCount(UnsignedInt count, UnsignedInt secondaryCount = 0);
         #endif
 
         /** @{
@@ -818,6 +1008,78 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         FlatGL<dimensions>& setObjectId(UnsignedInt id);
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set joint matrices
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Initial values are identity transformations. Expects that the size
+         * of the @p matrices array is the same as @ref jointCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TransformationUniform2D::transformationMatrix /
+         * @ref TransformationUniform3D::transformationMatrix and call
+         * @ref bindJointBuffer() instead.
+         * @see @ref setJointMatrix(UnsignedInt, const MatrixTypeFor<dimensions, Float>&)
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& setJointMatrices(const Containers::ArrayView<const MatrixTypeFor<dimensions, Float>> matrices);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        FlatGL<dimensions>& setJointMatrices(std::initializer_list<MatrixTypeFor<dimensions, Float>> matrices);
+
+        /**
+         * @brief Set joint matrix for given joint
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setJointMatrices() updates just a single joint matrix.
+         * Expects that @p id is less than @ref jointCount().
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref TransformationUniform2D::transformationMatrix /
+         * @ref TransformationUniform3D::transformationMatrix and call
+         * @ref bindJointBuffer() instead.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& setJointMatrix(UnsignedInt id, const MatrixTypeFor<dimensions, Float>& matrix);
+
+        /**
+         * @brief Set per-instance joint count
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Offset added to joint IDs in the @ref JointIds and
+         * @ref SecondaryJointIds in instanced draws. Should be less than
+         * @ref jointCount(). Initial value is @cpp 0 @ce, meaning every
+         * instance will use the same joint matrices, setting it to a non-zero
+         * value causes the joint IDs to be interpreted as
+         * @glsl gl_InstanceID*count + jointId @ce.
+         *
+         * Expects that @ref Flag::UniformBuffers is not set, in that case fill
+         * @ref FlatDrawUniform::perInstanceJointCount and call
+         * @ref bindDrawBuffer() instead.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& setPerInstanceJointCount(UnsignedInt count);
+        #endif
+
         /**
          * @}
          */
@@ -937,6 +1199,25 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         FlatGL<dimensions>& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
+         * @brief Bind a joint matrix uniform buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::UniformBuffers is set. The buffer is
+         * expected to contain @ref jointCount() instances of
+         * @ref TransformationUniform2D / @ref TransformationUniform3D.
+         * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         */
+        FlatGL<dimensions>& bindJointBuffer(GL::Buffer& buffer);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        FlatGL<dimensions>& bindJointBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
          * @}
          */
         #endif
@@ -1036,7 +1317,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _materialCount{}, _drawCount{};
+        UnsignedInt _jointCount{},
+            _perVertexJointCount{},
+            _secondaryPerVertexJointCount{},
+            _materialCount{},
+            _drawCount{};
         #endif
         Int _transformationProjectionMatrixUniform{0},
             _textureMatrixUniform{1},
@@ -1046,10 +1331,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
             _colorUniform{3},
             _alphaMaskUniform{4};
         #ifndef MAGNUM_TARGET_GLES2
-        Int _objectIdUniform{5};
-        /* Used instead of all other uniforms when Flag::UniformBuffers is set,
-           so it can alias them */
-        Int _drawOffsetUniform{0};
+        Int _objectIdUniform{5},
+            _jointMatricesUniform{6},
+            _perInstanceJointCountUniform, /* 6 + jointCount */
+            /* Used instead of all other uniforms when Flag::UniformBuffers is
+               set, so it can alias them */
+            _drawOffsetUniform{0},
+            _perVertexJointCountUniform; /* 7 + jointCount, or 1 with UBOs */
         #endif
 };
 
@@ -1059,7 +1347,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 
 @see @ref FlatGL(const Configuration&), @ref compile(const Configuration&)
 */
-template<UnsignedInt dimensions> class FlatGL<dimensions>::Configuration {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>::Configuration {
     public:
         explicit Configuration() = default;
 
@@ -1078,6 +1366,66 @@ template<UnsignedInt dimensions> class FlatGL<dimensions>::Configuration {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Joint count
+         *
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt jointCount() const { return _jointCount; }
+
+        /**
+         * @brief Per-vertex joint count
+         *
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt perVertexJointCount() const { return _perVertexJointCount; }
+
+        /**
+         *@brief Secondary per-vertex joint count
+         *
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
+        UnsignedInt secondaryPerVertexJointCount() const { return _secondaryPerVertexJointCount; }
+
+        /**
+         * @brief Set joint count
+         *
+         * If @ref Flag::UniformBuffers isn't set, @p count describes how many
+         * joint matrices get supplied to each draw by @ref setJointMatrices()
+         * / @ref setJointMatrix(). If @ref Flag::UniformBuffers is set,
+         * @p count describes size of a @ref TransformationUniform2D /
+         * @ref TransformationUniform3D buffer bound with
+         * @ref bindJointBuffer(); as uniform buffers are required to have a
+         * statically defined size. The per-vertex joints then index into the
+         * array offset by @ref FlatDrawUniform::jointOffset. If @p count is
+         * @cpp 0 @ce, skinning is not performed.
+         *
+         * The @p perVertexCount and @p secondaryPerVertexCount then describe
+         * how many components are taken from @ref JointIds / @ref Weights and
+         * @ref SecondaryJointIds / @ref SecondaryWeights attributes. Both
+         * values are expected to not be larger than @cpp 4 @ce, setting either
+         * of these to @cpp 0 @ce means given attribute is not used at all. If
+         * @p count is @cpp 0 @ce, both @p perVertexCount and
+         * @p secondaryPerVertexCount is expected to be @cpp 0 @ce as well; if
+         * @p count is non-zero at least one of @p perVertexCount and
+         * @p secondaryPerVertexCount is expected to be non-zero as well.
+         *
+         * Default value for all three is @cpp 0 @ce.
+         * @see @ref FlatGL::jointCount(), @ref FlatGL::perVertexJointCount(),
+         *      @ref FlatGL::secondaryPerVertexJointCount(),
+         *      @ref Flag::DynamicPerVertexJointCount,
+         *      @ref FlatGL::setPerVertexJointCount()
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Skinning requires integer support in shaders, which
+         *      is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Skinning requires integer support in shaders,
+         *      which is not available in WebGL 1.0.
+         */
+        Configuration& setJointCount(UnsignedInt count, UnsignedInt perVertexCount, UnsignedInt secondaryPerVertexCount = 0);
+
         /**
          * @brief Material count
          *
@@ -1144,7 +1492,10 @@ template<UnsignedInt dimensions> class FlatGL<dimensions>::Configuration {
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _materialCount = 1,
+        UnsignedInt _jointCount = 0,
+            _perVertexJointCount = 0,
+            _secondaryPerVertexJointCount = 0,
+            _materialCount = 1,
             _drawCount = 1;
         #endif
 };

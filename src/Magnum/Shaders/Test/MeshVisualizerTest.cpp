@@ -105,6 +105,10 @@ void MeshVisualizerTest::drawUniform2DConstructDefault() {
     CORRADE_COMPARE(b.materialId, 0);
     CORRADE_COMPARE(a.objectId, 0);
     CORRADE_COMPARE(b.objectId, 0);
+    CORRADE_COMPARE(a.jointOffset, 0);
+    CORRADE_COMPARE(b.jointOffset, 0);
+    CORRADE_COMPARE(a.perInstanceJointCount, 0);
+    CORRADE_COMPARE(b.perInstanceJointCount, 0);
 
     constexpr MeshVisualizerDrawUniform2D ca;
     constexpr MeshVisualizerDrawUniform2D cb{DefaultInit};
@@ -112,6 +116,10 @@ void MeshVisualizerTest::drawUniform2DConstructDefault() {
     CORRADE_COMPARE(cb.materialId, 0);
     CORRADE_COMPARE(ca.objectId, 0);
     CORRADE_COMPARE(cb.objectId, 0);
+    CORRADE_COMPARE(ca.jointOffset, 0);
+    CORRADE_COMPARE(cb.jointOffset, 0);
+    CORRADE_COMPARE(ca.perInstanceJointCount, 0);
+    CORRADE_COMPARE(cb.perInstanceJointCount, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<MeshVisualizerDrawUniform2D>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform2D, DefaultInitT>::value);
@@ -125,6 +133,7 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
     MeshVisualizerDrawUniform2D a;
     a.materialId = 73;
     a.objectId = 7;
+    a.perInstanceJointCount = 9;
 
     new(&a) MeshVisualizerDrawUniform2D{NoInit};
     {
@@ -136,6 +145,7 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
         #endif
         CORRADE_COMPARE(a.materialId, 73);
         CORRADE_COMPARE(a.objectId, 7);
+        CORRADE_COMPARE(a.perInstanceJointCount, 9);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform2D, NoInitT>::value);
@@ -147,17 +157,29 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
 void MeshVisualizerTest::drawUniform2DSetters() {
     MeshVisualizerDrawUniform2D a;
     a.setMaterialId(73)
-     .setObjectId(7);
+     .setObjectId(7)
+     .setJointOffset(6)
+     .setPerInstanceJointCount(8);
     CORRADE_COMPARE(a.materialId, 73);
     CORRADE_COMPARE(a.objectId, 7);
+    CORRADE_COMPARE(a.jointOffset, 6);
+    CORRADE_COMPARE(a.perInstanceJointCount, 8);
 }
 
 void MeshVisualizerTest::drawUniform2DMaterialIdPacking() {
     MeshVisualizerDrawUniform2D a;
-    a.setMaterialId(13765);
+    a.setMaterialId(13765)
+     /* second 16 bits unused */
+     .setJointOffset(13767)
+     .setPerInstanceJointCount(63574);
     /* materialId should be right at the beginning, in the low 16 bits on both
        LE and BE */
     CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[0] & 0xffff, 13765);
+    /* second 16 bits unused */
+
+    /* jointOffset in the low, perInstanceJointCount in the high */
+    CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[2] & 0xffff, 13767);
+    CORRADE_COMPARE((reinterpret_cast<UnsignedInt*>(&a)[2] >> 16) & 0xffff, 63574);
 }
 
 void MeshVisualizerTest::drawUniform3DConstructDefault() {
@@ -177,6 +199,10 @@ void MeshVisualizerTest::drawUniform3DConstructDefault() {
     CORRADE_COMPARE(b.materialId, 0);
     CORRADE_COMPARE(a.objectId, 0);
     CORRADE_COMPARE(b.objectId, 0);
+    CORRADE_COMPARE(a.jointOffset, 0);
+    CORRADE_COMPARE(b.jointOffset, 0);
+    CORRADE_COMPARE(a.perInstanceJointCount, 0);
+    CORRADE_COMPARE(b.perInstanceJointCount, 0);
 
     constexpr MeshVisualizerDrawUniform3D ca;
     constexpr MeshVisualizerDrawUniform3D cb{DefaultInit};
@@ -194,6 +220,10 @@ void MeshVisualizerTest::drawUniform3DConstructDefault() {
     CORRADE_COMPARE(cb.materialId, 0);
     CORRADE_COMPARE(ca.objectId, 0);
     CORRADE_COMPARE(cb.objectId, 0);
+    CORRADE_COMPARE(ca.jointOffset, 0);
+    CORRADE_COMPARE(cb.jointOffset, 0);
+    CORRADE_COMPARE(ca.perInstanceJointCount, 0);
+    CORRADE_COMPARE(cb.perInstanceJointCount, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<MeshVisualizerDrawUniform3D>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform3D, DefaultInitT>::value);
@@ -208,6 +238,7 @@ void MeshVisualizerTest::drawUniform3DConstructNoInit() {
     a.normalMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
     a.materialId = 5;
     a.objectId = 7;
+    a.perInstanceJointCount = 9;
 
     new(&a) MeshVisualizerDrawUniform3D{NoInit};
     {
@@ -220,6 +251,7 @@ void MeshVisualizerTest::drawUniform3DConstructNoInit() {
         CORRADE_COMPARE(a.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
         CORRADE_COMPARE(a.materialId, 5);
         CORRADE_COMPARE(a.objectId, 7);
+        CORRADE_COMPARE(a.perInstanceJointCount, 9);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform3D, NoInitT>::value);
@@ -232,7 +264,9 @@ void MeshVisualizerTest::drawUniform3DSetters() {
     MeshVisualizerDrawUniform3D a;
     a.setNormalMatrix(Matrix4::rotationX(90.0_degf).normalMatrix())
      .setMaterialId(5)
-     .setObjectId(7);
+     .setObjectId(7)
+     .setJointOffset(6)
+     .setPerInstanceJointCount(8);
     CORRADE_COMPARE(a.normalMatrix, (Matrix3x4{
         Vector4{1.0f,  0.0f, 0.0f, 0.0f},
         Vector4{0.0f,  0.0f, 1.0f, 0.0f},
@@ -240,14 +274,24 @@ void MeshVisualizerTest::drawUniform3DSetters() {
     }));
     CORRADE_COMPARE(a.materialId, 5);
     CORRADE_COMPARE(a.objectId, 7);
+    CORRADE_COMPARE(a.jointOffset, 6);
+    CORRADE_COMPARE(a.perInstanceJointCount, 8);
 }
 
 void MeshVisualizerTest::drawUniform3DMaterialIdPacking() {
     MeshVisualizerDrawUniform3D a;
-    a.setMaterialId(13765);
+    a.setMaterialId(13765)
+     /* second 16 bits unused */
+     .setJointOffset(13767)
+     .setPerInstanceJointCount(63574);
     /* The normalMatrix field is 3x4 floats, materialId should be right after
        in the low 16 bits on both LE and BE */
     CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[12] & 0xffff, 13765);
+    /* second 16 bits unused */
+
+    /* jointOffset in the low, perInstanceJointCount in the high */
+    CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[14] & 0xffff, 13767);
+    CORRADE_COMPARE((reinterpret_cast<UnsignedInt*>(&a)[14] >> 16) & 0xffff, 63574);
 }
 
 void MeshVisualizerTest::materialUniformConstructDefault() {

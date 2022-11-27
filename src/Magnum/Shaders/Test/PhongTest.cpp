@@ -117,6 +117,10 @@ void PhongTest::drawUniformConstructDefault() {
     CORRADE_COMPARE(b.lightOffset, 0);
     CORRADE_COMPARE(a.lightCount, 0xffffu);
     CORRADE_COMPARE(b.lightCount, 0xffffu);
+    CORRADE_COMPARE(a.jointOffset, 0);
+    CORRADE_COMPARE(b.jointOffset, 0);
+    CORRADE_COMPARE(a.perInstanceJointCount, 0);
+    CORRADE_COMPARE(b.perInstanceJointCount, 0);
 
     constexpr PhongDrawUniform ca;
     constexpr PhongDrawUniform cb{DefaultInit};
@@ -138,6 +142,10 @@ void PhongTest::drawUniformConstructDefault() {
     CORRADE_COMPARE(cb.lightOffset, 0);
     CORRADE_COMPARE(ca.lightCount, 0xffffu);
     CORRADE_COMPARE(cb.lightCount, 0xffffu);
+    CORRADE_COMPARE(ca.jointOffset, 0);
+    CORRADE_COMPARE(cb.jointOffset, 0);
+    CORRADE_COMPARE(ca.perInstanceJointCount, 0);
+    CORRADE_COMPARE(cb.perInstanceJointCount, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<PhongDrawUniform>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<PhongDrawUniform, DefaultInitT>::value);
@@ -152,6 +160,7 @@ void PhongTest::drawUniformConstructNoInit() {
     a.normalMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
     a.materialId = 5;
     a.lightCount = 7;
+    a.perInstanceJointCount = 9;
 
     new(&a) PhongDrawUniform{NoInit};
     {
@@ -164,6 +173,7 @@ void PhongTest::drawUniformConstructNoInit() {
         CORRADE_COMPARE(a.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
         CORRADE_COMPARE(a.materialId, 5);
         CORRADE_COMPARE(a.lightCount, 7);
+        CORRADE_COMPARE(a.perInstanceJointCount, 9);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<PhongDrawUniform, NoInitT>::value);
@@ -177,7 +187,9 @@ void PhongTest::drawUniformSetters() {
     a.setNormalMatrix(Matrix4::rotationX(90.0_degf).normalMatrix())
      .setMaterialId(5)
      .setObjectId(7)
-     .setLightOffsetCount(9, 13);
+     .setLightOffsetCount(9, 13)
+     .setJointOffset(6)
+     .setPerInstanceJointCount(8);
     CORRADE_COMPARE(a.normalMatrix, (Matrix3x4{
         Vector4{1.0f,  0.0f, 0.0f, 0.0f},
         Vector4{0.0f,  0.0f, 1.0f, 0.0f},
@@ -187,13 +199,17 @@ void PhongTest::drawUniformSetters() {
     CORRADE_COMPARE(a.objectId, 7);
     CORRADE_COMPARE(a.lightOffset, 9);
     CORRADE_COMPARE(a.lightCount, 13);
+    CORRADE_COMPARE(a.jointOffset, 6);
+    CORRADE_COMPARE(a.perInstanceJointCount, 8);
 }
 
 void PhongTest::drawUniformPacking() {
     PhongDrawUniform a;
     a.setMaterialId(13765)
      /* second 16 bits unused */
-     .setLightOffsetCount(13766, 63573);
+     .setLightOffsetCount(13766, 63573)
+     .setJointOffset(13767)
+     .setPerInstanceJointCount(63574);
     /* The normalMatrix field is 3x4 floats, materialId should be right after
        in the low 16 bits on both LE and BE */
     CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[12] & 0xffff, 13765);
@@ -203,6 +219,10 @@ void PhongTest::drawUniformPacking() {
        in the high */
     CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[14] & 0xffff, 13766);
     CORRADE_COMPARE((reinterpret_cast<UnsignedInt*>(&a)[14] >> 16) & 0xffff, 63573);
+
+    /* jointOffset in the low, perInstanceJointCount in the high */
+    CORRADE_COMPARE(reinterpret_cast<UnsignedInt*>(&a)[15] & 0xffff, 13767);
+    CORRADE_COMPARE((reinterpret_cast<UnsignedInt*>(&a)[15] >> 16) & 0xffff, 63574);
 }
 
 void PhongTest::materialUniformConstructDefault() {

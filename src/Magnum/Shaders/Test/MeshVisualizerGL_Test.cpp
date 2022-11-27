@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Shaders/MeshVisualizerGL.h"
 
@@ -35,6 +36,11 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
    is a common suffix used to mark tests that need a GL context. Ugly, I know. */
 struct MeshVisualizerGL_Test: TestSuite::Tester {
     explicit MeshVisualizerGL_Test();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void configurationSetJointCountInvalid2D();
+    void configurationSetJointCountInvalid3D();
+    #endif
 
     void constructNoCreate2D();
     void constructNoCreate3D();
@@ -54,7 +60,38 @@ struct MeshVisualizerGL_Test: TestSuite::Tester {
     #endif
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+    const char* message;
+} ConfigurationSetJointCountInvalidData[] {
+    {"per-vertex joint count too large",
+        10, 5, 0,
+        "expected at most 4 per-vertex joints, got 5"},
+    {"secondary per-vertex joint count too large",
+        10, 0, 5,
+        "expected at most 4 secondary per-vertex joints, got 5"},
+    {"joint count but no per-vertex joint count",
+        10, 0, 0,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+    {"per-vertex joint count but no joint count",
+        0, 2, 0,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+    {"secondary per-vertex joint count but no joint count",
+        0, 0, 3,
+        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+};
+#endif
+
 MeshVisualizerGL_Test::MeshVisualizerGL_Test() {
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({
+        &MeshVisualizerGL_Test::configurationSetJointCountInvalid2D,
+        &MeshVisualizerGL_Test::configurationSetJointCountInvalid3D},
+        Containers::arraySize(ConfigurationSetJointCountInvalidData));
+    #endif
+
     addTests({
         &MeshVisualizerGL_Test::constructNoCreate2D,
         &MeshVisualizerGL_Test::constructNoCreate3D,
@@ -74,6 +111,36 @@ MeshVisualizerGL_Test::MeshVisualizerGL_Test() {
         #endif
     });
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGL_Test::configurationSetJointCountInvalid2D() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    MeshVisualizerGL2D::Configuration configuration;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): {}\n", data.message));
+}
+
+void MeshVisualizerGL_Test::configurationSetJointCountInvalid3D() {
+    auto&& data = ConfigurationSetJointCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    MeshVisualizerGL3D::Configuration configuration;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    configuration.setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount);
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): {}\n", data.message));
+}
+#endif
 
 void MeshVisualizerGL_Test::constructNoCreate2D() {
     {

@@ -38,10 +38,10 @@ corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
 # There's an underscore between GL and Test to disambiguate from GLTest, which
 # is a common suffix used to mark tests that need a GL context. Ugly, I know.
 corrade_add_test(ShadersDistanceFieldVectorGL_Test DistanceFieldVectorGL_Test.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersFlatGL_Test FlatGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersFlatGL_Test FlatGL_Test.cpp LIBRARIES MagnumShadersTestLib)
 corrade_add_test(ShadersGenericGL_Test GenericGL_Test.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersMeshVisualizerGL_Test MeshVisualizerGL_Test.cpp LIBRARIES MagnumShaders)
-corrade_add_test(ShadersPhongGL_Test PhongGL_Test.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersMeshVisualizerGL_Test MeshVisualizerGL_Test.cpp LIBRARIES MagnumShadersTestLib)
+corrade_add_test(ShadersPhongGL_Test PhongGL_Test.cpp LIBRARIES MagnumShadersTestLib)
 corrade_add_test(ShadersVectorGL_Test VectorGL_Test.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVertexColorGL_Test VertexColorGL_Test.cpp LIBRARIES MagnumShaders)
 
@@ -127,6 +127,10 @@ if(MAGNUM_BUILD_GL_TESTS)
             TestFiles/diffuse-alpha-texture.tga
             TestFiles/diffuse-texture.tga
             TestFiles/alpha-mask1.0.tga
+            TestFiles/skinning.tga
+            TestFiles/skinning-default.tga
+            TestFiles/skinning-instanced.tga
+            TestFiles/skinning-multi.tga
 
             FlatTestFiles/colored2D.tga
             FlatTestFiles/colored3D.tga
@@ -246,7 +250,11 @@ if(MAGNUM_BUILD_GL_TESTS)
             MeshVisualizerTestFiles/multidraw-instancedobjectid2D.tga
             MeshVisualizerTestFiles/multidraw-instancedobjectid3D.tga
             MeshVisualizerTestFiles/multidraw-objectidtexture2D.tga
-            MeshVisualizerTestFiles/multidraw-objectidtexture3D.tga)
+            MeshVisualizerTestFiles/multidraw-objectidtexture3D.tga
+            MeshVisualizerTestFiles/skinning.tga
+            MeshVisualizerTestFiles/skinning-default.tga
+            MeshVisualizerTestFiles/skinning-instanced.tga
+            MeshVisualizerTestFiles/skinning-multi.tga)
     target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(MAGNUM_BUILD_PLUGINS_STATIC)
         if(MAGNUM_WITH_ANYIMAGEIMPORTER)
@@ -284,6 +292,10 @@ if(MAGNUM_BUILD_GL_TESTS)
             TestFiles/normal-texture.tga
             TestFiles/specular-texture.tga
             TestFiles/alpha-mask1.0.tga
+            TestFiles/skinning.tga
+            TestFiles/skinning-default.tga
+            TestFiles/skinning-instanced.tga
+            TestFiles/skinning-multi.tga
 
             PhongTestFiles/colored.tga
             PhongTestFiles/defaults.tga
