@@ -665,7 +665,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         constexpr explicit SceneFieldData() noexcept: _size{}, _name{}, _flags{}, _mappingType{}, _mappingStride{}, _mappingData{}, _fieldType{}, _fieldStride{}, _fieldArraySize{}, _fieldData{} {}
 
         /**
-         * @brief Type-erased constructor
+         * @brief Construct from type-erased views
          * @param name              Field name
          * @param mappingType       Object mapping type
          * @param mappingData       Object mapping data
@@ -676,9 +676,9 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param flags             Field flags.
          *      @ref SceneFieldFlag::OffsetOnly is not allowed here.
          *
-         * Expects that @p mappingData and @p fieldData have the same size,
-         * @p fieldType corresponds to @p name and @p fieldArraySize is zero
-         * for builtin fields.
+         * Expects that @p mappingData and @p fieldData have the same size; and
+         * for builtin fields that @p fieldType corresponds to @p name and
+         * @p fieldArraySize is zero.
          */
         constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, UnsignedShort fieldArraySize = 0, SceneFieldFlags flags = {}) noexcept;
 
@@ -686,7 +686,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags) noexcept: SceneFieldData{name, mappingType, mappingData, fieldType, fieldData, 0, flags} {}
 
         /**
-         * @brief Constructor
+         * @brief Construct from 2D views
          * @param name              Field name
          * @param mappingData       Object mapping data
          * @param fieldType         Field type
@@ -697,12 +697,12 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          *      @ref SceneFieldFlag::OffsetOnly is not allowed here.
          *
          * Expects that @p mappingData and @p fieldData have the same size in
-         * the first dimension, that the second dimension of @p mappingData is
+         * the first dimension; that the second dimension of @p mappingData is
          * contiguous and its size is either 1, 2, 4 or 8, corresponding to one
-         * of the @ref SceneMappingType values, that the second dimension of
+         * of the @ref SceneMappingType values; that the second dimension of
          * @p fieldData is contiguous and its size matches @p fieldType and
-         * @p fieldArraySize and that @p fieldType corresponds to @p name and
-         * @p fieldArraySize is zero for builtin attributes.
+         * @p fieldArraySize; and that for builtin fields @p fieldType
+         * corresponds to @p name and @p fieldArraySize is zero.
          */
         explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, UnsignedShort fieldArraySize = 0, SceneFieldFlags flags = {}) noexcept;
 
@@ -775,8 +775,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * Instances created this way refer to offsets in unspecified
          * external scene data instead of containing the data views directly.
          * Useful when the location of the scene data array is not known at
-         * field construction time. Expects that @p fieldType corresponds to
-         * @p name and @p fieldArraySize is zero for builtin attributes.
+         * field construction time. Expects that for builtin fields
+         * @p fieldType corresponds to @p name and @p fieldArraySize is zero.
          *
          * Note that due to the @cpp constexpr @ce nature of this constructor,
          * no @p mappingType checks against @p mappingStride or
@@ -821,7 +821,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         }
 
         /**
-         * @brief Type-erased object mapping data for an offset-only attribute
+         * @brief Type-erased object mapping data for an offset-only field
          *
          * If the field does not have @ref SceneFieldFlag::OffsetOnly set, the
          * @p data parameter is ignored.
@@ -857,7 +857,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         }
 
         /**
-         * @brief Type-erased field data for an offset-only attribute
+         * @brief Type-erased field data for an offset-only field
          *
          * If the field does not have @ref SceneFieldFlag::OffsetOnly set, the
          * @p data parameter is ignored.
@@ -1434,8 +1434,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * In case given field is an array (the euqivalent of e.g.
          * @cpp int[30] @ce), returns array size, otherwise returns @cpp 0 @ce.
          * At the moment only custom fields can be arrays, no builtin
-         * @ref SceneField is an array attribute. Note that this is different
-         * from the count of entries for given field, which is exposed through
+         * @ref SceneField is an array field. Note that this is different from
+         * the count of entries for given field, which is exposed through
          * @ref fieldSize(). See @ref Trade-SceneData-populating-custom for an
          * example.
          *
@@ -2859,7 +2859,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataFieldViewInternal(const SceneFieldData& field) const;
 
         #ifndef CORRADE_NO_ASSERT
-        template<class T> bool checkFieldTypeCompatibility(const SceneFieldData& attribute, const char* prefix) const;
+        template<class T> bool checkFieldTypeCompatibility(const SceneFieldData& field, const char* prefix) const;
         #endif
 
         MAGNUM_TRADE_LOCAL void mappingIntoInternal(UnsignedInt fieldId, std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const;
