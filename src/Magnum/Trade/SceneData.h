@@ -662,7 +662,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * initialization of the field array for @ref SceneData, expected to be
          * replaced with concrete values later.
          */
-        constexpr explicit SceneFieldData() noexcept: _size{}, _name{}, _flags{}, _mappingType{}, _mappingStride{}, _mappingData{}, _fieldType{}, _fieldStride{}, _fieldArraySize{}, _fieldData{} {}
+        constexpr explicit SceneFieldData() noexcept: _size{}, _name{}, _flags{}, _mappingType{}, _mappingStride{}, _mappingData{}, _fieldStride{}, _fieldType{}, _fieldArraySize{}, _fieldData{} {}
 
         /**
          * @brief Construct from type-erased views
@@ -891,8 +891,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         Short _mappingStride;
         Data _mappingData;
 
-        SceneFieldType _fieldType;
         Short _fieldStride;
+        SceneFieldType _fieldType;
         UnsignedShort _fieldArraySize;
         /* 2 bytes free */
         Data _fieldData;
@@ -3089,9 +3089,9 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappi
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride()), Short(mappingData.stride()))},
     _mappingData{mappingData.data()},
-    _fieldType{fieldType},
     _fieldStride{(CORRADE_CONSTEXPR_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride()), Short(fieldData.stride()))},
+    _fieldType{fieldType},
     _fieldArraySize{(CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
         "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
     _fieldData{fieldData.data()} {}
@@ -3118,9 +3118,9 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingStride >= -32768 && mappingStride <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingStride), Short(mappingStride))},
     _mappingData{mappingOffset},
-    _fieldType{fieldType},
     _fieldStride{(CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride))},
+    _fieldType{fieldType},
     _fieldArraySize{(CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
         "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
     _fieldData{fieldOffset} {}
