@@ -51,7 +51,7 @@ namespace Implementation {
 See @ref MeshData for more information.
 
 Apart from the builtin attribute names it's possible to have custom ones,
-which use the upper 15 bits of the enum range. Those are detected via
+which use the upper half of the enum range. Those are detected via
 @ref isMeshAttributeCustom() and can be converted to and from a numeric
 identifier using @ref meshAttributeCustom(MeshAttribute) and
 @ref meshAttributeCustom(UnsignedShort). Unlike the builtin ones, these can

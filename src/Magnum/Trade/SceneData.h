@@ -96,7 +96,7 @@ namespace Implementation {
 See @ref SceneData for more information.
 
 Apart from the builtin field names it's possible to have custom ones, which use
-the upper 31 bits of the enum range. While it's unlikely to have billions of
+the upper half of the enum range. While it's unlikely to have billions of
 custom fields, the enum intentionally reserves a full 31-bit range to avoid the
 need to remap field identifiers coming from 3rd party ECS frameworks, for
 example.
