@@ -30,6 +30,7 @@
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
@@ -1313,33 +1314,17 @@ void SceneDataTest::construct() {
         {NoInit, 2, radiusFieldData},
         {NoInit, 2, materialMeshRadiusMappingData},
     };
-    transformsParentFieldMappingData[0].object = 4;
-    transformsParentFieldMappingData[0].transformation = Matrix4::translation(Vector3::xAxis(5.0f));
-    transformsParentFieldMappingData[0].parent = -1;
 
-    transformsParentFieldMappingData[1].object = 2;
-    transformsParentFieldMappingData[1].transformation = Matrix4::translation(Vector3::yAxis(5.0f));
-    transformsParentFieldMappingData[1].parent = 0;
-
-    transformsParentFieldMappingData[2].object = 3;
-    transformsParentFieldMappingData[2].transformation = Matrix4::translation(Vector3::zAxis(5.0f));
-    transformsParentFieldMappingData[2].parent = 2;
-
-    transformsParentFieldMappingData[3].object = 0;
-    transformsParentFieldMappingData[3].transformation = Matrix4::translation(Vector3::yScale(5.0f));
-    transformsParentFieldMappingData[3].parent = 1;
-
-    transformsParentFieldMappingData[4].object = 1;
-    transformsParentFieldMappingData[4].transformation = Matrix4::translation(Vector3::zScale(5.0f));
-    transformsParentFieldMappingData[4].parent = -1;
-
-    meshFieldData[0] = 5;
-    radiusFieldData[0] = {37.5f, 1.5f};
-    materialMeshRadiusMappingData[0] = 2;
-
-    meshFieldData[1] = 7;
-    radiusFieldData[1] = {22.5f, 0.5f};
-    materialMeshRadiusMappingData[1] = 6;
+    Utility::copy({
+        {4, Matrix4::translation(Vector3::xAxis(5.0f)), -1},
+        {2, Matrix4::translation(Vector3::yAxis(5.0f)), 0},
+        {3, Matrix4::translation(Vector3::zAxis(5.0f)), 2},
+        {0, Matrix4::translation(Vector3::yScale(5.0f)), 1},
+        {1, Matrix4::translation(Vector3::zScale(5.0f)), -1},
+    }, transformsParentFieldMappingData);
+    Utility::copy({5, 7}, meshFieldData);
+    Utility::copy({{37.5f, 1.5f}, {22.5f, 0.5f}}, radiusFieldData);
+    Utility::copy({2, 6}, materialMeshRadiusMappingData);
 
     int importerState;
     SceneFieldData transformations{SceneField::Transformation,
@@ -1649,10 +1634,7 @@ void SceneDataTest::constructSpecialStrides() {
     };
 
     broadcastedData[0] = 15;
-    nonBroadcastedData[0] = 1;
-    nonBroadcastedData[1] = 2;
-    nonBroadcastedData[2] = 3;
-    nonBroadcastedData[3] = 4;
+    Utility::copy({1, 2, 3, 4}, nonBroadcastedData);
 
     SceneFieldData broadcastedMapping{sceneFieldCustom(38),
         broadcastedData.broadcasted<0>(4), nonBroadcastedData};
