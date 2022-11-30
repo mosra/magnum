@@ -91,12 +91,12 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
                 attribute.emplace(Shaders::GenericGL3D::Position{}, format);
                 break;
             case Trade::MeshAttribute::TextureCoordinates:
-                /** @todo have Generic2D derived from Generic that has all
+                /** @todo have GenericGL2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
                 attribute.emplace(Shaders::GenericGL2D::TextureCoordinates{}, format);
                 break;
             case Trade::MeshAttribute::Color:
-                /** @todo have Generic2D derived from Generic that has all
+                /** @todo have GenericGL2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
                 /* Pick Color4 always, the format will properly reduce it to a
                    3-component version if needed */
@@ -115,7 +115,9 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
                 break;
             #ifndef MAGNUM_TARGET_GLES2
             case Trade::MeshAttribute::ObjectId:
-                attribute.emplace(Shaders::GenericGL3D::ObjectId{}, format);
+                /** @todo have GenericGL2D derived from Generic that has all
+                    attribute definitions common for 2D and 3D */
+                attribute.emplace(Shaders::GenericGL2D::ObjectId{}, format);
                 break;
             #endif
 
