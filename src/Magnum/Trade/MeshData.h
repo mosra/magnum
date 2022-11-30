@@ -1379,7 +1379,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * In case given attribute is an array (the equivalent of e.g.
          * @cpp int[30] @ce), returns array size, otherwise returns @cpp 0 @ce.
          * At the moment only custom attributes can be arrays, no builtin
-         * @ref MeshAttribute is an array attribute. You can also use
+         * @ref MeshAttribute is an array attribute. The @p id is expected to
+         * be smaller than @ref attributeCount() const. You can also use
          * @ref attributeArraySize(MeshAttribute, UnsignedInt) const to
          * directly get array size of given named attribute.
          *
@@ -1447,22 +1448,18 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Offset of a named attribute
          *
-         * Byte offset of the first element of given named attribute from the
-         * beginning of the @ref vertexData() array. The @p id is expected to
-         * be smaller than @ref attributeCount(MeshAttribute) const.
-         * @see @ref attributeOffset(UnsignedInt) const
+         * The @p id is expected to be smaller than
+         * @ref attributeCount(MeshAttribute) const. See
+         * @ref attributeOffset(UnsignedInt) const for more information.
          */
         std::size_t attributeOffset(MeshAttribute name, UnsignedInt id = 0) const;
 
         /**
          * @brief Stride of a named attribute
          *
-         * Stride between consecutive elements of given named attribute in the
-         * @ref vertexData() array. In rare cases the stride may be zero or
-         * negative, such data layouts are however not commonly supported by
-         * GPU APIs. The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const.
-         * @see @ref attributeStride(UnsignedInt) const
+         * The @p id is expected to be smaller than
+         * @ref attributeCount(MeshAttribute) const. See
+         * @ref attributeStride(UnsignedInt) const for more information.
          */
         Short attributeStride(MeshAttribute name, UnsignedInt id = 0) const;
 
@@ -1489,7 +1486,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * such data layouts are however not commonly supported by GPU APIs.
          *
          * Use the templated overload below to get the attribute in a concrete
-         * type.
+         * type. You can also use
+         * @ref attribute(MeshAttribute, UnsignedInt) const to directly get
+         * data for given named attribute.
          * @see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},
          *      @ref vertexFormatSize(),
          *      @ref isVertexFormatImplementationSpecific()
@@ -1567,15 +1566,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Data for given named attribute
          *
          * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const. The second dimension
-         * represents the actual data type (its size is equal to format size
-         * for known @ref VertexFormat values and to attribute stride for
-         * implementation-specific values) and is guaranteed to be contiguous.
-         * In rare cases the first dimension stride may be zero or negative,
-         * such data layouts are however not commonly supported by GPU APIs.
-         *
-         * Use the templated overload below to get the attribute in a concrete
-         * type.
+         * @ref attributeCount(MeshAttribute) const. See
+         * @ref attribute(UnsignedInt) const for more information. Use the
+         * templated overload below to get the attribute in a concrete type.
          * @see @ref attribute(UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
          *      @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},

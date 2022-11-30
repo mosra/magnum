@@ -496,15 +496,16 @@ enum class SceneFieldType: UnsignedShort {
 
     /**
      * @cpp const void* @ce, type is not preserved. For convenience it's
-     * possible to retrieve the value by calling @cpp field<const T*>() @ce
-     * with an arbitrary `T` but the user has to ensure the type is correct.
+     * possible to retrieve the value by calling
+     * @ref SceneData::field() "field<const T*>()" with an arbitrary `T` but
+     * the user has to ensure the type is correct.
      */
     Pointer,
 
     /**
      * @cpp void* @ce, type is not preserved. For convenience it's possible to
-     * retrieve the value by calling @cpp field<T*>() @ce with an arbitrary `T`
-     * but the user has to ensure the type is correct.
+     * retrieve the value by calling @ref SceneData::field() "field<T*>()" with
+     * an arbitrary `T` but the user has to ensure the type is correct.
      */
     MutablePointer,
 };
@@ -783,7 +784,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @p fieldType / @p fieldArraySize checks against @p fieldStride can
          * be done. You're encouraged to use the @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, SceneFieldType, const Containers::StridedArrayView1D<const void>&, UnsignedShort, SceneFieldFlags)
          * constructor if you want additional safeguards.
-         * @see @ref flags(), @ref fieldArraySize(),
+         * @see @ref flags(), @ref fieldArraySize() const,
          *      @ref mappingData(Containers::ArrayView<const void>) const,
          *      @ref fieldData(Containers::ArrayView<const void>) const
          */
@@ -1562,6 +1563,9 @@ class MAGNUM_TRADE_EXPORT SceneData {
          *
          * The @p fieldId is expected to be smaller than @ref fieldCount() and
          * @p object smaller than @ref mappingBound().
+         *
+         * You can also use @ref hasFieldObject(SceneField, UnsignedLong) const
+         * to directly query object presence in given named field.
          */
         bool hasFieldObject(UnsignedInt fieldId, UnsignedLong object) const;
 
@@ -1606,8 +1610,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Array size of a named field
          * @m_since_latest
          *
-         * The @p name is expected to exist.
-         * @see @ref hasField(), @ref fieldArraySize(UnsignedInt) const
+         * The @p name is expected to exist. Note that this is different from
+         * the count of entries for given field, which is exposed through
+         * @ref fieldSize(SceneField) const. See @ref fieldArraySize(UnsignedInt) const
+         * for more information.
+         * @see @ref hasField()
          */
         UnsignedShort fieldArraySize(SceneField name) const;
 
@@ -1619,7 +1626,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * second dimension represents the actual data type (its size is equal
          * to @ref SceneMappingType size) and is guaranteed to be contiguous.
          * Use the templated overload below to get the mapping in a concrete
-         * type.
+         * type. You can also use @ref mapping(SceneField) const to directly
+         * get object mapping data for given named field.
          * @see @ref mutableMapping(UnsignedInt),
          *      @ref Corrade::Containers::StridedArrayView::isContiguous(),
          *      @ref sceneMappingTypeSize()
@@ -1671,14 +1679,11 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Object mapping data for given named field
          * @m_since_latest
          *
-         * The @p fieldName is expected to exist. The second dimension
-         * represents the actual data type (its size is equal to
-         * @ref SceneMappingType size) and is guaranteed to be contiguous. Use
-         * the templated overload below to get the object mapping in a concrete
+         * The @p fieldName is expected to exist. See
+         * @ref mapping(UnsignedInt) const for more information. Use the
+         * templated overload below to get the object mapping in a concrete
          * type.
-         * @see @ref hasField(), @ref mapping(UnsignedInt) const,
-         *      @ref mutableMapping(SceneField),
-         *      @ref Corrade::Containers::StridedArrayView::isContiguous()
+         * @see @ref hasField(), @ref mutableMapping(SceneField)
          */
         Containers::StridedArrayView2D<const char> mapping(SceneField fieldName) const;
 
@@ -1710,7 +1715,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * converted to the usual type, but note that these operations involve
          * extra allocation and data conversion.
          * @see @ref hasField(), @ref mapping(UnsignedInt) const,
-         *      @ref mutableMapping(UnsignedInt)
+         *      @ref mutableMapping(SceneField)
          */
         template<class T> Containers::StridedArrayView1D<const T> mapping(SceneField fieldName) const;
 
@@ -1732,7 +1737,9 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * second dimension represents the actual data type (its size is equal
          * to @ref SceneFieldType size, possibly multiplied by array size) and
          * is guaranteed to be contiguous. Use the templated overload below to
-         * get the field in a concrete type.
+         * get the field in a concrete type. You can also use
+         * @ref field(SceneField) const to directly get data for given named
+         * field.
          * @see @ref Corrade::Containers::StridedArrayView::isContiguous(),
          *      @ref sceneFieldTypeSize(), @ref mutableField(UnsignedInt)
          */
@@ -1809,14 +1816,10 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Data for given named field
          * @m_since_latest
          *
-         * The @p name is expected to exist. The second dimension represents
-         * the actual data type (its size is equal to @ref SceneFieldType size,
-         * possibly multiplied by array size) and is guaranteed to be
-         * contiguous. Use the templated overload below to get the field in a
-         * concrete type.
-         * @see @ref hasField(), @ref field(UnsignedInt) const,
-         *      @ref mutableField(SceneField),
-         *      @ref Corrade::Containers::StridedArrayView::isContiguous()
+         * The @p name is expected to exist. See @ref field(UnsignedInt) const
+         * for more information. Use the templated overload below to get the
+         * field in a concrete type.
+         * @see @ref hasField(), @ref mutableField(SceneField)
          */
         Containers::StridedArrayView2D<const char> field(SceneField name) const;
 
@@ -1848,7 +1851,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref importerStateAsArray() accessors to get common fields converted
          * to usual types, but note that these operations involve extra
          * allocation and data conversion.
-         * @see @ref field(UnsignedInt) const, @ref mutableField(SceneField)
+         * @see @ref hasField(), @ref field(UnsignedInt) const,
+         *      @ref mutableField(SceneField)
          */
         template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> field(SceneField name) const;
 
@@ -2828,7 +2832,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
            be then passed to fieldData{Mapping,Field}ViewInternal(). */
         MAGNUM_TRADE_LOCAL std::size_t findFieldObjectOffsetInternal(const SceneFieldData& field, UnsignedLong object, std::size_t offset) const;
 
-        /* Like objects() / field(), but returning just a 1D view, sliced from
+        /* Like mapping() / field(), but returning just a 1D view, sliced from
            offset to offset + size. The parameterless overloads are equal to
            offset = 0 and size = field.size(). */
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataMappingViewInternal(const SceneFieldData& field, std::size_t offset, std::size_t size) const;
