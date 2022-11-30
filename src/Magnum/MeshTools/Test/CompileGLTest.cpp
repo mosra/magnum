@@ -1407,9 +1407,10 @@ void CompileGLTest::externalBuffersInvalid() {
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedInt, nullptr},
         {}};
 
+    compile(data, GL::Buffer{NoCreate}, GL::Buffer{}); /* this is okay */
+
     std::ostringstream out;
     Error redirectError{&out};
-    compile(data, GL::Buffer{NoCreate}, GL::Buffer{}); /* this is okay */
     compile(data, GL::Buffer{NoCreate}, GL::Buffer{NoCreate});
     compile(indexedData, GL::Buffer{NoCreate}, GL::Buffer{});
     CORRADE_COMPARE(out.str(),
