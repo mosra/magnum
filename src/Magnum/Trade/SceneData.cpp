@@ -531,6 +531,38 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
     CORRADE_ASSERT(fieldData.isContiguous<1>(), "Trade::SceneFieldData: second field view dimension is not contiguous", );
 }
 
+Containers::StridedArrayView1D<const void> SceneFieldData::mappingData() const {
+    CORRADE_ASSERT(!(_flags & SceneFieldFlag::OffsetOnly),
+        "Trade::SceneFieldData::mappingData(): the field is offset-only, supply a data array", {});
+    return Containers::StridedArrayView1D<const void>{
+        /* We're *sure* the view is correct, so faking the view size */
+        /** @todo better ideas for the StridedArrayView API? */
+        {_mappingData.pointer, ~std::size_t{}}, _size, _mappingStride};
+}
+
+Containers::StridedArrayView1D<const void> SceneFieldData::mappingData(const Containers::ArrayView<const void> data) const {
+    return Containers::StridedArrayView1D<const void>{
+        /* We're *sure* the view is correct, so faking the view size */
+        /** @todo better ideas for the StridedArrayView API? */
+        data, _flags & SceneFieldFlag::OffsetOnly ? static_cast<const char*>(data.data()) + _mappingData.offset : _mappingData.pointer, _size, _mappingStride};
+}
+
+Containers::StridedArrayView1D<const void> SceneFieldData::fieldData() const {
+    CORRADE_ASSERT(!(_flags & SceneFieldFlag::OffsetOnly),
+        "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array", {});
+    return Containers::StridedArrayView1D<const void>{
+        /* We're *sure* the view is correct, so faking the view size */
+        /** @todo better ideas for the StridedArrayView API? */
+        {_fieldData.pointer, ~std::size_t{}}, _size, _fieldStride};
+}
+
+Containers::StridedArrayView1D<const void> SceneFieldData::fieldData(const Containers::ArrayView<const void> data) const {
+    return Containers::StridedArrayView1D<const void>{
+        /* We're *sure* the view is correct, so faking the view size */
+        /** @todo better ideas for the StridedArrayView API? */
+        data, _flags & SceneFieldFlag::OffsetOnly ? static_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _size, _fieldStride};
+}
+
 Containers::Array<SceneFieldData> sceneFieldDataNonOwningArray(const Containers::ArrayView<const SceneFieldData> view) {
     return Containers::Array<SceneFieldData>{const_cast<SceneFieldData*>(view.data()), view.size(), Implementation::nonOwnedArrayDeleter};
 }

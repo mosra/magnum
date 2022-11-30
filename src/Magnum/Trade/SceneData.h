@@ -812,13 +812,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * overload instead.
          * @see @ref flags()
          */
-        constexpr Containers::StridedArrayView1D<const void> mappingData() const {
-            return Containers::StridedArrayView1D<const void>{
-                /* We're *sure* the view is correct, so faking the view size */
-                /** @todo better ideas for the StridedArrayView API? */
-                {_mappingData.pointer, ~std::size_t{}}, _size,
-                (CORRADE_CONSTEXPR_ASSERT(!(_flags & SceneFieldFlag::OffsetOnly), "Trade::SceneFieldData::mappingData(): the field is offset-only, supply a data array"), _mappingStride)};
-        }
+        Containers::StridedArrayView1D<const void> mappingData() const;
 
         /**
          * @brief Type-erased object mapping data for an offset-only field
@@ -827,12 +821,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @p data parameter is ignored.
          * @see @ref flags(), @ref mappingData() const
          */
-        Containers::StridedArrayView1D<const void> mappingData(Containers::ArrayView<const void> data) const {
-            return Containers::StridedArrayView1D<const void>{
-                /* We're *sure* the view is correct, so faking the view size */
-                /** @todo better ideas for the StridedArrayView API? */
-                data, _flags & SceneFieldFlag::OffsetOnly ? reinterpret_cast<const char*>(data.data()) + _mappingData.offset : _mappingData.pointer, _size, _mappingStride};
-        }
+        Containers::StridedArrayView1D<const void> mappingData(Containers::ArrayView<const void> data) const;
 
         /** @brief Field type */
         constexpr SceneFieldType fieldType() const { return _fieldType; }
@@ -848,13 +837,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * overload instead.
          * @see @ref flags()
          */
-        constexpr Containers::StridedArrayView1D<const void> fieldData() const {
-            return Containers::StridedArrayView1D<const void>{
-                /* We're *sure* the view is correct, so faking the view size */
-                /** @todo better ideas for the StridedArrayView API? */
-                {_fieldData.pointer, ~std::size_t{}}, _size,
-                (CORRADE_CONSTEXPR_ASSERT(!(_flags & SceneFieldFlag::OffsetOnly), "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array"), _fieldStride)};
-        }
+        Containers::StridedArrayView1D<const void> fieldData() const;
 
         /**
          * @brief Type-erased field data for an offset-only field
@@ -863,12 +846,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @p data parameter is ignored.
          * @see @ref flags(), @ref fieldData() const
          */
-        Containers::StridedArrayView1D<const void> fieldData(Containers::ArrayView<const void> data) const {
-            return Containers::StridedArrayView1D<const void>{
-                /* We're *sure* the view is correct, so faking the view size */
-                /** @todo better ideas for the StridedArrayView API? */
-                data, _flags & SceneFieldFlag::OffsetOnly ? reinterpret_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _size, _fieldStride};
-        }
+        Containers::StridedArrayView1D<const void> fieldData(Containers::ArrayView<const void> data) const;
 
     private:
         friend SceneData;

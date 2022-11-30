@@ -816,21 +816,22 @@ void SceneDataTest::constructField() {
     constexpr SceneField name = crotations.name();
     constexpr SceneFieldFlags flags = crotations.flags();
     constexpr SceneMappingType mappingType = crotations.mappingType();
-    constexpr Containers::StridedArrayView1D<const void> mappingData = crotations.mappingData();
     constexpr SceneFieldType fieldType = crotations.fieldType();
     constexpr UnsignedShort fieldArraySize = crotations.fieldArraySize();
-    constexpr Containers::StridedArrayView1D<const void> fieldData = crotations.fieldData();
     CORRADE_COMPARE(name, SceneField::Rotation);
     CORRADE_COMPARE(flags, SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedShort);
-    CORRADE_COMPARE(mappingData.size(), 3);
-    CORRADE_COMPARE(mappingData.stride(), sizeof(UnsignedShort));
-    CORRADE_COMPARE(mappingData.data(), RotationMapping2D);
     CORRADE_COMPARE(fieldType, SceneFieldType::Complexd);
     CORRADE_COMPARE(fieldArraySize, 0);
-    CORRADE_COMPARE(fieldData.size(), 3);
-    CORRADE_COMPARE(fieldData.stride(), sizeof(Complexd));
-    CORRADE_COMPARE(fieldData.data(), RotationField2D);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(crotations.mappingData().size(), 3);
+    CORRADE_COMPARE(crotations.mappingData().stride(), sizeof(UnsignedShort));
+    CORRADE_COMPARE(crotations.mappingData().data(), RotationMapping2D);
+    CORRADE_COMPARE(crotations.fieldData().size(), 3);
+    CORRADE_COMPARE(crotations.fieldData().stride(), sizeof(Complexd));
+    CORRADE_COMPARE(crotations.fieldData().data(), RotationField2D);
     #endif
 }
 
