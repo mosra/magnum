@@ -2991,6 +2991,15 @@ namespace Implementation {
         }
     };
 
+    /* Used by field<T>(). Delegates to SceneFieldTypeFor by default, types
+       that can work with multiple SceneFieldType values have a
+       specialization. */
+    template<class T> struct SceneFieldTypeTraits {
+        constexpr static bool isCompatible(SceneFieldType type) {
+            return type == SceneFieldTypeFor<T>::type();
+        }
+    };
+
     template<class T> constexpr SceneMappingType sceneMappingTypeFor() {
         static_assert(sizeof(T) == 0, "unsupported mapping type");
         return {};
@@ -3149,7 +3158,7 @@ template<class T> Containers::StridedArrayView1D<T> SceneData::mutableMapping(co
 
 #ifndef CORRADE_NO_ASSERT
 template<class T> bool SceneData::checkFieldTypeCompatibility(const SceneFieldData& field, const char* const prefix) const {
-    CORRADE_ASSERT(Implementation::SceneFieldTypeFor<typename std::remove_extent<T>::type>::type() == field._fieldType,
+    CORRADE_ASSERT(Implementation::SceneFieldTypeTraits<typename std::remove_extent<T>::type>::isCompatible(field._fieldType),
         prefix << field._name << "is" << field._fieldType << "but requested a type equivalent to" << Implementation::SceneFieldTypeFor<typename std::remove_extent<T>::type>::type(), false);
     if(field._fieldArraySize) CORRADE_ASSERT(std::is_array<T>::value,
         prefix << field._name << "is an array field, use T[] to access it", false);
