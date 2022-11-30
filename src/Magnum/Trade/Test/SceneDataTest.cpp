@@ -794,22 +794,22 @@ void SceneDataTest::constructField() {
     CORRADE_COMPARE(rotations.mappingType(), SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(rotations.mappingData().size(), 3);
     CORRADE_COMPARE(rotations.mappingData().stride(), sizeof(UnsignedShort));
-    CORRADE_VERIFY(rotations.mappingData().data() == rotationMappingData);
+    CORRADE_COMPARE(rotations.mappingData().data(), rotationMappingData);
     CORRADE_COMPARE(rotations.fieldType(), SceneFieldType::Complexd);
     CORRADE_COMPARE(rotations.fieldArraySize(), 0);
     CORRADE_COMPARE(rotations.fieldData().size(), 3);
     CORRADE_COMPARE(rotations.fieldData().stride(), sizeof(Complexd));
-    CORRADE_VERIFY(rotations.fieldData().data() == rotationFieldData);
+    CORRADE_COMPARE(rotations.fieldData().data(), rotationFieldData);
 
     /* This is allowed too for simplicity, the parameter has to be large enough
        tho */
     char someArray[3*sizeof(Complexd)];
-    CORRADE_COMPARE(rotations.fieldData(someArray).size(), 3);
-    CORRADE_COMPARE(rotations.fieldData(someArray).stride(), sizeof(Complexd));
-    CORRADE_VERIFY(rotations.fieldData(someArray).data() == rotationFieldData);
     CORRADE_COMPARE(rotations.mappingData(someArray).size(), 3);
     CORRADE_COMPARE(rotations.mappingData(someArray).stride(), sizeof(UnsignedShort));
-    CORRADE_VERIFY(rotations.mappingData(someArray).data() == rotationMappingData);
+    CORRADE_COMPARE(rotations.mappingData(someArray).data(), rotationMappingData);
+    CORRADE_COMPARE(rotations.fieldData(someArray).size(), 3);
+    CORRADE_COMPARE(rotations.fieldData(someArray).stride(), sizeof(Complexd));
+    CORRADE_COMPARE(rotations.fieldData(someArray).data(), rotationFieldData);
 
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Won't bother anymore */
     constexpr SceneFieldData crotations{SceneField::Rotation, Containers::arrayView(RotationMapping2D), Containers::arrayView(RotationField2D), SceneFieldFlag::ImplicitMapping};
