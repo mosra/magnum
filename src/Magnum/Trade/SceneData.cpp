@@ -640,7 +640,11 @@ namespace {
 inline Long extractStringFieldOffset(const UnsignedLong strideOffset) {
     union {
         struct {
-            Short:16;
+            Short
+                #ifdef CORRADE_MSVC2015_COMPATIBILITY
+                _dummy /* "error C2059: syntax error: ':'" otherwise, heh */
+                #endif
+                :16;
             Long offset:48;
         } s;
         UnsignedLong u;
