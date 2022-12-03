@@ -3652,7 +3652,9 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappi
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
     _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)),
         "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)) << "for a view of" << fieldType), flags)},
-    _mappingTypeStringType{UnsignedByte(mappingType)},
+    /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
+       set but not used" */
+    _mappingTypeStringType(UnsignedByte(mappingType)),
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride()), Short(mappingData.stride()))},
     _mappingData{mappingData.data()},
@@ -3704,7 +3706,9 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
     _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::NullTerminatedString),
         "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::NullTerminatedString) << "for" << fieldType), flags|SceneFieldFlag::OffsetOnly)},
-    _mappingTypeStringType{UnsignedByte(mappingType)},
+    /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
+       set but not used" */
+    _mappingTypeStringType(UnsignedByte(mappingType)),
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingStride >= -32768 && mappingStride <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingStride), Short(mappingStride))},
     _mappingData{mappingOffset},
