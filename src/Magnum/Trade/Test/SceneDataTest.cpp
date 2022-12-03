@@ -27,6 +27,7 @@
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -76,21 +77,30 @@ struct SceneDataTest: TestSuite::Tester {
     void constructField();
     void constructFieldDefault();
     void constructFieldCustom();
+    void constructFieldString();
+    void constructFieldStringNegativeStride();
+    void constructFieldStringNegativeOffset();
     void constructField2D();
+    void constructField2DString();
     void constructFieldTypeErased();
+    void constructFieldTypeErasedString();
     void constructFieldNonOwningArray();
     void constructFieldOffsetOnly();
+    void constructFieldOffsetOnlyString();
+    void constructFieldOffsetOnlyStringNegativeStride();
     void constructFieldArray();
     void constructFieldArray2D();
     void constructFieldArrayTypeErased();
     void constructFieldArrayOffsetOnly();
 
     void constructFieldWrongType();
+    void constructFieldWrongTypeString();
     void constructFieldInconsistentViewSize();
     void constructFieldTooLargeMappingStride();
     void constructFieldTooLargeFieldStride();
-    void constructFieldOffsetOnlyNotAllowed();
+    void constructFieldFlagNotAllowed();
     void constructFieldWrongDataAccess();
+    void constructFieldWrongStringDataAccess();
     void constructField2DWrongSize();
     void constructField2DNonContiguous();
     void constructFieldArrayNonContiguous();
@@ -103,6 +113,7 @@ struct SceneDataTest: TestSuite::Tester {
     void constructZeroObjects();
     void constructSpecialStrides();
     void constructNotOwned();
+    template<class T> void constructString();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void constructDeprecated();
     void constructDeprecatedBoth2DAnd3D();
@@ -113,6 +124,7 @@ struct SceneDataTest: TestSuite::Tester {
     void constructInconsistentMappingType();
     void constructMappingDataNotContained();
     void constructFieldDataNotContained();
+    void constructStringDataNotContained();
     void constructMappingTypeTooSmall();
     void constructNotOwnedFlagOwned();
     void constructMismatchedTRSViews();
@@ -372,21 +384,30 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructField,
               &SceneDataTest::constructFieldDefault,
               &SceneDataTest::constructFieldCustom,
+              &SceneDataTest::constructFieldString,
+              &SceneDataTest::constructFieldStringNegativeStride,
+              &SceneDataTest::constructFieldStringNegativeOffset,
               &SceneDataTest::constructField2D,
+              &SceneDataTest::constructField2DString,
               &SceneDataTest::constructFieldTypeErased,
+              &SceneDataTest::constructFieldTypeErasedString,
               &SceneDataTest::constructFieldNonOwningArray,
               &SceneDataTest::constructFieldOffsetOnly,
+              &SceneDataTest::constructFieldOffsetOnlyString,
+              &SceneDataTest::constructFieldOffsetOnlyStringNegativeStride,
               &SceneDataTest::constructFieldArray,
               &SceneDataTest::constructFieldArray2D,
               &SceneDataTest::constructFieldArrayTypeErased,
               &SceneDataTest::constructFieldArrayOffsetOnly,
 
               &SceneDataTest::constructFieldWrongType,
+              &SceneDataTest::constructFieldWrongTypeString,
               &SceneDataTest::constructFieldInconsistentViewSize,
               &SceneDataTest::constructFieldTooLargeMappingStride,
               &SceneDataTest::constructFieldTooLargeFieldStride,
-              &SceneDataTest::constructFieldOffsetOnlyNotAllowed,
+              &SceneDataTest::constructFieldFlagNotAllowed,
               &SceneDataTest::constructFieldWrongDataAccess,
+              &SceneDataTest::constructFieldWrongStringDataAccess,
               &SceneDataTest::constructField2DWrongSize,
               &SceneDataTest::constructField2DNonContiguous,
               &SceneDataTest::constructFieldArrayNonContiguous,
@@ -402,6 +423,12 @@ SceneDataTest::SceneDataTest() {
     addInstancedTests({&SceneDataTest::constructNotOwned},
         Containers::arraySize(NotOwnedData));
 
+    addTests<SceneDataTest>({
+        &SceneDataTest::constructString<UnsignedByte>,
+        &SceneDataTest::constructString<UnsignedShort>,
+        &SceneDataTest::constructString<UnsignedInt>,
+        &SceneDataTest::constructString<UnsignedLong>});
+
     #ifdef MAGNUM_BUILD_DEPRECATED
     addInstancedTests({&SceneDataTest::constructDeprecated},
         Containers::arraySize(ChildrenDeprecatedData));
@@ -414,6 +441,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructInconsistentMappingType,
               &SceneDataTest::constructMappingDataNotContained,
               &SceneDataTest::constructFieldDataNotContained,
+              &SceneDataTest::constructStringDataNotContained,
               &SceneDataTest::constructMappingTypeTooSmall,
               &SceneDataTest::constructNotOwnedFlagOwned,
               &SceneDataTest::constructMismatchedTRSViews,
@@ -577,6 +605,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::releaseData});
 }
 
+using namespace Containers::Literals;
 using namespace Math::Literals;
 
 void SceneDataTest::mappingTypeSizeAlignment() {
@@ -817,13 +846,13 @@ void SceneDataTest::constructField() {
     constexpr SceneField name = crotations.name();
     constexpr SceneFieldFlags flags = crotations.flags();
     constexpr SceneMappingType mappingType = crotations.mappingType();
-    constexpr SceneFieldType fieldType = crotations.fieldType();
-    constexpr UnsignedShort fieldArraySize = crotations.fieldArraySize();
     CORRADE_COMPARE(name, SceneField::Rotation);
     CORRADE_COMPARE(flags, SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedShort);
-    CORRADE_COMPARE(fieldType, SceneFieldType::Complexd);
-    CORRADE_COMPARE(fieldArraySize, 0);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldString()) */
+    CORRADE_COMPARE(crotations.fieldType(), SceneFieldType::Complexd);
+    CORRADE_COMPARE(crotations.fieldArraySize(), 0);
     /* These are deliberately not constexpr to save header size a bit --
        compared to SceneField APIs they get used very little and it's mostly
        useless in a constexpr context anyway */
@@ -862,6 +891,105 @@ void SceneDataTest::constructFieldCustom() {
     CORRADE_VERIFY(ranges.fieldData().data() == rangeFieldData);
 }
 
+void SceneDataTest::constructFieldString() {
+    const UnsignedLong nameMappingData[3]{};
+
+    /* The string data is after the field data so the stored offset is
+       positive. Needs to be put into a struct as otherwise the compiler may
+       reorder it however it wants. Negative offset is tested in
+       constructFieldStringNegativeOffset() below. */
+    const struct {
+        Containers::Pair<UnsignedShort, UnsignedShort> nameField[3];
+        char nameString[15];
+    } data{};
+    CORRADE_VERIFY(static_cast<const void*>(data.nameString) > static_cast<const void*>(data.nameField));
+
+    SceneFieldData names{sceneFieldCustom(25), Containers::arrayView(nameMappingData), data.nameString, SceneFieldType::StringRange16, Containers::arrayView(data.nameField), SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(names.flags(), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(names.name(), sceneFieldCustom(25));
+    CORRADE_COMPARE(names.size(), 3);
+    CORRADE_COMPARE(names.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(names.mappingData().size(), 3);
+    CORRADE_COMPARE(names.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(names.mappingData().data(), nameMappingData);
+    CORRADE_COMPARE(names.fieldType(), SceneFieldType::StringRange16);
+    CORRADE_COMPARE(names.fieldArraySize(), 0);
+    CORRADE_COMPARE(names.fieldData().size(), 3);
+    CORRADE_COMPARE(names.fieldData().stride(), sizeof(Containers::Pair<UnsignedShort, UnsignedShort>));
+    CORRADE_COMPARE(names.fieldData().data(), data.nameField);
+    CORRADE_COMPARE(names.stringData(), static_cast<const void*>(data.nameString));
+
+    /* This is allowed too for simplicity, the parameter has to be large enough
+       tho */
+    char someArray[3*sizeof(UnsignedLong)];
+    CORRADE_COMPARE(names.mappingData(someArray).size(), 3);
+    CORRADE_COMPARE(names.mappingData(someArray).stride(), sizeof(UnsignedLong));
+    CORRADE_VERIFY(names.mappingData(someArray).data() == nameMappingData);
+    CORRADE_COMPARE(names.fieldData(someArray).size(), 3);
+    CORRADE_COMPARE(names.fieldData(someArray).stride(), sizeof(Containers::Pair<UnsignedShort, UnsignedShort>));
+    CORRADE_COMPARE(names.fieldData(someArray).data(), data.nameField);
+    CORRADE_COMPARE(names.stringData(someArray), static_cast<const void*>(data.nameString));
+}
+
+void SceneDataTest::constructFieldStringNegativeStride() {
+    const UnsignedLong nameMappingData[3]{};
+
+    /* The string data is after the field data so the stored offset is
+       positive. Needs to be put into a struct as otherwise the compiler may
+       reorder it however it wants. Negative offset is tested in
+       constructFieldStringNegativeOffset() below. */
+    const struct {
+        UnsignedInt nameField[3];
+        char nameString[15];
+    } data{};
+    CORRADE_VERIFY(static_cast<const void*>(data.nameString) > static_cast<const void*>(data.nameField));
+
+    SceneFieldData names{sceneFieldCustom(25), Containers::arrayView(nameMappingData), data.nameString, SceneFieldType::StringRangeNullTerminated32, Containers::stridedArrayView(data.nameField).flipped<0>(), SceneFieldFlag::OrderedMapping};
+    /* NullTerminatedString added implicitly for this type */
+    CORRADE_COMPARE(names.flags(), SceneFieldFlag::OrderedMapping|SceneFieldFlag::NullTerminatedString);
+
+    /* Testing only the properties related to the stride/offset unpack */
+    CORRADE_COMPARE(names.fieldData().size(), 3);
+    CORRADE_COMPARE(names.fieldData().stride(), -sizeof(UnsignedInt));
+    CORRADE_COMPARE(names.fieldData().data(), data.nameField + 2);
+    CORRADE_COMPARE(names.stringData(), static_cast<const void*>(data.nameString));
+
+    /* This is a separate code path, but should do the same */
+    char someArray[3*sizeof(UnsignedLong)];
+    CORRADE_COMPARE(names.fieldData(someArray).size(), 3);
+    CORRADE_COMPARE(names.fieldData(someArray).stride(), -sizeof(UnsignedInt));
+    CORRADE_COMPARE(names.fieldData(someArray).data(), data.nameField + 2);
+    CORRADE_COMPARE(names.stringData(someArray), static_cast<const void*>(data.nameString));
+}
+
+void SceneDataTest::constructFieldStringNegativeOffset() {
+    const UnsignedLong nameMappingData[3]{};
+
+    /* Compared to constructFieldString(), the string data is before the field
+       data so the stored offset is negative. Needd to be put into a struct as
+       otherwise the compiler may reorder it however it wants. */
+    const struct {
+        char nameString[15];
+        Containers::Pair<UnsignedShort, UnsignedShort> nameField[3];
+    } data{};
+    CORRADE_VERIFY(static_cast<const void*>(data.nameString) < static_cast<const void*>(data.nameField));
+
+    SceneFieldData names{sceneFieldCustom(25), Containers::arrayView(nameMappingData), data.nameString, SceneFieldType::StringRange16, Containers::arrayView(data.nameField), SceneFieldFlag::NullTerminatedString|SceneFieldFlag::OrderedMapping};
+
+    /* Testing only the properties related to the stride/offset unpack */
+    CORRADE_COMPARE(names.fieldData().size(), 3);
+    CORRADE_COMPARE(names.fieldData().stride(), sizeof(Containers::Pair<UnsignedShort, UnsignedShort>));
+    CORRADE_COMPARE(names.fieldData().data(), data.nameField);
+    CORRADE_COMPARE(names.stringData(), static_cast<const void*>(data.nameString));
+
+    /* This is a separate code path, but should do the same */
+    char someArray[3*sizeof(UnsignedLong)];
+    CORRADE_COMPARE(names.fieldData(someArray).size(), 3);
+    CORRADE_COMPARE(names.fieldData(someArray).stride(), sizeof(Containers::Pair<UnsignedShort, UnsignedShort>));
+    CORRADE_COMPARE(names.fieldData(someArray).data(), data.nameField);
+    CORRADE_COMPARE(names.stringData(someArray), static_cast<const void*>(data.nameString));
+}
+
 void SceneDataTest::constructField2D() {
     char rotationMappingData[6*sizeof(UnsignedShort)];
     char rotationFieldData[6*sizeof(Complexd)];
@@ -883,6 +1011,29 @@ void SceneDataTest::constructField2D() {
     CORRADE_COMPARE(rotations.fieldData().data(), rotationFieldView.data());
 }
 
+void SceneDataTest::constructField2DString() {
+    char nameMappingData[6*sizeof(UnsignedLong)]{};
+    char nameFieldData[6*sizeof(Containers::Pair<UnsignedShort, UnsignedShort>)]{};
+    auto nameMappingView = Containers::StridedArrayView2D<char>{nameMappingData, {6, sizeof(UnsignedLong)}}.every(2);
+    auto nameFieldView = Containers::StridedArrayView2D<char>{nameFieldData, {6, sizeof(Containers::Pair<UnsignedShort, UnsignedShort>)}}.every(2);
+    const char nameStringData[15]{};
+
+    SceneFieldData names{sceneFieldCustom(25), nameMappingView, nameStringData, SceneFieldType::StringRange16, nameFieldView, SceneFieldFlag::NullTerminatedString|SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(names.flags(), SceneFieldFlag::OrderedMapping|SceneFieldFlag::NullTerminatedString);
+    CORRADE_COMPARE(names.name(), sceneFieldCustom(25));
+    CORRADE_COMPARE(names.size(), 3);
+    CORRADE_COMPARE(names.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(names.mappingData().size(), 3);
+    CORRADE_COMPARE(names.mappingData().stride(), 2*sizeof(UnsignedLong));
+    CORRADE_COMPARE(names.mappingData().data(), nameMappingView.data());
+    CORRADE_COMPARE(names.fieldType(), SceneFieldType::StringRange16);
+    CORRADE_COMPARE(names.fieldArraySize(), 0);
+    CORRADE_COMPARE(names.fieldData().size(), 3);
+    CORRADE_COMPARE(names.fieldData().stride(), 2*sizeof(UnsignedShort)*2);
+    CORRADE_COMPARE(names.fieldData().data(), nameFieldView.data());
+    CORRADE_COMPARE(names.stringData(), static_cast<const void*>(nameStringData));
+}
+
 void SceneDataTest::constructFieldTypeErased() {
     const UnsignedLong scalingMappingData[3]{};
     const Vector3 scalingFieldData[3];
@@ -899,6 +1050,27 @@ void SceneDataTest::constructFieldTypeErased() {
     CORRADE_COMPARE(scalings.fieldData().size(), 3);
     CORRADE_COMPARE(scalings.fieldData().stride(), sizeof(Vector3));
     CORRADE_COMPARE(scalings.fieldData().data(), scalingFieldData);
+}
+
+void SceneDataTest::constructFieldTypeErasedString() {
+    const UnsignedLong nameMappingData[3]{};
+    const char nameStringData[15]{};
+    const Containers::Pair<UnsignedShort, UnsignedShort> nameFieldData[3]{};
+
+    SceneFieldData names{sceneFieldCustom(25), SceneMappingType::UnsignedLong, Containers::arrayCast<const char>(Containers::stridedArrayView(nameMappingData)), nameStringData, SceneFieldType::StringRange16, Containers::arrayCast<const char>(Containers::stridedArrayView(nameFieldData)), SceneFieldFlag::NullTerminatedString|SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(names.flags(), SceneFieldFlag::OrderedMapping|SceneFieldFlag::NullTerminatedString);
+    CORRADE_COMPARE(names.name(), sceneFieldCustom(25));
+    CORRADE_COMPARE(names.size(), 3);
+    CORRADE_COMPARE(names.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(names.mappingData().size(), 3);
+    CORRADE_COMPARE(names.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(names.mappingData().data(), nameMappingData);
+    CORRADE_COMPARE(names.fieldType(), SceneFieldType::StringRange16);
+    CORRADE_COMPARE(names.fieldArraySize(), 0);
+    CORRADE_COMPARE(names.fieldData().size(), 3);
+    CORRADE_COMPARE(names.fieldData().stride(), sizeof(UnsignedShort)*2);
+    CORRADE_COMPARE(names.fieldData().data(), nameFieldData);
+    CORRADE_COMPARE(names.stringData(), static_cast<const void*>(nameStringData));
 }
 
 void SceneDataTest::constructFieldNonOwningArray() {
@@ -935,6 +1107,70 @@ void SceneDataTest::constructFieldOffsetOnly() {
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.fieldData(data)),
         Containers::arrayView<Vector2>({{2.0f, 3.0f}, {67.0f, -1.1f}}),
         TestSuite::Compare::Container);
+}
+
+void SceneDataTest::constructFieldOffsetOnlyString() {
+    const char string[] = "NAMES:eyehandnoseleg";
+    struct Data {
+        Byte parent;
+        UnsignedLong object;
+        Containers::Pair<UnsignedByte, UnsignedByte> nameRange;
+    } data[]{
+        {0, 2, {3, 4}},
+        {0, 15, {11, 3}}
+    };
+
+    SceneFieldData a{sceneFieldCustom(36), 2, SceneMappingType::UnsignedLong, offsetof(Data, object), sizeof(Data), 6, SceneFieldType::StringRange8, offsetof(Data, nameRange), sizeof(Data), SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(a.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(a.name(), sceneFieldCustom(36));
+    CORRADE_COMPARE(a.size(), 2);
+    CORRADE_COMPARE(a.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(a.mappingData(data).size(), 2);
+    CORRADE_COMPARE(a.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedLong>(a.mappingData(data)),
+        Containers::arrayView<UnsignedLong>({2, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(a.fieldType(), SceneFieldType::StringRange8);
+    CORRADE_COMPARE(a.fieldArraySize(), 0);
+    CORRADE_COMPARE(a.fieldData(data).size(), 2);
+    CORRADE_COMPARE(a.fieldData(data).stride(), sizeof(Data));
+
+    auto fieldData = Containers::arrayCast<const Containers::Pair<UnsignedByte, UnsignedByte>>(a.fieldData(data));
+    CORRADE_COMPARE_AS(fieldData, (Containers::arrayView<Containers::Pair<UnsignedByte, UnsignedByte>>({
+        {3, 4}, {11, 3}
+    })), TestSuite::Compare::Container);
+    CORRADE_COMPARE(a.stringData(string), "eyehandnoseleg"_s);
+    CORRADE_COMPARE((Containers::StringView{a.stringData(string) + fieldData[0].first(), fieldData[0].second()}), "hand");
+    CORRADE_COMPARE((Containers::StringView{a.stringData(string) + fieldData[1].first(), fieldData[1].second()}), "leg");
+}
+
+void SceneDataTest::constructFieldOffsetOnlyStringNegativeStride() {
+    const char string[] = "NAMES:eye\0hand\0nose\0leg";
+    struct Data {
+        UnsignedLong object;
+        UnsignedShort nameRange;
+    } data[]{
+        {2, 4},
+        {15, 14}
+    };
+
+    SceneFieldData a{sceneFieldCustom(36), 2, SceneMappingType::UnsignedLong, offsetof(Data, object), sizeof(Data), 6, SceneFieldType::StringRangeNullTerminated16, offsetof(Data, nameRange) + sizeof(Data), -std::ptrdiff_t(sizeof(Data)), SceneFieldFlag::OrderedMapping};
+
+    /* NullTerminatedString added implicitly for this type */
+    CORRADE_COMPARE(a.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping|SceneFieldFlag::NullTerminatedString);
+    CORRADE_COMPARE(a.fieldType(), SceneFieldType::StringRangeNullTerminated16);
+    CORRADE_COMPARE(a.fieldArraySize(), 0);
+    CORRADE_COMPARE(a.fieldData(data).size(), 2);
+    CORRADE_COMPARE(a.fieldData(data).stride(), -sizeof(Data));
+
+    /* Order flipped compared to constructFieldOffsetOnlyString() */
+    auto fieldData = Containers::arrayCast<const UnsignedShort>(a.fieldData(data));
+    CORRADE_COMPARE_AS(fieldData, Containers::arrayView<UnsignedShort>({
+        14, 4,
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE(a.stringData(string), "eye"_s); /* after \0 it's lost */
+    CORRADE_COMPARE(a.stringData(string) + fieldData[0], "leg"_s);
+    CORRADE_COMPARE(a.stringData(string) + fieldData[1], "hand"_s);
 }
 
 constexpr UnsignedByte ArrayOffsetMappingData[3]{};
@@ -1044,13 +1280,18 @@ void SceneDataTest::constructFieldArrayOffsetOnly() {
 void SceneDataTest::constructFieldInconsistentViewSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    const UnsignedShort rotationMappingData[3]{};
+    const UnsignedShort mappingData[3]{};
     const Complexd rotationFieldData[2];
+    const char helloStringData[5]{};
+    const UnsignedLong helloOffsetsData[2]{};
 
     std::ostringstream out;
     Error redirectError{&out};
-    SceneFieldData{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: expected Trade::SceneField::Rotation mapping and field view to have the same size but got 3 and 2\n");
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData)};
+    SceneFieldData{sceneFieldCustom(32), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset64, Containers::arrayView(helloOffsetsData)};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: expected Trade::SceneField::Rotation mapping and field view to have the same size but got 3 and 2\n"
+        "Trade::SceneFieldData: expected Trade::SceneField::Custom(32) mapping and field view to have the same size but got 3 and 2\n");
 }
 
 void SceneDataTest::constructFieldWrongType() {
@@ -1063,9 +1304,44 @@ void SceneDataTest::constructFieldWrongType() {
     Error redirectError{&out};
     SceneFieldData{SceneField::Transformation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
     SceneFieldData{SceneField::Transformation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion)};
+    /** @todo test also builtin string fields with non-string types once there
+        are any */
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: Trade::SceneFieldType::Quaternion is not a valid type for Trade::SceneField::Transformation\n"
         "Trade::SceneFieldData: Trade::SceneFieldType::Quaternion is not a valid type for Trade::SceneField::Transformation\n");
+}
+
+void SceneDataTest::constructFieldWrongTypeString() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    const UnsignedShort mappingData[3]{};
+    const Complexd rotationFieldData[3];
+    const char helloStringData[5]{};
+    const UnsignedLong helloFieldData[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Non-string constructors with a string SceneFieldType. Only type-erased,
+       2D and offset-only construction, the regular and array constructor from
+       typed views have SceneFieldType implicit. */
+    SceneFieldData{sceneFieldCustom(32), SceneMappingType::UnsignedShort, Containers::arrayView(mappingData), SceneFieldType::StringOffset64, Containers::arrayView(helloFieldData)};
+    SceneFieldData{sceneFieldCustom(32), Containers::arrayCast<2, const char>(Containers::arrayView(mappingData)), SceneFieldType::StringOffset64, Containers::arrayCast<2, const char>(Containers::arrayView(helloFieldData))};
+    SceneFieldData{sceneFieldCustom(32), 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::StringRange16, 0, 8};
+
+    /* String constructors with a non-string SceneFieldType. */
+    SceneFieldData{SceneField::Rotation, SceneMappingType::UnsignedShort, Containers::arrayView(mappingData), nullptr, SceneFieldType::Complexd, Containers::arrayView(rotationFieldData)};
+    SceneFieldData{SceneField::Rotation, Containers::arrayCast<2, const char>(Containers::arrayView(mappingData)), helloStringData, SceneFieldType::Complexd, Containers::arrayCast<2, const char>(Containers::arrayView(rotationFieldData))};
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), helloStringData, SceneFieldType::Complexd, Containers::arrayView(rotationFieldData)};
+    SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedLong, 0, 8, 0, SceneFieldType::Quaternion, 0, 16};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: use a string constructor for Trade::SceneFieldType::StringOffset64\n"
+        "Trade::SceneFieldData: use a string constructor for Trade::SceneFieldType::StringOffset64\n"
+        "Trade::SceneFieldData: use a string constructor for Trade::SceneFieldType::StringRange16\n"
+
+        "Trade::SceneFieldData: can't use a string constructor for Trade::SceneFieldType::Complexd\n"
+        "Trade::SceneFieldData: can't use a string constructor for Trade::SceneFieldType::Complexd\n"
+        "Trade::SceneFieldData: can't use a string constructor for Trade::SceneFieldType::Complexd\n"
+        "Trade::SceneFieldData: can't use a string constructor for Trade::SceneFieldType::Quaternion\n");
 }
 
 void SceneDataTest::constructFieldTooLargeMappingStride() {
@@ -1073,6 +1349,7 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
 
     UnsignedInt enough[2];
     char toomuch[2*(32768 + sizeof(UnsignedInt))];
+    const char helloStringData[5]{};
 
     /* These should be fine */
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32767}, SceneFieldType::UnsignedInt, enough};
@@ -1080,13 +1357,28 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 32767, SceneFieldType::UnsignedInt, 0, 4};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 65536, -32768, SceneFieldType::UnsignedInt, 0, 4};
 
+    SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32767}, helloStringData, SceneFieldType::StringOffset32, enough};
+    SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}.flipped<0>(), helloStringData, SceneFieldType::StringOffset32, enough};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 32767, 0, SceneFieldType::StringOffset32, 0, 4};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 65536, -32768, 0, SceneFieldType::StringOffset32, 0, 4};
+
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}, SceneFieldType::UnsignedInt, enough};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>(), SceneFieldType::UnsignedInt, enough};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 32768, SceneFieldType::UnsignedInt, 0, 4};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 65538, -32769, SceneFieldType::UnsignedInt, 0, 4};
+
+    SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}, helloStringData, SceneFieldType::StringOffset32, enough};
+    SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>(), helloStringData, SceneFieldType::StringOffset32, enough};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 32768, 0, SceneFieldType::StringOffset32, 0, 4};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 65538, -32769, 0, SceneFieldType::StringOffset32, 0, 4};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
+
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
@@ -1098,6 +1390,7 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
 
     UnsignedInt enough[2];
     char toomuch[2*(32768 + sizeof(UnsignedInt))];
+    const char helloStringData[5]{};
 
     /* These should be fine */
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, enough, SceneFieldType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32767}};
@@ -1105,32 +1398,59 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 0, 32767};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 65536, -32768};
 
+    SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32767}};
+    SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}.flipped<0>()};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 0, 32767};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 65536, -32768};
+
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, enough, SceneFieldType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}};
     SceneFieldData{SceneField::Mesh, SceneMappingType::UnsignedInt, enough, SceneFieldType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>()};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 0, 32768};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 65538, -32769};
+
+    SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}};
+    SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>()};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 0, 32768};
+    SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 65538, -32769};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
+
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n");
 }
 
-void SceneDataTest::constructFieldOffsetOnlyNotAllowed() {
+void SceneDataTest::constructFieldFlagNotAllowed() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    const UnsignedShort rotationMappingData[3]{};
+    const UnsignedShort mappingData[3]{};
     const Quaternion rotationFieldData[3];
+    const char helloStringData[5]{};
+    const UnsignedShort helloFieldData[3]{};
 
-    /* This one is fine */
+    /* These are fine */
     SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion), SceneFieldFlag::OffsetOnly};
+    SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{sceneFieldCustom(24), 3, SceneMappingType::UnsignedShort, 0, 2, 0, SceneFieldType::StringOffset32, 0, 4, SceneFieldFlag::NullTerminatedString};
 
     std::ostringstream out;
     Error redirectError{&out};
-    SceneFieldData{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly};
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly};
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::Quaternion, 0, 16, SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::OffsetOnly};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneFieldType::Quaternion\n"
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view\n");
 }
 
@@ -1139,62 +1459,115 @@ void SceneDataTest::constructFieldWrongDataAccess() {
 
     const UnsignedShort rotationMappingData[3]{};
     const Quaternion rotationFieldData[3];
+    const char hello[5]{};
+
     SceneFieldData a{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
     SceneFieldData b{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion)};
+    SceneFieldData c{sceneFieldCustom(25), 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), 0, SceneFieldType::StringRange32, 0, 64};
     CORRADE_COMPARE(a.flags(), SceneFieldFlags{});
     CORRADE_COMPARE(b.flags(), SceneFieldFlag::OffsetOnly);
+    CORRADE_COMPARE(c.flags(), SceneFieldFlag::OffsetOnly);
 
     a.mappingData(rotationMappingData); /* This is fine, no asserts */
     a.fieldData(rotationFieldData);
+    c.stringData(hello);
 
     std::ostringstream out;
     Error redirectError{&out};
     b.mappingData();
     b.fieldData();
+    c.stringData();
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData::mappingData(): the field is offset-only, supply a data array\n"
-        "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array\n");
+        "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array\n"
+        "Trade::SceneFieldData::stringData(): the field is offset-only, supply a data array\n");
+}
+
+void SceneDataTest::constructFieldWrongStringDataAccess() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    const UnsignedShort rotationMappingData[3]{};
+    const Quaternion rotationFieldData[3];
+
+    SceneFieldData a{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    a.stringData();
+    a.stringData(rotationFieldData);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData::stringData(): the field is Trade::SceneFieldType::Quaternion, not a string\n"
+        "Trade::SceneFieldData::stringData(): the field is Trade::SceneFieldType::Quaternion, not a string\n");
 }
 
 void SceneDataTest::constructField2DWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    char rotationMappingData[5*sizeof(UnsignedInt)];
-    char rotationFieldData[5*sizeof(Complex)];
+    char mappingData[5*sizeof(UnsignedInt)];
+    char rotationFieldData[4*sizeof(Complex)];
+    char helloStringData[3]{};
+    char helloFieldData[4*sizeof(UnsignedShort)]{};
 
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation,
-        Containers::StridedArrayView2D<char>{rotationMappingData, {4, 5}}.every(2),
+        Containers::StridedArrayView2D<char>{mappingData, {4, 5}}.every(2),
         SceneFieldType::Complex,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, sizeof(Complex)}}.every(2)};
+    SceneFieldData{sceneFieldCustom(32),
+        Containers::StridedArrayView2D<char>{mappingData, {4, 5}}.every(2),
+        helloStringData,
+        SceneFieldType::StringOffset16,
+        Containers::StridedArrayView2D<char>{helloFieldData, {4, sizeof(UnsignedShort)}}.every(2)};
     SceneFieldData{SceneField::Translation,
-        Containers::StridedArrayView2D<char>{rotationMappingData, {4, sizeof(UnsignedInt)}}.every(2),
+        Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedInt)}}.every(2),
         SceneFieldType::Vector3,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, sizeof(Complex)}}.every(2)};
+    SceneFieldData{sceneFieldCustom(32),
+        Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedInt)}}.every(2),
+        helloStringData,
+        SceneFieldType::StringRange16,
+        Containers::StridedArrayView2D<char>{helloFieldData, {4, sizeof(UnsignedShort)}}.every(2)};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
-        "Trade::SceneFieldData: second field view dimension size 8 doesn't match Trade::SceneFieldType::Vector3\n");
+        "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
+        "Trade::SceneFieldData: second field view dimension size 8 doesn't match Trade::SceneFieldType::Vector3\n"
+        "Trade::SceneFieldData: second field view dimension size 2 doesn't match Trade::SceneFieldType::StringRange16\n");
 }
 
 void SceneDataTest::constructField2DNonContiguous() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    char rotationMappingData[8*sizeof(UnsignedInt)];
+    char mappingData[8*sizeof(UnsignedInt)];
     char rotationFieldData[8*sizeof(Complex)];
+    char helloStringData[3]{};
+    char helloFieldData[8*sizeof(UnsignedShort)]{};
 
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation,
-        Containers::StridedArrayView2D<char>{rotationMappingData, {4, 2*sizeof(UnsignedInt)}}.every({1, 2}),
+        Containers::StridedArrayView2D<char>{mappingData, {4, 2*sizeof(UnsignedInt)}}.every({1, 2}),
         SceneFieldType::Complex,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, sizeof(Complex)}}};
+    SceneFieldData{sceneFieldCustom(32),
+        Containers::StridedArrayView2D<char>{mappingData, {4, 2*sizeof(UnsignedInt)}}.every({1, 2}),
+        helloStringData,
+        SceneFieldType::StringOffset16,
+        Containers::StridedArrayView2D<char>{helloFieldData, {4, sizeof(UnsignedShort)}}};
     SceneFieldData{SceneField::Rotation,
-        Containers::StridedArrayView2D<char>{rotationMappingData, {4, sizeof(UnsignedInt)}},
+        Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedInt)}},
         SceneFieldType::Complex,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, 2*sizeof(Complex)}}.every({1, 2})};
+    SceneFieldData{sceneFieldCustom(32),
+        /* Just to cover the case of a 1-byte mapping type (lazy) */
+        Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedByte)}, {4, 1}},
+        helloStringData,
+        SceneFieldType::StringOffset8,
+        Containers::StridedArrayView2D<char>{helloFieldData, {4, 2*sizeof(UnsignedByte)}}.every({1, 2})};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
+        "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
+        "Trade::SceneFieldData: second field view dimension is not contiguous\n"
         "Trade::SceneFieldData: second field view dimension is not contiguous\n");
 }
 
@@ -1253,6 +1626,9 @@ void SceneDataTest::constructFieldArrayNotAllowed() {
     SceneFieldData{SceneField::Rotation,
         rotationMappingChar,
         SceneFieldType::Quaternion, rotationField2DChar, 3};
+    /* String fields can't be arrays, but for those the constructor doesn't
+       even offer the array size; and constructing them with the regular
+       constructor will fail as tested in constructFieldWrongTypeString() */
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: Trade::SceneField::Rotation can't be an array field\n"
         "Trade::SceneFieldData: Trade::SceneField::Rotation can't be an array field\n"
@@ -1717,6 +2093,320 @@ void SceneDataTest::constructNotOwned() {
         CORRADE_COMPARE(scene.mutableField<UnsignedByte>(0)[2], 0);
 }
 
+template<class T> struct StringFieldTraits;
+template<> struct StringFieldTraits<UnsignedByte> {
+    static const char* name() { return "8"; }
+    static SceneFieldType offsetType() { return SceneFieldType::StringOffset8; }
+    static SceneFieldType rangeType() { return SceneFieldType::StringRange8; }
+    static SceneFieldType rangeNullTerminatedType() {
+        return SceneFieldType::StringRangeNullTerminated8;
+    }
+};
+template<> struct StringFieldTraits<UnsignedShort> {
+    static const char* name() { return "16"; }
+    static SceneFieldType offsetType() { return SceneFieldType::StringOffset16; }
+    static SceneFieldType rangeType() { return SceneFieldType::StringRange16; }
+    static SceneFieldType rangeNullTerminatedType() {
+        return SceneFieldType::StringRangeNullTerminated16;
+    }
+};
+template<> struct StringFieldTraits<UnsignedInt> {
+    static const char* name() { return "32"; }
+    static SceneFieldType offsetType() { return SceneFieldType::StringOffset32; }
+    static SceneFieldType rangeType() { return SceneFieldType::StringRange32; }
+    static SceneFieldType rangeNullTerminatedType() {
+        return SceneFieldType::StringRangeNullTerminated32;
+    }
+};
+template<> struct StringFieldTraits<UnsignedLong> {
+    static const char* name() { return "64"; }
+    static SceneFieldType offsetType() { return SceneFieldType::StringOffset64; }
+    static SceneFieldType rangeType() { return SceneFieldType::StringRange64; }
+    static SceneFieldType rangeNullTerminatedType() {
+        return SceneFieldType::StringRangeNullTerminated64;
+    }
+};
+
+template<class T> void SceneDataTest::constructString() {
+    setTestCaseTemplateName(StringFieldTraits<T>::name());
+
+    /* Assumption is that these will be populated by some helper in SceneTools,
+       with offsets/sizes remembered. Things tested:
+
+        -   names are offsets w/o null termination, thus have to be referenced
+            only once and in the order they are in the string
+        -   keys are null-terminated ranges, thus can be referenced multiple
+            times, the only complication is that there's an extra \0 after
+            which doesn't count into the size
+        -   values are non-null-terminated (offset, size) ranges, nothing
+            special about these, can be also referenced multiple times
+            including subsets (such as "brown" out of "lightbrown"
+        -   files are offsets w/ null terminated, thus again have to be
+            referenced only once an in the order they are in the string, the
+            implicit size has to exclude the null terminator
+        -   keys are null terminated (offset, implicit size) ranges, are
+            defined at the end of the string in order to verify a null
+            terminator gets added by ArrayTuple after, compared to plain
+            offsets the reference order doesn't matter and can be referenced
+            multiple times */
+
+    Containers::StringView namesKeysValues =
+        "Chair"         /* 5 */
+        "Lampshade"     /* 14 */
+        "color\0"       /* 14, 5 */
+        "age\0"         /* 20, 3 */
+        "lightbrown"    /* 24, 10; 29, 5 */
+        "old"           /* 34, 3 */
+        "new"_s;        /* 37, 3 doesn't assume null termination */
+    CORRADE_COMPARE(namesKeysValues.size(), 37 + 3);
+
+    Containers::StringView filesTags =
+        "chair.glb\0"       /* 0 */
+        "empty.obj\0"       /* 10 */
+        "lampshade.fbx\0"   /* 20 */
+        "MAPPABLE\0"        /* 34 */
+        "STRANGE"_s;        /* 43, assumes it's stored null-terminated */
+    CORRADE_COMPARE(filesTags.size(), 43 + 7);
+
+    struct Name {
+        UnsignedShort object;
+        T nameOffset;
+    };
+
+    struct KeyValue {
+        UnsignedShort object;
+        Containers::Pair<T, T> keyRangeNullTerminated;
+        Containers::Pair<T, T> valueRange;
+    };
+
+    struct FileTag {
+        UnsignedShort object;
+        T fileOffsetNullTerminated;
+        T tagRangeNullTerminated;
+    };
+
+    Containers::StridedArrayView1D<Name> nameData;
+    Containers::StridedArrayView1D<KeyValue> keyValueData;
+    Containers::MutableStringView nameKeyValueStringData;
+    Containers::StridedArrayView1D<FileTag> fileTagData;
+    Containers::MutableStringView fileTagStringData;
+    Containers::ArrayTuple data{
+        {NoInit, 2, nameData},
+        {NoInit, 4, keyValueData},
+        {NoInit, filesTags.size(), fileTagStringData, Containers::StringViewFlag::NullTerminated},
+        {NoInit, 3, fileTagData},
+        {NoInit, namesKeysValues.size(), nameKeyValueStringData}
+    };
+
+    /* The offset has to be monotonically increasing, so the view is flipped in
+       the SceneFieldData */
+    Utility::copy({
+        {3, 14}, /* Chair */
+        {1, 5}   /* Lampshade */
+    }, nameData);
+
+    Utility::copy({
+        {3, {20, 3}, {37, 3}},  /* age=new */
+        {3, {14, 5}, {24, 10}}, /* color=lightbrown */
+        {1, {20, 3}, {34, 3}},  /* age=old */
+        {1, {14, 5}, {29, 5}}   /* color=brown */
+    }, keyValueData);
+
+    Utility::copy({
+        {1, 10, 34},    /* chair.glb, MAPPABLE */
+        {2, 20, 43},    /* empty.obj, STRANGE */
+        {3, 34, 43},    /* lampshade.fbx, STRANGE */
+    }, fileTagData);
+
+    Utility::copy(namesKeysValues, nameKeyValueStringData);
+    Utility::copy(filesTags, fileTagStringData);
+
+    const SceneField nameField = sceneFieldCustom(5);
+    const SceneField keyField = sceneFieldCustom(6);
+    const SceneField valueField = sceneFieldCustom(7);
+    const SceneField fileField = sceneFieldCustom(8);
+    const SceneField tagField = sceneFieldCustom(9);
+
+    /* Calculate offsets for the offset-only field before the data is moved
+       out */
+    const std::size_t keyValueDataOffset = static_cast<char*>(keyValueData.data()) - data.data();
+    const std::size_t nameKeyValueStringDataOffset = nameKeyValueStringData.data() - data.data();
+
+    /* The fileTagStringData should be before the file/tag field data in order
+       to test storing negative string data offset */
+    CORRADE_VERIFY(fileTagStringData.data() < fileTagData.data());
+
+    SceneData scene{SceneMappingType::UnsignedShort, 4, std::move(data), {
+        /* Has a negative stride */
+        SceneFieldData{nameField, nameData.slice(&Name::object).template flipped<0>(),
+            nameKeyValueStringData.data(), StringFieldTraits<T>::offsetType(),
+            nameData.slice(&Name::nameOffset).template flipped<0>()},
+        SceneFieldData{keyField, keyValueData.slice(&KeyValue::object),
+            nameKeyValueStringData.data(), StringFieldTraits<T>::rangeType(),
+            keyValueData.slice(&KeyValue::keyRangeNullTerminated),
+            SceneFieldFlag::NullTerminatedString},
+        /* Offset-only */
+        SceneFieldData{valueField, 4,
+            SceneMappingType::UnsignedShort, keyValueDataOffset + offsetof(KeyValue, object), sizeof(KeyValue),
+            nameKeyValueStringDataOffset,
+            StringFieldTraits<T>::rangeType(), keyValueDataOffset + offsetof(KeyValue, valueRange), sizeof(KeyValue)},
+        /* These two have the string data defined *before* the field data, thus
+           storing a negative string data offset */
+        SceneFieldData{fileField, fileTagData.slice(&FileTag::object),
+            fileTagStringData.data(), StringFieldTraits<T>::offsetType(),
+            fileTagData.slice(&FileTag::fileOffsetNullTerminated),
+            SceneFieldFlag::NullTerminatedString},
+        SceneFieldData{tagField, fileTagData.slice(&FileTag::object),
+            fileTagStringData.data(), StringFieldTraits<T>::rangeNullTerminatedType(),
+            fileTagData.slice(&FileTag::tagRangeNullTerminated)},
+    }};
+
+    /* Raw field data access to verify it correctly special-cases */
+    CORRADE_COMPARE(scene.fieldData(1).mappingType(), SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(scene.fieldData(1).mappingData().data(), keyValueData.data());
+    CORRADE_COMPARE(scene.fieldData(1).stringData(), nameKeyValueStringData.data());
+    CORRADE_COMPARE(scene.fieldData(1).fieldType(), StringFieldTraits<T>::rangeType());
+    CORRADE_COMPARE(scene.fieldData(1).fieldData().data(), keyValueData.slice(&KeyValue::keyRangeNullTerminated).data());
+    CORRADE_COMPARE(scene.fieldData(1).fieldArraySize(), 0);
+    CORRADE_COMPARE(scene.fieldData(1).flags(), SceneFieldFlag::NullTerminatedString);
+
+    /* Field property access, to verify it correctly special-cases */
+    CORRADE_COMPARE(scene.fieldType(keyField), StringFieldTraits<T>::rangeType());
+    CORRADE_COMPARE(scene.fieldArraySize(keyField), 0);
+
+    /* Field flags should contain the string-specific flags */
+    CORRADE_COMPARE(scene.fieldFlags(nameField), SceneFieldFlags{});
+    CORRADE_COMPARE(scene.fieldFlags(keyField), SceneFieldFlag::NullTerminatedString);
+    CORRADE_COMPARE(scene.fieldFlags(valueField), SceneFieldFlag::OffsetOnly);
+    CORRADE_COMPARE(scene.fieldFlags(fileField), SceneFieldFlag::NullTerminatedString);
+    /* This one is added implicitly */
+    CORRADE_COMPARE(scene.fieldFlags(tagField), SceneFieldFlag::NullTerminatedString);
+
+    /* Mapping access should correctly special-case the string type stored in
+       the same byte */
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(nameField), Containers::arrayView<UnsignedShort>({
+        1, 3
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.mutableMapping<UnsignedShort>(nameField), Containers::stridedArrayView<UnsignedShort>({
+        1, 3
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.mappingAsArray(nameField), Containers::arrayView<UnsignedInt>({
+        1, 3
+    }), TestSuite::Compare::Container);
+
+    /* Raw field data access. ID vs name of this API tested thoroughly enough
+       in  construct(). */
+    CORRADE_COMPARE_AS(scene.field<T>(nameField), Containers::arrayView<T>({
+        5, 14
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((scene.field<Containers::Pair<T, T>>(keyField)), (Containers::arrayView<Containers::Pair<T, T>>({
+        {20, 3}, {14, 5}, {20, 3}, {14, 5}
+    })), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((scene.field<Containers::Pair<T, T>>(valueField)), (Containers::arrayView<Containers::Pair<T, T>>({
+        {37, 3}, {24, 10}, {34, 3}, {29, 5}
+    })), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<T>(fileField), Containers::arrayView<T>({
+        10, 20, 34
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<T>(tagField), Containers::arrayView<T>({
+        34, 43, 43
+    }), TestSuite::Compare::Container);
+
+    /* Raw string data access using an ID */
+    CORRADE_COMPARE(scene.fieldStringData(0), static_cast<const void*>(nameKeyValueStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(1), static_cast<const void*>(nameKeyValueStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(2), static_cast<const void*>(nameKeyValueStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(3), static_cast<const void*>(fileTagStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(4), static_cast<const void*>(fileTagStringData.data()));
+
+    /* Raw string data access using a name */
+    CORRADE_COMPARE(scene.fieldStringData(nameField), static_cast<const void*>(nameKeyValueStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(keyField), static_cast<const void*>(nameKeyValueStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(valueField), static_cast<const void*>(nameKeyValueStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(fileField), static_cast<const void*>(fileTagStringData.data()));
+    CORRADE_COMPARE(scene.fieldStringData(tagField), static_cast<const void*>(fileTagStringData.data()));
+
+    /* String access using an ID */
+    CORRADE_COMPARE_AS(scene.fieldStrings(0), Containers::arrayView({
+        "Chair"_s, "Lampshade"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(0)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlags{});
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(1), Containers::arrayView({
+        "age"_s, "color"_s, "age"_s, "color"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(1)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(2), Containers::arrayView({
+        "new"_s, "lightbrown"_s, "old"_s, "brown"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(2)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlags{});
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(3), Containers::arrayView({
+        "chair.glb"_s, "empty.obj"_s, "lampshade.fbx"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(3)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(4), Containers::arrayView({
+        "MAPPABLE"_s, "STRANGE"_s, "STRANGE"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(4)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+
+    /* String access using a name */
+    CORRADE_COMPARE_AS(scene.fieldStrings(nameField), Containers::arrayView({
+        "Chair"_s, "Lampshade"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(nameField)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlags{});
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(keyField), Containers::arrayView({
+        "age"_s, "color"_s, "age"_s, "color"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(keyField)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(valueField), Containers::arrayView({
+        "new"_s, "lightbrown"_s, "old"_s, "brown"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(valueField)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlags{});
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(fileField), Containers::arrayView({
+        "chair.glb"_s, "empty.obj"_s, "lampshade.fbx"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(fileField)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+    CORRADE_COMPARE_AS(scene.fieldStrings(tagField), Containers::arrayView({
+        "MAPPABLE"_s, "STRANGE"_s, "STRANGE"_s
+    }), TestSuite::Compare::Container);
+    for(Containers::StringView i: scene.fieldStrings(tagField)) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 void SceneDataTest::constructDeprecated() {
     auto&& data = ChildrenDeprecatedData[testCaseInstanceId()];
@@ -1922,6 +2612,42 @@ void SceneDataTest::constructFieldDataNotContained() {
 
         "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: offset-only field data of field 0 span 25 bytes but passed data array has only 24\n");
+}
+
+void SceneDataTest::constructStringDataNotContained() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::ArrayView<char> data{reinterpret_cast<char*>(0xbadda9), 10};
+    Containers::ArrayView<UnsignedShort> dataIn{reinterpret_cast<UnsignedShort*>(0xbadda9), 5};
+
+    /* This should be fine even though it points to the very end (the string
+       array could be empty) */
+    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
+        SceneFieldData{sceneFieldCustom(35), dataIn,
+            reinterpret_cast<char*>(0xbadda9 + 10), SceneFieldType::StringOffset16,
+            dataIn}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Data too early */
+    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
+        /* This is here to test that not just the first attribute gets checked
+           and that the message shows proper ID */
+        SceneFieldData{SceneField::Light, dataIn, dataIn},
+        SceneFieldData{sceneFieldCustom(35), dataIn,
+            reinterpret_cast<char*>(0xbadda9 - 1), SceneFieldType::StringOffset16,
+            dataIn}
+    }};
+    /* Data too late */
+    SceneData{SceneMappingType::UnsignedShort, 5, {}, data, {
+        SceneFieldData{sceneFieldCustom(35), dataIn,
+            reinterpret_cast<char*>(0xbaddaa9 + 11), SceneFieldType::StringRange8,
+            dataIn}
+    }};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData: field string data 0xbadda8 of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+        "Trade::SceneData: field string data 0xbaddab4 of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n");
 }
 
 void SceneDataTest::constructMappingTypeTooSmall() {
@@ -4635,6 +5361,9 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField<UnsignedInt>(2);
     scene.mutableField<UnsignedInt[]>(2);
 
+    scene.fieldStringData(2);
+    scene.fieldStrings(2);
+
     scene.fieldId(sceneFieldCustom(666));
     scene.fieldFlags(sceneFieldCustom(666));
     scene.findFieldObjectOffset(sceneFieldCustom(666), 0);
@@ -4649,6 +5378,9 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField(sceneFieldCustom(666));
     scene.mutableField<UnsignedInt>(sceneFieldCustom(666));
     scene.mutableField<UnsignedInt[]>(sceneFieldCustom(666));
+
+    scene.fieldStringData(sceneFieldCustom(666));
+    scene.fieldStrings(sceneFieldCustom(666));
 
     scene.parentsAsArray();
     scene.parentsInto(nullptr, nullptr);
@@ -4698,6 +5430,9 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::mutableField(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::mutableField(): index 2 out of range for 2 fields\n"
 
+        "Trade::SceneData::fieldStringData(): index 2 out of range for 2 fields\n"
+        "Trade::SceneData::fieldStrings(): index 2 out of range for 2 fields\n"
+
         "Trade::SceneData::fieldId(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::fieldFlags(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::findFieldObjectOffset(): field Trade::SceneField::Custom(666) not found\n"
@@ -4712,6 +5447,9 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
+
+        "Trade::SceneData::fieldStringData(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::fieldStrings(): field Trade::SceneField::Custom(666) not found\n"
 
         /* AsArray() and Into() each share a common helper but have different
            top-level code paths. They however have the same assertion messages
@@ -4771,19 +5509,34 @@ void SceneDataTest::fieldWrongType() {
     scene.field<UnsignedByte[]>(1);
     scene.mutableField<UnsignedByte>(1);
     scene.mutableField<UnsignedByte[]>(1);
+
+    scene.fieldStringData(1);
+    scene.fieldStrings(1);
+
     scene.field<UnsignedByte>(SceneField::Mesh);
     scene.field<UnsignedByte[]>(SceneField::Mesh);
     scene.mutableField<UnsignedByte>(SceneField::Mesh);
     scene.mutableField<UnsignedByte[]>(SceneField::Mesh);
+
+    scene.fieldStringData(SceneField::Mesh);
+    scene.fieldStrings(SceneField::Mesh);
+
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
+
+        "Trade::SceneData::fieldStringData(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n"
+        "Trade::SceneData::fieldStrings(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n"
+
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
-        "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n");
+        "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
+
+        "Trade::SceneData::fieldStringData(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n"
+        "Trade::SceneData::fieldStrings(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n");
 }
 
 void SceneDataTest::fieldWrongPointerType() {

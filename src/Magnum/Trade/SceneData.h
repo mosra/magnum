@@ -61,7 +61,19 @@ enum class SceneMappingType: UnsignedByte {
     UnsignedShort,      /**< @relativeref{Magnum,UnsignedShort} */
     UnsignedInt,        /**< @relativeref{Magnum,UnsignedInt} */
     UnsignedLong        /**< @relativeref{Magnum,UnsignedLong} */
+
+    /* Bits 3-6 used to store `SceneFieldType::String* << 3` in
+       SceneFieldData::_mappingTypeStringType */
 };
+
+namespace Implementation {
+
+enum: UnsignedByte {
+    SceneMappingTypeMask = 0x07, /* covers SceneMappingType values */
+    SceneMappingStringTypeMask = 0xf8  /* covers `SceneFieldType::String* << 3` */
+};
+
+}
 
 /**
 @debugoperatorenum{SceneMappingType}
@@ -382,9 +394,12 @@ information.
 enum class SceneFieldType: UnsignedShort {
     /* Zero used for an invalid value */
 
-    /* 1 reserved for Bool (Bit?), which needs [Strided]BitArray[View] first */
+    /* 1-12 used by String* types defined below as they need to fit into 4 bits
+       to be stored in a single byte together with SceneMappingType */
 
-    Float = 2,      /**< @relativeref{Magnum,Float} */
+    /* 13 reserved for Bit, which needs StridedBitArrayView first */
+
+    Float = 14,     /**< @relativeref{Magnum,Float} */
     Half,           /**< @relativeref{Magnum,Half} */
     Double,         /**< @relativeref{Magnum,Double} */
     UnsignedByte,   /**< @relativeref{Magnum,UnsignedByte} */
@@ -508,6 +523,156 @@ enum class SceneFieldType: UnsignedShort {
      * an arbitrary `T` but the user has to ensure the type is correct.
      */
     MutablePointer,
+
+    /* String types defined at the end because of exquisite complexity */
+
+    /**
+     * 32-bit string offsets with implicit sizes. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * Internally, the first string starts at @ref SceneData::fieldStringData(),
+     * second string starts at @relativeref{SceneData,fieldStringData()} plus
+     * @ref SceneData::field() "field<UnsignedInt>()[0]", etc. String sizes are
+     * implicitly the distance between two successive offsets or
+     * @cpp field<UnsignedInt>()[0] @ce in case of the first string; if
+     * @ref SceneFieldFlag::NullTerminatedString is set the distance includes
+     * the null terminator.
+     *
+     * The `StringOffset*` types are useful mainly for cases where each string
+     * is unique, for strings with many duplicates
+     * @ref SceneFieldType::StringRange32 "SceneFieldType::StringRange*" or
+     * @ref SceneFieldType::StringRangeNullTerminated32 "StringRangeNullTerminated32*"
+     * may be a more space-efficient option.
+     */
+    StringOffset32 = 3,
+
+    /**
+     * 8-bit string offsets with implicit sizes. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to @ref SceneFieldType::StringOffset32
+     * except that @relativeref{Magnum,UnsignedByte} is used as the type, see
+     * its documentation for more information.
+     */
+    StringOffset8 = 1,
+
+    /**
+     * 16-bit string offsets with implicit sizes. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to @ref SceneFieldType::StringOffset32
+     * except that @relativeref{Magnum,UnsignedShort} is used as the type, see
+     * its documentation for more information.
+     */
+    StringOffset16 = 2,
+
+    /**
+     * 64-bit string offsets with implicit sizes. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to @ref SceneFieldType::StringOffset32
+     * except that @relativeref{Magnum,UnsignedLong} is used as the type, see
+     * its documentation for more information.
+     */
+    StringOffset64 = 4,
+
+    /**
+     * @relativeref{Corrade,Containers::Pair} of 32-bit string offsets and
+     * sizes. Use @ref SceneData::fieldStrings() for convenient access.
+     *
+     * Internally, string `i` starts at @ref SceneData::fieldStringData() plus
+     * @ref SceneData::field() "field<Containers::Pair<UnsignedInt, UnsignedInt>>()[i].first()"
+     * and has a size of @cpp field<Containers::Pair<UnsignedInt, UnsignedInt>>()[i].second() @ce.
+     *
+     * The main use case for `StringRange*` types is to be able to reference
+     * the same string from multiple field entries without having to duplicate
+     * it. For strings without duplicates
+     * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*" may
+     * be a more space-efficient option, as the size is implicit.
+     * Alternatively, @ref SceneFieldType::StringRangeNullTerminated32 "StringRangeNullTerminated32*"
+     * has the same space requirements as
+     * @ref SceneFieldType::StringOffset32 "StringOffset*" with
+     * @ref SceneFieldFlag::NullTerminatedString set and allows deduplication,
+     * however at the cost of a @ref std::strlen() call on every access.
+     */
+    StringRange32 = 7,
+
+    /**
+     * @relativeref{Corrade,Containers::Pair} of 8-bit string offsets and
+     * sizes. Use @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to @ref SceneFieldType::StringRange32
+     * except that @relativeref{Magnum,UnsignedByte} is used for the pair
+     * types, see its documentation for more information.
+     */
+    StringRange8 = 5,
+
+    /**
+     * @relativeref{Corrade,Containers::Pair} of 16-bit string offsets and
+     * sizes. Use @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to @ref SceneFieldType::StringRange32
+     * except that @relativeref{Magnum,UnsignedShort} is used for the pair
+     * types, see its documentation for more information.
+     */
+    StringRange16 = 6,
+
+    /**
+     * @relativeref{Corrade,Containers::Pair} of 64-bit string offsets and
+     * sizes. Use @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to @ref SceneFieldType::StringRange32
+     * except that @relativeref{Magnum,UnsignedLong} is used for the pair
+     * types, see its documentation for more information.
+     */
+    StringRange64 = 8,
+
+    /**
+     * 32-bit offsets to null-terminated strings. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * Compared to @ref SceneFieldType::StringRange32 stores just the offset,
+     * the size is calculated on-the-fly with @ref std::strlen().
+     *
+     * Internally, string `i` starts at @ref SceneData::fieldStringData() plus
+     * @ref SceneData::field() "field<UnsignedInt>()[i]", size is implicitly
+     * until the first @cpp '\0' @ce byte. See
+     * @ref SceneFieldType::StringRange32 for use case recommendations.
+     */
+    StringRangeNullTerminated32 = 11,
+
+    /**
+     * 8-bit offsets to null-terminated strings. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to
+     * @ref SceneFieldType::StringRangeNullTerminated32 except that
+     * @relativeref{Magnum,UnsignedByte} is used as the type, see its
+     * documentation for more information.
+     */
+    StringRangeNullTerminated8 = 9,
+
+    /**
+     * 16-bit offsets to null-terminated strings. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to
+     * @ref SceneFieldType::StringRangeNullTerminated32 except that
+     * @relativeref{Magnum,UnsignedShort} is used as the type, see its
+     * documentation for more information.
+     */
+    StringRangeNullTerminated16 = 10,
+
+    /**
+     * 32-bit offsets to null-terminated strings. Use
+     * @ref SceneData::fieldStrings() for convenient access.
+     *
+     * The internal layout is similar to
+     * @ref SceneFieldType::StringRangeNullTerminated32 except that
+     * @relativeref{Magnum,UnsignedLong} is used as the type, see its
+     * documentation for more information.
+     */
+    StringRangeNullTerminated64 = 12,
 };
 
 /**
@@ -582,6 +747,22 @@ enum class SceneFieldFlag: UnsignedByte {
      * @f$ \mathcal{O}(n) @f$ lookup complexity.
      */
     ImplicitMapping = (1 << 2)|OrderedMapping,
+
+    /**
+     * The string field is null-terminated, i.e. string views returned from
+     * @ref SceneData::fieldStrings() will always have
+     * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set.
+     * Internally it means that the distance between successive
+     * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*"
+     * entries includes the null terminator;
+     * @ref SceneFieldType::StringRange32 "SceneFieldType::StringRange*" size
+     * is excluding the null terminator but assumes it's present right after;
+     * for @ref SceneFieldType::StringRangeNullTerminated32 "SceneFieldType,StringRangeNullTerminated*"
+     * it's set implicitly as that's the default behavior.
+     *
+     * Can only be set for string @ref SceneFieldType.
+     */
+    NullTerminatedString = 1 << 3
 };
 
 /**
@@ -610,8 +791,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneFieldFlags value);
 @brief Scene field data
 @m_since_latest
 
-Convenience type for populating @ref SceneData, see its documentation for an
-introduction.
+Convenience type for populating @ref SceneData, see
+@ref Trade-SceneData-populating "its documentation" for an introduction.
 
 @section Trade-SceneFieldData-usage Usage
 
@@ -653,6 +834,20 @@ field specifying data for object @cpp 0 @ce, second entry for object
 @cpp 1 @ce, third for object @cpp 2 @ce and so on. You can annotate such fields
 with @ref SceneFieldFlag::ImplicitMapping, which is a superset of
 @relativeref{SceneFieldFlag,OrderedMapping}.
+
+@subsection Trade-SceneFieldData-usage-strings String fields
+
+String fields have to be constructed using dedicated constructors that
+additionally take a @cpp const char* @ce base string pointer, and because a
+particular type can correspond to more than one @ref SceneFieldType (such as
+@ref SceneFieldType::StringOffset32 and
+@ref SceneFieldType::StringRangeNullTerminated32 being both represented with an
+@relativeref{Magnum,UnsignedInt}), the type has to be specified explicitly:
+
+@snippet MagnumTrade.cpp SceneFieldData-usage-strings
+
+Offset-only constructors have it similar, containing an extra base string
+offset. Due to packing in the internal layout, string fields can't be arrays.
 */
 class MAGNUM_TRADE_EXPORT SceneFieldData {
     public:
@@ -663,7 +858,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * initialization of the field array for @ref SceneData, expected to be
          * replaced with concrete values later.
          */
-        constexpr explicit SceneFieldData() noexcept: _size{}, _name{}, _flags{}, _mappingType{}, _mappingStride{}, _mappingData{}, _fieldStride{}, _fieldType{}, _fieldArraySize{}, _fieldData{} {}
+        constexpr explicit SceneFieldData() noexcept: _size{}, _name{}, _flags{}, _mappingTypeStringType{}, _mappingStride{}, _mappingData{}, _field{}, _fieldData{} {}
 
         /**
          * @brief Construct from type-erased views
@@ -675,7 +870,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
          *      non-array fields.
          * @param flags             Field flags.
-         *      @ref SceneFieldFlag::OffsetOnly is not allowed here.
+         *      @ref SceneFieldFlag::OffsetOnly and
+         *      @ref SceneFieldFlag::NullTerminatedString is not allowed here.
          *
          * Expects that @p mappingData and @p fieldData have the same size; and
          * for builtin fields that @p fieldType corresponds to @p name and
@@ -695,7 +891,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
          *      non-array fields.
          * @param flags             Field flags.
-         *      @ref SceneFieldFlag::OffsetOnly is not allowed here.
+         *      @ref SceneFieldFlag::OffsetOnly and
+         *      @ref SceneFieldFlag::NullTerminatedString is not allowed here.
          *
          * Expects that @p mappingData and @p fieldData have the same size in
          * the first dimension; that the second dimension of @p mappingData is
@@ -715,8 +912,9 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param name          Field name
          * @param mappingData   Object mapping data
          * @param fieldData     Field data
-         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly is
-         *      not allowed here.
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
          *
          * Detects @ref SceneMappingType based on @p T and @ref SceneFieldType
          * based on @p U and calls @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, SceneFieldType, const Containers::StridedArrayView1D<const void>&, UnsignedShort, SceneFieldFlags).
@@ -740,8 +938,9 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param name          Field name
          * @param mappingData   Object mapping data
          * @param fieldData     Field data
-         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly is
-         *      not allowed here.
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
          *
          * Detects @ref SceneMappingType based on @p T and @ref SceneFieldType
          * based on @p U and calls @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, SceneFieldType, const Containers::StridedArrayView1D<const void>&, UnsignedShort, SceneFieldFlags)
@@ -759,6 +958,87 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& mappingData, const Containers::StridedArrayView2D<U>& fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, Containers::stridedArrayView(mappingData), fieldData, flags} {}
 
         /**
+         * @brief Construct a string field from type-erased views
+         * @param name          Field name
+         * @param mappingType   Object mapping type
+         * @param mappingData   Object mapping data
+         * @param stringData    String to which the field offset or range data
+         *      are relative to
+         * @param fieldType     Field type. Only `SceneFieldType::String*`
+         *      values are allowed here.
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly is
+         *      not allowed here. @ref SceneFieldFlag::NullTerminatedString is
+         *      set implicitly for
+         *      @ref SceneFieldType::StringRangeNullTerminated8,
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated16},
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated32} and
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated64}.
+         *
+         * Expects that @p mappingData and @p fieldData have the same size,
+         * @p fieldType corresponds to @p name and @p fieldArraySize is zero
+         * for builtin fields.
+         */
+        /* While a StringView could provide the range assertions with more
+           context inside the SceneFieldData constructor, the main range
+           checking happens in the SceneField constructor, at which point the
+           size would be gone anyway as SceneFieldData can store only the begin
+           pointer inside. Using it would also mean we'd need to include its
+           full definition in this header. */
+        constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept;
+
+        /**
+         * @brief Construct a string field from 2D views
+         * @param name          Field name
+         * @param mappingData   Object mapping data
+         * @param stringData    String to which the field offset or range data
+         *      are relative to
+         * @param fieldType     Field type. Only `SceneFieldType::String*`
+         *      values are allowed here.
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly is
+         *      not allowed here. @ref SceneFieldFlag::NullTerminatedString is
+         *      set implicitly for
+         *      @ref SceneFieldType::StringRangeNullTerminated8,
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated16},
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated32} and
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated64}.
+         *
+         * Expects that @p mappingData and @p fieldData have the same size in
+         * the first dimension; that the second dimension of @p mappingData is
+         * contiguous and its size is either 1, 2, 4 or 8, corresponding to one
+         * of the @ref SceneMappingType values; that the second dimension of
+         * @p fieldData is contiguous and its size matches @p fieldType and
+         * @p fieldArraySize; and that for builtin fields @p fieldType
+         * corresponds to @p name and @p fieldArraySize is zero.
+         */
+        /* See above for why const char* is used instead of StringView */
+        explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, SceneFieldFlags flags = {}) noexcept;
+
+        /**
+         * @brief Construct a string field
+         * @param name          Field name
+         * @param mappingData   Object mapping data
+         * @param stringData    String to which the field offset or range data
+         *      are relative to
+         * @param fieldType     Field type. Only `SceneFieldType::String*`
+         *      values are allowed here.
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly is
+         *      not allowed here. @ref SceneFieldFlag::NullTerminatedString is
+         *      set implicitly for
+         *      @ref SceneFieldType::StringRangeNullTerminated8,
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated16},
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated32} and
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated64}.
+         */
+        /* See above for why const char* is used instead of StringView */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept;
+
+        /** @overload */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, Containers::stridedArrayView(mappingData), stringData, fieldType, fieldData, flags} {}
+
+        /**
          * @brief Construct an offset-only field
          * @param name              Field name
          * @param size              Number of entries
@@ -772,6 +1052,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          *      non-array fields.
          * @param flags             Field flags.
          *      @ref SceneFieldFlag::OffsetOnly is set implicitly.
+         *      @ref SceneFieldFlag::NullTerminatedString is not allowed here.
          *
          * Instances created this way refer to offsets in unspecified
          * external scene data instead of containing the data views directly.
@@ -793,6 +1074,44 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         /** @overload */
         explicit constexpr SceneFieldData(SceneField name, std::size_t size, SceneMappingType mappingType, std::size_t mappingOffset, std::ptrdiff_t mappingStride, SceneFieldType fieldType, std::size_t fieldOffset, std::ptrdiff_t fieldStride, SceneFieldFlags flags) noexcept: SceneFieldData{name, size, mappingType, mappingOffset, mappingStride, fieldType, fieldOffset, fieldStride, 0, flags} {}
 
+        /**
+         * @brief Construct an offset-only string field
+         * @param name              Field name
+         * @param size              Number of entries
+         * @param mappingType       Object mapping type
+         * @param mappingOffset     Object mapping data offset
+         * @param mappingStride     Object mapping data stride
+         * @param stringOffset      String data offset to which the field
+         *      offset or range data are relative to
+         * @param fieldType         Field type. Only `SceneFieldType::String*`
+         *      values are allowed here.
+         * @param fieldOffset       Field data offset
+         * @param fieldStride       Field data stride
+         * @param flags             Field flags.
+         *      @ref SceneFieldFlag::OffsetOnly is set implicitly.
+         *      @ref SceneFieldFlag::NullTerminatedString is set implicitly for
+         *      @ref SceneFieldType::StringRangeNullTerminated8,
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated16},
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated32} and
+         *      @relativeref{SceneFieldType,StringRangeNullTerminated64}.
+         *
+         * Instances created this way refer to offsets in unspecified
+         * external scene data instead of containing the data views directly.
+         * Useful when the location of the scene data array is not known at
+         * field construction time. Expects that for builtin fields
+         * @p fieldType corresponds to @p name and @p fieldArraySize is zero.
+         *
+         * Note that due to the @cpp constexpr @ce nature of this constructor,
+         * no @p mappingType checks against @p mappingStride or
+         * @p fieldType checks against @p fieldStride can be done. You're
+         * encouraged to use the @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, SceneFieldType, const Containers::StridedArrayView1D<const void>&, UnsignedShort, SceneFieldFlags)
+         * constructor if you want additional safeguards.
+         * @see @ref flags(),
+         *      @ref mappingData(Containers::ArrayView<const void>) const,
+         *      @ref fieldData(Containers::ArrayView<const void>) const
+         */
+        explicit constexpr SceneFieldData(SceneField name, std::size_t size, SceneMappingType mappingType, std::size_t mappingOffset, std::ptrdiff_t mappingStride, std::size_t stringOffset, SceneFieldType fieldType, std::size_t fieldOffset, std::ptrdiff_t fieldStride, SceneFieldFlags flags = {}) noexcept;
+
         /** @brief Field flags */
         constexpr SceneFieldFlags flags() const { return _flags; }
 
@@ -803,7 +1122,9 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         constexpr UnsignedLong size() const { return _size; }
 
         /** @brief Object mapping type */
-        constexpr SceneMappingType mappingType() const { return _mappingType; }
+        constexpr SceneMappingType mappingType() const {
+            return SceneMappingType(_mappingTypeStringType & Implementation::SceneMappingTypeMask);
+        }
 
         /**
          * @brief Type-erased object mapping data
@@ -825,10 +1146,16 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         Containers::StridedArrayView1D<const void> mappingData(Containers::ArrayView<const void> data) const;
 
         /** @brief Field type */
-        constexpr SceneFieldType fieldType() const { return _fieldType; }
+        SceneFieldType fieldType() const {
+            return _mappingTypeStringType & Implementation::SceneMappingStringTypeMask ?
+                SceneFieldType((_mappingTypeStringType & Implementation::SceneMappingStringTypeMask) >> 3) : _field.data.type;
+        }
 
         /** @brief Field array size */
-        constexpr UnsignedShort fieldArraySize() const { return _fieldArraySize; }
+        UnsignedShort fieldArraySize() const {
+            return _mappingTypeStringType & Implementation::SceneMappingStringTypeMask ?
+                0 : _field.data.arraySize;
+        }
 
         /**
          * @brief Type-erased field data
@@ -849,6 +1176,39 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          */
         Containers::StridedArrayView1D<const void> fieldData(Containers::ArrayView<const void> data) const;
 
+        /**
+         * @brief Base data pointer for a string field
+         *
+         * Offsets and ranges returned from @ref fieldData() are relative to
+         * this pointer. Can be only called on
+         * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*",
+         * @ref SceneFieldType::StringRange32 "StringRange*"
+         * and @ref SceneFieldType::StringRangeNullTerminated32 "StringRangeNullTerminated*"
+         * fields.
+         *
+         * Expects that the field does not have @ref SceneFieldFlag::OffsetOnly
+         * set, in that case use the @ref stringData(Containers::ArrayView<const void>) const
+         * overload instead.
+         * @see @ref flags()
+         */
+        const char* stringData() const;
+
+        /**
+         * @brief Base data pointer for an offset-only string field
+         *
+         * Offsets and ranges returned from @ref SceneData::field() are
+         * relative to this pointer. Can be only called on
+         * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*",
+         * @ref SceneFieldType::StringRange32 "StringRange*"
+         * and @ref SceneFieldType::StringRangeNullTerminated32 "StringRangeNullTerminated*"
+         * fields.
+         *
+         * If the field does not have @ref SceneFieldFlag::OffsetOnly set, the
+         * @p data parameter is ignored.
+         * @see @ref flags(), @ref fieldData() const
+         */
+        const char* stringData(Containers::ArrayView<const void> data) const;
+
     private:
         friend SceneData;
 
@@ -866,14 +1226,49 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         UnsignedLong _size;
         SceneField _name;
         SceneFieldFlags _flags;
-        SceneMappingType _mappingType;
+        /* Contains SceneMappingType in the lower 3 bits. If the
+           next 4 bits are non-zero, they encode one of the
+           `SceneFieldType::String* << 3` values. 1 remaining bit unused. */
+        UnsignedByte _mappingTypeStringType;
         Short _mappingStride;
         Data _mappingData;
 
-        Short _fieldStride;
-        SceneFieldType _fieldType;
-        UnsignedShort _fieldArraySize;
-        /* 2 bytes free */
+        /* Contains either of the two following layouts depending on whether
+           _mappingTypeStringType marks this as a string field. In that case
+           the type is stored in _mappingTypeStringType already and the
+           remaining 6 bytes store a *signed* string data offset:
+
+            -   if SceneFieldFlag::OffsetOnly is not set, relative to
+                _fieldData.pointer
+            -   if OffsetOnly is set, absolute
+
+           The 6 bytes allow addressing up to ±128 TB of data, which should be
+           plenty, making it relative to _fieldData.pointer accounts for cases
+           where an absolute pointer itself wouldn't fit into 48 bits.
+
+            0            2            4            6            8 LE
+            +------------+------------+------------+------------+
+            |            |    type    | array size |  (unused)  |
+            +   stride   +------------+------------+------------+
+            |            |          string data offset          |
+            +------------+--------------------------------------+
+            8            6            4            2            0 BE */
+        union Field {
+            /* C++, if you wouldn't be stupid, these constructors wouldn't be
+               needed. I just want to initialize one or the other union
+               field! */
+            constexpr explicit Field(): data{} {}
+            constexpr explicit Field(Short stride, SceneFieldType type, UnsignedShort arraySize): data{stride, type, arraySize} {}
+            constexpr explicit Field(Short stride, Long offset): strideOffset{(UnsignedLong(stride) & 0xffff)|((UnsignedLong(offset) & 0xffffffffffffull) << 16)} {}
+
+            struct {
+                Short stride;
+                SceneFieldType type;
+                UnsignedShort arraySize;
+                /* 2 bytes unused */
+            } data;
+            UnsignedLong strideOffset; /* Upper 48 bits on LE, lower 48 on BE */
+        } _field;
         Data _fieldData;
 };
 
@@ -1141,6 +1536,57 @@ The light references are actually a 2D array (8 lights for each cell), so a
 @cpp [] @ce needs to be used:
 
 @snippet MagnumTrade.cpp SceneData-populating-custom-retrieve
+
+@subsection Trade-SceneData-populating-strings String fields
+
+Besides fixed-size types and their arrays, the @ref SceneData class is capable
+of storing strings. A string field consists of a base pointer and a list
+containing offsets or ranges relative to that base pointer. Such separation
+allows more efficient storage compared to storing a full pointer (or a pair of
+a pointer and size) for every field, as it's possible to choose a smaller
+offset type if the referenced strings fit into a 8- or 16-bit range.
+
+To cover different use cases, there's multiple ways how to store the string
+references:
+
+-   @ref SceneFieldType::StringOffset32 and its 8-, 16- and 64-bit variants
+    store a running offset into the string array. For example, offsets
+    @cpp {3, 11, 23} @ce would mean the first string is from byte 0 to 3,
+    second is from byte 3 to 11 and third from byte 11 to 23. This storage type
+    is most efficient if the strings are unique for each entry --- such as
+    various names or external data filenames.
+-   @ref SceneFieldType::StringRange32 and its 8-, 16- and 64-bit variants
+    store a pair of offset and size. For example, ranges
+    @cpp {{11, 5}, {4, 7}, {11, 5}} @ce would mean the first and third string
+    is from byte 11 to 16 and the second string is from byte 4 to 11. This
+    storage type is thus most efficient when there's many duplicates --- such
+    as various object tags or categories.
+-   @ref SceneFieldType::StringRangeNullTerminated32 and its 8-, 16- and 64-bit
+    variants are similar to @ref SceneFieldType::StringRange32, but stores just
+    the offset and size is implicitly until the next @cpp '\0' @ce byte. Thus
+    it trades a slightly better space efficiency for the cost of a runtime
+    @ref std::strlen() call on every access.
+
+String fields can also have @ref SceneFieldFlag::NullTerminatedString set, in
+which case the returned @ref Containers::StringView instances will have
+@relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set, which may
+be useful for example to avoid an allocation when passing filenames to OS APIs
+in @ref Utility::Path::read(). The null terminators of course have to be stored
+in the data itself, see a particular @ref SceneFieldType for information about
+how it affects the field encoding.
+
+The following example shows populating a @ref SceneData with a "tag" string
+field, stored as null-terminated 8-bit string array ranges. In other words ---
+assuming there's enough stored data --- the space efficiency is the same as if
+a just a numeric value of an 8-bit @cpp enum @ce would be stored, but here it
+includes human-readable string names.
+
+@snippet MagnumTrade.cpp SceneData-populating-strings
+
+While there's many options how to store the string, retrieving of any string
+@ref SceneFieldType can be conveniently done using @ref fieldStrings():
+
+@snippet MagnumTrade.cpp SceneData-populating-strings-retrieve
 
 @see @ref AbstractImporter::scene()
 */
@@ -1413,10 +1859,15 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * In case given field is an array (the euqivalent of e.g.
          * @cpp int[30] @ce), returns array size, otherwise returns @cpp 0 @ce.
          * At the moment only custom fields can be arrays, no builtin
-         * @ref SceneField is an array field. Note that this is different from
-         * the count of entries for given field, which is exposed through
-         * @ref fieldSize(). See @ref Trade-SceneData-populating-custom for an
-         * example.
+         * @ref SceneField is an array field. Additionally, fields with
+         * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*",
+         * @ref SceneFieldType::StringRange32 "SceneFieldType::StringRange*" or
+         * @ref SceneFieldType::StringRangeNullTerminated32 "SceneFieldType::StringRangeNullTerminated*"
+         * can't be arrays, for them the function always returns @cpp 0 @ce.
+         *
+         * Note that this is different from the count of entries for given
+         * field, which is exposed through @ref fieldSize(). See
+         * @ref Trade-SceneData-populating-custom for an example.
          *
          * The @p id is expected to be smaller than @ref fieldCount(). You can
          * also use @ref fieldArraySize(SceneField) const to directly get a
@@ -1889,6 +2340,70 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @ref fieldArraySize(SceneField) const for given field.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(SceneField name);
+
+        /**
+         * @brief Base data pointer for given string field
+         * @m_since_latest
+         *
+         * Raw string offsets and ranges returned from @ref field() are
+         * relative to this pointer. For more convenient access use
+         * @ref fieldStrings() instead. Expects that @p id is smaller than
+         * @ref fieldCount() const and that the field is
+         * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*",
+         * @ref SceneFieldType::StringRange32 "SceneFieldType::StringRange*" or
+         * @ref SceneFieldType::StringRangeNullTerminated32 "SceneFieldType::StringRangeNullTerminated*".
+         * You can also use @ref fieldStringData(SceneField) const to directly
+         * get a data pointer for given named string field.
+         * @see @ref fieldType(UnsignedInt) const
+         */
+        const char* fieldStringData(UnsignedInt id) const;
+
+        /**
+         * @brief Base data pointer for given named string field
+         * @m_since_latest
+         *
+         * Expects that @p name exists and is
+         * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*",
+         * @ref SceneFieldType::StringRange32 "SceneFieldType::StringRange*" or
+         * @ref SceneFieldType::StringRangeNullTerminated32 "SceneFieldType::StringRangeNullTerminated*". See
+         * @ref fieldStringData(UnsignedInt) const for more information.
+         * @see @ref hasField()
+         */
+        const char* fieldStringData(SceneField name) const;
+
+        /**
+         * @brief Contents of given string field
+         * @m_since_latest
+         *
+         * The returned views point to strings owned by this instance. If the
+         * field has @ref SceneFieldFlag::NullTerminatedString set, the
+         * returned views all have @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * set. Expects that @p id is smaller than @ref fieldCount() const and
+         * that the field is
+         * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*",
+         * @ref SceneFieldType::StringRange32 "SceneFieldType::StringRange*" or
+         * @ref SceneFieldType::StringRangeNullTerminated32 "SceneFieldType::StringRangeNullTerminated*". You can also use
+         * @ref fieldStrings(SceneField) const to directly get contents of
+         * given named string field.
+         *
+         * The raw string data can be accessed using @ref fieldStringData() and
+         * @ref field(). See a particular @ref SceneFieldType for information
+         * about how to interpret the data.
+         */
+        Containers::StringIterable fieldStrings(UnsignedInt id) const;
+
+        /**
+         * @brief Contents of given string field
+         * @m_since_latest
+         *
+         * Expects that @p name exists and that the field is
+         * @ref SceneFieldType::StringOffset32 "SceneFieldType::StringOffset*",
+         * @ref SceneFieldType::StringRange32 "SceneFieldType::StringRange*",
+         * @ref SceneFieldType::StringRangeNullTerminated32 "SceneFieldType::StringRangeNullTerminated*". See
+         * @ref fieldStrings(UnsignedInt) const for more information.
+         * @see @ref hasField()
+         */
+        Containers::StringIterable fieldStrings(SceneField name) const;
 
         /**
          * @brief Object mapping for given field as 32-bit integers
@@ -2839,6 +3354,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataMappingViewInternal(const SceneFieldData& field) const;
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataFieldViewInternal(const SceneFieldData& field, std::size_t offset, std::size_t size) const;
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> fieldDataFieldViewInternal(const SceneFieldData& field) const;
+        /* Assertion-less helper for fieldStringData() and fieldStrings() */
+        MAGNUM_TRADE_LOCAL const char* fieldDataStringDataInternal(const SceneFieldData& field) const;
 
         #ifndef CORRADE_NO_ASSERT
         template<class T> bool checkFieldTypeCompatibility(const SceneFieldData& field, const char* prefix) const;
@@ -2876,11 +3393,12 @@ namespace Implementation {
         static_assert(sizeof(T) == 0, "unsupported field type");
     };
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    #define _c(type_) template<> struct SceneFieldTypeFor<type_> {          \
+    #define _cn(name, ...) template<> struct SceneFieldTypeFor<__VA_ARGS__> { \
         constexpr static SceneFieldType type() {                            \
-            return SceneFieldType::type_;                                   \
+            return SceneFieldType::name;                                    \
         }                                                                   \
     };
+    #define _c(type_) _cn(type_, type_)
     /* Bool needs a special type */
     _c(Float)
     _c(Half)
@@ -2973,7 +3491,12 @@ namespace Implementation {
     _c(Rad)
     _c(Radh)
     _c(Radd)
+    _cn(StringRange8, Containers::Pair<UnsignedByte, UnsignedByte>)
+    _cn(StringRange16, Containers::Pair<UnsignedShort, UnsignedShort>)
+    _cn(StringRange32, Containers::Pair<UnsignedInt, UnsignedInt>)
+    _cn(StringRange64, Containers::Pair<UnsignedLong, UnsignedLong>)
     #undef _c
+    #undef _cn
     #endif
     /** @todo this doesn't handle RectangleMatrix<size, size, T> and Vector<size, T> at the moment, do we need those? */
     template<class T> struct SceneFieldTypeFor<Math::Color3<T>>: SceneFieldTypeFor<Math::Vector3<T>> {};
@@ -2997,6 +3520,34 @@ namespace Implementation {
     template<class T> struct SceneFieldTypeTraits {
         constexpr static bool isCompatible(SceneFieldType type) {
             return type == SceneFieldTypeFor<T>::type();
+        }
+    };
+    template<> struct SceneFieldTypeTraits<UnsignedByte> {
+        constexpr static bool isCompatible(SceneFieldType type) {
+            return type == SceneFieldType::UnsignedByte ||
+                   type == SceneFieldType::StringOffset8 ||
+                   type == SceneFieldType::StringRangeNullTerminated8;
+        }
+    };
+    template<> struct SceneFieldTypeTraits<UnsignedShort> {
+        constexpr static bool isCompatible(SceneFieldType type) {
+            return type == SceneFieldType::UnsignedShort ||
+                   type == SceneFieldType::StringOffset16 ||
+                   type == SceneFieldType::StringRangeNullTerminated16;
+        }
+    };
+    template<> struct SceneFieldTypeTraits<UnsignedInt> {
+        constexpr static bool isCompatible(SceneFieldType type) {
+            return type == SceneFieldType::UnsignedInt ||
+                   type == SceneFieldType::StringOffset32 ||
+                   type == SceneFieldType::StringRangeNullTerminated32;
+        }
+    };
+    template<> struct SceneFieldTypeTraits<UnsignedLong> {
+        constexpr static bool isCompatible(SceneFieldType type) {
+            return type == SceneFieldType::UnsignedLong ||
+                   type == SceneFieldType::StringOffset64 ||
+                   type == SceneFieldType::StringRangeNullTerminated64;
         }
     };
 
@@ -3067,6 +3618,31 @@ namespace Implementation {
     constexpr bool isSceneFieldArrayAllowed(SceneField name) {
         return isSceneFieldCustom(name);
     }
+
+    constexpr bool isSceneFieldTypeString(SceneFieldType type) {
+        return
+            type == SceneFieldType::StringOffset8 ||
+            type == SceneFieldType::StringOffset16 ||
+            type == SceneFieldType::StringOffset32 ||
+            type == SceneFieldType::StringOffset64 ||
+            type == SceneFieldType::StringRange8 ||
+            type == SceneFieldType::StringRange16 ||
+            type == SceneFieldType::StringRange32 ||
+            type == SceneFieldType::StringRange64 ||
+            type == SceneFieldType::StringRangeNullTerminated8 ||
+            type == SceneFieldType::StringRangeNullTerminated16 ||
+            type == SceneFieldType::StringRangeNullTerminated32 ||
+            type == SceneFieldType::StringRangeNullTerminated64;
+    }
+
+    constexpr SceneFieldFlags implicitSceneFieldFlagsFor(SceneFieldType type) {
+        return
+            type == SceneFieldType::StringRangeNullTerminated8 ||
+            type == SceneFieldType::StringRangeNullTerminated16 ||
+            type == SceneFieldType::StringRangeNullTerminated32 ||
+            type == SceneFieldType::StringRangeNullTerminated64 ?
+            SceneFieldFlag::NullTerminatedString : SceneFieldFlags{};
+    }
 }
 
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
@@ -3074,17 +3650,19 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappi
         "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size()), mappingData.size())},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
-    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::OffsetOnly),
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view"), flags)},
-    _mappingType{mappingType},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)),
+        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)) << "for a view of" << fieldType), flags)},
+    _mappingTypeStringType{UnsignedByte(mappingType)},
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride()), Short(mappingData.stride()))},
     _mappingData{mappingData.data()},
-    _fieldStride{(CORRADE_CONSTEXPR_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
-        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride()), Short(fieldData.stride()))},
-    _fieldType{fieldType},
-    _fieldArraySize{(CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
-        "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
+    _field{
+        (CORRADE_CONSTEXPR_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
+            "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride()), Short(fieldData.stride())),
+        (CORRADE_CONSTEXPR_ASSERT(!Implementation::isSceneFieldTypeString(fieldType),
+            "Trade::SceneFieldData: use a string constructor for" << fieldType), fieldType),
+        (CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
+            "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
     _fieldData{fieldData.data()} {}
 
 template<class T, class U> constexpr SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const Containers::StridedArrayView1D<U>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, Implementation::sceneMappingTypeFor<typename std::remove_const<T>::type>(), mappingData, Implementation::SceneFieldTypeFor<typename std::remove_const<U>::type>::type(), fieldData, 0, flags} {}
@@ -3100,20 +3678,59 @@ template<class T, class U> constexpr SceneFieldData::SceneFieldData(const SceneF
     flags
 } {}
 
+constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept:
+    _size{(CORRADE_CONSTEXPR_ASSERT(mappingData.size() == fieldData.size(),
+        "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size()), mappingData.size())},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
+        "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::OffsetOnly),
+        "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::OffsetOnly) << "for a view"), flags|Implementation::implicitSceneFieldFlagsFor(fieldType))},
+    _mappingTypeStringType{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeString(fieldType),
+        "Trade::SceneFieldData: can't use a string constructor for" << fieldType), UnsignedByte(UnsignedByte(mappingType)|(UnsignedShort(fieldType) << 3)))},
+    _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride()), Short(mappingData.stride()))},
+    _mappingData{mappingData.data()},
+    _field{
+        (CORRADE_CONSTEXPR_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
+            "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride()), Short(fieldData.stride())),
+        stringData - static_cast<const char*>(fieldData.data())},
+    _fieldData{fieldData.data()} {}
+
+template<class T> constexpr SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, Implementation::sceneMappingTypeFor<typename std::remove_const<T>::type>(), mappingData, stringData, fieldType, fieldData, flags} {}
+
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_t size, const SceneMappingType mappingType, const std::size_t mappingOffset, const std::ptrdiff_t mappingStride, const SceneFieldType fieldType, const std::size_t fieldOffset, const std::ptrdiff_t fieldStride, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
     _size{size},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
-    _flags{flags|SceneFieldFlag::OffsetOnly},
-    _mappingType{mappingType},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::NullTerminatedString),
+        "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::NullTerminatedString) << "for" << fieldType), flags|SceneFieldFlag::OffsetOnly)},
+    _mappingTypeStringType{UnsignedByte(mappingType)},
     _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingStride >= -32768 && mappingStride <= 32767,
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingStride), Short(mappingStride))},
     _mappingData{mappingOffset},
-    _fieldStride{(CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
-        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride))},
-    _fieldType{fieldType},
-    _fieldArraySize{(CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
-        "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
+    _field{
+        (CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
+            "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride)),
+        (CORRADE_CONSTEXPR_ASSERT(!Implementation::isSceneFieldTypeString(fieldType),
+            "Trade::SceneFieldData: use a string constructor for" << fieldType), fieldType),
+        (CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
+            "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
+    _fieldData{fieldOffset} {}
+
+constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_t size, const SceneMappingType mappingType, const std::size_t mappingOffset, const std::ptrdiff_t mappingStride, const std::size_t stringOffset, const SceneFieldType fieldType, const std::size_t fieldOffset, const std::ptrdiff_t fieldStride, const SceneFieldFlags flags) noexcept:
+    _size{size},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
+        "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
+    _flags{flags|SceneFieldFlag::OffsetOnly|Implementation::implicitSceneFieldFlagsFor(fieldType)},
+    _mappingTypeStringType{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeString(fieldType),
+        "Trade::SceneFieldData: can't use a string constructor for" << fieldType), UnsignedByte(UnsignedByte(mappingType)|(UnsignedShort(fieldType) << 3)))},
+    _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingStride >= -32768 && mappingStride <= 32767,
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingStride), Short(mappingStride))},
+    _mappingData{mappingOffset},
+    _field{
+        (CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
+            "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride)),
+        Long(stringOffset)},
     _fieldData{fieldOffset} {}
 
 template<class T> Containers::StridedArrayView1D<const T> SceneData::mapping(const UnsignedInt fieldId) const {
@@ -3158,9 +3775,9 @@ template<class T> Containers::StridedArrayView1D<T> SceneData::mutableMapping(co
 
 #ifndef CORRADE_NO_ASSERT
 template<class T> bool SceneData::checkFieldTypeCompatibility(const SceneFieldData& field, const char* const prefix) const {
-    CORRADE_ASSERT(Implementation::SceneFieldTypeTraits<typename std::remove_extent<T>::type>::isCompatible(field._fieldType),
-        prefix << field._name << "is" << field._fieldType << "but requested a type equivalent to" << Implementation::SceneFieldTypeFor<typename std::remove_extent<T>::type>::type(), false);
-    if(field._fieldArraySize) CORRADE_ASSERT(std::is_array<T>::value,
+    CORRADE_ASSERT(Implementation::SceneFieldTypeTraits<typename std::remove_extent<T>::type>::isCompatible(field.fieldType()),
+        prefix << field._name << "is" << field.fieldType() << "but requested a type equivalent to" << Implementation::SceneFieldTypeFor<typename std::remove_extent<T>::type>::type(), false);
+    if(field.fieldArraySize()) CORRADE_ASSERT(std::is_array<T>::value,
         prefix << field._name << "is an array field, use T[] to access it", false);
     else CORRADE_ASSERT(!std::is_array<T>::value,
         prefix << field._name << "is not an array field, can't use T[] to access it", false);

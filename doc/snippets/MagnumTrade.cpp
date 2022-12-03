@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Algorithms.h>
@@ -977,6 +978,17 @@ Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 120, std::move(data),
 }
 
 {
+/* [SceneFieldData-usage-strings] */
+Containers::StridedArrayView1D<UnsignedInt> mapping = DOXYGEN_ELLIPSIS({});
+Containers::StringView string = DOXYGEN_ELLIPSIS({});
+Containers::StridedArrayView1D<Containers::Pair<UnsignedInt, UnsignedInt>> ranges = DOXYGEN_ELLIPSIS({});
+
+Trade::SceneFieldData field{Trade::sceneFieldCustom(35), mapping,
+    string.data(), Trade::SceneFieldType::StringRange32, ranges};
+/* [SceneFieldData-usage-strings] */
+}
+
+{
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 /* [SceneData-usage1] */
@@ -1160,6 +1172,52 @@ Containers::StridedArrayView2D<const Int> cellLights =
 /* [SceneData-populating-custom-retrieve] */
 static_cast<void>(cellFrustums);
 static_cast<void>(cellLights);
+}
+
+{
+using namespace Containers::Literals;
+/* [SceneData-populating-strings] */
+constexpr Containers::StringView CategoryStrings =
+    "wall\0furniture\0lighting\0artwork"_s;
+constexpr UnsignedByte CategoryWall = 0;
+constexpr UnsignedByte CategoryFurniture = 5;
+constexpr UnsignedByte CategoryLighting = 15;
+constexpr UnsignedByte CategoryArtwork = 24;
+
+Containers::MutableStringView categoryStrings;
+Containers::ArrayView<UnsignedInt> mapping;
+Containers::ArrayView<UnsignedByte> categories;
+Containers::ArrayTuple data{
+    {CategoryStrings.size(), categoryStrings},
+    {DOXYGEN_ELLIPSIS(5), mapping},
+    {DOXYGEN_ELLIPSIS(5), categories},
+};
+
+Utility::copy(CategoryStrings, categoryStrings);
+mapping[0] = 7;
+categories[0] = CategoryWall;
+mapping[1] = 19;
+categories[1] = CategoryFurniture;
+DOXYGEN_ELLIPSIS(static_cast<void>(CategoryLighting); static_cast<void>(CategoryArtwork);)
+
+constexpr Trade::SceneField SceneFieldCategory = Trade::sceneFieldCustom(25);
+Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, DOXYGEN_ELLIPSIS(5), std::move(data), {
+    Trade::SceneFieldData{SceneFieldCategory, mapping,
+        categoryStrings.data(), Trade::SceneFieldType::StringRangeNullTerminated8,
+        categories}
+}};
+/* [SceneData-populating-strings] */
+}
+
+{
+constexpr Trade::SceneField SceneFieldCategory = Trade::sceneFieldCustom(25);
+Trade::SceneData scene{{}, 0, nullptr, nullptr};
+/* [SceneData-populating-strings-retrieve] */
+Containers::StringIterable categories = scene.fieldStrings(SceneFieldCategory);
+
+// Prints "furniture"
+Debug{} << categories[scene.fieldObjectOffset(SceneFieldCategory, 19)];
+/* [SceneData-populating-strings-retrieve] */
 }
 
 }

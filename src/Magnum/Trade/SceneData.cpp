@@ -31,6 +31,8 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayViewStl.h>
+#include <Corrade/Containers/StringIterable.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Algorithms.h>
 
@@ -238,6 +240,18 @@ Debug& operator<<(Debug& debug, const SceneFieldType value) {
         _c(Radd)
         _c(Pointer)
         _c(MutablePointer)
+        _c(StringOffset8)
+        _c(StringOffset16)
+        _c(StringOffset32)
+        _c(StringOffset64)
+        _c(StringRange8)
+        _c(StringRange16)
+        _c(StringRange32)
+        _c(StringRange64)
+        _c(StringRangeNullTerminated8)
+        _c(StringRangeNullTerminated16)
+        _c(StringRangeNullTerminated32)
+        _c(StringRangeNullTerminated64)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -253,6 +267,8 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
     switch(type) {
         case SceneFieldType::UnsignedByte:
         case SceneFieldType::Byte:
+        case SceneFieldType::StringOffset8:
+        case SceneFieldType::StringRangeNullTerminated8:
             return 1;
         case SceneFieldType::UnsignedShort:
         case SceneFieldType::Short:
@@ -261,6 +277,9 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
         case SceneFieldType::Vector2b:
         case SceneFieldType::Degh:
         case SceneFieldType::Radh:
+        case SceneFieldType::StringOffset16:
+        case SceneFieldType::StringRange8:
+        case SceneFieldType::StringRangeNullTerminated16:
             return 2;
         case SceneFieldType::Vector3ub:
         case SceneFieldType::Vector3b:
@@ -276,6 +295,9 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
         case SceneFieldType::Range1Dh:
         case SceneFieldType::Deg:
         case SceneFieldType::Rad:
+        case SceneFieldType::StringOffset32:
+        case SceneFieldType::StringRange16:
+        case SceneFieldType::StringRangeNullTerminated32:
             return 4;
         case SceneFieldType::Vector3us:
         case SceneFieldType::Vector3s:
@@ -297,6 +319,9 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
         case SceneFieldType::Complex:
         case SceneFieldType::Degd:
         case SceneFieldType::Radd:
+        case SceneFieldType::StringOffset64:
+        case SceneFieldType::StringRange32:
+        case SceneFieldType::StringRangeNullTerminated64:
             return 8;
         case SceneFieldType::Vector3:
         case SceneFieldType::Vector3ui:
@@ -318,6 +343,7 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
         case SceneFieldType::Complexd:
         case SceneFieldType::DualComplex:
         case SceneFieldType::Quaternion:
+        case SceneFieldType::StringRange64:
             return 16;
         case SceneFieldType::Matrix3x3h:
             return 18;
@@ -384,6 +410,9 @@ UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
         case SceneFieldType::Vector2b:
         case SceneFieldType::Vector3b:
         case SceneFieldType::Vector4b:
+        case SceneFieldType::StringOffset8:
+        case SceneFieldType::StringRange8:
+        case SceneFieldType::StringRangeNullTerminated8:
             return 1;
         case SceneFieldType::UnsignedShort:
         case SceneFieldType::Vector2us:
@@ -411,6 +440,9 @@ UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
         case SceneFieldType::Range3Dh:
         case SceneFieldType::Degh:
         case SceneFieldType::Radh:
+        case SceneFieldType::StringOffset16:
+        case SceneFieldType::StringRange16:
+        case SceneFieldType::StringRangeNullTerminated16:
             return 2;
         case SceneFieldType::UnsignedInt:
         case SceneFieldType::Vector2ui:
@@ -445,6 +477,9 @@ UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
         case SceneFieldType::DualQuaternion:
         case SceneFieldType::Deg:
         case SceneFieldType::Rad:
+        case SceneFieldType::StringOffset32:
+        case SceneFieldType::StringRange32:
+        case SceneFieldType::StringRangeNullTerminated32:
             return 4;
         case SceneFieldType::UnsignedLong:
         case SceneFieldType::Long:
@@ -470,6 +505,9 @@ UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
         case SceneFieldType::DualQuaterniond:
         case SceneFieldType::Degd:
         case SceneFieldType::Radd:
+        case SceneFieldType::StringOffset64:
+        case SceneFieldType::StringRange64:
+        case SceneFieldType::StringRangeNullTerminated64:
             return 8;
         case SceneFieldType::Pointer:
         case SceneFieldType::MutablePointer:
@@ -494,6 +532,7 @@ Debug& operator<<(Debug& debug, const SceneFieldFlag value) {
         _c(OffsetOnly)
         _c(ImplicitMapping)
         _c(OrderedMapping)
+        _c(NullTerminatedString)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -506,7 +545,8 @@ Debug& operator<<(Debug& debug, const SceneFieldFlags value) {
         SceneFieldFlag::OffsetOnly,
         SceneFieldFlag::ImplicitMapping,
         /* This one is implied by ImplicitMapping, so has to be after */
-        SceneFieldFlag::OrderedMapping
+        SceneFieldFlag::OrderedMapping,
+        SceneFieldFlag::NullTerminatedString
     });
 }
 
@@ -521,10 +561,37 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
         "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType, );
     #endif
 
-    if(mappingData.size()[1] == 8) _mappingType = SceneMappingType::UnsignedLong;
-    else if(mappingData.size()[1] == 4) _mappingType = SceneMappingType::UnsignedInt;
-    else if(mappingData.size()[1] == 2) _mappingType = SceneMappingType::UnsignedShort;
-    else if(mappingData.size()[1] == 1) _mappingType = SceneMappingType::UnsignedByte;
+    if(mappingData.size()[1] == 8)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedLong);
+    else if(mappingData.size()[1] == 4)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedInt);
+    else if(mappingData.size()[1] == 2)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedShort);
+    else if(mappingData.size()[1] == 1)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedByte);
+    else CORRADE_ASSERT_UNREACHABLE("Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got" << mappingData.size()[1], );
+
+    CORRADE_ASSERT(mappingData.isContiguous<1>(), "Trade::SceneFieldData: second mapping view dimension is not contiguous", );
+    CORRADE_ASSERT(fieldData.isContiguous<1>(), "Trade::SceneFieldData: second field view dimension is not contiguous", );
+}
+
+SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, stringData, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, flags} {
+    /* Yes, this calls into a constexpr function defined in the header --
+       because I feel that makes more sense than duplicating the full assert
+       logic */
+    CORRADE_ASSERT(fieldData.isEmpty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType),
+        "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType, );
+
+    /* Merge the mapping type with the string type already writen by the
+       delegated-to constructor -- that's why the |=. */
+    if(mappingData.size()[1] == 8)
+        _mappingTypeStringType |= UnsignedByte(SceneMappingType::UnsignedLong);
+    else if(mappingData.size()[1] == 4)
+        _mappingTypeStringType |= UnsignedByte(SceneMappingType::UnsignedInt);
+    else if(mappingData.size()[1] == 2)
+        _mappingTypeStringType |= UnsignedByte(SceneMappingType::UnsignedShort);
+    else if(mappingData.size()[1] == 1)
+        _mappingTypeStringType |= UnsignedByte(SceneMappingType::UnsignedByte);
     else CORRADE_ASSERT_UNREACHABLE("Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got" << mappingData.size()[1], );
 
     CORRADE_ASSERT(mappingData.isContiguous<1>(), "Trade::SceneFieldData: second mapping view dimension is not contiguous", );
@@ -553,14 +620,49 @@ Containers::StridedArrayView1D<const void> SceneFieldData::fieldData() const {
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
         /** @todo better ideas for the StridedArrayView API? */
-        {_fieldData.pointer, ~std::size_t{}}, _size, _fieldStride};
+        {_fieldData.pointer, ~std::size_t{}}, _size, _field.data.stride};
 }
 
 Containers::StridedArrayView1D<const void> SceneFieldData::fieldData(const Containers::ArrayView<const void> data) const {
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
         /** @todo better ideas for the StridedArrayView API? */
-        data, _flags & SceneFieldFlag::OffsetOnly ? static_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _size, _fieldStride};
+        data, _flags & SceneFieldFlag::OffsetOnly ? static_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _size, _field.data.stride};
+}
+
+namespace {
+
+/* https://graphics.stanford.edu/~seander/bithacks.html#FixedSignExtend ;
+   stride extraction doesn't need a helper as we can access the union field
+   directly. It's also not directly using bitfields in the SceneFieldData
+   privates as I expect nasty portability / endian issues and compiler warnings
+   coming from this. */
+inline Long extractStringFieldOffset(const UnsignedLong strideOffset) {
+    union {
+        struct {
+            Short:16;
+            Long offset:48;
+        } s;
+        UnsignedLong u;
+    } caster;
+    caster.u = strideOffset;
+    return caster.s.offset;
+}
+
+}
+
+const char* SceneFieldData::stringData() const {
+    CORRADE_ASSERT(_mappingTypeStringType & Implementation::SceneMappingStringTypeMask,
+        "Trade::SceneFieldData::stringData(): the field is" << _field.data.type << Debug::nospace << ", not a string", {});
+    CORRADE_ASSERT(!(_flags & SceneFieldFlag::OffsetOnly),
+        "Trade::SceneFieldData::stringData(): the field is offset-only, supply a data array", {});
+    return static_cast<const char*>(_fieldData.pointer) + extractStringFieldOffset(_field.strideOffset);
+}
+
+const char* SceneFieldData::stringData(Containers::ArrayView<const void> data) const {
+    CORRADE_ASSERT(_mappingTypeStringType & Implementation::SceneMappingStringTypeMask,
+        "Trade::SceneFieldData::stringData(): the field is" << _field.data.type << Debug::nospace << ", not a string", {});
+    return static_cast<const char*>(_flags & SceneFieldFlag::OffsetOnly ? data.data() : _fieldData.pointer) + extractStringFieldOffset(_field.strideOffset);
 }
 
 Containers::Array<SceneFieldData> sceneFieldDataNonOwningArray(const Containers::ArrayView<const SceneFieldData> view) {
@@ -603,8 +705,8 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
            large enough to reference all objects (checked outside of the loop
            above) and that it's the same for all fields. This also makes it
            more convenient for the user. */
-        CORRADE_ASSERT(field._mappingType == _mappingType,
-            "Trade::SceneData: inconsistent mapping type, got" << field._mappingType << "for field" << i << "but expected" << _mappingType, );
+        CORRADE_ASSERT(field.mappingType() == _mappingType,
+            "Trade::SceneData: inconsistent mapping type, got" << field.mappingType() << "for field" << i << "but expected" << _mappingType, );
 
         /* We could check that object indices are in bounds, but that's rather
            expensive. OTOH it's fine if field size is larger than object count,
@@ -631,8 +733,8 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
            accessing the memory would be invalid anyway and enforcing this
            would lead to unnecessary friction with optional fields. */
         if(field._size) {
-            const UnsignedInt fieldTypeSize = sceneFieldTypeSize(field._fieldType)*
-                (field._fieldArraySize ? field._fieldArraySize : 1);
+            const UnsignedShort fieldArraySize = field.fieldArraySize();
+            const UnsignedInt fieldTypeSize = sceneFieldTypeSize(field.fieldType())*(fieldArraySize ? fieldArraySize : 1);
 
             /* Both pointer and offset-only rely on basically same calculation,
                do it with offsets in a single place and only interpret as
@@ -641,7 +743,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
             std::size_t mappingBegin = field._mappingData.offset;
             std::size_t fieldBegin = field._fieldData.offset;
             std::size_t mappingEnd = mappingBegin + (field._size - 1)*field._mappingStride;
-            std::size_t fieldEnd = fieldBegin + (field._size - 1)*field._fieldStride;
+            std::size_t fieldEnd = fieldBegin + (field._size - 1)*field._field.data.stride;
             /* Flip for negative strides */
             if(mappingBegin > mappingEnd) std::swap(mappingBegin, mappingEnd);
             if(fieldBegin > fieldEnd) std::swap(fieldBegin, fieldEnd);
@@ -659,6 +761,15 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
                     "Trade::SceneData: mapping data [" << Debug::nospace << reinterpret_cast<const void*>(mappingBegin) << Debug::nospace << ":" << Debug::nospace << reinterpret_cast<const void*>(mappingEnd) << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
                 CORRADE_ASSERT(reinterpret_cast<const void*>(fieldBegin) >= _data.begin() && reinterpret_cast<const void*>(fieldEnd) <= _data.end(),
                     "Trade::SceneData: field data [" << Debug::nospace << reinterpret_cast<const void*>(fieldBegin) << Debug::nospace << ":" << Debug::nospace << reinterpret_cast<const void*>(fieldEnd) << Debug::nospace << "] of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
+            }
+
+            /* If a string field, check that the string data pointer is in
+               bounds. Not checking the offsets/sizes in the field itself
+               though, as that'd be prohibitively expensive. */
+            if(field._mappingTypeStringType & Implementation::SceneMappingStringTypeMask) {
+                const char* const stringData = field.stringData(_data);
+                CORRADE_ASSERT(stringData >= _data.begin() && stringData <= _data.end(),
+                    "Trade::SceneData: field string data" << reinterpret_cast<const void*>(stringData) << "of field" << i << "are not contained in passed data array [" << Debug::nospace << static_cast<const void*>(_data.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_data.end()) << Debug::nospace << "]", );
             }
         }
         #endif
@@ -693,7 +804,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
        "begin" was always zero, here we're always comparing four values, so the
        message for offset-only wouldn't be simpler either. */
     const auto checkFieldMappingDataMatch = [](const SceneFieldData& a, const SceneFieldData& b) {
-        const std::size_t mappingTypeSize = sceneMappingTypeSize(a._mappingType);
+        const std::size_t mappingTypeSize = sceneMappingTypeSize(a.mappingType());
         const void* const aBegin = a._mappingData.pointer;
         const void* const bBegin = b._mappingData.pointer;
         const void* const aEnd = static_cast<const char*>(a._mappingData.pointer) + a._size*mappingTypeSize;
@@ -719,7 +830,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
 
     /* Decide about dimensionality based on transformation type, if present */
     if(transformationField != ~UnsignedInt{}) {
-        const SceneFieldType fieldType = _fields[transformationField]._fieldType;
+        const SceneFieldType fieldType = _fields[transformationField]._field.data.type;
         if(fieldType == SceneFieldType::Matrix3x3 ||
            fieldType == SceneFieldType::Matrix3x3d ||
            fieldType == SceneFieldType::Matrix3x2 ||
@@ -740,7 +851,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
     /* Use TRS fields to decide about dimensionality, if the transformation
        field is not present. If it is, verify that they match it. */
     if(translationField != ~UnsignedInt{}) {
-        const SceneFieldType fieldType = _fields[translationField]._fieldType;
+        const SceneFieldType fieldType = _fields[translationField]._field.data.type;
         if(fieldType == SceneFieldType::Vector2 ||
            fieldType == SceneFieldType::Vector2d) {
             CORRADE_ASSERT(!_dimensions || _dimensions == 2,
@@ -754,7 +865,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
     if(rotationField != ~UnsignedInt{}) {
-        const SceneFieldType fieldType = _fields[rotationField]._fieldType;
+        const SceneFieldType fieldType = _fields[rotationField]._field.data.type;
         if(fieldType == SceneFieldType::Complex ||
            fieldType == SceneFieldType::Complexd) {
             CORRADE_ASSERT(!_dimensions || _dimensions == 2,
@@ -768,7 +879,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
     if(scalingField != ~UnsignedInt{}) {
-        const SceneFieldType fieldType = _fields[scalingField]._fieldType;
+        const SceneFieldType fieldType = _fields[scalingField]._field.data.type;
         if(fieldType == SceneFieldType::Vector2 ||
            fieldType == SceneFieldType::Vector2d) {
             CORRADE_ASSERT(!_dimensions || _dimensions == 2,
@@ -875,8 +986,8 @@ Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal
         /* We're *sure* the view is correct, so faking the view size */
         {static_cast<const char*>(field._flags & SceneFieldFlag::OffsetOnly ?
             _data.data() + field._fieldData.offset : field._fieldData.pointer)
-            + field._fieldStride*offset, ~std::size_t{}},
-        size, field._fieldStride};
+            + field._field.data.stride*offset, ~std::size_t{}},
+        size, field._field.data.stride};
 }
 
 Containers::StridedArrayView1D<const void> SceneData::fieldDataFieldViewInternal(const SceneFieldData& field) const {
@@ -894,7 +1005,11 @@ SceneFieldData SceneData::fieldData(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::fieldData(): index" << id << "out of range for" << _fields.size() << "fields", SceneFieldData{});
     const SceneFieldData& field = _fields[id];
-    return SceneFieldData{field._name, field._mappingType, fieldDataMappingViewInternal(field), field._fieldType, fieldDataFieldViewInternal(field), field._fieldArraySize, field._flags & ~SceneFieldFlag::OffsetOnly};
+    const SceneFieldFlags flags = field._flags & ~SceneFieldFlag::OffsetOnly;
+    if(field._mappingTypeStringType & Implementation::SceneMappingStringTypeMask)
+        return SceneFieldData{field._name, field.mappingType(), fieldDataMappingViewInternal(field), field.stringData(_data), field.fieldType(), fieldDataFieldViewInternal(field), flags};
+    else
+        return SceneFieldData{field._name, field.mappingType(), fieldDataMappingViewInternal(field), field._field.data.type, fieldDataFieldViewInternal(field), field._field.data.arraySize, flags};
 }
 
 SceneField SceneData::fieldName(const UnsignedInt id) const {
@@ -912,7 +1027,7 @@ SceneFieldFlags SceneData::fieldFlags(const UnsignedInt id) const {
 SceneFieldType SceneData::fieldType(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::fieldType(): index" << id << "out of range for" << _fields.size() << "fields", {});
-    return _fields[id]._fieldType;
+    return _fields[id].fieldType();
 }
 
 std::size_t SceneData::fieldSize(const UnsignedInt id) const {
@@ -924,7 +1039,7 @@ std::size_t SceneData::fieldSize(const UnsignedInt id) const {
 UnsignedShort SceneData::fieldArraySize(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::fieldArraySize(): index" << id << "out of range for" << _fields.size() << "fields", {});
-    return _fields[id]._fieldArraySize;
+    return _fields[id].fieldArraySize();
 }
 
 UnsignedInt SceneData::findFieldIdInternal(const SceneField name) const {
@@ -985,13 +1100,14 @@ template<class T> std::size_t findObject(const SceneFieldFlags flags, const Cont
 
 std::size_t SceneData::findFieldObjectOffsetInternal(const SceneFieldData& field, const UnsignedLong object, const std::size_t offset) const {
     const Containers::StridedArrayView1D<const void> mapping = fieldDataMappingViewInternal(field, offset, field._size - offset);
-    if(field._mappingType == SceneMappingType::UnsignedInt)
+    const SceneMappingType mappingType = field.mappingType();
+    if(mappingType == SceneMappingType::UnsignedInt)
         return offset + findObject<UnsignedInt>(field._flags, mapping, offset, object);
-    else if(field._mappingType == SceneMappingType::UnsignedShort)
+    else if(mappingType == SceneMappingType::UnsignedShort)
         return offset + findObject<UnsignedShort>(field._flags, mapping, offset, object);
-    else if(field._mappingType == SceneMappingType::UnsignedByte)
+    else if(mappingType == SceneMappingType::UnsignedByte)
         return offset + findObject<UnsignedByte>(field._flags, mapping, offset, object);
-    else if(field._mappingType == SceneMappingType::UnsignedLong)
+    else if(mappingType == SceneMappingType::UnsignedLong)
         return offset + findObject<UnsignedLong>(field._flags, mapping, offset, object);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -1091,7 +1207,7 @@ SceneFieldFlags SceneData::fieldFlags(const SceneField name) const {
 SceneFieldType SceneData::fieldType(const SceneField name) const {
     const UnsignedInt fieldId = findFieldIdInternal(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{}, "Trade::SceneData::fieldType(): field" << name << "not found", {});
-    return _fields[fieldId]._fieldType;
+    return _fields[fieldId].fieldType();
 }
 
 std::size_t SceneData::fieldSize(const SceneField name) const {
@@ -1103,7 +1219,7 @@ std::size_t SceneData::fieldSize(const SceneField name) const {
 UnsignedShort SceneData::fieldArraySize(const SceneField name) const {
     const UnsignedInt fieldId = findFieldIdInternal(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{}, "Trade::SceneData::fieldArraySize(): field" << name << "not found", {});
-    return _fields[fieldId]._fieldArraySize;
+    return _fields[fieldId].fieldArraySize();
 }
 
 Containers::StridedArrayView2D<const char> SceneData::mapping(const UnsignedInt fieldId) const {
@@ -1113,7 +1229,7 @@ Containers::StridedArrayView2D<const char> SceneData::mapping(const UnsignedInt 
     /* Build a 2D view using information about mapping type size */
     return Containers::arrayCast<2, const char>(
         fieldDataMappingViewInternal(field),
-        sceneMappingTypeSize(field._mappingType));
+        sceneMappingTypeSize(field.mappingType()));
 }
 
 Containers::StridedArrayView2D<char> SceneData::mutableMapping(const UnsignedInt fieldId) {
@@ -1125,7 +1241,7 @@ Containers::StridedArrayView2D<char> SceneData::mutableMapping(const UnsignedInt
     /* Build a 2D view using information about attribute type size */
     const auto out = Containers::arrayCast<2, const char>(
         fieldDataMappingViewInternal(field),
-        sceneMappingTypeSize(field._mappingType));
+        sceneMappingTypeSize(field.mappingType()));
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{
         /* The view size is there only for a size assert, we're pretty sure the
@@ -1152,10 +1268,11 @@ Containers::StridedArrayView2D<const char> SceneData::field(const UnsignedInt id
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::field(): index" << id << "out of range for" << _fields.size() << "fields", {});
     const SceneFieldData& field = _fields[id];
+    const UnsignedShort fieldArraySize = field.fieldArraySize();
     /* Build a 2D view using information about mapping type size */
     return Containers::arrayCast<2, const char>(
         fieldDataFieldViewInternal(field),
-        sceneFieldTypeSize(field._fieldType)*(field._fieldArraySize ? field._fieldArraySize : 1));
+        sceneFieldTypeSize(field.fieldType())*(fieldArraySize ? fieldArraySize : 1));
 }
 
 Containers::StridedArrayView2D<char> SceneData::mutableField(const UnsignedInt id) {
@@ -1164,10 +1281,11 @@ Containers::StridedArrayView2D<char> SceneData::mutableField(const UnsignedInt i
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::mutableField(): index" << id << "out of range for" << _fields.size() << "fields", {});
     const SceneFieldData& field = _fields[id];
+    const UnsignedShort fieldArraySize = field.fieldArraySize();
     /* Build a 2D view using information about attribute type size */
     const auto out = Containers::arrayCast<2, const char>(
         fieldDataFieldViewInternal(field),
-        sceneFieldTypeSize(field._fieldType)*(field._fieldArraySize ? field._fieldArraySize : 1));
+        sceneFieldTypeSize(field.fieldType())*(fieldArraySize ? fieldArraySize : 1));
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{
         /* The view size is there only for a size assert, we're pretty sure the
@@ -1192,6 +1310,123 @@ Containers::StridedArrayView2D<char> SceneData::mutableField(const SceneField na
     return mutableField(fieldId);
 }
 
+const char* SceneData::fieldDataStringDataInternal(const SceneFieldData& field) const {
+    return static_cast<const char*>(field._flags & SceneFieldFlag::OffsetOnly ? _data.data() : field._fieldData.pointer) + extractStringFieldOffset(field._field.strideOffset);
+}
+
+const char* SceneData::fieldStringData(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < _fields.size(),
+        "Trade::SceneData::fieldStringData(): index" << id << "out of range for" << _fields.size() << "fields", {});
+    const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field._mappingTypeStringType & Implementation::SceneMappingStringTypeMask,
+        "Trade::SceneData::fieldStringData():" << field._name << "is" << field._field.data.type << Debug::nospace << ", not a string", {});
+    return fieldDataStringDataInternal(field);
+}
+
+const char* SceneData::fieldStringData(const SceneField name) const {
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::fieldStringData(): field" << name << "not found", {});
+    return fieldStringData(fieldId);
+}
+
+namespace {
+
+/* These two take the `SceneFieldData` as a context pointer, instead of
+   `const char*`, in order to special-case the first element */
+template<class T> Containers::StringView fieldStringsAccessorOffset(const void* const data, const void* const context, const std::ptrdiff_t stride, const std::size_t i) {
+    const std::size_t currentOffset = *static_cast<const T*>(data);
+    const std::size_t prevOffset = i == 0 ? 0 : *reinterpret_cast<const T*>(static_cast<const char*>(data) - stride);
+    return Containers::StringView{static_cast<const char*>(context) + prevOffset, currentOffset - prevOffset};
+}
+template<class T> Containers::StringView fieldStringsAccessorNullTerminatedOffset(const void* const data, const void* const context, const std::ptrdiff_t stride, const std::size_t i) {
+    const std::size_t currentOffset = *static_cast<const T*>(data);
+    const std::size_t prevOffset = i == 0 ? 0 : *reinterpret_cast<const T*>(static_cast<const char*>(data) - stride);
+    return Containers::StringView{static_cast<const char*>(context) + prevOffset, currentOffset - prevOffset - 1, Containers::StringViewFlag::NullTerminated};
+}
+template<class T> Containers::StringView fieldStringsAccessorRange(const void* const data, const void* const context, std::ptrdiff_t, std::size_t) {
+    const auto& dataI = *static_cast<const Containers::Pair<T, T>*>(data);
+    return Containers::StringView{static_cast<const char*>(context) + dataI.first(), std::size_t(dataI.second())};
+}
+/* The difference between the two is that the first is for
+   SceneFieldType::StringRange* + SceneFieldFlag::NullTerminatedString, while
+   the second for SceneFieldType::StringRange*NullTerminated */
+template<class T> Containers::StringView fieldStringsAccessorNullTerminatedRange(const void* data, const void* context, std::ptrdiff_t, std::size_t) {
+    const auto& dataI = *static_cast<const Containers::Pair<T, T>*>(data);
+    return Containers::StringView{static_cast<const char*>(context) + dataI.first(), std::size_t(dataI.second()), Containers::StringViewFlag::NullTerminated};
+}
+template<class T> Containers::StringView fieldStringsAccessorRangeNullTerminated(const void* data, const void* context, std::ptrdiff_t, std::size_t) {
+    const auto& dataI = *static_cast<const T*>(data);
+    /* StringViewFlag::NullTerminated is added implicitly, as the function
+       uses strlen() to calculate the size */
+    return Containers::StringView{static_cast<const char*>(context) + dataI};
+}
+
+}
+
+Containers::StringIterable SceneData::fieldStrings(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < _fields.size(),
+        "Trade::SceneData::fieldStrings(): index" << id << "out of range for" << _fields.size() << "fields", {});
+    const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field._mappingTypeStringType & Implementation::SceneMappingStringTypeMask,
+        "Trade::SceneData::fieldStrings():" << field._name << "is" << field._field.data.type << Debug::nospace << ", not a string", {});
+
+    /* Decide on the accessor callback */
+    const SceneFieldType type = field.fieldType();
+    Containers::StringView(*accessor)(const void*, const void*, std::ptrdiff_t, std::size_t);
+    if(type == SceneFieldType::StringOffset8)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedOffset<UnsignedByte> :
+            fieldStringsAccessorOffset<UnsignedByte>;
+    else if(type == SceneFieldType::StringOffset16)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedOffset<UnsignedShort> :
+            fieldStringsAccessorOffset<UnsignedShort>;
+    else if(type == SceneFieldType::StringOffset32)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedOffset<UnsignedInt> :
+            fieldStringsAccessorOffset<UnsignedInt>;
+    else if(type == SceneFieldType::StringOffset64)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedOffset<UnsignedLong> :
+            fieldStringsAccessorOffset<UnsignedLong>;
+    else if(type == SceneFieldType::StringRange8)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedRange<UnsignedByte> :
+            fieldStringsAccessorRange<UnsignedByte>;
+    else if(type == SceneFieldType::StringRange16)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedRange<UnsignedShort> :
+            fieldStringsAccessorRange<UnsignedShort>;
+    else if(type == SceneFieldType::StringRange32)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedRange<UnsignedInt> :
+            fieldStringsAccessorRange<UnsignedInt>;
+    else if(type == SceneFieldType::StringRange64)
+        accessor = field._flags & SceneFieldFlag::NullTerminatedString ?
+            fieldStringsAccessorNullTerminatedRange<UnsignedLong> :
+            fieldStringsAccessorRange<UnsignedLong>;
+    else if(type == SceneFieldType::StringRangeNullTerminated8)
+        accessor = fieldStringsAccessorRangeNullTerminated<UnsignedByte>;
+    else if(type == SceneFieldType::StringRangeNullTerminated16)
+        accessor = fieldStringsAccessorRangeNullTerminated<UnsignedShort>;
+    else if(type == SceneFieldType::StringRangeNullTerminated32)
+        accessor = fieldStringsAccessorRangeNullTerminated<UnsignedInt>;
+    else if(type == SceneFieldType::StringRangeNullTerminated64)
+        accessor = fieldStringsAccessorRangeNullTerminated<UnsignedLong>;
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
+    const Containers::StridedArrayView1D<const void> data = fieldDataFieldViewInternal(field);
+    return Containers::StringIterable{data.data(), fieldDataStringDataInternal(field), data.size(), data.stride(), accessor};
+}
+
+Containers::StringIterable SceneData::fieldStrings(const SceneField name) const {
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::fieldStrings(): field" << name << "not found", {});
+    return fieldStrings(fieldId);
+}
+
 void SceneData::mappingIntoInternal(const UnsignedInt fieldId, const std::size_t offset, const Containers::StridedArrayView1D<UnsignedInt>& destination) const {
     /* fieldId, offset and destination.size() is assumed to be in bounds,
        checked by the callers */
@@ -1199,14 +1434,15 @@ void SceneData::mappingIntoInternal(const UnsignedInt fieldId, const std::size_t
     const SceneFieldData& field = _fields[fieldId];
     const Containers::StridedArrayView1D<const void> mappingData = fieldDataMappingViewInternal(field, offset, destination.size());
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
+    const SceneMappingType mappingType = field.mappingType();
 
-    if(field._mappingType == SceneMappingType::UnsignedInt)
+    if(mappingType == SceneMappingType::UnsignedInt)
         Utility::copy(Containers::arrayCast<const UnsignedInt>(mappingData), destination);
-    else if(field._mappingType == SceneMappingType::UnsignedShort)
+    else if(mappingType == SceneMappingType::UnsignedShort)
         Math::castInto(Containers::arrayCast<2, const UnsignedShort>(mappingData, 1), destination1ui);
-    else if(field._mappingType == SceneMappingType::UnsignedByte)
+    else if(mappingType == SceneMappingType::UnsignedByte)
         Math::castInto(Containers::arrayCast<2, const UnsignedByte>(mappingData, 1), destination1ui);
-    else if(field._mappingType == SceneMappingType::UnsignedLong) {
+    else if(mappingType == SceneMappingType::UnsignedLong) {
         Math::castInto(Containers::arrayCast<2, const UnsignedLong>(mappingData, 1), destination1ui);
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -1270,13 +1506,13 @@ void SceneData::parentsIntoInternal(const UnsignedInt fieldId, const std::size_t
     const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
     const auto destination1i = Containers::arrayCast<2, Int>(destination);
 
-    if(field._fieldType == SceneFieldType::Int)
+    if(field._field.data.type == SceneFieldType::Int)
         Utility::copy(Containers::arrayCast<const Int>(fieldData), destination);
-    else if(field._fieldType == SceneFieldType::Short)
+    else if(field._field.data.type == SceneFieldType::Short)
         Math::castInto(Containers::arrayCast<2, const Short>(fieldData, 1), destination1i);
-    else if(field._fieldType == SceneFieldType::Byte)
+    else if(field._field.data.type == SceneFieldType::Byte)
         Math::castInto(Containers::arrayCast<2, const Byte>(fieldData, 1), destination1i);
-    else if(field._fieldType == SceneFieldType::Long) {
+    else if(field._field.data.type == SceneFieldType::Long) {
         Math::castInto(Containers::arrayCast<2, const Long>(fieldData, 1), destination1i);
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -1435,17 +1671,17 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
         const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
         const auto destination1f = Containers::arrayCast<2, Float>(destination);
 
-        if(field._fieldType == SceneFieldType::Matrix3x3) {
+        if(field._field.data.type == SceneFieldType::Matrix3x3) {
             Utility::copy(Containers::arrayCast<const Matrix3>(fieldData), destination);
-        } else if(field._fieldType == SceneFieldType::Matrix3x3d) {
+        } else if(field._field.data.type == SceneFieldType::Matrix3x3d) {
             Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 9), destination1f);
-        } else if(field._fieldType == SceneFieldType::Matrix3x2) {
+        } else if(field._field.data.type == SceneFieldType::Matrix3x2) {
             expandTransformationMatrix<Matrix3x2>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::Matrix3x2d) {
+        } else if(field._field.data.type == SceneFieldType::Matrix3x2d) {
             expandTransformationMatrix<Matrix3x2d>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::DualComplex) {
+        } else if(field._field.data.type == SceneFieldType::DualComplex) {
             convertTransformation<DualComplex>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::DualComplexd) {
+        } else if(field._field.data.type == SceneFieldType::DualComplexd) {
             convertTransformation<DualComplexd>(fieldData, destination);
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
@@ -1460,9 +1696,9 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
             const SceneFieldData& field = _fields[scalingFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
-            if(field._fieldType == SceneFieldType::Vector2) {
+            if(field._field.data.type == SceneFieldType::Vector2) {
                 applyScaling<Vector2>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector2d) {
+            } else if(field._field.data.type == SceneFieldType::Vector2d) {
                 applyScaling<Vector2d>(fieldData, destination);
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1472,9 +1708,9 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
             const SceneFieldData& field = _fields[rotationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
-            if(field._fieldType == SceneFieldType::Complex) {
+            if(field._field.data.type == SceneFieldType::Complex) {
                 applyRotation<Complex>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Complexd) {
+            } else if(field._field.data.type == SceneFieldType::Complexd) {
                 applyRotation<Complexd>(fieldData, destination);
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1484,9 +1720,9 @@ void SceneData::transformations2DIntoInternal(const UnsignedInt transformationFi
             const SceneFieldData& field = _fields[translationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
-            if(field._fieldType == SceneFieldType::Vector2) {
+            if(field._field.data.type == SceneFieldType::Vector2) {
                 applyTranslation<Vector2>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector2d) {
+            } else if(field._field.data.type == SceneFieldType::Vector2d) {
                 applyTranslation<Vector2d>(fieldData, destination);
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1556,9 +1792,9 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
             const SceneFieldData& field = _fields[translationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, translationDestination.size());
 
-            if(field._fieldType == SceneFieldType::Vector2) {
+            if(field._field.data.type == SceneFieldType::Vector2) {
                 Utility::copy(Containers::arrayCast<const Vector2>(fieldData), translationDestination);
-            } else if(field._fieldType == SceneFieldType::Vector2d) {
+            } else if(field._field.data.type == SceneFieldType::Vector2d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(translationDestination));
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1574,9 +1810,9 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
             const SceneFieldData& field = _fields[rotationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, rotationDestination.size());
 
-            if(field._fieldType == SceneFieldType::Complex) {
+            if(field._field.data.type == SceneFieldType::Complex) {
                 Utility::copy(Containers::arrayCast<const Complex>(fieldData), rotationDestination);
-            } else if(field._fieldType == SceneFieldType::Complexd) {
+            } else if(field._field.data.type == SceneFieldType::Complexd) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(rotationDestination));
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1592,9 +1828,9 @@ void SceneData::translationsRotationsScalings2DIntoInternal(const UnsignedInt tr
             const SceneFieldData& field = _fields[scalingFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, scalingDestination.size());
 
-            if(field._fieldType == SceneFieldType::Vector2) {
+            if(field._field.data.type == SceneFieldType::Vector2) {
                 Utility::copy(Containers::arrayCast<const Vector2>(fieldData), scalingDestination);
-            } else if(field._fieldType == SceneFieldType::Vector2d) {
+            } else if(field._field.data.type == SceneFieldType::Vector2d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 2), Containers::arrayCast<2, Float>(scalingDestination));
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1681,17 +1917,17 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
         const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
         const auto destination1f = Containers::arrayCast<2, Float>(destination);
 
-        if(field._fieldType == SceneFieldType::Matrix4x4) {
+        if(field._field.data.type == SceneFieldType::Matrix4x4) {
             Utility::copy(Containers::arrayCast<const Matrix4>(fieldData), destination);
-        } else if(field._fieldType == SceneFieldType::Matrix4x4d) {
+        } else if(field._field.data.type == SceneFieldType::Matrix4x4d) {
             Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 16), destination1f);
-        } else if(field._fieldType == SceneFieldType::Matrix4x3) {
+        } else if(field._field.data.type == SceneFieldType::Matrix4x3) {
             expandTransformationMatrix<Matrix4x3>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::Matrix4x3d) {
+        } else if(field._field.data.type == SceneFieldType::Matrix4x3d) {
             expandTransformationMatrix<Matrix4x3d>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::DualQuaternion) {
+        } else if(field._field.data.type == SceneFieldType::DualQuaternion) {
             convertTransformation<DualQuaternion>(fieldData, destination);
-        } else if(field._fieldType == SceneFieldType::DualQuaterniond) {
+        } else if(field._field.data.type == SceneFieldType::DualQuaterniond) {
             convertTransformation<DualQuaterniond>(fieldData, destination);
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
@@ -1706,9 +1942,9 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
             const SceneFieldData& field = _fields[scalingFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
-            if(field._fieldType == SceneFieldType::Vector3) {
+            if(field._field.data.type == SceneFieldType::Vector3) {
                 applyScaling<Vector3>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector3d) {
+            } else if(field._field.data.type == SceneFieldType::Vector3d) {
                 applyScaling<Vector3d>(fieldData, destination);
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1718,9 +1954,9 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
             const SceneFieldData& field = _fields[rotationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
-            if(field._fieldType == SceneFieldType::Quaternion) {
+            if(field._field.data.type == SceneFieldType::Quaternion) {
                 applyRotation<Quaternion>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Quaterniond) {
+            } else if(field._field.data.type == SceneFieldType::Quaterniond) {
                 applyRotation<Quaterniond>(fieldData, destination);
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1730,9 +1966,9 @@ void SceneData::transformations3DIntoInternal(const UnsignedInt transformationFi
             const SceneFieldData& field = _fields[translationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
 
-            if(field._fieldType == SceneFieldType::Vector3) {
+            if(field._field.data.type == SceneFieldType::Vector3) {
                 applyTranslation<Vector3>(fieldData, destination);
-            } else if(field._fieldType == SceneFieldType::Vector3d) {
+            } else if(field._field.data.type == SceneFieldType::Vector3d) {
                 applyTranslation<Vector3d>(fieldData, destination);
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1802,9 +2038,9 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
             const SceneFieldData& field = _fields[translationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, translationDestination.size());
 
-            if(field._fieldType == SceneFieldType::Vector3) {
+            if(field._field.data.type == SceneFieldType::Vector3) {
                 Utility::copy(Containers::arrayCast<const Vector3>(fieldData), translationDestination);
-            } else if(field._fieldType == SceneFieldType::Vector3d) {
+            } else if(field._field.data.type == SceneFieldType::Vector3d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 3), Containers::arrayCast<2, Float>(translationDestination));
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1820,9 +2056,9 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
             const SceneFieldData& field = _fields[rotationFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, rotationDestination.size());
 
-            if(field._fieldType == SceneFieldType::Quaternion) {
+            if(field._field.data.type == SceneFieldType::Quaternion) {
                 Utility::copy(Containers::arrayCast<const Quaternion>(fieldData), rotationDestination);
-            } else if(field._fieldType == SceneFieldType::Quaterniond) {
+            } else if(field._field.data.type == SceneFieldType::Quaterniond) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 4), Containers::arrayCast<2, Float>(rotationDestination));
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1838,9 +2074,9 @@ void SceneData::translationsRotationsScalings3DIntoInternal(const UnsignedInt tr
             const SceneFieldData& field = _fields[scalingFieldId];
             const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, scalingDestination.size());
 
-            if(field._fieldType == SceneFieldType::Vector3) {
+            if(field._field.data.type == SceneFieldType::Vector3) {
                 Utility::copy(Containers::arrayCast<const Vector3>(fieldData), scalingDestination);
-            } else if(field._fieldType == SceneFieldType::Vector3d) {
+            } else if(field._field.data.type == SceneFieldType::Vector3d) {
                 Math::castInto(Containers::arrayCast<2, const Double>(fieldData, 3), Containers::arrayCast<2, Float>(scalingDestination));
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
@@ -1919,11 +2155,11 @@ void SceneData::unsignedIndexFieldIntoInternal(const UnsignedInt fieldId, const 
     const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
     const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
-    if(field._fieldType == SceneFieldType::UnsignedInt)
+    if(field._field.data.type == SceneFieldType::UnsignedInt)
         Utility::copy(Containers::arrayCast<const UnsignedInt>(fieldData), destination);
-    else if(field._fieldType == SceneFieldType::UnsignedShort)
+    else if(field._field.data.type == SceneFieldType::UnsignedShort)
         Math::castInto(Containers::arrayCast<2, const UnsignedShort>(fieldData, 1), destination1ui);
-    else if(field._fieldType == SceneFieldType::UnsignedByte)
+    else if(field._field.data.type == SceneFieldType::UnsignedByte)
         Math::castInto(Containers::arrayCast<2, const UnsignedByte>(fieldData, 1), destination1ui);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -1936,11 +2172,11 @@ void SceneData::indexFieldIntoInternal(const UnsignedInt fieldId, const std::siz
     const Containers::StridedArrayView1D<const void> fieldData = fieldDataFieldViewInternal(field, offset, destination.size());
     const auto destination1ui = Containers::arrayCast<2, Int>(destination);
 
-    if(field._fieldType == SceneFieldType::Int)
+    if(field._field.data.type == SceneFieldType::Int)
         Utility::copy(Containers::arrayCast<const Int>(fieldData), destination);
-    else if(field._fieldType == SceneFieldType::Short)
+    else if(field._field.data.type == SceneFieldType::Short)
         Math::castInto(Containers::arrayCast<2, const Short>(fieldData, 1), destination1ui);
-    else if(field._fieldType == SceneFieldType::Byte)
+    else if(field._field.data.type == SceneFieldType::Byte)
         Math::castInto(Containers::arrayCast<2, const Byte>(fieldData, 1), destination1ui);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -2136,8 +2372,8 @@ void SceneData::importerStateIntoInternal(const UnsignedInt fieldId, const std::
        checked by the callers */
 
     const SceneFieldData& field = _fields[fieldId];
-    CORRADE_INTERNAL_ASSERT(field._fieldType == SceneFieldType::Pointer ||
-                            field._fieldType == SceneFieldType::MutablePointer);
+    CORRADE_INTERNAL_ASSERT(field._field.data.type == SceneFieldType::Pointer ||
+                            field._field.data.type == SceneFieldType::MutablePointer);
     Utility::copy(Containers::arrayCast<const void* const>(fieldDataFieldViewInternal(field, offset, destination.size())), destination);
 }
 
