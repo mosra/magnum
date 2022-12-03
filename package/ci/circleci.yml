@@ -418,9 +418,11 @@ jobs:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     # It crashes with the default setting. Only on GCC, usually when the huge
     # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
-    # get involved.
+    # get involved. 24 is not enough, as everything goes significantly faster
+    # and so the heavy jobs are likely to get scheduled together.
     # TODO: revisit when we get rid of more STL
-    - cap-ninja-jobs
+    - cap-ninja-jobs:
+        count: 20
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
