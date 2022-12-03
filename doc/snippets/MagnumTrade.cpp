@@ -1135,28 +1135,28 @@ for(std::size_t i = 0; i != cellMapping.size(); ++i) {
 /* [SceneData-populating-custom1] */
 
 /* [SceneData-populating-custom2] */
-constexpr Trade::SceneField CellFrustum = Trade::sceneFieldCustom(0x00);
-constexpr Trade::SceneField CellLights = Trade::sceneFieldCustom(0x01);
+constexpr Trade::SceneField SceneFieldCellFrustum = Trade::sceneFieldCustom(0);
+constexpr Trade::SceneField SceneFieldCellLights = Trade::sceneFieldCustom(1);
 
 Trade::SceneData scene{
     Trade::SceneMappingType::UnsignedShort, nodeCount + cellMapping.size(),
     std::move(data), {
         DOXYGEN_ELLIPSIS()
-        Trade::SceneFieldData{CellFrustum, cellMapping, cellFrustums},
-        Trade::SceneFieldData{CellLights, cellMapping, cellLights},
+        Trade::SceneFieldData{SceneFieldCellFrustum, cellMapping, cellFrustums},
+        Trade::SceneFieldData{SceneFieldCellLights, cellMapping, cellLights},
     }};
 /* [SceneData-populating-custom2] */
 }
 
 {
-constexpr Trade::SceneField CellFrustum = Trade::sceneFieldCustom(0);
-constexpr Trade::SceneField CellLights = Trade::sceneFieldCustom(1);
+constexpr Trade::SceneField SceneFieldCellFrustum = Trade::sceneFieldCustom(0);
+constexpr Trade::SceneField SceneFieldCellLights = Trade::sceneFieldCustom(1);
 Trade::SceneData scene{{}, 0, nullptr, nullptr};
 /* [SceneData-populating-custom-retrieve] */
 Containers::StridedArrayView1D<const Matrix4> cellFrustums =
-    scene.field<Matrix4>(CellFrustum);
+    scene.field<Matrix4>(SceneFieldCellFrustum);
 Containers::StridedArrayView2D<const Int> cellLights =
-    scene.field<Int[]>(CellLights);
+    scene.field<Int[]>(SceneFieldCellLights);
 /* [SceneData-populating-custom-retrieve] */
 static_cast<void>(cellFrustums);
 static_cast<void>(cellLights);
