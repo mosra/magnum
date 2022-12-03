@@ -66,15 +66,6 @@ template<class T> Containers::String calculateBounds(Containers::Array<T>&& attr
     return out.str();
 }
 
-/* Named attribute index from a global index */
-/** @todo some helper for this directly on the MeshData class? */
-UnsignedInt namedAttributeId(const Trade::MeshData& mesh, UnsignedInt id) {
-    const Trade::MeshAttribute name = mesh.attributeName(id);
-    for(UnsignedInt i = 0; i != mesh.attributeCount(name); ++i)
-        if(mesh.attributeId(name, i) == id) return i;
-    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-}
-
 bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility::Arguments& args, Trade::AbstractImporter& importer, std::chrono::high_resolution_clock::duration& importTime) {
     struct AnimationInfo {
         UnsignedInt animation;
@@ -473,25 +464,25 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                 Containers::String bounds;
                 if(args.isSet("bounds") && !isVertexFormatImplementationSpecific(mesh->attributeFormat(k))) switch(name) {
                     case Trade::MeshAttribute::Position:
-                        bounds = calculateBounds(mesh->positions3DAsArray(namedAttributeId(*mesh, k)));
+                        bounds = calculateBounds(mesh->positions3DAsArray(mesh->attributeId(k)));
                         break;
                     case Trade::MeshAttribute::Tangent:
-                        bounds = calculateBounds(mesh->tangentsAsArray(namedAttributeId(*mesh, k)));
+                        bounds = calculateBounds(mesh->tangentsAsArray(mesh->attributeId(k)));
                         break;
                     case Trade::MeshAttribute::Bitangent:
-                        bounds = calculateBounds(mesh->bitangentsAsArray(namedAttributeId(*mesh, k)));
+                        bounds = calculateBounds(mesh->bitangentsAsArray(mesh->attributeId(k)));
                         break;
                     case Trade::MeshAttribute::Normal:
-                        bounds = calculateBounds(mesh->normalsAsArray(namedAttributeId(*mesh, k)));
+                        bounds = calculateBounds(mesh->normalsAsArray(mesh->attributeId(k)));
                         break;
                     case Trade::MeshAttribute::TextureCoordinates:
-                        bounds = calculateBounds(mesh->textureCoordinates2DAsArray(namedAttributeId(*mesh, k)));
+                        bounds = calculateBounds(mesh->textureCoordinates2DAsArray(mesh->attributeId(k)));
                         break;
                     case Trade::MeshAttribute::Color:
-                        bounds = calculateBounds(mesh->colorsAsArray(namedAttributeId(*mesh, k)));
+                        bounds = calculateBounds(mesh->colorsAsArray(mesh->attributeId(k)));
                         break;
                     case Trade::MeshAttribute::ObjectId:
-                        bounds = calculateBounds(mesh->objectIdsAsArray(namedAttributeId(*mesh, k)));
+                        bounds = calculateBounds(mesh->objectIdsAsArray(mesh->attributeId(k)));
                         break;
                 }
 
