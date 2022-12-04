@@ -640,7 +640,10 @@ namespace {
 inline Long extractStringFieldOffset(const UnsignedLong strideOffset) {
     union {
         struct {
-            Short
+            /* Short would work on GCC / Clang but causes everything to catch
+               fire on MSVC. Somehow. Now I see why bitfields are not
+               recommended. */
+            Long
                 #ifdef CORRADE_MSVC2015_COMPATIBILITY
                 _dummy /* "error C2059: syntax error: ':'" otherwise, heh */
                 #endif
