@@ -950,14 +950,18 @@ void SceneDataTest::constructFieldStringNegativeStride() {
 
     /* Testing only the properties related to the stride/offset unpack */
     CORRADE_COMPARE(names.fieldData().size(), 3);
-    CORRADE_COMPARE(names.fieldData().stride(), -sizeof(UnsignedInt));
+    /* Uhh C++ WHAT THE HELL? "error C4146: unary minus operator applied to
+       unsigned type, result still unsigned" */
+    CORRADE_COMPARE(names.fieldData().stride(), -std::ptrdiff_t(sizeof(UnsignedInt)));
     CORRADE_COMPARE(names.fieldData().data(), data.nameField + 2);
     CORRADE_COMPARE(names.stringData(), static_cast<const void*>(data.nameString));
 
     /* This is a separate code path, but should do the same */
     char someArray[3*sizeof(UnsignedLong)];
     CORRADE_COMPARE(names.fieldData(someArray).size(), 3);
-    CORRADE_COMPARE(names.fieldData(someArray).stride(), -sizeof(UnsignedInt));
+    /* Uhh C++ WHAT THE HELL? "error C4146: unary minus operator applied to
+       unsigned type, result still unsigned" */
+    CORRADE_COMPARE(names.fieldData(someArray).stride(), -std::ptrdiff_t(sizeof(UnsignedInt)));
     CORRADE_COMPARE(names.fieldData(someArray).data(), data.nameField + 2);
     CORRADE_COMPARE(names.stringData(someArray), static_cast<const void*>(data.nameString));
 }
@@ -1161,7 +1165,9 @@ void SceneDataTest::constructFieldOffsetOnlyStringNegativeStride() {
     CORRADE_COMPARE(a.fieldType(), SceneFieldType::StringRangeNullTerminated16);
     CORRADE_COMPARE(a.fieldArraySize(), 0);
     CORRADE_COMPARE(a.fieldData(data).size(), 2);
-    CORRADE_COMPARE(a.fieldData(data).stride(), -sizeof(Data));
+    /* Uhh C++ WHAT THE HELL? "error C4146: unary minus operator applied to
+       unsigned type, result still unsigned" */
+    CORRADE_COMPARE(a.fieldData(data).stride(), -std::ptrdiff_t(sizeof(Data)));
 
     /* Order flipped compared to constructFieldOffsetOnlyString() */
     auto fieldData = Containers::arrayCast<const UnsignedShort>(a.fieldData(data));
