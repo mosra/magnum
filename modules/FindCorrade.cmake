@@ -80,6 +80,9 @@
 #  CORRADE_BUILD_MULTITHREADED  - Defined if compiled in a way that makes it
 #   possible to safely use certain Corrade features simultaneously in multiple
 #   threads
+#  CORRADE_BUILD_CPU_RUNTIME_DISPATCH - Defined if built with code paths
+#   optimized for multiple architectres with the best matching variant selected
+#   at runtime based on detected CPU features
 #  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
 #   (Linux, BSD, macOS)
 #  CORRADE_TARGET_APPLE         - Defined if compiled for Apple platforms
@@ -100,6 +103,8 @@
 #  CORRADE_TARGET_MSVC          - Defined if compiling with MSVC or Clang with
 #   a MSVC frontend
 #  CORRADE_TARGET_MINGW         - Defined if compiling under MinGW
+#  CORRADE_CPU_USE_IFUNC        - Defined if GNU IFUNC is allowed to be used
+#   for runtime dispatch in the Cpu library
 #  CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT - Defined if PluginManager
 #   doesn't support dynamic plugin loading due to platform limitations
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targeting Xcode
@@ -210,7 +215,7 @@
 #                     <metadata file>
 #                     <sources>...)
 #
-# Unline the above version this puts everything into ``<debug install dir>`` on
+# Unlike the above version this puts everything into ``<debug install dir>`` on
 # both DLL and non-DLL platforms. If ``<debug install dir>`` is set to
 # :variable:`CMAKE_CURRENT_BINARY_DIR` (e.g. for testing purposes), the files
 # are copied directly, without the need to perform install step. Note that the
@@ -319,6 +324,7 @@ set(_corradeFlags
     BUILD_STATIC
     BUILD_STATIC_UNIQUE_GLOBALS
     BUILD_MULTITHREADED
+    BUILD_CPU_RUNTIME_DISPATCH
     TARGET_UNIX
     TARGET_APPLE
     TARGET_IOS
@@ -327,10 +333,12 @@ set(_corradeFlags
     TARGET_WINDOWS_RT
     TARGET_EMSCRIPTEN
     TARGET_ANDROID
-    # TARGET_X86 etc and TARGET_LIBCXX are not exposed to CMake as the meaning
-    # is unclear on platforms with multi-arch binaries or when mixing different
-    # STL implementations. TARGET_GCC etc are figured out via UseCorrade.cmake,
-    # as the compiler can be different when compiling the lib & when using it.
+    # TARGET_X86 etc, TARGET_32BIT, TARGET_BIG_ENDIAN and TARGET_LIBCXX etc.
+    # are not exposed to CMake as the meaning is unclear on platforms with
+    # multi-arch binaries or when mixing different STL implementations.
+    # TARGET_GCC etc are figured out via UseCorrade.cmake, as the compiler can
+    # be different when compiling the lib & when using it.
+    CPU_USE_IFUNC
     PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     TESTSUITE_TARGET_XCTEST
     UTILITY_USE_ANSI_COLORS)
