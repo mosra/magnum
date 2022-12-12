@@ -101,17 +101,31 @@ CORRADE_ENUMSET_OPERATORS(CompileFlags)
 Configures a mesh for a @ref Shaders::GenericGL shader with a vertex buffer and
 possibly also an index buffer, if the mesh is indexed.
 
--   If the mesh contains positions, these are bound to the
-    @ref Shaders::GenericGL2D::Position attribute if they are 2D or to
+-   If the mesh contains @ref Trade::MeshAttribute::Position, these are bound
+    to the @ref Shaders::GenericGL2D::Position attribute if they are 2D or to
     @ref Shaders::GenericGL3D::Position if they are 3D.
--   If the mesh contains normals or if @ref CompileFlag::GenerateFlatNormals /
+-   If the mesh contains @ref Trade::MeshAttribute::Tangent, these are bound to
+    @ref Shaders::GenericGL3D::Tangent4 or @ref Shaders::GenericGL3D::Tangent
+    based on their type.
+-   If the mesh contains @ref Trade::MeshAttribute::Bitangent, these are bound
+    to @ref Shaders::GenericGL3D::Bitangent. However, if the mesh contains a
+    @ref Trade::MeshAttribute::ObjectId as well, only the first appearing of
+    the two is bound. The second is ignored with a warning as they share the
+    same binding slot.
+-   If the mesh contains @ref Trade::MeshAttribute::Normal or if
+    @ref CompileFlag::GenerateFlatNormals /
     @ref CompileFlag::GenerateSmoothNormals is set, these are bound to
     @ref Shaders::GenericGL3D::Normal.
--   If the mesh contains texture coordinates, these are bound to
-    @ref Shaders::GenericGL::TextureCoordinates.
--   If the mesh contains colors, these are bound to
-    @ref Shaders::GenericGL::Color3 / @ref Shaders::GenericGL::Color4 based on
-    their type.
+-   If the mesh contains @ref Trade::MeshAttribute::TextureCoordinates, these
+    are bound to @ref Shaders::GenericGL::TextureCoordinates.
+-   If the mesh contains @ref Trade::MeshAttribute::Color, these are bound to
+    @ref Shaders::GenericGL::Color3 / @relativeref{Shaders::GenericGL,Color4}
+    based on their type.
+-   If the mesh contains @ref Trade::MeshAttribute::ObjectId, these are bound
+    to @ref Shaders::GenericGL::ObjectId. However, if the mesh contains a
+    @ref Trade::MeshAttribute::Bitangent as well, only the first appearing of
+    the two is bound. The second is ignored with a warning as they share the
+    same binding slot.
 -   Custom attributes and known attributes of implementation-specific vertex
     formats are ignored with a warning. See
     @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)

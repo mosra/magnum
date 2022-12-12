@@ -27,8 +27,10 @@
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Image.h"
@@ -102,9 +104,9 @@ struct CompileGLTest: GL::OpenGLTester {
         template<class T> void twoDimensions();
         template<class T> void threeDimensions();
 
-        void multipleAttributes();
         void packedAttributes();
 
+        void conflictingAttributes();
         void unsupportedIndexStride();
 
         void customAttribute();
@@ -201,6 +203,51 @@ const struct {
     {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed, {}}
 };
 
+constexpr std::ptrdiff_t ConflictingAttributesDataStride = 3*sizeof(Vector2) + sizeof(UnsignedInt) + sizeof(Vector3);
+
+const struct {
+    const char* name;
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    Flags flags;
+    UnsignedInt expectedObjectId;
+    const char* expected;
+    const char* expectedMessage;
+} ConflictingAttributesData[]{
+    /* The position atribute is added in the test */
+    {"multiple texture coordinates", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            VertexFormat::Vector2, sizeof(Vector2),
+            9, ConflictingAttributesDataStride},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            VertexFormat::Vector2, 2*sizeof(Vector2),
+            9, ConflictingAttributesDataStride},
+    }}, Flag::TextureCoordinates2D, 0, "textured2D.tga",
+        "ignoring Trade::MeshAttribute::TextureCoordinates 1 as its biding slot is already occupied by Trade::MeshAttribute::TextureCoordinates 0"},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"bitangents + object ID", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent,
+            VertexFormat::Vector3, 3*sizeof(Vector2) + sizeof(UnsignedInt),
+            9, ConflictingAttributesDataStride},
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+            VertexFormat::UnsignedInt, 3*sizeof(Vector2),
+            9, ConflictingAttributesDataStride},
+    }}, Flag::ObjectId, 0, "flat2D.tga",
+        "ignoring Trade::MeshAttribute::ObjectId 0 as its biding slot is already occupied by Trade::MeshAttribute::Bitangent 0"},
+    {"object ID + bitangents", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+            VertexFormat::UnsignedInt, 3*sizeof(Vector2),
+            9, ConflictingAttributesDataStride},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent,
+            VertexFormat::Vector3, 3*sizeof(Vector2) + sizeof(UnsignedInt),
+            9, ConflictingAttributesDataStride},
+    }}, Flag::ObjectId, 26234, "flat2D.tga",
+        "ignoring Trade::MeshAttribute::Bitangent 0 as its biding slot is already occupied by Trade::MeshAttribute::ObjectId 0"},
+    #endif
+    /** @todo test also a conflict with instanced transformation + secondary
+        joints & weights, once instanced transformation is a builtin
+        attribute */
+};
+
 constexpr struct {
     const char* name;
     CompileFlags flags;
@@ -262,8 +309,12 @@ CompileGLTest::CompileGLTest() {
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    addTests({&CompileGLTest::multipleAttributes,
-              &CompileGLTest::packedAttributes},
+    addTests({&CompileGLTest::packedAttributes},
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
+
+    addInstancedTests({&CompileGLTest::conflictingAttributes},
+        Containers::arraySize(ConflictingAttributesData),
         &CompileGLTest::renderSetup,
         &CompileGLTest::renderTeardown);
 
@@ -902,66 +953,6 @@ template<class T> void CompileGLTest::threeDimensions() {
     }
 }
 
-void CompileGLTest::multipleAttributes() {
-    struct Vertex {
-        Vector2 position;
-        Vector2 textureCoordinates1, textureCoordinates2;
-    } vertexData[]{
-        {{-0.75f, -0.75f}, {0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{ 0.00f, -0.75f}, {0.5f, 0.0f}, {5.0f, 0.0f}},
-        {{ 0.75f, -0.75f}, {1.0f, 0.0f}, {10.0f, 0.0f}},
-
-        {{-0.75f,  0.00f}, {0.0f, 0.5f}, {0.0f, 5.0f}},
-        {{ 0.00f,  0.00f}, {0.5f, 0.5f}, {5.0f, 5.0f}},
-        {{ 0.75f,  0.00f}, {1.0f, 0.5f}, {10.0f, 5.0f}},
-
-        {{-0.75f,  0.75f}, {0.0f, 1.0f}, {0.0f, 10.0f}},
-        {{ 0.0f,   0.75f}, {0.5f, 1.0f}, {5.0f, 10.0f}},
-        {{ 0.75f,  0.75f}, {1.0f, 1.0f}, {10.0f, 10.0f}}
-    };
-    auto vertices = Containers::stridedArrayView(vertexData);
-
-    const UnsignedInt indexData[]{
-        0, 1, 4, 0, 4, 3,
-        1, 2, 5, 1, 5, 4,
-        3, 4, 7, 3, 7, 6,
-        4, 5, 8, 4, 8, 7
-    };
-
-    Trade::MeshData meshData{MeshPrimitive::Triangles,
-        {}, indexData, Trade::MeshIndexData{indexData},
-        {}, vertexData, {
-            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-                vertices.slice(&Vertex::position)},
-            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-                vertices.slice(&Vertex::textureCoordinates1)},
-            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-                vertices.slice(&Vertex::textureCoordinates2)},
-        }};
-
-    GL::Mesh mesh = compile(meshData);
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
-       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
-
-    _framebuffer.clear(GL::FramebufferClear::Color);
-    _flatTextured2D
-        .bindTexture(_texture)
-        .draw(mesh);
-
-    /* The output should be the same as in the textured case of twoDimensions()
-       -- i.e., the second texture coordinate set not affecting anything */
-    MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_WITH(
-        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
-        Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/textured2D.tga"),
-        /* SwiftShader has some minor off-by-one precision differences,
-            llvmpipe as well */
-        (DebugTools::CompareImageToFile{_manager, 1.75f, 0.22f}));
-}
-
 /* Can't be inline because MSVC 2015 doesn't like anonymous bitfields in local
    structs */
 struct PackedVertex {
@@ -1145,6 +1136,103 @@ void CompileGLTest::packedAttributes() {
         /* Inside of the object, bottom and top half should be different */
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[11][18], 13562);
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[19][15], 26234);
+    }
+    #endif
+}
+
+void CompileGLTest::conflictingAttributes() {
+    auto&& data = ConflictingAttributesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct Vertex {
+        Vector2 position;
+        Vector2 textureCoordinates1, textureCoordinates2;
+        UnsignedInt objectId;
+        Vector3 bitangent;
+    } vertexData[]{
+        {{-0.75f, -0.75f}, {0.0f, 0.0f}, { 0.0f,  0.0f}, 26234, {}},
+        {{ 0.00f, -0.75f}, {0.5f, 0.0f}, { 5.0f,  0.0f}, 26234, {}},
+        {{ 0.75f, -0.75f}, {1.0f, 0.0f}, {10.0f,  0.0f}, 26234, {}},
+
+        {{-0.75f,  0.00f}, {0.0f, 0.5f}, { 0.0f,  5.0f}, 26234, {}},
+        {{ 0.00f,  0.00f}, {0.5f, 0.5f}, { 5.0f,  5.0f}, 26234, {}},
+        {{ 0.75f,  0.00f}, {1.0f, 0.5f}, {10.0f,  5.0f}, 26234, {}},
+
+        {{-0.75f,  0.75f}, {0.0f, 1.0f}, { 0.0f, 10.0f}, 26234, {}},
+        {{ 0.0f,   0.75f}, {0.5f, 1.0f}, { 5.0f, 10.0f}, 26234, {}},
+        {{ 0.75f,  0.75f}, {1.0f, 1.0f}, {10.0f, 10.0f}, 26234, {}}
+    };
+    auto vertices = Containers::stridedArrayView(vertexData);
+
+    const UnsignedInt indexData[]{
+        0, 1, 4, 0, 4, 3,
+        1, 2, 5, 1, 5, 4,
+        3, 4, 7, 3, 7, 6,
+        4, 5, 8, 4, 8, 7
+    };
+
+    Containers::Array<Trade::MeshAttributeData> attributeData;
+    arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Position,
+        vertices.slice(&Vertex::position));
+    arrayAppend(attributeData, data.attributes);
+
+    Trade::MeshData meshData{MeshPrimitive::Triangles,
+        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, vertexData, std::move(attributeData)};
+
+    GL::Mesh mesh{NoCreate};
+
+    std::ostringstream out;
+    {
+        Warning redirectWarning{&out};
+        mesh = compile(meshData);
+    }
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(out.str(), Utility::formatString("MeshTools::compile(): {}\n", data.expectedMessage));
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    _framebuffer.clear(GL::FramebufferClear::Color);
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags & Flag::ObjectId)
+        _framebuffer.clearColor(1, Vector4ui{27});
+    #endif
+    if(data.flags & Flag::TextureCoordinates2D)
+        _flatTextured2D
+            .bindTexture(_texture)
+            .draw(mesh);
+    #ifndef MAGNUM_TARGET_GLES2
+    else if(data.flags & Flag::ObjectId)
+        _flatObjectId2D
+            .setColor(0xff3366_rgbf)
+            .draw(mesh);
+    #endif
+    else
+        _flat2D
+            .setColor(0xff3366_rgbf)
+            .draw(mesh);
+
+    /* The output should be the same as in the textured case of twoDimensions()
+       -- i.e., the second texture coordinate set not affecting anything */
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Path::join({MESHTOOLS_TEST_DIR, "CompileTestFiles", data.expected}),
+        /* SwiftShader has some minor off-by-one precision differences,
+            llvmpipe as well */
+        (DebugTools::CompareImageToFile{_manager, 1.75f, 0.22f}));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(data.flags & Flag::ObjectId) {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        /* Outside of the object, cleared to 27 */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[2][2], 27);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[11][18], data.expectedObjectId);
     }
     #endif
 }

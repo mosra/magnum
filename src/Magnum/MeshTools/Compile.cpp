@@ -26,6 +26,7 @@
 #include "Compile.h"
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/GL/Buffer.h"
@@ -68,8 +69,11 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
     GL::Buffer verticesRef = GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array);
 
     /* Ensure each known attribute gets bound only once. There's 16 generic
-       attribs at most. */
-    Math::BitVector<16> boundAttributes;
+       attributes at most, for each remember the mesh attribute index that got
+       bound to it first, or ~UnsignedInt{} if none yet. */
+    /** @todo revisit when there are secondary generic texture coordinates,
+        colors, etc */
+    Containers::StaticArray<16, UnsignedInt> boundAttributes{DirectInit, ~UnsignedInt{}};
 
     for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
         Containers::Optional<GL::DynamicAttribute> attribute;
@@ -137,13 +141,20 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             continue;
         }
 
-        /* Ensure each attribute gets bound only once -- so for example when
-           there are two texture coordinate sets, we don't bind them both to
-           the same slot, effectively ignoring the first one */
-        /** @todo revisit when there are secondary generic texture coordinates */
-        if(boundAttributes[attribute->location()])
+        /* Ensure each attribute slot gets bound only once -- so for example
+           when there are two texture coordinate sets, we don't bind them both
+           to the same slot, effectively ignoring the first one. Similarly
+           warn if an attribute has a location conflicting with another one
+           (such as ObjectId and Bitangent). */
+        if(boundAttributes[attribute->location()] != ~UnsignedInt{}) {
+            Warning{} << "MeshTools::compile(): ignoring" << meshData.attributeName(i) << meshData.attributeId(i) << "as its biding slot is already occupied by" << meshData.attributeName(boundAttributes[attribute->location()]) << meshData.attributeId(boundAttributes[attribute->location()]);
             continue;
-        boundAttributes.set(attribute->location(), true);
+        }
+
+        /* Remeber where this attribute got bound, including all subsequent
+           vectors for matrix attributes */
+        for(UnsignedInt j = 0; j != attribute->vectors(); ++j)
+            boundAttributes[attribute->location() + j] = i;
 
         /* Negative strides are not supported by GL, zero strides are
            understood as tightly packed instead of all attributes having the
