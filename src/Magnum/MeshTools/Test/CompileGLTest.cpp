@@ -442,27 +442,20 @@ template<class T> void CompileGLTest::twoDimensions() {
         {{ 0.0f,   0.75f}, {0.5f, 1.0f}, 0x8080ff_rgbf, 26234},
         {{ 0.75f,  0.75f}, {1.0f, 1.0f}, 0xff00ff_rgbf, 26234}
     };
+    auto vertices = Containers::stridedArrayView(vertexData);
 
     Containers::Array<Trade::MeshAttributeData> attributeData;
-    arrayAppend(attributeData, Trade::MeshAttributeData{
-        Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(vertexData, &vertexData[0].position,
-            Containers::arraySize(vertexData), sizeof(Vertex))});
+    arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Position,
+        vertices.slice(&Vertex::position));
     if(data.flags & Flag::TextureCoordinates2D)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::TextureCoordinates,
-            Containers::stridedArrayView(vertexData, &vertexData[0].textureCoordinates,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::TextureCoordinates,
+            vertices.slice(&Vertex::textureCoordinates));
     if(data.flags & Flag::Colors)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::Color,
-            Containers::stridedArrayView(vertexData, &vertexData[0].color,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Color,
+            vertices.slice(&Vertex::color));
     if(data.flags & Flag::ObjectId)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::ObjectId,
-            Containers::stridedArrayView(vertexData, &vertexData[0].objectId,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::ObjectId,
+            vertices.slice(&Vertex::objectId));
 
     const UnsignedInt indexData[]{
         66, 78, 23, /* offset */
@@ -657,46 +650,33 @@ template<class T> void CompileGLTest::threeDimensions() {
          Vector3{ 0.5f,  0.5f, 1.0f}.normalized(),
          {1.0f, 1.0f}, 0xff00ff_rgbf, 26234}
     };
+    auto vertices = Containers::stridedArrayView(vertexData);
 
     /* Calculate bitangents from normal+tangent */
     for(Vertex& i: vertexData)
         i.bitangent = Math::cross(i.normal, i.tangent.xyz())*i.tangent.w();
 
     Containers::Array<Trade::MeshAttributeData> attributeData;
-    arrayAppend(attributeData, Trade::MeshAttributeData{
-        Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(vertexData, &vertexData[0].position,
-            Containers::arraySize(vertexData), sizeof(Vertex))});
+    arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Position,
+        vertices.slice(&Vertex::position));
     if(data.flags & Flag::Tangents || data.flags & Flag::BitangentsFromTangents)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::Tangent,
-            Containers::stridedArrayView(vertexData, &vertexData[0].tangent,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Tangent,
+            vertices.slice(&Vertex::tangent));
     if(data.flags & Flag::Bitangents)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::Bitangent,
-            Containers::stridedArrayView(vertexData, &vertexData[0].bitangent,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Bitangent,
+            vertices.slice(&Vertex::bitangent));
     if(data.flags & Flag::Normals)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::Normal,
-            Containers::stridedArrayView(vertexData, &vertexData[0].normal,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Normal,
+            vertices.slice(&Vertex::normal));
     if(data.flags & Flag::TextureCoordinates2D)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::TextureCoordinates,
-            Containers::stridedArrayView(vertexData, &vertexData[0].textureCoordinates,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::TextureCoordinates,
+            vertices.slice(&Vertex::textureCoordinates));
     if(data.flags & Flag::Colors)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::Color,
-            Containers::stridedArrayView(vertexData, &vertexData[0].color,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Color,
+            vertices.slice(&Vertex::color));
     if(data.flags & Flag::ObjectId)
-        arrayAppend(attributeData, Trade::MeshAttributeData{
-            Trade::MeshAttribute::ObjectId,
-            Containers::stridedArrayView(vertexData, &vertexData[0].objectId,
-                Containers::arraySize(vertexData), sizeof(Vertex))});
+        arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::ObjectId,
+            vertices.slice(&Vertex::objectId));
 
     const UnsignedByte indexData[]{
         66, 78, 23, /* offset */
@@ -939,6 +919,7 @@ void CompileGLTest::multipleAttributes() {
         {{ 0.0f,   0.75f}, {0.5f, 1.0f}, {5.0f, 10.0f}},
         {{ 0.75f,  0.75f}, {1.0f, 1.0f}, {10.0f, 10.0f}}
     };
+    auto vertices = Containers::stridedArrayView(vertexData);
 
     const UnsignedInt indexData[]{
         0, 1, 4, 0, 4, 3,
@@ -951,14 +932,11 @@ void CompileGLTest::multipleAttributes() {
         {}, indexData, Trade::MeshIndexData{indexData},
         {}, vertexData, {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-                Containers::stridedArrayView(vertexData,
-                &vertexData[0].position, Containers::arraySize(vertexData), sizeof(Vertex))},
+                vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-                Containers::stridedArrayView(vertexData,
-                &vertexData[0].textureCoordinates1, Containers::arraySize(vertexData), sizeof(Vertex))},
+                vertices.slice(&Vertex::textureCoordinates1)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-                Containers::stridedArrayView(vertexData,
-                &vertexData[0].textureCoordinates2, Containers::arraySize(vertexData), sizeof(Vertex))},
+                vertices.slice(&Vertex::textureCoordinates2)},
         }};
 
     GL::Mesh mesh = compile(meshData);
@@ -1057,6 +1035,7 @@ void CompileGLTest::packedAttributes() {
     };
     static_assert(sizeof(PackedVertex) % 4 == 0,
         "the vertex is not 4-byte aligned and that's bad");
+    auto vertices = Containers::stridedArrayView(vertexData);
 
     const UnsignedByte indexData[]{
         0, 1, 4, 0, 4, 3,
@@ -1067,31 +1046,21 @@ void CompileGLTest::packedAttributes() {
 
     Trade::MeshData meshData{MeshPrimitive::Triangles, {}, indexData,
         Trade::MeshIndexData{indexData}, {}, vertexData, {
-            Trade::MeshAttributeData{
-                Trade::MeshAttribute::Position,
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
                 VertexFormat::Vector3sNormalized,
-                Containers::stridedArrayView(vertexData, &vertexData[0].position,
-                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
-            Trade::MeshAttributeData{
-                Trade::MeshAttribute::Normal,
+                vertices.slice(&PackedVertex::position)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
                 VertexFormat::Vector3sNormalized,
-                Containers::stridedArrayView(vertexData, &vertexData[0].normal,
-                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
-            Trade::MeshAttributeData{
-                Trade::MeshAttribute::TextureCoordinates,
+                vertices.slice(&PackedVertex::normal)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
                 VertexFormat::Vector2usNormalized,
-                Containers::stridedArrayView(vertexData, &vertexData[0].textureCoordinates,
-                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
-            Trade::MeshAttributeData{
-                Trade::MeshAttribute::Color,
+                vertices.slice(&PackedVertex::textureCoordinates)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Color,
                 /* It should figure out the type itself here */
-                Containers::stridedArrayView(vertexData, &vertexData[0].color,
-                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
+                vertices.slice(&PackedVertex::color)},
             #ifndef MAGNUM_TARGET_GLES2
-            Trade::MeshAttributeData{
-                Trade::MeshAttribute::ObjectId,
-                Containers::stridedArrayView(vertexData, &vertexData[0].objectId,
-                    Containers::arraySize(vertexData), sizeof(PackedVertex))}
+            Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+                vertices.slice(&PackedVertex::objectId)}
             #endif
     }};
 
