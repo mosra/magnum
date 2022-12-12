@@ -215,7 +215,7 @@ guarantees of the above:
     order to allow a mesh to contain both
 -   Similarly, texture rotation/scale and offset is in consecutive locations to
     allow passing a single @ref Matrix3 attribute there.
--   Tnstanced texture transformation is available if and only if there's
+-   Instanced texture transformation is available if and only if there's
     exactly one set of texture coordinates (as the additional sets would need
     additional transformations as well).
 
