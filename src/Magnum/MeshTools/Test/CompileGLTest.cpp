@@ -203,6 +203,14 @@ const struct {
 
 constexpr struct {
     const char* name;
+    CompileFlags flags;
+} CustomAttributeWarningData[] {
+    {"", {}},
+    {"no warning", CompileFlag::NoWarnOnCustomAttributes}
+};
+
+constexpr struct {
+    const char* name;
     bool indexed, moveIndices, moveVertices;
 } DataExternal[] {
     {"indexed", true, false, false},
@@ -210,14 +218,6 @@ constexpr struct {
     {"move indices", true, true, false},
     {"move vertices", false, false, true},
     {"move both", true, true, true}
-};
-
-constexpr struct {
-    const char* name;
-    CompileFlags flags;
-} CustomAttributeWarningData[] {
-    {"", {}},
-    {"no warning", CompileFlag::NoWarnOnCustomAttributes}
 };
 
 using namespace Math::Literals;
