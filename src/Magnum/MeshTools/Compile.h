@@ -121,6 +121,11 @@ possibly also an index buffer, if the mesh is indexed.
 -   If the mesh contains @ref Trade::MeshAttribute::Color, these are bound to
     @ref Shaders::GenericGL::Color3 / @relativeref{Shaders::GenericGL,Color4}
     based on their type.
+-   If the mesh contains @ref Trade::MeshAttribute::JointIds and
+    @ref Trade::MeshAttribute::Weights, these are bound to
+    @ref Shaders::GenericGL::JointIds / @relativeref{Shaders::GenericGL,SecondaryJointIds} and
+    @relativeref{Shaders::GenericGL,Weights} / @relativeref{Shaders::GenericGL,SecondaryWeights} according to rules
+    described in @ref compiledPerVertexJointCount().
 -   If the mesh contains @ref Trade::MeshAttribute::ObjectId, these are bound
     to @ref Shaders::GenericGL::ObjectId. However, if the mesh contains a
     @ref Trade::MeshAttribute::Bitangent as well, only the first appearing of
@@ -282,6 +287,49 @@ greater flexibility.
 CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_DEPRECATED("use compile(const Trade::MeshData&, CompileFlags) instead") MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags = {});
 CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+/**
+@brief Compiled per-vertex joint count for given mesh data
+@m_since_latest
+
+Returns the count of bound primary and secondary per-vertex joint IDs and
+weights that a mesh returned from @ref compile(const Trade::MeshData&, CompileFlags)
+would contain. The function goes over all @ref Trade::MeshAttribute::JointIds
+and @relativeref{Trade::MeshAttribute,Weights} attributes present in the mesh
+and assigns them to the primary and secondary binding points:
+
+-   If the mesh contains just one instance of joint ID and weight attributes
+    and their @ref Trade::MeshData::attributeArraySize() is not larger than
+    4, they occupy just the primary binding slot. The second returned value
+    is @cpp 0 @ce.
+-   If the mesh contains more than one instance of joint ID and weight
+    attributes and array size of the first instance is not larger than 4, the
+    first instance goes to the primary binding slot and the first up to 4
+    array components of the second instance go to the secondary slot. Remaining
+    array components of the second instance and all remaining instances of
+    joint ID and weight attributes are ignored.
+-   If array size of the first instance of joint ID and weight attributes is
+    larger than 4, the first slot uses the first 4 array components and the
+    second the next up to 4 array components. Remaining array components of the
+    first instance and all remaining instances of joint ID and weight
+    attributes are ignored.
+
+Useful to get subsequently fed to
+@ref Shaders::FlatGL::Configuration::setJointCount() or to
+@ref Shaders::FlatGL::setPerVertexJointCount() if
+@ref Shaders::FlatGL::Flag::DynamicPerVertexJointCount is enabled, and
+similarly with other builtin shaders.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
+@requires_gles30 Not defined on OpenGL ES 2.0 builds.
+@requires_webgl20 Not defined on WebGL 1.0 builds.
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Trade::MeshData& meshData);
 #endif
 
 }}

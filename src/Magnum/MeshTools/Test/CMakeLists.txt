@@ -105,6 +105,7 @@ if(MAGNUM_BUILD_GL_TESTS)
             CompileTestFiles/phong.tga
             CompileTestFiles/phong-smooth.tga
             CompileTestFiles/phong-flat.tga
+            CompileTestFiles/skinning.tga
             CompileTestFiles/textured2D.tga
             CompileTestFiles/textured3D.tga)
     target_include_directories(MeshToolsCompileGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)

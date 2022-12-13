@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -48,6 +49,8 @@
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Half.h"
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Duplicate.h"
@@ -105,6 +108,12 @@ struct CompileGLTest: GL::OpenGLTester {
         template<class T> void threeDimensions();
 
         void packedAttributes();
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /* Tests also compiledPerVertexJointCount() */
+        void skinning();
+        void skinningPackedAttributes();
+        #endif
 
         void conflictingAttributes();
         void unsupportedIndexStride();
@@ -203,6 +212,138 @@ const struct {
     {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed, {}}
 };
 
+constexpr std::ptrdiff_t SkinningDataStride = sizeof(Vector2) + 7*sizeof(UnsignedInt) + 7*sizeof(Float);
+
+const struct {
+    const char* name;
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    UnsignedInt expectedJointCount, expectedSecondaryJointCount;
+    const char* expectedMessage;
+} SkinningData[]{
+    /* First two and last two weights are zeros thus the middle 3 components
+       are enough to give the full output */
+    {"single 3-component attribute", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2) + 2*sizeof(UnsignedInt),
+            4, SkinningDataStride, 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt) + 2*sizeof(Float),
+            4, SkinningDataStride, 3},
+    }}, 3, 0, ""},
+    {"single 7-component attribute", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2),
+            4, SkinningDataStride, 7},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt),
+            4, SkinningDataStride, 7},
+    }}, 4, 3, ""},
+    {"3-component and a 4-component attribute", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2),
+            4, SkinningDataStride, 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt),
+            4, SkinningDataStride, 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2) + 3*sizeof(UnsignedInt),
+            4, SkinningDataStride, 4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt) + 3*sizeof(Float),
+            4, SkinningDataStride, 4},
+    }}, 3, 4, ""},
+    {"4-component and a 3-component attribute", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2),
+            4, SkinningDataStride, 4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt),
+            4, SkinningDataStride, 4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2) + 4*sizeof(UnsignedInt),
+            4, SkinningDataStride, 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt) + 4*sizeof(Float),
+            4, SkinningDataStride, 3},
+    }}, 4, 3, ""},
+    {"1-component and a 5-component attribute", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2) + 1*sizeof(UnsignedInt),
+            4, SkinningDataStride, 1},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt) + 1*sizeof(Float),
+            4, SkinningDataStride, 1},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2) + 2*sizeof(UnsignedInt),
+            4, SkinningDataStride, 5},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt) + 2*sizeof(Float),
+            4, SkinningDataStride, 5},
+    }}, 1, 4, "MeshTools::compile(): ignoring remaining 1 components of joint ID / weights attribute 1, only two sets are supported at most\n"},
+    {"3-component, 2-component and a 2-component attribute", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2),
+            4, SkinningDataStride, 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt),
+            4, SkinningDataStride, 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2) + 3*sizeof(UnsignedInt),
+            4, SkinningDataStride, 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt) + 3*sizeof(Float),
+            4, SkinningDataStride, 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2) + 5*sizeof(UnsignedInt),
+            4, SkinningDataStride, 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt) + 5*sizeof(Float),
+            4, SkinningDataStride, 2},
+    }}, 3, 2, "MeshTools::compile(): ignoring joint ID / weights attribute 2, only two sets are supported at most\n"},
+    {"single 7-component attribute, and then a 9-component attribute", {InPlaceInit, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            sizeof(Vector2),
+            4, SkinningDataStride, 7},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            sizeof(Vector2) + 7*sizeof(UnsignedInt),
+            4, SkinningDataStride, 7},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedInt,
+            0,
+            4, SkinningDataStride, 9},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            0,
+            4, SkinningDataStride, 9},
+    /* The warning should be printed just once for the whole attribute, not
+       again for every group of four components */
+    }}, 4, 3, "MeshTools::compile(): ignoring joint ID / weights attribute 1, only two sets are supported at most\n"},
+};
+
 constexpr std::ptrdiff_t ConflictingAttributesDataStride = 3*sizeof(Vector2) + sizeof(UnsignedInt) + sizeof(Vector3);
 
 const struct {
@@ -243,6 +384,7 @@ const struct {
     }}, Flag::ObjectId, 26234, "flat2D.tga",
         "ignoring Trade::MeshAttribute::Bitangent 0 as its biding slot is already occupied by Trade::MeshAttribute::ObjectId 0"},
     #endif
+    /* Conflicting skinning attributes tested directly in skinning() */
     /** @todo test also a conflict with instanced transformation + secondary
         joints & weights, once instanced transformation is a builtin
         attribute */
@@ -312,6 +454,17 @@ CompileGLTest::CompileGLTest() {
     addTests({&CompileGLTest::packedAttributes},
         &CompileGLTest::renderSetup,
         &CompileGLTest::renderTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&CompileGLTest::skinning},
+        Containers::arraySize(SkinningData),
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
+
+    addTests({&CompileGLTest::skinningPackedAttributes},
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
+    #endif
 
     addInstancedTests({&CompileGLTest::conflictingAttributes},
         Containers::arraySize(ConflictingAttributesData),
@@ -1139,6 +1292,163 @@ void CompileGLTest::packedAttributes() {
     }
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void CompileGLTest::skinning() {
+    auto&& data = SkinningData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Same as in FlatGLTest/PhongGLTest/MeshVisualizerGLTest, just padded
+       with two dummy values at the beginning and at the end */
+    struct Vertex {
+        Vector2 position;
+        UnsignedInt jointIds[7];
+        Float weights[7];
+    } vertexData[]{
+        /* Top right corner gets moved to the right and up, top left just up,
+           bottom right just right, bottom left corner gets slightly scaled.
+
+           3--1
+           | /|
+           |/ |
+           2--0 */
+        {{ 1.0f, -1.0f},
+            {0, 0, 0, 2, 0, 0, 0},
+            {0.0f, 0.0f, 1.0f, 50.0f,  0.5f, 0.0f, 0.0f}},
+        {{ 1.0f,  1.0f},
+            {0, 0, 1, 0, 0, 0, 0},
+            {0.0f, 0.0f, 0.5f,  0.5f,  0.0f, 0.0f, 0.0f}},
+        {{-1.0f, -1.0f},
+            {0, 0, 3, 4, 4, 0, 0},
+            {0.0f, 0.0f, 0.5f, 0.25f, 0.25f, 0.0f, 0.0f}},
+        {{-1.0f,  1.0f},
+            {0, 0, 1, 0, 4, 0, 0},
+            {0.0f, 0.0f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f}},
+    };
+    static_assert(sizeof(Vertex) == SkinningDataStride, "");
+    auto vertices = Containers::stridedArrayView(vertexData);
+
+    Matrix3 jointMatrices[]{
+        Matrix3::translation(Vector2::xAxis(0.5f)),
+        Matrix3::translation(Vector2::yAxis(0.5f)),
+        Matrix3{Math::ZeroInit},
+        Matrix3::scaling(Vector2{2.0f}),
+        Matrix3{Math::IdentityInit},
+    };
+
+    Containers::Array<Trade::MeshAttributeData> attributeData;
+    arrayAppend(attributeData, InPlaceInit, Trade::MeshAttribute::Position,
+        vertices.slice(&Vertex::position));
+    arrayAppend(attributeData, data.attributes);
+
+    Trade::MeshData meshData{MeshPrimitive::TriangleStrip, {}, vertexData, std::move(attributeData)};
+
+    Containers::Pair<UnsignedInt, UnsignedInt> jointCount = compiledPerVertexJointCount(meshData);
+    CORRADE_COMPARE(jointCount.first(), data.expectedJointCount);
+    CORRADE_COMPARE(jointCount.second(), data.expectedSecondaryJointCount);
+
+    GL::Mesh mesh{NoCreate};
+    std::ostringstream out;
+    {
+        Warning redirectWarning{&out};
+        mesh = compile(meshData);
+    }
+    CORRADE_COMPARE(out.str(), data.expectedMessage);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    _framebuffer.clear(GL::FramebufferClear::Color);
+
+    Shaders::FlatGL2D shader{Shaders::FlatGL2D::Configuration{}
+        .setJointCount(Containers::arraySize(jointMatrices), jointCount.first(), jointCount.second())};
+    shader.setJointMatrices(jointMatrices)
+        .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
+        .draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/skinning.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+void CompileGLTest::skinningPackedAttributes() {
+    /* Same as skinning(), just with the attributes packed, and packed
+       differently for each set; and using a 3D shader */
+    struct Vertex {
+        Vector2 position;
+        UnsignedShort jointIds[4];
+        UnsignedByte secondaryJointIds[3];
+        Float weights[4];
+        Half secondaryWeights[3];
+    } vertexData[]{
+        {{ 1.0f, -1.0f},
+            {0, 0, 0, 2}, {0, 0, 0},
+            {0.0f, 0.0f, 1.0f, 50.0f}, { 0.5_h, 0.0_h, 0.0_h}},
+        {{ 1.0f,  1.0f},
+            {0, 0, 1, 0}, {0, 0, 0},
+            {0.0f, 0.0f, 0.5f,  0.5f}, { 0.0_h, 0.0_h, 0.0_h}},
+        {{-1.0f, -1.0f},
+            {0, 0, 3, 4}, {4, 0, 0},
+            {0.0f, 0.0f, 0.5f, 0.25f}, {0.25_h, 0.0_h, 0.0_h}},
+        {{-1.0f,  1.0f},
+            {0, 0, 1, 0}, {4, 0, 0},
+            {0.0f, 0.0f, 1.0f,  0.0f}, { 0.0_h, 0.0_h, 0.0_h}},
+    };
+    auto vertices = Containers::stridedArrayView(vertexData);
+
+    Matrix4 jointMatrices[]{
+        Matrix4::translation(Vector3::xAxis(0.5f)),
+        Matrix4::translation(Vector3::yAxis(0.5f)),
+        Matrix4{Math::ZeroInit},
+        Matrix4::scaling(Vector3{2.0f}),
+        Matrix4{Math::IdentityInit},
+    };
+
+    Trade::MeshData meshData{MeshPrimitive::TriangleStrip, {}, vertexData, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            vertices.slice(&Vertex::position)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedShort,
+            vertices.slice(&Vertex::jointIds), 4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::JointIds,
+            VertexFormat::UnsignedByte,
+            vertices.slice(&Vertex::secondaryJointIds), 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Float,
+            vertices.slice(&Vertex::weights), 4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Weights,
+            VertexFormat::Half,
+            vertices.slice(&Vertex::secondaryWeights), 3},
+    }};
+
+    GL::Mesh mesh = compile(meshData);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    _framebuffer.clear(GL::FramebufferClear::Color);
+
+    Shaders::FlatGL3D shader{Shaders::FlatGL3D::Configuration{}
+        .setJointCount(Containers::arraySize(jointMatrices), 4, 3)};
+    shader.setJointMatrices(jointMatrices)
+        .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.5f}))
+        .draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileTestFiles/skinning.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+#endif
 
 void CompileGLTest::conflictingAttributes() {
     auto&& data = ConflictingAttributesData[testCaseInstanceId()];

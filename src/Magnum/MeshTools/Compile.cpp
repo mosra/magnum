@@ -26,6 +26,7 @@
 #include "Compile.h"
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
@@ -68,15 +69,50 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
     /* Vertex data */
     GL::Buffer verticesRef = GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array);
 
-    /* Ensure each known attribute gets bound only once. There's 16 generic
-       attributes at most, for each remember the mesh attribute index that got
-       bound to it first, or ~UnsignedInt{} if none yet. */
+    /* Except for joint IDs and weights which are treated separately and can
+       have a secondary set, ensure each known attribute gets bound only once.
+       There's 16 generic attributes at most, for each remember the mesh
+       attribute index that got bound to it first, or ~UnsignedInt{} if none
+       yet. */
     /** @todo revisit when there are secondary generic texture coordinates,
         colors, etc */
     Containers::StaticArray<16, UnsignedInt> boundAttributes{DirectInit, ~UnsignedInt{}};
+    #ifndef MAGNUM_TARGET_GLES2
+    UnsignedInt jointIdAttributeCount = 0;
+    UnsignedInt weightAttributeCount = 0;
+    #endif
 
     for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
-        Containers::Optional<GL::DynamicAttribute> attribute;
+        auto addAttribute = [&](GL::DynamicAttribute attribute, std::size_t offset) {
+            /* Ensure each attribute gets bound only once -- so for example
+               when there are two texture coordinate sets, we don't bind them
+               both to the same slot, effectively ignoring the first one.
+               Similarly warn if an attribute has a location conflicting with
+               another one (such as ObjectId and Bitangent). */
+            if(boundAttributes[attribute.location()] != ~UnsignedInt{}) {
+                Warning{} << "MeshTools::compile(): ignoring" << meshData.attributeName(i) << meshData.attributeId(i) << "as its biding slot is already occupied by" << meshData.attributeName(boundAttributes[attribute.location()]) << meshData.attributeId(boundAttributes[attribute.location()]);
+                return;
+            }
+
+            /* Remeber where this attribute got bound, including all subsequent
+            vectors for matrix attributes */
+            for(UnsignedInt j = 0; j != attribute.vectors(); ++j)
+                boundAttributes[attribute.location() + j] = i;
+
+            /* Negative strides are not supported by GL, zero strides are
+               understood as tightly packed instead of all attributes having
+               the same value */
+            const Int stride = meshData.attributeStride(i);
+            CORRADE_ASSERT(stride > 0,
+                "MeshTools::compile():" << meshData.attributeName(i) << "stride of" << stride << "bytes isn't supported by OpenGL", );
+
+            /* For the first attribute move the buffer in, for all others use
+               the reference */
+            if(vertices.id()) mesh.addVertexBuffer(std::move(vertices),
+                meshData.attributeOffset(i) + offset, stride, attribute);
+            else mesh.addVertexBuffer(verticesRef, meshData.attributeOffset(i) + offset,
+                stride, attribute);
+        };
 
         /* Ignore implementation-specific formats because GL needs three
            separate values to describe them so there's no way to put them in a
@@ -92,84 +128,100 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             case Trade::MeshAttribute::Position:
                 /* Pick 3D position always, the format will properly reduce it
                    to a 2-component version if needed */
-                attribute.emplace(Shaders::GenericGL3D::Position{}, format);
-                break;
+                addAttribute(GL::DynamicAttribute{Shaders::GenericGL3D::Position{}, format}, 0);
+                continue;
             case Trade::MeshAttribute::TextureCoordinates:
                 /** @todo have GenericGL2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
-                attribute.emplace(Shaders::GenericGL2D::TextureCoordinates{}, format);
-                break;
+                addAttribute(GL::DynamicAttribute{Shaders::GenericGL2D::TextureCoordinates{}, format}, 0);
+                continue;
             case Trade::MeshAttribute::Color:
                 /** @todo have GenericGL2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
                 /* Pick Color4 always, the format will properly reduce it to a
                    3-component version if needed */
-                attribute.emplace(Shaders::GenericGL2D::Color4{}, format);
-                break;
+                addAttribute(GL::DynamicAttribute{Shaders::GenericGL2D::Color4{}, format}, 0);
+                continue;
             case Trade::MeshAttribute::Tangent:
                 /* Pick Tangent4 always, the format will properly reduce it to
                    a 3-component version if needed */
-                attribute.emplace(Shaders::GenericGL3D::Tangent4{}, format);
-                break;
+                addAttribute(GL::DynamicAttribute{Shaders::GenericGL3D::Tangent4{}, format}, 0);
+                continue;
             case Trade::MeshAttribute::Bitangent:
-                attribute.emplace(Shaders::GenericGL3D::Bitangent{}, format);
-                break;
+                addAttribute(GL::DynamicAttribute{Shaders::GenericGL3D::Bitangent{}, format}, 0);
+                continue;
             case Trade::MeshAttribute::Normal:
-                attribute.emplace(Shaders::GenericGL3D::Normal{}, format);
-                break;
+                addAttribute(GL::DynamicAttribute{Shaders::GenericGL3D::Normal{}, format}, 0);
+                continue;
             #ifndef MAGNUM_TARGET_GLES2
+            case Trade::MeshAttribute::JointIds: {
+                const UnsignedInt componentCount = meshData.attributeArraySize(i);
+                const std::size_t componentSize = vertexFormatSize(format);
+                for(UnsignedInt j = 0; j < componentCount; j += 4) {
+                    const VertexFormat arrayFormat = vertexFormat(format, Math::min(componentCount - j, 4u), false);
+                    /** @todo have GenericGL2D derived from Generic that has
+                        all attribute definitions common for 2D and 3D */
+                    if(jointIdAttributeCount == 0)
+                        addAttribute(GL::DynamicAttribute{Shaders::GenericGL2D::JointIds{}, arrayFormat}, j*componentSize);
+                    else if(jointIdAttributeCount == 1)
+                        addAttribute(GL::DynamicAttribute{Shaders::GenericGL2D::SecondaryJointIds{}, arrayFormat}, j*componentSize);
+                    else {
+                        Warning w;
+                        w << "MeshTools::compile(): ignoring";
+                        if(j != 0)
+                            w << "remaining" << componentCount - j << "components of";
+                        w << "joint ID / weights attribute" << meshData.attributeId(i) << Debug::nospace << ", only two sets are supported at most";
+                        break;
+                    }
+                    ++jointIdAttributeCount;
+                }
+            } continue;
+            case Trade::MeshAttribute::Weights: {
+                const UnsignedInt componentCount = meshData.attributeArraySize(i);
+                const std::size_t componentSize = vertexFormatSize(format);
+                for(UnsignedInt j = 0; j < componentCount; j += 4) {
+                    const VertexFormat arrayFormat = vertexFormat(format, Math::min(componentCount - j, 4u), isVertexFormatNormalized(format));
+                    /** @todo have GenericGL2D derived from Generic that has
+                        all attribute definitions common for 2D and 3D */
+                    if(weightAttributeCount == 0)
+                        addAttribute(GL::DynamicAttribute{Shaders::GenericGL2D::Weights{}, arrayFormat}, j*componentSize);
+                    else if(weightAttributeCount == 1)
+                        addAttribute(GL::DynamicAttribute{Shaders::GenericGL2D::SecondaryWeights{}, arrayFormat}, j*componentSize);
+                    else {
+                        /* Warning printed for joints already, the mesh is
+                           expected to have the same count of both so the
+                           warning would be redundant */
+                        break;
+                    }
+                    ++weightAttributeCount;
+                }
+            } continue;
             case Trade::MeshAttribute::ObjectId:
                 /** @todo have GenericGL2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
-                attribute.emplace(Shaders::GenericGL2D::ObjectId{}, format);
-                break;
+                addAttribute(GL::DynamicAttribute{Shaders::GenericGL2D::ObjectId{}, format}, 0);
+                continue;
             #endif
-
             /* To avoid the compiler warning that we didn't handle an enum
                value. For these a runtime warning is printed below. */
             /* LCOV_EXCL_START */
             #ifdef MAGNUM_TARGET_GLES2
             case Trade::MeshAttribute::ObjectId:
-            #endif
+            case Trade::MeshAttribute::JointIds:
+            case Trade::MeshAttribute::Weights:
                 break;
+            #endif
              /* LCOV_EXCL_STOP */
         }
 
-        if(!attribute) {
-            if(!Trade::isMeshAttributeCustom(meshData.attributeName(i)) || !(flags & CompileFlag::NoWarnOnCustomAttributes))
-                Warning{} << "MeshTools::compile(): ignoring unknown/unsupported attribute" << meshData.attributeName(i);
-            continue;
-        }
-
-        /* Ensure each attribute slot gets bound only once -- so for example
-           when there are two texture coordinate sets, we don't bind them both
-           to the same slot, effectively ignoring the first one. Similarly
-           warn if an attribute has a location conflicting with another one
-           (such as ObjectId and Bitangent). */
-        if(boundAttributes[attribute->location()] != ~UnsignedInt{}) {
-            Warning{} << "MeshTools::compile(): ignoring" << meshData.attributeName(i) << meshData.attributeId(i) << "as its biding slot is already occupied by" << meshData.attributeName(boundAttributes[attribute->location()]) << meshData.attributeId(boundAttributes[attribute->location()]);
-            continue;
-        }
-
-        /* Remeber where this attribute got bound, including all subsequent
-           vectors for matrix attributes */
-        for(UnsignedInt j = 0; j != attribute->vectors(); ++j)
-            boundAttributes[attribute->location() + j] = i;
-
-        /* Negative strides are not supported by GL, zero strides are
-           understood as tightly packed instead of all attributes having the
-           same value */
-        const Int stride = meshData.attributeStride(i);
-        CORRADE_ASSERT(stride > 0,
-            "MeshTools::compile():" << meshData.attributeName(i) << "stride of" << stride << "bytes isn't supported by OpenGL", GL::Mesh{});
-
-        /* For the first attribute move the buffer in, for all others use the
-           reference */
-        if(vertices.id()) mesh.addVertexBuffer(std::move(vertices),
-            meshData.attributeOffset(i), stride, *attribute);
-        else mesh.addVertexBuffer(verticesRef, meshData.attributeOffset(i),
-            stride, *attribute);
+        /* If we got here, the attribute was not recognized */
+        if(!Trade::isMeshAttributeCustom(meshData.attributeName(i)) || !(flags & CompileFlag::NoWarnOnCustomAttributes))
+            Warning{} << "MeshTools::compile(): ignoring unknown/unsupported attribute" << meshData.attributeName(i);
     }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_INTERNAL_ASSERT(jointIdAttributeCount == weightAttributeCount);
+    #endif
 
     if(meshData.isIndexed()) {
         /* If the type is implementation-specific, we have no way to know if
@@ -499,6 +551,30 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     return mesh;
 }
 CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Trade::MeshData& meshData) {
+    UnsignedInt primaryCount = 0, secondaryCount = 0;
+    for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
+        /* The mesh is expected to have the same count and array size of
+           JointIds and Weights, so it's enough to do it just for one of
+           them */
+        if(meshData.attributeName(i) != Trade::MeshAttribute::JointIds)
+            continue;
+
+        const UnsignedInt componentCount = meshData.attributeArraySize(i);
+        for(UnsignedInt i = 0; i < componentCount; i += 4) {
+            if(!primaryCount)
+                primaryCount = Math::min(componentCount - i, 4u);
+            else if(!secondaryCount)
+                secondaryCount = Math::min(componentCount - i, 4u);
+            else break;
+        }
+    }
+
+    return {primaryCount, secondaryCount};
+}
 #endif
 
 }}
