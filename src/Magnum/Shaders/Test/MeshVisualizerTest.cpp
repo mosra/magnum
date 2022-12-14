@@ -103,11 +103,15 @@ void MeshVisualizerTest::drawUniform2DConstructDefault() {
     MeshVisualizerDrawUniform2D b{DefaultInit};
     CORRADE_COMPARE(a.materialId, 0);
     CORRADE_COMPARE(b.materialId, 0);
+    CORRADE_COMPARE(a.objectId, 0);
+    CORRADE_COMPARE(b.objectId, 0);
 
     constexpr MeshVisualizerDrawUniform2D ca;
     constexpr MeshVisualizerDrawUniform2D cb{DefaultInit};
     CORRADE_COMPARE(ca.materialId, 0);
     CORRADE_COMPARE(cb.materialId, 0);
+    CORRADE_COMPARE(ca.objectId, 0);
+    CORRADE_COMPARE(cb.objectId, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<MeshVisualizerDrawUniform2D>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform2D, DefaultInitT>::value);
@@ -120,6 +124,7 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
     /* Testing only some fields, should be enough */
     MeshVisualizerDrawUniform2D a;
     a.materialId = 73;
+    a.objectId = 7;
 
     new(&a) MeshVisualizerDrawUniform2D{NoInit};
     {
@@ -130,6 +135,7 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
         CORRADE_COMPARE(a.materialId, 73);
+        CORRADE_COMPARE(a.objectId, 7);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform2D, NoInitT>::value);
@@ -140,8 +146,10 @@ void MeshVisualizerTest::drawUniform2DConstructNoInit() {
 
 void MeshVisualizerTest::drawUniform2DSetters() {
     MeshVisualizerDrawUniform2D a;
-    a.setMaterialId(73);
+    a.setMaterialId(73)
+     .setObjectId(7);
     CORRADE_COMPARE(a.materialId, 73);
+    CORRADE_COMPARE(a.objectId, 7);
 }
 
 void MeshVisualizerTest::drawUniform2DMaterialIdPacking() {
@@ -167,6 +175,8 @@ void MeshVisualizerTest::drawUniform3DConstructDefault() {
     }));
     CORRADE_COMPARE(a.materialId, 0);
     CORRADE_COMPARE(b.materialId, 0);
+    CORRADE_COMPARE(a.objectId, 0);
+    CORRADE_COMPARE(b.objectId, 0);
 
     constexpr MeshVisualizerDrawUniform3D ca;
     constexpr MeshVisualizerDrawUniform3D cb{DefaultInit};
@@ -182,6 +192,8 @@ void MeshVisualizerTest::drawUniform3DConstructDefault() {
     }));
     CORRADE_COMPARE(ca.materialId, 0);
     CORRADE_COMPARE(cb.materialId, 0);
+    CORRADE_COMPARE(ca.objectId, 0);
+    CORRADE_COMPARE(cb.objectId, 0);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<MeshVisualizerDrawUniform3D>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform3D, DefaultInitT>::value);
@@ -195,6 +207,7 @@ void MeshVisualizerTest::drawUniform3DConstructNoInit() {
     MeshVisualizerDrawUniform3D a;
     a.normalMatrix[2] = {1.5f, 0.3f, 3.1f, 0.5f};
     a.materialId = 5;
+    a.objectId = 7;
 
     new(&a) MeshVisualizerDrawUniform3D{NoInit};
     {
@@ -206,6 +219,7 @@ void MeshVisualizerTest::drawUniform3DConstructNoInit() {
         #endif
         CORRADE_COMPARE(a.normalMatrix[2], (Vector4{1.5f, 0.3f, 3.1f, 0.5f}));
         CORRADE_COMPARE(a.materialId, 5);
+        CORRADE_COMPARE(a.objectId, 7);
     }
 
     CORRADE_VERIFY(std::is_nothrow_constructible<MeshVisualizerDrawUniform3D, NoInitT>::value);
@@ -217,13 +231,15 @@ void MeshVisualizerTest::drawUniform3DConstructNoInit() {
 void MeshVisualizerTest::drawUniform3DSetters() {
     MeshVisualizerDrawUniform3D a;
     a.setNormalMatrix(Matrix4::rotationX(90.0_degf).normalMatrix())
-     .setMaterialId(5);
+     .setMaterialId(5)
+     .setObjectId(7);
     CORRADE_COMPARE(a.normalMatrix, (Matrix3x4{
         Vector4{1.0f,  0.0f, 0.0f, 0.0f},
         Vector4{0.0f,  0.0f, 1.0f, 0.0f},
         Vector4{0.0f, -1.0f, 0.0f, 0.0f}
     }));
     CORRADE_COMPARE(a.materialId, 5);
+    CORRADE_COMPARE(a.objectId, 7);
 }
 
 void MeshVisualizerTest::drawUniform3DMaterialIdPacking() {
