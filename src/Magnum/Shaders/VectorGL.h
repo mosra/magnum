@@ -613,7 +613,12 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        /** @brief Material count */
+        /**
+         * @brief Material count
+         *
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
         UnsignedInt materialCount() const { return _materialCount; }
 
         /**
@@ -637,7 +642,12 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
             return *this;
         }
 
-        /** @brief Draw count */
+        /**
+         * @brief Draw count
+         *
+         * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined on WebGL 1.0 builds.
+         */
         UnsignedInt drawCount() const { return _drawCount; }
 
         /**
