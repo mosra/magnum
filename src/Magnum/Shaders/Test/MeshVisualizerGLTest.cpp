@@ -589,7 +589,7 @@ constexpr struct {
     const char* name;
     SamplerFilter filter;
     SamplerWrapping wrapping;
-} InstancedObjectIdDefaultsData[] {
+} RenderInstancedObjectIdDefaultsData[] {
     {"nearest, clamp", SamplerFilter::Nearest, SamplerWrapping::ClampToEdge},
     {"nearest, repeat", SamplerFilter::Nearest, SamplerWrapping::Repeat},
     {"linear, clamp", SamplerFilter::Linear, SamplerWrapping::ClampToEdge},
@@ -603,7 +603,7 @@ constexpr struct {
     Float width, smoothness;
     const char* file;
     const char* fileXfail;
-} WireframeData2D[] {
+} RenderWireframeData2D[] {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"", MeshVisualizerGL2D::Flags{},
         1.0f, 2.0f, "wireframe2D.tga", nullptr},
@@ -622,7 +622,7 @@ constexpr struct {
     Float width, smoothness;
     const char* file;
     const char* fileXfail;
-} WireframeData3D[] {
+} RenderWireframeData3D[] {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"", MeshVisualizerGL3D::Flags{},
         1.0f, 2.0f, "wireframe3D.tga", nullptr},
@@ -647,7 +647,7 @@ const struct {
     Int layer;
     const char* file2D;
     const char* file3D;
-} ObjectVertexPrimitiveIdData[] {
+} RenderObjectVertexPrimitiveIdData[] {
     {"object ID",
         MeshVisualizerGL2D::Flag::ObjectId,
         MeshVisualizerGL3D::Flag::ObjectId,
@@ -743,7 +743,7 @@ constexpr struct {
     Float lineLength;
     Float multiply;
     const char* file;
-} TangentBitangentNormalData[] {
+} RenderTangentBitangentNormalData[] {
     {"",
         MeshVisualizerGL3D::Flag::TangentDirection|
         MeshVisualizerGL3D::Flag::BitangentDirection|
@@ -1221,7 +1221,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
         #endif
         },
-        Containers::arraySize(InstancedObjectIdDefaultsData),
+        Containers::arraySize(RenderInstancedObjectIdDefaultsData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1263,7 +1263,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
         #endif
         },
-        Containers::arraySize(WireframeData2D),
+        Containers::arraySize(RenderWireframeData2D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
 
@@ -1274,7 +1274,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
         #endif
         },
-        Containers::arraySize(WireframeData3D),
+        Containers::arraySize(RenderWireframeData3D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
 
@@ -1290,7 +1290,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
         #endif
         },
-        Containers::arraySize(ObjectVertexPrimitiveIdData),
+        Containers::arraySize(RenderObjectVertexPrimitiveIdData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1307,7 +1307,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderTangentBitangentNormal<MeshVisualizerGL3D::Flag::UniformBuffers>,
         #endif
         },
-        Containers::arraySize(TangentBitangentNormalData),
+        Containers::arraySize(RenderTangentBitangentNormalData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -2818,7 +2818,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D() {
-    auto&& data = InstancedObjectIdDefaultsData[testCaseInstanceId()];
+    auto&& data = RenderInstancedObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
@@ -2895,7 +2895,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D() {
-    auto&& data = InstancedObjectIdDefaultsData[testCaseInstanceId()];
+    auto&& data = RenderInstancedObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
@@ -3320,7 +3320,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 #endif
 
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWireframe2D() {
-    auto&& data = WireframeData2D[testCaseInstanceId()];
+    auto&& data = RenderWireframeData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -3453,7 +3453,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWireframe3D() {
-    auto&& data = WireframeData3D[testCaseInstanceId()];
+    auto&& data = RenderWireframeData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -3603,7 +3603,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
 
 #ifndef MAGNUM_TARGET_GLES2
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
-    auto&& data = ObjectVertexPrimitiveIdData[testCaseInstanceId()];
+    auto&& data = RenderObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
@@ -3796,7 +3796,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
-    auto&& data = ObjectVertexPrimitiveIdData[testCaseInstanceId()];
+    auto&& data = RenderObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
@@ -4050,7 +4050,7 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangentBitangentNormal() {
-    auto&& data = TangentBitangentNormalData[testCaseInstanceId()];
+    auto&& data = RenderTangentBitangentNormalData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
