@@ -1618,6 +1618,8 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.materialCount(), data.materialCount);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1698,6 +1700,8 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.materialCount(), data.materialCount);
+    CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
