@@ -376,11 +376,9 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
-    const GL::Context& context = GL::Context::current();
-    const GL::Version version = state._version;
-
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    const GL::Context& context = GL::Context::current();
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
@@ -421,7 +419,7 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(_flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(_flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
         if(_flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureUnit);
@@ -482,9 +480,6 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
         /* Object ID is zero by default */
     }
     #endif
-
-    static_cast<void>(context);
-    static_cast<void>(version);
 }
 
 PhongGL::PhongGL(const Configuration& configuration): PhongGL{compile(configuration)} {}

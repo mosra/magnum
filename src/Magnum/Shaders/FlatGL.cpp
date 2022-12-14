@@ -264,11 +264,9 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
-    const GL::Context& context = GL::Context::current();
-    const GL::Version version = state._version;
-
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    const GL::Context& context = GL::Context::current();
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
@@ -293,7 +291,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
         if(_flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
@@ -326,9 +324,6 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
         /* Object ID is zero by default */
     }
     #endif
-
-    static_cast<void>(version);
-    static_cast<void>(context);
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Configuration& configuration): FlatGL{compile(configuration)} {}

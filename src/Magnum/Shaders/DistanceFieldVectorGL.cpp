@@ -189,11 +189,9 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
-    const GL::Context& context = GL::Context::current();
-    const GL::Version version = state._version;
-
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    const GL::Context& context = GL::Context::current();
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
@@ -213,7 +211,7 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
         setUniform(uniformLocation("vectorTexture"), TextureUnit);
@@ -245,9 +243,6 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
         setSmoothness(0.04f);
     }
     #endif
-
-    static_cast<void>(context);
-    static_cast<void>(version);
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Configuration& configuration): DistanceFieldVectorGL{compile(configuration)} {}

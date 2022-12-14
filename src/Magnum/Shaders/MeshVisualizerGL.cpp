@@ -398,10 +398,6 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         "Shaders::MeshVisualizerGL2D: draw count can't be zero", CompileState{NoCreate});
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
-    const GL::Context& context = GL::Context::current();
-    #endif
-
     Utility::Resource rs{"MagnumShadersGL"};
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
@@ -483,6 +479,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
+    const GL::Context& context = GL::Context::current();
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
@@ -543,48 +540,45 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     else
         CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
-    const GL::Context& context = GL::Context::current();
-    const GL::Version version = state._version;
-    const Flags flags = state.flags();
-
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    const GL::Context& context = GL::Context::current();
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
     #endif
     {
         /* This one is used also in the UBO case as it's usually a global
            setting */
-        if((flags & Flag::Wireframe) && !(flags & Flag::NoGeometryShader))
+        if((flags() & Flag::Wireframe) && !(flags() & Flag::NoGeometryShader))
             _viewportSizeUniform = uniformLocation("viewportSize");
 
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(flags() >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
         {
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & Flag::TextureTransformation)
+            if(flags() & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix");
-            if(flags & Flag::TextureArrays)
+            if(flags() & Flag::TextureArrays)
                 _textureLayerUniform = uniformLocation("textureLayer");
             #endif
-            if(flags & (Flag::Wireframe
+            if(flags() & (Flag::Wireframe
                 #ifndef MAGNUM_TARGET_GLES2
                 |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
                 #endif
             ))
                 _colorUniform = uniformLocation("color");
-            if(flags & Flag::Wireframe) {
+            if(flags() & Flag::Wireframe) {
                 _wireframeColorUniform = uniformLocation("wireframeColor");
                 _wireframeWidthUniform = uniformLocation("wireframeWidth");
                 _smoothnessUniform = uniformLocation("smoothness");
             }
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
+            if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
                 _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
             }
-            if(flags & Flag::ObjectId)
+            if(flags() & Flag::ObjectId)
                 _objectIdUniform = uniformLocation("objectId");
             #endif
         }
@@ -592,20 +586,20 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(flags() && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
-        if(flags & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
+        if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
             setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::ObjectIdTexture)
+        if(flags() >= Flag::ObjectIdTexture)
             setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
-        if(flags >= Flag::UniformBuffers) {
+        if(flags() >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
-            if(flags & Flag::TextureTransformation)
+            if(flags() & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
         }
         #endif
@@ -615,34 +609,31 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(flags() >= Flag::UniformBuffers) {
         /* Viewport size is zero by default */
         /* Draw offset is zero by default */
     } else
     #endif
     {
         setTransformationProjectionMatrix(Matrix3{Math::IdentityInit});
-        if(flags & (Flag::Wireframe
+        if(flags() & (Flag::Wireframe
             #ifndef MAGNUM_TARGET_GLES2
             |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
             #endif
         ))
             setColor(Color3(1.0f));
-        if(flags & Flag::Wireframe) {
+        if(flags() & Flag::Wireframe) {
             /* Viewport size is zero by default */
             setWireframeColor(Color3{0.0f});
             setWireframeWidth(1.0f);
             setSmoothness(2.0f);
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId))
+        if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId))
             setColorMapTransformation(1.0f/512.0f, 1.0f/256.0f);
         #endif
     }
     #endif
-
-    static_cast<void>(context);
-    static_cast<void>(version);
 }
 
 MeshVisualizerGL2D::MeshVisualizerGL2D(const Configuration& configuration): MeshVisualizerGL2D{compile(configuration)} {}
@@ -751,10 +742,6 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         "Shaders::MeshVisualizerGL3D: material count can't be zero", CompileState{NoCreate});
     CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
         "Shaders::MeshVisualizerGL3D: draw count can't be zero", CompileState{NoCreate});
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    const GL::Context& context = GL::Context::current();
     #endif
 
     Utility::Resource rs{"MagnumShadersGL"};
@@ -872,6 +859,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
     /* ES3 has this done in the shader directly */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
+    const GL::Context& context = GL::Context::current();
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
@@ -903,7 +891,6 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
            configuration.flags() & Flag::BitangentFromTangentDirection)
             out.bindAttributeLocation(Normal::Location, "normal");
         #endif
-
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
         if(!context.isVersionSupported(GL::Version::GL310))
@@ -948,25 +935,22 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     else
         CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
-    const GL::Context& context = GL::Context::current();
-    const GL::Version version = state._version;
-    Flags flags = state.flags();
-
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    const GL::Context& context = GL::Context::current();
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
     #endif
     {
         /* This one is used also in the UBO case as it's usually a global
            setting */
-        if(((flags & Flag::Wireframe) && !(flags & Flag::NoGeometryShader))
+        if(((flags() & Flag::Wireframe) && !(flags() & Flag::NoGeometryShader))
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-            || (flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection))
+            || (flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection))
             #endif
         )
             _viewportSizeUniform = uniformLocation("viewportSize");
 
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::UniformBuffers) {
+        if(flags() >= Flag::UniformBuffers) {
             if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
         } else
         #endif
@@ -974,22 +958,22 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
             _transformationMatrixUniform = uniformLocation("transformationMatrix");
             _projectionMatrixUniform = uniformLocation("projectionMatrix");
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & Flag::TextureTransformation)
+            if(flags() & Flag::TextureTransformation)
                 _textureMatrixUniform = uniformLocation("textureMatrix");
-            if(flags & Flag::TextureArrays)
+            if(flags() & Flag::TextureArrays)
                 _textureLayerUniform = uniformLocation("textureLayer");
             #endif
-            if(flags & (Flag::Wireframe
+            if(flags() & (Flag::Wireframe
                 #ifndef MAGNUM_TARGET_GLES2
                 |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
                 #endif
             ))
                 _colorUniform = uniformLocation("color");
-            if(flags & Flag::Wireframe) {
+            if(flags() & Flag::Wireframe) {
                 _wireframeColorUniform = uniformLocation("wireframeColor");
                 _wireframeWidthUniform = uniformLocation("wireframeWidth");
             }
-            if(flags & (Flag::Wireframe
+            if(flags() & (Flag::Wireframe
                 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
                 |Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection
                 #endif
@@ -997,14 +981,14 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
                 _smoothnessUniform = uniformLocation("smoothness");
             }
             #ifndef MAGNUM_TARGET_GLES2
-            if(flags & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
+            if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
                 _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
             }
-            if(flags & Flag::ObjectId)
+            if(flags() & Flag::ObjectId)
                 _objectIdUniform = uniformLocation("objectId");
             #endif
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-            if(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
+            if(flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
                 _normalMatrixUniform = uniformLocation("normalMatrix");
                 _lineWidthUniform = uniformLocation("lineWidth");
                 _lineLengthUniform = uniformLocation("lineLength");
@@ -1015,21 +999,21 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(flags() && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
-        if(flags & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
+        if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
             setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags >= Flag::ObjectIdTexture)
+        if(flags() >= Flag::ObjectIdTexture)
             setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
-        if(flags >= Flag::UniformBuffers) {
+        if(flags() >= Flag::UniformBuffers) {
             setUniformBlockBinding(uniformBlockIndex("Projection"), ProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Transformation"), TransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
-            if(flags & Flag::TextureTransformation)
+            if(flags() & Flag::TextureTransformation)
                 setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
         }
         #endif
@@ -1039,7 +1023,7 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags >= Flag::UniformBuffers) {
+    if(flags() >= Flag::UniformBuffers) {
         /* Viewport size is zero by default */
         /* Draw offset is zero by default */
     } else
@@ -1047,18 +1031,18 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     {
         setTransformationMatrix(Matrix4{Math::IdentityInit});
         setProjectionMatrix(Matrix4{Math::IdentityInit});
-        if(flags & (Flag::Wireframe
+        if(flags() & (Flag::Wireframe
             #ifndef MAGNUM_TARGET_GLES2
             |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
             #endif
         ))
             setColor(Color3(1.0f));
-        if(flags & Flag::Wireframe) {
+        if(flags() & Flag::Wireframe) {
             /* Viewport size is zero by default */
             setWireframeColor(Color3{0.0f});
             setWireframeWidth(1.0f);
         }
-        if(flags & (Flag::Wireframe
+        if(flags() & (Flag::Wireframe
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             |Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection
             #endif
@@ -1066,11 +1050,11 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
             setSmoothness(2.0f);
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId))
+        if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId))
             setColorMapTransformation(1.0f/512.0f, 1.0f/256.0f);
         #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        if(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
+        if(flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
             setNormalMatrix(Matrix3x3{Math::IdentityInit});
             setLineWidth(1.0f);
             setLineLength(1.0f);
@@ -1078,9 +1062,6 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
         #endif
     }
     #endif
-
-    static_cast<void>(context);
-    static_cast<void>(version);
 }
 
 MeshVisualizerGL3D::MeshVisualizerGL3D(const Configuration& configuration): MeshVisualizerGL3D{compile(configuration)} {}

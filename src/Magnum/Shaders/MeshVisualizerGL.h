@@ -625,7 +625,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
-         * Expects that @ref Flag::ObjectId is enabled. Default is
+         * Expects that @ref Flag::ObjectId is enabled. Initial value is
          * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
          * value is added to the ID coming from the @ref ObjectId attribute.
          *
@@ -960,8 +960,8 @@ class MeshVisualizerGL2D::Configuration {
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _materialCount = 1;
-        UnsignedInt _drawCount = 1;
+        UnsignedInt _materialCount = 1,
+            _drawCount = 1;
         #endif
 };
 
@@ -2036,7 +2036,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
-         * Expects that @ref Flag::ObjectId is enabled. Default is
+         * Expects that @ref Flag::ObjectId is enabled. Initial value is
          * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
          * value is added to the ID coming from the @ref ObjectId attribute.
          *
@@ -2548,8 +2548,8 @@ class MeshVisualizerGL3D::Configuration {
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _materialCount = 1;
-        UnsignedInt _drawCount = 1;
+        UnsignedInt _materialCount = 1,
+            _drawCount = 1;
         #endif
 };
 

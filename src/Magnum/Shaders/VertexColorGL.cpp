@@ -167,11 +167,9 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
-    const GL::Context& context = GL::Context::current();
-    const GL::Version version = state._version;
-
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    const GL::Context& context = GL::Context::current();
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
@@ -187,7 +185,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     #ifndef MAGNUM_TARGET_GLES2
     if(_flags >= Flag::UniformBuffers
         #ifndef MAGNUM_TARGET_GLES
-        && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version)
+        && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version)
         #endif
     ) {
         setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
@@ -205,9 +203,6 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
         setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
     }
     #endif
-
-    static_cast<void>(context);
-    static_cast<void>(version);
 }
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Configuration& configuration): VertexColorGL{compile(configuration)} {}

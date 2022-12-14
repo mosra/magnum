@@ -1048,8 +1048,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
-         * @ref Shaders-PhongGL-object-id for more information. Default is
-         * @cpp 0 @ce. If @ref Flag::InstancedObjectId and/or
+         * @ref Shaders-PhongGL-object-id for more information. Initial value
+         * is @cpp 0 @ce. If @ref Flag::InstancedObjectId and/or
          * @ref Flag::ObjectIdTexture is enabled as well, this value is added
          * to the ID coming from the @ref ObjectId attribute and/or the
          * texture.
@@ -1920,8 +1920,8 @@ class PhongGL::Configuration {
         Flags _flags;
         UnsignedInt _lightCount = 1;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _materialCount = 1;
-        UnsignedInt _drawCount = 1;
+        UnsignedInt _materialCount = 1,
+            _drawCount = 1;
         #endif
 };
 

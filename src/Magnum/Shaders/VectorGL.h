@@ -679,8 +679,8 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _materialCount = 1;
-        UnsignedInt _drawCount = 1;
+        UnsignedInt _materialCount = 1,
+            _drawCount = 1;
         #endif
 };
 

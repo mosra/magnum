@@ -797,7 +797,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          *
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
-         * @ref Shaders-FlatGL-object-id for more information. Default is
+         * @ref Shaders-FlatGL-object-id for more information. Initial value is
          * @cpp 0 @ce. If @ref Flag::InstancedObjectId and/or
          * @ref Flag::ObjectIdTexture is enabled as well, this value is added
          * to the ID coming from the @ref ObjectId attribute and/or the
@@ -1141,8 +1141,8 @@ template<UnsignedInt dimensions> class FlatGL<dimensions>::Configuration {
     private:
         Flags _flags;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _materialCount = 1;
-        UnsignedInt _drawCount = 1;
+        UnsignedInt _materialCount = 1,
+            _drawCount = 1;
         #endif
 };
 
