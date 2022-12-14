@@ -1333,6 +1333,8 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
         #endif
         MeshVisualizerGL2D::Flag::InstancedTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizerGL2D::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        MeshVisualizerGL2D::Flag::TextureTransformation,
         MeshVisualizerGL2D::Flag::VertexId,
         MeshVisualizerGL2D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
         #ifndef MAGNUM_TARGET_WEBGL
@@ -1340,7 +1342,8 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGL2D::Flag::MultiDraw, /* Superset of UniformBuffers */
-        MeshVisualizerGL2D::Flag::UniformBuffers
+        MeshVisualizerGL2D::Flag::UniformBuffers,
+        MeshVisualizerGL2D::Flag::TextureArrays,
         #endif
         #endif
     });
@@ -1369,6 +1372,8 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
         #endif
         MeshVisualizerGL3D::Flag::InstancedTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizerGL3D::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
+        MeshVisualizerGL3D::Flag::TextureTransformation,
         MeshVisualizerGL3D::Flag::VertexId,
         MeshVisualizerGL3D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
         #ifndef MAGNUM_TARGET_WEBGL
@@ -1376,7 +1381,8 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerGL3D::Flag::MultiDraw, /* Superset of UniformBuffers */
-        MeshVisualizerGL3D::Flag::UniformBuffers
+        MeshVisualizerGL3D::Flag::UniformBuffers,
+        MeshVisualizerGL3D::Flag::TextureArrays,
         #endif
         #endif
     });

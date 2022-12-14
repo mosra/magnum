@@ -168,6 +168,14 @@ void MeshVisualizerGL_Test::debugFlagsSupersets2D() {
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL2D::Flag::ObjectIdTexture\n");
     }
 
+    /* InstancedTextureOffset is a superset of TextureTransformation so only
+       one should be printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL2D::Flag::InstancedTextureOffset|MeshVisualizerGL2D::Flag::TextureTransformation);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedTextureOffset\n");
+    }
+
     /* MultiDraw is a superset of UniformBuffers so only one should be printed */
     {
         std::ostringstream out;
@@ -191,6 +199,14 @@ void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
         std::ostringstream out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::ObjectId|MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture);
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedObjectId|Shaders::MeshVisualizerGL3D::Flag::ObjectIdTexture\n");
+    }
+
+    /* InstancedTextureOffset is a superset of TextureTransformation so only
+       one should be printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL3D::Flag::InstancedTextureOffset|MeshVisualizerGL3D::Flag::TextureTransformation);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedTextureOffset\n");
     }
 
     /* MultiDraw is a superset of UniformBuffers so only one should be printed */
