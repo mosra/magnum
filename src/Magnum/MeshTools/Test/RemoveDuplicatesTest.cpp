@@ -1237,7 +1237,9 @@ void RemoveDuplicatesTest::benchmark() {
         data[i].x() = i/100;
     std::shuffle(std::begin(data), std::end(data), std::minstd_rand{std::random_device{}()});
 
-    std::size_t count;
+    /* GCC 12 LOUDLY warns that this variable might be uninitialized, which
+       is stupid, suppress that */
+    std::size_t count = 0;
     UnsignedInt indices[10000];
     CORRADE_BENCHMARK(1)
         count = MeshTools::removeDuplicatesInPlaceInto(
@@ -1254,7 +1256,9 @@ void RemoveDuplicatesTest::benchmarkFuzzy() {
         data[i].x() = i/100;
     std::shuffle(std::begin(data), std::end(data), std::minstd_rand{std::random_device{}()});
 
-    std::size_t count;
+    /* GCC 12 LOUDLY warns that this variable might be uninitialized, which
+       is stupid, suppress that */
+    std::size_t count = 0;
     UnsignedInt indices[10000];
     CORRADE_BENCHMARK(1)
         count = MeshTools::removeDuplicatesFuzzyInPlaceInto(
