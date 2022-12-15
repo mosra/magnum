@@ -177,6 +177,15 @@ texture offset (or offset and layer).
     in OpenGL ES 2.0.
 @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
     1.0.
+
+@section Shaders-MeshVisualizerGL2D-ubo Uniform buffers
+
+Unlike with @ref Shaders-MeshVisualizerGL2D-ubo "uniform buffers in the 3D variant",
+because the shader doesn't need a separate projection and transformation
+matrix, a combined one is supplied via a @ref TransformationProjectionUniform2D
+buffer bound with @ref bindTransformationProjectionBuffer(), and
+a trimmed-down @ref MeshVisualizerDrawUniform2D is used instead of
+@ref MeshVisualizerDrawUniform3D. The rest is the same.
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisualizerGLBase {
     public:
@@ -1192,11 +1201,16 @@ texture offset (or offset and layer).
 
 See @ref shaders-usage-ubo for a high-level overview that applies to all
 shaders. In this particular case, the shader needs a separate
-@ref ProjectionUniform3D and @ref TransformationUniform3D buffer. To maximize
-use of the limited uniform buffer memory, materials are supplied separately in
-a @ref MeshVisualizerMaterialUniform and then referenced via
+@ref ProjectionUniform3D and @ref TransformationUniform3D buffer bound with
+@ref bindProjectionBuffer() and @ref bindTransformationBuffer(), respectively.
+To maximize use of the limited uniform buffer memory, materials are supplied
+separately in a @ref MeshVisualizerMaterialUniform buffer bound with
+@ref bindMaterialBuffer() and then referenced via
 @relativeref{MeshVisualizerDrawUniform3D,materialId} from a
-@ref MeshVisualizerDrawUniform3D. A uniform buffer setup equivalent to the
+@ref MeshVisualizerDrawUniform3D buffer bound with @ref bindDrawBuffer(); for optional texture transformation a per-draw
+@ref TextureTransformationUniform buffer bound with
+@ref bindTextureTransformationBuffer() can be supplied as well. A uniform
+buffer setup equivalent to the
 @ref Shaders-MeshVisualizerGL3D-wireframe "wireframe case at the top" would
 look like this --- note that @ref setViewportSize() is an immediate uniform
 here as well, as it's assumed to be set globally and rarely changed:

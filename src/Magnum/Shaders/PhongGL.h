@@ -259,14 +259,19 @@ well to ensure lighting works:
 
 See @ref shaders-usage-ubo for a high-level overview that applies to all
 shaders. In this particular case, the shader needs a separate
-@ref ProjectionUniform3D and @ref TransformationUniform3D buffer, lights are
-supplied via a @ref PhongLightUniform. To maximize use of the limited uniform
-buffer memory, materials are supplied separately in a @ref PhongMaterialUniform
-buffer and then referenced via @relativeref{PhongDrawUniform,materialId} from a
-@ref PhongDrawUniform; for optional texture transformation a per-draw
-@ref TextureTransformationUniform can be supplied as well. A uniform buffer
-setup equivalent to the @ref Shaders-PhongGL-colored "colored case at the top",
-with one default light, would look like this:
+@ref ProjectionUniform3D and @ref TransformationUniform3D buffer bound with
+@ref bindProjectionBuffer() and @ref bindTransformationBuffer(), respectively,
+lights are supplied via a @ref PhongLightUniform buffer bound with
+@ref bindLightBuffer(). To maximize use of the limited uniform buffer memory,
+materials are supplied separately in a @ref PhongMaterialUniform buffer
+bound with @ref bindMaterialBuffer() and then referenced via
+@relativeref{PhongDrawUniform,materialId} from a @ref PhongDrawUniform bound
+with @ref bindDrawBuffer(); for optional texture transformation a per-draw
+@ref TextureTransformationUniform buffer bound with
+@ref bindTextureTransformationBuffer() can be supplied as well. A uniform
+buffer setup equivalent to the
+@ref Shaders-PhongGL-colored "colored case at the top", with one default light,
+would look like this:
 
 @snippet MagnumShaders-gl.cpp PhongGL-ubo
 

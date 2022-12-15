@@ -88,12 +88,15 @@ See @ref shaders-usage-ubo for a high-level overview that applies to all
 shaders. In this particular case, because the shader doesn't need a separate
 projection and transformation matrix, a combined one is supplied via a
 @ref TransformationProjectionUniform2D / @ref TransformationProjectionUniform3D
-buffer. To maximize use of the limited uniform buffer memory, materials are
-supplied separately in a @ref DistanceFieldVectorMaterialUniform buffer and
-then referenced via @relativeref{DistanceFieldVectorDrawUniform,materialId}
-from a @ref DistanceFieldVectorDrawUniform; for optional texture transformation
-a per-draw @ref TextureTransformationUniform can be supplied as well. A uniform
-buffer setup equivalent to the above would look like this:
+buffer bound with @ref bindTransformationProjectionBuffer(). To maximize use of
+the limited uniform buffer memory, materials are supplied separately in a
+@ref DistanceFieldVectorMaterialUniform buffer bound with
+@ref bindMaterialBuffer() and then referenced via
+@relativeref{DistanceFieldVectorDrawUniform,materialId} from a
+@ref DistanceFieldVectorDrawUniform bound with @ref bindDrawBuffer(); for
+optional texture transformation a per-draw @ref TextureTransformationUniform
+buffer bound with @ref bindTextureTransformationBuffer() can be supplied as
+well. A uniform buffer setup equivalent to the above would look like this:
 
 @snippet MagnumShaders-gl.cpp DistanceFieldVectorGL-ubo
 

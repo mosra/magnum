@@ -87,9 +87,9 @@ See @ref shaders-usage-ubo for a high-level overview that applies to all
 shaders. In this particular case, because the shader doesn't need a separate
 projection and transformation matrix, a combined one is supplied via a
 @ref TransformationProjectionUniform2D / @ref TransformationProjectionUniform3D
-buffer. This is also the only buffer supplied, as there are no other draw
-parameters. A uniform buffer setup equivalent to the above would look like
-this:
+buffer bound with @ref bindTransformationProjectionBuffer(). This is also the
+only buffer supplied, as there are no other draw parameters. A uniform buffer
+setup equivalent to the above would look like this:
 
 @snippet MagnumShaders-gl.cpp VectorGL-ubo
 
