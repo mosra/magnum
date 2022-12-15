@@ -120,8 +120,7 @@ struct PhongGLTest: GL::OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void setObjectIdNotEnabled();
     #endif
-    void setWrongLightCount();
-    void setWrongLightId();
+    void setWrongLightCountOrId();
     #ifndef MAGNUM_TARGET_GLES2
     void setWrongDrawOffset();
     #endif
@@ -1003,8 +1002,7 @@ PhongGLTest::PhongGLTest() {
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::setObjectIdNotEnabled,
         #endif
-        &PhongGLTest::setWrongLightCount,
-        &PhongGLTest::setWrongLightId,
+        &PhongGLTest::setWrongLightCountOrId,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::setWrongDrawOffset
         #endif
@@ -1687,7 +1685,7 @@ void PhongGLTest::setObjectIdNotEnabled() {
 }
 #endif
 
-void PhongGLTest::setWrongLightCount() {
+void PhongGLTest::setWrongLightCountOrId() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     PhongGL shader{PhongGL::Configuration{}
@@ -1698,29 +1696,17 @@ void PhongGLTest::setWrongLightCount() {
     shader
         .setLightColors({Color3{}})
         .setLightPositions({Vector4{}})
-        .setLightRanges({0.0f});
+        .setLightRanges({0.0f})
+        .setLightColor(5, Color3{})
+        .setLightPosition(5, Vector4{})
+        .setLightRange(5, 0.0f);
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setLightColors(): expected 5 items but got 1\n"
         "Shaders::PhongGL::setLightPositions(): expected 5 items but got 1\n"
-        "Shaders::PhongGL::setLightRanges(): expected 5 items but got 1\n");
-}
-
-void PhongGLTest::setWrongLightId() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    PhongGL shader{PhongGL::Configuration{}
-        .setLightCount(3)};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    shader
-        .setLightColor(3, Color3{})
-        .setLightPosition(3, Vector4{})
-        .setLightRange(3, 0.0f);
-    CORRADE_COMPARE(out.str(),
-        "Shaders::PhongGL::setLightColor(): light ID 3 is out of bounds for 3 lights\n"
-        "Shaders::PhongGL::setLightPosition(): light ID 3 is out of bounds for 3 lights\n"
-        "Shaders::PhongGL::setLightRange(): light ID 3 is out of bounds for 3 lights\n");
+        "Shaders::PhongGL::setLightRanges(): expected 5 items but got 1\n"
+        "Shaders::PhongGL::setLightColor(): light ID 5 is out of bounds for 5 lights\n"
+        "Shaders::PhongGL::setLightPosition(): light ID 5 is out of bounds for 5 lights\n"
+        "Shaders::PhongGL::setLightRange(): light ID 5 is out of bounds for 5 lights\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
