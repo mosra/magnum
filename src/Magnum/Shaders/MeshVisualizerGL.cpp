@@ -803,8 +803,8 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::setSmoothness(const Float smoothness) {
 MeshVisualizerGL2D& MeshVisualizerGL2D::setJointMatrices(const Containers::ArrayView<const Matrix3> matrices) {
     CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
         "Shaders::MeshVisualizerGL2D::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
-    CORRADE_ASSERT(_jointCount == matrices.size(),
-        "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    CORRADE_ASSERT(matrices.size() <= _jointCount,
+        "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
     if(_jointCount) setUniform(_jointMatricesUniform, matrices);
     return *this;
 }
@@ -1372,8 +1372,8 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::setSmoothness(const Float smoothness) {
 MeshVisualizerGL3D& MeshVisualizerGL3D::setJointMatrices(const Containers::ArrayView<const Matrix4> matrices) {
     CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
         "Shaders::MeshVisualizerGL3D::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
-    CORRADE_ASSERT(_jointCount == matrices.size(),
-        "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    CORRADE_ASSERT(matrices.size() <= _jointCount,
+        "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
     if(_jointCount) setUniform(_jointMatricesUniform, matrices);
     return *this;
 }

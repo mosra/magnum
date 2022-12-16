@@ -857,7 +857,12 @@ const struct {
             {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
         }}, false, true, false,
         "skinning.tga"},
-    {"single set, joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+    {"single set, upload just a prefix of joint matrices", 15, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
+            {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, upload joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
             {0, PhongGL::JointIds{PhongGL::JointIds::Components::Three}},
             {3*4, PhongGL::Weights{PhongGL::Weights::Components::Three}},
         }}, false, true, true,
@@ -2008,10 +2013,12 @@ void PhongGLTest::setWrongJointCountOrId() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setJointMatrices({Matrix4{}})
+    /* Calling setJointMatrices() with less items is fine, tested in
+       renderSkinning() */
+    shader.setJointMatrices({{}, {}, {}, {}, {}, {}})
         .setJointMatrix(5, Matrix4{});
     CORRADE_COMPARE(out.str(),
-        "Shaders::PhongGL::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::PhongGL::setJointMatrices(): expected at most 5 items but got 6\n"
         "Shaders::PhongGL::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
 }
 #endif

@@ -886,8 +886,8 @@ PhongGL& PhongGL::setLightRange(const UnsignedInt id, const Float range) {
 PhongGL& PhongGL::setJointMatrices(const Containers::ArrayView<const Matrix4> matrices) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
-    CORRADE_ASSERT(_jointCount == matrices.size(),
-        "Shaders::PhongGL::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    CORRADE_ASSERT(matrices.size() <= _jointCount,
+        "Shaders::PhongGL::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
     if(_jointCount) setUniform(_jointMatricesUniform, matrices);
     return *this;
 }

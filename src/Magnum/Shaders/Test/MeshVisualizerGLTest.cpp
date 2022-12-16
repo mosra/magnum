@@ -935,7 +935,12 @@ const struct {
             {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
         }}, false, true, false,
         "skinning.tga"},
-    {"single set, joint matrices one by one", 5, 3, 0, 0, 0, {}, {}, {InPlaceInit, {
+    {"single set, upload just a prefix of joint matrices", 15, 3, 0, 0, 0, {}, {}, {InPlaceInit, {
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set, upload joint matrices one by one", 5, 3, 0, 0, 0, {}, {}, {InPlaceInit, {
             {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
             {3*4, MeshVisualizerGL2D::Weights{MeshVisualizerGL2D::Weights::Components::Three}},
         }}, false, true, true,
@@ -2881,10 +2886,12 @@ void MeshVisualizerGLTest::setWrongJointCountOrId2D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setJointMatrices({Matrix3{}});
-    shader.setJointMatrix(5, Matrix3{});
+    /* Calling setJointMatrices() with less items is fine, tested in
+       renderSkinningWireframe2D() */
+    shader.setJointMatrices({{}, {}, {}, {}, {}, {}})
+        .setJointMatrix(5, Matrix3{});
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected at most 5 items but got 6\n"
         "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
 }
 
@@ -2904,10 +2911,12 @@ void MeshVisualizerGLTest::setWrongJointCountOrId3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setJointMatrices({Matrix4{}});
-    shader.setJointMatrix(5, Matrix4{});
+    /* Calling setJointMatrices() with less items is fine, tested in
+       renderSkinningWireframe3D() */
+    shader.setJointMatrices({{}, {}, {}, {}, {}, {}})
+        .setJointMatrix(5, Matrix4{});
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected at most 5 items but got 6\n"
         "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
 }
 #endif

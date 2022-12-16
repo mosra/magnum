@@ -152,10 +152,13 @@ per-vertex primary and secondary joint count in
 @ref Configuration::setJointCount() and upload appropriate joint matrices with
 @ref setJointMatrices().
 
-To avoid having to compile multiple shader variants for different per-vertex
-joint counts, enable @ref Flag::DynamicPerVertexJointCount, set the maximum
-per-vertex joint count in @ref Configuration::setJointCount() and then adjust
-the actual per-draw joint count with @ref setPerVertexJointCount().
+To avoid having to compile multiple shader variants for different joint matrix
+counts, set the maximum used joint count in @ref Configuration::setJointCount()
+and then upload just a prefix via @ref setJointMatrices(). Similarly, to avoid
+multiple variants for different per-vertex joint counts, enable
+@ref Flag::DynamicPerVertexJointCount, set the maximum per-vertex joint count
+in @ref Configuration::setJointCount() and then adjust the actual per-draw
+joint count with @ref setPerVertexJointCount().
 
 @requires_gl30 Extension @gl_extension{EXT,texture_integer}
 @requires_gles30 Skinning requires integer support in shaders, which is not
@@ -1015,7 +1018,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @m_since_latest
          *
          * Initial values are identity transformations. Expects that the size
-         * of the @p matrices array is the same as @ref jointCount().
+         * of the @p matrices array is not larger than @ref jointCount().
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref TransformationUniform2D::transformationMatrix /
@@ -1393,15 +1396,15 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
         /**
          * @brief Set joint count
          *
-         * If @ref Flag::UniformBuffers isn't set, @p count describes how many
-         * joint matrices get supplied to each draw by @ref setJointMatrices()
-         * / @ref setJointMatrix(). If @ref Flag::UniformBuffers is set,
-         * @p count describes size of a @ref TransformationUniform2D /
-         * @ref TransformationUniform3D buffer bound with
-         * @ref bindJointBuffer(); as uniform buffers are required to have a
-         * statically defined size. The per-vertex joints then index into the
-         * array offset by @ref FlatDrawUniform::jointOffset. If @p count is
-         * @cpp 0 @ce, skinning is not performed.
+         * If @ref Flag::UniformBuffers isn't set, @p count describes an upper
+         * bound on how many joint matrices get supplied to each draw by
+         * @ref setJointMatrices() / @ref setJointMatrix(). If
+         * @ref Flag::UniformBuffers is set, @p count describes size of a
+         * @ref TransformationUniform2D / @ref TransformationUniform3D buffer
+         * bound with @ref bindJointBuffer(); as uniform buffers are required
+         * to have a statically defined size. The per-vertex joints then index
+         * into the array offset by @ref FlatDrawUniform::jointOffset. If
+         * @p count is @cpp 0 @ce, skinning is not performed.
          *
          * The @p perVertexCount and @p secondaryPerVertexCount then describe
          * how many components are taken from @ref JointIds / @ref Weights and

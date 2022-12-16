@@ -542,7 +542,12 @@ const struct {
             {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
         }}, false, true, false,
         "skinning.tga"},
-    {"single set, joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+    {"single set, upload just a prefix of joint matrices", 15, 3, 0, 0, 0, {}, {InPlaceInit, {
+            {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
+            {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
+        }}, false, true, false,
+        "skinning.tga"},
+    {"single set,  upload joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
             {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
             {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
         }}, false, true, true,
@@ -1587,10 +1592,12 @@ template<UnsignedInt dimensions> void FlatGLTest::setWrongJointCountOrId() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    shader.setJointMatrices({MatrixTypeFor<dimensions, Float>{}});
-    shader.setJointMatrix(5, MatrixTypeFor<dimensions, Float>{});
+    /* Calling setJointMatrices() with less items is fine, tested in
+       renderSkinning*D() */
+    shader.setJointMatrices({{}, {}, {}, {}, {}, {}})
+        .setJointMatrix(5, MatrixTypeFor<dimensions, Float>{});
     CORRADE_COMPARE(out.str(),
-        "Shaders::FlatGL::setJointMatrices(): expected 5 items but got 1\n"
+        "Shaders::FlatGL::setJointMatrices(): expected at most 5 items but got 6\n"
         "Shaders::FlatGL::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
 }
 #endif

@@ -498,8 +498,8 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setObje
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setJointMatrices(const Containers::ArrayView<const MatrixTypeFor<dimensions, Float>> matrices) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::FlatGL::setJointMatrices(): the shader was created with uniform buffers enabled", *this);
-    CORRADE_ASSERT(_jointCount == matrices.size(),
-        "Shaders::FlatGL::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    CORRADE_ASSERT(matrices.size() <= _jointCount,
+        "Shaders::FlatGL::setJointMatrices(): expected at most" << _jointCount << "items but got" << matrices.size(), *this);
     if(_jointCount) setUniform(_jointMatricesUniform, matrices);
     return *this;
 }
