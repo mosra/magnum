@@ -78,34 +78,42 @@ Containers::ArrayView<char> AnimationData::mutableData() & {
 }
 
 AnimationTrackType AnimationData::trackType(UnsignedInt id) const {
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackType(): index out of range", {});
+    CORRADE_ASSERT(id < _tracks.size(),
+        "Trade::AnimationData::trackType(): index" << id << "out of range for" << _tracks.size() << "tracks", {});
     return _tracks[id]._type;
 }
 
 AnimationTrackType AnimationData::trackResultType(UnsignedInt id) const {
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackResultType(): index out of range", {});
+    CORRADE_ASSERT(id < _tracks.size(),
+        "Trade::AnimationData::trackResultType(): index" << id << "out of range for" << _tracks.size() << "tracks", {});
     return _tracks[id]._resultType;
 }
 
 AnimationTrackTargetType AnimationData::trackTargetType(UnsignedInt id) const {
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackTargetType(): index out of range", {});
+    CORRADE_ASSERT(id < _tracks.size(),
+        "Trade::AnimationData::trackTargetType(): index" << id << "out of range for" << _tracks.size() << "tracks", {});
     return _tracks[id]._targetType;
 }
 
 UnsignedLong AnimationData::trackTarget(UnsignedInt id) const {
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackTarget(): index out of range", {});
+    CORRADE_ASSERT(id < _tracks.size(),
+        "Trade::AnimationData::trackTarget(): index" << id << "out of range for" << _tracks.size() << "tracks", {});
     return _tracks[id]._target;
 }
 
 const Animation::TrackViewStorage<const Float>& AnimationData::track(UnsignedInt id) const {
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::track(): index out of range", _tracks[id]._view);
+    CORRADE_ASSERT(id < _tracks.size(),
+        "Trade::AnimationData::track(): index" << id << "out of range for" << _tracks.size() << "tracks", _tracks[0]._view);
     return _tracks[id]._view;
 }
 
 const Animation::TrackViewStorage<Float>& AnimationData::mutableTrack(UnsignedInt id) {
     CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
-        "Trade::AnimationData::mutableTrack(): the animation is not mutable", reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view));
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::track(): index out of range", reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view));
+        "Trade::AnimationData::mutableTrack(): the animation is not mutable",
+        reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view));
+    CORRADE_ASSERT(id < _tracks.size(),
+        "Trade::AnimationData::mutableTrack(): index" << id << "out of range for" << _tracks.size() << "tracks",
+        reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[0]._view));
     return reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view);
 }
 

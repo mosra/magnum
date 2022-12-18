@@ -579,19 +579,24 @@ void AnimationDataTest::trackWrongIndex() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    AnimationData data{nullptr, nullptr};
-    data.trackType(0);
-    data.trackResultType(0);
-    data.trackTargetType(0);
-    data.trackTarget(0);
-    data.track(0);
+    AnimationData data{nullptr, {
+        AnimationTrackData{AnimationTrackType::Vector3,
+            AnimationTrackTargetType::Scaling3D, 0, {}}
+        }};
+    data.trackType(1);
+    data.trackResultType(1);
+    data.trackTargetType(1);
+    data.trackTarget(1);
+    data.track(1);
+    data.mutableTrack(1);
 
     CORRADE_COMPARE(out.str(),
-        "Trade::AnimationData::trackType(): index out of range\n"
-        "Trade::AnimationData::trackResultType(): index out of range\n"
-        "Trade::AnimationData::trackTargetType(): index out of range\n"
-        "Trade::AnimationData::trackTarget(): index out of range\n"
-        "Trade::AnimationData::track(): index out of range\n");
+        "Trade::AnimationData::trackType(): index 1 out of range for 1 tracks\n"
+        "Trade::AnimationData::trackResultType(): index 1 out of range for 1 tracks\n"
+        "Trade::AnimationData::trackTargetType(): index 1 out of range for 1 tracks\n"
+        "Trade::AnimationData::trackTarget(): index 1 out of range for 1 tracks\n"
+        "Trade::AnimationData::track(): index 1 out of range for 1 tracks\n"
+        "Trade::AnimationData::mutableTrack(): index 1 out of range for 1 tracks\n");
 }
 
 void AnimationDataTest::trackWrongType() {
