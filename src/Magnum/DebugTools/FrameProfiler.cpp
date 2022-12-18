@@ -190,21 +190,17 @@ void FrameProfiler::endFrame() {
         Measurement& measurement = _measurements[i];
         const UnsignedInt measurementDelay = Math::max(1u, measurement._delay);
 
-        /* Where to save currently queried data. For _delay of 0 or 1,
-           delayedCurrentData(Math::max(1u, measurement._delay)) is equal to
-           _currentData. */
-        UnsignedLong& currentMeasurementData = _data[delayedCurrentData(measurementDelay)*_measurements.size() + i];
-
         /* If we're wrapping around, subtract the oldest data from the moving
            average so we can reuse the memory for currently queried data */
         if(_measuredFrameCount > _maxFrameCount + measurementDelay - 1) {
+            UnsignedLong& currentMeasurementData = _data[delayedCurrentData(measurementDelay)*_measurements.size() + i];
             CORRADE_INTERNAL_ASSERT(measurement._movingSum >= currentMeasurementData);
             measurement._movingSum -= currentMeasurementData;
         }
 
         /* Simply save the data if not delayed */
         if(!measurement._delay)
-            currentMeasurementData = measurement._query.immediate(measurement._state);
+            _data[delayedCurrentData(measurementDelay)*_measurements.size() + i] = measurement._query.immediate(measurement._state);
 
         /* For delayed measurements call the end function for current frame and
            then save the data for the delayed frame */
@@ -215,7 +211,7 @@ void FrameProfiler::endFrame() {
                reused for a a new value next frame */
             const UnsignedInt previous = (measurement._current + 1) % measurement._delay;
             if(_measuredFrameCount >= measurement._delay) {
-                currentMeasurementData =
+                _data[delayedCurrentData(measurementDelay)*_measurements.size() + i] =
                     measurement._query.delayed(measurement._state, previous, measurement._current);
             }
             measurement._current = previous;
@@ -228,9 +224,8 @@ void FrameProfiler::endFrame() {
         Measurement& measurement = _measurements[i];
         const UnsignedInt measurementDelay = Math::max(1u, measurement._delay);
 
-        /* If we have enough frames, add the new measurement to the moving sum.
-           For _delay of 0 or 1, delayedCurrentData(Math::max(1u, measurement._delay))
-           is equal to _currentData. */
+        /* If we have enough frames, add the new measurement to the moving
+           sum */
         if(_measuredFrameCount >= measurementDelay) {
             const UnsignedLong data = _data[delayedCurrentData(measurementDelay)*_measurements.size() + i];
             CORRADE_INTERNAL_ASSERT(_measurements[i]._movingSum + data >= _measurements[i]._movingSum);
