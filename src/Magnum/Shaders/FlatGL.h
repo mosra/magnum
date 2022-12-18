@@ -150,7 +150,8 @@ and weight attributes to @ref JointIds / @ref SecondaryJointIds and
 @ref Weights / @ref SecondaryWeights, set an appropriate joint count and
 per-vertex primary and secondary joint count in
 @ref Configuration::setJointCount() and upload appropriate joint matrices with
-@ref setJointMatrices().
+@ref setJointMatrices(). The usage is similar for all shaders, see
+@ref shaders-usage-skinning for an example.
 
 To avoid having to compile multiple shader variants for different joint matrix
 counts, set the maximum used joint count in @ref Configuration::setJointCount()

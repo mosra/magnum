@@ -228,6 +228,30 @@ using the usual vertex color attribute, only instanced:
 
 @snippet MagnumShaders-gl.cpp shaders-instancing
 
+@subsection shaders-usage-skinning Skinning
+
+@ref Shaders::FlatGL, @ref Shaders::MeshVisualizerGL3D "Shaders::MeshVisualizerGL*D"
+and @ref Shaders::PhongGL are capable of rendering skinned meshes. Such meshes
+are commonly imported from files such as glTF or FBX together with the skeleton
+hierarchy and associated animations. The following snippet shows compiling a
+@ref Trade::MeshData to a @ref GL::Mesh using @ref MeshTools::compile(), using
+@ref Trade::SkinData and @ref MeshTools::compiledPerVertexJointCount() to
+set up shader parameters and finally uploading calculated joint matrices to
+perform the skinning animation:
+
+@snippet MagnumShaders-gl.cpp shaders-skinning
+
+The above hardcodes the joint counts in the shader, which makes it the most
+optimal for rendering given mesh. However, with multiple skinned meshes it'd
+mean having a dedicated shader instance tailored for each. To avoid that, you
+can set the joint count and per-vertex joint count to the maximum that the
+meshes would need, enable @ref Shaders::PhongGL::Flag::DynamicPerVertexJointCount "Flag::DynamicPerVertexJointCount",
+for a particular draw upload just a subset of joint matrices the mesh would
+reference and set the count of actually used per-vertex joints via
+@ref Shaders::PhongGL::setPerVertexJointCount(). Thus, compared to above:
+
+@snippet MagnumShaders-gl.cpp shaders-skinning-dynamic
+
 @subsection shaders-usage-textures Using textures
 
 Unless the shader requires a texture to work (which is the case of

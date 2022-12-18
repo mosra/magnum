@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/ImageView.h"
@@ -47,6 +48,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/Shaders/DistanceFieldVectorGL.h"
 #include "Magnum/Shaders/FlatGL.h"
@@ -55,6 +57,8 @@
 #include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Shaders/VertexColorGL.h"
 #include "Magnum/Trade/LightData.h"
+#include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/SkinData.h"
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/TextureArray.h"
@@ -269,6 +273,63 @@ shader
     .draw(sphereInstanced);
 /* [shaders-instancing] */
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+/* [shaders-skinning] */
+/* Import and compile the mesh */
+Trade::MeshData meshData = DOXYGEN_ELLIPSIS(Trade::MeshData{MeshPrimitive::Triangles, 0});
+GL::Mesh mesh = MeshTools::compile(meshData);
+Containers::Pair<UnsignedInt, UnsignedInt> meshPerVertexJointCount =
+    MeshTools::compiledPerVertexJointCount(meshData);
+
+/* Import the skin associated with the mesh */
+Trade::SkinData3D skin = DOXYGEN_ELLIPSIS(Trade::SkinData3D{{}, {}});
+
+/* Set up a skinned shader */
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setJointCount(skin.joints().size(), meshPerVertexJointCount.first(),
+                                         meshPerVertexJointCount.second())};
+
+DOXYGEN_ELLIPSIS()
+
+/* Absolute transformations for all nodes in the scene, possibly animated */
+Containers::Array<Matrix4> absoluteTransformations{DOXYGEN_ELLIPSIS()};
+DOXYGEN_ELLIPSIS()
+
+/* Gather joint transformations for this skin, upload and draw */
+Containers::Array<Matrix4> jointTransformations{NoInit, skin.joints().size()};
+for(std::size_t i = 0; i != jointTransformations.size(); ++i)
+    jointTransformations[i] = absoluteTransformations[skin.joints()[i]]*
+                              skin.inverseBindMatrices()[i];
+shader
+    .setJointMatrices(jointTransformations)
+    DOXYGEN_ELLIPSIS()
+    .draw(mesh);
+/* [shaders-skinning] */
+}
+
+{
+Matrix4 jointTransformations[2];
+UnsignedInt maxSkinJointCount{};
+Containers::Pair<UnsignedInt, UnsignedInt> meshPerVertexJointCount;
+GL::Mesh mesh;
+/* [shaders-skinning-dynamic] */
+Shaders::PhongGL shader{Shaders::PhongGL::Configuration{}
+    .setFlags(Shaders::PhongGL::Flag::DynamicPerVertexJointCount)
+    .setJointCount(maxSkinJointCount, 4, 4)};
+
+DOXYGEN_ELLIPSIS()
+
+shader
+    .setJointMatrices(jointTransformations)
+    .setPerVertexJointCount(meshPerVertexJointCount.first(),
+                            meshPerVertexJointCount.second())
+    DOXYGEN_ELLIPSIS()
+    .draw(mesh);
+/* [shaders-skinning-dynamic] */
+}
+#endif
 
 {
 GL::Mesh mesh;
