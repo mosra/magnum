@@ -1237,7 +1237,7 @@ void MeshDataTest::construct() {
     /* Enough vertex data to fit also the case with large explicit vertex count
        (but fill just the first 3, as those are only tested) */
     Containers::Array<char> vertexData{17*sizeof(Vertex)};
-    auto vertexView = Containers::arrayCast<Vertex>(vertexData).prefix(3);
+    auto vertexView = stridedArrayView(Containers::arrayCast<Vertex>(vertexData)).prefix(3);
     vertexView[0].position = {0.1f, 0.2f, 0.3f};
     vertexView[1].position = {0.4f, 0.5f, 0.6f};
     vertexView[2].position = {0.7f, 0.8f, 0.9f};
@@ -1260,16 +1260,16 @@ void MeshDataTest::construct() {
     int importerState;
     MeshIndexData indices{indexView};
     MeshAttributeData positions{MeshAttribute::Position,
-        Containers::StridedArrayView1D<Vector3>{vertexData, &vertexView[0].position, vertexView.size(), sizeof(Vertex)}};
+        vertexView.slice(&Vertex::position)};
     /* Offset-only */
     MeshAttributeData normals{MeshAttribute::Normal,
         VertexFormat::Vector3, offsetof(Vertex, normal),
         UnsignedInt(vertexView.size()), sizeof(Vertex)};
     MeshAttributeData textureCoordinates{MeshAttribute::TextureCoordinates,
-        Containers::StridedArrayView1D<Vector2>{vertexData, &vertexView[0].textureCoordinate, vertexView.size(), sizeof(Vertex)}};
+        vertexView.slice(&Vertex::textureCoordinate)};
     /* Custom & array */
     MeshAttributeData ids{meshAttributeCustom(13),
-        Containers::StridedArrayView2D<Short>{vertexData, &vertexView[0].id[0], {vertexView.size(), 2}, {sizeof(Vertex), sizeof(Short)}}};
+        Containers::arrayCast<2, Short>(vertexView.slice(&Vertex::id))};
     MeshData data{MeshPrimitive::Triangles,
         std::move(indexData), indices,
         /* Texture coordinates deliberately twice (though aliased) */
