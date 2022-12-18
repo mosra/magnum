@@ -428,7 +428,10 @@ CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages,
         sizeof(BufferMemoryBarrier) == sizeof(VkBufferMemoryBarrier) &&
         sizeof(ImageMemoryBarrier) == sizeof(VkImageMemoryBarrier),
         "");
-    (**_device).CmdPipelineBarrier(_handle, VkPipelineStageFlags(sourceStages), VkPipelineStageFlags(destinationStages), VkDependencyFlags(dependencyFlags), memoryBarriers.size(), memoryBarriers[0], bufferMemoryBarriers.size(), bufferMemoryBarriers[0], imageMemoryBarriers.size(), imageMemoryBarriers[0]);
+    (**_device).CmdPipelineBarrier(_handle, VkPipelineStageFlags(sourceStages), VkPipelineStageFlags(destinationStages), VkDependencyFlags(dependencyFlags),
+        memoryBarriers.size(), memoryBarriers.isEmpty() ? nullptr : &*memoryBarriers.front(),
+        bufferMemoryBarriers.size(), bufferMemoryBarriers.isEmpty() ? nullptr : &*bufferMemoryBarriers.front(),
+        imageMemoryBarriers.size(), imageMemoryBarriers.isEmpty() ? nullptr : &*imageMemoryBarriers.front());
     return *this;
 }
 
