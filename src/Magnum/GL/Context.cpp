@@ -1009,11 +1009,11 @@ bool Context::tryCreate(const Configuration& configuration) {
        GL::defaultFramebuffer global itself without turning it into a pointer
        or a function. */
     if(!(_configurationFlags & Configuration::Flag::Windowless)) {
-        Implementation::FramebufferState& state = _state->framebuffer;
+        Implementation::FramebufferState& framebufferState = _state->framebuffer;
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
-        state.defaultViewport = state.viewport = Range2Di::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
-        CORRADE_INTERNAL_ASSERT(state.defaultViewport != Implementation::FramebufferState::DisengagedViewport);
+        framebufferState.defaultViewport = framebufferState.viewport = Range2Di::fromSize({viewport[0], viewport[1]}, {viewport[2], viewport[3]});
+        CORRADE_INTERNAL_ASSERT(framebufferState.defaultViewport != Implementation::FramebufferState::DisengagedViewport);
     }
     /** @todo Get rid of this as well somehow */
     Renderer::initializeContextBasedFunctionality();

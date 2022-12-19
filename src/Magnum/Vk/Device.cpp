@@ -842,9 +842,9 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
 void Device::initialize(Instance& instance, const Version version, const Containers::StringIterable& enabledExtensions, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures) {
     /* Mark all known extensions as enabled */
     for(const Containers::StringView extension: enabledExtensions) {
-        for(const Version version: KnownVersionsForExtensions) {
+        for(const Version extensionVersion: KnownVersionsForExtensions) {
             const Containers::ArrayView<const Extension> knownExtensions =
-                Extension::extensions(version);
+                Extension::extensions(extensionVersion);
             const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, Containers::StringView b) {
                 return a.string() < b;
             });

@@ -349,11 +349,11 @@ MaterialData::MaterialData(const MaterialTypes types, const DataFlags attributeD
         CORRADE_ASSERT(begin <= end && end <= _data.size(),
             "Trade::MaterialData: invalid range (" << Debug::nospace << begin << Debug::nospace << "," << end << Debug::nospace <<") for layer" << i << "with" << _data.size() << "attributes in total", );
 
-        if(end - begin > 1) for(std::size_t i = begin + 1; i != end; ++i) {
-            CORRADE_ASSERT(_data[i - 1].name() != _data[i].name(),
-                "Trade::MaterialData: duplicate attribute" << _data[i].name(), );
-            CORRADE_ASSERT(_data[i - 1].name() < _data[i].name(),
-                "Trade::MaterialData:" << _data[i].name() << "has to be sorted before" << _data[i - 1].name() << "if passing non-owned data", );
+        if(end - begin > 1) for(std::size_t j = begin + 1; j != end; ++j) {
+            CORRADE_ASSERT(_data[j - 1].name() != _data[j].name(),
+                "Trade::MaterialData: duplicate attribute" << _data[j].name(), );
+            CORRADE_ASSERT(_data[j - 1].name() < _data[j].name(),
+                "Trade::MaterialData:" << _data[j].name() << "has to be sorted before" << _data[j - 1].name() << "if passing non-owned data", );
         }
 
         begin = end;

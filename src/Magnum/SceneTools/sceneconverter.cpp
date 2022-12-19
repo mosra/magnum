@@ -750,11 +750,11 @@ well, the IDs reference attributes of the first mesh.)")
         struct SingleMeshImporter: Trade::AbstractImporter {
             explicit SingleMeshImporter(Trade::MeshData&& mesh_, Containers::String&& name, Trade::AbstractImporter& original): mesh{std::move(mesh_)}, name{std::move(name)} {
                 for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
-                    const Trade::MeshAttribute name = mesh.attributeName(i);
-                    if(!isMeshAttributeCustom(name)) continue;
+                    const Trade::MeshAttribute attributeName = mesh.attributeName(i);
+                    if(!isMeshAttributeCustom(attributeName)) continue;
                     /* Appending even empty ones so we don't have to
                        special-case "not found" in doMeshAttributeName() */
-                    arrayAppend(attributeNames, InPlaceInit, meshAttributeCustom(name), original.meshAttributeName(name));
+                    arrayAppend(attributeNames, InPlaceInit, meshAttributeCustom(attributeName), original.meshAttributeName(attributeName));
                 }
             }
 
@@ -1016,10 +1016,10 @@ well, the IDs reference attributes of the first mesh.)")
         if(images2D) {
             if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Images2D)) {
                 Warning{} << "Ignoring" << images2D.size() << "2D images not supported by the converter";
-            } else for(UnsignedInt i = 0; i != images2D.size(); ++i) {
+            } else for(UnsignedInt j = 0; j != images2D.size(); ++j) {
                 Trade::Implementation::Duration d{conversionTime};
-                if(!converter->add(images2D[i], contents & Trade::SceneContent::Names ? importer->image2DName(i) : Containers::String{})) {
-                    Error{} << "Cannot add 2D image" << i;
+                if(!converter->add(images2D[j], contents & Trade::SceneContent::Names ? importer->image2DName(j) : Containers::String{})) {
+                    Error{} << "Cannot add 2D image" << j;
                     return 1;
                 }
             }
@@ -1039,10 +1039,10 @@ well, the IDs reference attributes of the first mesh.)")
         if(images3D) {
             if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Images3D)) {
                 Warning{} << "Ignoring" << images3D.size() << "3D images not supported by the converter";
-            } else for(UnsignedInt i = 0; i != images3D.size(); ++i) {
+            } else for(UnsignedInt j = 0; j != images3D.size(); ++j) {
                 Trade::Implementation::Duration d{conversionTime};
-                if(!converter->add(images3D[i], contents & Trade::SceneContent::Names ? importer->image3DName(i) : Containers::String{})) {
-                    Error{} << "Cannot add 3D image" << i;
+                if(!converter->add(images3D[j], contents & Trade::SceneContent::Names ? importer->image3DName(j) : Containers::String{})) {
+                    Error{} << "Cannot add 3D image" << j;
                     return 1;
                 }
             }
@@ -1066,18 +1066,18 @@ well, the IDs reference attributes of the first mesh.)")
         if(meshes) {
             if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Meshes)) {
                 Warning{} << "Ignoring" << meshes.size() << "meshes not supported by the converter";
-            } else for(UnsignedInt i = 0; i != meshes.size(); ++i) {
+            } else for(UnsignedInt j = 0; j != meshes.size(); ++j) {
                 Trade::Implementation::Duration d{conversionTime};
 
-                const Trade::MeshData& mesh = meshes[i];
+                const Trade::MeshData& mesh = meshes[j];
 
                 /* Propagate custom attribute names, skip ones that are empty.
                    Compared to data names this is done always to avoid
                    information loss. */
-                for(UnsignedInt j = 0; j != mesh.attributeCount(); ++j) {
+                for(UnsignedInt k = 0; k != mesh.attributeCount(); ++k) {
                     /** @todo have some kind of a map to not have to query the
                         same custom attribute again for each mesh */
-                    const Trade::MeshAttribute name = mesh.attributeName(j);
+                    const Trade::MeshAttribute name = mesh.attributeName(k);
                     if(!isMeshAttributeCustom(name)) continue;
                     /* The expectation here is that the meshes are coming from
                        the importer instance. If --mesh or --concatenate-meshes
@@ -1089,8 +1089,8 @@ well, the IDs reference attributes of the first mesh.)")
                     }
                 }
 
-                if(!converter->add(mesh, contents & Trade::SceneContent::Names ? importer->meshName(i) : Containers::String{})) {
-                    Error{} << "Cannot add mesh" << i;
+                if(!converter->add(mesh, contents & Trade::SceneContent::Names ? importer->meshName(j) : Containers::String{})) {
+                    Error{} << "Cannot add mesh" << j;
                     return 1;
                 }
             }

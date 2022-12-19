@@ -1312,10 +1312,10 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                 /* Propagate custom attribute names, skip ones that are empty.
                    Compared to data names this is done always to avoid
                    information loss. */
-                for(UnsignedInt j = 0; j != mesh->attributeCount(); ++j) {
+                for(UnsignedInt k = 0; k != mesh->attributeCount(); ++k) {
                     /** @todo have some kind of a map to not have to query the
                         same custom attribute again for each mesh */
-                    const Trade::MeshAttribute name = mesh->attributeName(j);
+                    const Trade::MeshAttribute name = mesh->attributeName(k);
                     if(!isMeshAttributeCustom(name)) continue;
                     if(const Containers::String nameString = importer.meshAttributeName(name)) {
                         setMeshAttributeName(name, nameString);

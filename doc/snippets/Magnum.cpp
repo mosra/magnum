@@ -44,6 +44,7 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 #ifdef MAGNUM_TARGET_GL
+namespace Wew {
 Containers::Pointer<GL::Mesh> mesh;
 bool found = false;
 
@@ -63,6 +64,7 @@ class MeshResourceLoader: public AbstractResourceLoader<GL::Mesh> {
     }
 };
 /* [AbstractResourceLoader-implementation] */
+}
 #endif
 
 int main() {
@@ -304,6 +306,7 @@ Resource<GL::AbstractShaderProgram, MyShader> shader =
 }
 
 {
+using namespace Wew;
 typedef ResourceManager<GL::Mesh> MyResourceManager;
 /* [AbstractResourceLoader-use] */
 MyResourceManager manager;

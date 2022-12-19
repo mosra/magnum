@@ -565,11 +565,11 @@ Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Tra
             continue;
 
         const UnsignedInt componentCount = meshData.attributeArraySize(i);
-        for(UnsignedInt i = 0; i < componentCount; i += 4) {
+        for(UnsignedInt j = 0; j < componentCount; j += 4) {
             if(!primaryCount)
-                primaryCount = Math::min(componentCount - i, 4u);
+                primaryCount = Math::min(componentCount - j, 4u);
             else if(!secondaryCount)
-                secondaryCount = Math::min(componentCount - i, 4u);
+                secondaryCount = Math::min(componentCount - j, 4u);
             else break;
         }
     }

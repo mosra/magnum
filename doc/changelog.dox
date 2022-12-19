@@ -745,6 +745,7 @@ See also:
 -   Worked around a MSVC2022 bug with constexpr conversion operators if C++20
     is used, causing most @ref Math tests to fail compilation (see
     [mosra/magnum#602](https://github.com/mosra/magnum/pull/602))
+-   Fixed various variable shadowing warings on MSVC (see [mosra/magnum#611](https://github.com/mosra/magnum/issues/611))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
