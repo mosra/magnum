@@ -35,12 +35,22 @@ Debug& operator<<(Debug& debug, const ImageFlag1D value) {
     if(!packed)
         debug << "ImageFlag1D" << Debug::nospace;
 
+    /* MSVC, I want to have the switch here even if it's empty so I'm notified
+       when there are new values that I should handle. Don't complain. */
+    /** @todo drop this once there are values */
+    #ifdef CORRADE_TARGET_MSVC
+    #pragma warning(push)
+    #pragma warning(disable: 4060)
+    #endif
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case ImageFlag1D::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         #undef _c
         /* LCOV_EXCL_STOP */
     }
+    #ifdef CORRADE_TARGET_MSVC
+    #pragma warning(pop)
+    #endif
 
     return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
 }
