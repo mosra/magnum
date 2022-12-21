@@ -405,7 +405,11 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
+    return CompileState{std::move(out), std::move(vert), std::move(frag)
+        #ifndef MAGNUM_TARGET_GLES
+        , version
+        #endif
+    };
 }
 
 PhongGL::CompileState PhongGL::compile() {

@@ -698,10 +698,20 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::CompileState: publi
 
     explicit CompileState(NoCreateT): VectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    explicit CompileState(VectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): VectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+    explicit CompileState(VectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag
+        #ifndef MAGNUM_TARGET_GLES
+        , GL::Version version
+        #endif
+    ): VectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+        #ifndef MAGNUM_TARGET_GLES
+        , _version{version}
+        #endif
+        {}
 
     Implementation::GLShaderWrapper _vert, _frag;
+    #ifndef MAGNUM_TARGET_GLES
     GL::Version _version;
+    #endif
 };
 
 /**

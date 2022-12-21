@@ -2297,10 +2297,20 @@ class PhongGL::CompileState: public PhongGL {
 
     explicit CompileState(NoCreateT): PhongGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    explicit CompileState(PhongGL&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): PhongGL{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+    explicit CompileState(PhongGL&& shader, GL::Shader&& vert, GL::Shader&& frag
+        #ifndef MAGNUM_TARGET_GLES
+        , GL::Version version
+        #endif
+    ): PhongGL{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+        #ifndef MAGNUM_TARGET_GLES
+        , _version{version}
+        #endif
+        {}
 
     Implementation::GLShaderWrapper _vert, _frag;
+    #ifndef MAGNUM_TARGET_GLES
     GL::Version _version;
+    #endif
 };
 
 /** @debugoperatorclassenum{PhongGL,PhongGL::Flag} */

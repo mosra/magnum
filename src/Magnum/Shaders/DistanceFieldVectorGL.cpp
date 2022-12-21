@@ -157,7 +157,11 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     #endif
 
     out.submitLink();
-    return CompileState{std::move(out), std::move(vert), std::move(frag), version};
+    return CompileState{std::move(out), std::move(vert), std::move(frag)
+        #ifndef MAGNUM_TARGET_GLES
+        , version
+        #endif
+    };
 }
 
 template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::CompileState DistanceFieldVectorGL<dimensions>::compile() {

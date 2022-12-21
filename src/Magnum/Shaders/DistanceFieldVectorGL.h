@@ -748,10 +748,20 @@ template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Compil
 
     explicit CompileState(NoCreateT): DistanceFieldVectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    explicit CompileState(DistanceFieldVectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): DistanceFieldVectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+    explicit CompileState(DistanceFieldVectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag
+        #ifndef MAGNUM_TARGET_GLES
+        , GL::Version version
+        #endif
+    ): DistanceFieldVectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+        #ifndef MAGNUM_TARGET_GLES
+        , _version{version}
+        #endif
+        {}
 
     Implementation::GLShaderWrapper _vert, _frag;
+    #ifndef MAGNUM_TARGET_GLES
     GL::Version _version;
+    #endif
 };
 
 /**

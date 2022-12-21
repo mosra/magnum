@@ -515,10 +515,20 @@ template<UnsignedInt dimensions> class VertexColorGL<dimensions>::CompileState: 
 
     explicit CompileState(NoCreateT): VertexColorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    explicit CompileState(VertexColorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Version version): VertexColorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _version{version} {}
+    explicit CompileState(VertexColorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag
+        #ifndef MAGNUM_TARGET_GLES
+        , GL::Version version
+        #endif
+    ): VertexColorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+        #ifndef MAGNUM_TARGET_GLES
+        , _version{version}
+        #endif
+        {}
 
     Implementation::GLShaderWrapper _vert, _frag;
+    #ifndef MAGNUM_TARGET_GLES
     GL::Version _version;
+    #endif
 };
 
 /**

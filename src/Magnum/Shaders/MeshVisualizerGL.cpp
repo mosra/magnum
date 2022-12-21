@@ -608,7 +608,14 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, version};
+    return CompileState{std::move(out), std::move(vert), std::move(frag)
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        , geom ? &*geom : nullptr
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        , version
+        #endif
+    };
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -634,10 +641,14 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     if(!id()) return;
     #endif
 
-    if(state._geom.id)
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    if(state._geom.id) {
         CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag), GL::Shader(state._geom)}));
-    else
+    } else
+    #endif
+    {
         CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     const GL::Context& context = GL::Context::current();
@@ -1091,7 +1102,14 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag), geom ? &*geom : nullptr, version};
+    return CompileState{std::move(out), std::move(vert), std::move(frag)
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        , geom ? &*geom : nullptr
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        , version
+        #endif
+    };
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -1117,10 +1135,14 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     if(!id()) return;
     #endif
 
-    if(state._geom.id)
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    if(state._geom.id) {
         CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag), GL::Shader(state._geom)}));
-    else
+    } else
+    #endif
+    {
         CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     const GL::Context& context = GL::Context::current();

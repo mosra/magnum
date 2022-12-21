@@ -1311,14 +1311,32 @@ class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
     /* Everything deliberately private except for the inheritance */
     friend class MeshVisualizerGL2D;
 
-    explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate}, _geom{NoCreate} {}
+    explicit CompileState(NoCreateT): MeshVisualizerGL2D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    explicit CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Shader* geom, GL::Version version): MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{NoCreate}, _version{version} {
+    explicit CompileState(MeshVisualizerGL2D&& shader, GL::Shader&& vert, GL::Shader&& frag
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        , GL::Shader* geom
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        , GL::Version version
+        #endif
+    ): MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+        #ifndef MAGNUM_TARGET_GLES
+        , _version{version}
+        #endif
+    {
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         if(geom) _geom = Implementation::GLShaderWrapper{std::move(*geom)};
+        #endif
     }
 
-    Implementation::GLShaderWrapper _vert, _frag, _geom;
+    Implementation::GLShaderWrapper _vert, _frag;
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    Implementation::GLShaderWrapper _geom{NoCreate};
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
     GL::Version _version;
+    #endif
 };
 
 /**
@@ -3261,14 +3279,32 @@ class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
     /* Everything deliberately private except for the inheritance */
     friend class MeshVisualizerGL3D;
 
-    explicit CompileState(NoCreateT): MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate}, _geom{NoCreate} {}
+    explicit CompileState(NoCreateT): MeshVisualizerGL3D{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
-    explicit CompileState(MeshVisualizerGL3D&& shader, GL::Shader&& vert, GL::Shader&& frag, GL::Shader* geom, GL::Version version): MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}, _geom{NoCreate}, _version{version} {
+    explicit CompileState(MeshVisualizerGL3D&& shader, GL::Shader&& vert, GL::Shader&& frag
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        , GL::Shader* geom
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        , GL::Version version
+        #endif
+    ): MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+        #ifndef MAGNUM_TARGET_GLES
+        , _version{version}
+        #endif
+    {
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         if(geom) _geom = Implementation::GLShaderWrapper{std::move(*geom)};
+        #endif
     }
 
-    Implementation::GLShaderWrapper _vert, _frag, _geom;
+    Implementation::GLShaderWrapper _vert, _frag;
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    Implementation::GLShaderWrapper _geom{NoCreate};
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
     GL::Version _version;
+    #endif
 };
 
 /** @debugoperatorclassenum{MeshVisualizerGL2D,MeshVisualizerGL2D::Flag} */
