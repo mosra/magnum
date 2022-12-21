@@ -55,6 +55,7 @@ struct ShaderGLTest: OpenGLTester {
     void addSource();
     void addSourceNoVersion();
     void addFile();
+    void addFileNonexistent();
     void compile();
     void compileAsync();
     void compileFailure();
@@ -98,6 +99,7 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::addSource,
               &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
+              &ShaderGLTest::addFileNonexistent,
               &ShaderGLTest::compile,
               &ShaderGLTest::compileAsync});
 
@@ -314,6 +316,24 @@ void ShaderGLTest::addFile() {
     #endif
 }
 
+void ShaderGLTest::addFileNonexistent() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    #ifndef MAGNUM_TARGET_GLES
+    Shader shader(Version::GL210, Shader::Type::Fragment);
+    #else
+    Shader shader(Version::GLES200, Shader::Type::Fragment);
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    shader.addFile("nonexistent");
+    /* There's an error message from Path::read() before */
+    CORRADE_COMPARE_AS(out.str(),
+        "\nGL::Shader::addFile(): can't read nonexistent\n",
+        TestSuite::Compare::StringHasSuffix);
+}
+
 void ShaderGLTest::compile() {
     #ifndef MAGNUM_TARGET_GLES
     constexpr Version v =
@@ -379,6 +399,8 @@ void ShaderGLTest::compileFailure() {
         CORRADE_VERIFY(!shader.compile());
     }
     CORRADE_VERIFY(shader.isCompileFinished());
+
+    /* There's a driver-specific message after */
     CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of vertex shader failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
 
@@ -397,6 +419,11 @@ void ShaderGLTest::compileFailure() {
     CORRADE_COMPARE_AS(out.str(), "175", TestSuite::Compare::StringNotContains);
     CORRADE_COMPARE_AS(out.str(), "176", TestSuite::Compare::StringContains);
     CORRADE_COMPARE_AS(out.str(), "177", TestSuite::Compare::StringNotContains);
+
+    /* No stray \0 should be anywhere */
+    CORRADE_COMPARE_AS(out.str(), "\0"_s, TestSuite::Compare::StringNotContains);
+    /* The message should end with a newline */
+    CORRADE_COMPARE_AS(out.str(), "\n"_s, TestSuite::Compare::StringHasSuffix);
 }
 
 void ShaderGLTest::compileFailureAsync() {
@@ -435,6 +462,10 @@ void ShaderGLTest::compileFailureAsync() {
     CORRADE_VERIFY(shader.isCompileFinished());
     CORRADE_COMPARE_AS(out.str(), "GL::Shader::compile(): compilation of fragment shader failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
+
+    /* Not testing presence of \0 etc., as that's tested well enough in
+       compileFailure() above already and both cases use the same error printing
+       code path */
 }
 
 void ShaderGLTest::compileUtf8() {

@@ -523,8 +523,14 @@ void AbstractShaderProgramGLTest::linkFailure() {
 
     Utility::System::sleep(200);
     CORRADE_VERIFY(program.isLinkFinished());
+
+    /* There's a driver-specific message after */
     CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
+    /* No stray \0 should be anywhere */
+    CORRADE_COMPARE_AS(out.str(), "\0"_s, TestSuite::Compare::StringNotContains);
+    /* The message should end with a newline */
+    CORRADE_COMPARE_AS(out.str(), "\n"_s, TestSuite::Compare::StringHasSuffix);
 }
 
 void AbstractShaderProgramGLTest::linkFailureAsync() {
@@ -573,6 +579,10 @@ void AbstractShaderProgramGLTest::linkFailureAsync() {
     CORRADE_VERIFY(program.isLinkFinished());
     CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringHasPrefix);
+
+    /* Not testing presence of \0 etc., as that's tested well enough in
+       linkFailure() above already and both cases use the same error printing
+       code path */
 }
 
 void AbstractShaderProgramGLTest::linkFailureAsyncShaderList() {

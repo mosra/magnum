@@ -141,7 +141,7 @@ if(MAGNUM_BUILD_GL_TESTS)
     endif()
 
     corrade_add_test(GLShaderGLTest ShaderGLTest.cpp
-        LIBRARIES MagnumOpenGLTester
+        LIBRARIES MagnumOpenGLTesterTestLib
         FILES ShaderGLTestFiles/shader.glsl)
     target_include_directories(GLShaderGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
