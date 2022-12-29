@@ -1839,7 +1839,7 @@ void MeshDataTest::constructAttributelessNotOwned() {
     CORRADE_VERIFY(!data.attributeData());
     CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
     if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(data.mutableVertexData(), nullptr);
+        CORRADE_COMPARE(data.mutableVertexData(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.importerState(), &importerState);
 
     CORRADE_VERIFY(data.isIndexed());

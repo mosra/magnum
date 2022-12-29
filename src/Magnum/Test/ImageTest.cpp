@@ -219,7 +219,7 @@ void ImageTest::constructGenericPlaceholder() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 8);
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         Image2D a{PixelStorage{}.setAlignment(1),
             PixelFormat::RGB16F};
@@ -230,7 +230,7 @@ void ImageTest::constructGenericPlaceholder() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 }
 
@@ -317,7 +317,7 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         Image2D a{PixelStorage{}.setAlignment(1),
             Vk::PixelFormat::R32G32B32F};
@@ -328,7 +328,7 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 
     /* Format + extra */
@@ -341,7 +341,7 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         Image2D a{PixelStorage{}.setAlignment(1),
             GL::PixelFormat::RGB, GL::PixelType::UnsignedShort};
@@ -351,7 +351,7 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 
     /* Manual pixel size */
@@ -364,7 +364,7 @@ void ImageTest::constructImplementationSpecificPlaceholder() {
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 }
 
@@ -403,7 +403,7 @@ void ImageTest::constructCompressedGenericPlaceholder() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat{});
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     } {
         CompressedImage2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4})};
 
@@ -411,7 +411,7 @@ void ImageTest::constructCompressedGenericPlaceholder() {
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat{});
         CORRADE_COMPARE(a.size(), Vector2i{});
-        CORRADE_COMPARE(a.data(), nullptr);
+        CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     }
 }
 
@@ -523,7 +523,7 @@ void ImageTest::constructMoveGeneric() {
         PixelFormat::RGBA32F, {1, 3}, Containers::Array<char>{data, 3*16}, ImageFlag2D::Array};
     Image2D b(std::move(a));
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
@@ -561,7 +561,7 @@ void ImageTest::constructMoveImplementationSpecific() {
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array};
     Image2D b(std::move(a));
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
@@ -598,7 +598,7 @@ void ImageTest::constructMoveCompressedGeneric() {
         CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array};
     CompressedImage2D b{std::move(a)};
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
@@ -633,7 +633,7 @@ void ImageTest::constructMoveCompressedImplementationSpecific() {
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array};
     CompressedImage2D b{std::move(a)};
 
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
 
     CORRADE_COMPARE(b.flags(), ImageFlag2D::Array);
@@ -789,7 +789,7 @@ void ImageTest::release() {
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i());
 }
 
@@ -799,7 +799,7 @@ void ImageTest::releaseCompressed() {
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);
-    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i());
 }
 
