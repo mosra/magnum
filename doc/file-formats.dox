@@ -454,8 +454,14 @@ Together with @ref file-formats-image-importers "image importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
-<th>Autodesk FBX (`*.fbx`)</th>
-<td>`FbxImporter`</td>
+<th rowspan="2">Autodesk FBX (`*.fbx`)</th>
+<td rowspan="2">`FbxImporter`</td>
+<td>@relativeref{Trade,UfbxImporter}</td>
+<td class="m-text-center m-success">@ref Trade-UfbxImporter-behavior "minor"</td>
+<td class="m-text-center m-primary">bundled</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
+</tr>
+<tr>
 <td>@ref Trade::AssimpImporter "AssimpImporter"</td>
 <td class="m-text-center m-dim">@ref Trade-AssimpImporter-behavior "unknown"</td>
 <td class="m-text-center m-warning">bundleable</td>
@@ -464,12 +470,18 @@ Together with @ref file-formats-image-importers "image importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
-<th rowspan="2">OBJ<br/>(`*.obj`)</th>
-<td rowspan="2">`ObjImporter`</td>
+<th rowspan="3">OBJ<br/>(`*.obj`)</th>
+<td rowspan="3">`ObjImporter`</td>
 <td>@ref Trade::ObjImporter "ObjImporter"</td>
 <td class="m-text-center m-danger">@ref Trade-ObjImporter-behavior "severe"</td>
 <td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
 <td class="m-text-center"></td>
+</tr>
+<tr>
+<td>@relativeref{Trade,UfbxImporter}</td>
+<td class="m-text-center m-dim">@ref Trade-UfbxImporter-behavior "unknown"</td>
+<td class="m-text-center m-primary">bundled</td>
+<td class="m-text-center m-primary">public&nbsp;domain</td>
 </tr>
 <tr>
 <td>@ref Trade::AssimpImporter "AssimpImporter"</td>
