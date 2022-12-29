@@ -1318,14 +1318,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         #ifdef MAGNUM_TARGET_GLES
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        #if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915)
+        #if !defined(MAGNUM_TARGET_GLES2) && (!defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915)
         static void MAGNUM_GL_LOCAL drawElementsBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLint baseVertex);
         #endif
         static void MAGNUM_GL_LOCAL drawElementsBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLint);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
         static void MAGNUM_GL_LOCAL drawRangeElementsBaseVertexImplementationANGLE(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void* indices, GLint baseVertex);
         #endif
         static void MAGNUM_GL_LOCAL drawRangeElementsBaseVertexImplementationAssert(GLenum, GLuint, GLuint, GLsizei, GLenum, const void*, GLint);
@@ -1339,7 +1339,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexBaseInstanceImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint, GLuint);
 
-        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instanceCount, GLint baseVertex);
         #endif
         static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint);
