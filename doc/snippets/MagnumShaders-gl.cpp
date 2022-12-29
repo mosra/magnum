@@ -28,7 +28,8 @@
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Pair.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -683,7 +684,7 @@ bindAttributeLocation(Shaders::GenericGL3D::Normal::Location, "normal");
 {
 GL::Shader vert{GL::Version::None, GL::Shader::Type::Vertex};
 /* [GenericGL-custom-preprocessor] */
-vert.addSource(Utility::formatString(
+vert.addSource(Utility::format(
     "#define POSITION_ATTRIBUTE_LOCATION {}\n"
     "#define NORMAL_ATTRIBUTE_LOCATION {}\n",
     Shaders::GenericGL3D::Position::Location,

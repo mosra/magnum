@@ -37,7 +37,8 @@
 #include "Magnum/Math/Matrix4.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/GL/Buffer.h"
 #endif
@@ -100,7 +101,7 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     vert.addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n");
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             configuration.drawCount()));

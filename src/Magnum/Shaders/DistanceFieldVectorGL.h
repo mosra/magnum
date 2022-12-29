@@ -31,6 +31,8 @@
  * @m_since_latest
  */
 
+#include <Corrade/Utility/Move.h>
+
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Shaders/GenericGL.h"
@@ -752,7 +754,7 @@ template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Compil
         #ifndef MAGNUM_TARGET_GLES
         , GL::Version version
         #endif
-    ): DistanceFieldVectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+    ): DistanceFieldVectorGL<dimensions>{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
         #ifndef MAGNUM_TARGET_GLES
         , _version{version}
         #endif

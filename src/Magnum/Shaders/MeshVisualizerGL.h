@@ -31,6 +31,7 @@
  * @m_since_latest
  */
 
+#include <Corrade/Utility/Move.h>
 #include <Corrade/Utility/Utility.h>
 
 #include "Magnum/DimensionTraits.h"
@@ -38,6 +39,10 @@
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
+
+#ifndef MAGNUM_TARGET_GLES2
+#include <initializer_list>
+#endif
 
 namespace Magnum { namespace Shaders {
 
@@ -1320,13 +1325,13 @@ class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
         #ifndef MAGNUM_TARGET_GLES
         , GL::Version version
         #endif
-    ): MeshVisualizerGL2D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+    ): MeshVisualizerGL2D{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
         #ifndef MAGNUM_TARGET_GLES
         , _version{version}
         #endif
     {
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-        if(geom) _geom = Implementation::GLShaderWrapper{std::move(*geom)};
+        if(geom) _geom = Implementation::GLShaderWrapper{Utility::move(*geom)};
         #endif
     }
 
@@ -3288,13 +3293,13 @@ class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
         #ifndef MAGNUM_TARGET_GLES
         , GL::Version version
         #endif
-    ): MeshVisualizerGL3D{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+    ): MeshVisualizerGL3D{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
         #ifndef MAGNUM_TARGET_GLES
         , _version{version}
         #endif
     {
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-        if(geom) _geom = Implementation::GLShaderWrapper{std::move(*geom)};
+        if(geom) _geom = Implementation::GLShaderWrapper{Utility::move(*geom)};
         #endif
     }
 

@@ -25,7 +25,10 @@
 
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/Triple.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -43,10 +46,6 @@
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
-
-#ifndef MAGNUM_TARGET_WEBGL
-#include <Corrade/Containers/String.h>
-#endif
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
@@ -74,6 +73,38 @@ struct TransformFeedbackGLTest: OpenGLTester {
 };
 
 #ifndef MAGNUM_TARGET_GLES
+using namespace Containers::Literals;
+
+const struct {
+    const char* name;
+    Containers::StringView output1Name;
+    Containers::StringView glSkipComponents1Name;
+    Containers::StringView output2Name;
+} InterleavedData[]{
+    {"",
+        "output1"_s,
+        "gl_SkipComponents1"_s,
+        "output2"_s},
+    {"non-null-terminated strings",
+        "output1!"_s.exceptSuffix(1),
+        "gl_SkipComponents1!"_s.exceptSuffix(1),
+        "output2!"_s.exceptSuffix(1)},
+    #ifdef CORRADE_TARGET_WINDOWS
+    /* Testing the "nv-windows-dangling-transform-feedback-varying-names"
+       bug / workaround. "output1" alone *is* a global string, however a
+       StringView created from it doesn't know that and so it should get copied
+       to a local, null-terminated String first. Without the workaround present
+       this case would do the right thing as well tho (but the above not) --
+       the driver assumes the string is global (which it is), while StringView
+       assumes the driver doesn't need a global string so it doesn't do
+       anything extra. */
+    {"non-global strings",
+        "output1",
+        "gl_SkipComponents1",
+        "output2"},
+    #endif
+};
+
 const struct {
     const char* name;
     UnsignedInt stream;
@@ -101,14 +132,12 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
               &TransformFeedbackGLTest::attachBase,
               &TransformFeedbackGLTest::attachRange,
               &TransformFeedbackGLTest::attachBases,
-              &TransformFeedbackGLTest::attachRanges,
-
-              #ifndef MAGNUM_TARGET_GLES
-              &TransformFeedbackGLTest::interleaved,
-              #endif
-              });
+              &TransformFeedbackGLTest::attachRanges});
 
     #ifndef MAGNUM_TARGET_GLES
+    addInstancedTests({&TransformFeedbackGLTest::interleaved},
+        Containers::arraySize(InterleavedData));
+
     addInstancedTests({&TransformFeedbackGLTest::draw},
         Containers::arraySize(DrawData));
     #endif
@@ -266,6 +295,7 @@ XfbShader::XfbShader() {
     attachShaders({vert, frag});
     #endif
     bindAttributeLocation(Input::Location, "inputData");
+    /* Non-null-terminated strings tested in interleaved() */
     setTransformFeedbackOutputs({"outputData"}, TransformFeedbackBufferMode::SeparateAttributes);
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
@@ -402,6 +432,7 @@ XfbMultiShader::XfbMultiShader() {
     attachShaders({vert, frag});
     #endif
     bindAttributeLocation(Input::Location, "inputData");
+    /* Non-null-terminated input tested in interleaved() */
     setTransformFeedbackOutputs({"output1", "output2"}, TransformFeedbackBufferMode::SeparateAttributes);
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 }
@@ -519,6 +550,9 @@ void TransformFeedbackGLTest::attachRanges() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TransformFeedbackGLTest::interleaved() {
+    auto&& data = InterleavedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     /* ARB_transform_feedback3 needed for gl_SkipComponents1 */
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
         CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() << "is not supported.");
@@ -533,7 +567,7 @@ void TransformFeedbackGLTest::interleaved() {
     struct XfbInterleavedShader: AbstractShaderProgram {
         typedef Attribute<0, Vector2> Input;
 
-        explicit XfbInterleavedShader() {
+        explicit XfbInterleavedShader(Containers::StringView output1Name, Containers::StringView glSkipComponents1Name, Containers::StringView output2Name) {
             Shader vert(
                 #ifndef CORRADE_TARGET_APPLE
                 Version::GL300
@@ -554,10 +588,10 @@ void TransformFeedbackGLTest::interleaved() {
                 "}\n").compile());
             attachShader(vert);
             bindAttributeLocation(Input::Location, "inputData");
-            setTransformFeedbackOutputs({"output1", "gl_SkipComponents1", "output2"}, TransformFeedbackBufferMode::InterleavedAttributes);
+            setTransformFeedbackOutputs({output1Name, glSkipComponents1Name, output2Name}, TransformFeedbackBufferMode::InterleavedAttributes);
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
         }
-    } shader;
+    } shader{data.output1Name, data.glSkipComponents1Name, data.output2Name};
 
     Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);
@@ -581,11 +615,11 @@ void TransformFeedbackGLTest::interleaved() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    auto data = Containers::arrayCast<const Vector2>(output.mapRead(0, 4*sizeof(Vector2)));
-    CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
-    CORRADE_COMPARE(data[1].y(), 5.0f);
-    CORRADE_COMPARE(data[2], Vector2(0.0f, 0.0f));
-    CORRADE_COMPARE(data[3].y(), 3.0f);
+    auto outputData = Containers::arrayCast<const Vector2>(output.mapRead(0, 4*sizeof(Vector2)));
+    CORRADE_COMPARE(outputData[0], Vector2(1.0f, -1.0f));
+    CORRADE_COMPARE(outputData[1].y(), 5.0f);
+    CORRADE_COMPARE(outputData[2], Vector2(0.0f, 0.0f));
+    CORRADE_COMPARE(outputData[3].y(), 3.0f);
     output.unmap();
 }
 
@@ -617,11 +651,12 @@ void TransformFeedbackGLTest::draw() {
                 "    vertexOutput = vec2(0.3);\n"
                 "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
                 "}\n");
-            if(stream) geom.addSource(
+            if(stream) geom.addSource(Utility::format(
                 "#extension GL_ARB_gpu_shader5: require\n"
-                "#define STREAM " + std::to_string(stream) + "\n" +
-                "layout(stream = 0) out mediump float otherOutput;\n" +
-                "layout(stream = STREAM) out mediump vec2 geomOutput;\n");
+                "#define STREAM {}\n"
+                "layout(stream = 0) out mediump float otherOutput;\n"
+                "layout(stream = STREAM) out mediump vec2 geomOutput;\n",
+                stream));
             else geom.addSource(
                 "out mediump vec2 geomOutput;\n");
             geom.addSource(

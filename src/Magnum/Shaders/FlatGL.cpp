@@ -41,7 +41,8 @@
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/TextureArray.h"
@@ -178,7 +179,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.jointCount()) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define JOINT_COUNT {}\n"
             "#define PER_VERTEX_JOINT_COUNT {}u\n"
             "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
@@ -195,7 +196,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
             out._perInstanceJointCountUniform));
     }
     if(configuration.flags() >= Flag::DynamicPerVertexJointCount) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
             "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
             out._perVertexJointCountUniform));
@@ -203,7 +204,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             configuration.drawCount()));
@@ -226,7 +227,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        frag.addSource(Utility::formatString(
+        frag.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n",

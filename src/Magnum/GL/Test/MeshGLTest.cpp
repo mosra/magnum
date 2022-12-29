@@ -27,6 +27,7 @@
 #include <sstream>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -770,7 +771,7 @@ void MeshGLTest::construct() {
 }
 
 struct FloatShader: AbstractShaderProgram {
-    explicit FloatShader(const std::string& type, const std::string& conversion);
+    explicit FloatShader(Containers::StringView type, Containers::StringView conversion);
 };
 
 void MeshGLTest::constructMove() {
@@ -949,13 +950,13 @@ void MeshGLTest::label() {
 
 #ifndef MAGNUM_TARGET_GLES2
 struct IntegerShader: AbstractShaderProgram {
-    explicit IntegerShader(const std::string& type);
+    explicit IntegerShader(Containers::StringView type);
 };
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 struct DoubleShader: AbstractShaderProgram {
-    explicit DoubleShader(const std::string& type, const std::string& outputType, const std::string& conversion);
+    explicit DoubleShader(Containers::StringView type, Containers::StringView outputType, Containers::StringView conversion);
 };
 #endif
 
@@ -969,7 +970,7 @@ struct Checker {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-FloatShader::FloatShader(const std::string& type, const std::string& conversion) {
+FloatShader::FloatShader(Containers::StringView type, Containers::StringView conversion) {
     /* We need special version for ES3, because GLSL in ES2 doesn't support
        rectangle matrices */
     #ifndef MAGNUM_TARGET_GLES
@@ -995,7 +996,7 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     Shader frag(Version::GLES300, Shader::Type::Fragment);
     #endif
 
-    vert.addSource(
+    vert.addSource(Utility::format(
         "#if !defined(GL_ES) && __VERSION__ == 120\n"
         "#define mediump\n"
         "#endif\n"
@@ -1003,14 +1004,14 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
         "#define in attribute\n"
         "#define out varying\n"
         "#endif\n"
-        "in mediump " + type + " value;\n"
-        "out mediump " + type + " valueInterpolated;\n"
-        "void main() {\n"
+        "in mediump {0} value;\n"
+        "out mediump {0} valueInterpolated;\n"
+        "void main() {{\n"
         "    valueInterpolated = value;\n"
         "    gl_PointSize = 1.0;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
-        "}\n");
-    frag.addSource(
+        "}}\n", type));
+    frag.addSource(Utility::format(
         "#if !defined(GL_ES) && __VERSION__ == 120\n"
         "#define mediump\n"
         "#endif\n"
@@ -1018,11 +1019,11 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
         "#define in varying\n"
         "#define result gl_FragColor\n"
         "#endif\n"
-        "in mediump " + type + " valueInterpolated;\n"
+        "in mediump {0} valueInterpolated;\n"
         "#if (defined(GL_ES) && __VERSION__ >= 300) || (!defined(GL_ES) && __VERSION__ >= 130)\n"
         "out mediump vec4 result;\n"
         "#endif\n"
-        "void main() { result = " + conversion + "; }\n");
+        "void main() {{ result = {1}; }}\n", type, conversion));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
@@ -1034,7 +1035,7 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-IntegerShader::IntegerShader(const std::string& type) {
+IntegerShader::IntegerShader(const Containers::StringView type) {
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(
         #ifndef CORRADE_TARGET_APPLE
@@ -1055,16 +1056,18 @@ IntegerShader::IntegerShader(const std::string& type) {
     Shader frag(Version::GLES300, Shader::Type::Fragment);
     #endif
 
-    vert.addSource("in mediump " + type + " value;\n"
-                   "flat out mediump " + type + " valueInterpolated;\n"
-                   "void main() {\n"
-                   "    valueInterpolated = value;\n"
-                   "    gl_PointSize = 1.0;\n"
-                   "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
-                   "}\n");
-    frag.addSource("flat in mediump " + type + " valueInterpolated;\n"
-                   "out mediump " + type + " result;\n"
-                   "void main() { result = valueInterpolated; }\n");
+    vert.addSource(Utility::format(
+        "in mediump {0} value;\n"
+        "flat out mediump {0} valueInterpolated;\n"
+        "void main() {{\n"
+        "    valueInterpolated = value;\n"
+        "    gl_PointSize = 1.0;\n"
+        "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
+        "}}\n", type));
+    frag.addSource(Utility::format(
+        "flat in mediump {0} valueInterpolated;\n"
+        "out mediump {0} result;\n"
+        "void main() {{ result = valueInterpolated; }}\n", type));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
@@ -1077,7 +1080,7 @@ IntegerShader::IntegerShader(const std::string& type) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-DoubleShader::DoubleShader(const std::string& type, const std::string& outputType, const std::string& conversion) {
+DoubleShader::DoubleShader(const Containers::StringView type, const Containers::StringView outputType, const Containers::StringView conversion) {
     constexpr const Version version =
         #ifndef CORRADE_TARGET_APPLE
         Version::GL300;
@@ -1087,19 +1090,20 @@ DoubleShader::DoubleShader(const std::string& type, const std::string& outputTyp
     Shader vert{version, Shader::Type::Vertex};
     Shader frag(version, Shader::Type::Fragment);
 
-    vert.addSource(
+    vert.addSource(Utility::format(
         "#extension GL_ARB_vertex_attrib_64bit: require\n"
         "#extension GL_ARB_gpu_shader_fp64: require\n"
-        "in " + type + " value;\n"
-        "out " + outputType + " valueInterpolated;\n"
-        "void main() {\n"
-        "    valueInterpolated = " + conversion + ";\n"
+        "in {0} value;\n"
+        "out {1} valueInterpolated;\n"
+        "void main() {{\n"
+        "    valueInterpolated = {2};\n"
         "    gl_PointSize = 1.0;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
-        "}\n");
-    frag.addSource("in " + outputType + " valueInterpolated;\n"
-                   "out " + outputType + " result;\n"
-                   "void main() { result = valueInterpolated; }\n");
+        "}}\n", type, outputType, conversion));
+    frag.addSource(Utility::format(
+        "in {0} valueInterpolated;\n"
+        "out {0} result;\n"
+        "void main() {{ result = valueInterpolated; }}\n", outputType));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 

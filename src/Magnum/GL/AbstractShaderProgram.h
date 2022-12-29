@@ -31,15 +31,12 @@
  * @brief Class @ref Magnum::GL::AbstractShaderProgram, macro @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION(), @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION()
  */
 
-#include <string>
-#include <Corrade/Containers/ArrayView.h>
-
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES2)
-#include <vector>
+#include <Corrade/Containers/ArrayTuple.h>
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -47,8 +44,14 @@
 /* For attachShaders(), which used to take a std::initializer_list<Reference>,
    and draw({MeshView}) as well */
 #include <Corrade/Containers/Iterable.h>
-/* For label() / setLabel(), which used to be a std::string */
+/* For label() / setLabel() and all uniform/attribute/... name stuff that used
+   to be a std::string. Since that's all only function parameters and no return
+   types, it should cover all cases. */
 #include <Corrade/Containers/StringStl.h>
+/* For setTransformFeedbackOutputs(), which used to take
+   std::initializer_list<std::string>. Usually people passed C string literals,
+   so it should convert directly to a StringIterable. */
+#include <Corrade/Containers/StringIterable.h>
 #endif
 
 namespace Magnum { namespace GL {
@@ -831,7 +834,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @def_gl{VALIDATE_STATUS}, @def_gl{INFO_LOG_LENGTH},
          *      @fn_gl_keyword{GetProgramInfoLog}
          */
-        std::pair<bool, std::string> validate();
+        std::pair<bool, Containers::String> validate();
 
         /**
          * @brief Draw a mesh
@@ -1432,14 +1435,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref GL-AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          */
-        void bindAttributeLocation(UnsignedInt location, const std::string& name) {
-            bindAttributeLocationInternal(location, {name.data(), name.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> void bindAttributeLocation(UnsignedInt location, const char(&name)[size]) {
-            bindAttributeLocationInternal(location, {name, size - 1});
-        }
+        void bindAttributeLocation(UnsignedInt location, Containers::StringView name);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -1461,14 +1457,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES or WebGL.
          */
-        void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
-            bindFragmentDataLocationIndexedInternal(location, index, {name.data(), name.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const char(&name)[size]) {
-            bindFragmentDataLocationIndexedInternal(location, index, {name, size - 1});
-        }
+        void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, Containers::StringView name);
 
         /**
          * @brief Bind fragment data to given location and first color input index
@@ -1488,15 +1477,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      in OpenGL ES 2.0 and @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
-        void bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
-            bindFragmentDataLocationInternal(location, {name.data(), name.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> void bindFragmentDataLocation(UnsignedInt location, const char(&name)[size]) {
-            /* Not using const char* parameter, because this way it avoids most accidents with non-zero-terminated strings */
-            bindFragmentDataLocationInternal(location, {name, size - 1});
-        }
+        void bindFragmentDataLocation(UnsignedInt location, Containers::StringView name);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -1531,8 +1512,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl Special output names `gl_NextBuffer` and
          *      `gl_SkipComponents#` are not available in OpenGL ES or WebGL.
          */
-        void setTransformFeedbackOutputs(Containers::ArrayView<const std::string> outputs, TransformFeedbackBufferMode bufferMode);
-        void setTransformFeedbackOutputs(std::initializer_list<std::string> outputs, TransformFeedbackBufferMode bufferMode); /**< @overload */
+        void setTransformFeedbackOutputs(const Containers::StringIterable& outputs, TransformFeedbackBufferMode bufferMode);
         #endif
 
         /**
@@ -1600,14 +1580,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref GL-AbstractShaderProgram-uniform-location "class documentation"
          *      for more information.
          */
-        Int uniformLocation(const std::string& name) {
-            return uniformLocationInternal({name.data(), name.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> Int uniformLocation(const char(&name)[size]) {
-            return uniformLocationInternal({name, size - 1});
-        }
+        Int uniformLocation(Containers::StringView name);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -1626,14 +1599,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref GL-AbstractShaderProgram-uniform-block-binding "class documentation"
          *      for more information.
          */
-        UnsignedInt uniformBlockIndex(const std::string& name) {
-            return uniformBlockIndexInternal({name.data(), name.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> UnsignedInt uniformBlockIndex(const char(&name)[size]) {
-            return uniformBlockIndexInternal({name, size - 1});
-        }
+        UnsignedInt uniformBlockIndex(Containers::StringView name);
         #endif
 
         /**
@@ -1910,27 +1876,21 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
     private:
-        void bindAttributeLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
-        #ifndef MAGNUM_TARGET_GLES
-        void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayView<const char> name);
-        void bindFragmentDataLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
-        #endif
-        Int uniformLocationInternal(Containers::ArrayView<const char> name);
-        UnsignedInt uniformBlockIndexInternal(Containers::ArrayView<const char> name);
-
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDefault(Containers::ArrayView<const std::string> outputs, TransformFeedbackBufferMode bufferMode);
+        void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDefault(const Containers::StringIterable& outputs, TransformFeedbackBufferMode bufferMode);
         #ifdef CORRADE_TARGET_WINDOWS
-        void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDanglingWorkaround(Containers::ArrayView<const std::string> outputs, TransformFeedbackBufferMode bufferMode);
+        /* See the "nv-windows-dangling-transform-feedback-varying-names"
+           workaround */
+        void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDanglingWorkaround(const Containers::StringIterable& outputs, TransformFeedbackBufferMode bufferMode);
         #endif
         #endif
 
-        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(Containers::String& message);
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(Containers::String& message);
         #endif
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-        static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(Containers::String& message);
         #endif
 
         MAGNUM_GL_LOCAL static void APIENTRY completionStatusImplementationFallback(GLuint, GLenum, GLint*);
@@ -2008,7 +1968,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES2)
         /* Needed for the nv-windows-dangling-transform-feedback-varying-names
            workaround */
-        std::vector<std::string> _transformFeedbackVaryingNames;
+        Containers::ArrayTuple _transformFeedbackVaryingNames;
         #endif
 };
 

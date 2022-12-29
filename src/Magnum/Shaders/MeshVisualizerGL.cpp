@@ -28,7 +28,6 @@
 
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Iterable.h>
-#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Math/Color.h"
@@ -40,6 +39,9 @@
 #include "Magnum/GL/Texture.h"
 
 #ifndef MAGNUM_TARGET_GLES2
+#include <Corrade/Containers/String.h>
+#include <Corrade/Utility/Format.h>
+
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/TextureArray.h"
 #endif
@@ -196,7 +198,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(jointCount) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define JOINT_COUNT {}\n"
             "#define PER_VERTEX_JOINT_COUNT {}u\n"
             "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
@@ -213,7 +215,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
             perInstanceJointCountUniform));
     }
     if(flags >= FlagBase::DynamicPerVertexJointCount) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
             "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
             perVertexJointCountUniform));
@@ -221,7 +223,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(flags >= FlagBase::UniformBuffers) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n",
@@ -245,7 +247,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(flags >= FlagBase::UniformBuffers) {
-        frag.addSource(Utility::formatString(
+        frag.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n",
@@ -539,7 +541,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
                     "#define PRIMITIVE_ID\n") : "");
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::UniformBuffers) {
-            geom->addSource(Utility::formatString(
+            geom->addSource(Utility::format(
                 "#define TWO_DIMENSIONS\n"
                 "#define UNIFORM_BUFFERS\n"
                 "#define DRAW_COUNT {}\n"
@@ -1002,7 +1004,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
 
         geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         (*geom)
-            .addSource(Utility::formatString("#define MAX_VERTICES {}\n", maxVertices))
+            .addSource(Utility::format("#define MAX_VERTICES {}\n", maxVertices))
             .addSource(configuration.flags() & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
             .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
             .addSource(baseFlags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
@@ -1018,7 +1020,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
             .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "");
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::UniformBuffers) {
-            geom->addSource(Utility::formatString(
+            geom->addSource(Utility::format(
                 "#define THREE_DIMENSIONS\n"
                 "#define UNIFORM_BUFFERS\n"
                 "#define DRAW_COUNT {}\n"

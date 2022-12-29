@@ -26,7 +26,8 @@
 #include "DistanceField.h"
 
 #include <Corrade/Containers/Iterable.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Math/Range.h"
@@ -101,7 +102,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
 
     vert.addSource(rs.getString("FullScreenTriangle.glsl"))
         .addSource(rs.getString("DistanceFieldShader.vert"));
-    frag.addSource(Utility::formatString("#define RADIUS {}\n", radius))
+    frag.addSource(Utility::format("#define RADIUS {}\n", radius))
         .addSource(rs.getString("DistanceFieldShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());

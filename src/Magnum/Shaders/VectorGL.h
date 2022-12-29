@@ -31,6 +31,8 @@
  * @m_since_latest
  */
 
+#include <Corrade/Utility/Move.h>
+
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Shaders/GenericGL.h"
@@ -702,7 +704,7 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::CompileState: publi
         #ifndef MAGNUM_TARGET_GLES
         , GL::Version version
         #endif
-    ): VectorGL<dimensions>{std::move(shader)}, _vert{std::move(vert)}, _frag{std::move(frag)}
+    ): VectorGL<dimensions>{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
         #ifndef MAGNUM_TARGET_GLES
         , _version{version}
         #endif

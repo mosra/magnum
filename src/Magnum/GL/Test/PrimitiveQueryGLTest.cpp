@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Resource.h>
 

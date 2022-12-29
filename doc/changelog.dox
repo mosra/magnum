@@ -1137,6 +1137,12 @@ See also:
 -   As part of the ongoing STL header dependency cleanup, the following
     breaking changes related to @ref std::string and a @ref std::vector are
     done:
+    -   @ref GL::AbstractShaderProgram::validate() now returns a
+        @relativeref{Corrade,Containers::String} instead of a @ref std::string;
+        @ref GL::Shader::sources() now returns a
+        @relativeref{Corrade,Containers::StringIterable} instead of a
+        @ref std::vector of a @ref std::string See also [mosra/magnum#499](https://github.com/mosra/magnum/pull/499)
+        and [mosra/magnum#608](https://github.com/mosra/magnum/pull/608).
     -   @ref GL::Context::vendorString(),
         @relativeref{GL::Context,rendererString()},
         @relativeref{GL::Context,versionString()},

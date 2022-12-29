@@ -25,7 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/StringStl.h> /** @todo remove when Shader is <string>-free */
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Resource.h>
 

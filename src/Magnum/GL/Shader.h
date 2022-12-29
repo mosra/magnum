@@ -30,9 +30,7 @@
  * @brief Class @ref Magnum::GL::Shader
  */
 
-#include <string>
-#include <vector>
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -40,8 +38,8 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
-/* For label() / setLabel(), which used to be a std::string. Not ideal for the
-   return type, but at least something. */
+/* For label() / setLabel() and all name/source stuff, which used to be a
+   std::string. Not ideal for the return types, but at least something. */
 #include <Corrade/Containers/StringStl.h>
 #endif
 
@@ -570,14 +568,13 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * API, see the documentation of @ref NoCreate for alternatives.
          * @see @ref Shader()
          */
-        explicit Shader(NoCreateT) noexcept: _type{}, _id{0} {}
+        explicit Shader(NoCreateT) noexcept;
 
         /** @brief Copying is not allowed */
         Shader(const Shader&) = delete;
 
         /** @brief Move constructor */
-        /* MinGW complains loudly if the declaration doesn't also have inline */
-        inline Shader(Shader&& other) noexcept;
+        Shader(Shader&& other) noexcept;
 
         /**
          * @brief Destructor
@@ -591,8 +588,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Shader& operator=(const Shader&) = delete;
 
         /** @brief Move assignment */
-        /* MinGW complains loudly if the declaration doesn't also have inline */
-        inline Shader& operator=(Shader&& other) noexcept;
+        Shader& operator=(Shader&& other) noexcept;
 
         /** @brief OpenGL shader ID */
         GLuint id() const { return _id; }
@@ -645,20 +641,46 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         /** @brief Shader type */
         Type type() const { return _type; }
 
-        /** @brief Shader sources */
-        std::vector<std::string> sources() const;
+        /**
+         * @brief Shader sources
+         *
+         * The returned views are all
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated},
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} is set for
+         * the initial @glsl #version @ce directive and for global
+         * null-terminated views that were passed to @ref addSource().
+         */
+        Containers::StringIterable sources() const;
 
         /**
          * @brief Add shader source
          * @param source    String with shader source
          * @return Reference to self (for method chaining)
          *
-         * Adds given source to source list, preceded with a
-         * @glsl #line n 1 @ce directive for improved
-         * @ref GL-Shader-errors "compilation error reporting".
+         * If the string is not empty, adds it to the shader source list,
+         * preceded with a @glsl #line n 1 @ce directive for improved
+         * @ref GL-Shader-errors "compilation error reporting". If it's empty,
+         * the function is a no-op.
+         *
+         * If the view is both @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and @relativeref{Corrade,Containers::StringViewFlag::Global}, it's
+         * directly referenced, otherwise a copy is made internally. For
+         * dynamic strings prefer to use the @ref addSource(Containers::String&&)
+         * overload to avoid copies.
          * @see @ref addFile()
          */
-        Shader& addSource(std::string source);
+        Shader& addSource(Containers::StringView source);
+        /** @overload */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Shader& addSource(Containers::String&& source);
+        #else
+        /* Otherwise passing a char* is ambiguous between this and the
+           StringView overload. Sigh, C++. */
+        template<class U, class = typename std::enable_if<std::is_same<U&&, Containers::String&&>::value>::type>
+        Shader& addSource(U&& source) {
+            return addSourceInternal(std::move(source));
+        }
+        #endif
 
         /**
          * @brief Add shader source file
@@ -668,7 +690,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * The file must exist and must be readable. Calls @ref addSource()
          * with the contents.
          */
-        Shader& addFile(const std::string& filename);
+        Shader& addFile(const Containers::StringView filename);
 
         /**
          * @brief Compile the shader
@@ -745,14 +767,17 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
     private:
         explicit Shader(Type type, GLuint id, ObjectFlags flags) noexcept;
 
-        void MAGNUM_GL_LOCAL addSourceImplementationDefault(std::string source);
+        /* Used by addSource(Containers::String&&) */
+        Shader& addSourceInternal(Containers::String&& source);
+
+        void MAGNUM_GL_LOCAL addSourceImplementationDefault(Containers::String&& source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
-        void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(std::string source);
+        void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(Containers::String&& source);
         #endif
 
-        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(Containers::String& message);
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(Containers::String& message);
         #endif
 
         MAGNUM_GL_LOCAL static void APIENTRY completionStatusImplementationFallback(GLuint, GLenum, GLint*);
@@ -765,32 +790,11 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         bool _offsetLineByOneOnOldGlsl;
         #endif
 
-        std::vector<std::string> _sources;
+        Containers::Array<Containers::String> _sources;
 };
 
 /** @debugoperatorclassenum{Shader,Shader::Type} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Shader::Type value);
-
-inline Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _flags{other._flags},
-    #ifndef MAGNUM_TARGET_GLES
-    _offsetLineByOneOnOldGlsl{other._flags},
-    #endif
-    _sources{std::move(other._sources)}
-{
-    other._id = 0;
-}
-
-inline Shader& Shader::operator=(Shader&& other) noexcept {
-    using std::swap;
-    swap(_type, other._type);
-    swap(_id, other._id);
-    swap(_flags, other._flags);
-    #ifndef MAGNUM_TARGET_GLES
-    swap(_offsetLineByOneOnOldGlsl, other._offsetLineByOneOnOldGlsl);
-    #endif
-    swap(_sources, other._sources);
-    return *this;
-}
 
 inline GLuint Shader::release() {
     const GLuint id = _id;

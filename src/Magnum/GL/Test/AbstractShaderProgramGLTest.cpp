@@ -28,7 +28,7 @@
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Containers/StringStl.h> /* StringHasPrefix / StringHasSuffix */
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/TestSuite/Compare/String.h>
@@ -116,6 +116,52 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     #endif
 };
 
+using namespace Containers::Literals;
+
+const struct {
+    const char* name;
+    Containers::StringView positionName, matrixName, multiplierName, colorName, additionsName;
+} CreateData[]{
+    {"",
+        "position",
+        "matrix",
+        "multiplier",
+        "color",
+        "additions"},
+    {"non-null-terminated strings",
+        "position!"_s.exceptSuffix(1),
+        "matrix!"_s.exceptSuffix(1),
+        "multiplier!"_s.exceptSuffix(1),
+        "color!"_s.exceptSuffix(1),
+        "additions!"_s.exceptSuffix(1)},
+};
+
+const struct {
+    const char* name;
+    Containers::StringView firstName, secondName;
+} CreateMultipleOutputsData[]{
+    {"",
+        "first",
+        "second"},
+    {"non-null-terminated strings",
+        "first!"_s.exceptSuffix(1),
+        "second!"_s.exceptSuffix(1)}
+};
+
+#ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
+    Containers::StringView matricesName, materialName;
+} CreateUniformBlocksData[]{
+    {"",
+        "matrices",
+        "material"},
+    {"non-null-terminated strings",
+        "matrices!"_s.exceptSuffix(1),
+        "material!"_s.exceptSuffix(1)}
+};
+#endif
+
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
     addTests({&AbstractShaderProgramGLTest::construct,
               &AbstractShaderProgramGLTest::constructMove,
@@ -123,15 +169,21 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               #ifndef MAGNUM_TARGET_WEBGL
               &AbstractShaderProgramGLTest::label,
               #endif
+              });
 
-              &AbstractShaderProgramGLTest::create,
-              &AbstractShaderProgramGLTest::createAsync,
-              &AbstractShaderProgramGLTest::createMultipleOutputs,
-              #ifndef MAGNUM_TARGET_GLES
-              &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
-              #endif
+    addInstancedTests({&AbstractShaderProgramGLTest::create},
+        Containers::arraySize(CreateData));
 
-              &AbstractShaderProgramGLTest::linkFailure,
+    addTests({&AbstractShaderProgramGLTest::createAsync});
+
+    addInstancedTests({
+        &AbstractShaderProgramGLTest::createMultipleOutputs,
+        #ifndef MAGNUM_TARGET_GLES
+        &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
+        #endif
+    }, Containers::arraySize(CreateMultipleOutputsData));
+
+    addTests({&AbstractShaderProgramGLTest::linkFailure,
               &AbstractShaderProgramGLTest::linkFailureAsync,
               &AbstractShaderProgramGLTest::linkFailureAsyncShaderList,
 
@@ -149,9 +201,15 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::uniformDoubleMatrix,
               &AbstractShaderProgramGLTest::uniformDoubleArray,
               #endif
+              });
 
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&AbstractShaderProgramGLTest::createUniformBlocks},
+        Containers::arraySize(CreateUniformBlocksData));
+    #endif
+
+    addTests({
               #ifndef MAGNUM_TARGET_GLES2
-              &AbstractShaderProgramGLTest::createUniformBlocks,
               &AbstractShaderProgramGLTest::uniformBlockIndexNotFound,
               &AbstractShaderProgramGLTest::uniformBlock,
 
@@ -248,6 +306,9 @@ struct MyPublicShader: AbstractShaderProgram {
 };
 
 void AbstractShaderProgramGLTest::create() {
+    auto&& data = CreateData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(
@@ -287,7 +348,7 @@ void AbstractShaderProgramGLTest::create() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    program.bindAttributeLocation(0, "position");
+    program.bindAttributeLocation(0, data.positionName);
     const bool linked = program.link();
     const bool valid = program.validate().first;
 
@@ -304,10 +365,10 @@ void AbstractShaderProgramGLTest::create() {
         CORRADE_VERIFY(valid);
     }
 
-    const Int matrixUniform = program.uniformLocation("matrix");
-    const Int multiplierUniform = program.uniformLocation("multiplier");
-    const Int colorUniform = program.uniformLocation("color");
-    const Int additionsUniform = program.uniformLocation("additions");
+    const Int matrixUniform = program.uniformLocation(data.matrixName);
+    const Int multiplierUniform = program.uniformLocation(data.multiplierName);
+    const Int colorUniform = program.uniformLocation(data.colorName);
+    const Int additionsUniform = program.uniformLocation(data.additionsName);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(matrixUniform >= 0);
@@ -387,6 +448,9 @@ void AbstractShaderProgramGLTest::createAsync() {
 }
 
 void AbstractShaderProgramGLTest::createMultipleOutputs() {
+    auto&& data = CreateMultipleOutputsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
@@ -423,8 +487,10 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     program.bindAttributeLocation(0, "position");
-    program.bindFragmentDataLocation(0, "first");
-    program.bindFragmentDataLocation(1, "second");
+    /* Testing just what wasn't verified for non-null-terminated strings in
+       create() already */
+    program.bindFragmentDataLocation(0, data.firstName);
+    program.bindFragmentDataLocation(1, data.secondName);
     const bool linked = program.link();
     const bool valid = program.validate().first;
 
@@ -445,6 +511,9 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
+    auto&& data = CreateMultipleOutputsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::blend_func_extended>())
@@ -482,8 +551,8 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     program.bindAttributeLocation(0, "position");
-    program.bindFragmentDataLocationIndexed(0, 0, "first");
-    program.bindFragmentDataLocationIndexed(0, 1, "second");
+    program.bindFragmentDataLocationIndexed(0, 0, data.firstName);
+    program.bindFragmentDataLocationIndexed(0, 1, data.secondName);
     const bool linked = program.link();
     const bool valid = program.validate().first;
 
@@ -713,7 +782,7 @@ void main() {
     program.setUniform(program.uniformLocation("textureData2D"), 0);
     program.setUniform(program.uniformLocation("textureData3D"), 0);
 
-    std::pair<bool, std::string> result = program.validate();
+    std::pair<bool, Containers::String> result = program.validate();
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!result.first);
     /* The message shouldn't be empty */
@@ -769,10 +838,8 @@ void AbstractShaderProgramGLTest::uniformNotFound() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     program.uniformLocation("nonexistent");
-    program.uniformLocation(std::string{"another"});
     CORRADE_COMPARE(out.str(),
-        "GL::AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved\n"
-        "GL::AbstractShaderProgram: location of uniform 'another' cannot be retrieved\n");
+        "GL::AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved\n");
 }
 
 struct MyShader: AbstractShaderProgram {
@@ -977,6 +1044,9 @@ void AbstractShaderProgramGLTest::uniformDoubleArray() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgramGLTest::createUniformBlocks() {
+    auto&& data = CreateUniformBlocksData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
@@ -1025,8 +1095,8 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
         CORRADE_VERIFY(valid);
     }
 
-    const Int matricesUniformBlock = program.uniformBlockIndex("matrices");
-    const Int materialUniformBlock = program.uniformBlockIndex("material");
+    const Int matricesUniformBlock = program.uniformBlockIndex(data.matricesName);
+    const Int materialUniformBlock = program.uniformBlockIndex(data.materialName);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(matricesUniformBlock >= 0);
@@ -1066,10 +1136,8 @@ void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     program.uniformBlockIndex("nonexistent");
-    program.uniformBlockIndex(std::string{"another"});
     CORRADE_COMPARE(out.str(),
-        "GL::AbstractShaderProgram: index of uniform block 'nonexistent' cannot be retrieved\n"
-        "GL::AbstractShaderProgram: index of uniform block 'another' cannot be retrieved\n");
+        "GL::AbstractShaderProgram: index of uniform block 'nonexistent' cannot be retrieved\n");
 }
 
 struct UniformBlockShader: AbstractShaderProgram {

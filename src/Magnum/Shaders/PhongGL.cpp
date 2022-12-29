@@ -32,8 +32,8 @@
 #endif
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Iterable.h>
-#include <Corrade/Containers/StringView.h>
-#include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
@@ -192,9 +192,9 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     /* Initializer for the light color / position / range arrays -- we need a
        list of initializers joined by commas. For GLES we'll simply upload the
        values directly. */
-    std::string lightInitializer;
+    Containers::String lightInitializer;
     if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount())
-        lightInitializer = Utility::formatString(
+        lightInitializer = Utility::format(
             "#define LIGHT_POSITION_INITIALIZER {}\n"
             "#define LIGHT_COLOR_INITIALIZER {}\n"
             "#define LIGHT_RANGE_INITIALIZER {}\n",
@@ -223,7 +223,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.jointCount()) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define JOINT_COUNT {}\n"
             "#define PER_VERTEX_JOINT_COUNT {}u\n"
             "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
@@ -242,7 +242,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             out._perInstanceJointCountUniform));
     }
     if(configuration.flags() >= Flag::DynamicPerVertexJointCount) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
             "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
             out._perVertexJointCountUniform));
@@ -250,7 +250,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        vert.addSource(Utility::formatString(
+        vert.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             configuration.drawCount(),
@@ -279,7 +279,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        frag.addSource(Utility::formatString(
+        frag.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n"
@@ -292,7 +292,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     } else
     #endif
     {
-        frag.addSource(Utility::formatString(
+        frag.addSource(Utility::format(
             "#define LIGHT_COUNT {}\n"
             "#define LIGHT_COLORS_LOCATION {}\n"
             "#define LIGHT_SPECULAR_COLORS_LOCATION {}\n"

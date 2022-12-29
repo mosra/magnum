@@ -29,16 +29,12 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Iterable.h>
-#include <Corrade/Containers/StridedArrayView.h>
-#ifndef MAGNUM_TARGET_WEBGL
-#include <Corrade/Containers/String.h>
-#endif
-#include <Corrade/Containers/StringStl.h> /** @todo remove once <string>-free */
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Reference.h>
 #endif
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringIterable.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -343,7 +339,7 @@ AbstractShaderProgram& AbstractShaderProgram::setLabel(const Containers::StringV
 }
 #endif
 
-std::pair<bool, std::string> AbstractShaderProgram::validate() {
+std::pair<bool, Containers::String> AbstractShaderProgram::validate() {
     glValidateProgram(_id);
 
     /* Check validation status */
@@ -351,18 +347,21 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
     glGetProgramiv(_id, GL_VALIDATE_STATUS, &success);
     glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
 
-    /* Error or warning message. The string is returned null-terminated, scrap
-       the \0 at the end afterwards */
-    std::string message(logLength, '\n');
-    if(message.size() > 1)
-        glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
-    message.resize(Math::max(logLength, 1)-1);
+    /* Error or warning message. The length is reported including the null
+       terminator and the string implicitly has a storage for that, thus
+       specify one byte less. */
+    Containers::String message{NoInit, std::size_t(Math::max(logLength, 1) - 1)};
+    if(logLength > 1)
+        glGetProgramInfoLog(_id, logLength, nullptr, message.data());
 
     /* On some drivers (such as SwiftShader) the message contains a newline at
        the end, on some (such as Mesa) it doesn't. Same as with link() or
        compile() message trimming it doesn't make sense to add driver-specific
        workarounds for this, so just trim it always. */
-    return {success, Utility::String::trim(std::move(message))};
+    /** @todo this allocates a new string, revisit once String is capable of
+        trimming in-place, e.g. `std::move(message).trimmed()` would just
+        shift the data around */
+    return {success, message.trimmed()};
 }
 
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh) {
@@ -547,48 +546,62 @@ void AbstractShaderProgram::attachShaders(const Containers::Iterable<Shader>& sh
     for(Shader& s: shaders) attachShader(s);
 }
 
-void AbstractShaderProgram::bindAttributeLocationInternal(const UnsignedInt location, const Containers::ArrayView<const char> name) {
-    glBindAttribLocation(_id, location, name);
+void AbstractShaderProgram::bindAttributeLocation(const UnsignedInt location, const Containers::StringView name) {
+    glBindAttribLocation(_id, location, Containers::String::nullTerminatedView(name).data());
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractShaderProgram::bindFragmentDataLocationInternal(const UnsignedInt location, const Containers::ArrayView<const char> name) {
-    glBindFragDataLocation(_id, location, name);
+void AbstractShaderProgram::bindFragmentDataLocation(const UnsignedInt location, const Containers::StringView name) {
+    glBindFragDataLocation(_id, location, Containers::String::nullTerminatedView(name).data());
 }
-void AbstractShaderProgram::bindFragmentDataLocationIndexedInternal(const UnsignedInt location, UnsignedInt index, const Containers::ArrayView<const char> name) {
-    glBindFragDataLocationIndexed(_id, location, index, name);
+void AbstractShaderProgram::bindFragmentDataLocationIndexed(const UnsignedInt location, UnsignedInt index, const Containers::StringView name) {
+    glBindFragDataLocationIndexed(_id, location, index, Containers::String::nullTerminatedView(name).data());
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractShaderProgram::setTransformFeedbackOutputs(const Containers::ArrayView<const std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
+void AbstractShaderProgram::setTransformFeedbackOutputs(const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
     (this->*Context::current().state().shaderProgram.transformFeedbackVaryingsImplementation)(outputs, bufferMode);
 }
 
-void AbstractShaderProgram::setTransformFeedbackOutputs(const std::initializer_list<std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
-    setTransformFeedbackOutputs(Containers::arrayView(outputs), bufferMode);
-}
-
-void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(const Containers::ArrayView<const std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
-    /** @todo VLAs */
-    Containers::Array<const char*> names{outputs.size()};
-
-    Int i = 0;
-    for(const std::string& output: outputs) names[i++] = output.data();
+void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
+    Containers::ArrayView<Containers::String> nameData;
+    Containers::ArrayView<const char*> names;
+    Containers::ArrayTuple data{
+        {NoInit, outputs.size(), nameData},
+        {NoInit, outputs.size(), names}
+    };
+    for(std::size_t i = 0; i != outputs.size(); ++i) {
+        new(&nameData[i]) Containers::String{Containers::String::nullTerminatedView(outputs[i])};
+        names[i] = nameData[i].data();
+    }
 
     glTransformFeedbackVaryings(_id, outputs.size(), names, GLenum(bufferMode));
 }
 
 #ifdef CORRADE_TARGET_WINDOWS
-void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorkaround(const Containers::ArrayView<const std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
+void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorkaround(const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
     /* NVidia on Windows doesn't copy the names when calling
-       glTransformFeedbackVaryings() so it then fails at link time because the
-       char* are dangling. We have to do the copy on the engine side and keep
-       the values until link time (which can happen any time and multiple
-       times, so basically for the remaining lifetime of the shader program) */
-    _transformFeedbackVaryingNames.assign(outputs.begin(), outputs.end());
+       glTransformFeedbackVaryings() so it then might fail at link time because
+       the char* get dangling. We have to do the copy on the engine side and
+       keep the values until link time (which can happen any time and multiple
+       times, so basically for the remaining lifetime of the shader program).
 
-    transformFeedbackVaryingsImplementationDefault({_transformFeedbackVaryingNames.data(), _transformFeedbackVaryingNames.size()}, bufferMode);
+       Compared to the above case we thus do a copy also if the view is not
+       global in addition to not null-terminated, and we keep the string memory
+       in a member variable. */
+    Containers::ArrayView<Containers::String> nameData;
+    Containers::ArrayView<const char*> names;
+    _transformFeedbackVaryingNames = Containers::ArrayTuple{
+        {NoInit, outputs.size(), nameData},
+        {NoInit, outputs.size(), names}
+    };
+    for(std::size_t i = 0; i != outputs.size(); ++i) {
+        new(&nameData[i]) Containers::String{Containers::String::nullTerminatedGlobalView(outputs[i])};
+        names[i] = nameData[i].data();
+    }
+
+    glTransformFeedbackVaryings(_id, outputs.size(), names, GLenum(bufferMode));
 }
 #endif
 #endif
@@ -613,12 +626,12 @@ bool AbstractShaderProgram::checkLink(const Containers::Iterable<Shader>& shader
     glGetProgramiv(_id, GL_LINK_STATUS, &success);
     glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &logLength);
 
-    /* Error or warning message. The string is returned null-terminated,
-       strip the \0 at the end afterwards. */
-    std::string message(logLength, '\n');
-    if(message.size() > 1)
-        glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
-    message.resize(Math::max(logLength, 1)-1);
+    /* Error or warning message. The length is reported including the null
+       terminator and the string implicitly has a storage for that, thus
+       specify one byte less. */
+    Containers::String message{NoInit, std::size_t(Math::max(logLength, 1)) - 1};
+    if(logLength > 1)
+        glGetProgramInfoLog(_id, logLength, nullptr, message.data());
 
     /* Some drivers are chatty and can't keep shut when there's nothing to
        be said, handle that as well. */
@@ -662,16 +675,16 @@ bool AbstractShaderProgram::isLinkFinished() {
     return success == GL_TRUE;
 }
 
-void AbstractShaderProgram::cleanLogImplementationNoOp(std::string&) {}
+void AbstractShaderProgram::cleanLogImplementationNoOp(Containers::String&) {}
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-void AbstractShaderProgram::cleanLogImplementationIntelWindows(std::string& message) {
+void AbstractShaderProgram::cleanLogImplementationIntelWindows(Containers::String& message) {
     if(message == "No errors.\n") message = {};
 }
 #endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-void AbstractShaderProgram::cleanLogImplementationAngle(std::string& message) {
+void AbstractShaderProgram::cleanLogImplementationAngle(Containers::String& message) {
     if(message == "\n") message = {};
 }
 #endif
@@ -680,18 +693,18 @@ void AbstractShaderProgram::completionStatusImplementationFallback(GLuint, GLenu
     *value = GL_TRUE;
 }
 
-Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
-    const GLint location = glGetUniformLocation(_id, name);
+Int AbstractShaderProgram::uniformLocation(const Containers::StringView name) {
+    const GLint location = glGetUniformLocation(_id, Containers::String::nullTerminatedView(name).data());
     if(location == -1)
-        Warning{} << "GL::AbstractShaderProgram: location of uniform \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
+        Warning{} << "GL::AbstractShaderProgram: location of uniform \'" << Debug::nospace << name << Debug::nospace << "\' cannot be retrieved";
     return location;
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-UnsignedInt AbstractShaderProgram::uniformBlockIndexInternal(const Containers::ArrayView<const char> name) {
-    const GLuint index = glGetUniformBlockIndex(_id, name);
+UnsignedInt AbstractShaderProgram::uniformBlockIndex(const Containers::StringView name) {
+    const GLuint index = glGetUniformBlockIndex(_id, Containers::String::nullTerminatedView(name).data());
     if(index == GL_INVALID_INDEX)
-        Warning{} << "GL::AbstractShaderProgram: index of uniform block \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
+        Warning{} << "GL::AbstractShaderProgram: index of uniform block \'" << Debug::nospace << name << Debug::nospace << "\' cannot be retrieved";
     return index;
 }
 #endif
