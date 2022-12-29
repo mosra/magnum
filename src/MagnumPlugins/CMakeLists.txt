@@ -31,7 +31,7 @@ macro(add_plugin plugin_name plugin_folder debug_install_dirs release_install_di
         set_target_properties(${plugin_name} ${plugin_name}-metadata PROPERTIES FOLDER "MagnumPlugins/${plugin_name}")
     else()
         corrade_add_static_plugin(${plugin_name} "${release_install_dirs}" ${metadata_file} ${ARGN})
-        set_target_properties(${plugin_name} ${plugin_name}-dependencies PROPERTIES FOLDER "MagnumPlugins/${plugin_name}")
+        set_target_properties(${plugin_name} PROPERTIES FOLDER "MagnumPlugins/${plugin_name}")
     endif()
     # For each type of output directory and each configuration, append the plugin subfolder only if the global CMAKE_ variable was set
     foreach(output RUNTIME LIBRARY ARCHIVE)
