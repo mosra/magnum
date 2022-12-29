@@ -34,7 +34,9 @@
 #include <Corrade/Containers/String.h>
 #endif
 #include <Corrade/Containers/StringStl.h> /** @todo remove once <string>-free */
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Reference.h>
+#endif
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Context.h"
