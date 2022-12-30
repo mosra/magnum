@@ -36,7 +36,6 @@
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
-#include "Magnum/GL/Attribute.h"
 #include "Magnum/GL/GL.h"
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES2)
