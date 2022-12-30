@@ -101,10 +101,12 @@ set(MagnumGL_HEADERS
 set(MagnumGL_PRIVATE_HEADERS
     Implementation/BufferState.h
     Implementation/ContextState.h
+    Implementation/compressedPixelFormatMapping.hpp
     Implementation/FramebufferState.h
     Implementation/maxTextureSize.h
     Implementation/MeshState.h
     Implementation/QueryState.h
+    Implementation/pixelFormatMapping.hpp
     Implementation/RendererState.h
     Implementation/ShaderProgramState.h
     Implementation/ShaderState.h
