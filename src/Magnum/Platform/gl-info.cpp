@@ -397,7 +397,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug{} << "";
 
     /* Get first future (not supported) version */
-    std::vector<GL::Version> versions{
+    GL::Version versions[]{
         #ifndef MAGNUM_TARGET_GLES
         GL::Version::GL300,
         GL::Version::GL310,
@@ -431,7 +431,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
           "        "_s;
 
     /* Display supported OpenGL extensions from unsupported versions */
-    for(std::size_t i = future; i != versions.size(); ++i) {
+    for(std::size_t i = future; i != Containers::arraySize(versions); ++i) {
         if(versions[i] != GL::Version::None)
             Debug{} << versions[i] << "extension support:";
         else Debug{} << "Vendor extension support:";
