@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <utility> /* std::pair */
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Magnum.h"
@@ -74,7 +74,7 @@ struct TextureState {
     #endif
 
     explicit TextureState(Context& context,
-        Containers::ArrayView<std::pair<GLenum, GLuint>> bindings,
+        Containers::ArrayView<Containers::Pair<GLenum, GLuint>> bindings,
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Containers::ArrayView<ImageBinding> imageBindings,
         #endif
@@ -187,7 +187,7 @@ struct TextureState {
     /* Texture type, texture object ID. While not true, for simplicity this
        assumes that each slot can have just one ID bound, not one ID per
        texture type. */
-    Containers::ArrayView<std::pair<GLenum, GLuint>> bindings;
+    Containers::ArrayView<Containers::Pair<GLenum, GLuint>> bindings;
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     Math::BitVector<80> bufferTextureBound;
     #endif

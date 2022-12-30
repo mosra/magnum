@@ -603,9 +603,7 @@ void Buffer::textureWorkaroundAppleBefore() {
 
         /* Unbind the texture, reset state tracker */
         glBindTexture(GL_TEXTURE_BUFFER, 0);
-        /* libstdc++ since GCC 6.3 can't handle just = {} (ambiguous overload
-           of operator=) */
-        textureState.bindings[textureUnit] = std::pair<GLenum, GLuint>{};
+        textureState.bindings[textureUnit] = {};
         textureState.bufferTextureBound.set(textureUnit, false);
     }
 }

@@ -43,7 +43,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 using namespace Containers::Literals;
 
 TextureState::TextureState(Context& context,
-    Containers::ArrayView<std::pair<GLenum, GLuint>> bindings,
+    Containers::ArrayView<Containers::Pair<GLenum, GLuint>> bindings,
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     Containers::ArrayView<ImageBinding> imageBindings,
     #endif
@@ -547,7 +547,7 @@ TextureState::TextureState(Context& context,
 }
 
 void TextureState::reset() {
-    for(std::pair<GLenum, GLuint>& i: bindings)
+    for(Containers::Pair<GLenum, GLuint>& i: bindings)
         i = {{}, State::DisengagedBinding};
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     for(ImageBinding& i: imageBindings)

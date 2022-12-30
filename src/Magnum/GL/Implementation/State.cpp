@@ -26,6 +26,7 @@
 #include "State.h"
 
 #include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"
@@ -83,7 +84,7 @@ std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std:
     Containers::ArrayView<ShaderState> shaderStateView;
     Containers::ArrayView<ShaderProgramState> shaderProgramStateView;
     Containers::ArrayView<TextureState> textureStateView;
-    Containers::ArrayView<std::pair<GLenum, GLuint>> textureBindings;
+    Containers::ArrayView<Containers::Pair<GLenum, GLuint>> textureBindings;
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     Containers::ArrayView<TextureState::ImageBinding> imageBindings;
     #endif

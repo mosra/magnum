@@ -119,13 +119,11 @@ void AbstractTexture::unbind(const Int textureUnit) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* If given texture unit is already unbound, nothing to do */
-    if(textureState.bindings[textureUnit].second == 0) return;
+    if(textureState.bindings[textureUnit].second() == 0) return;
 
     /* Unbind the texture, reset state tracker */
     Context::current().state().texture.unbindImplementation(textureUnit);
-    /* libstdc++ since GCC 6.3 can't handle just = {} (ambiguous overload of
-       operator=) */
-    textureState.bindings[textureUnit] = std::pair<GLenum, GLuint>{};
+    textureState.bindings[textureUnit] = {};
 }
 
 void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
@@ -135,8 +133,8 @@ void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
     if(textureState.currentTextureUnit != textureUnit)
         glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = textureUnit));
 
-    CORRADE_INTERNAL_ASSERT(textureState.bindings[textureUnit].first != 0);
-    glBindTexture(textureState.bindings[textureUnit].first, 0);
+    CORRADE_INTERNAL_ASSERT(textureState.bindings[textureUnit].first() != 0);
+    glBindTexture(textureState.bindings[textureUnit].first(), 0);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -146,7 +144,7 @@ void AbstractTexture::unbindImplementationMulti(const GLint textureUnit) {
 }
 
 void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
-    CORRADE_INTERNAL_ASSERT(Context::current().state().texture.bindings[textureUnit].first != 0);
+    CORRADE_INTERNAL_ASSERT(Context::current().state().texture.bindings[textureUnit].first() != 0);
     glBindTextureUnit(textureUnit, 0);
 }
 #endif
@@ -184,9 +182,9 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Cont
             ids[i] = id;
         }
 
-        if(textureState.bindings[firstTextureUnit + i].second != id) {
+        if(textureState.bindings[firstTextureUnit + i].second() != id) {
             different = true;
-            textureState.bindings[firstTextureUnit + i].second = id;
+            textureState.bindings[firstTextureUnit + i].second() = id;
         }
     }
 
@@ -235,9 +233,7 @@ AbstractTexture::~AbstractTexture() {
     /* Remove all bindings */
     for(auto& binding: Context::current().state().texture.bindings) {
         /* MSVC 2015 needs the parentheses around */
-        /* libstdc++ since GCC 6.3 can't handle just = {} (ambiguous overload
-           of operator=) */
-        if(binding.second == _id) binding = std::pair<GLenum, GLuint>{};
+        if(binding.second() == _id) binding = {};
     }
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -335,7 +331,7 @@ void AbstractTexture::bind(Int textureUnit) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* If already bound in given texture unit, nothing to do */
-    if(textureState.bindings[textureUnit].second == _id) return;
+    if(textureState.bindings[textureUnit].second() == _id) return;
 
     /* Update state tracker, bind the texture to the unit */
     textureState.bindings[textureUnit] = {_target, _id};
@@ -525,7 +521,7 @@ void AbstractTexture::bindInternal() {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* If the texture is already bound in current unit, nothing to do */
-    if(textureState.bindings[textureState.currentTextureUnit].second == _id)
+    if(textureState.bindings[textureState.currentTextureUnit].second() == _id)
         return;
 
     /* Set internal unit as active if not already, update state tracker */
@@ -535,7 +531,7 @@ void AbstractTexture::bindInternal() {
         glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = internalTextureUnit));
 
     /* If already bound in given texture unit, nothing to do */
-    if(textureState.bindings[internalTextureUnit].second == _id) return;
+    if(textureState.bindings[internalTextureUnit].second() == _id) return;
 
     /* Update state tracker, bind the texture to the unit. Not directly calling
        glBindTexture() here because we may need to include various
