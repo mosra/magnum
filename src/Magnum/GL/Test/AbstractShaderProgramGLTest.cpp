@@ -26,6 +26,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringStl.h> /* StringHasPrefix / StringHasSuffix */
@@ -350,7 +351,7 @@ void AbstractShaderProgramGLTest::create() {
 
     program.bindAttributeLocation(0, data.positionName);
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
@@ -425,7 +426,7 @@ void AbstractShaderProgramGLTest::createAsync() {
 
     CORRADE_VERIFY(program.checkLink({vert, frag}));
     CORRADE_VERIFY(program.isLinkFinished());
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     {
@@ -492,7 +493,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     program.bindFragmentDataLocation(0, data.firstName);
     program.bindFragmentDataLocation(1, data.secondName);
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
@@ -554,7 +555,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     program.bindFragmentDataLocationIndexed(0, 0, data.firstName);
     program.bindFragmentDataLocationIndexed(0, 1, data.secondName);
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
@@ -782,16 +783,16 @@ void main() {
     program.setUniform(program.uniformLocation("textureData2D"), 0);
     program.setUniform(program.uniformLocation("textureData3D"), 0);
 
-    std::pair<bool, Containers::String> result = program.validate();
+    Containers::Pair<bool, Containers::String> result = program.validate();
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_VERIFY(!result.first);
+    CORRADE_VERIFY(!result.first());
     /* The message shouldn't be empty */
-    CORRADE_COMPARE_AS(result.second,
+    CORRADE_COMPARE_AS(result.second(),
         "",
         TestSuite::Compare::NotEqual);
     /* No stray \0 or \n should be anywhere */
-    CORRADE_COMPARE_AS(result.second, "\0"_s, TestSuite::Compare::StringNotContains);
-    CORRADE_COMPARE_AS(result.second, "\n"_s, TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(result.second(), "\0"_s, TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(result.second(), "\n"_s, TestSuite::Compare::StringNotContains);
     #endif
 }
 
@@ -1084,7 +1085,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     const bool linked = program.link();
-    const bool valid = program.validate().first;
+    const bool valid = program.validate().first();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);

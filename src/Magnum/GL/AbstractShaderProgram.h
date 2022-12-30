@@ -834,7 +834,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @def_gl{VALIDATE_STATUS}, @def_gl{INFO_LOG_LENGTH},
          *      @fn_gl_keyword{GetProgramInfoLog}
          */
-        std::pair<bool, Containers::String> validate();
+        Containers::Pair<bool, Containers::String> validate();
 
         /**
          * @brief Draw a mesh

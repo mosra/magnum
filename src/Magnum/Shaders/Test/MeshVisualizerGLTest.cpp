@@ -1676,7 +1676,7 @@ void MeshVisualizerGLTest::construct2D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1736,7 +1736,7 @@ void MeshVisualizerGLTest::construct3D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1766,7 +1766,7 @@ void MeshVisualizerGLTest::constructSkinning2D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1795,7 +1795,7 @@ void MeshVisualizerGLTest::constructSkinning3D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1821,7 +1821,7 @@ void MeshVisualizerGLTest::constructAsync2D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1846,7 +1846,7 @@ void MeshVisualizerGLTest::constructAsync3D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1933,7 +1933,7 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2019,7 +2019,7 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2060,7 +2060,7 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync2D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2099,7 +2099,7 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync3D() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

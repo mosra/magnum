@@ -25,6 +25,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
@@ -314,7 +315,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::construct() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -335,7 +336,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructAsync() {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -377,7 +378,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -409,7 +410,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.validate().first);
+        CORRADE_VERIFY(shader.validate().first());
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

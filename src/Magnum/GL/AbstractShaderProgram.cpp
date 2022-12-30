@@ -29,6 +29,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Pair.h>
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Containers/Reference.h>
 #endif
@@ -339,7 +340,7 @@ AbstractShaderProgram& AbstractShaderProgram::setLabel(const Containers::StringV
 }
 #endif
 
-std::pair<bool, Containers::String> AbstractShaderProgram::validate() {
+Containers::Pair<bool, Containers::String> AbstractShaderProgram::validate() {
     glValidateProgram(_id);
 
     /* Check validation status */
@@ -361,7 +362,7 @@ std::pair<bool, Containers::String> AbstractShaderProgram::validate() {
     /** @todo this allocates a new string, revisit once String is capable of
         trimming in-place, e.g. `std::move(message).trimmed()` would just
         shift the data around */
-    return {success, message.trimmed()};
+    return {bool(success), message.trimmed()};
 }
 
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh) {
