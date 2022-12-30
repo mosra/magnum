@@ -25,8 +25,6 @@
 
 #include "OpenGLTester.h"
 
-#include <string>
-
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #ifndef MAGNUM_TARGET_WEBGL
