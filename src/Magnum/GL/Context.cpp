@@ -994,7 +994,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     if(!_driverWorkarounds.isEmpty()) {
         Debug{output} << "Using driver workarounds:";
         for(const auto& workaround: _driverWorkarounds)
-            if(!workaround.second) Debug(output) << "   " << workaround.first;
+            if(!workaround.second()) Debug(output) << "   " << workaround.first();
     }
 
     /* Fetch default framebuffer size and set up default clear color. If we are

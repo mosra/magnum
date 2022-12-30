@@ -915,7 +915,7 @@ class MAGNUM_GL_EXPORT Context {
             then can be discarded -- what to do? we could avoid including
             Array altogether */
         /* True means known and disabled, false means known */
-        Containers::Array<std::pair<Containers::StringView, bool>> _driverWorkarounds;
+        Containers::Array<Containers::Pair<Containers::StringView, bool>> _driverWorkarounds;
         Containers::Array<Extension> _disabledExtensions;
         Implementation::ContextConfigurationFlags _configurationFlags;
 };

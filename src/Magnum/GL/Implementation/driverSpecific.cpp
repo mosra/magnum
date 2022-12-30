@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Containers/StringIterable.h>
 
@@ -612,7 +613,7 @@ bool Context::isDriverWorkaroundDisabled(const Containers::StringView workaround
        compare just data pointers instead of the whole string as we store only
        the views in the KnownWorkarounds list. */
     for(const auto& i: _driverWorkarounds)
-        if(i.first.data() == found.data()) return i.second;
+        if(i.first().data() == found.data()) return i.second();
     arrayAppend(_driverWorkarounds, InPlaceInit, found, false);
     return false;
 }
