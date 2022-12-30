@@ -74,8 +74,6 @@ struct TransformFeedbackGLTest: OpenGLTester {
 };
 
 #ifndef MAGNUM_TARGET_GLES
-enum: std::size_t { DrawDataCount = 4 };
-
 const struct {
     const char* name;
     UnsignedInt stream;
@@ -83,7 +81,7 @@ const struct {
     UnsignedInt countStream0;
     UnsignedInt countStreamN;
     UnsignedInt countDraw;
-} DrawData[DrawDataCount] = {
+} DrawData[]{
     {"basic", 0, 1, 6, 6, 6},
     {"instanced", 0, 5, 6, 6, 30},
     {"stream", 1, 1, 0, 6, 6},
@@ -111,7 +109,8 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
               });
 
     #ifndef MAGNUM_TARGET_GLES
-    addInstancedTests({&TransformFeedbackGLTest::draw}, DrawDataCount);
+    addInstancedTests({&TransformFeedbackGLTest::draw},
+        Containers::arraySize(DrawData));
     #endif
 }
 
