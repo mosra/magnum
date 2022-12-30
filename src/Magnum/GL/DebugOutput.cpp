@@ -145,7 +145,8 @@ Int DebugOutput::maxMessageLength() {
 }
 
 void DebugOutput::setCallback(const Callback callback, const void* userParam) {
-    Context::current().state().debug.callbackImplementation(callback, userParam);
+    Context::current().state().debug.messageCallback.userParam = userParam;
+    Context::current().state().debug.callbackImplementation(callback);
 }
 
 void DebugOutput::setDefaultCallback() {
@@ -172,38 +173,38 @@ void DebugOutput::controlImplementationKhrES(const GLenum source, const GLenum t
 }
 #endif
 
-void DebugOutput::callbackImplementationNoOp(Callback, const void*) {}
+void DebugOutput::callbackImplementationNoOp(Callback) {}
 
 #ifndef MAGNUM_TARGET_GLES2
-void DebugOutput::callbackImplementationKhrDesktopES32(const Callback callback, const void* userParam) {
+void DebugOutput::callbackImplementationKhrDesktopES32(const Callback callback) {
     /* Replace the callback */
-    const Callback original = Context::current().state().debug.messageCallback.callback;
+    const bool setPreviously = !!Context::current().state().debug.messageCallback.callback;
+
     Context::current().state().debug.messageCallback.callback = callback;
-    Context::current().state().debug.messageCallback.userParam = userParam;
 
     /* Adding callback */
-    if(!original && callback)
+    if(!setPreviously && callback)
         glDebugMessageCallback(callbackWrapper,  &Context::current().state().debug.messageCallback);
 
     /* Deleting callback */
-    else if(original && !callback)
+    else if(setPreviously && !callback)
         glDebugMessageCallback(nullptr, nullptr);
 }
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-void DebugOutput::callbackImplementationKhrES(const Callback callback, const void* userParam) {
+void DebugOutput::callbackImplementationKhrES(const Callback callback) {
     /* Replace the callback */
-    const Callback original = Context::current().state().debug.messageCallback.callback;
+    const bool setPreviously = !!Context::current().state().debug.messageCallback.callback;
+
     Context::current().state().debug.messageCallback.callback = callback;
-    Context::current().state().debug.messageCallback.userParam = userParam;
 
     /* Adding callback */
-    if(!original && callback)
+    if(!setPreviously && callback)
         glDebugMessageCallbackKHR(callbackWrapper, &Context::current().state().debug.messageCallback);
 
     /* Deleting callback */
-    else if(original && !callback)
+    else if(setPreviously && !callback)
         glDebugMessageCallbackKHR(nullptr, nullptr);
 }
 #endif

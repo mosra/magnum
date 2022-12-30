@@ -422,12 +422,12 @@ class MAGNUM_GL_EXPORT DebugOutput {
         static MAGNUM_GL_LOCAL void controlImplementationKhrES(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
         #endif
 
-        static MAGNUM_GL_LOCAL void callbackImplementationNoOp(Callback, const void*);
+        static MAGNUM_GL_LOCAL void callbackImplementationNoOp(Callback callback);
         #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void callbackImplementationKhrDesktopES32(Callback callback, const void* userParam);
+        static MAGNUM_GL_LOCAL void callbackImplementationKhrDesktopES32(Callback callback);
         #endif
         #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void callbackImplementationKhrES(Callback callback, const void* userParam);
+        static MAGNUM_GL_LOCAL void callbackImplementationKhrES(Callback callback);
         #endif
 };
 

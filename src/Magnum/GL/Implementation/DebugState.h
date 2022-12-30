@@ -42,7 +42,7 @@ struct DebugState {
 
     void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char>);
     void(*controlImplementation)(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
-    void(*callbackImplementation)(DebugOutput::Callback, const void*);
+    void(*callbackImplementation)(DebugOutput::Callback);
     void(*pushGroupImplementation)(DebugGroup::Source, UnsignedInt, Containers::ArrayView<const char>);
     void(*popGroupImplementation)();
 
