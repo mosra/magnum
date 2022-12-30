@@ -287,7 +287,7 @@ void AbstractShaderProgramGLTest::create() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
 
-    // Some drivers need a bit of time to update this result
+    /* Some drivers need a bit of time to update this result */
     Utility::System::sleep(200);
     CORRADE_VERIFY(program.isLinkFinished());
     {
