@@ -30,6 +30,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
@@ -84,6 +85,8 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     void linkFailureAsync();
     void linkFailureAsyncShaderList();
 
+    void validateFailure();
+
     void uniformNotFound();
 
     void uniform();
@@ -131,6 +134,9 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::linkFailure,
               &AbstractShaderProgramGLTest::linkFailureAsync,
               &AbstractShaderProgramGLTest::linkFailureAsyncShaderList,
+
+              &AbstractShaderProgramGLTest::validateFailure,
+
               &AbstractShaderProgramGLTest::uniformNotFound,
 
               &AbstractShaderProgramGLTest::uniform,
@@ -238,6 +244,7 @@ struct MyPublicShader: AbstractShaderProgram {
     #ifndef MAGNUM_TARGET_GLES2
     using AbstractShaderProgram::uniformBlockIndex;
     #endif
+    using AbstractShaderProgram::setUniform;
 };
 
 void AbstractShaderProgramGLTest::create() {
@@ -642,6 +649,81 @@ void AbstractShaderProgramGLTest::linkFailureAsyncShaderList() {
        printed */
     CORRADE_COMPARE_AS(out.str(), "GL::AbstractShaderProgram::link(): linking failed with the following message:",
         TestSuite::Compare::StringNotContains);
+}
+
+void AbstractShaderProgramGLTest::validateFailure() {
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("No known case where glValidateProgram() would fail on ES2.");
+    #else
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isVersionSupported(Version::GL300))
+        CORRADE_SKIP(Version::GL300 << "is not supported");
+    #endif
+
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES300
+        #endif
+        , Shader::Type::Vertex);
+    vert.addSource(R"(void main() {
+    gl_Position = vec4(0.0);
+})");
+    CORRADE_VERIFY(vert.compile());
+
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        #else
+        Version::GLES300
+        #endif
+        , Shader::Type::Fragment);
+    frag.addSource(R"(
+uniform highp sampler2D textureData2D;
+uniform highp sampler3D textureData3D;
+
+out highp vec4 fragmentColor;
+
+void main() {
+    fragmentColor =
+        texture(textureData2D, vec2(0.0))*
+        texture(textureData3D, vec3(0.0));
+})");
+    CORRADE_VERIFY(frag.compile());
+
+    MyPublicShader program;
+    program.attachShaders({vert, frag});
+    CORRADE_VERIFY(program.link());
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Set both samplers to the same location. On Mesa at least, this is done
+       implicitly (and so validation fails right after linking the shader), but
+       it won't hurt to be explicitly. Also, funnily enough, if I'd set those
+       to 0 and 1 after and validate() again, the validation returns true but
+       the message still contains the original message. Heh. */
+    program.setUniform(program.uniformLocation("textureData2D"), 0);
+    program.setUniform(program.uniformLocation("textureData3D"), 0);
+
+    std::pair<bool, std::string> result = program.validate();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_VERIFY(!result.first);
+    /* The message shouldn't be empty */
+    CORRADE_COMPARE_AS(result.second,
+        "",
+        TestSuite::Compare::NotEqual);
+    /* No stray \0 or \n should be anywhere */
+    CORRADE_COMPARE_AS(result.second, "\0"_s, TestSuite::Compare::StringNotContains);
+    CORRADE_COMPARE_AS(result.second, "\n"_s, TestSuite::Compare::StringNotContains);
+    #endif
 }
 
 void AbstractShaderProgramGLTest::uniformNotFound() {
