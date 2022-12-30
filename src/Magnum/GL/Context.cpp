@@ -28,6 +28,7 @@
 #include <algorithm> /* std::lower_bound() */
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
@@ -985,9 +986,9 @@ bool Context::tryCreate(const Configuration& configuration) {
             Debug{output} << "   " << extension.string();
     }
 
-    std::pair<Containers::ArrayTuple, Implementation::State&> state = Implementation::State::allocate(*this, output);
-    _stateData = std::move(state.first);
-    _state = &state.second;
+    Containers::Pair<Containers::ArrayTuple, Containers::Reference<Implementation::State>> state = Implementation::State::allocate(*this, output);
+    _stateData = std::move(state.first());
+    _state = &*state.second();
 
     /* Print a list of used workarounds */
     if(!_driverWorkarounds.isEmpty()) {

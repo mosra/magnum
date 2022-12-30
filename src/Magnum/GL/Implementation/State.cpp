@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"
@@ -49,7 +50,7 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std::ostream* const out) {
+Containers::Pair<Containers::ArrayTuple, Containers::Reference<State>> State::allocate(Context& context, std::ostream* const out) {
     /* TextureState needs to track state per texture / image binding, fetch
        how many of them is there and allocate here as well so we don't need to
        do another nested allocation */

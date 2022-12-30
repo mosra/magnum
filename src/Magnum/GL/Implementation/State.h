@@ -26,7 +26,6 @@
 */
 
 #include <iosfwd>
-#include <utility>
 #include <Corrade/Containers/Containers.h>
 
 #include "Magnum/Magnum.h"
@@ -53,7 +52,7 @@ struct TransformFeedbackState;
 struct State {
     /* Initializes context-based functionality together with all nested classes
        in a single allocation */
-    static std::pair<Containers::ArrayTuple, State&> allocate(Context& context, std::ostream* out);
+    static Containers::Pair<Containers::ArrayTuple, Containers::Reference<State>> allocate(Context& context, std::ostream* out);
 
     enum: GLuint { DisengagedBinding = ~0u };
 
