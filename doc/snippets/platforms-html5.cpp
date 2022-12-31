@@ -23,15 +23,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
+#include <Corrade/Containers/String.h>
 #include <emscripten/emscripten.h>
+
+using namespace Corrade;
 
 int main() {
 {
 /* [emasm-dollar] */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-std::string title;
+Containers::String title;
 EM_ASM_({document.getElementById('title').innerHTML =
     UTF8ToString($0)}, title.data());
 #pragma GCC diagnostic pop
