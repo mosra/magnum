@@ -29,13 +29,17 @@
  * @brief Function @ref Magnum::DebugTools::screenshot()
  */
 
-#include <string>
 #include <Corrade/PluginManager/PluginManager.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/DebugTools/visibility.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/Trade/Trade.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* The filename used to be a std::string */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace DebugTools {
 
@@ -51,7 +55,7 @@ using @ref GL::AbstractFramebuffer::implementationColorReadFormat() and
 @ref GL::AbstractFramebuffer::implementationColorReadType() and then mapped
 back to the generic @ref Magnum::PixelFormat "PixelFormat". If, for some
 reason, the driver-suggested pixel format is not desired, use the
-@ref screenshot(GL::AbstractFramebuffer&, PixelFormat, const std::string&)
+@ref screenshot(GL::AbstractFramebuffer&, PixelFormat, Containers::StringView)
 overload instead.
 
 The read pixel data are saved using the
@@ -66,7 +70,7 @@ map the detected pixel format back to a generic format, if either the
 for given file format could not be loaded, or if the file saving fails (for
 example due to unsupported pixel format). A message is printed in each case.
 */
-bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, const std::string& filename);
+bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, Containers::StringView filename);
 
 /** @overload
 @m_since{2019,10}
@@ -75,7 +79,7 @@ Useful in case you already have an instance of the converter plugin manager in
 your application or if you intend to save screenshots often, as the operation
 doesn't involve costly dynamic library loading and unloading on every call.
 */
-bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, const std::string& filename);
+bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, Containers::StringView filename);
 
 /**
 @brief Save a screenshot in requested pixel format to a file
@@ -84,12 +88,12 @@ bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractI
 @param filename     File where to save
 @m_since{2019,10}
 
-Similar to @ref screenshot(GL::AbstractFramebuffer&, PixelFormat, const std::string&)
+Similar to @ref screenshot(GL::AbstractFramebuffer&, PixelFormat, Containers::StringView)
 but with an explicit pixel format. Useful in cases where the driver-suggested
 pixel format is not desired, however note that supplying a format that's
 incompatible with the framebuffer may result in GL errors.
 */
-bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, PixelFormat format, const std::string& filename);
+bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, PixelFormat format, Containers::StringView filename);
 
 /** @overload
 @m_since{2019,10}
@@ -98,7 +102,7 @@ Useful in case you already have an instance of the converter plugin manager in
 your application or if you intend to save screenshots often, as the operation
 doesn't involve costly dynamic library loading and unloading on every call.
 */
-bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, PixelFormat format, const std::string& filename);
+bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, PixelFormat format, Containers::StringView filename);
 
 }}
 

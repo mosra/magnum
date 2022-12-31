@@ -26,7 +26,6 @@
 #include <sstream>
 #include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove when screenshot() is <string>-free */
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>

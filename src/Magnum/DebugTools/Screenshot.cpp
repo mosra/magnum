@@ -26,9 +26,8 @@
 #include "Screenshot.h"
 
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Image.h"
@@ -39,12 +38,12 @@
 
 namespace Magnum { namespace DebugTools {
 
-bool screenshot(GL::AbstractFramebuffer& framebuffer, const std::string& filename) {
+bool screenshot(GL::AbstractFramebuffer& framebuffer, const Containers::StringView filename) {
     PluginManager::Manager<Trade::AbstractImageConverter> manager;
     return screenshot(manager, framebuffer, filename);
 }
 
-bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, const std::string& filename) {
+bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, const Containers::StringView filename) {
     /* Get the implementation-specific color read format for given framebuffer */
     const GL::PixelFormat format = framebuffer.implementationColorReadFormat();
     const GL::PixelType type = framebuffer.implementationColorReadType();
@@ -68,12 +67,12 @@ bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, 
     return screenshot(manager, framebuffer, *genericFormat, filename);
 }
 
-bool screenshot(GL::AbstractFramebuffer& framebuffer, const PixelFormat format, const std::string& filename) {
+bool screenshot(GL::AbstractFramebuffer& framebuffer, const PixelFormat format, const Containers::StringView filename) {
     PluginManager::Manager<Trade::AbstractImageConverter> manager;
     return screenshot(manager, framebuffer, format, filename);
 }
 
-bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, const PixelFormat format, const std::string& filename) {
+bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, GL::AbstractFramebuffer& framebuffer, const PixelFormat format, const Containers::StringView filename) {
     Containers::Pointer<Trade::AbstractImageConverter> converter;
     if(!(converter = manager.loadAndInstantiate("AnyImageConverter")))
         return false;
