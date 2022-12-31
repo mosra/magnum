@@ -33,7 +33,6 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -190,52 +189,18 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     #ifndef MAGNUM_TARGET_GLES
+    /* Initializer for the light color / position / range arrays -- we need a
+       list of initializers joined by commas. For GLES we'll simply upload the
+       values directly. */
     std::string lightInitializer;
-    if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount()) {
-        using namespace Containers::Literals;
-
-        /* Initializer for the light color / position / range arrays -- we need
-           a list of initializers joined by commas. For GLES we'll simply
-           upload the values directly. */
-        constexpr Containers::StringView lightPositionInitializerPreamble = "#define LIGHT_POSITION_INITIALIZER "_s;
-        constexpr Containers::StringView lightColorInitializerPreamble = "#define LIGHT_COLOR_INITIALIZER "_s;
-        constexpr Containers::StringView lightRangeInitializerPreamble = "#define LIGHT_RANGE_INITIALIZER "_s;
-        constexpr Containers::StringView lightPositionInitializerItem = "vec4(0.0, 0.0, 1.0, 0.0), "_s;
-        constexpr Containers::StringView lightColorInitializerItem = "vec3(1.0), "_s;
-        constexpr Containers::StringView lightRangeInitializerItem = "1.0/0.0, "_s;
-
-        lightInitializer.reserve(
-            lightPositionInitializerPreamble.size() +
-            lightColorInitializerPreamble.size() +
-            lightRangeInitializerPreamble.size() +
-            configuration.lightCount()*(lightPositionInitializerItem.size() +
-                                        lightColorInitializerItem.size() +
-                                        lightRangeInitializerItem.size()));
-
-        lightInitializer.append(lightPositionInitializerPreamble);
-        for(std::size_t i = 0; i != configuration.lightCount(); ++i)
-            lightInitializer.append(lightPositionInitializerItem);
-
-        /* Drop the last comma and add a newline at the end */
-        lightInitializer[lightInitializer.size() - 2] = '\n';
-        lightInitializer.resize(lightInitializer.size() - 1);
-
-        lightInitializer.append(lightColorInitializerPreamble);
-        for(std::size_t i = 0; i != configuration.lightCount(); ++i)
-            lightInitializer.append(lightColorInitializerItem);
-
-        /* Drop the last comma and add a newline at the end */
-        lightInitializer[lightInitializer.size() - 2] = '\n';
-        lightInitializer.resize(lightInitializer.size() - 1);
-
-        lightInitializer.append(lightRangeInitializerPreamble);
-        for(std::size_t i = 0; i != configuration.lightCount(); ++i)
-            lightInitializer.append(lightRangeInitializerItem);
-
-        /* Drop the last comma and add a newline at the end */
-        lightInitializer[lightInitializer.size() - 2] = '\n';
-        lightInitializer.resize(lightInitializer.size() - 1);
-    }
+    if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount())
+        lightInitializer = Utility::formatString(
+            "#define LIGHT_POSITION_INITIALIZER {}\n"
+            "#define LIGHT_COLOR_INITIALIZER {}\n"
+            "#define LIGHT_RANGE_INITIALIZER {}\n",
+            ("vec4(0.0, 0.0, 1.0, 0.0), "_s*configuration.lightCount()).exceptSuffix(2),
+            ("vec3(1.0), "_s*configuration.lightCount()).exceptSuffix(2),
+            ("1.0/0.0, "_s*configuration.lightCount()).exceptSuffix(2));
     #endif
 
     vert.addSource((configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)
