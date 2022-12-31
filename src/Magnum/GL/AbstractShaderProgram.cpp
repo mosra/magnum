@@ -38,6 +38,7 @@
 #include <Corrade/Containers/Reference.h>
 #endif
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/String.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -357,7 +358,11 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
         glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
     message.resize(Math::max(logLength, 1)-1);
 
-    return {success, std::move(message)};
+    /* On some drivers (such as SwiftShader) the message contains a newline at
+       the end, on some (such as Mesa) it doesn't. Same as with link() or
+       compile() message trimming it doesn't make sense to add driver-specific
+       workarounds for this, so just trim it always. */
+    return {success, Utility::String::trim(std::move(message))};
 }
 
 AbstractShaderProgram& AbstractShaderProgram::draw(Mesh& mesh) {
