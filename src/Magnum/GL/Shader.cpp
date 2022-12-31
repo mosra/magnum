@@ -818,9 +818,15 @@ bool Shader::compile() {
 void Shader::submitCompile() {
     CORRADE_ASSERT(_sources.size() > 1, "GL::Shader::compile(): no files added", );
 
-    /** @todo ArrayTuple/VLAs */
-    Containers::Array<const GLchar*> pointers(_sources.size());
-    Containers::Array<GLint> sizes(_sources.size());
+    /* Coalesce the two arrays into one allocation. Still worse than not
+       allocating anything, OTOH the driver (or at least Mesa) then performs
+       ~45k allocations on its own, so this is just a drop in the ocean. */
+    Containers::ArrayView<const GLchar*> pointers;
+    Containers::ArrayView<GLint> sizes;
+    Containers::ArrayTuple data{
+        {NoInit, _sources.size(), pointers},
+        {NoInit, _sources.size(), sizes},
+    };
 
     /* Upload sources of all shaders */
     for(std::size_t i = 0; i != _sources.size(); ++i) {
