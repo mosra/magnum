@@ -30,12 +30,19 @@
  * @m_since{2020,06}
  */
 
-#include <string>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/String.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/DebugTools/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Measurement used to take a std::string, measurementName() and statistics()
+   used to be a std::string. Not ideal for the return types, but at least
+   something. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace DebugTools {
 
@@ -289,9 +296,13 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          *
          * The @p id corresponds to the index of the measurement in the list
          * passed to @ref setup(). Expects that @p id is less than
-         * @ref measurementCount().
+         * @ref measurementCount(). The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated};
+         * @relativeref{Corrade,Containers::StringViewFlag::Global} is set if
+         * the corresponding @ref Measurement was created with a global
+         * null-terminated string view.
          */
-        std::string measurementName(UnsignedInt id) const;
+        Containers::StringView measurementName(UnsignedInt id) const;
 
         /**
          * @brief Measurement units
@@ -359,7 +370,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * is not available yet, prints placeholder values for these.
          * @see @ref isMeasurementAvailable(), @ref isEnabled()
          */
-        std::string statistics() const;
+        Containers::String statistics() const;
 
         /**
          * @brief Print an overview of all measurements to a console at given rate
@@ -427,8 +438,12 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler::Measurement {
          *      the measured value
          * @param state     State pointer passed to both @p begin and @p end
          *      as a first argument
+         *
+         * If @p name is @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and @relativeref{Corrade::Containers::StringViewFlag,Global}, no
+         * internal copy of the string is made.
          */
-        explicit Measurement(const std::string& name, Units units, void(*begin)(void*), UnsignedLong(*end)(void*), void* state);
+        explicit Measurement(Containers::StringView name, Units units, void(*begin)(void*), UnsignedLong(*end)(void*), void* state);
 
         /**
          * @brief Construct a delayed measurement
@@ -458,13 +473,17 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler::Measurement {
          *      corresponds to current frame.
          * @param state     State pointer passed to both @p begin and @p end
          *      as a first argument
+         *
+         * If @p name is @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and @relativeref{Corrade::Containers::StringViewFlag,Global}, no
+         * internal copy of the string is made.
          */
-        explicit Measurement(const std::string& name, Units units, UnsignedInt delay, void(*begin)(void*, UnsignedInt), void(*end)(void*, UnsignedInt), UnsignedLong(*query)(void*, UnsignedInt, UnsignedInt), void* state);
+        explicit Measurement(Containers::StringView name, Units units, UnsignedInt delay, void(*begin)(void*, UnsignedInt), void(*end)(void*, UnsignedInt), UnsignedLong(*query)(void*, UnsignedInt, UnsignedInt), void* state);
 
     private:
         friend FrameProfiler;
 
-        std::string _name;
+        Containers::String _name;
         union {
             void(*immediate)(void*);
             void(*delayed)(void*, UnsignedInt);
@@ -733,16 +752,18 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
     /**
      * @brief Writes enum value as a string
      *
-     * If the value is invalid, returns an empty string.
+     * If the value is invalid, returns an empty string. The returned view is
+     * always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+     * and @relativeref{Corrade,Containers::StringViewFlag::Global}.
      */
-    static std::string toString(Magnum::DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags);
+    static Containers::StringView toString(Magnum::DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum value as a string
      *
      * If the string is invalid, returns a zero (invalid) value.
      */
-    static Magnum::DebugTools::FrameProfilerGL::Value fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::DebugTools::FrameProfilerGL::Value fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 
 /**
@@ -758,7 +779,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      * Writes the enum set as a sequence of flag names separated by spaces. If
      * the value is invalid, returns an empty string.
      */
-    static std::string toString(Magnum::DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags);
+    static Containers::String toString(Magnum::DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum set value as a string
@@ -766,7 +787,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      * Assumes the string is a sequence of flag names separated by spaces. If
      * the value is invalid, returns an empty set.
      */
-    static Magnum::DebugTools::FrameProfilerGL::Values fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::DebugTools::FrameProfilerGL::Values fromString(Containers::StringView stringValue, ConfigurationValueFlags);
 };
 #endif
 

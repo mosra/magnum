@@ -31,9 +31,9 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/String.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Containers/StringIterable.h>
+#include <Corrade/Containers/StringStl.h> /** @todo drop once Debug is stream-free */
 #include <Corrade/Utility/Format.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/Math/Functions.h"
 #ifdef MAGNUM_TARGET_GL
@@ -45,12 +45,14 @@
 
 namespace Magnum { namespace DebugTools {
 
-FrameProfiler::Measurement::Measurement(const std::string& name, const Units units, void(*const begin)(void*), UnsignedLong(*const end)(void*), void* const state): _name{name}, _end{nullptr}, _state{state}, _units{units}, _delay{0} {
+using namespace Containers::Literals;
+
+FrameProfiler::Measurement::Measurement(const Containers::StringView name, const Units units, void(*const begin)(void*), UnsignedLong(*const end)(void*), void* const state): _name{Containers::String::nullTerminatedGlobalView(name)}, _end{nullptr}, _state{state}, _units{units}, _delay{0} {
     _begin.immediate = begin;
     _query.immediate = end;
 }
 
-FrameProfiler::Measurement::Measurement(const std::string& name, const Units units, const UnsignedInt delay, void(*const begin)(void*, UnsignedInt), void(*const end)(void*, UnsignedInt), UnsignedLong(*const query)(void*, UnsignedInt, UnsignedInt), void* const state): _name{name}, _state{state}, _units{units}, _delay{delay} {
+FrameProfiler::Measurement::Measurement(const Containers::StringView name, const Units units, const UnsignedInt delay, void(*const begin)(void*, UnsignedInt), void(*const end)(void*, UnsignedInt), UnsignedLong(*const query)(void*, UnsignedInt, UnsignedInt), void* const state): _name{Containers::String::nullTerminatedGlobalView(name)}, _state{state}, _units{units}, _delay{delay} {
     CORRADE_ASSERT(delay >= 1, "DebugTools::FrameProfiler::Measurement: delay can't be zero", );
     _begin.delayed = begin;
     _end = end;
@@ -234,7 +236,7 @@ void FrameProfiler::endFrame() {
     }
 }
 
-std::string FrameProfiler::measurementName(const UnsignedInt id) const {
+Containers::StringView FrameProfiler::measurementName(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _measurements.size(),
         "DebugTools::FrameProfiler::measurementName(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     return _measurements[id]._name;
@@ -379,7 +381,7 @@ void FrameProfiler::printStatisticsInternal(Debug& out) const {
     }
 }
 
-std::string FrameProfiler::statistics() const {
+Containers::String FrameProfiler::statistics() const {
     std::ostringstream out;
     Debug d{&out, Debug::Flag::NoNewlineAtTheEnd|Debug::Flag::DisableColors};
     printStatisticsInternal(d);
@@ -471,7 +473,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
            should have flipped the table and learn carpentry instead. BUT NO,
            I'm still suffering this abomination a decade later! */
         arrayAppend(measurements, InPlaceInit,
-            "Frame time", Units::Nanoseconds, UnsignedInt(Containers::arraySize(_state->frameTimeStartFrame)),
+            "Frame time"_s, Units::Nanoseconds, UnsignedInt(Containers::arraySize(_state->frameTimeStartFrame)),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->frameTimeStartFrame[current] = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
             },
@@ -485,7 +487,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
     }
     if(values & Value::CpuDuration) {
         arrayAppend(measurements, InPlaceInit,
-            "CPU duration", Units::Nanoseconds,
+            "CPU duration"_s, Units::Nanoseconds,
             [](void* state) {
                 static_cast<State*>(state)->cpuDurationStartFrame = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
             },
@@ -499,7 +501,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
         for(GL::TimeQuery& q: _state->timeQueries)
             q = GL::TimeQuery{GL::TimeQuery::Target::TimeElapsed};
         arrayAppend(measurements, InPlaceInit,
-            "GPU duration", Units::Nanoseconds,
+            "GPU duration"_s, Units::Nanoseconds,
             UnsignedInt(_state->timeQueries.size()),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->timeQueries[current].begin();
@@ -519,7 +521,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
         for(GL::PipelineStatisticsQuery& q: _state->vertexShaderInvocationsQueries)
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::VertexShaderInvocations};
         arrayAppend(measurements, InPlaceInit,
-            "Vertex fetch ratio", Units::RatioThousandths,
+            "Vertex fetch ratio"_s, Units::RatioThousandths,
             UnsignedInt(_state->verticesSubmittedQueries.size()),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->verticesSubmittedQueries[current].begin();
@@ -544,7 +546,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
         for(GL::PipelineStatisticsQuery& q: _state->clippingOutputPrimitivesQueries)
             q = GL::PipelineStatisticsQuery{GL::PipelineStatisticsQuery::Target::ClippingOutputPrimitives};
         arrayAppend(measurements, InPlaceInit,
-            "Primitives clipped", Units::PercentageThousandths,
+            "Primitives clipped"_s, Units::PercentageThousandths,
             UnsignedInt(_state->clippingInputPrimitivesQueries.size()),
             [](void* state, UnsignedInt current) {
                 static_cast<State*>(state)->clippingInputPrimitivesQueries[current].begin();
@@ -674,17 +676,18 @@ Debug& operator<<(Debug& debug, const FrameProfilerGL::Values value) {
 
 namespace Corrade { namespace Utility {
 
+using namespace Containers::Literals;
 using namespace Magnum;
 
 #ifdef MAGNUM_TARGET_GL
-std::string ConfigurationValue<DebugTools::FrameProfilerGL::Value>::toString(const DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags) {
+Containers::StringView ConfigurationValue<DebugTools::FrameProfilerGL::Value>::toString(const DebugTools::FrameProfilerGL::Value value, ConfigurationValueFlags) {
     const UnsignedInt bit = Math::log2(UnsignedShort(value));
     if(1 << bit == UnsignedShort(value))
         return DebugTools::FrameProfilerGLValueNames[bit];
     return "";
 }
 
-DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerGL::Value>::fromString(const std::string& value, ConfigurationValueFlags) {
+DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerGL::Value>::fromString(const Containers::StringView value, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
         if(DebugTools::FrameProfilerGLValueNames[i] == value)
             return DebugTools::FrameProfilerGL::Value(1 << i);
@@ -692,25 +695,27 @@ DebugTools::FrameProfilerGL::Value ConfigurationValue<DebugTools::FrameProfilerG
     return DebugTools::FrameProfilerGL::Value{};
 }
 
-std::string ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
-    std::string out;
+Containers::String ConfigurationValue<DebugTools::FrameProfilerGL::Values>::toString(const DebugTools::FrameProfilerGL::Values value, ConfigurationValueFlags) {
+    Containers::String out;
 
     for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i) {
         const auto bit = DebugTools::FrameProfilerGL::Value(1 << i);
         if(value & bit) {
-            if(!out.empty()) out += ' ';
-            out += DebugTools::FrameProfilerGLValueNames[i];
+            /** @todo ugh, one allocation per bit, fix when growable String is
+                a thing ... or maybe some "get set bits" utility and then call
+                join just once? */
+            out = " "_s.joinWithoutEmptyParts({out, DebugTools::FrameProfilerGLValueNames[i]});
         }
     }
 
     return out;
 }
 
-DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(const std::string& value, ConfigurationValueFlags) {
-    const std::vector<std::string> bits = Utility::String::splitWithoutEmptyParts(value);
+DebugTools::FrameProfilerGL::Values ConfigurationValue<DebugTools::FrameProfilerGL::Values>::fromString(const Containers::StringView value, ConfigurationValueFlags) {
+    const Containers::Array<Containers::StringView> bits = value.splitOnWhitespaceWithoutEmptyParts();
 
     DebugTools::FrameProfilerGL::Values values;
-    for(const std::string& bit: bits)
+    for(const Containers::StringView bit: bits)
         for(std::size_t i = 0; i != Containers::arraySize(DebugTools::FrameProfilerGLValueNames); ++i)
             if(DebugTools::FrameProfilerGLValueNames[i] == bit)
                 values |= DebugTools::FrameProfilerGL::Value(1 << i);

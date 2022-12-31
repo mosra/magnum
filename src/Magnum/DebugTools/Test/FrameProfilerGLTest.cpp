@@ -124,6 +124,7 @@ void FrameProfilerGLTest::test() {
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
 
     /* MSVC 2015 needs the {} */
+    UnsignedInt i = 0;
     for(auto value: {FrameProfilerGL::Value::CpuDuration,
                      FrameProfilerGL::Value::GpuDuration,
                      #ifndef MAGNUM_TARGET_GLES
@@ -131,8 +132,11 @@ void FrameProfilerGLTest::test() {
                      FrameProfilerGL::Value::PrimitiveClipRatio
                      #endif
                      }) {
-        if(data.values & value)
-            CORRADE_VERIFY(!profiler.isMeasurementAvailable(value));
+        if(!(data.values & value)) continue;
+
+        CORRADE_VERIFY(!profiler.isMeasurementAvailable(value));
+        /* The names should not be allocated */
+        CORRADE_COMPARE(profiler.measurementName(i++).flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
     }
 
     profiler.beginFrame();

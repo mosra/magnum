@@ -1137,6 +1137,10 @@ See also:
 -   As part of the ongoing STL header dependency cleanup, the following
     breaking changes related to @ref std::string, @ref std::vector and
     @ref std::pair are done:
+    -   @ref DebugTools::FrameProfiler::measurementName() and
+        @ref DebugTools::FrameProfiler::statistics() now return a
+        @relativeref{Corrade,Containers::StringView} /
+        @relativeref{Corrade,Containers::String} instead of a @ref std::string
     -   @ref GL::AbstractShaderProgram::validate() now returns a
         @relativeref{Corrade,Containers::Pair} with a
         @relativeref{Corrade,Containers::String} instead of a @ref std::pair
