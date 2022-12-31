@@ -25,7 +25,7 @@
 
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Path.h>
 
@@ -79,16 +79,16 @@ struct ShaderVisualizer: Platform::WindowlessApplication {
 
     int exec() override;
 
-    std::string phong();
-    std::string meshVisualizer2D();
-    std::string meshVisualizer2DPrimitiveId();
-    std::string meshVisualizer3D();
-    std::string meshVisualizer3DPrimitiveId();
-    std::string flat();
-    std::string vertexColor();
+    Containers::StringView phong();
+    Containers::StringView meshVisualizer2D();
+    Containers::StringView meshVisualizer2DPrimitiveId();
+    Containers::StringView meshVisualizer3D();
+    Containers::StringView meshVisualizer3DPrimitiveId();
+    Containers::StringView flat();
+    Containers::StringView vertexColor();
 
-    std::string vector();
-    std::string distanceFieldVector();
+    Containers::StringView vector();
+    Containers::StringView distanceFieldVector();
 
     Containers::Pointer<Trade::AbstractImporter> _importer;
 };
@@ -142,7 +142,7 @@ int ShaderVisualizer::exec() {
                    &ShaderVisualizer::distanceFieldVector}) {
         multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-        std::string filename = (this->*fun)();
+        Containers::StringView filename = (this->*fun)();
 
         GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
         Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -161,7 +161,7 @@ namespace {
     const auto OutlineColor = 0xdcdcdc_srgbf;
 }
 
-std::string ShaderVisualizer::phong() {
+Containers::StringView ShaderVisualizer::phong() {
     Shaders::PhongGL{}
         .setAmbientColor(0x22272e_srgbf)
         .setDiffuseColor(BaseColor)
@@ -175,7 +175,7 @@ std::string ShaderVisualizer::phong() {
     return "phong.png";
 }
 
-std::string ShaderVisualizer::meshVisualizer2D() {
+Containers::StringView ShaderVisualizer::meshVisualizer2D() {
     const Matrix3 projection =
         Matrix3::projection(Vector2{3.0f})*
         Matrix3::rotation(13.7_degf);
@@ -193,7 +193,7 @@ std::string ShaderVisualizer::meshVisualizer2D() {
     return "meshvisualizer2d.png";
 }
 
-std::string ShaderVisualizer::meshVisualizer2DPrimitiveId() {
+Containers::StringView ShaderVisualizer::meshVisualizer2DPrimitiveId() {
     const Matrix3 projection =
         Matrix3::projection(Vector2{3.0f})*
         Matrix3::rotation(13.7_degf);
@@ -219,7 +219,7 @@ std::string ShaderVisualizer::meshVisualizer2DPrimitiveId() {
     return "meshvisualizer2d-primitiveid.png";
 }
 
-std::string ShaderVisualizer::meshVisualizer3D() {
+Containers::StringView ShaderVisualizer::meshVisualizer3D() {
     const Matrix4 transformation = Transformation*
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
@@ -244,7 +244,7 @@ std::string ShaderVisualizer::meshVisualizer3D() {
     return "meshvisualizer3d.png";
 }
 
-std::string ShaderVisualizer::meshVisualizer3DPrimitiveId() {
+Containers::StringView ShaderVisualizer::meshVisualizer3DPrimitiveId() {
     const Matrix4 transformation = Transformation*
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
@@ -271,7 +271,7 @@ std::string ShaderVisualizer::meshVisualizer3DPrimitiveId() {
     return "meshvisualizer3d-primitiveid.png";
 }
 
-std::string ShaderVisualizer::flat() {
+Containers::StringView ShaderVisualizer::flat() {
     Shaders::FlatGL3D{}
         .setColor(BaseColor)
         .setTransformationProjectionMatrix(Projection*Transformation)
@@ -280,7 +280,7 @@ std::string ShaderVisualizer::flat() {
     return "flat.png";
 }
 
-std::string ShaderVisualizer::vertexColor() {
+Containers::StringView ShaderVisualizer::vertexColor() {
     Trade::MeshData sphere = Primitives::uvSphereSolid(32, 64);
 
     /* Add a color attribute */
@@ -303,7 +303,7 @@ std::string ShaderVisualizer::vertexColor() {
     return "vertexcolor.png";
 }
 
-std::string ShaderVisualizer::vector() {
+Containers::StringView ShaderVisualizer::vector() {
     Containers::Optional<Trade::ImageData2D> image;
     if(!_importer->openFile("vector.png") || !(image = _importer->image2D(0))) {
         Error() << "Cannot open vector.png";
@@ -332,7 +332,7 @@ std::string ShaderVisualizer::vector() {
     return "vector.png";
 }
 
-std::string ShaderVisualizer::distanceFieldVector() {
+Containers::StringView ShaderVisualizer::distanceFieldVector() {
     Containers::Optional<Trade::ImageData2D> image;
     if(!_importer->openFile("vector-distancefield.png") || !(image = _importer->image2D(0))) {
         Error() << "Cannot open vector-distancefield.png";
