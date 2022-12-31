@@ -376,7 +376,7 @@ void ContextTest::makeCurrentNoOp() {
 void ContextTest::extensions() {
     const char* used[GL::Implementation::ExtensionCount]{};
 
-    std::set<std::string> unique;
+    std::set<Containers::StringView> unique;
 
     /* Check that all extension indices are unique, are in correct lists, are
        not compiled on versions that shouldn't have them, are listed just once
@@ -404,12 +404,12 @@ void ContextTest::extensions() {
         #endif
         Version::None})
     {
-        std::string previous;
+        Containers::StringView previous;
         for(const Extension& e: Extension::extensions(version)) {
             CORRADE_ITERATION(version);
             CORRADE_ITERATION(e.string());
 
-            CORRADE_FAIL_IF(!previous.empty() && previous >= e.string(),
+            CORRADE_FAIL_IF(previous && previous >= e.string(),
                 "Extension not sorted after" << previous);
 
             CORRADE_FAIL_IF(e.index() >= GL::Implementation::ExtensionCount,
