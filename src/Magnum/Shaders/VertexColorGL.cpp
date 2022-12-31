@@ -47,6 +47,8 @@
 
 namespace Magnum { namespace Shaders {
 
+using namespace Containers::Literals;
+
 namespace {
     #ifndef MAGNUM_TARGET_GLES2
     enum: Int {
@@ -82,10 +84,10 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"_s))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShadersGL");
+    Utility::Resource rs("MagnumShadersGL"_s);
 
     const GL::Context& context = GL::Context::current();
 
@@ -98,20 +100,20 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n");
+    vert.addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             configuration.drawCount()));
-        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
-    vert.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("VertexColor.vert"));
-    frag.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("VertexColor.frag"));
+    vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("VertexColor.vert"_s));
+    frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("VertexColor.frag"_s));
 
     vert.submitCompile();
     frag.submitCompile();
@@ -130,8 +132,8 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        out.bindAttributeLocation(Position::Location, "position");
-        out.bindAttributeLocation(Color3::Location, "color"); /* Color4 is the same */
+        out.bindAttributeLocation(Position::Location, "position"_s);
+        out.bindAttributeLocation(Color3::Location, "color"_s); /* Color4 is the same */
     }
     #endif
 
@@ -179,11 +181,11 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     {
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
-            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix"_s);
         }
     }
 
@@ -193,7 +195,7 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
         && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version)
         #endif
     ) {
-        setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
+        setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
     }
     #endif
 

@@ -147,10 +147,10 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"_s))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShadersGL");
+    Utility::Resource rs("MagnumShadersGL"_s);
 
     const GL::Context& context = GL::Context::current();
 
@@ -207,20 +207,20 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
             #endif
-            ) ? "#define TEXTURED\n" : "")
-        .addSource(configuration.flags() & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
-        .addSource(configuration.flags() & Flag::Bitangent ? "#define BITANGENT\n" : "")
-        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
-        .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+            ) ? "#define TEXTURED\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::Bitangent ? "#define BITANGENT\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
         #endif
-        .addSource(configuration.lightCount() ? "#define HAS_LIGHTS\n" : "")
+        .addSource(configuration.lightCount() ? "#define HAS_LIGHTS\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
         #endif
-        .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
-        .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
+        .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n"_s : ""_s)
+        .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n"_s : ""_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.jointCount()) {
         vert.addSource(Utility::format(
@@ -255,27 +255,27 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             "#define DRAW_COUNT {}\n",
             configuration.drawCount(),
             configuration.lightCount()));
-        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
-    vert.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("Phong.vert"));
-    frag.addSource(configuration.flags() & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
-        .addSource(configuration.flags() & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
-        .addSource(configuration.flags() & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
-        .addSource(configuration.flags() & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
+    vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("Phong.vert"_s));
+    frag.addSource(configuration.flags() & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
         #endif
-        .addSource(configuration.flags() & Flag::Bitangent ? "#define BITANGENT\n" : "")
-        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
-        .addSource(configuration.flags() & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
+        .addSource(configuration.flags() & Flag::Bitangent ? "#define BITANGENT\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::AlphaMask ? "#define ALPHA_MASK\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
-        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
-        .addSource(configuration.flags() >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
+        .addSource(configuration.flags() >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n"_s : ""_s)
         #endif
-        .addSource(configuration.flags() & Flag::NoSpecular ? "#define NO_SPECULAR\n" : "")
+        .addSource(configuration.flags() & Flag::NoSpecular ? "#define NO_SPECULAR\n"_s : ""_s)
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
@@ -287,8 +287,8 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             configuration.drawCount(),
             configuration.materialCount(),
             configuration.lightCount()));
-        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "")
-            .addSource(configuration.flags() >= Flag::LightCulling ? "#define LIGHT_CULLING\n" : "");
+        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s)
+            .addSource(configuration.flags() >= Flag::LightCulling ? "#define LIGHT_CULLING\n"_s : ""_s);
     } else
     #endif
     {
@@ -306,8 +306,8 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount())
         frag.addSource(std::move(lightInitializer));
     #endif
-    frag.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("Phong.frag"));
+    frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("Phong.frag"_s));
 
     vert.submitCompile();
     frag.submitCompile();
@@ -321,48 +321,48 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Position::Location, "position"_s);
         if(configuration.lightCount())
-            out.bindAttributeLocation(Normal::Location, "normal");
+            out.bindAttributeLocation(Normal::Location, "normal"_s);
         if((configuration.flags() & Flag::NormalTexture) && configuration.lightCount()) {
-            out.bindAttributeLocation(Tangent::Location, "tangent");
+            out.bindAttributeLocation(Tangent::Location, "tangent"_s);
             if(configuration.flags() & Flag::Bitangent)
-                out.bindAttributeLocation(Bitangent::Location, "bitangent");
+                out.bindAttributeLocation(Bitangent::Location, "bitangent"_s);
         }
         if(configuration.flags() & Flag::VertexColor)
-            out.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
+            out.bindAttributeLocation(Color3::Location, "vertexColor"_s); /* Color4 is the same */
         if(configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture)
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
             #endif
         )
-            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates"_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() & Flag::ObjectId) {
-            out.bindFragmentDataLocation(ColorOutput, "color");
-            out.bindFragmentDataLocation(ObjectIdOutput, "objectId");
+            out.bindFragmentDataLocation(ColorOutput, "color"_s);
+            out.bindFragmentDataLocation(ObjectIdOutput, "objectId"_s);
         }
         if(configuration.flags() >= Flag::InstancedObjectId)
-            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId"_s);
         #endif
         if(configuration.flags() & Flag::InstancedTransformation) {
-            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix"_s);
             if(configuration.lightCount())
-                out.bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix");
+                out.bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix"_s);
         }
         if(configuration.flags() >= Flag::InstancedTextureOffset)
-            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset"_s);
         #ifndef MAGNUM_TARGET_GLES2
         /* Configuration::setJointCount() checks that jointCount and
            perVertexJointCount / secondaryPerVertexJointCount are either all
            zero or non-zero so we don't need to check for jointCount() here */
         if(configuration.perVertexJointCount()) {
-            out.bindAttributeLocation(Weights::Location, "weights");
-            out.bindAttributeLocation(JointIds::Location, "jointIds");
+            out.bindAttributeLocation(Weights::Location, "weights"_s);
+            out.bindAttributeLocation(JointIds::Location, "jointIds"_s);
         }
         if(configuration.secondaryPerVertexJointCount()) {
-            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
-            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights"_s);
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds"_s);
         }
         #endif
     }
@@ -415,44 +415,44 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
     {
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::DynamicPerVertexJointCount)
-            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
-            _transformationMatrixUniform = uniformLocation("transformationMatrix");
+            _transformationMatrixUniform = uniformLocation("transformationMatrix"_s);
             if(_flags & Flag::TextureTransformation)
-                _textureMatrixUniform = uniformLocation("textureMatrix");
+                _textureMatrixUniform = uniformLocation("textureMatrix"_s);
             #ifndef MAGNUM_TARGET_GLES2
             if(_flags & Flag::TextureArrays)
-                _textureLayerUniform = uniformLocation("textureLayer");
+                _textureLayerUniform = uniformLocation("textureLayer"_s);
             #endif
-            _projectionMatrixUniform = uniformLocation("projectionMatrix");
-            _ambientColorUniform = uniformLocation("ambientColor");
+            _projectionMatrixUniform = uniformLocation("projectionMatrix"_s);
+            _ambientColorUniform = uniformLocation("ambientColor"_s);
             if(_lightCount) {
-                _normalMatrixUniform = uniformLocation("normalMatrix");
-                _diffuseColorUniform = uniformLocation("diffuseColor");
+                _normalMatrixUniform = uniformLocation("normalMatrix"_s);
+                _diffuseColorUniform = uniformLocation("diffuseColor"_s);
                 if(!(_flags & Flag::NoSpecular)) {
-                    _specularColorUniform = uniformLocation("specularColor");
-                    _shininessUniform = uniformLocation("shininess");
+                    _specularColorUniform = uniformLocation("specularColor"_s);
+                    _shininessUniform = uniformLocation("shininess"_s);
                 }
                 if(_flags & Flag::NormalTexture)
-                    _normalTextureScaleUniform = uniformLocation("normalTextureScale");
-                _lightPositionsUniform = uniformLocation("lightPositions");
-                _lightColorsUniform = uniformLocation("lightColors");
+                    _normalTextureScaleUniform = uniformLocation("normalTextureScale"_s);
+                _lightPositionsUniform = uniformLocation("lightPositions"_s);
+                _lightColorsUniform = uniformLocation("lightColors"_s);
                 if(!(_flags & Flag::NoSpecular))
-                    _lightSpecularColorsUniform = uniformLocation("lightSpecularColors");
-                _lightRangesUniform = uniformLocation("lightRanges");
+                    _lightSpecularColorsUniform = uniformLocation("lightSpecularColors"_s);
+                _lightRangesUniform = uniformLocation("lightRanges"_s);
             }
-            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
+            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask"_s);
             #ifndef MAGNUM_TARGET_GLES2
-            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
+            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId"_s);
             #endif
             #ifndef MAGNUM_TARGET_GLES2
             if(_jointCount) {
-                _jointMatricesUniform = uniformLocation("jointMatrices");
-                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+                _jointMatricesUniform = uniformLocation("jointMatrices"_s);
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount"_s);
             }
             #endif
         }
@@ -462,25 +462,25 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
     if(_flags && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
-        if(_flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureUnit);
+        if(_flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"_s), AmbientTextureUnit);
         if(_lightCount) {
-            if(_flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"), DiffuseTextureUnit);
-            if(_flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"), SpecularTextureUnit);
-            if(_flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"), NormalTextureUnit);
+            if(_flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"_s), DiffuseTextureUnit);
+            if(_flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"_s), SpecularTextureUnit);
+            if(_flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"_s), NormalTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
+        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
         if(_flags >= Flag::UniformBuffers) {
-            setUniformBlockBinding(uniformBlockIndex("Projection"), ProjectionBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Transformation"), TransformationBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Projection"_s), ProjectionBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Transformation"_s), TransformationBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
             if(_flags & Flag::TextureTransformation)
-                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"_s), TextureTransformationBufferBinding);
             if(_lightCount)
-                setUniformBlockBinding(uniformBlockIndex("Light"), LightBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("Light"_s), LightBufferBinding);
             if(_jointCount)
-                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("Joint"_s), JointBufferBinding);
         }
         #endif
     }

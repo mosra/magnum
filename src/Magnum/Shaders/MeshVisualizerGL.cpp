@@ -144,7 +144,7 @@ void MeshVisualizerGLBase::assertExtensions(const FlagsBase flags) {
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"_s))
         importShaderResources();
     #endif
 }
@@ -176,24 +176,24 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
+    vert.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
-        .addSource(flags & FlagBase::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
-        .addSource(flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
-        .addSource(flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n"_s : ""_s)
+        .addSource(flags & FlagBase::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
+        .addSource(flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+        .addSource(flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
         #endif
-        .addSource(flags & FlagBase::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
+        .addSource(flags & FlagBase::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags >= FlagBase::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "")
-        .addSource(flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
-        .addSource(flags >= FlagBase::PrimitiveIdFromVertexId ? "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" : "")
+        .addSource(flags >= FlagBase::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n"_s : ""_s)
+        .addSource(flags & FlagBase::VertexId ? "#define VERTEX_ID\n"_s : ""_s)
+        .addSource(flags >= FlagBase::PrimitiveIdFromVertexId ? "#define PRIMITIVE_ID_FROM_VERTEX_ID\n"_s : ""_s)
         #endif
         #ifdef MAGNUM_TARGET_WEBGL
-        .addSource("#define SUBSCRIPTING_WORKAROUND\n")
+        .addSource("#define SUBSCRIPTING_WORKAROUND\n"_s)
         #elif defined(MAGNUM_TARGET_GLES2)
         .addSource(context.detectedDriver() & GL::Context::DetectedDriver::Angle ?
-            "#define SUBSCRIPTING_WORKAROUND\n" : "")
+            "#define SUBSCRIPTING_WORKAROUND\n"_s : ""_s)
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
@@ -229,20 +229,20 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
             "#define MATERIAL_COUNT {}\n",
             drawCount,
             materialCount));
-        vert.addSource(flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        vert.addSource(flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
-    frag.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
+    frag.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(flags & FlagBase::ObjectId ? "#define OBJECT_ID\n" : "")
-        .addSource(flags >= FlagBase::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
-        .addSource(flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
-        .addSource(flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
-        .addSource(flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
+        .addSource(flags & FlagBase::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
+        .addSource(flags >= FlagBase::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n"_s : ""_s)
+        .addSource(flags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+        .addSource(flags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
+        .addSource(flags & FlagBase::VertexId ? "#define VERTEX_ID\n"_s : ""_s)
         .addSource(flags & FlagBase::PrimitiveId ?
             (flags >= FlagBase::PrimitiveIdFromVertexId ?
-                "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
-                "#define PRIMITIVE_ID\n") : "")
+                "#define PRIMITIVE_ID_FROM_VERTEX_ID\n"_s :
+                "#define PRIMITIVE_ID\n"_s) : ""_s)
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
@@ -253,7 +253,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
             "#define MATERIAL_COUNT {}\n",
             drawCount,
             materialCount));
-        frag.addSource(flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        frag.addSource(flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
 
@@ -503,42 +503,42 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
     );
     Containers::Optional<GL::Shader> geom;
 
-    vert.addSource("#define TWO_DIMENSIONS\n")
+    vert.addSource("#define TWO_DIMENSIONS\n"_s)
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
            the shader code */
         .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & Flag::Wireframe) ?
-            "#define NO_GEOMETRY_SHADER\n" : "")
-        .addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("MeshVisualizer.vert"));
+            "#define NO_GEOMETRY_SHADER\n"_s : ""_s)
+        .addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("MeshVisualizer.vert"_s));
     frag
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
            the shader code */
         .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & Flag::Wireframe) ?
-            "#define NO_GEOMETRY_SHADER\n" : "");
+            "#define NO_GEOMETRY_SHADER\n"_s : ""_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers)
-        frag.addSource("#define TWO_DIMENSIONS\n");
+        frag.addSource("#define TWO_DIMENSIONS\n"_s);
     #endif
-    frag.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("MeshVisualizer.frag"));
+    frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("MeshVisualizer.frag"_s));
 
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(configuration.flags() & Flag::Wireframe && !(configuration.flags() & Flag::NoGeometryShader)) {
         geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         (*geom)
-            .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n")
-            .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
-            .addSource(baseFlags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
-            .addSource(baseFlags & FlagBase::ObjectId ? "#define OBJECT_ID\n" : "")
-            .addSource(baseFlags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
-            .addSource(baseFlags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
+            .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n"_s)
+            .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n"_s : ""_s)
+            .addSource(baseFlags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+            .addSource(baseFlags & FlagBase::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
+            .addSource(baseFlags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
+            .addSource(baseFlags & FlagBase::VertexId ? "#define VERTEX_ID\n"_s : ""_s)
             .addSource(baseFlags & FlagBase::PrimitiveId ?
                 (baseFlags >= FlagBase::PrimitiveIdFromVertexId ?
-                    "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
-                    "#define PRIMITIVE_ID\n") : "");
+                    "#define PRIMITIVE_ID_FROM_VERTEX_ID\n"_s :
+                    "#define PRIMITIVE_ID\n"_s) : ""_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::UniformBuffers) {
             geom->addSource(Utility::format(
@@ -548,10 +548,10 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
                 "#define MATERIAL_COUNT {}\n",
                 configuration.drawCount(),
                 configuration.materialCount()));
-            geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
         }
         #endif
-        geom->addSource(rs.getString("MeshVisualizer.geom"));
+        geom->addSource(rs.getString("MeshVisualizer.geom"_s));
     }
     #else
     static_cast<void>(version);
@@ -571,25 +571,25 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Position::Location, "position"_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::ObjectIdTexture)
-            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates"_s);
         if(configuration.flags() >= Flag::InstancedObjectId)
-            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId"_s);
         #endif
         if(configuration.flags() & Flag::InstancedTransformation)
-            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix"_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::InstancedTextureOffset)
-            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset"_s);
         #endif
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
         if(!context.isVersionSupported(GL::Version::GL310))
         #endif
         {
-            out.bindAttributeLocation(VertexIndex::Location, "vertexIndex");
+            out.bindAttributeLocation(VertexIndex::Location, "vertexIndex"_s);
         }
         #endif
         #ifndef MAGNUM_TARGET_GLES2
@@ -597,12 +597,12 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
            perVertexJointCount / secondaryPerVertexJointCount are either all
            zero or non-zero so we don't need to check for jointCount() here */
         if(configuration.perVertexJointCount()) {
-            out.bindAttributeLocation(Weights::Location, "weights");
-            out.bindAttributeLocation(JointIds::Location, "jointIds");
+            out.bindAttributeLocation(Weights::Location, "weights"_s);
+            out.bindAttributeLocation(JointIds::Location, "jointIds"_s);
         }
         if(configuration.secondaryPerVertexJointCount()) {
-            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
-            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights"_s);
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds"_s);
         }
         #endif
     }
@@ -660,45 +660,45 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
         /* This one is used also in the UBO case as it's usually a global
            setting */
         if((flags() & Flag::Wireframe) && !(flags() & Flag::NoGeometryShader))
-            _viewportSizeUniform = uniformLocation("viewportSize");
+            _viewportSizeUniform = uniformLocation("viewportSize"_s);
 
         #ifndef MAGNUM_TARGET_GLES2
         if(flags() >= Flag::DynamicPerVertexJointCount)
-            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(flags() >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
-            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix"_s);
             #ifndef MAGNUM_TARGET_GLES2
             if(flags() & Flag::TextureTransformation)
-                _textureMatrixUniform = uniformLocation("textureMatrix");
+                _textureMatrixUniform = uniformLocation("textureMatrix"_s);
             if(flags() & Flag::TextureArrays)
-                _textureLayerUniform = uniformLocation("textureLayer");
+                _textureLayerUniform = uniformLocation("textureLayer"_s);
             #endif
             if(flags() & (Flag::Wireframe
                 #ifndef MAGNUM_TARGET_GLES2
                 |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
                 #endif
             ))
-                _colorUniform = uniformLocation("color");
+                _colorUniform = uniformLocation("color"_s);
             if(flags() & Flag::Wireframe) {
-                _wireframeColorUniform = uniformLocation("wireframeColor");
-                _wireframeWidthUniform = uniformLocation("wireframeWidth");
-                _smoothnessUniform = uniformLocation("smoothness");
+                _wireframeColorUniform = uniformLocation("wireframeColor"_s);
+                _wireframeWidthUniform = uniformLocation("wireframeWidth"_s);
+                _smoothnessUniform = uniformLocation("smoothness"_s);
             }
             #ifndef MAGNUM_TARGET_GLES2
             if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
-                _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
+                _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale"_s);
             }
             if(flags() & Flag::ObjectId)
-                _objectIdUniform = uniformLocation("objectId");
+                _objectIdUniform = uniformLocation("objectId"_s);
             #endif
             #ifndef MAGNUM_TARGET_GLES2
             if(_jointCount) {
-                _jointMatricesUniform = uniformLocation("jointMatrices");
-                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+                _jointMatricesUniform = uniformLocation("jointMatrices"_s);
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount"_s);
             }
             #endif
         }
@@ -710,19 +710,19 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     #endif
     {
         if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
-            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
+            setUniform(uniformLocation("colorMapTexture"_s), ColorMapTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
         if(flags() >= Flag::ObjectIdTexture)
-            setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
+            setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
         if(flags() >= Flag::UniformBuffers) {
-            setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
             if(flags() & Flag::TextureTransformation)
-                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"_s), TextureTransformationBufferBinding);
             if(_jointCount)
-                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("Joint"_s), JointBufferBinding);
         }
         #endif
     }
@@ -955,7 +955,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
     CORRADE_INTERNAL_ASSERT(!(configuration.flags() & (Flag::NormalDirection|Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection)) || version >= GL::Version::GLES310);
     #endif
 
-    vert.addSource("#define THREE_DIMENSIONS\n")
+    vert.addSource("#define THREE_DIMENSIONS\n"_s)
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
            the vertex shader code */
@@ -963,16 +963,16 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             |Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection|Flag::NormalDirection
             #endif
-            )) ? "#define NO_GEOMETRY_SHADER\n" : "")
+            )) ? "#define NO_GEOMETRY_SHADER\n"_s : ""_s)
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        .addSource(configuration.flags() & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
-        .addSource(configuration.flags() & Flag::BitangentFromTangentDirection ? "#define BITANGENT_FROM_TANGENT_DIRECTION\n" : "")
-        .addSource(configuration.flags() & Flag::BitangentDirection ? "#define BITANGENT_DIRECTION\n" : "")
-        .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "")
+        .addSource(configuration.flags() & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::BitangentFromTangentDirection ? "#define BITANGENT_FROM_TANGENT_DIRECTION\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::BitangentDirection ? "#define BITANGENT_DIRECTION\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n"_s : ""_s)
         #endif
         ;
-    vert.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("MeshVisualizer.vert"));
+    vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("MeshVisualizer.vert"_s));
     frag
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
@@ -981,17 +981,17 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             |Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection|Flag::NormalDirection
             #endif
-            )) ? "#define NO_GEOMETRY_SHADER\n" : "")
+            )) ? "#define NO_GEOMETRY_SHADER\n"_s : ""_s)
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        .addSource(configuration.flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) ? "#define TBN_DIRECTION\n" : "")
+        .addSource(configuration.flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) ? "#define TBN_DIRECTION\n"_s : ""_s)
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers)
-        frag.addSource("#define THREE_DIMENSIONS\n");
+        frag.addSource("#define THREE_DIMENSIONS\n"_s);
     #endif
-    frag.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("MeshVisualizer.frag"));
+    frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("MeshVisualizer.frag"_s));
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(configuration.flags() & (Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) && !(configuration.flags() & Flag::NoGeometryShader)) {
@@ -1005,19 +1005,19 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         (*geom)
             .addSource(Utility::format("#define MAX_VERTICES {}\n", maxVertices))
-            .addSource(configuration.flags() & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
-            .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n" : "")
-            .addSource(baseFlags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
-            .addSource(baseFlags & FlagBase::ObjectId ? "#define OBJECT_ID\n" : "")
-            .addSource(baseFlags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
-            .addSource(baseFlags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
+            .addSource(configuration.flags() & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
+            .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n"_s : ""_s)
+            .addSource(baseFlags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
+            .addSource(baseFlags & FlagBase::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
+            .addSource(baseFlags >= FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
+            .addSource(baseFlags & FlagBase::VertexId ? "#define VERTEX_ID\n"_s : ""_s)
             .addSource(baseFlags & FlagBase::PrimitiveId ?
                 (baseFlags >= FlagBase::PrimitiveIdFromVertexId ?
-                    "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
-                    "#define PRIMITIVE_ID\n") : "")
-            .addSource(configuration.flags() & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
-            .addSource(configuration.flags() & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection) ? "#define BITANGENT_DIRECTION\n" : "")
-            .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "");
+                    "#define PRIMITIVE_ID_FROM_VERTEX_ID\n"_s :
+                    "#define PRIMITIVE_ID\n"_s) : ""_s)
+            .addSource(configuration.flags() & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n"_s : ""_s)
+            .addSource(configuration.flags() & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection) ? "#define BITANGENT_DIRECTION\n"_s : ""_s)
+            .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n"_s : ""_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::UniformBuffers) {
             geom->addSource(Utility::format(
@@ -1027,10 +1027,10 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
                 "#define MATERIAL_COUNT {}\n",
                 configuration.drawCount(),
                 configuration.materialCount()));
-            geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+            geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
         }
         #endif
-        geom->addSource(rs.getString("MeshVisualizer.geom"));
+        geom->addSource(rs.getString("MeshVisualizer.geom"_s));
     }
     #else
     static_cast<void>(version);
@@ -1050,40 +1050,40 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Position::Location, "position"_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::ObjectIdTexture)
-            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates"_s);
         if(configuration.flags() >= Flag::InstancedObjectId)
-            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId"_s);
         #endif
         if(configuration.flags() & Flag::InstancedTransformation) {
-            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix"_s);
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             if(configuration.flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection))
-                out.bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix");
+                out.bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix"_s);
             #endif
         }
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::InstancedTextureOffset)
-            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset"_s);
         #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         if(configuration.flags() & Flag::TangentDirection ||
            configuration.flags() & Flag::BitangentFromTangentDirection)
-            out.bindAttributeLocation(Tangent4::Location, "tangent");
+            out.bindAttributeLocation(Tangent4::Location, "tangent"_s);
         if(configuration.flags() & Flag::BitangentDirection)
-            out.bindAttributeLocation(Bitangent::Location, "bitangent");
+            out.bindAttributeLocation(Bitangent::Location, "bitangent"_s);
         if(configuration.flags() & Flag::NormalDirection ||
            configuration.flags() & Flag::BitangentFromTangentDirection)
-            out.bindAttributeLocation(Normal::Location, "normal");
+            out.bindAttributeLocation(Normal::Location, "normal"_s);
         #endif
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
         if(!context.isVersionSupported(GL::Version::GL310))
         #endif
         {
-            out.bindAttributeLocation(VertexIndex::Location, "vertexIndex");
+            out.bindAttributeLocation(VertexIndex::Location, "vertexIndex"_s);
         }
         #endif
         #ifndef MAGNUM_TARGET_GLES2
@@ -1091,12 +1091,12 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
            perVertexJointCount / secondaryPerVertexJointCount are either all
            zero or non-zero so we don't need to check for jointCount() here */
         if(configuration.perVertexJointCount()) {
-            out.bindAttributeLocation(Weights::Location, "weights");
-            out.bindAttributeLocation(JointIds::Location, "jointIds");
+            out.bindAttributeLocation(Weights::Location, "weights"_s);
+            out.bindAttributeLocation(JointIds::Location, "jointIds"_s);
         }
         if(configuration.secondaryPerVertexJointCount()) {
-            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
-            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights"_s);
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds"_s);
         }
         #endif
     }
@@ -1158,59 +1158,59 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
             || (flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection))
             #endif
         )
-            _viewportSizeUniform = uniformLocation("viewportSize");
+            _viewportSizeUniform = uniformLocation("viewportSize"_s);
 
         #ifndef MAGNUM_TARGET_GLES2
         if(flags() >= Flag::DynamicPerVertexJointCount)
-            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(flags() >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
-            _transformationMatrixUniform = uniformLocation("transformationMatrix");
-            _projectionMatrixUniform = uniformLocation("projectionMatrix");
+            _transformationMatrixUniform = uniformLocation("transformationMatrix"_s);
+            _projectionMatrixUniform = uniformLocation("projectionMatrix"_s);
             #ifndef MAGNUM_TARGET_GLES2
             if(flags() & Flag::TextureTransformation)
-                _textureMatrixUniform = uniformLocation("textureMatrix");
+                _textureMatrixUniform = uniformLocation("textureMatrix"_s);
             if(flags() & Flag::TextureArrays)
-                _textureLayerUniform = uniformLocation("textureLayer");
+                _textureLayerUniform = uniformLocation("textureLayer"_s);
             #endif
             if(flags() & (Flag::Wireframe
                 #ifndef MAGNUM_TARGET_GLES2
                 |Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
                 #endif
             ))
-                _colorUniform = uniformLocation("color");
+                _colorUniform = uniformLocation("color"_s);
             if(flags() & Flag::Wireframe) {
-                _wireframeColorUniform = uniformLocation("wireframeColor");
-                _wireframeWidthUniform = uniformLocation("wireframeWidth");
+                _wireframeColorUniform = uniformLocation("wireframeColor"_s);
+                _wireframeWidthUniform = uniformLocation("wireframeWidth"_s);
             }
             if(flags() & (Flag::Wireframe
                 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
                 |Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection
                 #endif
             )) {
-                _smoothnessUniform = uniformLocation("smoothness");
+                _smoothnessUniform = uniformLocation("smoothness"_s);
             }
             #ifndef MAGNUM_TARGET_GLES2
             if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
-                _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
+                _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale"_s);
             }
             if(flags() & Flag::ObjectId)
-                _objectIdUniform = uniformLocation("objectId");
+                _objectIdUniform = uniformLocation("objectId"_s);
             #endif
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             if(flags() & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
-                _normalMatrixUniform = uniformLocation("normalMatrix");
-                _lineWidthUniform = uniformLocation("lineWidth");
-                _lineLengthUniform = uniformLocation("lineLength");
+                _normalMatrixUniform = uniformLocation("normalMatrix"_s);
+                _lineWidthUniform = uniformLocation("lineWidth"_s);
+                _lineLengthUniform = uniformLocation("lineLength"_s);
             }
             #endif
             #ifndef MAGNUM_TARGET_GLES2
             if(_jointCount) {
-                _jointMatricesUniform = uniformLocation("jointMatrices");
-                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+                _jointMatricesUniform = uniformLocation("jointMatrices"_s);
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount"_s);
             }
             #endif
         }
@@ -1222,20 +1222,20 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     #endif
     {
         if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
-            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
+            setUniform(uniformLocation("colorMapTexture"_s), ColorMapTextureUnit);
         }
         #ifndef MAGNUM_TARGET_GLES2
         if(flags() >= Flag::ObjectIdTexture)
-            setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
+            setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
         if(flags() >= Flag::UniformBuffers) {
-            setUniformBlockBinding(uniformBlockIndex("Projection"), ProjectionBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Transformation"), TransformationBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Projection"_s), ProjectionBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Transformation"_s), TransformationBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
             if(flags() & Flag::TextureTransformation)
-                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"_s), TextureTransformationBufferBinding);
             if(_jointCount)
-                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("Joint"_s), JointBufferBinding);
         }
         #endif
     }

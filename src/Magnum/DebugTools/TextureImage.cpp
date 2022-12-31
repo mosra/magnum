@@ -56,6 +56,8 @@ static void importDebugToolsResources() {
 namespace Magnum { namespace DebugTools {
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+using namespace Containers::Literals;
+
 namespace {
 
 class FloatReinterpretShader: public GL::AbstractShaderProgram {
@@ -75,7 +77,7 @@ class FloatReinterpretShader: public GL::AbstractShaderProgram {
 FloatReinterpretShader::FloatReinterpretShader() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumDebugTools"))
+    if(!Utility::Resource::hasGroup("MagnumDebugTools"_s))
         importDebugToolsResources();
     #endif
     Utility::Resource rs{"MagnumDebugTools"};
@@ -83,21 +85,21 @@ FloatReinterpretShader::FloatReinterpretShader() {
     GL::Shader vert{GL::Version::GLES300, GL::Shader::Type::Vertex};
     GL::Shader frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
-        vert.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n");
-    vert.addSource(rs.getString("TextureImage.vert"));
-    frag.addSource(rs.getString("TextureImage.frag"));
+        vert.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n"_s);
+    vert.addSource(rs.getString("TextureImage.vert"_s));
+    frag.addSource(rs.getString("TextureImage.frag"_s));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
     attachShaders({vert, frag});
 
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>()) {
-        bindAttributeLocation(0, "position");
+        bindAttributeLocation(0, "position"_s);
     }
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
-    levelUniform = uniformLocation("level");
-    setUniform(uniformLocation("textureData"), 0);
+    levelUniform = uniformLocation("level"_s);
+    setUniform(uniformLocation("textureData"_s), 0);
 }
 
 }

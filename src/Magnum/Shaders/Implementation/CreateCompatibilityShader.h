@@ -43,30 +43,32 @@ static void importShaderResources() {
 namespace Magnum { namespace Shaders { namespace Implementation {
 
 inline GL::Shader createCompatibilityShader(const Utility::Resource& rs, GL::Version version, GL::Shader::Type type) {
+    using namespace Containers::Literals;
+
     GL::Shader shader(version, type);
 
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::explicit_attrib_location>(version))
-        shader.addSource("#define DISABLE_GL_ARB_explicit_attrib_location\n");
+        shader.addSource("#define DISABLE_GL_ARB_explicit_attrib_location\n"_s);
     if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::shading_language_420pack>(version))
-        shader.addSource("#define DISABLE_GL_ARB_shading_language_420pack\n");
+        shader.addSource("#define DISABLE_GL_ARB_shading_language_420pack\n"_s);
     if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::explicit_uniform_location>(version))
-        shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n");
+        shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n"_s);
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     if(type == GL::Shader::Type::Vertex && GL::Context::current().isExtensionDisabled<GL::Extensions::MAGNUM::shader_vertex_id>(version))
-        shader.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n");
+        shader.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n"_s);
     #endif
 
     /* My Android emulator (running on NVidia) doesn't define GL_ES
        preprocessor macro, thus *all* the stock shaders fail to compile */
     /** @todo remove this when Android emulator is sane */
     #ifdef CORRADE_TARGET_ANDROID
-    shader.addSource("#ifndef GL_ES\n#define GL_ES 1\n#endif\n");
+    shader.addSource("#ifndef GL_ES\n#define GL_ES 1\n#endif\n"_s);
     #endif
 
-    shader.addSource(rs.getString("compatibility.glsl"));
+    shader.addSource(rs.getString("compatibility.glsl"_s));
     return shader;
 }
 

@@ -132,10 +132,10 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"_s))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShadersGL");
+    Utility::Resource rs("MagnumShadersGL"_s);
 
     const GL::Context& context = GL::Context::current();
 
@@ -165,18 +165,18 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
             #endif
-            ) ? "#define TEXTURED\n" : "")
-        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
-        .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+            ) ? "#define TEXTURED\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
         #endif
-        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
+        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
         #endif
-        .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
-        .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
+        .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n"_s : ""_s)
+        .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n"_s : ""_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.jointCount()) {
         vert.addSource(Utility::format(
@@ -208,21 +208,21 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             configuration.drawCount()));
-        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
-    vert.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("Flat.vert"));
-    frag.addSource(configuration.flags() & Flag::Textured ? "#define TEXTURED\n" : "")
+    vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("Flat.vert"_s));
+    frag.addSource(configuration.flags() & Flag::Textured ? "#define TEXTURED\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n" : "")
+        .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
         #endif
-        .addSource(configuration.flags() & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
-        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
+        .addSource(configuration.flags() & Flag::AlphaMask ? "#define ALPHA_MASK\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
-        .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
-        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
-        .addSource(configuration.flags() >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n" : "")
+        .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
+        .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
+        .addSource(configuration.flags() >= Flag::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n"_s : ""_s)
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
@@ -233,11 +233,11 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
             "#define MATERIAL_COUNT {}\n",
             configuration.drawCount(),
             configuration.materialCount()));
-        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
-    frag.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("Flat.frag"));
+    frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("Flat.frag"_s));
 
     vert.submitCompile();
     frag.submitCompile();
@@ -251,38 +251,38 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        out.bindAttributeLocation(Position::Location, "position");
+        out.bindAttributeLocation(Position::Location, "position"_s);
         if(configuration.flags() & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
             #endif
         )
-            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+            out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates"_s);
         if(configuration.flags() & Flag::VertexColor)
-            out.bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
+            out.bindAttributeLocation(Color3::Location, "vertexColor"_s); /* Color4 is the same */
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() & Flag::ObjectId) {
-            out.bindFragmentDataLocation(ColorOutput, "color");
-            out.bindFragmentDataLocation(ObjectIdOutput, "objectId");
+            out.bindFragmentDataLocation(ColorOutput, "color"_s);
+            out.bindFragmentDataLocation(ObjectIdOutput, "objectId"_s);
         }
         if(configuration.flags() >= Flag::InstancedObjectId)
-            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+            out.bindAttributeLocation(ObjectId::Location, "instanceObjectId"_s);
         #endif
         if(configuration.flags() & Flag::InstancedTransformation)
-            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+            out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix"_s);
         if(configuration.flags() >= Flag::InstancedTextureOffset)
-            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
+            out.bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset"_s);
         #ifndef MAGNUM_TARGET_GLES2
         /* Configuration::setJointCount() checks that jointCount and
            perVertexJointCount / secondaryPerVertexJointCount are either all
            zero or non-zero so we don't need to check for jointCount() here */
         if(configuration.perVertexJointCount()) {
-            out.bindAttributeLocation(Weights::Location, "weights");
-            out.bindAttributeLocation(JointIds::Location, "jointIds");
+            out.bindAttributeLocation(Weights::Location, "weights"_s);
+            out.bindAttributeLocation(JointIds::Location, "jointIds"_s);
         }
         if(configuration.secondaryPerVertexJointCount()) {
-            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
-            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
+            out.bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights"_s);
+            out.bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds"_s);
         }
         #endif
     }
@@ -333,28 +333,28 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
     {
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::DynamicPerVertexJointCount)
-            _perVertexJointCountUniform = uniformLocation("perVertexJointCount");
+            _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
-            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix"_s);
             if(_flags & Flag::TextureTransformation)
-                _textureMatrixUniform = uniformLocation("textureMatrix");
+                _textureMatrixUniform = uniformLocation("textureMatrix"_s);
             #ifndef MAGNUM_TARGET_GLES2
             if(_flags & Flag::TextureArrays)
-                _textureLayerUniform = uniformLocation("textureLayer");
+                _textureLayerUniform = uniformLocation("textureLayer"_s);
             #endif
-            _colorUniform = uniformLocation("color");
-            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
+            _colorUniform = uniformLocation("color"_s);
+            if(_flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask"_s);
             #ifndef MAGNUM_TARGET_GLES2
-            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
+            if(_flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId"_s);
             #endif
             #ifndef MAGNUM_TARGET_GLES2
             if(_jointCount) {
-                _jointMatricesUniform = uniformLocation("jointMatrices");
-                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount");
+                _jointMatricesUniform = uniformLocation("jointMatrices"_s);
+                _perInstanceJointCountUniform = uniformLocation("perInstanceJointCount"_s);
             }
             #endif
         }
@@ -364,17 +364,17 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
     if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
-        if(_flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
+        if(_flags & Flag::Textured) setUniform(uniformLocation("textureData"_s), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
-        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"), ObjectIdTextureUnit);
+        if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
         if(_flags >= Flag::UniformBuffers) {
-            setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
             if(_flags & Flag::TextureTransformation)
-                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"_s), TextureTransformationBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
             if(_jointCount)
-                setUniformBlockBinding(uniformBlockIndex("Joint"), JointBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("Joint"_s), JointBufferBinding);
         }
         #endif
     }

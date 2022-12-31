@@ -49,6 +49,8 @@ static void importTextureToolResources() {
 
 namespace Magnum { namespace TextureTools {
 
+using namespace Containers::Literals;
+
 namespace {
 
 class DistanceFieldShader: public GL::AbstractShaderProgram {
@@ -86,10 +88,10 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
 DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumTextureTools"))
+    if(!Utility::Resource::hasGroup("MagnumTextureTools"_s))
         importTextureToolResources();
     #endif
-    Utility::Resource rs("MagnumTextureTools");
+    Utility::Resource rs("MagnumTextureTools"_s);
 
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version v = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL300, GL::Version::GL210});
@@ -100,10 +102,10 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     GL::Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Vertex);
     GL::Shader frag = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Fragment);
 
-    vert.addSource(rs.getString("FullScreenTriangle.glsl"))
-        .addSource(rs.getString("DistanceFieldShader.vert"));
+    vert.addSource(rs.getString("FullScreenTriangle.glsl"_s))
+        .addSource(rs.getString("DistanceFieldShader.vert"_s));
     frag.addSource(Utility::format("#define RADIUS {}\n", radius))
-        .addSource(rs.getString("DistanceFieldShader.frag"));
+        .addSource(rs.getString("DistanceFieldShader.frag"_s));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
@@ -113,7 +115,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
     #endif
     {
-        bindAttributeLocation(Position::Location, "position");
+        bindAttributeLocation(Position::Location, "position"_s);
     }
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
@@ -122,7 +124,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>())
     #endif
     {
-        scalingUniform = uniformLocation("scaling");
+        scalingUniform = uniformLocation("scaling"_s);
 
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
@@ -130,7 +132,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
         #endif
         {
-            imageSizeInvertedUniform = uniformLocation("imageSizeInverted");
+            imageSizeInvertedUniform = uniformLocation("imageSizeInverted"_s);
         }
     }
 
@@ -138,7 +140,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>())
     #endif
     {
-        setUniform(uniformLocation("textureData"), TextureUnit);
+        setUniform(uniformLocation("textureData"_s), TextureUnit);
     }
 }
 

@@ -49,6 +49,8 @@
 
 namespace Magnum { namespace Shaders {
 
+using namespace Containers::Literals;
+
 namespace {
     enum: Int { TextureUnit = 6 };
 
@@ -91,10 +93,10 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
-    if(!Utility::Resource::hasGroup("MagnumShadersGL"))
+    if(!Utility::Resource::hasGroup("MagnumShadersGL"_s))
         importShaderResources();
     #endif
-    Utility::Resource rs("MagnumShadersGL");
+    Utility::Resource rs("MagnumShadersGL"_s);
 
     const GL::Context& context = GL::Context::current();
 
@@ -107,19 +109,19 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
-        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n");
+    vert.addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
+        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         vert.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
             configuration.drawCount()));
-        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
-    vert.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("Vector.vert"));
+    vert.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("Vector.vert"_s));
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         frag.addSource(Utility::format(
@@ -128,11 +130,11 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
             "#define MATERIAL_COUNT {}\n",
             configuration.drawCount(),
             configuration.materialCount()));
-        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n" : "");
+        frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
-    frag.addSource(rs.getString("generic.glsl"))
-        .addSource(rs.getString("Vector.frag"));
+    frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("Vector.frag"_s));
 
     vert.submitCompile();
     frag.submitCompile();
@@ -152,8 +154,8 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #endif
     {
-        out.bindAttributeLocation(Position::Location, "position");
-        out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+        out.bindAttributeLocation(Position::Location, "position"_s);
+        out.bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates"_s);
     }
     #endif
 
@@ -202,15 +204,15 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& s
     {
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset");
+            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
-            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+            _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix"_s);
             if(_flags & Flag::TextureTransformation)
-                _textureMatrixUniform = uniformLocation("textureMatrix");
-            _backgroundColorUniform = uniformLocation("backgroundColor");
-            _colorUniform = uniformLocation("color");
+                _textureMatrixUniform = uniformLocation("textureMatrix"_s);
+            _backgroundColorUniform = uniformLocation("backgroundColor"_s);
+            _colorUniform = uniformLocation("color"_s);
         }
     }
 
@@ -218,14 +220,14 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& s
     if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
-        setUniform(uniformLocation("vectorTexture"), TextureUnit);
+        setUniform(uniformLocation("vectorTexture"_s), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::UniformBuffers) {
-            setUniformBlockBinding(uniformBlockIndex("TransformationProjection"), TransformationProjectionBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Draw"), DrawBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
             if(_flags & Flag::TextureTransformation)
-                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"), TextureTransformationBufferBinding);
-            setUniformBlockBinding(uniformBlockIndex("Material"), MaterialBufferBinding);
+                setUniformBlockBinding(uniformBlockIndex("TextureTransformation"_s), TextureTransformationBufferBinding);
+            setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
         }
         #endif
     }
