@@ -24,7 +24,7 @@
 */
 
 #include <sstream>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 

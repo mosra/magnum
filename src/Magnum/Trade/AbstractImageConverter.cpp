@@ -29,7 +29,6 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once PluginManager is <string>-free */
 #include <Corrade/PluginManager/Manager.hpp>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Path.h>

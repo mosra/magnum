@@ -26,7 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -432,7 +432,7 @@ void InstanceVkTest::constructCommandLineEnable() {
     UnsignedInt minor = versionMinor(enumerateInstanceVersion());
     UnsignedInt patch = versionPatch(enumerateInstanceVersion());
     /* Vulkan 1.0 instances report no patch version, special-case that */
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, major, minor, patch ? Utility::formatString(".{}", patch) : ""));
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, major, minor, patch ? Utility::format(".{}", patch) : ""));
 
     /* Verify that the entrypoint is actually (not) loaded as expected, to
        avoid all the above reporting being just smoke & mirrors */

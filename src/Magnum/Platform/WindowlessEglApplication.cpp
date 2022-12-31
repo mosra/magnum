@@ -27,8 +27,7 @@
 
 #include "WindowlessEglApplication.h"
 
-#include <cstring> /** @todo used by extensionSupported(), cleann up */
-#include <string>
+#include <cstring> /** @todo used by extensionSupported(), clean up */
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>

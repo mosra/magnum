@@ -27,8 +27,9 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/StringStl.h> /* StringHasPrefix */
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
@@ -785,11 +786,14 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
     UnsignedInt major = versionMajor(deviceProperties.version());
     UnsignedInt minor = versionMinor(deviceProperties.version());
     UnsignedInt patch = versionPatch(deviceProperties.version());
-    /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo());
     /* The output might contain a device workaround list, cut that away.
        That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
-    CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
+    CORRADE_COMPARE_AS(out.str(),
+        Utility::format(data.log, deviceProperties.name(), major, minor,
+        /* SwiftShader reports just 1.1 with no patch version, special-case
+           that */
+        patch ? Utility::format(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo()),
+        TestSuite::Compare::StringHasPrefix);
 
     /* Verify that the entrypoint is actually (not) loaded as expected, to
        avoid all the above reporting being just smoke & mirrors */
@@ -842,11 +846,14 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     UnsignedInt major = versionMajor(deviceProperties.version());
     UnsignedInt minor = versionMinor(deviceProperties.version());
     UnsignedInt patch = versionPatch(deviceProperties.version());
-    /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo());
     /* The output might contain a device workaround list, cut that away.
        That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
-    CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
+    CORRADE_COMPARE_AS(out.str(),
+        Utility::format(data.log, deviceProperties.name(), major, minor,
+        /* SwiftShader reports just 1.1 with no patch version, special-case
+           that */
+        patch ? Utility::format(".{}", patch) : "", deviceProperties.driverName(), deviceProperties.driverInfo()),
+        TestSuite::Compare::StringHasPrefix);
 
     /* Verify that the entrypoint is actually (not) loaded as expected, to
        avoid all the above reporting being just smoke & mirrors */

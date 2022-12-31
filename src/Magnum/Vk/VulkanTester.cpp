@@ -25,7 +25,6 @@
 
 #include "VulkanTester.h"
 
-#include <string> /* sigh, for setSkippedArgumentPrefixes() */
 #include <Corrade/Containers/StringView.h>
 
 #include "Magnum/Vk/DeviceCreateInfo.h"

@@ -24,7 +24,6 @@
 */
 
 #include <Corrade/Containers/String.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove when AbstractImporter is <string>-free */
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/Utility/Path.h>
 

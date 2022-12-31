@@ -24,7 +24,7 @@
 */
 
 #include <sstream>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -136,8 +136,7 @@ void LayerPropertiesVkTest::isSupported() {
     }
 
     /* Verify that we're not just comparing a prefix */
-    const std::string layer = std::string(properties.name(0)) + "_hello";
-    CORRADE_VERIFY(!properties.isSupported(layer));
+    CORRADE_VERIFY(!properties.isSupported(properties.name(0) + "_hello"_s));
 }
 
 }}}}

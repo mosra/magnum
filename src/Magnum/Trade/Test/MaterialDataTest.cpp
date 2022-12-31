@@ -26,7 +26,7 @@
 #include <algorithm> /* std::next_permutation() */
 #include <sstream>
 #include <Corrade/Containers/StaticArray.h>
-#include <Corrade/Containers/StringStl.h>
+#include <Corrade/Containers/StringStl.h> /* partition() on a std::string */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>

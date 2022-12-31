@@ -24,8 +24,8 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
-#include <Corrade/Containers/StringStl.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -169,8 +169,7 @@ void ExtensionPropertiesVkTest::instanceExtensionIsSupported() {
     CORRADE_VERIFY(!properties.isSupported("ZZZZZ"));
 
     /* Verify that we're not just comparing a prefix */
-    const std::string extension = std::string(properties.name(0)) + "_hello";
-    CORRADE_VERIFY(!properties.isSupported(extension));
+    CORRADE_VERIFY(!properties.isSupported(properties.name(0) + "_hello"_s));
 
     /* This extension should be available almost always */
     if(!properties.isSupported("VK_KHR_get_physical_device_properties2"))
