@@ -26,6 +26,7 @@
 #include <cstring>
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -346,11 +347,9 @@ template<class T> void AngleTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseTemplateName(TweakableTraits<T>::name());
     setTestCaseDescription(data.name);
-    Corrade::Utility::TweakableState state;
-    T result;
-    std::tie(state, result) = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal()));
-    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
-    CORRADE_COMPARE(result, T(typename T::Type(data.result)));
+    auto result = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal()));
+    CORRADE_COMPARE(result.first(), Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result.second(), T(typename T::Type(data.result)));
 }
 
 template<class T> void AngleTest::tweakableError() {
@@ -361,7 +360,7 @@ template<class T> void AngleTest::tweakableError() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
-    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal())).first;
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal())).first();
     CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, TweakableTraits<T>::literal()));
     CORRADE_COMPARE(state, data.state);
 }

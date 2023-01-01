@@ -145,7 +145,7 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace Corrade { namespace Utility {
 
-std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color3<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color3<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {
@@ -177,7 +177,7 @@ std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> TweakableP
                  Magnum::Math::Literals::operator "" _rgb(result)};
 }
 
-std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {
@@ -209,7 +209,7 @@ std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableP
                  Magnum::Math::Literals::operator "" _rgba(result)};
 }
 
-std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<Magnum::Math::Color3<Magnum::Float>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<Magnum::Math::Color3<Magnum::Float>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {
@@ -241,7 +241,7 @@ std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<M
                  Magnum::Math::Literals::operator "" _rgbf(result)};
 }
 
-std::pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableParser<Magnum::Math::Color4<Magnum::Float>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableParser<Magnum::Math::Color4<Magnum::Float>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {

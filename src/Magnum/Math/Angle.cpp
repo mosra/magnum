@@ -27,12 +27,13 @@
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <cstdlib>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/TweakableParser.h>
 
 namespace Corrade { namespace Utility {
 
-std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> TweakableParser<Magnum::Math::Deg<Magnum::Float>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> TweakableParser<Magnum::Math::Deg<Magnum::Float>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     char* end;
@@ -56,7 +57,7 @@ std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> TweakableParser<Magn
     return {TweakableState::Success, Magnum::Math::Deg<Magnum::Float>{result}};
 }
 
-std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> TweakableParser<Magnum::Math::Deg<Magnum::Double>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> TweakableParser<Magnum::Math::Deg<Magnum::Double>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     char* end;
@@ -80,7 +81,7 @@ std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> TweakableParser<Mag
     return {TweakableState::Success, Magnum::Math::Deg<Magnum::Double>{result}};
 }
 
-std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> TweakableParser<Magnum::Math::Rad<Magnum::Float>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> TweakableParser<Magnum::Math::Rad<Magnum::Float>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     char* end;
@@ -104,7 +105,7 @@ std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> TweakableParser<Magn
     return {TweakableState::Success, Magnum::Math::Rad<Magnum::Float>{result}};
 }
 
-std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> TweakableParser<Magnum::Math::Rad<Magnum::Double>>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> TweakableParser<Magnum::Math::Rad<Magnum::Double>>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     char* end;
