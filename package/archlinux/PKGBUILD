@@ -18,9 +18,12 @@ build() {
     mkdir -p "$_rootdir/build"
     cd "$_rootdir/build"
 
+    # RelWithDebInfo is enabled but not built -- it's meant for profiling from
+    # within the build dir
     cmake .. \
-        -DCMAKE_CONFIGURATION_TYPES="Debug;Release" \
+        -DCMAKE_CONFIGURATION_TYPES="Debug;Release;RelWithDebInfo" \
         -DCMAKE_CROSS_CONFIGS=all \
+        -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -g -DNDEBUG -fno-omit-frame-pointer" \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DMAGNUM_WITH_AUDIO=ON \
         -DMAGNUM_WITH_VK=ON \
@@ -57,7 +60,7 @@ build() {
         -DMAGNUM_BUILD_GL_TESTS=ON \
         -DMAGNUM_BUILD_VK_TESTS=ON \
         -G "Ninja Multi-Config"
-    ninja all:all
+    ninja all:Debug all:Release
 }
 
 check() {
