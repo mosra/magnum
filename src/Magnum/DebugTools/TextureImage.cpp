@@ -37,6 +37,7 @@
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
 #include <Corrade/Containers/Iterable.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
