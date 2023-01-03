@@ -360,7 +360,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Vertex position
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3".
+         * @relativeref{Magnum,Vector3}.
          */
         typedef GenericGL3D::Position Position;
 
@@ -368,7 +368,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Normal direction
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3". Used only if @ref lightCount() isn't
+         * @relativeref{Magnum,Vector3}. Used only if @ref lightCount() isn't
          * @cpp 0 @ce.
          */
         typedef GenericGL3D::Normal Normal;
@@ -378,7 +378,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @m_since{2019,10}
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
+         * @relativeref{Magnum,Vector3}. Use either this or the @ref Tangent4
          * attribute. If only a three-component attribute is used and
          * @ref Flag::Bitangent is not enabled, it's the same as if
          * @ref Tangent4 was specified with the fourth component always being
@@ -393,7 +393,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @m_since_latest
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector4 "Vector4". Use either this or the @ref Tangent
+         * @relativeref{Magnum,Vector4}. Use either this or the @ref Tangent
          * attribute. If @ref Flag::Bitangent is set, the fourth component is
          * ignored and bitangents are taken from the @ref Bitangent attribute
          * instead. Used only if @ref Flag::NormalTexture is set and
@@ -407,7 +407,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @m_since_latest
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
+         * @relativeref{Magnum,Vector3}. Use either this or the @ref Tangent4
          * attribute. Used only if both @ref Flag::NormalTexture and
          * @ref Flag::Bitangent are set and @ref lightCount() isn't @cpp 0 @ce.
          * @see @ref Shaders-PhongGL-normal-mapping
@@ -418,7 +418,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief 2D texture coordinates
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2", used only if at least one of
+         * @relativeref{Magnum,Vector2}, used only if at least one of
          * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture and
          * @ref Flag::SpecularTexture is set.
          */
@@ -449,8 +449,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
-         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}. Used only if
+         * @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -463,8 +464,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -477,8 +479,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Secondary joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -491,8 +494,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Secondary weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -507,8 +511,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief (Instanced) object ID
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
-         * Used only if @ref Flag::InstancedObjectId is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,UnsignedInt}. Used only if
+         * @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0.
@@ -522,8 +527,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief (Instanced) transformation matrix
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix4.
-         * Used only if @ref Flag::InstancedTransformation is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Matrix4}. Used only if
+         * @ref Flag::InstancedTransformation is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays} or
@@ -537,8 +543,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief (Instanced) normal matrix
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3x3.
-         * Used only if @ref Flag::InstancedTransformation is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Matrix3x3}. Used only if
+         * @ref Flag::InstancedTransformation is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays} or
@@ -552,8 +559,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief (Instanced) texture offset
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
-         * only if @ref Flag::InstancedTextureOffset is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector2}. Used only if
+         * @ref Flag::InstancedTextureOffset is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays} or
@@ -568,11 +576,11 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief (Instanced) texture offset and layer
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector3, with
-         * the last component interpreted as an integer. Use either this or the
-         * @ref TextureOffset attribute. First two components used only if
-         * @ref Flag::InstancedTextureOffset is set, third component only if
-         * @ref Flag::TextureArrays is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector3}, with the last component interpreted as
+         * an integer. Use either this or the @ref TextureOffset attribute.
+         * First two components used only if @ref Flag::InstancedTextureOffset
+         * is set, third component only if @ref Flag::TextureArrays is set.
          * @requires_gl33 Extension @gl_extension{EXT,texture_array} and
          *      @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
@@ -797,11 +805,12 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * and adds the value from @ref setDrawOffset() with the
              * @glsl gl_DrawID @ce builtin, which makes draws submitted via
              * @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
-             * pick up per-draw parameters directly, without having to rebind
-             * the uniform buffers or specify @ref setDrawOffset() before each
-             * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
-             * @cpp 0 @ce, which means a shader with this flag enabled can be
-             * used for regular draws as well.
+             * and related APIs pick up per-draw parameters directly, without
+             * having to rebind the uniform buffers or specify
+             * @ref setDrawOffset() before each draw. In a non-multidraw
+             * scenario, @glsl gl_DrawID @ce is @cpp 0 @ce, which means a
+             * shader with this flag enabled can be used for regular draws as
+             * well.
              * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
              *      and @gl_extension{ARB,shader_draw_parameters}
              * @requires_es_extension OpenGL ES 3.0 and extension
@@ -895,7 +904,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         /**
          * @brief Flags
          *
-         * @see @ref flags()
+         * @see @ref flags(), @ref Configuration::setFlags()
          */
         typedef Containers::EnumSet<Flag> Flags;
 

@@ -216,7 +216,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief Vertex position
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2".
+         * @relativeref{Magnum,Vector2}.
          */
         typedef typename GenericGL2D::Position Position;
 
@@ -230,7 +230,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief Joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}.
          * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
@@ -244,8 +245,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief Weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -258,8 +260,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief Secondary joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -272,8 +275,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief Secondary weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -283,11 +287,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         typedef GenericGL3D::SecondaryWeights SecondaryWeights;
         #endif
 
-        /**
-         * @brief Vertex index
-         *
-         * See @ref MeshVisualizerGL3D::VertexIndex for more information.
-         */
+        /** @copydoc MeshVisualizerGL3D::VertexIndex */
         typedef GL::Attribute<4, Float> VertexIndex;
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -295,8 +295,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief (Instanced) object ID
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
-         * Used only if @ref Flag::InstancedObjectId is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,UnsignedInt}. Used only if
+         * @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0.
@@ -310,8 +311,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @brief (Instanced) transformation matrix
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3.
-         * Used only if @ref Flag::InstancedTransformation is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Matrix3}. Used only if
+         * @ref Flag::InstancedTransformation is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays} or
@@ -499,11 +501,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
              * and combines the value from @ref setDrawOffset() with the
              * @glsl gl_DrawID @ce builtin, which makes draws submitted via
              * @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
-             * pick up per-draw parameters directly, without having to rebind
-             * the uniform buffers or specify @ref setDrawOffset() before each
-             * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
-             * @cpp 0 @ce, which means a shader with this flag enabled can be
-             * used for regular draws as well.
+             * and related APIs pick up per-draw parameters directly, without
+             * having to rebind the uniform buffers or specify
+             * @ref setDrawOffset() before each draw. In a non-multidraw
+             * scenario, @glsl gl_DrawID @ce is @cpp 0 @ce, which means a
+             * shader with this flag enabled can be used for regular draws as
+             * well.
              * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
              *      and @gl_extension{ARB,shader_draw_parameters}
              * @requires_es_extension OpenGL ES 3.0 and extension
@@ -547,7 +550,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
             #endif
         };
 
-        /** @brief Flags */
+        /**
+         * @brief Flags
+         *
+         * @see @ref flags(), @ref Configuration::setFlags()
+         */
         typedef Containers::EnumSet<Flag> Flags;
 
         /**
@@ -1641,7 +1648,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Vertex position
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3".
+         * @relativeref{Magnum,Vector3}.
          */
         typedef typename GenericGL3D::Position Position;
 
@@ -1650,7 +1657,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
+         * @relativeref{Magnum,Vector3}. Use either this or the @ref Tangent4
          * attribute. Used only if @ref Flag::TangentDirection is enabled.
          */
         typedef typename GenericGL3D::Tangent Tangent;
@@ -1660,7 +1667,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector4 "Vector4". Use either this or the @ref Tangent
+         * @relativeref{Magnum,Vector4}. Use either this or the @ref Tangent
          * attribute. Used only if @ref Flag::TangentDirection or
          * @ref Flag::BitangentFromTangentDirection is enabled.
          */
@@ -1671,7 +1678,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
+         * @relativeref{Magnum,Vector3}. Use either this or the @ref Tangent4
          * attribute. Used only if @ref Flag::BitangentDirection is enabled.
          */
         typedef typename GenericGL3D::Bitangent Bitangent;
@@ -1681,7 +1688,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3". Used only if
+         * @relativeref{Magnum,Vector3}. Used only if
          * @ref Flag::NormalDirection is enabled.
          */
         typedef typename GenericGL3D::Normal Normal;
@@ -1692,7 +1699,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @m_since_latest
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2". Used only if
+         * @relativeref{Magnum,Vector2}. Used only if
          * @ref Flag::ObjectIdTexture is enabled.
          * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID input requires integer support in
@@ -1708,8 +1715,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
-         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}. Used only if
+         * @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -1722,8 +1730,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -1736,8 +1745,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Secondary joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -1750,8 +1760,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief Secondary weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -1764,7 +1775,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         /**
          * @brief Vertex index
          *
-         * @ref Magnum::Float "Float", used only in OpenGL < 3.1 and OpenGL ES
+         * @relativeref{Magnum,Float}, used only in OpenGL < 3.1 and OpenGL ES
          * 2.0 if @ref Flag::Wireframe is enabled. This attribute (modulo 3)
          * specifies index of given vertex in triangle, i.e. @cpp 0.0f @ce for
          * first, @cpp 1.0f @ce for second, @cpp 2.0f @ce for third. In OpenGL
@@ -1784,8 +1795,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief (Instanced) object ID
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
-         * Used only if @ref Flag::InstancedObjectId is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,UnsignedInt}. Used only if
+         * @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0.
@@ -1799,8 +1811,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief (Instanced) transformation matrix
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix4.
-         * Used only if @ref Flag::InstancedTransformation is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Matrix4}. Used only if
+         * @ref Flag::InstancedTransformation is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays} or
@@ -1815,8 +1828,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief (Instanced) normal matrix
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3x3.
-         * Used only if @ref Flag::InstancedTransformation and at least one of
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Matrix3x3}. Used only if
+         * @ref Flag::InstancedTransformation and at least one of
          * @ref Flag::TangentDirection, @ref Flag::BitangentDirection or
          * @ref Flag::NormalDirection is set.
          * @requires_gl33 Extension @gl_extension{ARB,geometry_shader4} and
@@ -1834,8 +1848,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief (Instanced) texture offset for an object ID texture
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
-         * only if @ref Flag::InstancedTextureOffset is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector2}. Used only if
+         * @ref Flag::InstancedTextureOffset is set.
          * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4} and
          *      @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Object ID input requires integer support in
@@ -1849,11 +1864,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @brief (Instanced) texture offset and layer for an object ID texture
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector3, with
-         * the last component interpreted as an integer. Use either this or the
-         * @ref TextureOffset attribute. First two components used only if
-         * @ref Flag::InstancedTextureOffset is set, third component only if
-         * @ref Flag::TextureArrays is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector3}, with the last component interpreted as
+         * an integer. Use either this or the @ref TextureOffset attribute.
+         * First two components used only if @ref Flag::InstancedTextureOffset
+         * is set, third component only if @ref Flag::TextureArrays is set.
          * @requires_gl33 Extension @gl_extension{EXT,gpu_shader4},
          *      @gl_extension{EXT,texture_array} and
          *      @gl_extension{ARB,instanced_arrays}
@@ -2161,11 +2176,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
              * and combines the value from @ref setDrawOffset() with the
              * @glsl gl_DrawID @ce builtin, which makes draws submitted via
              * @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
-             * pick up per-draw parameters directly, without having to rebind
-             * the uniform buffers or specify @ref setDrawOffset() before each
-             * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
-             * @cpp 0 @ce, which means a shader with this flag enabled can be
-             * used for regular draws as well.
+             * and related APIs pick up per-draw parameters directly, without
+             * having to rebind the uniform buffers or specify
+             * @ref setDrawOffset() before each draw. In a non-multidraw
+             * scenario, @glsl gl_DrawID @ce is @cpp 0 @ce, which means a
+             * shader with this flag enabled can be used for regular draws as
+             * well.
              * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
              *      and @gl_extension{ARB,shader_draw_parameters}
              * @requires_es_extension OpenGL ES 3.0 and extension
@@ -2229,7 +2245,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
             #endif
         };
 
-        /** @brief Flags */
+        /**
+         * @brief Flags
+         *
+         * @see @ref flags(), @ref Configuration::setFlags()
+         */
         typedef Containers::EnumSet<Flag> Flags;
 
         /**

@@ -263,8 +263,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief Vertex position
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2" in 2D, @ref Magnum::Vector3 "Vector3"
-         * in 3D.
+         * @relativeref{Magnum,Vector2} in 2D, @relativeref{Magnum,Vector3} in
+         * 3D.
          */
         typedef typename GenericGL<dimensions>::Position Position;
 
@@ -272,7 +272,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief 2D texture coordinates
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2". Used only if @ref Flag::Textured is
+         * @relativeref{Magnum,Vector2}. Used only if @ref Flag::Textured is
          * set.
          */
         typedef typename GenericGL<dimensions>::TextureCoordinates TextureCoordinates;
@@ -302,8 +302,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief Joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
-         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}. Used only if
+         * @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -316,8 +317,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief Weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref perVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref perVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -330,8 +332,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief Secondary joint ids
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4ui}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -344,8 +347,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief Secondary weights
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
-         * Used only if @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector4}. Used only if
+         * @ref secondaryPerVertexJointCount() isn't @cpp 0 @ce.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Skinning requires integer support in shaders, which
          *      is not available in OpenGL ES 2.0.
@@ -360,8 +364,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief (Instanced) object ID
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
-         * Used only if @ref Flag::InstancedObjectId is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,UnsignedInt}. Used only if
+         * @ref Flag::InstancedObjectId is set.
          * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
          * @requires_gles30 Object ID output requires integer support in
          *      shaders, which is not available in OpenGL ES 2.0.
@@ -375,9 +380,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief (Instanced) transformation matrix
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3 in
-         * 2D, @ref Magnum::Matrix4 in 3D. Used only if
-         * @ref Flag::InstancedTransformation is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Matrix3} in 2D, @relativeref{Magnum,Matrix4} in
+         * 3D. Used only if @ref Flag::InstancedTransformation is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays} or
@@ -391,8 +396,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief (Instanced) texture offset
          * @m_since{2020,06}
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Use
-         * either this or the @ref TextureOffsetLayer attribute. Used only if
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector2}. Use either this or the
+         * @ref TextureOffsetLayer attribute. Used only if
          * @ref Flag::InstancedTextureOffset is set.
          * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
@@ -408,11 +414,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @brief (Instanced) texture offset and layer
          * @m_since_latest
          *
-         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector3, with
-         * the last component interpreted as an integer. Use either this or the
-         * @ref TextureOffset attribute. First two components used only if
-         * @ref Flag::InstancedTextureOffset is set, third component only if
-         * @ref Flag::TextureArrays is set.
+         * @ref shaders-generic "Generic attribute",
+         * @relativeref{Magnum,Vector3}, with the last component interpreted as
+         * an integer. Use either this or the @ref TextureOffset attribute.
+         * First two components used only if @ref Flag::InstancedTextureOffset
+         * is set, third component only if @ref Flag::TextureArrays is set.
          * @requires_gl33 Extension @gl_extension{EXT,texture_array} and
          *      @gl_extension{ARB,instanced_arrays}
          * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
@@ -423,8 +429,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
 
         enum: UnsignedInt {
             /**
-             * Color shader output. Present always, expects three- or
-             * four-component floating-point or normalized buffer attachment.
+             * Color shader output. @ref shaders-generic "Generic output",
+             * present always. Expects three- or four-component floating-point
+             * or normalized buffer attachment.
              * @m_since{2019,10}
              */
             ColorOutput = GenericGL<dimensions>::ColorOutput,
@@ -603,11 +610,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
              * and adds the value from @ref setDrawOffset() with the
              * @glsl gl_DrawID @ce builtin, which makes draws submitted via
              * @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
-             * pick up per-draw parameters directly, without having to rebind
-             * the uniform buffers or specify @ref setDrawOffset() before each
-             * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
-             * @cpp 0 @ce, which means a shader with this flag enabled can be
-             * used for regular draws as well.
+             * and related APIs pick up per-draw parameters directly, without
+             * having to rebind the uniform buffers or specify
+             * @ref setDrawOffset() before each draw. In a non-multidraw
+             * scenario, @glsl gl_DrawID @ce is @cpp 0 @ce, which means a
+             * shader with this flag enabled can be used for regular draws as
+             * well.
              * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
              *      and @gl_extension{ARB,shader_draw_parameters}
              * @requires_es_extension OpenGL ES 3.0 and extension
@@ -669,7 +677,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
         /**
          * @brief Flags
          *
-         * @see @ref flags()
+         * @see @ref flags(), @ref Configuration::setFlags()
          */
         typedef Containers::EnumSet<Flag> Flags;
         #else

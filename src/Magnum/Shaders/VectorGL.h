@@ -128,8 +128,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @brief Vertex position
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2" in 2D, @ref Magnum::Vector3 "Vector3"
-         * in 3D.
+         * @relativeref{Magnum,Vector2} in 2D, @relativeref{Magnum,Vector3} in
+         * 3D.
          */
         typedef typename GenericGL<dimensions>::Position Position;
 
@@ -137,7 +137,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @brief 2D texture coordinates
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector2 "Vector2".
+         * @relativeref{Magnum,Vector2}.
          */
         typedef typename GenericGL<dimensions>::TextureCoordinates TextureCoordinates;
 
@@ -185,11 +185,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
              * and adds the value from @ref setDrawOffset() with the
              * @glsl gl_DrawID @ce builtin, which makes draws submitted via
              * @ref GL::AbstractShaderProgram::draw(const Containers::Iterable<MeshView>&)
-             * pick up per-draw parameters directly, without having to rebind
-             * the uniform buffers or specify @ref setDrawOffset() before each
-             * draw. In a non-multidraw scenario, @glsl gl_DrawID @ce is
-             * @cpp 0 @ce, which means a shader with this flag enabled can be
-             * used for regular draws as well.
+             * and related APIs pick up per-draw parameters directly, without
+             * having to rebind the uniform buffers or specify
+             * @ref setDrawOffset() before each draw. In a non-multidraw
+             * scenario, @glsl gl_DrawID @ce is @cpp 0 @ce, which means a
+             * shader with this flag enabled can be used for regular draws as
+             * well.
              * @requires_gl46 Extension @gl_extension{ARB,uniform_buffer_object}
              *      and @gl_extension{ARB,shader_draw_parameters}
              * @requires_es_extension OpenGL ES 3.0 and extension
@@ -211,7 +212,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @brief Flags
          * @m_since{2020,06}
          *
-         * @see @ref flags()
+         * @see @ref flags(), @ref Configuration::setFlags()
          */
         typedef Containers::EnumSet<Flag> Flags;
         #else
