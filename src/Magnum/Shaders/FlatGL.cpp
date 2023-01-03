@@ -159,8 +159,6 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-
     vert.addSource((configuration.flags() & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
@@ -212,7 +210,10 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("Flat.vert"_s));
+        .addSource(rs.getString("Flat.vert"_s))
+        .submitCompile();
+
+    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
     frag.addSource(configuration.flags() & Flag::Textured ? "#define TEXTURED\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
@@ -237,10 +238,8 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     }
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("Flat.frag"_s));
-
-    vert.submitCompile();
-    frag.submitCompile();
+        .addSource(rs.getString("Flat.frag"_s))
+        .submitCompile();
 
     out.attachShaders({vert, frag});
 

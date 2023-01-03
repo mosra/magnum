@@ -107,8 +107,6 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-
     vert.addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
@@ -121,7 +119,10 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("Vector.vert"_s));
+        .addSource(rs.getString("Vector.vert"_s))
+        .submitCompile();
+
+    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         frag.addSource(Utility::format(
@@ -134,10 +135,8 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     }
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("Vector.frag"_s));
-
-    vert.submitCompile();
-    frag.submitCompile();
+        .addSource(rs.getString("Vector.frag"_s))
+        .submitCompile();
 
     VectorGL out{NoInit};
     out._flags = configuration.flags();

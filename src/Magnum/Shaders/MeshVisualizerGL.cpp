@@ -174,8 +174,6 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     #endif
 
     vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-
     vert.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n"_s : ""_s)
@@ -232,6 +230,8 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         vert.addSource(flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
+
+    frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
     frag.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & FlagBase::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
@@ -510,7 +510,9 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         .addSource((configuration.flags() & Flag::NoGeometryShader) || !(configuration.flags() & Flag::Wireframe) ?
             "#define NO_GEOMETRY_SHADER\n"_s : ""_s)
         .addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("MeshVisualizer.vert"_s));
+        .addSource(rs.getString("MeshVisualizer.vert"_s))
+        .submitCompile();
+
     frag
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
@@ -522,8 +524,8 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         frag.addSource("#define TWO_DIMENSIONS\n"_s);
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("MeshVisualizer.frag"_s));
-
+        .addSource(rs.getString("MeshVisualizer.frag"_s))
+        .submitCompile();
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(configuration.flags() & Flag::Wireframe && !(configuration.flags() & Flag::NoGeometryShader)) {
@@ -551,15 +553,13 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
             geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
         }
         #endif
-        geom->addSource(rs.getString("MeshVisualizer.geom"_s));
+        (*geom)
+            .addSource(rs.getString("MeshVisualizer.geom"_s))
+            .submitCompile();
     }
     #else
     static_cast<void>(version);
     #endif
-
-    vert.submitCompile();
-    frag.submitCompile();
-    if(geom) geom->submitCompile();
 
     out.attachShaders({vert, frag});
     if(geom) out.attachShader(*geom);

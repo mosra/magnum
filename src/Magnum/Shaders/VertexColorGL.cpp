@@ -98,8 +98,6 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-
     vert.addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
@@ -111,12 +109,13 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("VertexColor.vert"_s));
-    frag.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("VertexColor.frag"_s));
+        .addSource(rs.getString("VertexColor.vert"_s))
+        .submitCompile();
 
-    vert.submitCompile();
-    frag.submitCompile();
+    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
+    frag.addSource(rs.getString("generic.glsl"_s))
+        .addSource(rs.getString("VertexColor.frag"_s))
+        .submitCompile();
 
     VertexColorGL<dimensions> out{NoInit};
     out._flags = configuration.flags();

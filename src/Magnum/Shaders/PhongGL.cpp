@@ -185,9 +185,6 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         1 : out._perInstanceJointCountUniform + 1;
     #endif
 
-    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-
     #ifndef MAGNUM_TARGET_GLES
     /* Initializer for the light color / position / range arrays -- we need a
        list of initializers joined by commas. For GLES we'll simply upload the
@@ -203,6 +200,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             ("1.0/0.0, "_s*configuration.lightCount()).exceptSuffix(2));
     #endif
 
+    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     vert.addSource((configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
@@ -259,7 +257,10 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     }
     #endif
     vert.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("Phong.vert"_s));
+        .addSource(rs.getString("Phong.vert"_s))
+        .submitCompile();
+
+    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
     frag.addSource(configuration.flags() & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n"_s : ""_s)
@@ -307,10 +308,8 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         frag.addSource(std::move(lightInitializer));
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
-        .addSource(rs.getString("Phong.frag"_s));
-
-    vert.submitCompile();
-    frag.submitCompile();
+        .addSource(rs.getString("Phong.frag"_s))
+        .submitCompile();
 
     out.attachShaders({vert, frag});
 
