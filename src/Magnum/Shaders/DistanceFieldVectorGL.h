@@ -237,13 +237,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @ref shaders-async for more information.
          * @see @ref DistanceFieldVectorGL(CompileState&&)
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /* Compared to the non-templated shaders like PhongGL or
+           MeshVisualizerGL2D using a forward declaration is fine here. Huh. */
         static CompileState compile(const Configuration& configuration = Configuration{});
-        #else
-        /* Configuration is forward-declared */
-        static CompileState compile(const Configuration& configuration);
-        static CompileState compile();
-        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -270,13 +266,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Constructor
          * @m_since_latest
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /* Compared to the non-templated shaders like PhongGL or
+           MeshVisualizerGL2D using a forward declaration is fine here. Huh. */
         explicit DistanceFieldVectorGL(const Configuration& configuration = Configuration{});
-        #else
-        /* Configuration is forward-declared */
-        explicit DistanceFieldVectorGL(const Configuration& configuration);
-        explicit DistanceFieldVectorGL();
-        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

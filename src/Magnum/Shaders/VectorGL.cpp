@@ -167,10 +167,6 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     };
 }
 
-template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile() {
-    return compile(Configuration{});
-}
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState VectorGL<dimensions>::compile(const Flags flags) {
     return compile(Configuration{}
@@ -249,8 +245,6 @@ template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(CompileState&& s
 }
 
 template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Configuration& configuration): VectorGL{compile(configuration)} {}
-
-template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(): VectorGL{Configuration{}} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> VectorGL<dimensions>::VectorGL(const Flags flags): VectorGL{compile(Configuration{}

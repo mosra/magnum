@@ -231,13 +231,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * more information.
          * @see @ref VectorGL(CompileState&&)
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /* Compared to the non-templated shaders like PhongGL or
+           MeshVisualizerGL2D using a forward declaration is fine here. Huh. */
         static CompileState compile(const Configuration& configuration = Configuration{});
-        #else
-        /* Configuration is forward-declared */
-        static CompileState compile(const Configuration& configuration);
-        static CompileState compile();
-        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -264,13 +260,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @brief Constructor
          * @m_since_latest
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /* Compared to the non-templated shaders like PhongGL or
+           MeshVisualizerGL2D using a forward declaration is fine here. Huh. */
         explicit VectorGL(const Configuration& configuration = Configuration{});
-        #else
-        /* Configuration is forward-declared */
-        explicit VectorGL(const Configuration& configuration);
-        explicit VectorGL();
-        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

@@ -145,10 +145,6 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     };
 }
 
-template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile() {
-    return compile(Configuration{});
-}
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileState VertexColorGL<dimensions>::compile(const Flags flags) {
     return compile(Configuration{}
@@ -212,8 +208,6 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
 }
 
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Configuration& configuration): VertexColorGL{compile(configuration)} {}
-
-template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(): VertexColorGL{Configuration{}} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(const Flags flags): VertexColorGL{compile(Configuration{}

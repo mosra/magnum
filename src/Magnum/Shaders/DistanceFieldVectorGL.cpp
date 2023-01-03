@@ -166,10 +166,6 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     };
 }
 
-template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::CompileState DistanceFieldVectorGL<dimensions>::compile() {
-    return compile(Configuration{});
-}
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::CompileState DistanceFieldVectorGL<dimensions>::compile(const Flags flags) {
     return compile(Configuration{}
@@ -252,8 +248,6 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Configuration& configuration): DistanceFieldVectorGL{compile(configuration)} {}
-
-template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(): DistanceFieldVectorGL{Configuration{}} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFieldVectorGL(const Flags flags): DistanceFieldVectorGL{compile(Configuration{}

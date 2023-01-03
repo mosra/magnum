@@ -296,10 +296,6 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     };
 }
 
-template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile() {
-    return compile(Configuration{});
-}
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatGL<dimensions>::compile(const Flags flags) {
     return compile(Configuration{}
@@ -408,8 +404,6 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Configuration& configuration): FlatGL{compile(configuration)} {}
-
-template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(): FlatGL{Configuration{}} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(const Flags flags): FlatGL{compile(Configuration{}
