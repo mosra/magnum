@@ -393,10 +393,12 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # 24 is not enough, unlike the other GCC-based builds
+    # In this case it gets stuck even with 20 jobs, usually when the huge
+    # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
+    # get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
-        count: 20
+        count: 16
     - install-gcc-4_8
     - install-cmake:
         version: "3.4.3"
