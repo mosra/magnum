@@ -27,6 +27,7 @@
 
 #ifdef MAGNUM_MAGNUMFONT_BUILD_STATIC
 #include <Corrade/PluginManager/AbstractManager.h>
+#include <Corrade/Utility/Macros.h>
 
 static int magnumMagnumFontStaticImporter() {
     CORRADE_PLUGIN_IMPORT(MagnumFont)

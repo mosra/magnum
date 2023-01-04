@@ -27,6 +27,7 @@
 
 #ifdef MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC
 #include <Corrade/PluginManager/AbstractManager.h>
+#include <Corrade/Utility/Macros.h>
 
 static int magnumAnyImageImporterStaticImporter() {
     CORRADE_PLUGIN_IMPORT(AnyImageImporter)

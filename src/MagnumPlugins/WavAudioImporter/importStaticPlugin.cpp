@@ -27,6 +27,7 @@
 
 #ifdef MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC
 #include <Corrade/PluginManager/AbstractManager.h>
+#include <Corrade/Utility/Macros.h>
 
 static int magnumWavAudioImporterStaticImporter() {
     CORRADE_PLUGIN_IMPORT(WavAudioImporter)

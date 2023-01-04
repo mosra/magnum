@@ -27,6 +27,7 @@
 
 #ifdef MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC
 #include <Corrade/PluginManager/AbstractManager.h>
+#include <Corrade/Utility/Macros.h>
 
 static int magnumTgaImageConverterStaticImporter() {
     CORRADE_PLUGIN_IMPORT(TgaImageConverter)

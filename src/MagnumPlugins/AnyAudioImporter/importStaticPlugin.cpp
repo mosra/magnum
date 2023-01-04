@@ -27,6 +27,7 @@
 
 #ifdef MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC
 #include <Corrade/PluginManager/AbstractManager.h>
+#include <Corrade/Utility/Macros.h>
 
 static int magnumAnyAudioImporterStaticImporter() {
     CORRADE_PLUGIN_IMPORT(AnyAudioImporter)

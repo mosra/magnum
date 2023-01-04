@@ -27,6 +27,7 @@
 
 #ifdef MAGNUM_ANYSCENECONVERTER_BUILD_STATIC
 #include <Corrade/PluginManager/AbstractManager.h>
+#include <Corrade/Utility/Macros.h>
 
 static int magnumAnySceneConverterStaticImporter() {
     CORRADE_PLUGIN_IMPORT(AnySceneConverter)
