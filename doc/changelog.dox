@@ -739,8 +739,9 @@ See also:
     `MAGNUM_SHADERCONVERTER_STATIC_PLUGINS` CMake options for linking static
     plugins to the command-line utilities. See @ref building-features for more
     information.
--   The `FindSDL2.cmake` module now looks for `SDL2-static` as well (see
-    [mosra/magnum#594](https://github.com/mosra/magnum/pull/594))
+-   The `FindSDL2.cmake` module now looks for `SDL2-static` and `SDL2-staticd`
+    as well (see [mosra/magnum#594](https://github.com/mosra/magnum/pull/594)
+    and [mosra/magnum#613](https://github.com/mosra/magnum/pull/613))
 -   Fixed a typo in a CMake option name (see [mosra/magnum#599](https://github.com/mosra/magnum/pull/599))
 -   Worked around a MSVC2022 bug with constexpr conversion operators if C++20
     is used, causing most @ref Math tests to fail compilation (see
