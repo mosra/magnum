@@ -1196,16 +1196,16 @@ Equivalent to GLSL @glsl dmat4x3 @ce.
 typedef Math::Matrix4x3<Double> Matrix4x3d;
 
 /** @brief Double two-dimensional quadratic Bézier curve */
-typedef Math::QuadraticBezier2D<Float> QuadraticBezier2Dd;
+typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
 
 /** @brief Double three-dimensional quadratic Bézier curve */
-typedef Math::QuadraticBezier3D<Float> QuadraticBezier3Dd;
+typedef Math::QuadraticBezier3D<Double> QuadraticBezier3Dd;
 
 /** @brief Double two-dimensional cubic Bézier curve */
-typedef Math::CubicBezier2D<Float> CubicBezier2Dd;
+typedef Math::CubicBezier2D<Double> CubicBezier2Dd;
 
 /** @brief Double three-dimensional cubic Bézier curve */
-typedef Math::CubicBezier3D<Float> CubicBezier3Dd;
+typedef Math::CubicBezier3D<Double> CubicBezier3Dd;
 
 /** @brief Double scalar cubic Hermite spline point */
 typedef Math::CubicHermite1D<Double> CubicHermite1Dd;

@@ -775,6 +775,9 @@ See also:
 -   Fixed a silly mistake where there was no @cpp extern template @ce for a
     @ref Frustumd debug printer but two declarations for the float version
     instead (see [mosra/magnum#545](https://github.com/mosra/magnum/issues/545))
+-   Fixed the @ref QuadraticBezier2Dd, @ref QuadraticBezier3Dd,
+    @ref CubicBezier2Dd and @ref CubicBezier3Dd typedefs to be actually
+    double-precision
 -   Fixed @ref MeshTools::compile() to properly take into account index buffer
     offsets
 -   Fixed @ref MeshTools::removeDuplicates() to not take into account random
