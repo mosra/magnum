@@ -50,6 +50,7 @@ namespace Implementation {
         #endif
     };
     typedef Containers::EnumSet<VectorGLFlag> VectorGLFlags;
+    CORRADE_ENUMSET_OPERATORS(VectorGLFlags)
 }
 
 /**
@@ -731,7 +732,6 @@ template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, VectorGL<dimens
 namespace Implementation {
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, VectorGLFlag value);
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, VectorGLFlags value);
-    CORRADE_ENUMSET_OPERATORS(VectorGLFlags)
 }
 #endif
 

@@ -49,6 +49,7 @@ namespace Implementation {
         #endif
     };
     typedef Containers::EnumSet<VertexColorGLFlag> VertexColorGLFlags;
+    CORRADE_ENUMSET_OPERATORS(VertexColorGLFlags)
 }
 
 /**
@@ -548,7 +549,6 @@ template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, VertexColorGL<d
 namespace Implementation {
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, VertexColorGLFlag value);
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, VertexColorGLFlags value);
-    CORRADE_ENUMSET_OPERATORS(VertexColorGLFlags)
 }
 #endif
 

@@ -50,6 +50,7 @@ namespace Implementation {
         #endif
     };
     typedef Containers::EnumSet<DistanceFieldVectorGLFlag> DistanceFieldVectorGLFlags;
+    CORRADE_ENUMSET_OPERATORS(DistanceFieldVectorGLFlags)
 }
 
 /**
@@ -781,7 +782,6 @@ template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, DistanceFieldVe
 namespace Implementation {
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, DistanceFieldVectorGLFlag value);
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, DistanceFieldVectorGLFlags value);
-    CORRADE_ENUMSET_OPERATORS(DistanceFieldVectorGLFlags)
 }
 #endif
 

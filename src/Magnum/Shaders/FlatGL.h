@@ -66,6 +66,7 @@ namespace Implementation {
         #endif
     };
     typedef Containers::EnumSet<FlatGLFlag> FlatGLFlags;
+    CORRADE_ENUMSET_OPERATORS(FlatGLFlags)
 }
 
 /**
@@ -1560,7 +1561,6 @@ template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, FlatGL<dimensio
 namespace Implementation {
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, FlatGLFlag value);
     MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, FlatGLFlags value);
-    CORRADE_ENUMSET_OPERATORS(FlatGLFlags)
 }
 #endif
 
