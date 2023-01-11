@@ -1700,7 +1700,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::Array<UnsignedInt> indicesAsArray() const;
 
         /**
-         * @brief Positions as 32-bit integers into a pre-allocated view
+         * @brief Indices as 32-bit integers into a pre-allocated view
          *
          * Like @ref indicesAsArray(), but puts the result into @p destination
          * instead of allocating a new array. Expects that @p destination is
