@@ -95,6 +95,30 @@ requesting OpenGL ES 2.0 and advertising Retina support:
 Again, see [the official Apple Property List file documentation](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/AboutInformationPropertyListFiles.html)
 for information about all options.
 
+@section platforms-ios-native-resolution Running at native resolution
+
+In order to run at a native resolution on iOS, you need to add a Launch Screen
+Storyboard. A `LaunchScreen.storyboard` file can be generated from Xcode as
+shown in [Apple documentation](https://developer.apple.com/documentation/xcode/specifying-your-apps-launch-screen),
+you also can find a sample file [here](https://gist.github.com/hsdk123/ee940c1dd21a2055e7d1df5111dbedaa)
+or [here](https://github.com/Microsoft/appcenter-sampleapp-xamarin/blob/master/iOS/LaunchScreen.storyboard).
+Then, do the following in CMake:
+
+@todoc figure out what the heck is all the cruft in the file, check if it's possible to trim it down and then paste it here verbatim
+
+@code{.cmake}
+target_sources(my-application PRIVATE path/to/LaunchScreen.storyboard)
+set_property(SOURCE path/to/LaunchScreen.storyboard
+            PROPERTY MACOSX_PACKAGE_LOCATION "Resources/LaunchScreen.storyboard")
+@endcode
+
+You may also want to add this to your `*.plist` file:
+
+@code{.xml}
+<key>UILaunchStoryboardName</key>
+<string>LaunchScreen</string>
+@endcode
+
 @section platforms-ios-xcode Xcode
 
 @subsection platforms-ios-xcode-cmake CMake can't find a compiler
