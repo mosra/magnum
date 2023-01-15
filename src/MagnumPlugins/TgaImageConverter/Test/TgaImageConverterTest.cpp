@@ -51,6 +51,7 @@ struct TgaImageConverterTest: TestSuite::Tester {
 
     void rgb();
     void rgba();
+    void r();
 
     void unsupportedMetadata();
 
@@ -87,6 +88,8 @@ TgaImageConverterTest::TgaImageConverterTest() {
         &TgaImageConverterTest::rgb,
         &TgaImageConverterTest::rgba},
         Containers::arraySize(VerboseData));
+
+    addTests({&TgaImageConverterTest::r});
 
     addInstancedTests({&TgaImageConverterTest::unsupportedMetadata},
         Containers::arraySize(UnsupportedMetadataData));
@@ -201,6 +204,35 @@ void TgaImageConverterTest::rgba() {
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataRGBA),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(out.str(), data.message32);
+}
+
+/* Padding / skip tested in rgb() */
+constexpr char OriginalDataR[] = {
+    1, 2,
+    3, 4,
+    5, 6,
+};
+const ImageView2D OriginalR{PixelStorage{}.setAlignment(1), PixelFormat::R8Unorm, {2, 3}, OriginalDataR};
+
+void TgaImageConverterTest::r() {
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+
+    Containers::Optional<Containers::Array<char>> array = converter->convertToData(OriginalR);
+    CORRADE_VERIFY(array);
+
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
+
+    Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openData(*array));
+    Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
+    CORRADE_VERIFY(converted);
+
+    CORRADE_COMPARE(converted->storage().alignment(), 1);
+    CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
+    CORRADE_COMPARE(converted->format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataR),
+        TestSuite::Compare::Container);
 }
 
 void TgaImageConverterTest::unsupportedMetadata() {
