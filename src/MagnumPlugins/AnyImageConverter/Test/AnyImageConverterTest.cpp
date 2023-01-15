@@ -1078,7 +1078,8 @@ void AnyImageConverterTest::propagateFlags2D() {
     CORRADE_VERIFY(Utility::Path::exists(filename));
     CORRADE_COMPARE(out.str(),
         "Trade::AnyImageConverter::convertToFile(): using TgaImageConverter\n"
-        "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n");
+        "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n"
+        "Trade::TgaImageConverter::convertToData(): RLE output 3 bytes larger than uncompressed, falling back to uncompressed\n");
 }
 
 void AnyImageConverterTest::propagateFlags3D() {
