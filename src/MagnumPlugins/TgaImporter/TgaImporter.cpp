@@ -97,11 +97,11 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         return {};
     }
 
+    /* RLE encoding. Reference: http://www.paulbourke.net/dataformats/tga/ */
+    const bool rle = (header.imageType & 8);
+
     /* Color */
-    bool rle = false;
-    if(header.imageType == 2 || header.imageType == 10) {
-        /* Reference: http://www.paulbourke.net/dataformats/tga/ */
-        rle = header.imageType == 10;
+    if((header.imageType & ~8) == 2) {
         switch(header.bpp) {
             case 24:
                 format = PixelFormat::RGB8Unorm;
@@ -115,11 +115,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         }
 
     /* Grayscale */
-    } else if(header.imageType == 3 || header.imageType == 11) {
-        /* I only discovered this by accident when using ImageMagick's
-            mogrify -compression RunLengthEncoded file.tga
-           as far as I could find, it's not documented in any TGA specs */
-        rle = header.imageType == 11;
+    } else if((header.imageType & ~8) == 3) {
         format = PixelFormat::R8Unorm;
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
