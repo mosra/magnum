@@ -154,15 +154,6 @@ template<char ...components, class T> constexpr T scatter(const T& vector, const
     return Implementation::scatterRecursive<T, sizeof...(components), components...>(vector, values, 0);
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief gather()
- * @m_deprecated_since{2019,10} Use @ref gather() instead.
- */
-template<char ...components, class T> CORRADE_DEPRECATED("use gather() instead") constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
-    return gather<components...>(vector);
-}
-#endif
-
 }}
 
 #endif

@@ -1132,6 +1132,8 @@ See also:
         @cpp Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*) @ce
         and @cpp Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) @ce
         constructors or directly the new @ref Trade::MaterialData class
+-   Removed APIs deprecated in 2019.10, in particular:
+    -   @cpp Math::swizzle() @ce, use @ref Math::gather() instead
 -   All includes of @ref Corrade/Containers/PointerStl.h and
     @ref Corrade/Containers/ArrayViewStl.h that were added in 2019.01 for
     preserving backwards compatibility after the move from @ref std::unique_ptr
