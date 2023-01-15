@@ -73,7 +73,13 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
     header = {};
     switch(image.format()) {
         case PixelFormat::RGB8Unorm:
+            if(flags() & ImageConverterFlag::Verbose)
+                Debug{} << "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR";
+            header.imageType = 2;
+            break;
         case PixelFormat::RGBA8Unorm:
+            if(flags() & ImageConverterFlag::Verbose)
+                Debug{} << "Trade::TgaImageConverter::convertToData(): converting from RGBA to BGRA";
             header.imageType = 2;
             break;
         case PixelFormat::R8Unorm:
@@ -93,13 +99,9 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
         {std::size_t(image.size().y()), std::size_t(image.size().x()), pixelSize}});
 
     if(image.format() == PixelFormat::RGB8Unorm) {
-        if(flags() & ImageConverterFlag::Verbose)
-            Debug{} << "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR";
         for(Vector3ub& pixel: Containers::arrayCast<Vector3ub>(pixels))
             pixel = Math::gather<'b', 'g', 'r'>(pixel);
     } else if(image.format() == PixelFormat::RGBA8Unorm) {
-        if(flags() & ImageConverterFlag::Verbose)
-            Debug{} << "Trade::TgaImageConverter::convertToData(): converting from RGBA to BGRA";
         for(Vector4ub& pixel: Containers::arrayCast<Vector4ub>(pixels))
             pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
     }
