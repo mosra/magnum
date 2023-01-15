@@ -130,13 +130,6 @@ constexpr char ConvertedDataRGB[] = {
 const ImageView2D OriginalRGB{PixelStorage{}.setSkip({0, 1, 0}),
     PixelFormat::RGB8Unorm, {2, 3}, OriginalDataRGB};
 
-constexpr char OriginalDataRGBA[] = {
-    1, 2, 3, 4, 2, 3, 4, 5,
-    3, 4, 5, 6, 4, 5, 6, 7,
-    5, 6, 7, 8, 6, 7, 8, 9
-};
-const ImageView2D OriginalRGBA{PixelFormat::RGBA8Unorm, {2, 3}, OriginalDataRGBA};
-
 void TgaImageConverterTest::rgb() {
     auto&& data = VerboseData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -170,6 +163,14 @@ void TgaImageConverterTest::rgb() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(out.str(), data.message24);
 }
+
+/* Padding / skip tested in rgb() */
+constexpr char OriginalDataRGBA[] = {
+    1, 2, 3, 4, 2, 3, 4, 5,
+    3, 4, 5, 6, 4, 5, 6, 7,
+    5, 6, 7, 8, 6, 7, 8, 9
+};
+const ImageView2D OriginalRGBA{PixelFormat::RGBA8Unorm, {2, 3}, OriginalDataRGBA};
 
 void TgaImageConverterTest::rgba() {
     auto&& data = VerboseData[testCaseInstanceId()];
