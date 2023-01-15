@@ -343,8 +343,7 @@ void ImageConverterImplementationTest::converterInfoExtensionMimeType() {
         CORRADE_SKIP("TgaImageConverter plugin can't be loaded.");
 
     Containers::Pointer<Trade::AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
-    /** @todo pick a plugin that has some actual configuration */
-    converter->configuration().setValue("something", "is there");
+    converter->configuration().setValue("rle", "yes hello");
 
     /* Print to visually verify coloring */
     {
@@ -356,14 +355,16 @@ void ImageConverterImplementationTest::converterInfoExtensionMimeType() {
     std::ostringstream out;
     Debug redirectOutput{&out};
     Implementation::printImageConverterInfo(Debug::Flag::DisableColors, *converter);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE_AS(out.str(),
         "Plugin name: TgaImageConverter\n"
         "Features:\n"
         "  Convert2DToData\n"
         "File extension: tga\n"
         "MIME type: image/x-tga\n"
         "Configuration:\n"
-        "  something=is there\n");
+        "  # Run-length encode the data for smaller file size\n"
+        "  rle=yes hello\n",
+        TestSuite::Compare::StringHasPrefix);
 }
 
 void ImageConverterImplementationTest::converterInfoExtensionMimeTypeNoFileConversion() {
