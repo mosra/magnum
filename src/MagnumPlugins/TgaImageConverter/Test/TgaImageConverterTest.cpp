@@ -333,6 +333,7 @@ void TgaImageConverterTest::uncompressedRgb() {
         array = converter->convertToData(OriginalRGB);
     }
     CORRADE_VERIFY(array);
+    CORRADE_COMPARE(out.str(), data.message24);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
@@ -347,7 +348,6 @@ void TgaImageConverterTest::uncompressedRgb() {
     CORRADE_COMPARE(converted->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(ConvertedDataRGB),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), data.message24);
 }
 
 /* Padding / skip tested in uncompressedRgb() */
@@ -375,6 +375,7 @@ void TgaImageConverterTest::uncompressedRgba() {
         array = converter->convertToData(OriginalRGBA);
     }
     CORRADE_VERIFY(array);
+    CORRADE_COMPARE(out.str(), data.message32);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
@@ -389,7 +390,6 @@ void TgaImageConverterTest::uncompressedRgba() {
     CORRADE_COMPARE(converted->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataRGBA),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), data.message32);
 }
 
 /* Padding / skip tested in uncompressedRgb() */
