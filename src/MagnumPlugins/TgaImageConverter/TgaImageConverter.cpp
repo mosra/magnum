@@ -66,25 +66,26 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
 
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
-    Containers::Array<char> data{ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
+    Containers::Array<char> data{NoInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
 
-    /* Fill header */
-    auto header = reinterpret_cast<Implementation::TgaHeader*>(data.begin());
+    /* Clear the header and fill non-zero values */
+    auto& header = *reinterpret_cast<Implementation::TgaHeader*>(data.begin());
+    header = {};
     switch(image.format()) {
         case PixelFormat::RGB8Unorm:
         case PixelFormat::RGBA8Unorm:
-            header->imageType = 2;
+            header.imageType = 2;
             break;
         case PixelFormat::R8Unorm:
-            header->imageType = 3;
+            header.imageType = 3;
             break;
         default:
             Error() << "Trade::TgaImageConverter::convertToData(): unsupported pixel format" << image.format();
             return {};
     }
-    header->bpp = pixelSize*8;
-    header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
-    header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
+    header.bpp = pixelSize*8;
+    header.width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
+    header.height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
 
     /* Copy the pixels into output, dropping padding (if any) */
     const Containers::ArrayView<char> pixels = data.exceptPrefix(sizeof(Implementation::TgaHeader));
