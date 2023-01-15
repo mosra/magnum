@@ -220,12 +220,13 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
        not then allocate exactly the amount of bytes so we don't need to copy
        after. */
     const auto pixelSize = UnsignedByte(image.pixelSize());
+    const std::size_t uncompressedSize = sizeof(Implementation::TgaHeader) + pixelSize*image.size().product();
     const bool rle = configuration().value<bool>("rle");
     Containers::Array<char> data;
     if(rle) {
         arrayAppend(data, NoInit, sizeof(Implementation::TgaHeader));
     } else {
-        data = Containers::Array<char>{NoInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
+        data = Containers::Array<char>{NoInit, uncompressedSize};
     }
 
     /* Clear the header and fill non-zero values */
@@ -270,14 +271,24 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
                 break;
             default: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         }
+    }
 
-        /* Turn the array back into a non-growable to avoid a dangling deleter
-           on plugin unload */
-        arrayShrink(data);
+    /* If RLE wasn't used or if a RLE output is larger than uncompressed
+       output, write an uncompressed output instead */
+    if(!rle || (data.size() > uncompressedSize && configuration().value<bool>("rleFallbackIfLarger"))) {
+        if(rle) {
+            if(flags() & ImageConverterFlag::Verbose)
+                Debug{} << "Trade::TgaImageConverter::convertToData(): RLE output" << data.size() - uncompressedSize << "bytes larger than uncompressed, falling back to uncompressed";
 
-    /* Otherwise directly dopy the pixels into output, dropping padding (if
-       any), and do the BGR(A) conversion on the copied data */
-    } else {
+            /* Resize the array to exactly the uncompressed size (this will
+               always shrink, never grow) */
+            arrayResize(data, NoInit, uncompressedSize);
+
+            /* Remove the RLE bit from the header. Can't use the header
+               variable from above as it may be dangling at this point. */
+            reinterpret_cast<Implementation::TgaHeader*>(data.begin())->imageType &= ~8;
+        }
+
         const Containers::ArrayView<char> pixels = data.exceptPrefix(sizeof(Implementation::TgaHeader));
         Utility::copy(image.pixels(), Containers::StridedArrayView3D<char>{pixels,
             {std::size_t(image.size().y()), std::size_t(image.size().x()), pixelSize}});
@@ -290,6 +301,10 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
                 pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
         }
     }
+
+    /* If we started with a RLE-encoded file, turn the array back into a
+       non-growable to avoid a dangling deleter on plugin unload */
+    if(rle) arrayShrink(data);
 
     /* GCC 4.8 needs extra help here */
     return Containers::optional(std::move(data));

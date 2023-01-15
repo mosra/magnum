@@ -91,10 +91,12 @@ information.
 
 @section Trade-TgaImageConverter-behavior Behavior and limitations
 
-The output is RLE-compressed by default, you can produce uncompressed files by
-disabling the @cb{.ini} rle @ce @ref Trade-TgaImageConverter-configuration "configuration option".
-Enabling @cb{.ini} rleAcrossScanlines @ce will result in even smaller files
-but [such files are considered invalid in the TGA 2.0 spec](https://en.wikipedia.org/wiki/Truevision_TGA#Specification_discrepancies)
+The output is RLE-compressed by default unless the uncompressed output is
+smaller than RLE. You can always produce uncompressed files by disabling the
+@cb{.ini} rle @ce @ref Trade-TgaImageConverter-configuration "configuration option", and always RLE files by disabling the
+@cb{.ini} rleFallbackIfLarger @ce option. Enabling
+@cb{.ini} rleAcrossScanlines @ce can result in even smaller files but
+[such files are considered invalid in the TGA 2.0 spec](https://en.wikipedia.org/wiki/Truevision_TGA#Specification_discrepancies)
 and thus may cause issues in certain importers.
 
 The TGA file format doesn't have a way to distinguish between 2D and 1D array

@@ -61,6 +61,7 @@ struct TgaImageConverterTest: TestSuite::Tester {
     void rleRgb();
     void rleRgba();
     void rleDisabled();
+    void rleFallbackIfLarger();
 
     void unsupportedMetadata();
 
@@ -247,6 +248,37 @@ const struct {
 
 const struct {
     const char* name;
+    char data[2];
+    Containers::Array<UnsignedByte> expected;
+    Containers::Optional<bool> rle;
+    Containers::Optional<bool> rleFallbackIfLarger;
+    ImageConverterFlags flags;
+    const char* message;
+} RleFallbackIfLargerData[]{
+    {"RLE smaller, verbose", {7, 7}, {InPlaceInit, {
+            /* well, not smaller but not larger either, so we pick what's less
+               work (which is to not discard all the already-done RLE work) */
+            0x80|1, 7
+        }}, {}, {}, ImageConverterFlag::Verbose, ""},
+    {"RLE smaller, RLE disabled, verbose", {7, 7}, {InPlaceInit, {
+            7, 7
+        }}, false, {}, ImageConverterFlag::Verbose, ""},
+    {"uncompressed smaller", {7, 13}, {InPlaceInit, {
+            7, 13
+        }}, {}, {}, {}, ""},
+    {"uncompressed smaller, verbose", {7, 13}, {InPlaceInit, {
+            7, 13
+        }}, {}, {}, ImageConverterFlag::Verbose, "Trade::TgaImageConverter::convertToData(): RLE output 1 bytes larger than uncompressed, falling back to uncompressed\n"},
+    {"uncompressed smaller, fallback disabled, verbose", {7, 13}, {InPlaceInit, {
+            0x00|1, 7, 13
+        }}, {}, false, ImageConverterFlag::Verbose, ""},
+    {"uncompressed smaller, RLE disabled, verbose", {7, 13}, {InPlaceInit, {
+            7, 13
+        }}, false, false, ImageConverterFlag::Verbose, ""},
+};
+
+const struct {
+    const char* name;
     ImageFlags2D flags;
     const char* message;
 } UnsupportedMetadataData[]{
@@ -270,6 +302,9 @@ TgaImageConverterTest::TgaImageConverterTest() {
     addTests({&TgaImageConverterTest::rleRgb,
               &TgaImageConverterTest::rleRgba,
               &TgaImageConverterTest::rleDisabled});
+
+    addInstancedTests({&TgaImageConverterTest::rleFallbackIfLarger},
+        Containers::arraySize(RleFallbackIfLargerData));
 
     addInstancedTests({&TgaImageConverterTest::unsupportedMetadata},
         Containers::arraySize(UnsupportedMetadataData));
@@ -435,9 +470,11 @@ void TgaImageConverterTest::rle() {
     ImageView2D image{PixelStorage{}.setAlignment(1), PixelFormat::R8Unorm, size, data.data};
 
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
-
     if(data.rleAcrossScanlines)
         converter->configuration().setValue("rleAcrossScanlines", *data.rleAcrossScanlines);
+    /* Force RLE to be used even if larger than uncompressed. This behavior is
+       tested in rleFallbackIfLarger() instead. */
+    converter->configuration().setValue("rleFallbackIfLarger", false);
 
     Containers::Optional<Containers::Array<char>> array = converter->convertToData(image);
     CORRADE_VERIFY(array);
@@ -564,6 +601,49 @@ void TgaImageConverterTest::rleDisabled() {
     })), TestSuite::Compare::Container);
 
     /* No need to verify a roundtrip, that's tested enough in uncompressed*() */
+}
+
+void TgaImageConverterTest::rleFallbackIfLarger() {
+    auto&& data = RleFallbackIfLargerData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Skip/alignment handling tested in rleRgb() */
+    ImageView2D image{PixelStorage{}.setAlignment(1), PixelFormat::R8Unorm, {2, 1}, data.data};
+
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    converter->setFlags(data.flags);
+    if(data.rle)
+        converter->configuration().setValue("rle", *data.rle);
+    if(data.rleFallbackIfLarger)
+        converter->configuration().setValue("rleFallbackIfLarger", *data.rleFallbackIfLarger);
+
+    std::ostringstream out;
+    Containers::Optional<Containers::Array<char>> array;
+    {
+        Debug redirectOutput{&out};
+        array = converter->convertToData(image);
+    }
+    CORRADE_VERIFY(array);
+    CORRADE_COMPARE_AS(
+        Containers::arrayCast<const UnsignedByte>(*array)
+            .exceptPrefix(sizeof(Implementation::TgaHeader)),
+        data.expected,
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), data.message);
+
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
+
+    Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openData(*array));
+    Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
+    CORRADE_VERIFY(converted);
+
+    CORRADE_COMPARE(converted->size(), (Vector2i{2, 1}));
+    CORRADE_COMPARE(converted->format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE_AS(converted->data(),
+        Containers::arrayView(data.data),
+        TestSuite::Compare::Container);
 }
 
 void TgaImageConverterTest::unsupportedMetadata() {
