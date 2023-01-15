@@ -91,8 +91,11 @@ information.
 
 @section Trade-TgaImageConverter-behavior Behavior and limitations
 
-The output is always uncompressed. If you want to make use of RLE compression
-and have the files smaller, use the @ref StbImageConverter plugin instead.
+The output is RLE-compressed by default, you can produce uncompressed files by
+disabling the @cb{.ini} rle @ce @ref Trade-TgaImageConverter-configuration "configuration option".
+Enabling @cb{.ini} rleAcrossScanlines @ce will result in even smaller files
+but [such files are considered invalid in the TGA 2.0 spec](https://en.wikipedia.org/wiki/Truevision_TGA#Specification_discrepancies)
+and thus may cause issues in certain importers.
 
 The TGA file format doesn't have a way to distinguish between 2D and 1D array
 images. If an image has @ref ImageFlag2D::Array set, a warning is printed and
@@ -101,6 +104,16 @@ the file is saved as a regular 2D image.
 While TGA files can have several extensions, @ref extension() always returns
 @cpp "tga" @ce as that's the most common one. As TGA doesn't have a registered
 MIME type, @ref mimeType() returns @cpp "image/x-tga" @ce.
+
+@section Trade-TgaImageConverter-configuration Plugin-specific configuration
+
+It's possible to tune various output options through @ref configuration(). See
+below for all options and their default values:
+
+@snippet MagnumPlugins/TgaImageConverter/TgaImageConverter.conf configuration_
+
+See @ref plugins-configuration for more information and an example showing how
+to edit the configuration values.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:

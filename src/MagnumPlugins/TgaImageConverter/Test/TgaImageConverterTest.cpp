@@ -30,15 +30,19 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "MagnumPlugins/TgaImporter/TgaHeader.h"
 
 #include "configure.h"
 
@@ -49,9 +53,14 @@ struct TgaImageConverterTest: TestSuite::Tester {
 
     void wrongFormat();
 
-    void rgb();
-    void rgba();
-    void r();
+    void uncompressedRgb();
+    void uncompressedRgba();
+    void uncompressedR();
+
+    void rle();
+    void rleRgb();
+    void rleRgba();
+    void rleDisabled();
 
     void unsupportedMetadata();
 
@@ -59,6 +68,8 @@ struct TgaImageConverterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImageConverter> _converterManager{"nonexistent"};
     PluginManager::Manager<AbstractImporter> _importerManager{"nonexistent"};
 };
+
+using namespace Math::Literals;
 
 constexpr struct {
     const char* name;
@@ -70,6 +81,168 @@ constexpr struct {
     {"verbose", ImageConverterFlag::Verbose,
         "Trade::TgaImageConverter::convertToData(): converting from RGB to BGR\n",
         "Trade::TgaImageConverter::convertToData(): converting from RGBA to BGRA\n"}
+};
+
+const struct {
+    TestSuite::TestCaseDescriptionSourceLocation name;
+    Containers::Array<char> data;
+    Containers::Array<UnsignedByte> expected;
+    Int width;
+    Containers::Optional<bool> rleAcrossScanlines;
+} RleData[]{
+    {"single repeat run", {InPlaceInit, {
+            3, 3, 3, 3, 3
+        }}, {InPlaceInit, {
+            0x80|4, 3
+        }}, 5, {}},
+    {"single sequence run", {InPlaceInit, {
+            2, 7, 6, 5, 4, 37
+        }}, {InPlaceInit, {
+            0x00|5, 2, 7, 6, 5, 4, 37
+        }}, 6, {}},
+    {"1x1 pixel", {InPlaceInit, {
+            2
+        }}, {InPlaceInit, {
+            0x00|0, 2
+        }}, 1, {}},
+    {"two repeats", {InPlaceInit, {
+            1, 1, 1, 2, 2, 2, 2, 2
+        }}, {InPlaceInit, {
+            0x80|2, 1, 0x80|4, 2
+        }}, 8, {}},
+    {"sequence after a repeat", {InPlaceInit, {
+            2, 2, 2, 3, 4, 5, 76
+        }}, {InPlaceInit, {
+            0x80|2, 2, 0x00|3, 3, 4, 5, 76
+        }}, 7, {}},
+    {"repeat after a sequence", {InPlaceInit, {
+            3, 4, 5, 76, 2, 2, 2
+        }}, {InPlaceInit, {
+            0x00|3, 3, 4, 5, 76, 0x80|2, 2
+        }}, 7, {}},
+    {"repeat after a single different pixel", {InPlaceInit, {
+            76, 2, 2
+        }}, {InPlaceInit, {
+            0x00|0, 76, 0x80|1, 2
+        }}, 3, {}},
+    {"single different pixel after a repeat", {InPlaceInit, {
+            2, 2, 76
+        }}, {InPlaceInit, {
+            0x80|1, 2, 0x00|0, 76
+        }}, 3, {}},
+    {"repeat across a scanline", {InPlaceInit, {
+            2, 4, 4,
+            4, 4, 5
+        }}, {InPlaceInit, {
+            0x00|0, 2, 0x80|1, 4, 0x80|1, 4, 0x00|0, 5
+        }}, 3, {}},
+    {"repeat across a scanline, single pixel before", {InPlaceInit, {
+            2, 3, 4,
+            4, 4, 5
+        }}, {InPlaceInit, {
+            /* Whole first line encoded as a sequence */
+            0x00|2, 2, 3, 4,
+            0x80|1, 4, 0x00|0, 5
+        }}, 3, {}},
+    {"repeat across a scanline, single pixel after", {InPlaceInit, {
+            2, 4, 4,
+            4, 3, 5
+        }}, {InPlaceInit, {
+            0x00|0, 2, 0x80|1, 4,
+            /* Whole second line encoded as a sequence */
+            0x00|2, 4, 3, 5
+        }}, 3, {}},
+    {"repeat across a scanline, non-strict", {InPlaceInit, {
+            2, 4, 4,
+            4, 4, 5
+        }}, {InPlaceInit, {
+            0x00|0, 2, 0x80|3, 4, 0x00|0, 5
+        }}, 3, true},
+    {"sequence across a scanline", {InPlaceInit, {
+            2, 2, 3, 4,
+            5, 6, 7, 7
+        }}, {InPlaceInit, {
+            0x80|1, 2, 0x00|1, 3, 4, 0x00|1, 5, 6, 0x80|1, 7
+        }}, 4, {}},
+    {"sequence across a scanline, single pixel before", {InPlaceInit, {
+            2, 2, 2, 4,
+            5, 6, 7, 7
+        }}, {InPlaceInit, {
+            0x80|2, 2, 0x00|0, 4, 0x00|1, 5, 6, 0x80|1, 7
+        }}, 4, {}},
+    {"sequence across a scanline, single pixel after", {InPlaceInit, {
+            2, 2, 3, 4,
+            5, 7, 7, 7
+        }}, {InPlaceInit, {
+            0x80|1, 2, 0x00|1, 3, 4, 0x00|0, 5, 0x80|2, 7
+        }}, 4, {}},
+    {"sequence across a scanline, non-strict", {InPlaceInit, {
+            2, 2, 3, 4,
+            5, 6, 7, 7
+        }}, {InPlaceInit, {
+            0x80|1, 2, 0x00|3, 3, 4, 5, 6, 0x80|1, 7
+        }}, 4, true},
+    {"repeat & sequence across multiple scanlines, non-strict", {InPlaceInit, {
+            2, 2, 2,
+            2, 2, 2,
+            2, 3, 4,
+            5, 6, 7,
+            8, 9, 0,
+            1, 2, 3
+        }}, {InPlaceInit, {
+            0x80|6, 2, 0x00|10, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3
+        }}, 3, true},
+    {"repeat overflow", {InPlaceInit, {
+         /* 1  2  3  4  5  6  7  8  9 10 11 12 13 14 16 16 */
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 6,
+            6, 6
+        }}, {InPlaceInit, {
+            0x80|127, 7, 0x80|30, 7, 0x80|2, 6
+        }}, 128 + 31 + 3, {}},
+    {"sequence overflow", {InPlaceInit, {
+         /* 1  2  3  4  5  6  7  8  9 10 11 12 13 14 16 16 */
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            6, 6
+        }}, {InPlaceInit, {
+            0x00|127,
+             /* 1  2  3  4  5  6  7  8  9 10 11 12 13 14 16 16 */
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+            0x00|30,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6,
+                7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7,
+            0x80|2,
+                6
+        }}, 128 + 31 + 3, {}},
 };
 
 const struct {
@@ -85,11 +258,18 @@ TgaImageConverterTest::TgaImageConverterTest() {
     addTests({&TgaImageConverterTest::wrongFormat});
 
     addInstancedTests({
-        &TgaImageConverterTest::rgb,
-        &TgaImageConverterTest::rgba},
+        &TgaImageConverterTest::uncompressedRgb,
+        &TgaImageConverterTest::uncompressedRgba},
         Containers::arraySize(VerboseData));
 
-    addTests({&TgaImageConverterTest::r});
+    addTests({&TgaImageConverterTest::uncompressedR});
+
+    addInstancedTests({&TgaImageConverterTest::rle},
+        Containers::arraySize(RleData));
+
+    addTests({&TgaImageConverterTest::rleRgb,
+              &TgaImageConverterTest::rleRgba,
+              &TgaImageConverterTest::rleDisabled});
 
     addInstancedTests({&TgaImageConverterTest::unsupportedMetadata},
         Containers::arraySize(UnsupportedMetadataData));
@@ -133,7 +313,7 @@ constexpr char ConvertedDataRGB[] = {
 const ImageView2D OriginalRGB{PixelStorage{}.setSkip({0, 1, 0}),
     PixelFormat::RGB8Unorm, {2, 3}, OriginalDataRGB};
 
-void TgaImageConverterTest::rgb() {
+void TgaImageConverterTest::uncompressedRgb() {
     auto&& data = VerboseData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -142,6 +322,9 @@ void TgaImageConverterTest::rgb() {
     CORRADE_COMPARE(converter->mimeType(), "image/x-tga");
 
     converter->setFlags(data.flags);
+
+    /* Disable RLE, that's tested in rle*() instead */
+    converter->configuration().setValue("rle", false);
 
     std::ostringstream out;
     Containers::Optional<Containers::Array<char>> array;
@@ -167,7 +350,7 @@ void TgaImageConverterTest::rgb() {
     CORRADE_COMPARE(out.str(), data.message24);
 }
 
-/* Padding / skip tested in rgb() */
+/* Padding / skip tested in uncompressedRgb() */
 constexpr char OriginalDataRGBA[] = {
     1, 2, 3, 4, 2, 3, 4, 5,
     3, 4, 5, 6, 4, 5, 6, 7,
@@ -175,12 +358,15 @@ constexpr char OriginalDataRGBA[] = {
 };
 const ImageView2D OriginalRGBA{PixelFormat::RGBA8Unorm, {2, 3}, OriginalDataRGBA};
 
-void TgaImageConverterTest::rgba() {
+void TgaImageConverterTest::uncompressedRgba() {
     auto&& data = VerboseData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
     converter->setFlags(data.flags);
+
+    /* Disable RLE, that's tested in rle*() instead */
+    converter->configuration().setValue("rle", false);
 
     std::ostringstream out;
     Containers::Optional<Containers::Array<char>> array;
@@ -206,7 +392,7 @@ void TgaImageConverterTest::rgba() {
     CORRADE_COMPARE(out.str(), data.message32);
 }
 
-/* Padding / skip tested in rgb() */
+/* Padding / skip tested in uncompressedRgb() */
 constexpr char OriginalDataR[] = {
     1, 2,
     3, 4,
@@ -214,8 +400,11 @@ constexpr char OriginalDataR[] = {
 };
 const ImageView2D OriginalR{PixelStorage{}.setAlignment(1), PixelFormat::R8Unorm, {2, 3}, OriginalDataR};
 
-void TgaImageConverterTest::r() {
+void TgaImageConverterTest::uncompressedR() {
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+
+    /* Disable RLE, that's tested in rle*() instead */
+    converter->configuration().setValue("rle", false);
 
     Containers::Optional<Containers::Array<char>> array = converter->convertToData(OriginalR);
     CORRADE_VERIFY(array);
@@ -233,6 +422,148 @@ void TgaImageConverterTest::r() {
     CORRADE_COMPARE(converted->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataR),
         TestSuite::Compare::Container);
+}
+
+void TgaImageConverterTest::rle() {
+    auto&& data = RleData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_COMPARE_AS(data.data.size(), data.width,
+        TestSuite::Compare::Divisible);
+    Vector2i size{data.width, Int(data.data.size()/data.width)};
+    /* Skip/alignment handling tested in rleRgb() */
+    ImageView2D image{PixelStorage{}.setAlignment(1), PixelFormat::R8Unorm, size, data.data};
+
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+
+    if(data.rleAcrossScanlines)
+        converter->configuration().setValue("rleAcrossScanlines", *data.rleAcrossScanlines);
+
+    Containers::Optional<Containers::Array<char>> array = converter->convertToData(image);
+    CORRADE_VERIFY(array);
+    CORRADE_COMPARE_AS(
+        Containers::arrayCast<const UnsignedByte>(*array)
+            .exceptPrefix(sizeof(Implementation::TgaHeader)),
+        data.expected,
+        TestSuite::Compare::Container);
+
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
+
+    Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openData(*array));
+    Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
+    CORRADE_VERIFY(converted);
+
+    CORRADE_COMPARE(converted->size(), size);
+    CORRADE_COMPARE(converted->format(), PixelFormat::R8Unorm);
+    CORRADE_COMPARE_AS(converted->data(),
+        data.data,
+        TestSuite::Compare::Container);
+}
+
+void TgaImageConverterTest::rleRgb() {
+    Color3ub data[]{
+        {}, {}, {}, {},
+        /* Three different pixels, differing always in only one component */
+        0x0000ff_rgb, 0x0000ef_rgb, 0x0100ef_rgb, {},
+        /* One different and two same pixels */
+        0x0100ef_rgb, 0xaabbcc_rgb, 0xaabbcc_rgb, {},
+    };
+
+    ImageView2D image{PixelStorage{}.setRowLength(4).setSkip({0, 1, 0}), PixelFormat::RGB8Unorm, {3, 2}, data};
+
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    Containers::Optional<Containers::Array<char>> array = converter->convertToData(image);
+    CORRADE_VERIFY(array);
+    CORRADE_COMPARE_AS(
+        Containers::arrayCast<const UnsignedByte>(*array)
+            .exceptPrefix(sizeof(Implementation::TgaHeader)),
+        Containers::arrayView<UnsignedByte>({
+            /* Swizzled to BGR */
+            0x00|2, 0xff, 0x00, 0x00,
+                    0xef, 0x00, 0x00,
+                    0xef, 0x00, 0x01,
+            /* No runs across rows by default */
+            0x00|0, 0xef, 0x00, 0x01,
+            0x80|1, 0xcc, 0xbb, 0xaa,
+        }),
+        TestSuite::Compare::Container);
+
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
+
+    Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openData(*array));
+    Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
+    CORRADE_VERIFY(converted);
+
+    CORRADE_COMPARE(converted->size(), (Vector2i{3, 2}));
+    CORRADE_COMPARE(converted->format(), PixelFormat::RGB8Unorm);
+    CORRADE_COMPARE_AS(converted->data(), Containers::arrayCast<const char>(Containers::arrayView({
+        0x0000ff_rgb, 0x0000ef_rgb, 0x0100ef_rgb,
+        0x0100ef_rgb, 0xaabbcc_rgb, 0xaabbcc_rgb,
+    })), TestSuite::Compare::Container);
+}
+
+const Color4ub RleRgbaData[]{
+    /* Four different pixels, differing always in only one component */
+    0x0000ffff_rgba, 0x0000efff_rgba, 0x0100efff_rgba, 0x0100effe_rgba,
+    /* One different and three same pixels */
+    0x0100effe_rgba, 0xaabbccdd_rgba, 0xaabbccdd_rgba, 0xaabbccdd_rgba
+};
+
+void TgaImageConverterTest::rleRgba() {
+    ImageView2D image{PixelFormat::RGBA8Unorm, {4, 2}, RleRgbaData};
+
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    Containers::Optional<Containers::Array<char>> array = converter->convertToData(image);
+    CORRADE_VERIFY(array);
+    CORRADE_COMPARE_AS(
+        Containers::arrayCast<const UnsignedByte>(*array)
+            .exceptPrefix(sizeof(Implementation::TgaHeader)),
+        Containers::arrayView<UnsignedByte>({
+            /* Swizzled to BGRA */
+            0x00|3, 0xff, 0x00, 0x00, 0xff,
+                    0xef, 0x00, 0x00, 0xff,
+                    0xef, 0x00, 0x01, 0xff,
+                    0xef, 0x00, 0x01, 0xfe,
+            /* No runs across rows by default */
+            0x00|0, 0xef, 0x00, 0x01, 0xfe,
+            0x80|2, 0xcc, 0xbb, 0xaa, 0xdd
+        }),
+        TestSuite::Compare::Container);
+
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
+
+    Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openData(*array));
+    Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
+    CORRADE_VERIFY(converted);
+
+    CORRADE_COMPARE(converted->size(), (Vector2i{4, 2}));
+    CORRADE_COMPARE(converted->format(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE_AS(converted->data(),
+        Containers::arrayCast<const char>(RleRgbaData),
+        TestSuite::Compare::Container);
+}
+
+void TgaImageConverterTest::rleDisabled() {
+    ImageView2D image{PixelFormat::RGBA8Unorm, {4, 2}, RleRgbaData};
+
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    converter->configuration().setValue("rle", false);
+
+    const Containers::Optional<Containers::Array<char>> array = converter->convertToData(image);
+    CORRADE_VERIFY(array);
+    CORRADE_COMPARE_AS(array->exceptPrefix(sizeof(Implementation::TgaHeader)),Containers::arrayCast<const char>(Containers::arrayView({
+        /* Swizzled to BGRA */
+        0xff0000ff_rgba, 0xef0000ff_rgba, 0xef0001ff_rgba, 0xef0001fe_rgba,
+        0xef0001fe_rgba, 0xccbbaadd_rgba, 0xccbbaadd_rgba, 0xccbbaadd_rgba
+    })), TestSuite::Compare::Container);
+
+    /* No need to verify a roundtrip, that's tested enough in uncompressed*() */
 }
 
 void TgaImageConverterTest::unsupportedMetadata() {
