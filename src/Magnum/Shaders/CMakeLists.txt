@@ -65,18 +65,20 @@ set(MagnumShaders_HEADERS
     glShaderWrapper.h
     visibility.h)
 
+# Header files to display in project view of IDEs only
+set(MagnumShaders_PRIVATE_HEADERS
+    Implementation/CreateCompatibilityShader.h)
+
 if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumShaders_HEADERS
         VertexColor.h)
 endif()
 
-# Header files to display in project view of IDEs only
-set(MagnumShaders_PRIVATE_HEADERS Implementation/CreateCompatibilityShader.h)
-
 # Objects shared between main and test library
 add_library(MagnumShadersObjects OBJECT
     ${MagnumShaders_SRCS}
-    ${MagnumShaders_HEADERS})
+    ${MagnumShaders_HEADERS}
+    ${MagnumShaders_PRIVATE_HEADERS})
 if(MAGNUM_BUILD_STATIC)
     # On the static build we're importing the resources manually, so no need to
     # have the implicit initializers as well.
