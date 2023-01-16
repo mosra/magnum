@@ -103,6 +103,8 @@ void MeshVisualizerGLBase::assertExtensions(const FlagsBase flags) {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if(flags >= FlagBase::ObjectId)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::gpu_shader4);
     if(flags >= FlagBase::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif

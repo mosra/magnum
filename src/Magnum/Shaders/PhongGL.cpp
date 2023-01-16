@@ -126,6 +126,8 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    if(configuration.flags() >= Flag::ObjectId)
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::gpu_shader4);
     if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
