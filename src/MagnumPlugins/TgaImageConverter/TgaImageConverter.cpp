@@ -45,6 +45,8 @@ namespace Magnum { namespace Trade {
 
 using namespace Containers::Literals;
 
+/** @todo doesn't populate config options correctly, deprecate (used in
+    MagnumFontConverter currently) */
 TgaImageConverter::TgaImageConverter() = default;
 
 TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractImageConverter{manager, plugin} {}
