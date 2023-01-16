@@ -370,7 +370,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          */
 
         /**
-         * @brief Bind a draw offset
+         * @brief Set a draw offset
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
