@@ -421,6 +421,195 @@ target_link_libraries(your-app PRIVATE Magnum::Primitives)
 @endcode
 
 See @ref building and @ref cmake for more information.
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-axis2d.png width=128px
+@ref axis2D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-axis3d.png width=128px
+@ref axis3D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-capsule2dwireframe.png width=128px
+@ref capsule2DWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-capsule3dsolid.png width=128px
+@ref capsule3DSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-capsule3dwireframe.png width=128px
+@ref capsule3DWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-circle2dsolid.png width=128px
+@ref circle2DSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-circle2dwireframe.png width=128px
+@ref circle2DWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-circle3dsolid.png width=128px
+@ref circle3DSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-circle3dwireframe.png width=128px
+@ref circle3DWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-conesolid.png width=128px
+@ref coneSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-conewireframe.png width=128px
+@ref coneWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-crosshair2d.png width=128px
+@ref crosshair2D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-crosshair3d.png width=128px
+@ref crosshair3D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-cubesolid.png width=128px
+@ref cubeSolid() \n @ref cubeSolidStrip()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-cubewireframe.png width=128px
+@ref cubeWireframe()
+@m_enddiv
+
+@m_div{m-clearfix-s m-show-s} @m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-cylindersolid.png width=128px
+@ref cylinderSolid()
+@m_enddiv
+
+@m_div{m-clearfix-m m-show-m} @m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-cylinderwireframe.png width=128px
+@ref cylinderWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-gradient2d.png width=128px
+@ref gradient2D()
+@m_enddiv
+
+@m_div{m-clearfix-l m-show-l} @m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-gradient2dhorizontal.png width=128px
+@ref gradient2DHorizontal()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-gradient2dvertical.png width=128px
+@ref gradient2DVertical()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-gradient3d.png width=128px
+@ref gradient3D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-gradient3dhorizontal.png width=128px
+@ref gradient3DHorizontal()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-gradient3dvertical.png width=128px
+@ref gradient3DVertical()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-grid3dsolid.png width=128px
+@ref grid3DSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-grid3dwireframe.png width=128px
+@ref grid3DWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-icospheresolid.png width=128px
+@ref icosphereSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-icospherewireframe.png width=128px
+@ref icosphereWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-line2d.png width=128px
+@ref line2D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-line3d.png width=128px
+@ref line3D()
+@m_enddiv
+
+@m_div{m-col-l-2 m-col-m-3 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-planesolid.png width=128px
+@ref planeSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-0 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-planewireframe.png width=128px
+@ref planeWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-0 m-col-s-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-squaresolid.png width=128px
+@ref squareSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-1 m-col-s-4 m-push-s-0 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html primitives-squarewireframe.png width=128px
+@ref squareWireframe()
+@m_enddiv
+
+@m_div{m-col-l-2 m-push-l-1 m-col-m-4 m-push-m-1 m-col-s-4 m-push-s-2 m-col-t-6 m-push-t-0 m-text-center m-nopadt m-nopadx}
+@image html primitives-uvspheresolid.png width=128px
+@ref uvSphereSolid()
+@m_enddiv
+
+@m_div{m-col-l-2 m-push-l-1 m-col-m-3 m-push-m-1 m-col-s-4 m-push-s-2 m-col-t-6 m-push-t-3 m-text-center m-nopadt m-nopadx}
+@image html primitives-uvspherewireframe.png width=128px
+@ref uvSphereWireframe()
+@m_enddiv
+
+@endparblock
+
+@see @relativeref{Trade,PrimitiveImporter}
 */
 
 /** @dir Magnum/SceneGraph
