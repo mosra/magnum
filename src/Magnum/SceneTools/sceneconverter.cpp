@@ -33,6 +33,7 @@
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h> /* parseNumberSequence() */
 
+#include "Magnum/MaterialTools/PhongToPbrMetallicRoughness.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Reference.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -180,7 +181,7 @@ magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [-C|--converter PLUGIN]... [-P|--image-converter PLUGIN]...
     [-M|--mesh-converter PLUGIN]... [--plugin-dir DIR] [--map]
     [--only-mesh-attributes N1,N2-N3…] [--remove-duplicate-vertices]
-    [--remove-duplicate-vertices-fuzzy EPSILON]
+    [--remove-duplicate-vertices-fuzzy EPSILON] [--phong-to-pbr]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]...
     [-p|--image-converter-options key=val,key2=val2,…]...
@@ -217,6 +218,8 @@ Arguments:
 -   `--remove-duplicate-vertices-fuzzy EPSILON` --- remove duplicate vertices
     using @ref MeshTools::removeDuplicatesFuzzy(const Trade::MeshData&, Float, Double)
     in all meshes after import
+-   `--phong-to-pbr` --- convert Phong materials to PBR metallic/roughness
+    using @ref MaterialTools::phongToPbrMetallicRoughness()
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
@@ -292,8 +295,8 @@ feature for given image dimensions, all mesh converters in the chain have to
 support the ConvertMesh feature. If no `-P` / `-M` is specified, the imported
 images / meshes are passed directly to the scene converter.
 
-The `--remove-duplicate-vertices` operations are performed before passing them
-to any converter.
+The `--remove-duplicate-vertices` and `--phong-to-pbr` operations are performed
+on meshes and materials before passing them to any converter.
 
 If `--concatenate-meshes` is given, all meshes of the input file are
 first concatenated into a single mesh using @ref MeshTools::concatenate(), with
@@ -404,6 +407,7 @@ int main(int argc, char** argv) {
         .addOption("only-mesh-attributes").setHelp("only-mesh-attributes", "include only mesh attributes of given IDs in the output", "N1,N2-N3…")
         .addBooleanOption("remove-duplicate-vertices").setHelp("remove-duplicate-vertices", "remove duplicate vertices in all meshes after import")
         .addOption("remove-duplicate-vertices-fuzzy").setHelp("remove-duplicate-vertices-fuzzy", "remove duplicate vertices with fuzzy comparison in all meshes after import", "EPSILON")
+        .addBooleanOption("phong-to-pbr").setHelp("phong-to-pbr", "convert Phong materials to PBR metallic/roughness")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addArrayOption('p', "image-converter-options").setHelp("image-converter-options", "configuration options to pass to the image converter(s)", "key=val,key2=val2,…")
@@ -478,8 +482,8 @@ feature for given image dimensions, all mesh converters in the chain have to
 support the ConvertMesh feature. If no -P / -M is specified, the imported
 images / meshes are passed directly to the scene converter.
 
-The --remove-duplicate-vertices operations are performed on meshes before
-passing them to any converter.
+The --remove-duplicate-vertices and --phong-to-pbr operations are performed on
+meshes and materials before passing them to any converter.
 
 If --concatenate-meshes is given, all meshes of the input file are first
 concatenated into a single mesh, with the scene hierarchy transformation baked
@@ -943,6 +947,39 @@ well, the IDs reference attributes of the first mesh.)")
         }
     }
 
+    /* Operations to perform on all materials in the importer. If there are
+       any, materials are supplied manually to the converter from the array
+       below. */
+    Containers::Array<Trade::MaterialData> materials;
+    if(args.isSet("phong-to-pbr")) {
+        arrayReserve(materials, importer->materialCount());
+
+        for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
+            Containers::Optional<Trade::MaterialData> material;
+            {
+                Trade::Implementation::Duration d{importConversionTime};
+                if(!(material = importer->material(i))) {
+                    Error{} << "Cannot import material" << i;
+                    return 1;
+                }
+            }
+
+            /* Phong to PBR conversion */
+            if(args.isSet("phong-to-pbr")) {
+                if(args.isSet("verbose"))
+                    Debug{} << "Converting material" << i << "to PBR";
+
+                Trade::Implementation::Duration d{conversionTime};
+                /** @todo make the flags configurable as well? then the below
+                    assert can actually fire, convert to a runtime error */
+                material = MaterialTools::phongToPbrMetallicRoughness(*material, MaterialTools::PhongToPbrMetallicRoughnessFlag::DropUnconvertableAttributes);
+                CORRADE_INTERNAL_ASSERT(material);
+            }
+
+            arrayAppend(materials, *std::move(material));
+        }
+    }
+
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnySceneConverter. All converters except the last one are
        expected to support ConvertMesh and the mesh is "piped" from one to the
@@ -1111,6 +1148,59 @@ well, the IDs reference attributes of the first mesh.)")
                 that each change the output to verify the old meshes don't get
                 reused in the next step again */
             meshes = {};
+        }
+
+        /* If there are any loose materials from previous conversion steps, add
+           them directly, and clear the array so the next iteration (if any)
+           takes them from the importer instead */
+        if(materials) {
+            /* Materials reference textures (and those reference images), thus
+               we need to add those first */
+            {
+                const Trade::SceneContents materialDependencies = contents &
+                    (Trade::SceneContent::Images1D|
+                     Trade::SceneContent::Images2D|
+                     Trade::SceneContent::Images3D|
+                     Trade::SceneContent::ImageLevels|
+                     Trade::SceneContent::Textures|
+                     Trade::SceneContent::Names);
+
+                Trade::Implementation::Duration d{importConversionTime};
+                if(!converter->addSupportedImporterContents(*importer, materialDependencies)) {
+                    Error{} << "Cannot add material dependencies";
+                    return 5;
+                }
+
+                /* Ensure these are not added by addSupportedImporterContents()
+                   again below, except for names -- those should be added as
+                   long as they were in the contents originally. */
+                contents &= ~(materialDependencies & ~Trade::SceneContent::Names);
+            }
+
+            if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Materials)) {
+                Warning{} << "Ignoring" << materials.size() << "materials not supported by the converter";
+            } else for(UnsignedInt i = 0; i != materials.size(); ++i) {
+                Trade::Implementation::Duration d{conversionTime};
+
+                if(!converter->add(materials[i], contents & Trade::SceneContent::Names ? importer->materialName(i) : Containers::String{})) {
+                    Error{} << "Cannot add material" << i;
+                    return 1;
+                }
+            }
+
+            /* Ensure the materials are not added by
+               addSupportedImporterContents() below. Do this also in case the
+               converter actually doesn't support mesh addition, as it would
+               otherwise cause two warnings about the same "not supported"
+               thing being printed. */
+            contents &= ~Trade::SceneContent::Materials;
+
+            /* Delete the list to avoid adding them again for the next
+               converter (at which point they would be stale) */
+            /** @todo this line is untested, needs two chained conversion steps
+                that each change the output to verify the old materials don't
+                get reused in the next step again */
+            materials = {};
         }
 
         {

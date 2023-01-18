@@ -664,6 +664,48 @@ const struct {
         "Processing 3D image 1 with StbResizeImageConverter...\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding texture 0 out of 2\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding texture 1 out of 2\n"},
+    {"Phong to PBR", {InPlaceInit, {
+            "-I", "UfbxImporter", "-C", "GltfSceneConverter", "--phong-to-pbr",
+            /* We need the file as minimal as possible, so no index buffer.
+               OTOH, dropping meshes altogether would also lose
+               node/mesh/material assignment, which is important */
+            "-i", "generateIndices=false",
+            /* Removing the generator identifier for a smaller file */
+            "-c", "generator=",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/materials-phong.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/materials-pbr.gltf")
+        }},
+        "UfbxImporter", "PngImporter", "GltfSceneConverter", {"PngImageConverter", nullptr}, nullptr,
+        /* The file should contain also material names and everything */
+        "materials-pbr.gltf", nullptr,
+        "MaterialTools::phongToPbrMetallicRoughness(): unconvertable Trade::MaterialAttribute::AmbientColor attribute, skipping\n"
+        /** @todo remove this once StridedBitArray exists and SceneData +
+            UfbxImporter uses it for bit values */
+        "Trade::GltfSceneConverter::add(): custom scene field Visibility has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"
+        "Trade::GltfSceneConverter::add(): custom scene field GeometryTransformHelper has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"},
+    {"Phong to PBR, verbose", {InPlaceInit, {
+            /* Same as above, just with -v added */
+            "-I", "UfbxImporter", "-C", "GltfSceneConverter", "--phong-to-pbr",
+            "-i", "generateIndices=false", "-c", "generator=", "-v",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/materials-phong.obj"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/materials-pbr.gltf")
+        }},
+        "UfbxImporter", "PngImporter", "GltfSceneConverter", {"PngImageConverter", nullptr}, nullptr,
+        "materials-pbr.gltf", nullptr,
+        "Converting material 0 to PBR\n"
+        "MaterialTools::phongToPbrMetallicRoughness(): unconvertable Trade::MaterialAttribute::AmbientColor attribute, skipping\n"
+        "Converting material 1 to PBR\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 0 out of 2\n"
+        "Trade::AnyImageImporter::openFile(): using PngImporter\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 1 out of 2\n"
+        "Trade::AnyImageImporter::openFile(): using PngImporter\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding texture 0 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding texture 1 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 1 out of 2\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"
+        /** @todo remove this once StridedBitArray exists and SceneData +
+            UfbxImporter uses it for bit values */
+        "Trade::GltfSceneConverter::add(): custom scene field Visibility has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"
+        "Trade::GltfSceneConverter::add(): custom scene field GeometryTransformHelper has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"},
     {"data unsupported by the converter", {InPlaceInit, {
             "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx",
             "-C", "StanfordSceneConverter",
@@ -675,7 +717,8 @@ const struct {
         "quad.ply", nullptr,
         "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 2D images not supported by the converter\n"
         "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 3D images not supported by the converter\n"
-        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 2 textures not supported by the converter\n"},
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 2 textures not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 materials not supported by the converter\n"},
     {"per-image processed images unsupported by the converter", {InPlaceInit, {
             "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx",
             "-P", "StbResizeImageConverter", "-p", "size=\"1 1\"",
@@ -690,7 +733,23 @@ const struct {
            printed by sceneconverter itself, not the converter interface */
         "Ignoring 1 2D images not supported by the converter\n"
         "Ignoring 1 3D images not supported by the converter\n"
-        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 2 textures not supported by the converter\n"},
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 2 textures not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 materials not supported by the converter\n"},
+    {"per-material processed materials unsupported by the converter", {InPlaceInit, {
+            "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx",
+            "--phong-to-pbr", "-C", "StanfordSceneConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/ignoring-unsupported.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")
+        }},
+        "GltfImporter", "KtxImporter", "StanfordSceneConverter",
+        {"StbResizeImageConverter", nullptr}, nullptr,
+        "quad.ply", nullptr,
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 2D images not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 3D images not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 2 textures not supported by the converter\n"
+        /* Compared to "data unsupported by the converter" this message is
+           printed by sceneconverter itself, not the converter interface */
+        "Ignoring 1 materials not supported by the converter\n"},
 };
 
 const struct {
@@ -978,6 +1037,46 @@ const struct {
         nullptr, "KtxImporter", nullptr,
         nullptr,
         "Sorry, 1D image conversion is not implemented yet\n"},
+    {"can't load a material for Phong to PBR conversion", {InPlaceInit, {
+            "-I", "GltfImporter", "--phong-to-pbr",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/broken-material.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
+        }},
+        "GltfImporter", nullptr, nullptr,
+        nullptr,
+        "Trade::GltfImporter::material(): unrecognized alphaMode TOUGH\n"
+        "Cannot import material 2\n"},
+    {"can't add material dependencies", {InPlaceInit, {
+            /* --phong-to-pbr is a no-op because the input is PBR already, we
+               just need something that causes the materials to be added
+               directly */
+            "-I", "GltfImporter", "--phong-to-pbr",
+            /* Not enabling experimentalKhrTextureKtx for the converter in
+               order to trigger this error */
+            "-i", "experimentalKhrTextureKtx", "-C", "GltfSceneConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/materials-3d.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
+        }},
+        "GltfImporter", "KtxImporter", "GltfSceneConverter",
+        nullptr,
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 3D images not supported by the converter\n"
+        /* Another way this could fail is that the texture is now referencing a
+           3D image out of bounds (because adding it failed above) */
+        "Trade::GltfSceneConverter::add(): 2D array textures require experimentalKhrTextureKtx to be enabled\n"
+        "Cannot add material dependencies\n"},
+    {"can't add processed material", {InPlaceInit, {
+            /* --phong-to-pbr is a no-op because the input is PBR already, we
+               just need something that causes the materials to be added
+               directly */
+            "-I", "UfbxImporter", "--phong-to-pbr",
+            "-C", "GltfSceneConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/materials-separate-metalness-roughness.mtl"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
+        }},
+        "UfbxImporter", "PngImporter", "GltfSceneConverter",
+        nullptr,
+        "Trade::GltfSceneConverter::add(): unsupported R/R packing of a metallic/roughness texture\n"
+        "Cannot add material 1\n"}
 };
 
 SceneConverterTest::SceneConverterTest() {

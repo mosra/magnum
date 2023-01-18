@@ -99,6 +99,7 @@ if(MAGNUM_WITH_SCENECONVERTER)
     target_link_libraries(magnum-sceneconverter PRIVATE
         Corrade::Main
         Magnum
+        MagnumMaterialTools
         MagnumMeshTools
         MagnumSceneTools
         MagnumTrade

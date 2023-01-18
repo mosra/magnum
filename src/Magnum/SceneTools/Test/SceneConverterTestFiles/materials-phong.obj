@@ -1,0 +1,15 @@
+mtllib materials-phong.mtl
+
+# Same as two-triangles.obj, but with material references
+o First
+usemtl Red
+v -1 -1 0
+v  1 -1 0
+v -1  1 0
+f 1 2 3
+o Second
+usemtl DarkBlue
+v -1  1 0
+v  1 -1 0
+v  1  1 0
+f 4 5 6

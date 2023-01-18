@@ -97,6 +97,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/blue4x4x1.ktx2
             SceneConverterTestFiles/broken-image-2d.gltf
             SceneConverterTestFiles/broken-image-3d.gltf
+            SceneConverterTestFiles/broken-material.gltf
             SceneConverterTestFiles/broken-mesh.obj
             SceneConverterTestFiles/broken-scene.gltf
             SceneConverterTestFiles/dxt1.dds
@@ -115,6 +116,11 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/info-image-converter.txt
             SceneConverterTestFiles/info-importer.txt
             SceneConverterTestFiles/info-importer-ignored-input-output.txt
+            SceneConverterTestFiles/materials-3d.gltf
+            SceneConverterTestFiles/materials-pbr.gltf
+            SceneConverterTestFiles/materials-phong.mtl
+            SceneConverterTestFiles/materials-phong.obj
+            SceneConverterTestFiles/materials-separate-metalness-roughness.mtl
             SceneConverterTestFiles/point.obj
             SceneConverterTestFiles/quad-duplicates-fuzzy.obj
             SceneConverterTestFiles/quad-duplicates.obj

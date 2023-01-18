@@ -205,7 +205,7 @@ cmake_dependent_option(MAGNUM_WITH_TGAIMPORTER "Build TgaImporter plugin" OFF "N
 # Parts of the library
 cmake_dependent_option(MAGNUM_WITH_AUDIO "Build Audio library" OFF "NOT MAGNUM_WITH_AL_INFO;NOT MAGNUM_WITH_ANYAUDIOIMPORTER;NOT MAGNUM_WITH_WAVAUDIOIMPORTER" ON)
 option(MAGNUM_WITH_DEBUGTOOLS "Build DebugTools library" ON)
-option(MAGNUM_WITH_MATERIALTOOLS "Build MaterialTools library" ON)
+cmake_dependent_option(MAGNUM_WITH_MATERIALTOOLS "Build MaterialTools library" ON "NOT MAGNUM_WITH_SCENECONVERTER" ON)
 cmake_dependent_option(MAGNUM_WITH_MESHTOOLS "Build MeshTools library" ON "NOT MAGNUM_WITH_OBJIMPORTER;NOT MAGNUM_WITH_SCENECONVERTER" ON)
 option(MAGNUM_WITH_SCENEGRAPH "Build SceneGraph library" ON)
 cmake_dependent_option(MAGNUM_WITH_SCENETOOLS "Build SceneTools library" ON "NOT MAGNUM_WITH_SCENECONVERTER" ON)

@@ -1,0 +1,7 @@
+newmtl Red
+Ka 0.1 0.1 0.1
+map_Kd red2x2.png
+
+newmtl DarkBlue
+Kd 0.5 0.5 0.5
+map_Kd blue4x4.png

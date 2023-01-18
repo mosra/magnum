@@ -1,0 +1,9 @@
+newmtl Material
+Kd 0.0 1.0 0.0
+
+newmtl Separate metalness and roughness
+# Has to be present as otherwise UfbxImporter doesn't load the textures at all
+# https://github.com/ufbx/ufbx/issues/55
+Pm 0.0
+map_Pr blue4x4.png
+map_Pm red2x2.png

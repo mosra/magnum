@@ -235,6 +235,9 @@ See also:
     experimental `--concatenate-meshes` option, which will flatten the mesh
     hierarchy and concatenate all meshes together. Note that it doesn't
     correctly handle all corner cases yet and may assert on certain inputs.
+-   Added a `--phong-to-pbr` option to the @ref magnum-sceneconverter "magnum-sceneconverter"
+    utility to perform conversion of Phong materials to PBR, useful for example
+    when converting old OBJ and COLLADA files to glTF
 -   The @ref magnum-sceneconverter "magnum-sceneconverter" `--info` output is
     now more compact and colored for better readability
 -   Added `--info-importer`, `--info-converter` and `--info-image-converter`
