@@ -120,6 +120,9 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
         plugin = "ModoImporter"_s;
     else if(normalizedExtension == ".ms3d"_s)
         plugin = "MilkshapeImporter"_s;
+    /** @todo pass `*.mtl` files to ObjImporter as well, once the builtin one
+        can handle materials and can open them directly (UfbxImporter can,
+        Assimp tries to open them as a FBX ffs) */
     else if(normalizedExtension == ".obj"_s)
         plugin = "ObjImporter"_s;
     else if(normalizedExtension == ".xml"_s)
