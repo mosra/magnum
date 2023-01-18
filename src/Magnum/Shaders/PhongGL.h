@@ -32,16 +32,13 @@
  * @m_since_latest
  */
 
+#include <initializer_list>
 #include <Corrade/Utility/Move.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Shaders/GenericGL.h"
 #include "Magnum/Shaders/glShaderWrapper.h"
 #include "Magnum/Shaders/visibility.h"
-
-#ifndef MAGNUM_TARGET_GLES2
-#include <initializer_list>
-#endif
 
 namespace Magnum { namespace Shaders {
 
