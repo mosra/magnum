@@ -664,6 +664,33 @@ const struct {
         "Processing 3D image 1 with StbResizeImageConverter...\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding texture 0 out of 2\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding texture 1 out of 2\n"},
+    {"data unsupported by the converter", {InPlaceInit, {
+            "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx",
+            "-C", "StanfordSceneConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/ignoring-unsupported.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")
+        }},
+        "GltfImporter", "KtxImporter", "StanfordSceneConverter",
+        {"StbResizeImageConverter", nullptr}, nullptr,
+        "quad.ply", nullptr,
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 2D images not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 3D images not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 2 textures not supported by the converter\n"},
+    {"per-image processed images unsupported by the converter", {InPlaceInit, {
+            "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx",
+            "-P", "StbResizeImageConverter", "-p", "size=\"1 1\"",
+            "-C", "StanfordSceneConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/ignoring-unsupported.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.ply")
+        }},
+        "GltfImporter", "KtxImporter", "StanfordSceneConverter",
+        {"StbResizeImageConverter", nullptr}, nullptr,
+        "quad.ply", nullptr,
+        /* Compared to "data unsupported by the converter" these messages are
+           printed by sceneconverter itself, not the converter interface */
+        "Ignoring 1 2D images not supported by the converter\n"
+        "Ignoring 1 3D images not supported by the converter\n"
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 2 textures not supported by the converter\n"},
 };
 
 const struct {

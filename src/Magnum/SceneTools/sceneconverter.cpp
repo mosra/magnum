@@ -1067,6 +1067,8 @@ well, the IDs reference attributes of the first mesh.)")
            takes them from the importer instead */
         if(meshes) {
             if(!(Trade::sceneContentsFor(*converter) & Trade::SceneContent::Meshes)) {
+                /** @todo test this branch once there's a plugin that doesn't
+                    support meshes (URDF exporter, for example? glXF?) */
                 Warning{} << "Ignoring" << meshes.size() << "meshes not supported by the converter";
             } else for(UnsignedInt j = 0; j != meshes.size(); ++j) {
                 Trade::Implementation::Duration d{conversionTime};

@@ -107,6 +107,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/images-3d.gltf
             SceneConverterTestFiles/images-3d-1x1x1.bin
             SceneConverterTestFiles/images-3d-1x1x1.gltf
+            SceneConverterTestFiles/ignoring-unsupported.gltf
             SceneConverterTestFiles/info-data.txt
             SceneConverterTestFiles/info-data-ignored-output.txt
             SceneConverterTestFiles/info-converter.txt
