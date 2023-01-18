@@ -982,9 +982,10 @@ well, the IDs reference attributes of the first mesh.)")
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnySceneConverter. All converters except the last one are
-       expected to support ConvertMesh and the mesh is "piped" from one to the
-       other. If the last converter supports ConvertMeshToFile instead of
-       ConvertMesh, it's used instead of the last implicit AnySceneConverter. */
+       expected to support Convert{Mesh,Multiple} and the mesh/scene is "piped"
+       from one to the other. If the last converter supports
+       Convert{Mesh,Multiple}ToFile instead of Convert{Mesh,Multiple}, it's
+       used instead of the last implicit AnySceneConverter. */
     for(std::size_t i = 0, converterCount = args.arrayValueCount("converter"); i <= converterCount; ++i) {
         /* Load converter plugin */
         const Containers::StringView converterName = i == converterCount ?
