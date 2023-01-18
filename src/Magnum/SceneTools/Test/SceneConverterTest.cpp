@@ -272,18 +272,24 @@ const struct {
         "Mesh 1 fuzzy duplicate removal: 6 -> 4 vertices\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"},
     {"one implicit mesh, two converters", Containers::array<Containers::String>({
+        /* Not removing the generator identifier in this case as we want to
+           test passing no options */
         "-C", "MeshOptimizerSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
         "GltfImporter", nullptr, "GltfSceneConverter", {}, nullptr,
         "quad.gltf", "quad.bin",
         {}},
     {"one implicit mesh, two converters, explicit last", Containers::array<Containers::String>({
+        /* Not removing the generator identifier in this case as we want to
+           test passing no options */
         "-C", "MeshOptimizerSceneConverter", "-C", "GltfSceneConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
         "GltfImporter", nullptr, "GltfSceneConverter", {}, nullptr,
         "quad.gltf", "quad.bin",
         {}},
     {"one implicit mesh, two converters, verbose", Containers::array<Containers::String>({
+        /* Not removing the generator identifier in this case as we want to
+           test passing no options */
         "-C", "MeshOptimizerSceneConverter", "-v",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")}),
         "GltfImporter", nullptr, "GltfSceneConverter", {}, nullptr,
@@ -754,7 +760,7 @@ const struct {
         "-c", "imageConverter=NonexistentImageConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-2d.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")}),
         "ObjImporter", "PngImporter", "GltfSceneConverter", "StbResizeImageConverter",
-        "\n" /* Sust a suffix */
+        "\n" /* Just a suffix */
         "Trade::GltfSceneConverter::add(): can't load NonexistentImageConverter for image conversion\n"
         "Cannot add 2D image 0\n"},
     {"can't add processed 3D images", Containers::array<Containers::String>({
@@ -764,7 +770,7 @@ const struct {
         "-c", "experimentalKhrTextureKtx,imageConverter=NonexistentImageConverter",
         Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-3d.gltf"), Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")}),
         "ObjImporter", "PngImporter", "GltfSceneConverter", "StbResizeImageConverter",
-        "\n" /* Sust a suffix */
+        "\n" /* Just a suffix */
         "Trade::GltfSceneConverter::add(): can't load NonexistentImageConverter for image conversion\n"
         "Cannot add 3D image 0\n"},
 };
