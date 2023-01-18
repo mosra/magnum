@@ -858,6 +858,8 @@ well, the IDs reference attributes of the first mesh.)")
        args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy") ||
        args.arrayValueCount("mesh-converter"))
     {
+        arrayReserve(meshes, importer->meshCount());
+
         for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
             Containers::Optional<Trade::MeshData> mesh;
             {
