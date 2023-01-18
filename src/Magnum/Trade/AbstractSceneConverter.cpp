@@ -1624,44 +1624,16 @@ bool AbstractSceneConverter::addSupportedImporterContents(AbstractImporter& impo
     /* To avoid needlessly querying fooCount() several times (which might be
        expensive in certain unfortunate cases), this basically unwraps the
        contents of sceneContentsFor(const AbstractImporter&) and adds warnings
-       there */
+       there.
+
+       The data kinds are in dependency order, matching the order in
+       addImporterContentsInternal(), so when warnings are printed they're not
+       in an order different from the verbose output for no reason. */
     SceneContents used = contents;
     UnsignedInt count;
-    if((wantedButUnsupported & SceneContent::Scenes) && (count = importer.sceneCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "scenes not supported by the converter";
-        used &= ~SceneContent::Scenes;
-    }
-    if((wantedButUnsupported & SceneContent::Animations) && (count = importer.animationCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "animations not supported by the converter";
-        used &= ~SceneContent::Animations;
-    }
-    if((wantedButUnsupported & SceneContent::Lights) && (count = importer.lightCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "lights not supported by the converter";
-        used &= ~SceneContent::Lights;
-    }
-    if((wantedButUnsupported & SceneContent::Cameras) && (count = importer.cameraCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "cameras not supported by the converter";
-        used &= ~SceneContent::Cameras;
-    }
-    if((wantedButUnsupported & SceneContent::Skins2D) && (count = importer.skin2DCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "2D skins not supported by the converter";
-        used &= ~SceneContent::Skins2D;
-    }
-    if((wantedButUnsupported & SceneContent::Skins3D) && (count = importer.skin3DCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "3D skins not supported by the converter";
-        used &= ~SceneContent::Skins3D;
-    }
     if((wantedButUnsupported & SceneContent::Meshes) && (count = importer.meshCount())) {
         Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "meshes not supported by the converter";
         used &= ~SceneContent::Meshes;
-    }
-    if((wantedButUnsupported & SceneContent::Materials) && (count = importer.materialCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "materials not supported by the converter";
-        used &= ~SceneContent::Materials;
-    }
-    if((wantedButUnsupported & SceneContent::Textures) && (count = importer.textureCount())) {
-        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "textures not supported by the converter";
-        used &= ~SceneContent::Textures;
     }
     if((wantedButUnsupported & SceneContent::Images1D) && (count = importer.image1DCount())) {
         Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "1D images not supported by the converter";
@@ -1674,6 +1646,38 @@ bool AbstractSceneConverter::addSupportedImporterContents(AbstractImporter& impo
     if((wantedButUnsupported & SceneContent::Images3D) && (count = importer.image3DCount())) {
         Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "3D images not supported by the converter";
         used &= ~SceneContent::Images3D;
+    }
+    if((wantedButUnsupported & SceneContent::Textures) && (count = importer.textureCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "textures not supported by the converter";
+        used &= ~SceneContent::Textures;
+    }
+    if((wantedButUnsupported & SceneContent::Materials) && (count = importer.materialCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "materials not supported by the converter";
+        used &= ~SceneContent::Materials;
+    }
+    if((wantedButUnsupported & SceneContent::Lights) && (count = importer.lightCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "lights not supported by the converter";
+        used &= ~SceneContent::Lights;
+    }
+    if((wantedButUnsupported & SceneContent::Cameras) && (count = importer.cameraCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "cameras not supported by the converter";
+        used &= ~SceneContent::Cameras;
+    }
+    if((wantedButUnsupported & SceneContent::Scenes) && (count = importer.sceneCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "scenes not supported by the converter";
+        used &= ~SceneContent::Scenes;
+    }
+    if((wantedButUnsupported & SceneContent::Skins2D) && (count = importer.skin2DCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "2D skins not supported by the converter";
+        used &= ~SceneContent::Skins2D;
+    }
+    if((wantedButUnsupported & SceneContent::Skins3D) && (count = importer.skin3DCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "3D skins not supported by the converter";
+        used &= ~SceneContent::Skins3D;
+    }
+    if((wantedButUnsupported & SceneContent::Animations) && (count = importer.animationCount())) {
+        Warning{} << "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring" << count << "animations not supported by the converter";
+        used &= ~SceneContent::Animations;
     }
 
     /* MeshLevels and ImageLevels handled inside */
