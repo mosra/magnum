@@ -91,6 +91,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             # executable so plugin existence checks are consistent between the two
             ${MAGNUM_SCENECONVERTER_STATIC_PLUGINS}
         FILES
+            SceneConverterTestFiles/1d.ktx2
             SceneConverterTestFiles/blue4x4.png
             # magnum-imageconverter --layers blue4x4.png --array blue4x4x1.ktx2 -c writerName=
             SceneConverterTestFiles/blue4x4x1.ktx2

@@ -968,6 +968,16 @@ const struct {
         "\n" /* Just a suffix */
         "Trade::GltfSceneConverter::add(): can't load NonexistentImageConverter for image conversion\n"
         "Cannot add 3D image 0\n"},
+    {"1D image processing not implemented", {InPlaceInit, {
+            /* Faking an image-only importer which is fine, it's failing right
+               after anyway; also not supplying any size to the resize plugin */
+            "-I" "KtxImporter", "-P" "StbResizeImageConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/1d.ktx2"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
+        }},
+        nullptr, "KtxImporter", nullptr,
+        nullptr,
+        "Sorry, 1D image conversion is not implemented yet\n"},
 };
 
 SceneConverterTest::SceneConverterTest() {
