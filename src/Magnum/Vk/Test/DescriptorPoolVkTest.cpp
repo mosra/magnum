@@ -257,14 +257,14 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
 
     /* We can allocate two sets at most and at most 8 uniform buffers */
     DescriptorPool pool{_deviceVariableDescriptorCount, DescriptorPoolCreateInfo{2, {
-        {DescriptorType::UniformBuffer, 7}
+        {DescriptorType::UniformBuffer, 8}
     }}};
 
     {
         /* tryAllocate() should not assert, and should not print anything */
         std::ostringstream out;
         Error redirectError{&out};
-        CORRADE_VERIFY(!pool.tryAllocate(layout, 8));
+        CORRADE_VERIFY(!pool.tryAllocate(layout, 80));
         CORRADE_COMPARE(out.str(), "");
     } {
         CORRADE_SKIP_IF_NO_ASSERT();
@@ -272,7 +272,7 @@ void DescriptorPoolVkTest::allocateVariableCountFail() {
         /* allocate() should assert with ErrorOutOfPoolMemory */
         std::ostringstream out;
         Error redirectError{&out};
-        pool.allocate(layout, 8);
+        pool.allocate(layout, 80);
         CORRADE_COMPARE(out.str(), "Vk::DescriptorPool::allocate(): allocation failed with Vk::Result::ErrorOutOfPoolMemory\n");
     }
 }
