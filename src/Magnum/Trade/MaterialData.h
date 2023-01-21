@@ -1395,8 +1395,9 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * @param name      Attribute name
          * @param value     Attribute value
          *
-         * The @p name together with @p value is expected to fit into 62 bytes.
-         * @ref MaterialAttributeType is inferred from the type passed.
+         * The @p name is expected to be non-empty and together with @p value
+         * is expected to fit into 62 bytes. @ref MaterialAttributeType is
+         * inferred from the type passed.
          *
          * This function is useful in @cpp constexpr @ce contexts and for
          * creating custom material attributes. For known attributes prefer to
@@ -1415,8 +1416,9 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * @param name      Attribute name
          * @param value     Attribute value
          *
-         * The combined length of @p name and @p value is expected to fit into
-         * 60 bytes. Type is set to @ref MaterialAttributeType::String.
+         * The @p name is expected to be non-empty and the combined length of
+         * @p name and @p value is expected to fit into 60 bytes. Type is set
+         * to @ref MaterialAttributeType::String.
          *
          * This function is useful in @cpp constexpr @ce contexts and for
          * creating custom material attributes. For known attributes prefer to
@@ -1431,8 +1433,9 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * @param name      Attribute name
          * @param value     Attribute value
          *
-         * The combined length of @p name and @p value is expected to fit into
-         * 61 bytes. Type is set to @ref MaterialAttributeType::Buffer.
+         * The @p name is expected to be non-empty and the combined length of
+         * @p name and @p value is expected to fit into 61 bytes. Type is set
+         * to @ref MaterialAttributeType::Buffer.
          *
          * This function is useful for creating custom material attributes.
          * Currently there isn't any builtin @ref MaterialAttribute with a
@@ -1487,6 +1490,8 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          * @param name      Attribute name
          * @param type      Attribute type
          * @param value     Type-erased value
+         *
+         * The @p name is expected to be non-empty.
          *
          * In case @p type is neither @ref MaterialAttributeType::String nor
          * @ref MaterialAttributeType::Buffer, copies a number of bytes
