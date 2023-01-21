@@ -1827,11 +1827,11 @@ best type for a particular use case.
 Because retrieving everything through the @ref attribute() APIs can get verbose
 and complex, the @ref Trade library provides a set of accessor APIs for common
 material types such as @ref FlatMaterialData, @ref PhongMaterialData,
-@ref PbrMetallicRoughnessMaterialData or @ref PbrSpecularGlossinessMaterialData.
-Using @ref as() you can convert any @ref MaterialData instance to a reference
-to one of those. These convenience APIs then take care of default values when
-an attribute isn't present or handle fallbacks when an attribute can be defined
-in multiple ways:
+@ref PbrMetallicRoughnessMaterialData, @ref PbrSpecularGlossinessMaterialData
+as well as material layers like @ref PbrClearCoatMaterialData. Using @ref as()
+you can convert any @ref MaterialData instance to a reference to one of those.
+These convenience APIs then take care of default values when an attribute isn't
+present or handle fallbacks when an attribute can be defined in multiple ways:
 
 @snippet MagnumTrade.cpp MaterialData-usage-types
 
@@ -2178,8 +2178,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * Returns a reference to @cpp *this @ce cast to given type. @p T is
          * expected to be a subclass of the same size such as
-         * @ref PbrMetallicRoughnessMaterialData,
-         * @ref PbrSpecularGlossinessMaterialData or @ref PhongMaterialData.
+         * @ref PhongMaterialData or @ref PbrMetallicRoughnessMaterialData, as
+         * well as layers like @ref PbrClearCoatMaterialData.
          */
         /* MSVC needs the & here, otherwise it complains that "cannot overload
            a member function with ref-qualifier with a member function without
