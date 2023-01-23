@@ -50,7 +50,7 @@
 #endif
 
 /* This header is included only privately and doesn't introduce any linker
-   dependency, thus it's completely safe */
+   dependency, thus it's completely safe to not link to the Shaders library */
 #include "Magnum/Shaders/GenericGL.h"
 
 namespace Magnum { namespace MeshTools {
