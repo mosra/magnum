@@ -275,10 +275,25 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
         "MeshTools::generateIndices(): mesh data already indexed",
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
+    const UnsignedInt vertexCount = data.vertexCount();
+    #ifndef CORRADE_NO_ASSERT
+    UnsignedInt minVertexCount;
+    if(data.primitive() == MeshPrimitive::LineStrip ||
+       data.primitive() == MeshPrimitive::LineLoop) {
+        minVertexCount = 2;
+    } else if(data.primitive() == MeshPrimitive::TriangleStrip ||
+              data.primitive() == MeshPrimitive::TriangleFan) {
+        minVertexCount = 3;
+    } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << data.primitive(),
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_ASSERT(vertexCount >= minVertexCount,
+        "MeshTools::generateIndices(): expected at least" << minVertexCount << "vertices for" << data.primitive() << Debug::nospace << ", got" << vertexCount,
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    #endif
+
     /* Transfer vertex / attribute data as-is, as those don't need any changes.
        Release if possible. */
     Containers::Array<char> vertexData;
-    const UnsignedInt vertexCount = data.vertexCount();
     if(data.vertexDataFlags() & Trade::DataFlag::Owned)
         vertexData = data.releaseVertexData();
     else {
@@ -316,8 +331,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
         primitive = MeshPrimitive::Triangles;
         indexData = Containers::Array<char>{NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
         generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
-    } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << data.primitive(),
-        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};
     return Trade::MeshData{primitive, std::move(indexData), indices,

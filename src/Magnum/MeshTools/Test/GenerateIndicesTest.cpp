@@ -30,6 +30,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
@@ -70,6 +71,7 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void generateIndicesMeshDataNoAttributes();
     void generateIndicesMeshDataIndexed();
     void generateIndicesMeshDataInvalidPrimitive();
+    void generateIndicesMeshDataInvalidVertexCount();
 };
 
 using namespace Math::Literals;
@@ -160,6 +162,16 @@ const struct {
     }}}
 };
 
+const struct {
+    MeshPrimitive primitive;
+    UnsignedInt invalidVertexCount, expectedVertexCount;
+} MeshDataInvalidVertexCountData[] {
+    {MeshPrimitive::LineStrip, 1, 2},
+    {MeshPrimitive::LineLoop, 1, 2},
+    {MeshPrimitive::TriangleStrip, 2, 3},
+    {MeshPrimitive::TriangleFan, 2, 3}
+};
+
 GenerateIndicesTest::GenerateIndicesTest() {
     addTests({&GenerateIndicesTest::primitiveCount,
               &GenerateIndicesTest::primitiveCountInvalidPrimitive,
@@ -200,6 +212,9 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::generateIndicesMeshDataNoAttributes,
               &GenerateIndicesTest::generateIndicesMeshDataIndexed,
               &GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive});
+
+    addInstancedTests({&GenerateIndicesTest::generateIndicesMeshDataInvalidVertexCount},
+        Containers::arraySize(MeshDataInvalidVertexCountData));
 }
 
 void GenerateIndicesTest::primitiveCount() {
@@ -731,6 +746,23 @@ void GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive() {
     generateIndices(mesh);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateIndices(): invalid primitive MeshPrimitive::Triangles\n");
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataInvalidVertexCount() {
+    auto&& data = MeshDataInvalidVertexCountData[testCaseInstanceId()];
+    std::ostringstream primitiveName;
+    Debug{&primitiveName, Debug::Flag::NoNewlineAtTheEnd} << data.primitive;
+    setTestCaseDescription(primitiveName.str());
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::MeshData mesh{data.primitive, data.invalidVertexCount};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    generateIndices(mesh);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "MeshTools::generateIndices(): expected at least {} vertices for {}, got {}\n", data.expectedVertexCount, primitiveName.str(), data.invalidVertexCount));
 }
 
 }}}}

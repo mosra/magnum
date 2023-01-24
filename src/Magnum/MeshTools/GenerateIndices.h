@@ -211,10 +211,12 @@ MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedAr
 @brief Convert a mesh to plain indexed lines or triangles
 @m_since{2020,06}
 
-Expects that @p mesh is not indexed and is one of
+Expects that @p mesh is not indexed, is one of
 @ref MeshPrimitive::LineStrip, @ref MeshPrimitive::LineLoop,
-@ref MeshPrimitive::TriangleStrip, @ref MeshPrimitive::TriangleFan primitives,
-calling one of @ref generateLineStripIndices(), @ref generateLineLoopIndices(),
+@ref MeshPrimitive::TriangleStrip, @ref MeshPrimitive::TriangleFan primitives
+and has at least @cpp 2 @ce vertices for a line-based primitive or @cpp 3 @ce
+vertices for a triangle-based primitive. Calls one of
+@ref generateLineStripIndices(), @ref generateLineLoopIndices(),
 @ref generateTriangleStripIndices() or @ref generateTriangleFanIndices()
 functions to generate the index buffer. If your mesh is indexed, call
 @ref duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>)
