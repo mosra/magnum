@@ -134,29 +134,29 @@ const struct {
     MeshPrimitive primitive;
     Containers::Array<UnsignedInt> indices;
 } MeshDataData[] {
-    {MeshPrimitive::LineStrip, Containers::array<UnsignedInt>({
+    {MeshPrimitive::LineStrip, {InPlaceInit, {
         0, 1,
         1, 2,
         2, 3,
         3, 4
-    })},
-    {MeshPrimitive::LineLoop, Containers::array<UnsignedInt>({
+    }}},
+    {MeshPrimitive::LineLoop, {InPlaceInit, {
         0, 1,
         1, 2,
         2, 3,
         3, 4,
         4, 0
-    })},
-    {MeshPrimitive::TriangleStrip, Containers::array<UnsignedInt>({
+    }}},
+    {MeshPrimitive::TriangleStrip, {InPlaceInit, {
         0, 1, 2,
         2, 1, 3, /* Reversed */
         2, 3, 4
-    })},
-    {MeshPrimitive::TriangleFan, Containers::array<UnsignedInt>({
+    }}},
+    {MeshPrimitive::TriangleFan, {InPlaceInit, {
         0, 1, 2,
         0, 2, 3,
         0, 3, 4
-    })}
+    }}}
 };
 
 GenerateIndicesTest::GenerateIndicesTest() {
@@ -599,21 +599,17 @@ void GenerateIndicesTest::generateIndicesMeshData() {
         {{4.5f, 3.3f}, {40, -18}, {0.5f, 0.5f}},
         {{5.5f, 4.3f}, {41, -19}, {0.6f, 0.4f}}
     };
+    Containers::StridedArrayView1D<const Vertex> vertices = vertexData;
 
-    Trade::MeshData mesh{data.primitive,
-        {}, vertexData, {
-            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-                Containers::stridedArrayView(vertexData,
-                    &vertexData[0].position, 5, sizeof(Vertex))},
-            /* Array attribute to verify it's correctly propagated */
-            Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-                VertexFormat::Short,
-                Containers::stridedArrayView(vertexData,
-                    &vertexData[0].data, 5, sizeof(Vertex)), 2},
-            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-                Containers::stridedArrayView(vertexData,
-                    &vertexData[0].textureCoordinates, 5, sizeof(Vertex))}
-        }};
+    Trade::MeshData mesh{data.primitive, {}, vertexData, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            vertices.slice(&Vertex::position)},
+        /* Array attribute to verify it's correctly propagated */
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::Short, vertices.slice(&Vertex::data), 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            vertices.slice(&Vertex::textureCoordinates)}
+    }};
 
     Trade::MeshData out = generateIndices(mesh);
     CORRADE_VERIFY(out.isIndexed());
