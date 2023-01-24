@@ -136,6 +136,17 @@ void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const Uns
     generateLineStripIndicesIntoImplementation(indices, output);
 }
 
+void generateLineStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateLineStripIndicesInto(): second index view dimension is not contiguous", );
+    if(indices.size()[1] == 4)
+        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+    else if(indices.size()[1] == 2)
+        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+    else if(indices.size()[1] == 1)
+        return generateLineStripIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+    else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateLineStripIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+}
+
 Containers::Array<UnsignedInt> generateLineStripIndices(const UnsignedInt vertexCount) {
     Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(vertexCount, 1u) - 1)};
     generateLineStripIndicesInto(vertexCount, output);
@@ -156,6 +167,12 @@ Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::Stride
 
 Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
     Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(indices.size(), std::size_t{1}) - 1)};
+    generateLineStripIndicesInto(indices, output);
+    return output;
+}
+
+Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView2D<const char>& indices) {
+    Containers::Array<UnsignedInt> output{NoInit, 2*(Math::max(indices.size()[0], std::size_t{1}) - 1)};
     generateLineStripIndicesInto(indices, output);
     return output;
 }
@@ -219,6 +236,17 @@ void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const Unsi
     generateLineLoopIndicesIntoImplementation(indices, output);
 }
 
+void generateLineLoopIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateLineLoopIndicesInto(): second index view dimension is not contiguous", );
+    if(indices.size()[1] == 4)
+        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+    else if(indices.size()[1] == 2)
+        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+    else if(indices.size()[1] == 1)
+        return generateLineLoopIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+    else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateLineLoopIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+}
+
 Containers::Array<UnsignedInt> generateLineLoopIndices(const UnsignedInt vertexCount) {
     Containers::Array<UnsignedInt> output{NoInit, 2*vertexCount};
     generateLineLoopIndicesInto(vertexCount, output);
@@ -239,6 +267,12 @@ Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::Strided
 
 Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
     Containers::Array<UnsignedInt> output{NoInit, 2*indices.size()};
+    generateLineLoopIndicesInto(indices, output);
+    return output;
+}
+
+Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView2D<const char>& indices) {
+    Containers::Array<UnsignedInt> output{NoInit, 2*indices.size()[0]};
     generateLineLoopIndicesInto(indices, output);
     return output;
 }
@@ -301,6 +335,17 @@ void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const
     generateTriangleStripIndicesIntoImplementation(indices, output);
 }
 
+void generateTriangleStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateTriangleStripIndicesInto(): second index view dimension is not contiguous", );
+    if(indices.size()[1] == 4)
+        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+    else if(indices.size()[1] == 2)
+        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+    else if(indices.size()[1] == 1)
+        return generateTriangleStripIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+    else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateTriangleStripIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+}
+
 Containers::Array<UnsignedInt> generateTriangleStripIndices(const UnsignedInt vertexCount) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(vertexCount, 2u) - 2u)};
     generateTriangleStripIndicesInto(vertexCount, output);
@@ -321,6 +366,12 @@ Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::St
 
 Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
+    generateTriangleStripIndicesInto(indices, output);
+    return output;
+}
+
+Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView2D<const char>& indices) {
+    Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size()[0], std::size_t{2}) - 2)};
     generateTriangleStripIndicesInto(indices, output);
     return output;
 }
@@ -384,6 +435,17 @@ void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const U
     generateTriangleFanIndicesIntoImplementation(indices, output);
 }
 
+void generateTriangleFanIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateTriangleFanIndicesInto(): second index view dimension is not contiguous", );
+    if(indices.size()[1] == 4)
+        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedInt>(indices), output);
+    else if(indices.size()[1] == 2)
+        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedShort>(indices), output);
+    else if(indices.size()[1] == 1)
+        return generateTriangleFanIndicesInto(Containers::arrayCast<1, const UnsignedByte>(indices), output);
+    else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateTriangleFanIndicesInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+}
+
 Containers::Array<UnsignedInt> generateTriangleFanIndices(const UnsignedInt vertexCount) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(vertexCount, 2u) - 2)};
     generateTriangleFanIndicesInto(vertexCount, output);
@@ -404,6 +466,12 @@ Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::Stri
 
 Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices) {
     Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size(), std::size_t{2}) - 2)};
+    generateTriangleFanIndicesInto(indices, output);
+    return output;
+}
+
+Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView2D<const char>& indices) {
+    Containers::Array<UnsignedInt> output{NoInit, 3*(Math::max(indices.size()[0], std::size_t{2}) - 2)};
     generateTriangleFanIndicesInto(indices, output);
     return output;
 }

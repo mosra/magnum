@@ -47,23 +47,31 @@ struct GenerateIndicesTest: TestSuite::Tester {
 
     void generateLineStripIndices();
     template<class T> void generateLineStripIndicesIndexed();
+    template<class T> void generateLineStripIndicesIndexed2D();
     void generateLineStripIndicesWrongVertexCount();
     void generateLineStripIndicesIntoWrongSize();
+    void generateLineStripIndicesIndexed2DInvalid();
 
     void generateLineLoopIndices();
     template<class T> void generateLineLoopIndicesIndexed();
+    template<class T> void generateLineLoopIndicesIndexed2D();
     void generateLineLoopIndicesWrongVertexCount();
     void generateLineLoopIndicesIntoWrongSize();
+    void generateLineLoopIndicesIndexed2DInvalid();
 
     void generateTriangleStripIndices();
     template<class T> void generateTriangleStripIndicesIndexed();
+    template<class T> void generateTriangleStripIndicesIndexed2D();
     void generateTriangleStripIndicesWrongVertexCount();
     void generateTriangleStripIndicesIntoWrongSize();
+    void generateTriangleStripIndicesIndexed2DInvalid();
 
     void generateTriangleFanIndices();
     template<class T> void generateTriangleFanIndicesIndexed();
+    template<class T> void generateTriangleFanIndicesIndexed2D();
     void generateTriangleFanIndicesWrongVertexCount();
     void generateTriangleFanIndicesIntoWrongSize();
+    void generateTriangleFanIndicesIndexed2DInvalid();
 
     template<class T> void generateQuadIndices();
     template<class T> void generateQuadIndicesInto();
@@ -187,29 +195,45 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedInt>,
               &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedShort>,
               &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedByte>,
+              &GenerateIndicesTest::generateLineStripIndicesIndexed2D<UnsignedInt>,
+              &GenerateIndicesTest::generateLineStripIndicesIndexed2D<UnsignedShort>,
+              &GenerateIndicesTest::generateLineStripIndicesIndexed2D<UnsignedByte>,
               &GenerateIndicesTest::generateLineStripIndicesWrongVertexCount,
               &GenerateIndicesTest::generateLineStripIndicesIntoWrongSize,
+              &GenerateIndicesTest::generateLineStripIndicesIndexed2DInvalid,
 
               &GenerateIndicesTest::generateLineLoopIndices,
               &GenerateIndicesTest::generateLineLoopIndicesIndexed<UnsignedInt>,
               &GenerateIndicesTest::generateLineLoopIndicesIndexed<UnsignedShort>,
               &GenerateIndicesTest::generateLineLoopIndicesIndexed<UnsignedByte>,
+              &GenerateIndicesTest::generateLineLoopIndicesIndexed2D<UnsignedInt>,
+              &GenerateIndicesTest::generateLineLoopIndicesIndexed2D<UnsignedShort>,
+              &GenerateIndicesTest::generateLineLoopIndicesIndexed2D<UnsignedByte>,
               &GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount,
               &GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize,
+              &GenerateIndicesTest::generateLineLoopIndicesIndexed2DInvalid,
 
               &GenerateIndicesTest::generateTriangleStripIndices,
               &GenerateIndicesTest::generateTriangleStripIndicesIndexed<UnsignedInt>,
               &GenerateIndicesTest::generateTriangleStripIndicesIndexed<UnsignedShort>,
               &GenerateIndicesTest::generateTriangleStripIndicesIndexed<UnsignedByte>,
+              &GenerateIndicesTest::generateTriangleStripIndicesIndexed2D<UnsignedInt>,
+              &GenerateIndicesTest::generateTriangleStripIndicesIndexed2D<UnsignedShort>,
+              &GenerateIndicesTest::generateTriangleStripIndicesIndexed2D<UnsignedByte>,
               &GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount,
               &GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize,
+              &GenerateIndicesTest::generateTriangleStripIndicesIndexed2DInvalid,
 
               &GenerateIndicesTest::generateTriangleFanIndices,
               &GenerateIndicesTest::generateTriangleFanIndicesIndexed<UnsignedInt>,
               &GenerateIndicesTest::generateTriangleFanIndicesIndexed<UnsignedShort>,
               &GenerateIndicesTest::generateTriangleFanIndicesIndexed<UnsignedByte>,
+              &GenerateIndicesTest::generateTriangleFanIndicesIndexed2D<UnsignedInt>,
+              &GenerateIndicesTest::generateTriangleFanIndicesIndexed2D<UnsignedShort>,
+              &GenerateIndicesTest::generateTriangleFanIndicesIndexed2D<UnsignedByte>,
               &GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount,
-              &GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize});
+              &GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize,
+              &GenerateIndicesTest::generateTriangleFanIndicesIndexed2DInvalid});
 
     addInstancedTests<GenerateIndicesTest>({
         &GenerateIndicesTest::generateQuadIndices<UnsignedInt>,
@@ -363,6 +387,27 @@ template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed() {
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed2D() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Subset of the above, testing the empty and non-empty case with a 2D
+       index array */
+    T indexData[]{60, 21, 72, 93, 44, 85};
+    auto indices = Containers::arrayCast<2, char>(Containers::stridedArrayView(indexData));
+
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(5)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateLineStripIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -394,6 +439,20 @@ void GenerateIndicesTest::generateLineStripIndicesIntoWrongSize() {
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 0 but got 7\n"
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 8 but got 7\n"
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 8 but got 7\n");
+}
+
+void GenerateIndicesTest::generateLineStripIndicesIndexed2DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char indices[3*4];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::generateLineStripIndices(Containers::StridedArrayView2D<char>{indices, {3, 4}}.every({1, 2}));
+    MeshTools::generateLineStripIndices(Containers::StridedArrayView2D<char>{indices, {4, 3}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateLineStripIndicesInto(): second index view dimension is not contiguous\n"
+        "MeshTools::generateLineStripIndicesInto(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 void GenerateIndicesTest::generateLineLoopIndices() {
@@ -474,6 +533,28 @@ template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed() {
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed2D() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Subset of the above, testing the empty and non-empty case with a 2D
+       index array */
+    T indexData[]{60, 21, 72, 93, 44, 85};
+    auto indices = Containers::arrayCast<2, char>(Containers::arrayView(indexData));
+
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(5)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44,
+            44, 60
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -505,6 +586,20 @@ void GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize() {
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 0 but got 9\n"
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 10 but got 9\n"
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 10 but got 9\n");
+}
+
+void GenerateIndicesTest::generateLineLoopIndicesIndexed2DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char indices[3*4];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::generateLineLoopIndices(Containers::StridedArrayView2D<char>{indices, {3, 4}}.every({1, 2}));
+    MeshTools::generateLineLoopIndices(Containers::StridedArrayView2D<char>{indices, {4, 3}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateLineLoopIndicesInto(): second index view dimension is not contiguous\n"
+        "MeshTools::generateLineLoopIndicesInto(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 void GenerateIndicesTest::generateTriangleStripIndices() {
@@ -583,6 +678,28 @@ template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed(
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed2D() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Subset of the above, testing the empty and non-empty case with a 2D
+       index array */
+    T indexData[]{60, 21, 72, 93, 44, 85, 36, 17};
+    auto indices = Containers::arrayCast<2, char>(Containers::arrayView(indexData));
+
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(7)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72,
+            72, 21, 93, /* Reversed */
+            72, 93, 44,
+            44, 93, 85, /* Reversed */
+            44, 85, 36
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -614,6 +731,20 @@ void GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize() {
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 0 but got 8\n"
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 9 but got 8\n"
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 9 but got 8\n");
+}
+
+void GenerateIndicesTest::generateTriangleStripIndicesIndexed2DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char indices[3*4];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::generateTriangleStripIndices(Containers::StridedArrayView2D<char>{indices, {3, 4}}.every({1, 2}));
+    MeshTools::generateTriangleStripIndices(Containers::StridedArrayView2D<char>{indices, {4, 3}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateTriangleStripIndicesInto(): second index view dimension is not contiguous\n"
+        "MeshTools::generateTriangleStripIndicesInto(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 void GenerateIndicesTest::generateTriangleFanIndices() {
@@ -692,6 +823,28 @@ template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed() 
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed2D() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Subset of the above, testing the empty and non-empty case with a 2D
+       index array */
+    T indexData[]{60, 21, 72, 93, 44, 85, 36, 17};
+    auto indices = Containers::arrayCast<2, char>(Containers::arrayView(indexData));
+
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(7)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72,
+            60, 72, 93,
+            60, 93, 44,
+            60, 44, 85,
+            60, 85, 36
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -723,6 +876,20 @@ void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 0 but got 8\n"
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n"
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n");
+}
+
+void GenerateIndicesTest::generateTriangleFanIndicesIndexed2DInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char indices[3*4];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::generateTriangleFanIndices(Containers::StridedArrayView2D<char>{indices, {3, 4}}.every({1, 2}));
+    MeshTools::generateTriangleFanIndices(Containers::StridedArrayView2D<char>{indices, {4, 3}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateTriangleFanIndicesInto(): second index view dimension is not contiguous\n"
+        "MeshTools::generateTriangleFanIndicesInto(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 constexpr Vector3 QuadPositions[] {

@@ -86,6 +86,17 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineStripIndices(
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices);
 
 /**
+@brief Create index buffer for a line strip primitive with a type-erased index buffer
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineStripIndices(const Containers::StridedArrayView2D<const char>& indices);
+
+/**
 @brief Create index buffer for a line strip primitive into an existing array
 @m_since{2020,06}
 
@@ -118,6 +129,17 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineStripIndicesInto(const Containers::Stri
  * @m_since_latest
  */
 MAGNUM_MESHTOOLS_EXPORT void generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
+
+/**
+@brief Create index buffer for a line strip primitive with a type-erased index buffer into an existing array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateLineStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT void generateLineStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create index buffer for a line loop primitive
@@ -156,6 +178,17 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(c
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices);
 
 /**
+@brief Create index buffer for a line loop primitive with a type-erased index buffer
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(const Containers::StridedArrayView2D<const char>& indices);
+
+/**
 @brief Create index buffer for a line loop primitive into an existing array
 @m_since{2020,06}
 
@@ -188,6 +221,17 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::Strid
  * @m_since_latest
  */
 MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
+
+/**
+@brief Create index buffer for a line loop primitive with a type-erased index buffer into an existing array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateLineLoopIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create index buffer for a triangle strip primitive
@@ -226,6 +270,17 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndi
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices);
 
 /**
+@brief Create index buffer for a triangle strip primitive with a type-erased index buffer
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndices(const Containers::StridedArrayView2D<const char>& indices);
+
+/**
 @brief Create index buffer for a triangle strip primitive into an existing array
 @m_since{2020,06}
 
@@ -258,6 +313,17 @@ MAGNUM_MESHTOOLS_EXPORT void generateTriangleStripIndicesInto(const Containers::
  * @m_since_latest
  */
 MAGNUM_MESHTOOLS_EXPORT void generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
+
+/**
+@brief Create index buffer for a triangle strip primitive with a type-erased index buffer into an existing array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateTriangleStripIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT void generateTriangleStripIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create index buffer for a triangle fan primitive
@@ -296,6 +362,17 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleFanIndice
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices);
 
 /**
+@brief Create index buffer for a triangle fan primitive with a type-erased index buffer
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleFanIndices(const Containers::StridedArrayView2D<const char>& indices);
+
+/**
 @brief Create index buffer for a triangle fan primitive into an existing array
 @m_since{2020,06}
 
@@ -328,6 +405,17 @@ MAGNUM_MESHTOOLS_EXPORT void generateTriangleFanIndicesInto(const Containers::St
  * @m_since_latest
  */
 MAGNUM_MESHTOOLS_EXPORT void generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
+
+/**
+@brief Create index buffer for a triangle fan primitive with a type-erased index buffer into an existing array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateTriangleFanIndicesInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT void generateTriangleFanIndicesInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create a triangle index buffer for quad primitives
