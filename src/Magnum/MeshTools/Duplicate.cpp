@@ -39,8 +39,10 @@ namespace {
 template<class T> inline void duplicateIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out) {
     CORRADE_ASSERT(out.size()[0] == indices.size(),
         "MeshTools::duplicateInto(): index array and output size don't match, expected" << indices.size() << "but got" << out.size()[0], );
-    CORRADE_ASSERT(data.isContiguous<1>() && out.isContiguous<1>(),
-        "MeshTools::duplicateInto(): second view dimension is not contiguous", );
+    CORRADE_ASSERT(data.isContiguous<1>(),
+        "MeshTools::duplicateInto(): second data view dimension is not contiguous", );
+    CORRADE_ASSERT(out.isContiguous<1>(),
+        "MeshTools::duplicateInto(): second output view dimension is not contiguous", );
     CORRADE_ASSERT(data.size()[1] == out.size()[1],
         "MeshTools::duplicateInto(): input and output type size doesn't match, expected" << data.size()[1] << "but got" << out.size()[1], );
     const std::size_t size = data.size()[1];

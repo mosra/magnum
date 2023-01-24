@@ -211,8 +211,13 @@ void DuplicateTest::duplicateIntoErasedNonContiguous() {
         Containers::stridedArrayView(indices),
         Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)).every({1, 2}),
         Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
+    MeshTools::duplicateInto(
+        Containers::stridedArrayView(indices),
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)),
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(output)).every({1, 2}));
     CORRADE_COMPARE(out.str(),
-        "MeshTools::duplicateInto(): second view dimension is not contiguous\n");
+        "MeshTools::duplicateInto(): second data view dimension is not contiguous\n"
+        "MeshTools::duplicateInto(): second output view dimension is not contiguous\n");
 }
 
 template<class T> void DuplicateTest::duplicateErasedIndicesIntoErased() {
