@@ -370,8 +370,8 @@ void GenerateIndicesTest::generateLineStripIndicesWrongVertexCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateLineStripIndicesInto(1, nullptr);
-    MeshTools::generateLineStripIndicesInto(indices, nullptr);
+    MeshTools::generateLineStripIndices(1);
+    MeshTools::generateLineStripIndices(indices);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two vertices, got 1\n"
         "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two indices, got 1\n");
@@ -481,8 +481,8 @@ void GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateLineLoopIndicesInto(1, nullptr);
-    MeshTools::generateLineLoopIndicesInto(indices, nullptr);
+    MeshTools::generateLineLoopIndices(1);
+    MeshTools::generateLineLoopIndices(indices);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two vertices, got 1\n"
         "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two indices, got 1\n");
@@ -590,8 +590,8 @@ void GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateTriangleStripIndicesInto(2, nullptr);
-    MeshTools::generateTriangleStripIndicesInto(indices, nullptr);
+    MeshTools::generateTriangleStripIndices(2);
+    MeshTools::generateTriangleStripIndices(indices);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three vertices, got 2\n"
         "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three indices, got 2\n");
@@ -699,8 +699,8 @@ void GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateTriangleFanIndicesInto(2, nullptr);
-    MeshTools::generateTriangleFanIndicesInto(indices, nullptr);
+    MeshTools::generateTriangleFanIndices(2);
+    MeshTools::generateTriangleFanIndices(indices);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three vertices, got 2\n"
         "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three indices, got 2\n");
