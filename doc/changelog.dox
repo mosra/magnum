@@ -551,6 +551,12 @@ See also:
     @relativeref{MeshTools,generateIndices()} now allow empty input, producing
     an empty index buffer as a result. Disallowing empty input was an
     unnecessary restriction that was inconsistent with other APIs.
+-   Added overloads to @ref MeshTools::generateLineStripIndices(),
+    @relativeref{MeshTools,generateLineLoopIndices()},
+    @relativeref{MeshTools,generateTriangleStripIndices()} and
+    @relativeref{MeshTools,generateTriangleFanIndices()} that take an existing
+    index buffer instead of vertex count as an input to generate an index
+    buffer for a mesh that's already indexed.
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 

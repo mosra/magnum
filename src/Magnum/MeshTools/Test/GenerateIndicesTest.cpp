@@ -46,18 +46,22 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void primitiveCountInvalidPrimitive();
 
     void generateLineStripIndices();
+    template<class T> void generateLineStripIndicesIndexed();
     void generateLineStripIndicesWrongVertexCount();
     void generateLineStripIndicesIntoWrongSize();
 
     void generateLineLoopIndices();
+    template<class T> void generateLineLoopIndicesIndexed();
     void generateLineLoopIndicesWrongVertexCount();
     void generateLineLoopIndicesIntoWrongSize();
 
     void generateTriangleStripIndices();
+    template<class T> void generateTriangleStripIndicesIndexed();
     void generateTriangleStripIndicesWrongVertexCount();
     void generateTriangleStripIndicesIntoWrongSize();
 
     void generateTriangleFanIndices();
+    template<class T> void generateTriangleFanIndicesIndexed();
     void generateTriangleFanIndicesWrongVertexCount();
     void generateTriangleFanIndicesIntoWrongSize();
 
@@ -180,18 +184,30 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::primitiveCountInvalidPrimitive,
 
               &GenerateIndicesTest::generateLineStripIndices,
+              &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedInt>,
+              &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedShort>,
+              &GenerateIndicesTest::generateLineStripIndicesIndexed<UnsignedByte>,
               &GenerateIndicesTest::generateLineStripIndicesWrongVertexCount,
               &GenerateIndicesTest::generateLineStripIndicesIntoWrongSize,
 
               &GenerateIndicesTest::generateLineLoopIndices,
+              &GenerateIndicesTest::generateLineLoopIndicesIndexed<UnsignedInt>,
+              &GenerateIndicesTest::generateLineLoopIndicesIndexed<UnsignedShort>,
+              &GenerateIndicesTest::generateLineLoopIndicesIndexed<UnsignedByte>,
               &GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount,
               &GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize,
 
               &GenerateIndicesTest::generateTriangleStripIndices,
+              &GenerateIndicesTest::generateTriangleStripIndicesIndexed<UnsignedInt>,
+              &GenerateIndicesTest::generateTriangleStripIndicesIndexed<UnsignedShort>,
+              &GenerateIndicesTest::generateTriangleStripIndicesIndexed<UnsignedByte>,
               &GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount,
               &GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize,
 
               &GenerateIndicesTest::generateTriangleFanIndices,
+              &GenerateIndicesTest::generateTriangleFanIndicesIndexed<UnsignedInt>,
+              &GenerateIndicesTest::generateTriangleFanIndicesIndexed<UnsignedShort>,
+              &GenerateIndicesTest::generateTriangleFanIndicesIndexed<UnsignedByte>,
               &GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount,
               &GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize});
 
@@ -307,27 +323,76 @@ void GenerateIndicesTest::generateLineStripIndices() {
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* The second digit is 0, 1, 2, 3, 4, 5 for easier ordering. The output in
+       the second digit should then be the same as in
+       generateLineStripIndices() above. */
+    T indexData[]{60, 21, 72, 93, 44, 85};
+    auto indices = Containers::arrayView(indexData);
+
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(2)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21
+        }), TestSuite::Compare::Container);
+
+    /* Odd */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(5)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44
+        }), TestSuite::Compare::Container);
+
+    /* Even */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices),
+        Containers::arrayView<UnsignedInt>({
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44,
+            44, 85
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateLineStripIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedShort indices[1];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateLineStripIndicesInto(1, nullptr);
+    MeshTools::generateLineStripIndicesInto(indices, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two vertices, got 1\n");
+        "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two vertices, got 1\n"
+        "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two indices, got 1\n");
 }
 
 void GenerateIndicesTest::generateLineStripIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    UnsignedByte indices[5];
     UnsignedInt output[7];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateLineStripIndicesInto(0, output);
+    MeshTools::generateLineStripIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
     MeshTools::generateLineStripIndicesInto(5, output);
+    MeshTools::generateLineStripIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 0 but got 7\n"
+        "MeshTools::generateLineStripIndicesInto(): bad output size, expected 0 but got 7\n"
+        "MeshTools::generateLineStripIndicesInto(): bad output size, expected 8 but got 7\n"
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 8 but got 7\n");
 }
 
@@ -366,27 +431,79 @@ void GenerateIndicesTest::generateLineLoopIndices() {
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* The second digit is 0, 1, 2, 3, 4, 5 for easier ordering. The output in
+       the second digit should then be the same as in generateLineLoopIndices()
+       above. */
+    T indexData[]{60, 21, 72, 93, 44, 85};
+    auto indices = Containers::arrayView(indexData);
+
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(2)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21,
+            21, 60
+        }), TestSuite::Compare::Container);
+
+    /* Odd */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(5)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44,
+            44, 60
+        }), TestSuite::Compare::Container);
+
+    /* Even */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices),
+        Containers::arrayView<UnsignedInt>({
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44,
+            44, 85,
+            85, 60
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedInt indices[1];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateLineLoopIndicesInto(1, nullptr);
+    MeshTools::generateLineLoopIndicesInto(indices, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two vertices, got 1\n");
+        "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two vertices, got 1\n"
+        "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two indices, got 1\n");
 }
 
 void GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    UnsignedShort indices[5];
     UnsignedInt output[9];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateLineLoopIndicesInto(0, output);
+    MeshTools::generateLineLoopIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
     MeshTools::generateLineLoopIndicesInto(5, output);
+    MeshTools::generateLineLoopIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 0 but got 9\n"
+        "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 0 but got 9\n"
+        "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 10 but got 9\n"
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 10 but got 9\n");
 }
 
@@ -424,27 +541,78 @@ void GenerateIndicesTest::generateTriangleStripIndices() {
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* The second digit is 0, 1, 2, 3, 4, 5, 6, 7 for easier ordering. The
+       output in the second digit should then be the same as in
+       generateTriangleStripIndices() above. */
+    T indexData[]{60, 21, 72, 93, 44, 85, 36, 17};
+    auto indices = Containers::arrayView(indexData);
+
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(3)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72
+        }), TestSuite::Compare::Container);
+
+    /* Odd */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(7)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72,
+            72, 21, 93, /* Reversed */
+            72, 93, 44,
+            44, 93, 85, /* Reversed */
+            44, 85, 36
+        }), TestSuite::Compare::Container);
+
+    /* Even */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72,
+            72, 21, 93, /* Reversed */
+            72, 93, 44,
+            44, 93, 85, /* Reversed */
+            44, 85, 36,
+            36, 85, 17  /* Reversed */
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedByte indices[2];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateTriangleStripIndicesInto(2, nullptr);
+    MeshTools::generateTriangleStripIndicesInto(indices, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three vertices, got 2\n");
+        "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three vertices, got 2\n"
+        "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three indices, got 2\n");
 }
 
 void GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    UnsignedInt indices[5];
     UnsignedInt output[8];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateTriangleStripIndicesInto(0, output);
+    MeshTools::generateTriangleStripIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
     MeshTools::generateTriangleStripIndicesInto(5, output);
+    MeshTools::generateTriangleStripIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 0 but got 8\n"
+        "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 0 but got 8\n"
+        "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 9 but got 8\n"
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 9 but got 8\n");
 }
 
@@ -482,27 +650,78 @@ void GenerateIndicesTest::generateTriangleFanIndices() {
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* The second digit is 0, 1, 2, 3, 4, 5, 6, 7 for easier ordering. The
+       output in the second digit should then be the same as in
+       generateTriangleFanIndices() above. */
+    T indexData[]{60, 21, 72, 93, 44, 85, 36, 17};
+    auto indices = Containers::arrayView(indexData);
+
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(std::size_t{})),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(3)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72
+        }), TestSuite::Compare::Container);
+
+    /* Odd */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(7)),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72,
+            60, 72, 93,
+            60, 93, 44,
+            60, 44, 85,
+            60, 85, 36
+        }), TestSuite::Compare::Container);
+
+    /* Even */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices),
+        Containers::arrayView<UnsignedInt>({
+            60, 21, 72,
+            60, 72, 93,
+            60, 93, 44,
+            60, 44, 85,
+            60, 85, 36,
+            60, 36, 17
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedInt indices[2];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateTriangleFanIndicesInto(2, nullptr);
+    MeshTools::generateTriangleFanIndicesInto(indices, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three vertices, got 2\n");
+        "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three vertices, got 2\n"
+        "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three indices, got 2\n");
 }
 
 void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    UnsignedInt indices[5];
     UnsignedInt output[8];
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateTriangleFanIndicesInto(0, output);
+    MeshTools::generateTriangleFanIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
     MeshTools::generateTriangleFanIndicesInto(5, output);
+    MeshTools::generateTriangleFanIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 0 but got 8\n"
+        "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 0 but got 8\n"
+        "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n"
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n");
 }
 
