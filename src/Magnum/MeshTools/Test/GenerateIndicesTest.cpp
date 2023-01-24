@@ -149,7 +149,7 @@ const struct {
 
 const struct {
     MeshPrimitive primitive;
-    Containers::Array<UnsignedInt> indices;
+    Containers::Array<UnsignedInt> expectedIndices;
 } MeshDataData[] {
     {MeshPrimitive::LineStrip, {InPlaceInit, {
         0, 1,
@@ -1066,7 +1066,7 @@ void GenerateIndicesTest::generateIndicesMeshData() {
     Trade::MeshData out = generateIndices(mesh);
     CORRADE_VERIFY(out.isIndexed());
     CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), data.indices,
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), data.expectedIndices,
         TestSuite::Compare::Container);
 
     CORRADE_COMPARE(out.attributeCount(), 3);
