@@ -320,12 +320,12 @@ void GenerateIndicesTest::generateLineStripIndicesWrongVertexCount() {
 void GenerateIndicesTest::generateLineStripIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    UnsignedInt indices[7];
+    UnsignedInt output[7];
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateLineStripIndicesInto(0, indices);
-    MeshTools::generateLineStripIndicesInto(5, indices);
+    MeshTools::generateLineStripIndicesInto(0, output);
+    MeshTools::generateLineStripIndicesInto(5, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 0 but got 7\n"
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 8 but got 7\n");
@@ -379,12 +379,12 @@ void GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount() {
 void GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    UnsignedInt indices[9];
+    UnsignedInt output[9];
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateLineLoopIndicesInto(0, indices);
-    MeshTools::generateLineLoopIndicesInto(5, indices);
+    MeshTools::generateLineLoopIndicesInto(0, output);
+    MeshTools::generateLineLoopIndicesInto(5, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 0 but got 9\n"
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 10 but got 9\n");
@@ -437,12 +437,12 @@ void GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount() {
 void GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    UnsignedInt indices[8];
+    UnsignedInt output[8];
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateTriangleStripIndicesInto(0, indices);
-    MeshTools::generateTriangleStripIndicesInto(5, indices);
+    MeshTools::generateTriangleStripIndicesInto(0, output);
+    MeshTools::generateTriangleStripIndicesInto(5, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 0 but got 8\n"
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 9 but got 8\n");
@@ -495,12 +495,12 @@ void GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount() {
 void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    UnsignedInt indices[8];
+    UnsignedInt output[8];
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::generateTriangleFanIndicesInto(0, indices);
-    MeshTools::generateTriangleFanIndicesInto(5, indices);
+    MeshTools::generateTriangleFanIndicesInto(0, output);
+    MeshTools::generateTriangleFanIndicesInto(5, output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 0 but got 8\n"
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n");

@@ -68,10 +68,10 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineStripIndices(
 
 A variant of @ref generateLineStripIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be either
-@cpp 0 @ce or at least @cpp 2 @ce, the @p indices array is expected to have a
+@cpp 0 @ce or at least @cpp 2 @ce, the @p output array is expected to have a
 size of @cpp 2*(vertexCount - 1) @ce. Primitive restart is not supported.
 */
-MAGNUM_MESHTOOLS_EXPORT void generateLineStripIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& indices);
+MAGNUM_MESHTOOLS_EXPORT void generateLineStripIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create index buffer for a line loop primitive
@@ -92,10 +92,10 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(U
 
 A variant of @ref generateLineLoopIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be either
-@cpp 0 @ce or at least @cpp 2 @ce, the @p indices array is expected to have a
+@cpp 0 @ce or at least @cpp 2 @ce, the @p output array is expected to have a
 size of @cpp 2*vertexCount @ce. Primitive restart is not supported.
 */
-MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& into);
+MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create index buffer for a triangle strip primitive
@@ -116,10 +116,10 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndi
 
 A variant of @ref generateTriangleStripIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be either
-@cpp 0 @ce or at least @cpp 3 @ce, the @p indices array is expected to have a
+@cpp 0 @ce or at least @cpp 3 @ce, the @p output array is expected to have a
 size of @cpp 3*(vertexCount - 2) @ce. Primitive restart is not supported.
 */
-MAGNUM_MESHTOOLS_EXPORT void generateTriangleStripIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& into);
+MAGNUM_MESHTOOLS_EXPORT void generateTriangleStripIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create index buffer for a triangle fan primitive
@@ -140,10 +140,10 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleFanIndice
 
 A variant of @ref generateTriangleFanIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be either
-@cpp 0 @ce or at least @cpp 3 @ce, the @p indices array is expected to have a
+@cpp 0 @ce or at least @cpp 3 @ce, the @p output array is expected to have a
 size of @cpp 3*(vertexCount - 2) @ce. Primitive restart is not supported.
 */
-MAGNUM_MESHTOOLS_EXPORT void generateTriangleFanIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& into);
+MAGNUM_MESHTOOLS_EXPORT void generateTriangleFanIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
 @brief Create a triangle index buffer for quad primitives
@@ -191,22 +191,22 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateQuadIndices(const
 @m_since_latest
 
 A variant of @ref generateQuadIndices() that fills existing memory instead of
-allocating a new array. Size of @p quads is expected to be divisible by @cpp 4 @ce
-and @p into should have a size that's @cpp quads.size()*6/4 @ce.
+allocating a new array. Size of @p quads is expected to be divisible by
+@cpp 4 @ce and @p output should have a size that's @cpp quads.size()*6/4 @ce.
 */
-MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads, const Containers::StridedArrayView1D<UnsignedInt>& into);
+MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads, const Containers::StridedArrayView1D<UnsignedInt>& output);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads, const Containers::StridedArrayView1D<UnsignedShort>& into);
+MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads, const Containers::StridedArrayView1D<UnsignedShort>& output);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& into);
+MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& output);
 
 /**
 @brief Convert a mesh to plain indexed lines or triangles
