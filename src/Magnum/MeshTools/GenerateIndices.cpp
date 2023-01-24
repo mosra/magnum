@@ -577,9 +577,9 @@ void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>
 }
 
 Trade::MeshData generateIndices(Trade::MeshData&& data) {
-    CORRADE_ASSERT(!data.isIndexed(),
-        "MeshTools::generateIndices(): mesh data already indexed",
-        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_ASSERT(!data.isIndexed() || !isMeshIndexTypeImplementationSpecific(data.indexType()),
+        "MeshTools::generateIndices(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+        (Trade::MeshData{MeshPrimitive{}, 0}));
 
     const UnsignedInt vertexCount = data.vertexCount();
     #ifndef CORRADE_NO_ASSERT
@@ -624,19 +624,31 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
     if(data.primitive() == MeshPrimitive::LineStrip) {
         primitive = MeshPrimitive::Lines;
         indexData = Containers::Array<char>{NoInit, 2*(Math::max(vertexCount, 1u) - 1)*sizeof(UnsignedInt)};
-        generateLineStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+        if(data.isIndexed())
+            generateLineStripIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        else
+            generateLineStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::LineLoop) {
         primitive = MeshPrimitive::Lines;
         indexData = Containers::Array<char>{NoInit, 2*vertexCount*sizeof(UnsignedInt)};
-        generateLineLoopIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+        if(data.isIndexed())
+            generateLineLoopIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        else
+            generateLineLoopIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::TriangleStrip) {
         primitive = MeshPrimitive::Triangles;
         indexData = Containers::Array<char>{NoInit, 3*(Math::max(vertexCount, 2u) - 2)*sizeof(UnsignedInt)};
-        generateTriangleStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+        if(data.isIndexed())
+            generateTriangleStripIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        else
+            generateTriangleStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::TriangleFan) {
         primitive = MeshPrimitive::Triangles;
         indexData = Containers::Array<char>{NoInit, 3*(Math::max(vertexCount, 2u) - 2)*sizeof(UnsignedInt)};
-        generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+        if(data.isIndexed())
+            generateTriangleFanIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        else
+            generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};

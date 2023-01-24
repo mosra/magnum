@@ -80,12 +80,13 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void generateQuadIndicesIntoWrongSize();
 
     void generateIndicesMeshData();
+    template<class T> void generateIndicesMeshDataIndexed();
     void generateIndicesMeshDataEmpty();
     void generateIndicesMeshDataMove();
     void generateIndicesMeshDataNoAttributes();
-    void generateIndicesMeshDataIndexed();
     void generateIndicesMeshDataInvalidPrimitive();
     void generateIndicesMeshDataInvalidVertexCount();
+    void generateIndicesMeshDataImplementationSpecificIndexType();
 };
 
 using namespace Math::Literals;
@@ -150,30 +151,50 @@ const struct {
 const struct {
     MeshPrimitive primitive;
     Containers::Array<UnsignedInt> expectedIndices;
+    Containers::Array<UnsignedInt> expectedIndexedIndices;
 } MeshDataData[] {
     {MeshPrimitive::LineStrip, {InPlaceInit, {
-        0, 1,
-        1, 2,
-        2, 3,
-        3, 4
-    }}},
+            0, 1,
+            1, 2,
+            2, 3,
+            3, 4
+        }}, {InPlaceInit, {
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44
+        }}},
     {MeshPrimitive::LineLoop, {InPlaceInit, {
-        0, 1,
-        1, 2,
-        2, 3,
-        3, 4,
-        4, 0
-    }}},
+            0, 1,
+            1, 2,
+            2, 3,
+            3, 4,
+            4, 0
+        }}, {InPlaceInit, {
+            60, 21,
+            21, 72,
+            72, 93,
+            93, 44,
+            44, 60
+        }}},
     {MeshPrimitive::TriangleStrip, {InPlaceInit, {
-        0, 1, 2,
-        2, 1, 3, /* Reversed */
-        2, 3, 4
-    }}},
+            0, 1, 2,
+            2, 1, 3, /* Reversed */
+            2, 3, 4
+        }}, {InPlaceInit, {
+            60, 21, 72,
+            72, 21, 93, /* Reversed */
+            72, 93, 44
+        }}},
     {MeshPrimitive::TriangleFan, {InPlaceInit, {
-        0, 1, 2,
-        0, 2, 3,
-        0, 3, 4
-    }}}
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 4
+        }}, {InPlaceInit, {
+            60, 21, 72,
+            60, 72, 93,
+            60, 93, 44
+        }}}
 };
 
 const struct {
@@ -249,16 +270,20 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::generateQuadIndicesIntoWrongSize});
 
     addInstancedTests({&GenerateIndicesTest::generateIndicesMeshData,
+                       &GenerateIndicesTest::generateIndicesMeshDataIndexed<UnsignedInt>,
+                       &GenerateIndicesTest::generateIndicesMeshDataIndexed<UnsignedShort>,
+                       &GenerateIndicesTest::generateIndicesMeshDataIndexed<UnsignedByte>,
                        &GenerateIndicesTest::generateIndicesMeshDataEmpty},
         Containers::arraySize(MeshDataData));
 
     addTests({&GenerateIndicesTest::generateIndicesMeshDataMove,
               &GenerateIndicesTest::generateIndicesMeshDataNoAttributes,
-              &GenerateIndicesTest::generateIndicesMeshDataIndexed,
               &GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive});
 
     addInstancedTests({&GenerateIndicesTest::generateIndicesMeshDataInvalidVertexCount},
         Containers::arraySize(MeshDataInvalidVertexCountData));
+
+    addTests({&GenerateIndicesTest::generateIndicesMeshDataImplementationSpecificIndexType});
 }
 
 void GenerateIndicesTest::primitiveCount() {
@@ -1089,6 +1114,68 @@ void GenerateIndicesTest::generateIndicesMeshData() {
         }), TestSuite::Compare::Container);
 }
 
+template<class T> void GenerateIndicesTest::generateIndicesMeshDataIndexed() {
+    auto&& data = MeshDataData[testCaseInstanceId()];
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+    {
+        std::ostringstream out;
+        Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << data.primitive;
+        setTestCaseDescription(out.str());
+    }
+
+    const struct Vertex {
+        Vector2 position;
+        Short data[2];
+        Vector2 textureCoordinates;
+    } vertexData[] {
+        {{1.5f, 0.3f}, {28, -15}, {0.2f, 0.8f}},
+        {{2.5f, 1.3f}, {29, -16}, {0.3f, 0.7f}},
+        {{3.5f, 2.3f}, {30, -17}, {0.4f, 0.6f}},
+        {{4.5f, 3.3f}, {40, -18}, {0.5f, 0.5f}},
+        {{5.5f, 4.3f}, {41, -19}, {0.6f, 0.4f}}
+    };
+    Containers::StridedArrayView1D<const Vertex> vertices = vertexData;
+
+    const T indexData[]{60, 21, 72, 93, 44};
+
+    Trade::MeshData mesh{data.primitive,
+        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, vertexData, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                vertices.slice(&Vertex::position)},
+            /* Array attribute to verify it's correctly propagated */
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+                VertexFormat::Short, vertices.slice(&Vertex::data), 2},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+                vertices.slice(&Vertex::textureCoordinates)}
+        }};
+
+    Trade::MeshData out = generateIndices(mesh);
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), data.expectedIndexedIndices,
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(out.attributeCount(), 3);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
+        }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(out.attributeName(1), Trade::meshAttributeCustom(42));
+    CORRADE_COMPARE(out.attributeFormat(1), VertexFormat::Short);
+    CORRADE_COMPARE(out.attributeArraySize(1), 2);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2s>(out.attribute<Short[]>(1))),
+        Containers::arrayView<Vector2s>({
+            {28, -15}, {29, -16}, {30, -17}, {40, -18}, {41, -19}
+        }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates),
+        Containers::arrayView<Vector2>({
+            {0.2f, 0.8f}, {0.3f, 0.7f}, {0.4f, 0.6f}, {0.5f, 0.5f}, {0.6f, 0.4f}
+        }), TestSuite::Compare::Container);
+}
+
 void GenerateIndicesTest::generateIndicesMeshDataEmpty() {
     auto&& data = MeshDataData[testCaseInstanceId()];
     {
@@ -1189,24 +1276,6 @@ void GenerateIndicesTest::generateIndicesMeshDataNoAttributes() {
     CORRADE_COMPARE(out.attributeCount(), 0);
 }
 
-void GenerateIndicesTest::generateIndicesMeshDataIndexed() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    UnsignedByte indices[]{0};
-    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        {}, indices, Trade::MeshIndexData{indices}, 0};
-
-    /* Test both r-value and l-value overload */
-    std::ostringstream out;
-    Error redirectError{&out};
-    generateIndices(mesh);
-    generateIndices(Trade::MeshData{MeshPrimitive::TriangleFan,
-        {}, indices, Trade::MeshIndexData{indices}, 0});
-    CORRADE_COMPARE(out.str(),
-        "MeshTools::generateIndices(): mesh data already indexed\n"
-        "MeshTools::generateIndices(): mesh data already indexed\n");
-}
-
 void GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -1234,6 +1303,19 @@ void GenerateIndicesTest::generateIndicesMeshDataInvalidVertexCount() {
     generateIndices(mesh);
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "MeshTools::generateIndices(): expected either zero or at least {} vertices for {}, got {}\n", data.expectedVertexCount, primitiveName.str(), data.invalidVertexCount));
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataImplementationSpecificIndexType() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::MeshData a{MeshPrimitive::LineLoop,
+        nullptr, Trade::MeshIndexData{meshIndexTypeWrap(0xcaca), Containers::StridedArrayView1D<const void>{}},
+        nullptr, {}, 3};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    generateIndices(a);
+    CORRADE_COMPARE(out.str(), "MeshTools::generateIndices(): mesh has an implementation-specific index type 0xcaca\n");
 }
 
 }}}}

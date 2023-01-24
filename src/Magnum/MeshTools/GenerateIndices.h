@@ -484,22 +484,22 @@ MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedAr
 @brief Convert a mesh to plain indexed lines or triangles
 @m_since{2020,06}
 
-Expects that @p mesh is not indexed, is one of
-@ref MeshPrimitive::LineStrip, @ref MeshPrimitive::LineLoop,
-@ref MeshPrimitive::TriangleStrip, @ref MeshPrimitive::TriangleFan primitives
-and has either @cpp 0 @ce vertices or at least @cpp 2 @ce vertices for a
-line-based primitive or @cpp 3 @ce vertices for a triangle-based primitive.
-Calls one of @ref generateLineStripIndices(), @ref generateLineLoopIndices(),
+Expects that @p mesh is one of @ref MeshPrimitive::LineStrip,
+@ref MeshPrimitive::LineLoop, @ref MeshPrimitive::TriangleStrip or
+@ref MeshPrimitive::TriangleFan primitives and has either @cpp 0 @ce vertices
+or at least @cpp 2 @ce vertices for a line-based primitive and @cpp 3 @ce
+vertices for a triangle-based primitive. If it's indexed, the index type is
+expected to be non-implementation-specific. Calls one of
+@ref generateLineStripIndices(), @ref generateLineLoopIndices(),
 @ref generateTriangleStripIndices() or @ref generateTriangleFanIndices()
-functions to generate the index buffer. If your mesh is indexed, call
-@ref duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>)
-on it first.
+functions or their indexed overloads to generate the index buffer.
 
 The resulting mesh always has @ref MeshIndexType::UnsignedInt, call
 @ref compressIndices(const Trade::MeshData&, MeshIndexType) on the result to
 compress it to a smaller type, if desired. This function will unconditionally
 make a copy of all vertex data, use @ref generateIndices(Trade::MeshData&&) to
 avoid that copy.
+@see @ref isMeshIndexTypeImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(const Trade::MeshData& mesh);
 
