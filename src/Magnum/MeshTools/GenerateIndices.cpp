@@ -36,6 +36,32 @@
 namespace Magnum { namespace MeshTools {
 
 UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elementCount) {
+    #ifndef CORRADE_NO_ASSERT
+    UnsignedInt minElementCount;
+    if(primitive == MeshPrimitive::Lines ||
+       primitive == MeshPrimitive::LineStrip ||
+       primitive == MeshPrimitive::LineLoop)
+        minElementCount = 2;
+    else if(primitive == MeshPrimitive::Triangles ||
+            primitive == MeshPrimitive::TriangleStrip ||
+            primitive == MeshPrimitive::TriangleFan)
+        minElementCount = 3;
+    else
+        minElementCount = 1;
+    CORRADE_ASSERT(elementCount == 0 || elementCount >= minElementCount,
+        "MeshTools::primitiveCount(): expected either zero or at least" << minElementCount << "elements for" << primitive << Debug::nospace << ", got" << elementCount, {});
+
+    UnsignedInt elementCountDivisor;
+    if(primitive == MeshPrimitive::Lines)
+        elementCountDivisor = 2;
+    else if(primitive == MeshPrimitive::Triangles)
+        elementCountDivisor = 3;
+    else
+        elementCountDivisor = 1;
+    CORRADE_ASSERT(elementCount % elementCountDivisor == 0,
+        "MeshTools::primitiveCount(): expected element count to be divisible by" << elementCountDivisor << "for" << primitive << Debug::nospace << ", got" << elementCount, {});
+    #endif
+
     if(primitive == MeshPrimitive::Points ||
        primitive == MeshPrimitive::Edges ||
        primitive == MeshPrimitive::Faces ||

@@ -42,9 +42,10 @@ namespace Magnum { namespace MeshTools {
 
 Returns how many primitives is generated for given @p primitive and
 @p elementCount, for example for @ref MeshPrimitive::Triangles returns
-@cpp elementCount/3 @ce. Expects that @p primitive is valid, return value is
-rounded down if there's not enough elements for given primitive type (so for
-14 vertices you get just 4 triangles, for example).
+@cpp elementCount/3 @ce. Expects that @p primitive is valid, @p elementCount
+is either zero or at least @cpp 2 @ce for a line-based primitive and at least
+@cpp 3 @ce for a triangle-based primitive, is divisible by @cpp 2 @ce for
+@ref MeshPrimitive::Lines and by @cpp 3 @ce for @ref MeshPrimitive::Triangles.
 */
 MAGNUM_MESHTOOLS_EXPORT UnsignedInt primitiveCount(MeshPrimitive primitive, UnsignedInt elementCount);
 

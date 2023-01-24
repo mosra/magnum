@@ -1279,6 +1279,10 @@ See also:
     @ref Math::RectangularMatrix::data() are no longer @cpp constexpr @ce in
     order to make them return a reference to a fixed-size array instead of a
     pointer, which was deemed a more useful property.
+-   @ref MeshTools::primitiveCount() now requires the element count to follow
+    rules defined by a particular primitive to be consistent with requirements
+    of @ref MeshTools::generateIndices() and related APIs. Before it was just
+    rounding down to the nearest lower primitive count.
 -   @cpp Platform::WindowlessWindowsEglApplication @ce is now merged into
     @ref Platform::WindowlessEglApplication. Since its use case was rather rare
     (windowless applications on ANGLE on Windows) and it wasn't even built in

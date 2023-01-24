@@ -42,6 +42,7 @@ struct GenerateIndicesTest: TestSuite::Tester {
     explicit GenerateIndicesTest();
 
     void primitiveCount();
+    void primitiveCountInvalidVertexCount();
     void primitiveCountInvalidPrimitive();
 
     void generateLineStripIndices();
@@ -175,6 +176,7 @@ const struct {
 
 GenerateIndicesTest::GenerateIndicesTest() {
     addTests({&GenerateIndicesTest::primitiveCount,
+              &GenerateIndicesTest::primitiveCountInvalidVertexCount,
               &GenerateIndicesTest::primitiveCountInvalidPrimitive,
 
               &GenerateIndicesTest::generateLineStripIndices,
@@ -224,26 +226,43 @@ void GenerateIndicesTest::primitiveCount() {
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Instances, 13), 13);
 
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Lines, 4), 2);
-    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Lines, 5), 2);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Lines, 14), 7);
 
-    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineStrip, 1), 0);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineStrip, 2), 1);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineStrip, 4), 3);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineStrip, 10), 9);
 
-    /* This is a degenerate line, which technically still is a primitive */
-    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineLoop, 1), 1);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineLoop, 2), 2);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineLoop, 9), 9);
 
-    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Triangles, 2), 0);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Triangles, 3), 1);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Triangles, 6), 2);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Triangles, 21), 7);
 
-    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 2), 0);
-    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 2), 0);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 3), 1);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 3), 1);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 7), 5);
     CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 7), 5);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 22), 20);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 22), 20);
+}
+
+void GenerateIndicesTest::primitiveCountInvalidVertexCount() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::primitiveCount(MeshPrimitive::LineLoop, 1);
+    MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 1);
+    MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 2);
+    MeshTools::primitiveCount(MeshPrimitive::Lines, 7);
+    MeshTools::primitiveCount(MeshPrimitive::Triangles, 14);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::primitiveCount(): expected either zero or at least 2 elements for MeshPrimitive::LineLoop, got 1\n"
+        "MeshTools::primitiveCount(): expected either zero or at least 3 elements for MeshPrimitive::TriangleStrip, got 1\n"
+        "MeshTools::primitiveCount(): expected either zero or at least 3 elements for MeshPrimitive::TriangleFan, got 2\n"
+        "MeshTools::primitiveCount(): expected element count to be divisible by 2 for MeshPrimitive::Lines, got 7\n"
+        "MeshTools::primitiveCount(): expected element count to be divisible by 3 for MeshPrimitive::Triangles, got 14\n");
 }
 
 void GenerateIndicesTest::primitiveCountInvalidPrimitive() {
