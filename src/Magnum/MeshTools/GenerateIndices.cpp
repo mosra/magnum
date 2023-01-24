@@ -58,10 +58,12 @@ UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elem
 }
 
 void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
-    CORRADE_ASSERT(vertexCount >= 2,
-        "MeshTools::generateLineStripIndicesInto(): expected at least two vertices, got" << vertexCount, );
-    CORRADE_ASSERT(indices.size() == 2*(vertexCount - 1),
-        "MeshTools::generateLineStripIndicesInto(): bad output size, expected" << 2*(vertexCount - 1) << "but got" << indices.size(), );
+    CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 2,
+        "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two vertices, got" << vertexCount, );
+
+    const UnsignedInt iMax = Math::max(vertexCount, 1u) - 1;
+    CORRADE_ASSERT(indices.size() == 2*iMax,
+        "MeshTools::generateLineStripIndicesInto(): bad output size, expected" << 2*iMax << "but got" << indices.size(), );
 
     /*
             1 --- 2             1 2 --- 3 4
@@ -70,21 +72,21 @@ void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Container
          /           \       /               \
         0             3     0                 5
     */
-    for(std::size_t i = 0; i != vertexCount - 1; ++i) {
+    for(std::size_t i = 0; i != iMax; ++i) {
         indices[i*2 + 0] = i;
         indices[i*2 + 1] = i + 1;
     }
 }
 
 Containers::Array<UnsignedInt> generateLineStripIndices(const UnsignedInt vertexCount) {
-    Containers::Array<UnsignedInt> indices{NoInit, 2*(vertexCount - 1)};
+    Containers::Array<UnsignedInt> indices{NoInit, 2*(Math::max(vertexCount, 1u) - 1)};
     generateLineStripIndicesInto(vertexCount, indices);
     return indices;
 }
 
 void generateLineLoopIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
-    CORRADE_ASSERT(vertexCount >= 2,
-        "MeshTools::generateLineLoopIndicesInto(): expected at least two vertices, got" << vertexCount, );
+    CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 2,
+        "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two vertices, got" << vertexCount, );
     CORRADE_ASSERT(indices.size() == 2*vertexCount,
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected" << 2*vertexCount << "but got" << indices.size(), );
 
@@ -97,12 +99,14 @@ void generateLineLoopIndicesInto(const UnsignedInt vertexCount, const Containers
          /           \       /               \
         0 ----------- 3     0 7 ----------- 6 5
     */
-    for(std::size_t i = 0; i != vertexCount - 1; ++i) {
+    for(std::size_t i = 0, iMax = Math::max(vertexCount, 1u) - 1; i != iMax; ++i) {
         indices[i*2 + 0] = i;
         indices[i*2 + 1] = i + 1;
     }
-    indices[2*vertexCount - 2] = vertexCount - 1;
-    indices[2*vertexCount - 1] = 0;
+    if(vertexCount >= 2) {
+        indices[2*vertexCount - 2] = vertexCount - 1;
+        indices[2*vertexCount - 1] = 0;
+    }
 }
 
 Containers::Array<UnsignedInt> generateLineLoopIndices(const UnsignedInt vertexCount) {
@@ -112,10 +116,12 @@ Containers::Array<UnsignedInt> generateLineLoopIndices(const UnsignedInt vertexC
 }
 
 void generateTriangleStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
-    CORRADE_ASSERT(vertexCount >= 3,
-        "MeshTools::generateTriangleStripIndicesInto(): expected at least three vertices, got" << vertexCount, );
-    CORRADE_ASSERT(indices.size() == 3*(vertexCount - 2),
-        "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected" << 3*(vertexCount - 2) << "but got" << indices.size(), );
+    CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 3,
+        "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three vertices, got" << vertexCount, );
+
+    const UnsignedInt iMax = Math::max(vertexCount, 2u) - 2;
+    CORRADE_ASSERT(indices.size() == 3*iMax,
+        "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected" << 3*iMax << "but got" << indices.size(), );
 
     /*
         Triangles starting with odd vertices (marked with !) have the first two
@@ -127,7 +133,7 @@ void generateTriangleStripIndicesInto(const UnsignedInt vertexCount, const Conta
            \ /     \ /     \           \ / /  !  \ \ / /  !  \
             1 ----- 3 ----- 5           1 4 ----- 5 7 10 ---- 11
     */
-    for(std::size_t i = 0; i != vertexCount - 2; ++i) {
+    for(std::size_t i = 0; i != iMax; ++i) {
         indices[i*3 + 0] = i % 2 ? i + 1 : i;
         indices[i*3 + 1] = i % 2 ? i : i + 1;
         indices[i*3 + 2] = i + 2;
@@ -135,16 +141,18 @@ void generateTriangleStripIndicesInto(const UnsignedInt vertexCount, const Conta
 }
 
 Containers::Array<UnsignedInt> generateTriangleStripIndices(const UnsignedInt vertexCount) {
-    Containers::Array<UnsignedInt> indices{NoInit, 3*(vertexCount - 2)};
+    Containers::Array<UnsignedInt> indices{NoInit, 3*(Math::max(vertexCount, 2u) - 2u)};
     generateTriangleStripIndicesInto(vertexCount, indices);
     return indices;
 }
 
 void generateTriangleFanIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
-    CORRADE_ASSERT(vertexCount >= 3,
-        "MeshTools::generateTriangleFanIndicesInto(): expected at least three vertices, got" << vertexCount, );
-    CORRADE_ASSERT(indices.size() == 3*(vertexCount - 2),
-        "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected" << 3*(vertexCount - 2) << "but got" << indices.size(), );
+    CORRADE_ASSERT(vertexCount == 0 || vertexCount >= 3,
+        "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three vertices, got" << vertexCount, );
+
+    const UnsignedInt iMax = Math::max(vertexCount, 2u) - 2;
+    CORRADE_ASSERT(indices.size() == 3*iMax,
+        "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected" << 3*iMax << "but got" << indices.size(), );
 
     /*                              10 8 ----- 7 5
             4 ----- 3               / \ \     / / \
@@ -157,7 +165,7 @@ void generateTriangleFanIndicesInto(const UnsignedInt vertexCount, const Contain
                    \ /                          \ /
                     1                            1
     */
-    for(std::size_t i = 0; i != vertexCount - 2; ++i) {
+    for(std::size_t i = 0; i != iMax; ++i) {
         indices[i*3 + 0] = 0;
         indices[i*3 + 1] = i + 1;
         indices[i*3 + 2] = i + 2;
@@ -165,7 +173,7 @@ void generateTriangleFanIndicesInto(const UnsignedInt vertexCount, const Contain
 }
 
 Containers::Array<UnsignedInt> generateTriangleFanIndices(const UnsignedInt vertexCount) {
-    Containers::Array<UnsignedInt> indices{NoInit, 3*(vertexCount - 2)};
+    Containers::Array<UnsignedInt> indices{NoInit, 3*(Math::max(vertexCount, 2u) - 2)};
     generateTriangleFanIndicesInto(vertexCount, indices);
     return indices;
 }
@@ -286,8 +294,8 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
         minVertexCount = 3;
     } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << data.primitive(),
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-    CORRADE_ASSERT(vertexCount >= minVertexCount,
-        "MeshTools::generateIndices(): expected at least" << minVertexCount << "vertices for" << data.primitive() << Debug::nospace << ", got" << vertexCount,
+    CORRADE_ASSERT(vertexCount == 0 || vertexCount >= minVertexCount,
+        "MeshTools::generateIndices(): expected either zero or at least" << minVertexCount << "vertices for" << data.primitive() << Debug::nospace << ", got" << vertexCount,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
     #endif
 
@@ -317,7 +325,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
     Containers::Array<char> indexData;
     if(data.primitive() == MeshPrimitive::LineStrip) {
         primitive = MeshPrimitive::Lines;
-        indexData = Containers::Array<char>{NoInit, 2*(vertexCount - 1)*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, 2*(Math::max(vertexCount, 1u) - 1)*sizeof(UnsignedInt)};
         generateLineStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::LineLoop) {
         primitive = MeshPrimitive::Lines;
@@ -325,11 +333,11 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
         generateLineLoopIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::TriangleStrip) {
         primitive = MeshPrimitive::Triangles;
-        indexData = Containers::Array<char>{NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, 3*(Math::max(vertexCount, 2u) - 2)*sizeof(UnsignedInt)};
         generateTriangleStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else if(data.primitive() == MeshPrimitive::TriangleFan) {
         primitive = MeshPrimitive::Triangles;
-        indexData = Containers::Array<char>{NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, 3*(Math::max(vertexCount, 2u) - 2)*sizeof(UnsignedInt)};
         generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 

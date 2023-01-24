@@ -67,6 +67,7 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void generateQuadIndicesIntoWrongSize();
 
     void generateIndicesMeshData();
+    void generateIndicesMeshDataEmpty();
     void generateIndicesMeshDataMove();
     void generateIndicesMeshDataNoAttributes();
     void generateIndicesMeshDataIndexed();
@@ -205,7 +206,8 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds,
               &GenerateIndicesTest::generateQuadIndicesIntoWrongSize});
 
-    addInstancedTests({&GenerateIndicesTest::generateIndicesMeshData},
+    addInstancedTests({&GenerateIndicesTest::generateIndicesMeshData,
+                       &GenerateIndicesTest::generateIndicesMeshDataEmpty},
         Containers::arraySize(MeshDataData));
 
     addTests({&GenerateIndicesTest::generateIndicesMeshDataMove,
@@ -255,7 +257,12 @@ void GenerateIndicesTest::primitiveCountInvalidPrimitive() {
 }
 
 void GenerateIndicesTest::generateLineStripIndices() {
-    /* Minimal input */
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(0),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
     CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(2),
         Containers::arrayView<UnsignedInt>({
             0, 1
@@ -288,7 +295,7 @@ void GenerateIndicesTest::generateLineStripIndicesWrongVertexCount() {
     Error redirectError{&out};
     MeshTools::generateLineStripIndicesInto(1, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateLineStripIndicesInto(): expected at least two vertices, got 1\n");
+        "MeshTools::generateLineStripIndicesInto(): expected either zero or at least two vertices, got 1\n");
 }
 
 void GenerateIndicesTest::generateLineStripIndicesIntoWrongSize() {
@@ -298,13 +305,20 @@ void GenerateIndicesTest::generateLineStripIndicesIntoWrongSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    MeshTools::generateLineStripIndicesInto(0, indices);
     MeshTools::generateLineStripIndicesInto(5, indices);
     CORRADE_COMPARE(out.str(),
+        "MeshTools::generateLineStripIndicesInto(): bad output size, expected 0 but got 7\n"
         "MeshTools::generateLineStripIndicesInto(): bad output size, expected 8 but got 7\n");
 }
 
 void GenerateIndicesTest::generateLineLoopIndices() {
-    /* Minimal input */
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(0),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
     CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(2),
         Containers::arrayView<UnsignedInt>({
             0, 1,
@@ -340,7 +354,7 @@ void GenerateIndicesTest::generateLineLoopIndicesWrongVertexCount() {
     Error redirectError{&out};
     MeshTools::generateLineLoopIndicesInto(1, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateLineLoopIndicesInto(): expected at least two vertices, got 1\n");
+        "MeshTools::generateLineLoopIndicesInto(): expected either zero or at least two vertices, got 1\n");
 }
 
 void GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize() {
@@ -350,13 +364,20 @@ void GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    MeshTools::generateLineLoopIndicesInto(0, indices);
     MeshTools::generateLineLoopIndicesInto(5, indices);
     CORRADE_COMPARE(out.str(),
+        "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 0 but got 9\n"
         "MeshTools::generateLineLoopIndicesInto(): bad output size, expected 10 but got 9\n");
 }
 
 void GenerateIndicesTest::generateTriangleStripIndices() {
-    /* Minimal input */
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(0),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
     CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(3),
         Containers::arrayView<UnsignedInt>({
             0, 1, 2
@@ -391,7 +412,7 @@ void GenerateIndicesTest::generateTriangleStripIndicesWrongVertexCount() {
     Error redirectError{&out};
     MeshTools::generateTriangleStripIndicesInto(2, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateTriangleStripIndicesInto(): expected at least three vertices, got 2\n");
+        "MeshTools::generateTriangleStripIndicesInto(): expected either zero or at least three vertices, got 2\n");
 }
 
 void GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize() {
@@ -401,13 +422,20 @@ void GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    MeshTools::generateTriangleStripIndicesInto(0, indices);
     MeshTools::generateTriangleStripIndicesInto(5, indices);
     CORRADE_COMPARE(out.str(),
+        "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 0 but got 8\n"
         "MeshTools::generateTriangleStripIndicesInto(): bad output size, expected 9 but got 8\n");
 }
 
 void GenerateIndicesTest::generateTriangleFanIndices() {
-    /* Minimal input */
+    /* Empty input */
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(0),
+        Containers::ArrayView<const UnsignedInt>{},
+        TestSuite::Compare::Container);
+
+    /* Minimal non-empty input */
     CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(3),
         Containers::arrayView<UnsignedInt>({
             0, 1, 2
@@ -442,7 +470,7 @@ void GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount() {
     Error redirectError{&out};
     MeshTools::generateTriangleFanIndicesInto(2, nullptr);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateTriangleFanIndicesInto(): expected at least three vertices, got 2\n");
+        "MeshTools::generateTriangleFanIndicesInto(): expected either zero or at least three vertices, got 2\n");
 }
 
 void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
@@ -452,8 +480,10 @@ void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    MeshTools::generateTriangleFanIndicesInto(0, indices);
     MeshTools::generateTriangleFanIndicesInto(5, indices);
     CORRADE_COMPARE(out.str(),
+        "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 0 but got 8\n"
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n");
 }
 
@@ -654,6 +684,42 @@ void GenerateIndicesTest::generateIndicesMeshData() {
         }), TestSuite::Compare::Container);
 }
 
+void GenerateIndicesTest::generateIndicesMeshDataEmpty() {
+    auto&& data = MeshDataData[testCaseInstanceId()];
+    {
+        std::ostringstream out;
+        Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << data.primitive;
+        setTestCaseDescription(out.str());
+    }
+
+    /* Similar to generateIndicesMeshData(), just with 0 vertices. Verifying it
+       doesn't crash anywhere and produces an empty mesh as well. */
+
+    struct Vertex {
+        Vector2 position;
+        Short data[2];
+        Vector2 textureCoordinates;
+    };
+    Containers::StridedArrayView1D<const Vertex> vertices;
+
+    Trade::MeshData mesh{data.primitive, {}, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            vertices.slice(&Vertex::position)},
+        /* Array attribute to verify it's correctly propagated */
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::Short,
+            vertices.slice(&Vertex::data), 2},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            vertices.slice(&Vertex::textureCoordinates)}
+    }};
+
+    Trade::MeshData out = generateIndices(mesh);
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexCount(), 0);
+    CORRADE_COMPARE(out.attributeCount(), 3);
+    CORRADE_COMPARE(out.vertexCount(), 0);
+}
+
 void GenerateIndicesTest::generateIndicesMeshDataMove() {
     struct Vertex {
         Vector2 position;
@@ -762,7 +828,7 @@ void GenerateIndicesTest::generateIndicesMeshDataInvalidVertexCount() {
     Error redirectError{&out};
     generateIndices(mesh);
     CORRADE_COMPARE(out.str(), Utility::formatString(
-        "MeshTools::generateIndices(): expected at least {} vertices for {}, got {}\n", data.expectedVertexCount, primitiveName.str(), data.invalidVertexCount));
+        "MeshTools::generateIndices(): expected either zero or at least {} vertices for {}, got {}\n", data.expectedVertexCount, primitiveName.str(), data.invalidVertexCount));
 }
 
 }}}}
