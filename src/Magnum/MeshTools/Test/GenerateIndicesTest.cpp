@@ -67,6 +67,7 @@ struct GenerateIndicesTest: TestSuite::Tester {
 
     void generateIndicesMeshData();
     void generateIndicesMeshDataMove();
+    void generateIndicesMeshDataNoAttributes();
     void generateIndicesMeshDataIndexed();
     void generateIndicesMeshDataInvalidPrimitive();
 };
@@ -196,6 +197,7 @@ GenerateIndicesTest::GenerateIndicesTest() {
         Containers::arraySize(MeshDataData));
 
     addTests({&GenerateIndicesTest::generateIndicesMeshDataMove,
+              &GenerateIndicesTest::generateIndicesMeshDataNoAttributes,
               &GenerateIndicesTest::generateIndicesMeshDataIndexed,
               &GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive});
 }
@@ -686,6 +688,19 @@ void GenerateIndicesTest::generateIndicesMeshDataMove() {
 
     /* The vertex data should be moved, not copied */
     CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataNoAttributes() {
+    Trade::MeshData out = generateIndices(Trade::MeshData{MeshPrimitive::TriangleStrip, 4});
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({
+            0, 1, 2,
+            2, 1, 3, /* Reversed */
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.vertexCount(), 4);
+    CORRADE_COMPARE(out.attributeCount(), 0);
 }
 
 void GenerateIndicesTest::generateIndicesMeshDataIndexed() {

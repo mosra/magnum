@@ -321,7 +321,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
 
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};
     return Trade::MeshData{primitive, std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData)};
+        std::move(vertexData), std::move(attributeData), vertexCount};
 }
 
 Trade::MeshData generateIndices(const Trade::MeshData& data) {

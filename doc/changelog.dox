@@ -841,6 +841,8 @@ See also:
     usually just didn't remove any duplicate whatsoever while
     `--remove-duplicates-fuzzy` did, no matter how ridiculously low epsilon
     was used.
+-   Fixed @ref MeshTools::generateIndices() to work correctly with
+    attribute-less @ref Trade::MeshData instances
 -   @ref Platform::EmscriptenApplication randomly created antialiased contexts
     due to an uninitialized variable in its
     @ref Platform::EmscriptenApplication::GLConfiguration "GLConfiguration"
