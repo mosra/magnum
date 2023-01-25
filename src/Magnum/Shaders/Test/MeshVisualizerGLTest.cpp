@@ -991,6 +991,12 @@ const struct {
     {"only secondary set, dynamic", 5, 4, 4, 0, 3,
         MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
         MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount, {InPlaceInit, {
+            #ifdef MAGNUM_TARGET_WEBGL
+            /* On WebGL the primary joint vertex attribute has to be bound to
+               something even if not (dynamically) used in the end, otherwise
+               it causes an error. So just alias it with the secondary one. */
+            {0, MeshVisualizerGL2D::JointIds{MeshVisualizerGL2D::JointIds::Components::Three}},
+            #endif
             {0, MeshVisualizerGL2D::SecondaryJointIds{MeshVisualizerGL2D::SecondaryJointIds::Components::Three}},
             {3*4, MeshVisualizerGL2D::SecondaryWeights{MeshVisualizerGL2D::SecondaryWeights::Components::Three}},
         }}, true, true, false,
