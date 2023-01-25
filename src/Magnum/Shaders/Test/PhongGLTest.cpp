@@ -4191,7 +4191,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     };
 
     sphere
-        .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        .addVertexBufferInstanced(GL::Buffer{GL::Buffer::TargetHint::Array, instanceData}, 1, 0,
             PhongGL::TransformationMatrix{},
             PhongGL::NormalMatrix{},
             PhongGL::Color3{},
@@ -4605,11 +4605,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstancedSkinning() {
 
     GL::Mesh mesh{MeshPrimitive::TriangleStrip};
     mesh.setCount(4)
-        .addVertexBuffer(GL::Buffer{vertices}, 0,
+        .addVertexBuffer(GL::Buffer{GL::Buffer::TargetHint::Array, vertices}, 0,
             PhongGL::Position{},
             PhongGL::JointIds{PhongGL::JointIds::Components::Three},
             PhongGL::Weights{PhongGL::Weights::Components::Three})
-        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+        .addVertexBufferInstanced(GL::Buffer{GL::Buffer::TargetHint::Array, instanceTransformations}, 1, 0,
             PhongGL::TransformationMatrix{})
         .setInstanceCount(3);
 
@@ -5148,11 +5148,11 @@ void PhongGLTest::renderMultiSkinning() {
 
     GL::Mesh mesh{MeshPrimitive::Triangles};
     mesh.setCount(12)
-        .addVertexBuffer(GL::Buffer{vertices}, 0,
+        .addVertexBuffer(GL::Buffer{GL::Buffer::TargetHint::Array, vertices}, 0,
             PhongGL::Position{},
             PhongGL::JointIds{PhongGL::JointIds::Components::Two},
             PhongGL::Weights{PhongGL::Weights::Components::Two})
-        .setIndexBuffer(GL::Buffer{indices}, 0, MeshIndexType::UnsignedInt);
+        .setIndexBuffer(GL::Buffer{GL::Buffer::TargetHint::ElementArray, indices}, 0, MeshIndexType::UnsignedInt);
     GL::MeshView square{mesh};
     square.setCount(6);
     GL::MeshView triangle1{mesh};

@@ -3453,7 +3453,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     };
 
     circle
-        .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        .addVertexBufferInstanced(GL::Buffer{GL::Buffer::TargetHint::Array, instanceData}, 1, 0,
             FlatGL2D::TransformationMatrix{},
             FlatGL2D::Color3{},
             #ifndef MAGNUM_TARGET_GLES2
@@ -3779,7 +3779,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     };
 
     sphere
-        .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        .addVertexBufferInstanced(GL::Buffer{GL::Buffer::TargetHint::Array, instanceData}, 1, 0,
             FlatGL3D::TransformationMatrix{},
             FlatGL3D::Color3{},
             #ifndef MAGNUM_TARGET_GLES2
@@ -4109,11 +4109,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning2D() {
 
     GL::Mesh mesh{MeshPrimitive::TriangleStrip};
     mesh.setCount(4)
-        .addVertexBuffer(GL::Buffer{vertices}, 0,
+        .addVertexBuffer(GL::Buffer{GL::Buffer::TargetHint::Array, vertices}, 0,
             FlatGL2D::Position{},
             FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three},
             FlatGL2D::Weights{FlatGL2D::Weights::Components::Three})
-        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+        .addVertexBufferInstanced(GL::Buffer{GL::Buffer::TargetHint::Array, instanceTransformations}, 1, 0,
             FlatGL2D::TransformationMatrix{})
         .setInstanceCount(3);
 
@@ -4237,11 +4237,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning3D() {
 
     GL::Mesh mesh{MeshPrimitive::TriangleStrip};
     mesh.setCount(4)
-        .addVertexBuffer(GL::Buffer{vertices}, 0,
+        .addVertexBuffer(GL::Buffer{GL::Buffer::TargetHint::Array, vertices}, 0,
             FlatGL3D::Position{},
             FlatGL3D::JointIds{FlatGL3D::JointIds::Components::Three},
             FlatGL3D::Weights{FlatGL3D::Weights::Components::Three})
-        .addVertexBufferInstanced(GL::Buffer{instanceTransformations}, 1, 0,
+        .addVertexBufferInstanced(GL::Buffer{GL::Buffer::TargetHint::Array, instanceTransformations}, 1, 0,
             FlatGL3D::TransformationMatrix{})
         .setInstanceCount(3);
 
@@ -5077,11 +5077,11 @@ void FlatGLTest::renderMultiSkinning2D() {
 
     GL::Mesh mesh{MeshPrimitive::Triangles};
     mesh.setCount(12)
-        .addVertexBuffer(GL::Buffer{vertices}, 0,
+        .addVertexBuffer(GL::Buffer{GL::Buffer::TargetHint::Array, vertices}, 0,
             FlatGL2D::Position{},
             FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Two},
             FlatGL2D::Weights{FlatGL2D::Weights::Components::Two})
-        .setIndexBuffer(GL::Buffer{indices}, 0, MeshIndexType::UnsignedInt);
+        .setIndexBuffer(GL::Buffer{GL::Buffer::TargetHint::ElementArray, indices}, 0, MeshIndexType::UnsignedInt);
     GL::MeshView square{mesh};
     square.setCount(6);
     GL::MeshView triangle1{mesh};
@@ -5313,11 +5313,11 @@ void FlatGLTest::renderMultiSkinning3D() {
 
     GL::Mesh mesh{MeshPrimitive::Triangles};
     mesh.setCount(12)
-        .addVertexBuffer(GL::Buffer{vertices}, 0,
+        .addVertexBuffer(GL::Buffer{GL::Buffer::TargetHint::Array, vertices}, 0,
             FlatGL3D::Position{},
             FlatGL3D::JointIds{FlatGL3D::JointIds::Components::Two},
             FlatGL3D::Weights{FlatGL3D::Weights::Components::Two})
-        .setIndexBuffer(GL::Buffer{indices}, 0, MeshIndexType::UnsignedInt);
+        .setIndexBuffer(GL::Buffer{GL::Buffer::TargetHint::ElementArray, indices}, 0, MeshIndexType::UnsignedInt);
     GL::MeshView square{mesh};
     square.setCount(6);
     GL::MeshView triangle1{mesh};
