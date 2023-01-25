@@ -3280,7 +3280,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     GL::Mesh icosphere = MeshTools::compile(Primitives::icosphereSolid(0));
 
     MeshVisualizerGL3D shader{MeshVisualizerGL3D::Configuration{}
-        .setFlags(MeshVisualizerGL3D::Flag::InstancedObjectId|flag)};
+        .setFlags(MeshVisualizerGL3D::Flag::ObjectId|flag)};
     shader.bindColorMapTexture(_colorMapTexture);
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
