@@ -165,6 +165,10 @@ in lowp vec4 interpolatedVertexColor;
 flat in highp uint interpolatedInstanceObjectId;
 #endif
 
+#ifdef MULTI_DRAW
+flat in highp uint drawId;
+#endif
+
 /* Outputs */
 
 #ifdef NEW_GLSL
@@ -179,10 +183,6 @@ layout(location = OBJECT_ID_OUTPUT_ATTRIBUTE_LOCATION)
 #endif
 /* mediump is just 2^10, which might not be enough, this is 2^16 */
 out highp uint fragmentObjectId;
-#endif
-
-#ifdef MULTI_DRAW
-flat in highp uint drawId;
 #endif
 
 void main() {

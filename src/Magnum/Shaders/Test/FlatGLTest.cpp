@@ -544,7 +544,7 @@ const struct {
             {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
         }}, false, true, false,
         "skinning.tga"},
-    {"single set,  upload joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
+    {"single set, upload joint matrices one by one", 5, 3, 0, 0, 0, {}, {InPlaceInit, {
             {0, FlatGL2D::JointIds{FlatGL2D::JointIds::Components::Three}},
             {3*4, FlatGL2D::Weights{FlatGL2D::Weights::Components::Three}},
         }}, false, true, true,
