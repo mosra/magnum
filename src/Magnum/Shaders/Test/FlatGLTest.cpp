@@ -3191,6 +3191,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning2D() {
         Matrix3{Math::IdentityInit},
     };
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::UniformBuffers && data.jointCount > Containers::arraySize(jointMatrices))
+        CORRADE_SKIP("Uploading an uniform buffer smaller than the size hardcoded in the shader is an error in WebGL.");
+    #endif
+
     GL::Buffer buffer{vertices};
 
     GL::Mesh mesh{MeshPrimitive::TriangleStrip};
@@ -3316,6 +3321,11 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning3D() {
         Matrix4::scaling(Vector3{2.0f}),
         Matrix4{Math::IdentityInit},
     };
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL3D::Flag::UniformBuffers && data.jointCount > Containers::arraySize(jointMatrices))
+        CORRADE_SKIP("Uploading an uniform buffer smaller than the size hardcoded in the shader is an error in WebGL.");
+    #endif
 
     GL::Buffer buffer{vertices};
 

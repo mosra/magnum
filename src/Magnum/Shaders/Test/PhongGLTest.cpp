@@ -4033,6 +4033,11 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSkinning() {
         Matrix4{Math::IdentityInit},
     };
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::UniformBuffers && data.jointCount > Containers::arraySize(jointMatrices))
+        CORRADE_SKIP("Uploading an uniform buffer smaller than the size hardcoded in the shader is an error in WebGL.");
+    #endif
+
     GL::Buffer buffer{vertices};
 
     GL::Mesh mesh{MeshPrimitive::TriangleStrip};

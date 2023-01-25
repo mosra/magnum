@@ -4804,6 +4804,11 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
         Matrix3{Math::IdentityInit},
     };
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers && data.jointCount > Containers::arraySize(jointMatrices))
+        CORRADE_SKIP("Uploading an uniform buffer smaller than the size hardcoded in the shader is an error in WebGL.");
+    #endif
+
     GL::Buffer buffer{vertices};
 
     GL::Mesh mesh{MeshPrimitive::Triangles};
@@ -4936,6 +4941,11 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
         Matrix4::scaling(Vector3{2.0f}),
         Matrix4{Math::IdentityInit},
     };
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers && data.jointCount > Containers::arraySize(jointMatrices))
+        CORRADE_SKIP("Uploading an uniform buffer smaller than the size hardcoded in the shader is an error in WebGL.");
+    #endif
 
     GL::Buffer buffer{vertices};
 
