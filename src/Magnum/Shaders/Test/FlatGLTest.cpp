@@ -153,9 +153,6 @@ struct FlatGLTest: GL::OpenGLTester {
     template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderAlpha3D();
 
     #ifndef MAGNUM_TARGET_GLES2
-    void renderObjectIdSetup();
-    void renderObjectIdTeardown();
-
     template<FlatGL2D::Flag flag = FlatGL2D::Flag{}> void renderObjectId2D();
     template<FlatGL3D::Flag flag = FlatGL3D::Flag{}> void renderObjectId3D();
     #endif
@@ -961,8 +958,8 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderObjectId3D,
         &FlatGLTest::renderObjectId3D<FlatGL3D::Flag::UniformBuffers>},
         Containers::arraySize(RenderObjectIdData),
-        &FlatGLTest::renderObjectIdSetup,
-        &FlatGLTest::renderObjectIdTeardown);
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -989,14 +986,8 @@ FlatGLTest::FlatGLTest() {
         #endif
         },
         Containers::arraySize(RenderInstancedData),
-        #ifndef MAGNUM_TARGET_GLES2
-        &FlatGLTest::renderObjectIdSetup,
-        &FlatGLTest::renderObjectIdTeardown
-        #else
         &FlatGLTest::renderSetup,
-        &FlatGLTest::renderTeardown
-        #endif
-        );
+        &FlatGLTest::renderTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
@@ -1013,8 +1004,8 @@ FlatGLTest::FlatGLTest() {
     addInstancedTests({&FlatGLTest::renderMulti2D,
                        &FlatGLTest::renderMulti3D},
         Containers::arraySize(RenderMultiData),
-        &FlatGLTest::renderObjectIdSetup,
-        &FlatGLTest::renderObjectIdTeardown);
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
 
     addInstancedTests({&FlatGLTest::renderMultiSkinning2D,
                        &FlatGLTest::renderMultiSkinning3D},
@@ -1646,11 +1637,34 @@ void FlatGLTest::renderSetup() {
     _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
         .clear(GL::FramebufferClear::Color)
         .bind();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* If we don't have EXT_gpu_shader4, we likely don't have integer
+       framebuffers either (Mesa's Zink), so skip setting up integer
+       attachments to avoid GL errors */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _objectId = GL::Renderbuffer{};
+        _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
+        _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+            .mapForDraw({
+                {FlatGL2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}}
+                /* ObjectIdOutput is mapped (and cleared) in test cases that
+                   actually draw to it, otherwise it causes an error on WebGL
+                   due to the shader not rendering to all outputs */
+            });
+    }
+    #endif
 }
 
 void FlatGLTest::renderTeardown() {
     _framebuffer = GL::Framebuffer{NoCreate};
     _color = GL::Renderbuffer{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    _objectId = GL::Renderbuffer{NoCreate};
+    #endif
 }
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderDefaults2D() {
@@ -2813,43 +2827,6 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderAlpha3D() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void FlatGLTest::renderObjectIdSetup() {
-    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
-
-    _color = GL::Renderbuffer{};
-    _color.setStorage(GL::RenderbufferFormat::RGBA8, RenderSize);
-    _framebuffer = GL::Framebuffer{{{}, RenderSize}};
-    _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
-        /* Pick a color that's directly representable on RGBA4 as well to
-           reduce artifacts (well, and this needs to be consistent with other
-           tests that *need* to run on WebGL 1) */
-        .clearColor(0, 0x111111_rgbf)
-        .bind();
-
-    /* If we don't have EXT_gpu_shader4, we likely don't have integer
-       framebuffers either (Mesa's Zink), so skip setting up integer
-       attachments to avoid GL errors */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
-        _objectId = GL::Renderbuffer{};
-        _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
-        _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
-            .mapForDraw({
-                {FlatGL2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                {FlatGL2D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
-            })
-            .clearColor(1, Vector4ui{27});
-    }
-}
-
-void FlatGLTest::renderObjectIdTeardown() {
-    _color = GL::Renderbuffer{NoCreate};
-    _objectId = GL::Renderbuffer{NoCreate};
-    _framebuffer = GL::Framebuffer{NoCreate};
-}
-
 template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -2916,6 +2893,16 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
             shader.bindObjectIdTexture(texture);
         }
     }
+
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    _framebuffer
+        .mapForDraw({
+            {FlatGL2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {FlatGL2D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
 
     if(flag == FlatGL2D::Flag{}) {
         if(data.textureTransformation != Matrix3{})
@@ -3049,6 +3036,16 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
             shader.bindObjectIdTexture(texture);
         }
     }
+
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    _framebuffer
+        .mapForDraw({
+            {FlatGL3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {FlatGL3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
 
     if(flag == FlatGL3D::Flag{}) {
         if(data.textureTransformation != Matrix3{})
@@ -3586,6 +3583,18 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    if(data.flags & FlatGL2D::Flag::ObjectId) _framebuffer
+        .mapForDraw({
+            {FlatGL2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {FlatGL2D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
+    #endif
+
     if(flag == FlatGL2D::Flag{}) {
         shader
             .setColor(data.flags & FlatGL2D::Flag::Textured ? 0xffffff_rgbf : 0xffff00_rgbf)
@@ -3898,6 +3907,18 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
             shader.bindObjectIdTexture(objectIdTexture);
         }
     }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    if(data.flags & FlatGL3D::Flag::ObjectId) _framebuffer
+        .mapForDraw({
+            {FlatGL3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {FlatGL3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
     #endif
 
     if(flag == FlatGL3D::Flag{}) {
@@ -4505,6 +4526,16 @@ void FlatGLTest::renderMulti2D() {
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    if(data.flags & FlatGL2D::Flag::ObjectId) _framebuffer
+        .mapForDraw({
+            {FlatGL2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {FlatGL2D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
+
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
         shader.bindMaterialBuffer(materialUniform,
@@ -4849,6 +4880,16 @@ void FlatGLTest::renderMulti3D() {
         .setMaterialId(data.drawCount == 1 ? 0 : 1)
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
+
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    if(data.flags & FlatGL3D::Flag::ObjectId) _framebuffer
+        .mapForDraw({
+            {FlatGL3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {FlatGL3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {

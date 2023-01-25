@@ -155,9 +155,6 @@ struct PhongGLTest: GL::OpenGLTester {
     template<PhongGL::Flag flag = PhongGL::Flag{}> void renderAlpha();
 
     #ifndef MAGNUM_TARGET_GLES2
-    void renderObjectIdSetup();
-    void renderObjectIdTeardown();
-
     template<PhongGL::Flag flag = PhongGL::Flag{}> void renderObjectId();
     #endif
 
@@ -1274,8 +1271,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderObjectId,
         &PhongGLTest::renderObjectId<PhongGL::Flag::UniformBuffers>},
         Containers::arraySize(RenderObjectIdData),
-        &PhongGLTest::renderObjectIdSetup,
-        &PhongGLTest::renderObjectIdTeardown);
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
     #endif
 
     /* MSVC needs explicit type due to default template args */
@@ -1306,14 +1303,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderZeroLights<PhongGL::Flag::UniformBuffers>
         #endif
         },
-        #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderObjectIdSetup,
-        &PhongGLTest::renderObjectIdTeardown
-        #else
         &PhongGLTest::renderSetup,
-        &PhongGLTest::renderTeardown
-        #endif
-    );
+        &PhongGLTest::renderTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
@@ -1333,14 +1324,8 @@ PhongGLTest::PhongGLTest() {
         #endif
         },
         Containers::arraySize(RenderInstancedData),
-        #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderObjectIdSetup,
-        &PhongGLTest::renderObjectIdTeardown
-        #else
         &PhongGLTest::renderSetup,
-        &PhongGLTest::renderTeardown
-        #endif
-    );
+        &PhongGLTest::renderTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
     /* MSVC needs explicit type due to default template args */
@@ -1354,8 +1339,8 @@ PhongGLTest::PhongGLTest() {
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&PhongGLTest::renderMulti},
         Containers::arraySize(RenderMultiData),
-        &PhongGLTest::renderObjectIdSetup,
-        &PhongGLTest::renderObjectIdTeardown);
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
 
     addInstancedTests({&PhongGLTest::renderMultiSkinning},
         Containers::arraySize(RenderMultiSkinningData),
@@ -2067,11 +2052,34 @@ void PhongGLTest::renderSetup() {
         .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
         .clear(GL::FramebufferClear::Color)
         .bind();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* If we don't have EXT_gpu_shader4, we likely don't have integer
+       framebuffers either (Mesa's Zink), so skip setting up integer
+       attachments to avoid GL errors */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _objectId = GL::Renderbuffer{};
+        _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
+        _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+            .mapForDraw({
+                {PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}}
+                /* ObjectIdOutput is mapped (and cleared) in test cases that
+                   actually draw to it, otherwise it causes an error on WebGL
+                   due to the shader not rendering to all outputs */
+            });
+    }
+    #endif
 }
 
 void PhongGLTest::renderTeardown() {
     _framebuffer = GL::Framebuffer{NoCreate};
     _color = GL::Renderbuffer{NoCreate};
+    #ifndef MAGNUM_TARGET_GLES2
+    _objectId = GL::Renderbuffer{NoCreate};
+    #endif
 }
 
 template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
@@ -3321,43 +3329,6 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void PhongGLTest::renderObjectIdSetup() {
-    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
-
-    _color = GL::Renderbuffer{};
-    _color.setStorage(GL::RenderbufferFormat::RGBA8, RenderSize);
-    _framebuffer = GL::Framebuffer{{{}, RenderSize}};
-    _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
-        /* Pick a color that's directly representable on RGBA4 as well to
-           reduce artifacts (well, and this needs to be consistent with other
-           tests that *need* to run on WebGL 1) */
-        .clearColor(0, 0x111111_rgbf)
-        .bind();
-
-    /* If we don't have EXT_gpu_shader4, we likely don't have integer
-       framebuffers either (Mesa's Zink), so skip setting up integer
-       attachments to avoid GL errors */
-    #ifndef MAGNUM_TARGET_GLES
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-    #endif
-    {
-        _objectId = GL::Renderbuffer{};
-        _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
-        _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
-            .mapForDraw({
-                {PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-                {PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
-            })
-            .clearColor(1, Vector4ui{27});
-    }
-}
-
-void PhongGLTest::renderObjectIdTeardown() {
-    _color = GL::Renderbuffer{NoCreate};
-    _objectId = GL::Renderbuffer{NoCreate};
-    _framebuffer = GL::Framebuffer{NoCreate};
-}
-
 template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -3425,6 +3396,16 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
             shader.bindObjectIdTexture(texture);
         }
     }
+
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    _framebuffer
+        .mapForDraw({
+            {PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
 
     if(flag == PhongGL::Flag{}) {
         if(data.textureTransformation != Matrix3{})
@@ -3858,6 +3839,18 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
         .setSubImage(0, {}, *ambientImage);
 
     shader.bindAmbientTexture(ambient);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    _framebuffer
+        .mapForDraw({
+            {PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
+    #endif
 
     if(flag == PhongGL::Flag{}) {
         shader
@@ -4386,6 +4379,18 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
             shader.bindObjectIdTexture(objectIdTexture);
         }
     }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    if(data.flags & PhongGL::Flag::ObjectId) _framebuffer
+        .mapForDraw({
+            {PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
     #endif
 
     if(flag == PhongGL::Flag{}) {
@@ -4939,6 +4944,16 @@ void PhongGLTest::renderMulti() {
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     shader.bindProjectionBuffer(projectionUniform);
+
+    /* Map ObjectIdOutput so we can draw to it. Mapping it always causes an
+       error on WebGL when the shader does not render to it; however if not
+       bound we can't even clear it on WebGL, so it has to be cleared after. */
+    if(data.flags & PhongGL::Flag::ObjectId) _framebuffer
+        .mapForDraw({
+            {PhongGL::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {PhongGL::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        .clearColor(1, Vector4ui{27});
 
     /* Just one draw, rebinding UBOs each time */
     if(data.drawCount == 1) {
