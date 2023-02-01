@@ -2,8 +2,8 @@
 <path fill="none" stroke="#405363" stroke-width="1.0" d="
   M16 16 L208 16 M16 112 L208 112
   M16 106 l0 12 M208 10 l0 12"/>
-<path fill="none" stroke="#3ad267" stroke-width="1.5" d="M1.85263 119.074 L3.87368 118.063 L5.89474 117.053 L7.91579 116.042 L9.93684 115.032 L11.9579 114.021 L13.9789 113.011 L16 112"/>
-<path fill="none" stroke="#3ad267" stroke-width="1.5" d="M208 16 L210.021 14.9895 L212.042 13.9789 L214.063 12.9684 L216.084 11.9579 L218.105 10.9474 L220.126 9.93684 L222.147 8.92632"/>
+<path fill="none" stroke="#3bd267" stroke-width="1.5" d="M1.85263 119.074 L3.87368 118.063 L5.89474 117.053 L7.91579 116.042 L9.93684 115.032 L11.9579 114.021 L13.9789 113.011 L16 112"/>
+<path fill="none" stroke="#3bd267" stroke-width="1.5" d="M208 16 L210.021 14.9895 L212.042 13.9789 L214.063 12.9684 L216.084 11.9579 L218.105 10.9474 L220.126 9.93684 L222.147 8.92632"/>
 <path fill="none" stroke="#2f83cc" stroke-width="1.0" d="M78.2111 80.8944 L16 112 C80 80, 144 48, 208 16 L145.789 47.1056"/>
 <circle cx="80" cy="80" r="2" stroke="#2f83cc" stroke-width="1.0" fill="none" />
 <circle cx="144" cy="48" r="2" stroke="#2f83cc" stroke-width="1.0" fill="none" />
