@@ -202,9 +202,7 @@ const Color3 success = 0x3bd267_srgbf;
 /** @todo better bezier approximations for more complex curves, easings.net has it awful */
 
 int main() {
-    using namespace Animation::Easing;
-
-    #define _c(name) Utility::String::lowercase(std::string{#name}), name
+    #define _c(name) Utility::String::lowercase(std::string{#name}), Animation::Easing::name
     generate(_c(linear), {},
 /* [linear] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f},
@@ -212,127 +210,127 @@ CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f},
 /* [linear] */
         , success, success);
     generate(_c(step), {}, {}, success, success);
-    generate(_c(smoothstep), {smootherstep},
+    generate(_c(smoothstep), {Animation::Easing::smootherstep},
 /* [smoothstep] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f, 0.0f},
               Vector2{2.0f/3.0f, 1.0f}, Vector2{1.0f}}
 /* [smoothstep] */
         , success, success);
-    generate(_c(smootherstep), {smoothstep}, {}, success, success);
-    generate(_c(quadraticIn), {cubicIn, quarticIn, quinticIn},
+    generate(_c(smootherstep), {Animation::Easing::smoothstep}, {}, success, success);
+    generate(_c(quadraticIn), {Animation::Easing::cubicIn, Animation::Easing::quarticIn, Animation::Easing::quinticIn},
 /* [quadraticIn] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f, 0.0f},
               Vector2{2.0f/3.0f, 1.0f/3.0f}, Vector2{1.0f}}
 /* [quadraticIn] */
         , danger, success);
-    generate(_c(quadraticOut), {cubicOut, quarticOut, quinticOut},
+    generate(_c(quadraticOut), {Animation::Easing::cubicOut, Animation::Easing::quarticOut, Animation::Easing::quinticOut},
 /* [quadraticOut] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f, 2.0f/3.0f},
               Vector2{2.0f/3.0f, 1.0f}, Vector2{1.0f}}
 /* [quadraticOut] */
         , success, danger);
-    generate(_c(quadraticInOut), {cubicInOut, quarticInOut, quinticInOut},
+    generate(_c(quadraticInOut), {Animation::Easing::cubicInOut, Animation::Easing::quarticInOut, Animation::Easing::quinticInOut},
 /* [quadraticInOut] */
 CubicBezier2D{Vector2{0.0f}, Vector2{0.455f, 0.0f},
               Vector2{0.545f, 1.0f}, Vector2{1.0f}}
 /* [quadraticInOut] */
         );
-    generate(_c(cubicIn), {quadraticIn, quarticIn, quinticIn},
+    generate(_c(cubicIn), {Animation::Easing::quadraticIn, Animation::Easing::quarticIn, Animation::Easing::quinticIn},
 /* [cubicIn] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f, 0.0f},
               Vector2{2.0f/3.0f, 0.0f}, Vector2{1.0f}}
 /* [cubicIn] */
         , danger, success);
-    generate(_c(cubicOut), {quadraticOut, quarticOut, quinticOut},
+    generate(_c(cubicOut), {Animation::Easing::quadraticOut, Animation::Easing::quarticOut, Animation::Easing::quinticOut},
 /* [cubicOut] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f, 1.0f},
               Vector2{2.0f/3.0f, 1.0f}, Vector2{1.0f}}
 /* [cubicOut] */
         , success, danger);
-    generate(_c(cubicInOut), {quadraticInOut, quarticInOut, quinticInOut},
+    generate(_c(cubicInOut), {Animation::Easing::quadraticInOut, Animation::Easing::quarticInOut, Animation::Easing::quinticInOut},
 /* [cubicInOut] */
 CubicBezier2D{Vector2{0.0f}, Vector2{0.645f, 0.0f},
               Vector2{0.355f, 1.0f}, Vector2{1.0f}}
 /* [cubicInOut] */
         );
-    generate(_c(quarticIn), {quadraticIn, cubicIn, quinticIn}, {}
+    generate(_c(quarticIn), {Animation::Easing::quadraticIn, Animation::Easing::cubicIn, Animation::Easing::quinticIn}, {}
 //     ,
 // /* [quarticIn] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.895f, 0.03f},
 //               Vector2{0.685f, 0.22f}, Vector2{1.0f}}
 // /* [quarticIn] */
         , danger, success);
-    generate(_c(quarticOut), {quadraticOut, cubicOut, quinticOut}, {}
+    generate(_c(quarticOut), {Animation::Easing::quadraticOut, Animation::Easing::cubicOut, Animation::Easing::quinticOut}, {}
 //     ,
 // /* [quarticOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.165f, 0.84f},
 //               Vector2{0.44f, 1.0f}, Vector2{1.0f}}
 // /* [quarticOut] */
         , success, danger);
-    generate(_c(quarticInOut), {quadraticInOut, cubicInOut, quinticInOut}
+    generate(_c(quarticInOut), {Animation::Easing::quadraticInOut, Animation::Easing::cubicInOut, Animation::Easing::quinticInOut}
 //     ,
 // /* [quarticInOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.77f, 0.0f},
 //               Vector2{0.175f, 1.0f}, Vector2{1.0f}}
 // /* [quarticInOut] */
         );
-    generate(_c(quinticIn), {quadraticIn, cubicIn, quarticIn}, {}
+    generate(_c(quinticIn), {Animation::Easing::quadraticIn, Animation::Easing::cubicIn, Animation::Easing::quarticIn}, {}
 //     ,
 // /* [quinticIn] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.755f, 0.05f},
 //               Vector2{0.855f, 0.06f}, Vector2{1.0f}}
 // /* [quinticIn] */
         , danger, success);
-    generate(_c(quinticOut), {quadraticOut, cubicOut, quarticOut}, {}
+    generate(_c(quinticOut), {Animation::Easing::quadraticOut, Animation::Easing::cubicOut, Animation::Easing::quarticOut}, {}
 //     ,
 // /* [quinticOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.23f, 1.0f},
 //               Vector2{0.32f, 1.0f}, Vector2{1.0f}}
 // /* [quinticOut] */
         , success, danger);
-    generate(_c(quinticInOut), {quadraticInOut, cubicInOut, quarticInOut}
+    generate(_c(quinticInOut), {Animation::Easing::quadraticInOut, Animation::Easing::cubicInOut, Animation::Easing::quarticInOut}
 //     ,
 // /* [quinticInOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.86f, 0.0f},
 //               Vector2{0.07f, 1.0f}, Vector2{1.0f}}
 // /* [quinticInOut] */
         );
-    generate(_c(sineIn), {circularIn}
+    generate(_c(sineIn), {Animation::Easing::circularIn}
 //     ,
 // /* [sineIn] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.47f, 0.0f},
 //               Vector2{0.745f, 0.715f}, Vector2{1.0f}}
 // /* [sineIn] */
         );
-    generate(_c(sineOut), {circularOut}
+    generate(_c(sineOut), {Animation::Easing::circularOut}
 //     ,
 // /* [sineOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.39f, 0.575f},
 //               Vector2{0.565f, 1.0f}, Vector2{1.0f}}
 // /* [sineOut] */
         );
-    generate(_c(sineInOut), {circularInOut}
+    generate(_c(sineInOut), {Animation::Easing::circularInOut}
 //     ,
 // /* [sineInOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.445f, 0.05f},
 //               Vector2{0.55f, 0.95f}, Vector2{1.0f}}
 // /* [sineInOut] */
         );
-    generate(_c(circularIn), {sineIn}
+    generate(_c(circularIn), {Animation::Easing::sineIn}
 //     ,
 // /* [circularIn] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.6f, 0.04f},
 //               Vector2{0.98f, 0.335f}, Vector2{1.0f}}
 // /* [circularIn] */
         );
-    generate(_c(circularOut), {sineOut}
+    generate(_c(circularOut), {Animation::Easing::sineOut}
 //     ,
 // /* [circularOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.075f, 0.085f},
 //               Vector2{0.165f, 1.0f}, Vector2{1.0f}}
 // /* [circularOut] */
         );
-    generate(_c(circularInOut), {sineInOut}
+    generate(_c(circularInOut), {Animation::Easing::sineInOut}
 //     ,
 // /* [circularInOut] */
 // CubicBezier2D{Vector2{0.0f}, Vector2{0.785f, 0.135f},

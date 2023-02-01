@@ -30,24 +30,26 @@
 #include <Corrade/Utility/Format.h>
 
 #include "Magnum/Animation/Easing.h"
+#include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace Animation { namespace Test { namespace {
 
 struct EasingTest: TestSuite::Tester {
     explicit EasingTest();
 
-    void bounds();
-    void monotonicity();
-    void symmetry();
-    void values();
+    template<class T> void bounds();
+    template<class T> void monotonicity();
+    template<class T> void symmetry();
+    template<class T> void values();
 
-    void benchmark();
+    template<class T> void benchmark();
 };
 
-#define _c(name) #name, Easing::name
-constexpr struct {
+#define _c(name) #name, Easing::name, Easingd::name
+constexpr struct Bounds {
     const char* name;
     Float(*function)(Float);
+    Double(*functiond)(Double);
 } BoundsData[] {
     {_c(linear)},
     {_c(step)},
@@ -80,9 +82,10 @@ constexpr struct {
     {_c(bounceInOut)}
 };
 
-constexpr struct {
+constexpr struct Monotonicity {
     const char* name;
     Float(*function)(Float);
+    Double(*functiond)(Double);
 } MonotonicityData[] {
     {_c(linear)},
     {_c(step)},
@@ -112,11 +115,13 @@ constexpr struct {
     /* elastic, back and bounce are not monotonic */
 };
 
-constexpr struct {
+constexpr struct Symmetry {
     const char* name;
     Float(*function)(Float);
+    Double(*functiond)(Double);
     const char* symmetricName;
     Float(*symmetric)(Float);
+    Double(*symmetricd)(Double);
 } SymmetryData[] {
     {_c(linear), _c(linear)},
     {_c(step), _c(step)},
@@ -144,9 +149,10 @@ constexpr struct {
     {_c(bounceInOut), _c(bounceInOut)}
 };
 
-constexpr struct {
+constexpr struct Value {
     const char* name;
     Float(*function)(Float);
+    Double(*functiond)(Double);
     Float values[3];
 } ValueData[] {
     {_c(linear), {0.25f, 0.5f, 0.75f}},
@@ -186,91 +192,142 @@ constexpr struct {
 };
 #undef _c
 
+template<class T> struct FunctionFor;
+template<> struct FunctionFor<Float>  {
+    static auto function(const Bounds& s) -> Float(*)(Float) {
+        return s.function;
+    }
+    static auto function(const Monotonicity& s) -> Float(*)(Float) {
+        return s.function;
+    }
+    static auto function(const Symmetry& s) -> Float(*)(Float) {
+        return s.function;
+    }
+    static auto symmetric(const Symmetry& s) -> Float(*)(Float) {
+        return s.symmetric;
+    }
+    static auto function(const Value& s) -> Float(*)(Float) {
+        return s.function;
+    }
+};
+template<> struct FunctionFor<Double>  {
+    static auto function(const Bounds& s) -> Double(*)(Double) {
+        return s.functiond;
+    }
+    static auto function(const Monotonicity& s) -> Double(*)(Double) {
+        return s.functiond;
+    }
+    static auto function(const Symmetry& s) -> Double(*)(Double) {
+        return s.functiond;
+    }
+    static auto symmetric(const Symmetry& s) -> Double(*)(Double) {
+        return s.symmetricd;
+    }
+    static auto function(const Value& s) -> Double(*)(Double) {
+        return s.functiond;
+    }
+};
+
 EasingTest::EasingTest() {
-    addInstancedTests({&EasingTest::bounds},
+    addInstancedTests<EasingTest>({
+        &EasingTest::bounds<Float>,
+        &EasingTest::bounds<Double>},
         Containers::arraySize(BoundsData));
 
-    addInstancedTests({&EasingTest::monotonicity},
+    addInstancedTests<EasingTest>({
+        &EasingTest::monotonicity<Float>,
+        &EasingTest::monotonicity<Double>},
         Containers::arraySize(MonotonicityData));
 
-    addInstancedTests({&EasingTest::symmetry},
+    addInstancedTests<EasingTest>({
+        &EasingTest::symmetry<Float>,
+        &EasingTest::symmetry<Double>},
         Containers::arraySize(SymmetryData));
 
-    addInstancedTests({&EasingTest::values},
+    addInstancedTests<EasingTest>({
+        &EasingTest::values<Float>,
+        &EasingTest::values<Double>},
         Containers::arraySize(ValueData));
 
-    addInstancedBenchmarks({&EasingTest::benchmark}, 100,
+    addInstancedBenchmarks<EasingTest>({
+        &EasingTest::benchmark<Float>,
+        &EasingTest::benchmark<Double>}, 100,
         Containers::arraySize(ValueData));
 }
 
 enum: std::size_t { PropertyVerificationStepCount = 50 };
 
-void EasingTest::bounds() {
+template<class T> void EasingTest::bounds() {
     auto&& data = BoundsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    Float scale = 1.0f/Float(PropertyVerificationStepCount - 1);
+    T scale = T(1.0)/T(PropertyVerificationStepCount - 1);
     for(std::size_t i = 0; i != PropertyVerificationStepCount; ++i) {
-        Float t = i*scale;
-        CORRADE_COMPARE_AS(data.function(t), 0.0f, TestSuite::Compare::GreaterOrEqual);
-        CORRADE_COMPARE_AS(data.function(t), 1.0f, TestSuite::Compare::LessOrEqual);
+        T t = i*scale;
+        CORRADE_COMPARE_AS(FunctionFor<T>::function(data)(t), T(0.0), TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(FunctionFor<T>::function(data)(t), T(1.0), TestSuite::Compare::LessOrEqual);
     }
 }
 
-void EasingTest::monotonicity() {
+template<class T> void EasingTest::monotonicity() {
     auto&& data = MonotonicityData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    Float scale = 1.0f/Float(PropertyVerificationStepCount - 1);
-    Float prev = data.function(0);
+    T scale = T(1.0)/T(PropertyVerificationStepCount - 1);
+    T prev = FunctionFor<T>::function(data)(0);
     for(std::size_t i = 1; i != PropertyVerificationStepCount; ++i) {
-        Float cur = data.function(i*scale);
+        T cur = FunctionFor<T>::function(data)(i*scale);
         CORRADE_COMPARE_AS(cur, prev, TestSuite::Compare::GreaterOrEqual);
         prev = cur;
     }
 }
 
-void EasingTest::symmetry() {
+template<class T> void EasingTest::symmetry() {
     auto&& data = SymmetryData[testCaseInstanceId()];
     if(data.name == Containers::StringView{data.symmetricName})
         setTestCaseDescription(data.name);
     else
         setTestCaseDescription(Utility::format("{} : {}", data.name, data.symmetricName));
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     /* Not testing the edges, as these are tested in values() anyway (and are
        problematic in functions that have explicit handling for them) */
-    Float scale = 1.0f/Float(PropertyVerificationStepCount + 1);
-    std::size_t max = PropertyVerificationStepCount/(data.function == data.symmetric ? 2 : 1);
+    T scale = T(1.0)/T(PropertyVerificationStepCount + 1);
+    std::size_t max = PropertyVerificationStepCount/(FunctionFor<T>::function(data) == FunctionFor<T>::symmetric(data) ? 2 : 1);
     for(std::size_t i = 1; i != max; ++i) {
-        Float t = i*scale;
-        CORRADE_COMPARE(data.function(t), 1.0f - data.symmetric(1.0f - t));
+        T t = i*scale;
+        CORRADE_COMPARE(FunctionFor<T>::function(data)(t), T(1.0) - FunctionFor<T>::symmetric(data)(T(1.0) - t));
     }
 }
 
-void EasingTest::values() {
+template<class T> void EasingTest::values() {
     auto&& data = ValueData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    CORRADE_COMPARE(data.function(0.0f), 0.0f);
-    CORRADE_COMPARE(data.function(1.0f), 1.0f);
-    CORRADE_COMPARE(data.function(0.25f), data.values[0]);
-    CORRADE_COMPARE(data.function(0.50f), data.values[1]);
-    CORRADE_COMPARE(data.function(0.75f), data.values[2]);
+    CORRADE_COMPARE(FunctionFor<T>::function(data)(T(0.0)), T(0.0));
+    CORRADE_COMPARE(FunctionFor<T>::function(data)(T(1.0)), T(1.0));
+    CORRADE_COMPARE(FunctionFor<T>::function(data)(T(0.25)), data.values[0]);
+    CORRADE_COMPARE(FunctionFor<T>::function(data)(T(0.50)), data.values[1]);
+    CORRADE_COMPARE(FunctionFor<T>::function(data)(T(0.75)), data.values[2]);
 }
 
 enum: Int { BenchmarkStepCount = 5000 };
 
-void EasingTest::benchmark() {
+template<class T> void EasingTest::benchmark() {
     auto&& data = ValueData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     /* Skip edges because the cumulated number may exceed 1 (on asm.js
        Emscripten), producing NaN on some functions and failing the test */
-    Float scale = 1.0f/Float(BenchmarkStepCount + 1);
-    Float result = 0.0f;
+    T scale = T(1.0)/T(BenchmarkStepCount + 1);
+    T result = T(0.0);
     std::size_t i = 0;
     CORRADE_BENCHMARK(BenchmarkStepCount)
-        result += data.function(++i*scale);
+        result += FunctionFor<T>::function(data)(++i*scale);
 
     /* backIn() has -340 */
     CORRADE_COMPARE_AS(result, -350.0f, TestSuite::Compare::Greater);

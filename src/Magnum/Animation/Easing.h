@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Namespace @ref Magnum::Animation::Easing
+ * @brief Struct @ref Magnum::Animation::BasicEasing, typedef @ref Magnum::Animation::Easing, @ref Magnum::Animation::Easingd
  */
 
 #include "Magnum/Magnum.h"
@@ -37,11 +37,13 @@ namespace Magnum { namespace Animation {
 
 /**
 @brief Easing functions
+@m_since_latest
 
 @m_keywords{Tweening Inbetweening}
 
 A collection of predefined [easing / tweening](https://en.wikipedia.org/wiki/Inbetweening)
-functions for adding life to animation interpolation.
+functions for adding life to animation interpolation. Meant to be used through
+the @ref Easing and @ref Easingd typedefs.
 
 This library is built as part of Magnum by default. To use this library with
 CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
@@ -298,7 +300,7 @@ https://easings.net/,
 [https://github.com/bkaradzic/bx](https://github.com/bkaradzic/bx/blob/master/include/bx/inline/easing.inl),
 https://blog.demofox.org/2014/08/28/one-dimensional-bezier-curves/.
 */
-namespace Easing {
+template<class T> struct BasicEasing {
     /**
      * @brief Linear
      *
@@ -312,14 +314,14 @@ namespace Easing {
      *
      * @snippet easings.cpp linear
      */
-    inline Float linear(Float t) { return t; }
+    static T linear(T t) { return t; }
 
     /**
      * @brief Step
      *
      * Similar to @ref Math::select(), but does the step in the middle of the
      * range instead of at the end. Implementation matching the GLSL
-     * @glsl step() @ce function with @cpp edge = 0.5f @ce.
+     * @glsl step() @ce function with @cpp edge = T(0.5) @ce.
      *
      * @htmlinclude easings-step.svg
      *
@@ -333,7 +335,7 @@ namespace Easing {
      * @m_keyword{step(),GLSL step(),}
      * @see @ref smoothstep(), @ref smootherstep()
      */
-    inline Float step(Float t) { return t < 0.5f ? 0.0f : 1.0f; }
+    static T step(T t) { return t < T(0.5) ? T(0.0) : T(1.0); }
 
     /**
      * @brief [Smoothstep](https://en.wikipedia.org/wiki/Smoothstep).
@@ -360,12 +362,12 @@ namespace Easing {
      * @m_keyword{smoothstep(),GLSL smoothstep(),}
      * @see @ref smootherstep(), @ref Math::clamp()
      */
-    inline Float smoothstep(Float t) {
+    static T smoothstep(T t) {
         /* Deliberately *not* using Math::clamp() because that would drag in
            unneeded vector headers */
-        if(t <= 0.0f) return 0.0f;
-        if(t >= 1.0f) return 1.0f;
-        return (3.0f - 2.0f*t)*t*t;
+        if(t <= T(0.0)) return T(0.0);
+        if(t >= T(1.0)) return T(1.0);
+        return (T(3.0) - T(2.0)*t)*t*t;
     }
 
     /**
@@ -385,12 +387,12 @@ namespace Easing {
      *
      * @see @ref Math::clamp()
      */
-    inline Float smootherstep(Float t) {
+    static T smootherstep(T t) {
         /* Deliberately *not* using Math::clamp() because that would drag in
            unneeded vector headers */
-        if(t <= 0.0f) return 0.0f;
-        if(t >= 1.0f) return 1.0f;
-        return t*t*t*(t*(t* 6.0f - 15.0f) + 10.0f);
+        if(t <= T(0.0)) return T(0.0);
+        if(t >= T(1.0)) return T(1.0);
+        return t*t*t*(t*(t*T(6.0) - T(15.0)) + T(10.0));
     }
 
     /**
@@ -408,7 +410,7 @@ namespace Easing {
      *
      * @see @ref cubicIn(), @ref quarticIn(), @ref quinticIn()
      */
-    inline Float quadraticIn(Float t) { return t*t; }
+    static T quadraticIn(T t) { return t*t; }
 
     /**
      * @brief Quadratic out
@@ -425,7 +427,7 @@ namespace Easing {
      *
      * @see @ref cubicOut(), @ref quarticOut(), @ref quinticOut()
      */
-    inline Float quadraticOut(Float t) { return -t*(t - 2.0f); }
+    static T quadraticOut(T t) { return -t*(t - T(2.0)); }
 
     /**
      * @brief Quadratic in and out
@@ -447,11 +449,11 @@ namespace Easing {
      *
      * @see @ref cubicInOut(), @ref quarticInOut(), @ref quinticInOut()
      */
-    inline Float quadraticInOut(Float t) {
-        if(t < 0.5f) return 2.0f*t*t;
+    static T quadraticInOut(T t) {
+        if(t < T(0.5)) return T(2.0)*t*t;
 
-        const Float inv = 1.0f - t;
-        return 1.0f - 2.0f*inv*inv;
+        const T inv = T(1.0) - t;
+        return T(1.0) - T(2.0)*inv*inv;
     }
 
     /**
@@ -469,7 +471,7 @@ namespace Easing {
      *
      * @see @ref quadraticIn(), @ref quarticIn(), @ref quinticIn()
      */
-    inline Float cubicIn(Float t) { return t*t*t; }
+    static T cubicIn(T t) { return t*t*t; }
 
     /**
      * @brief Cubic out
@@ -486,9 +488,9 @@ namespace Easing {
      *
      * @see @ref quadraticOut(), @ref quarticOut(), @ref quinticOut()
      */
-    inline Float cubicOut(Float t) {
-        const Float inv = t - 1.0f;
-        return inv*inv*inv + 1.0f;
+    static T cubicOut(T t) {
+        const T inv = t - T(1.0);
+        return inv*inv*inv + T(1.0);
     }
 
     /**
@@ -511,11 +513,11 @@ namespace Easing {
      *
      * @see @ref quadraticInOut(), @ref quarticInOut(), @ref quinticInOut()
      */
-    inline Float cubicInOut(Float t) {
-        if(t < 0.5f) return 4.0f*t*t*t;
+    static T cubicInOut(T t) {
+        if(t < T(0.5)) return T(4.0)*t*t*t;
 
-        const Float inv = 1.0f - t;
-        return 1.0f - 4.0f*inv*inv*inv;
+        const T inv = T(1.0) - t;
+        return T(1.0) - T(4.0)*inv*inv*inv;
     }
 
     /**
@@ -529,11 +531,11 @@ namespace Easing {
      *
      * @see @ref quadraticIn(), @ref cubicIn(), @ref quinticIn()
      */
-    inline Float quarticIn(Float t) {
+    static T quarticIn(T t) {
         /* Not just t*t*t*t, since compile can't optimize it on its own to just
            two multiplication without breaking precision. So doing that
            explicitly. */
-        const Float tt = t*t;
+        const T tt = t*t;
         return tt*tt;
     }
 
@@ -548,11 +550,11 @@ namespace Easing {
      *
      * @see @ref quadraticOut(), @ref cubicOut(), @ref quinticOut()
      */
-    inline Float quarticOut(Float t) {
+    static T quarticOut(T t) {
         /* Instead of t*t*t*t suggesting the optimization as described above */
-        const Float inv = 1.0f - t;
-        const Float quad = inv*inv;
-        return 1.0f - quad*quad;
+        const T inv = T(1.0) - t;
+        const T quad = inv*inv;
+        return T(1.0) - quad*quad;
     }
 
     /**
@@ -571,17 +573,17 @@ namespace Easing {
      *
      * @see @ref quadraticInOut(), @ref cubicInOut(), @ref quinticInOut()
      */
-    inline Float quarticInOut(Float t) {
+    static T quarticInOut(T t) {
         /* Instead of t*t*t*t suggesting the optimization as described above */
 
-        if(t < 0.5f) {
-            const Float tt = t*t;
+        if(t < T(0.5)) {
+            const T tt = t*t;
             return 8*tt*tt;
         }
 
-        const Float inv = 1.0f - t;
-        const Float quad = inv*inv;
-        return 1.0f - 8.0f*quad*quad;
+        const T inv = T(1.0) - t;
+        const T quad = inv*inv;
+        return T(1.0) - T(8.0)*quad*quad;
     }
 
     /**
@@ -595,10 +597,10 @@ namespace Easing {
      *
      * @see @ref quadraticIn(), @ref cubicIn(), @ref quarticIn()
      */
-    inline Float quinticIn(Float t) {
+    static T quinticIn(T t) {
         /* Instead of t*t*t*t*t suggesting the optimization as described
            above */
-        const Float tt = t*t;
+        const T tt = t*t;
         return tt*t*tt;
     }
 
@@ -613,12 +615,12 @@ namespace Easing {
      *
      * @see @ref quadraticOut(), @ref cubicOut(), @ref quarticOut()
      */
-    inline Float quinticOut(Float t) {
+    static T quinticOut(T t) {
         /* Instead of t*t*t*t*t suggesting the optimization as described
            above */
-        const Float inv = t - 1.0f;
-        const Float quad = inv*inv;
-        return 1.0f + quad*inv*quad;
+        const T inv = t - T(1.0);
+        const T quad = inv*inv;
+        return T(1.0) + quad*inv*quad;
     }
 
     /**
@@ -637,18 +639,18 @@ namespace Easing {
      *
      * @see @ref quadraticInOut(), @ref cubicInOut(), @ref quarticInOut()
      */
-    inline Float quinticInOut(Float t) {
+    static T quinticInOut(T t) {
         /* Instead of t*t*t*t*t suggesting the optimization as described
            above */
 
-        if(t < 0.5f) {
-            const Float tt = t*t;
-            return 16.0f*tt*t*tt;
+        if(t < T(0.5)) {
+            const T tt = t*t;
+            return T(16.0)*tt*t*tt;
         }
 
-        const Float inv = 1.0f - t;
-        const Float quad = inv*inv;
-        return 1.0f - 16.0f*quad*inv*quad;
+        const T inv = T(1.0) - t;
+        const T quad = inv*inv;
+        return T(1.0) - T(16.0)*quad*inv*quad;
     }
 
     /**
@@ -662,8 +664,8 @@ namespace Easing {
      *
      * @see @ref circularIn()
      */
-    inline Float sineIn(Float t) {
-        return 1.0f + std::sin(Constants::piHalf()*(t - 1.0f));
+    static T sineIn(T t) {
+        return T(1.0) + std::sin(Math::Constants<T>::piHalf()*(t - T(1.0)));
     }
 
     /**
@@ -677,8 +679,8 @@ namespace Easing {
      *
      * @see @ref circularOut()
      */
-    inline Float sineOut(Float t) {
-        return std::sin(Constants::piHalf()*t);
+    static T sineOut(T t) {
+        return std::sin(Math::Constants<T>::piHalf()*t);
     }
 
     /**
@@ -694,8 +696,8 @@ namespace Easing {
      *
      * @see @ref circularInOut()
      */
-    inline Float sineInOut(Float t) {
-        return 0.5f*(1.0f - std::cos(t*Constants::pi()));
+    static T sineInOut(T t) {
+        return T(0.5)*(T(1.0) - std::cos(t*Math::Constants<T>::pi()));
     }
 
     /**
@@ -709,8 +711,8 @@ namespace Easing {
      *
      * @see @ref sineIn()
      */
-    inline Float circularIn(Float t) {
-        return 1.0f - std::sqrt(1.0f - t*t);
+    static T circularIn(T t) {
+        return T(1.0) - std::sqrt(T(1.0) - t*t);
     }
 
     /**
@@ -724,8 +726,8 @@ namespace Easing {
      *
      * @see @ref sineOut()
      */
-    inline Float circularOut(Float t) {
-        return std::sqrt((2.0f - t)*t);
+    static T circularOut(T t) {
+        return std::sqrt((T(2.0) - t)*t);
     }
 
     /**
@@ -744,9 +746,9 @@ namespace Easing {
      *
      * @see @ref sineInOut()
      */
-    inline Float circularInOut(Float t) {
-        if(t < 0.5f) return 0.5f*(1.0f - std::sqrt(1.0f - 4.0f*t*t));
-        return 0.5f*(1.0f + std::sqrt(-4.0f*t*t + 8.0f*t - 3.0f));
+    static T circularInOut(T t) {
+        if(t < T(0.5)) return T(0.5)*(T(1.0) - std::sqrt(T(1.0) - T(4.0)*t*t));
+        return T(0.5)*(T(1.0) + std::sqrt(T(-4.0)*t*t + T(8.0)*t - T(3.0)));
     }
 
     /**
@@ -768,8 +770,8 @@ namespace Easing {
      * @todo could be done better like with the sRGB curve, but should I
      *      bother?
      */
-    inline Float exponentialIn(Float t) {
-        return t <= 0.0f ? 0.0f : std::pow(2.0f, 10.0f * (t - 1.0f));
+    static T exponentialIn(T t) {
+        return t <= T(0.0) ? T(0.0) : std::pow(T(2.0), T(10.0)*(t - T(1.0)));
     }
 
     /**
@@ -791,8 +793,8 @@ namespace Easing {
      * @todo could be done better like with the sRGB curve, but should I
      *      bother?
      */
-    inline Float exponentialOut(Float t) {
-        return t >= 1.0f ? 1.0f : 1.0f - std::pow(2.0f, -10.0f*t);
+    static T exponentialOut(T t) {
+        return t >= T(1.0) ? T(1.0) : T(1.0) - std::pow(T(2.0), -T(10.0)*t);
     }
 
     /**
@@ -814,11 +816,11 @@ namespace Easing {
      *      \end{cases}
      * @f]
      */
-    inline Float exponentialInOut(Float t) {
-        if(t <= 0.0f) return 0.0f;
-        if(t < 0.5f) return 0.5f*std::pow(2.0f, 20.0f*t - 10.0f);
-        if(t < 1.0f) return 1.0f - 0.5f*std::pow(2.0f, 10.0f - 20.0f*t);
-        return 1.0f;
+    static T exponentialInOut(T t) {
+        if(t <= T(0.0)) return T(0.0);
+        if(t < T(0.5)) return T(0.5)*std::pow(T(2.0), T(20.0)*t - T(10.0));
+        if(t < T(1.0)) return T(1.0) - T(0.5)*std::pow(T(2.0), T(10.0) -T(20.0)*t);
+        return T(1.0);
     }
 
     /**
@@ -832,8 +834,8 @@ namespace Easing {
      *      y = 2^{10 (p - 1)} \sin(13 \frac{\pi}{2} x)
      * @f]
      */
-    inline Float elasticIn(Float t) {
-        return std::pow(2.0f, 10.0f*(t - 1.0f))*std::sin(13.0f*Constants::piHalf()*t);
+    static T elasticIn(T t) {
+        return std::pow(T(2.0), T(10.0)*(t - T(1.0)))*std::sin(T(13.0)*Math::Constants<T>::piHalf()*t);
     }
 
     /**
@@ -847,8 +849,8 @@ namespace Easing {
      *      y = 1 - 2^{-10 x} \sin(13 \frac{\pi}{2} (x + 1))
      * @f]
      */
-    inline Float elasticOut(Float t) {
-        return 1.0f - std::pow(2.0f, -10.0f*t)*std::sin(13.0f*Constants::piHalf()*(t + 1.0f));
+    static T elasticOut(T t) {
+        return T(1.0) - std::pow(T(2.0), T(-10.0)*t)*std::sin(T(13.0)*Math::Constants<T>::piHalf()*(t + T(1.0)));
     }
 
     /**
@@ -866,10 +868,10 @@ namespace Easing {
      *      \end{cases}
      * @f]
      */
-    inline Float elasticInOut(Float t) {
-        if(t < 0.5f)
-            return 0.5f*std::pow(2.0f, 10.0f*(2.0f*t - 1.0f))*std::sin(13.0f*Constants::pi()*t);
-        return 1.0f - 0.5f*std::pow(2.0f, 10.0f*(1.0f - 2.0f*t))*std::sin(13.0f*Constants::pi()*t);
+    static T elasticInOut(T t) {
+        if(t < T(0.5))
+            return T(0.5)*std::pow(T(2.0), T(10.0)*(T(2.0)*t - T(1.0)))*std::sin(T(13.0)*Math::Constants<T>::pi()*t);
+        return T(1.0) - T(0.5)*std::pow(T(2.0), T(10.0)*(T(1.0) - T(2.0)*t))*std::sin(T(13.0)*Math::Constants<T>::pi()*t);
     }
 
     /**
@@ -881,8 +883,8 @@ namespace Easing {
      *      y = x^3 - x \sin(\pi x)
      * @f]
      */
-    inline Float backIn(Float t) {
-        return t*(t*t - std::sin(Constants::pi()*t));
+    static T backIn(T t) {
+        return t*(t*t - std::sin(Math::Constants<T>::pi()*t));
     }
 
     /**
@@ -894,9 +896,9 @@ namespace Easing {
      *      y = 1 - ((1 - x)^3 - (1 - x) \sin(\pi (1 - x)))
      * @f]
      */
-    inline Float backOut(Float t) {
-        const Float inv = 1.0f - t;
-        return 1 - inv*(inv*inv - std::sin(Constants::pi()*inv));
+    static T backOut(T t) {
+        const T inv = T(1.0) - t;
+        return 1 - inv*(inv*inv - std::sin(Math::Constants<T>::pi()*inv));
     }
 
     /**
@@ -915,27 +917,23 @@ namespace Easing {
      *      \end{cases}
      * @f]
      */
-    inline Float backInOut(Float t) {
-        if(t < 0.5f) {
-            const Float t2 = 2.0f*t;
-            return 0.5f*t2*(t2*t2 - std::sin(Constants::pi()*t2));
+    static T backInOut(T t) {
+        if(t < T(0.5)) {
+            const T t2 = T(2.0)*t;
+            return T(0.5)*t2*(t2*t2 - std::sin(Math::Constants<T>::pi()*t2));
         }
 
-        const Float inv = 2.0f - 2.0f*t;
-        return 1.0f - 0.5f*inv*(inv*inv - std::sin(Constants::pi()*inv));
+        const T inv = T(2.0) - T(2.0)*t;
+        return T(1.0) - T(0.5)*inv*(inv*inv - std::sin(Math::Constants<T>::pi()*inv));
     }
-
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    Float bounceOut(Float);
-    #endif
 
     /**
      * @brief Bounce in
      *
      * @htmlinclude easings-bouncein.svg
      */
-    inline Float bounceIn(Float t) {
-        return 1.0f - bounceOut(1.0f - t);
+    static T bounceIn(T t) {
+        return T(1.0) - bounceOut(T(1.0) - t);
     }
 
     /**
@@ -943,11 +941,11 @@ namespace Easing {
      *
      * @htmlinclude easings-bounceout.svg
      */
-    inline Float bounceOut(Float t) {
-        if(t < 4.0f/11.0f) return (121.0f*t*t)/16.0f;
-        if(t < 8.0f/11.0f) return 363.0f/40.0f*t*t - 99.0f/10.0f*t + 17.0f/5.0f;
-        if(t < 9.0f/10.0f) return 4356.0f/361.0f*t*t - 35442.0f/1805.0f*t + 16061.0f/1805.0f;
-        return 54.0f/5.0f*t*t - 513.0f/25.0f*t + 268.0f/25.0f;
+    static T bounceOut(T t) {
+        if(t < T(4.0)/T(11.0)) return (T(121.0)*t*t)/T(16.0);
+        if(t < T(8.0)/T(11.0)) return T(363.0)/T(40.0)*t*t - T(99.0)/T(10.0)*t + T(17.0)/T(5.0);
+        if(t < T(9.0)/T(10.0)) return T(4356.0)/T(361.0)*t*t - T(35442.0)/T(1805.0)*t + T(16061.0)/T(1805.0);
+        return T(54.0)/T(5.0)*t*t - T(513.0)/T(25.0)*t + T(268.0)/T(25.0);
     }
 
     /**
@@ -957,11 +955,26 @@ namespace Easing {
      *
      * @htmlinclude easings-bounceinout.svg
      */
-    inline Float bounceInOut(Float t) {
-        if(t < 0.5f) return 0.5f*bounceIn(2.0f*t);
-        return 0.5f*bounceOut(2.0f*t - 1.0f) + 0.5f;
+    static T bounceInOut(T t) {
+        if(t < T(0.5)) return T(0.5)*bounceIn(T(2.0)*t);
+        return T(0.5)*bounceOut(T(2.0)*t - T(1.0)) + T(0.5);
     }
-}
+};
+
+/**
+@brief Float easing functions
+
+@see @ref Easingd
+*/
+typedef BasicEasing<Float> Easing;
+
+/**
+@brief Double easing functions
+@m_since_latest
+
+@see @ref Easing
+*/
+typedef BasicEasing<Double> Easingd;
 
 }}
 
