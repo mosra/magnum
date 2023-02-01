@@ -257,6 +257,18 @@ EasingTest::EasingTest() {
 
 enum: std::size_t { PropertyVerificationStepCount = 50 };
 
+template<class> struct BoundsLimits;
+template<> struct BoundsLimits<Float> {
+    static Float min() { return 0.0f; }
+    static Float max() { return 1.0f; }
+};
+template<> struct BoundsLimits<Double> {
+    /* Doubles very slightly overflow the bounds in release builds for some
+       of the functions, have some epsilon there */
+    static Double min() { return 0.0 - Math::TypeTraits<Double>::epsilon(); }
+    static Double max() { return 1.0 + Math::TypeTraits<Double>::epsilon(); }
+};
+
 template<class T> void EasingTest::bounds() {
     auto&& data = BoundsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -265,8 +277,8 @@ template<class T> void EasingTest::bounds() {
     T scale = T(1.0)/T(PropertyVerificationStepCount - 1);
     for(std::size_t i = 0; i != PropertyVerificationStepCount; ++i) {
         T t = i*scale;
-        CORRADE_COMPARE_AS(FunctionFor<T>::function(data)(t), T(0.0), TestSuite::Compare::GreaterOrEqual);
-        CORRADE_COMPARE_AS(FunctionFor<T>::function(data)(t), T(1.0), TestSuite::Compare::LessOrEqual);
+        CORRADE_COMPARE_AS(FunctionFor<T>::function(data)(t), BoundsLimits<T>::min(), TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(FunctionFor<T>::function(data)(t), BoundsLimits<T>::max(), TestSuite::Compare::LessOrEqual);
     }
 }
 
