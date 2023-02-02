@@ -112,7 +112,8 @@ inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const
         CORRADE_INTERNAL_ASSERT(!(field.flags() & Trade::SceneFieldFlag::OffsetOnly));
 
         /* Mapping data. Allocate if the view is a placeholder of if it wasn't
-           used by other fields yet. */
+           used by other fields yet. std::pair is used due to this being
+           returned from a std::unordered_map. */
         std::pair<std::unordered_map<const void*, UnsignedInt>::iterator, bool> inserted;
         if(field.mappingData().data())
             inserted = objectMappings.emplace(field.mappingData().data(), itemViewOffset);
