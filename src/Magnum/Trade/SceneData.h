@@ -865,7 +865,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param name              Field name
          * @param mappingType       Object mapping type
          * @param mappingData       Object mapping data
-         * @param fieldType         Field type
+         * @param fieldType         Field type. `SceneFieldType::String*`
+         *      values are not allowed here.
          * @param fieldData         Field data
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
          *      non-array fields.
@@ -886,7 +887,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @brief Construct from 2D views
          * @param name              Field name
          * @param mappingData       Object mapping data
-         * @param fieldType         Field type
+         * @param fieldType         Field type. `SceneFieldType::String*`
+         *      values are not allowed here.
          * @param fieldData         Field data
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
          *      non-array fields.
@@ -947,7 +949,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * with the @p fieldData second dimension size passed to
          * @p fieldArraySize. Expects that the second dimension of @p fieldData
          * is contiguous. At the moment only custom fields can be arrays, which
-         * means this function can't be used with a builtin @p name. See
+         * means this constructor can't be used with a builtin @p name. See
          * @ref SceneFieldData(SceneField, const Containers::StridedArrayView1D<T>&, const Containers::StridedArrayView1D<U>&, SceneFieldFlags)
          * for details about @ref SceneMappingType and @ref SceneFieldType
          * detection.
@@ -975,9 +977,9 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          *      @relativeref{SceneFieldType,StringRangeNullTerminated32} and
          *      @relativeref{SceneFieldType,StringRangeNullTerminated64}.
          *
-         * Expects that @p mappingData and @p fieldData have the same size,
-         * @p fieldType corresponds to @p name and @p fieldArraySize is zero
-         * for builtin fields.
+         * Expects that @p mappingData and @p fieldData have the same size. At
+         * the moment only custom fields can be strings, which means this
+         * constructor can't be used with a builtin @p name.
          */
         /* While a StringView could provide the range assertions with more
            context inside the SceneFieldData constructor, the main range
@@ -1007,10 +1009,10 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * Expects that @p mappingData and @p fieldData have the same size in
          * the first dimension; that the second dimension of @p mappingData is
          * contiguous and its size is either 1, 2, 4 or 8, corresponding to one
-         * of the @ref SceneMappingType values; that the second dimension of
-         * @p fieldData is contiguous and its size matches @p fieldType and
-         * @p fieldArraySize; and that for builtin fields @p fieldType
-         * corresponds to @p name and @p fieldArraySize is zero.
+         * of the @ref SceneMappingType values and that the second dimension of
+         * @p fieldData is contiguous and its size matches @p fieldType. At the
+         * moment only custom fields can be strings, which means this
+         * constructor can't be used with a builtin @p name.
          */
         /* See above for why const char* is used instead of StringView */
         explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, SceneFieldFlags flags = {}) noexcept;
@@ -1045,7 +1047,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param mappingType       Object mapping type
          * @param mappingOffset     Object mapping data offset
          * @param mappingStride     Object mapping data stride
-         * @param fieldType         Field type
+         * @param fieldType         Field type. `SceneFieldType::String*`
+         *      values are not allowed here.
          * @param fieldOffset       Field data offset
          * @param fieldStride       Field data stride
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
@@ -1098,8 +1101,9 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * Instances created this way refer to offsets in unspecified
          * external scene data instead of containing the data views directly.
          * Useful when the location of the scene data array is not known at
-         * field construction time. Expects that for builtin fields
-         * @p fieldType corresponds to @p name and @p fieldArraySize is zero.
+         * field construction time. At the moment only custom fields can be
+         * strings, which means this constructor can't be used with a builtin
+         * @p name.
          *
          * Note that due to the @cpp constexpr @ce nature of this constructor,
          * no @p mappingType checks against @p mappingStride or
