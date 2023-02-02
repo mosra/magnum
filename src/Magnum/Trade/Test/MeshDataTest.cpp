@@ -889,7 +889,7 @@ void MeshDataTest::constructAttribute2DNonContiguous() {
 
 void MeshDataTest::constructAttributeTypeErased() {
     const Vector3 positionData[3]{};
-    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, Containers::StridedArrayView1D<const void>{positionData}};
+    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, positionData};
     CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.arraySize(), 0);
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
@@ -1131,7 +1131,7 @@ void MeshDataTest::constructArrayAttribute2DNonContiguous() {
 void MeshDataTest::constructArrayAttributeTypeErased() {
     Vector2 vertexData[3*4];
     Containers::StridedArrayView1D<Vector2> attribute{vertexData, 3, 4*sizeof(Vector2)};
-    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, Containers::StridedArrayView1D<const void>{attribute}, 4};
+    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, attribute, 4};
     CORRADE_VERIFY(!data.isOffsetOnly());
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
