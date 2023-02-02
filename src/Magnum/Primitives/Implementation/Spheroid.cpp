@@ -247,29 +247,25 @@ Trade::MeshData Spheroid::finalize() {
     Containers::Array<Trade::MeshAttributeData> attributes{_attributeCount};
     attributes[attributeOffset++] = Trade::MeshAttributeData{
         Trade::MeshAttribute::Position, VertexFormat::Vector3,
-        /* GCC 4.8 can't handle the stridedArrayView() convenience thing */
-        Containers::StridedArrayView1D<const char>{_vertexData,
+        Containers::StridedArrayView1D<const void>{_vertexData,
             _vertexData.data(),
             _vertexData.size()/_stride, std::ptrdiff_t(_stride)}};
     attributes[attributeOffset++] = Trade::MeshAttributeData{
         Trade::MeshAttribute::Normal, VertexFormat::Vector3,
-        /* GCC 4.8 can't handle the stridedArrayView() convenience thing */
-        Containers::StridedArrayView1D<const char>{_vertexData,
+        Containers::StridedArrayView1D<const void>{_vertexData,
             _vertexData.data() + sizeof(Vector3),
             _vertexData.size()/_stride, std::ptrdiff_t(_stride)}};
 
     if(_flags & Flag::Tangents)
         attributes[attributeOffset++] = Trade::MeshAttributeData{
             Trade::MeshAttribute::Tangent, VertexFormat::Vector4,
-            /* GCC 4.8 can't handle the stridedArrayView() convenience thing */
-            Containers::StridedArrayView1D<const char>{_vertexData,
+            Containers::StridedArrayView1D<const void>{_vertexData,
                 _vertexData.data() + _tangentOffset,
                 _vertexData.size()/_stride, std::ptrdiff_t(_stride)}};
     if(_flags & Flag::TextureCoordinates)
         attributes[attributeOffset++] = Trade::MeshAttributeData{
             Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2,
-            /* GCC 4.8 can't handle the stridedArrayView() convenience thing */
-            Containers::StridedArrayView1D<const char>{_vertexData,
+            Containers::StridedArrayView1D<const void>{_vertexData,
                 _vertexData.data() + _textureCoordinateOffset,
                 _vertexData.size()/_stride, std::ptrdiff_t(_stride)}};
 
