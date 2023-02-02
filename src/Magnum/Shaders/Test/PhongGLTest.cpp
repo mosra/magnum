@@ -689,7 +689,7 @@ const struct {
     Color3 specularColor, lightSpecularColor;
     Float intensity;
     Float range;
-    Containers::Array<std::pair<Vector2i, Color3ub>> picks;
+    Containers::Array<Containers::Pair<Vector2i, Color3ub>> picks;
 } RenderLightsData[] {
     {"directional", "light-directional.tga",
         {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
@@ -3610,10 +3610,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
     /* Analytical output check. Comment this out when image comparison fails
        for easier debugging. */
     for(const auto& pick: data.picks) {
-        CORRADE_ITERATION(pick.first);
+        CORRADE_ITERATION(pick.first());
         CORRADE_COMPARE_WITH(
-            image.pixels<Color4ub>()[pick.first.y()][pick.first.x()].xyz(),
-            pick.second, TestSuite::Compare::around(0x010101_rgb));
+            image.pixels<Color4ub>()[pick.first().y()][pick.first().x()].xyz(),
+            pick.second(), TestSuite::Compare::around(0x010101_rgb));
     }
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
