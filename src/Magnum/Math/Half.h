@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Math::Half, literal @link Magnum::Math::Literals::operator""_h() @endlink
  */
 
-#include <utility>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Utility.h>
 #endif
@@ -214,7 +213,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Half> {
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Half> parse(Containers::StringView value);
+    static Containers::Pair<TweakableState, Magnum::Math::Half> parse(Containers::StringView value);
 };
 
 }}

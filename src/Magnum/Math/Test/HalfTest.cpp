@@ -639,11 +639,9 @@ void HalfTest::debug() {
 void HalfTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
-    Corrade::Utility::TweakableState state;
-    Half result;
-    std::tie(state, result) = Corrade::Utility::TweakableParser<Half>::parse(data.data);
-    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
-    CORRADE_COMPARE(result, data.result);
+    auto result = Corrade::Utility::TweakableParser<Half>::parse(data.data);
+    CORRADE_COMPARE(result.first(), Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result.second(), data.result);
 }
 
 void HalfTest::tweakableError() {
@@ -653,7 +651,7 @@ void HalfTest::tweakableError() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
-    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Half>::parse(data.data).first;
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Half>::parse(data.data).first();
     CORRADE_COMPARE(out.str(), data.error);
     CORRADE_COMPARE(state, data.state);
 }

@@ -30,6 +30,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
@@ -49,7 +50,7 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value) 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace Corrade { namespace Utility {
 
-std::pair<TweakableState, Magnum::Math::Half> TweakableParser<Magnum::Math::Half>::parse(const Containers::StringView value) {
+Containers::Pair<TweakableState, Magnum::Math::Half> TweakableParser<Magnum::Math::Half>::parse(const Containers::StringView value) {
     using namespace Containers::Literals;
 
     char* end;
