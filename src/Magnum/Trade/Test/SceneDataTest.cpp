@@ -80,17 +80,19 @@ struct SceneDataTest: TestSuite::Tester {
     void constructFieldString();
     void constructFieldStringNegativeStride();
     void constructFieldStringNegativeOffset();
-    void constructField2D();
-    void constructField2DString();
     void constructFieldTypeErased();
     void constructFieldTypeErasedString();
+    void constructFieldTypeErased2D();
+    void constructFieldTypeErased2DString();
     void constructFieldNonOwningArray();
     void constructFieldOffsetOnly();
     void constructFieldOffsetOnlyString();
     void constructFieldOffsetOnlyStringNegativeStride();
     void constructFieldArray();
-    void constructFieldArray2D();
     void constructFieldArrayTypeErased();
+    /* no constructFieldArrayTypeErasedString(), strings can't be arrays */
+    void constructFieldArrayTypeErased2D();
+    /* no constructFieldArrayTypeErased2DString(), strings can't be arrays */
     void constructFieldArrayOffsetOnly();
 
     void constructFieldWrongType();
@@ -101,12 +103,12 @@ struct SceneDataTest: TestSuite::Tester {
     void constructFieldFlagNotAllowed();
     void constructFieldWrongOffsetOnlyDataAccess();
     void constructFieldWrongStringDataAccess();
-    void constructField2DWrongSize();
-    void constructField2DNonContiguous();
+    void constructFieldTypeErased2DWrongSize();
+    void constructFieldTypeErased2DNonContiguous();
     void constructFieldArrayNonContiguous();
     void constructFieldArrayNotAllowed();
-    void constructFieldArray2DWrongSize();
-    void constructFieldArray2DNonContiguous();
+    void constructFieldArrayTypeErased2DWrongSize();
+    void constructFieldArrayTypeErased2DNonContiguous();
 
     void construct();
     void constructZeroFields();
@@ -387,17 +389,17 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructFieldString,
               &SceneDataTest::constructFieldStringNegativeStride,
               &SceneDataTest::constructFieldStringNegativeOffset,
-              &SceneDataTest::constructField2D,
-              &SceneDataTest::constructField2DString,
               &SceneDataTest::constructFieldTypeErased,
               &SceneDataTest::constructFieldTypeErasedString,
+              &SceneDataTest::constructFieldTypeErased2D,
+              &SceneDataTest::constructFieldTypeErased2DString,
               &SceneDataTest::constructFieldNonOwningArray,
               &SceneDataTest::constructFieldOffsetOnly,
               &SceneDataTest::constructFieldOffsetOnlyString,
               &SceneDataTest::constructFieldOffsetOnlyStringNegativeStride,
               &SceneDataTest::constructFieldArray,
-              &SceneDataTest::constructFieldArray2D,
               &SceneDataTest::constructFieldArrayTypeErased,
+              &SceneDataTest::constructFieldArrayTypeErased2D,
               &SceneDataTest::constructFieldArrayOffsetOnly,
 
               &SceneDataTest::constructFieldWrongType,
@@ -408,12 +410,12 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructFieldFlagNotAllowed,
               &SceneDataTest::constructFieldWrongOffsetOnlyDataAccess,
               &SceneDataTest::constructFieldWrongStringDataAccess,
-              &SceneDataTest::constructField2DWrongSize,
-              &SceneDataTest::constructField2DNonContiguous,
+              &SceneDataTest::constructFieldTypeErased2DWrongSize,
+              &SceneDataTest::constructFieldTypeErased2DNonContiguous,
               &SceneDataTest::constructFieldArrayNonContiguous,
               &SceneDataTest::constructFieldArrayNotAllowed,
-              &SceneDataTest::constructFieldArray2DWrongSize,
-              &SceneDataTest::constructFieldArray2DNonContiguous,
+              &SceneDataTest::constructFieldArrayTypeErased2DWrongSize,
+              &SceneDataTest::constructFieldArrayTypeErased2DNonContiguous,
 
               &SceneDataTest::construct,
               &SceneDataTest::constructZeroFields,
@@ -994,50 +996,6 @@ void SceneDataTest::constructFieldStringNegativeOffset() {
     CORRADE_COMPARE(names.stringData(someArray), static_cast<const void*>(data.nameString));
 }
 
-void SceneDataTest::constructField2D() {
-    char rotationMappingData[6*sizeof(UnsignedShort)];
-    char rotationFieldData[6*sizeof(Complexd)];
-    auto rotationMappingView = Containers::StridedArrayView2D<char>{rotationMappingData, {6, sizeof(UnsignedShort)}}.every(2);
-    auto rotationFieldView = Containers::StridedArrayView2D<char>{rotationFieldData, {6, sizeof(Complexd)}}.every(2);
-
-    SceneFieldData rotations{SceneField::Rotation, rotationMappingView, SceneFieldType::Complexd, rotationFieldView, SceneFieldFlag::ImplicitMapping};
-    CORRADE_COMPARE(rotations.flags(), SceneFieldFlag::ImplicitMapping);
-    CORRADE_COMPARE(rotations.name(), SceneField::Rotation);
-    CORRADE_COMPARE(rotations.size(), 3);
-    CORRADE_COMPARE(rotations.mappingType(), SceneMappingType::UnsignedShort);
-    CORRADE_COMPARE(rotations.mappingData().size(), 3);
-    CORRADE_COMPARE(rotations.mappingData().stride(), 2*sizeof(UnsignedShort));
-    CORRADE_COMPARE(rotations.mappingData().data(), rotationMappingView.data());
-    CORRADE_COMPARE(rotations.fieldType(), SceneFieldType::Complexd);
-    CORRADE_COMPARE(rotations.fieldArraySize(), 0);
-    CORRADE_COMPARE(rotations.fieldData().size(), 3);
-    CORRADE_COMPARE(rotations.fieldData().stride(), 2*sizeof(Complexd));
-    CORRADE_COMPARE(rotations.fieldData().data(), rotationFieldView.data());
-}
-
-void SceneDataTest::constructField2DString() {
-    char nameMappingData[6*sizeof(UnsignedLong)]{};
-    char nameFieldData[6*sizeof(Containers::Pair<UnsignedShort, UnsignedShort>)]{};
-    auto nameMappingView = Containers::StridedArrayView2D<char>{nameMappingData, {6, sizeof(UnsignedLong)}}.every(2);
-    auto nameFieldView = Containers::StridedArrayView2D<char>{nameFieldData, {6, sizeof(Containers::Pair<UnsignedShort, UnsignedShort>)}}.every(2);
-    const char nameStringData[15]{};
-
-    SceneFieldData names{sceneFieldCustom(25), nameMappingView, nameStringData, SceneFieldType::StringRange16, nameFieldView, SceneFieldFlag::NullTerminatedString|SceneFieldFlag::OrderedMapping};
-    CORRADE_COMPARE(names.flags(), SceneFieldFlag::OrderedMapping|SceneFieldFlag::NullTerminatedString);
-    CORRADE_COMPARE(names.name(), sceneFieldCustom(25));
-    CORRADE_COMPARE(names.size(), 3);
-    CORRADE_COMPARE(names.mappingType(), SceneMappingType::UnsignedLong);
-    CORRADE_COMPARE(names.mappingData().size(), 3);
-    CORRADE_COMPARE(names.mappingData().stride(), 2*sizeof(UnsignedLong));
-    CORRADE_COMPARE(names.mappingData().data(), nameMappingView.data());
-    CORRADE_COMPARE(names.fieldType(), SceneFieldType::StringRange16);
-    CORRADE_COMPARE(names.fieldArraySize(), 0);
-    CORRADE_COMPARE(names.fieldData().size(), 3);
-    CORRADE_COMPARE(names.fieldData().stride(), 2*sizeof(UnsignedShort)*2);
-    CORRADE_COMPARE(names.fieldData().data(), nameFieldView.data());
-    CORRADE_COMPARE(names.stringData(), static_cast<const void*>(nameStringData));
-}
-
 void SceneDataTest::constructFieldTypeErased() {
     const UnsignedLong scalingMappingData[3]{};
     const Vector3 scalingFieldData[3];
@@ -1074,6 +1032,50 @@ void SceneDataTest::constructFieldTypeErasedString() {
     CORRADE_COMPARE(names.fieldData().size(), 3);
     CORRADE_COMPARE(names.fieldData().stride(), sizeof(UnsignedShort)*2);
     CORRADE_COMPARE(names.fieldData().data(), nameFieldData);
+    CORRADE_COMPARE(names.stringData(), static_cast<const void*>(nameStringData));
+}
+
+void SceneDataTest::constructFieldTypeErased2D() {
+    char rotationMappingData[6*sizeof(UnsignedShort)];
+    char rotationFieldData[6*sizeof(Complexd)];
+    auto rotationMappingView = Containers::StridedArrayView2D<char>{rotationMappingData, {6, sizeof(UnsignedShort)}}.every(2);
+    auto rotationFieldView = Containers::StridedArrayView2D<char>{rotationFieldData, {6, sizeof(Complexd)}}.every(2);
+
+    SceneFieldData rotations{SceneField::Rotation, rotationMappingView, SceneFieldType::Complexd, rotationFieldView, SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(rotations.flags(), SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(rotations.name(), SceneField::Rotation);
+    CORRADE_COMPARE(rotations.size(), 3);
+    CORRADE_COMPARE(rotations.mappingType(), SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(rotations.mappingData().size(), 3);
+    CORRADE_COMPARE(rotations.mappingData().stride(), 2*sizeof(UnsignedShort));
+    CORRADE_COMPARE(rotations.mappingData().data(), rotationMappingView.data());
+    CORRADE_COMPARE(rotations.fieldType(), SceneFieldType::Complexd);
+    CORRADE_COMPARE(rotations.fieldArraySize(), 0);
+    CORRADE_COMPARE(rotations.fieldData().size(), 3);
+    CORRADE_COMPARE(rotations.fieldData().stride(), 2*sizeof(Complexd));
+    CORRADE_COMPARE(rotations.fieldData().data(), rotationFieldView.data());
+}
+
+void SceneDataTest::constructFieldTypeErased2DString() {
+    char nameMappingData[6*sizeof(UnsignedLong)]{};
+    char nameFieldData[6*sizeof(Containers::Pair<UnsignedShort, UnsignedShort>)]{};
+    auto nameMappingView = Containers::StridedArrayView2D<char>{nameMappingData, {6, sizeof(UnsignedLong)}}.every(2);
+    auto nameFieldView = Containers::StridedArrayView2D<char>{nameFieldData, {6, sizeof(Containers::Pair<UnsignedShort, UnsignedShort>)}}.every(2);
+    const char nameStringData[15]{};
+
+    SceneFieldData names{sceneFieldCustom(25), nameMappingView, nameStringData, SceneFieldType::StringRange16, nameFieldView, SceneFieldFlag::NullTerminatedString|SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(names.flags(), SceneFieldFlag::OrderedMapping|SceneFieldFlag::NullTerminatedString);
+    CORRADE_COMPARE(names.name(), sceneFieldCustom(25));
+    CORRADE_COMPARE(names.size(), 3);
+    CORRADE_COMPARE(names.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(names.mappingData().size(), 3);
+    CORRADE_COMPARE(names.mappingData().stride(), 2*sizeof(UnsignedLong));
+    CORRADE_COMPARE(names.mappingData().data(), nameMappingView.data());
+    CORRADE_COMPARE(names.fieldType(), SceneFieldType::StringRange16);
+    CORRADE_COMPARE(names.fieldArraySize(), 0);
+    CORRADE_COMPARE(names.fieldData().size(), 3);
+    CORRADE_COMPARE(names.fieldData().stride(), 2*sizeof(UnsignedShort)*2);
+    CORRADE_COMPARE(names.fieldData().data(), nameFieldView.data());
     CORRADE_COMPARE(names.stringData(), static_cast<const void*>(nameStringData));
 }
 
@@ -1214,24 +1216,6 @@ void SceneDataTest::constructFieldArray() {
     CORRADE_VERIFY(cdata.fieldData().data() == ArrayOffsetFieldData);
 }
 
-void SceneDataTest::constructFieldArray2D() {
-    char offsetMappingData[3*sizeof(UnsignedByte)];
-    char offsetFieldData[3*4*sizeof(Int)];
-    SceneFieldData data{sceneFieldCustom(34), Containers::StridedArrayView2D<char>{offsetMappingData, {3, sizeof(UnsignedByte)}}, SceneFieldType::Int, Containers::StridedArrayView2D<char>{offsetFieldData, {3, 4*sizeof(Int)}}, 4, SceneFieldFlag::ImplicitMapping};
-    CORRADE_COMPARE(data.flags(), SceneFieldFlag::ImplicitMapping);
-    CORRADE_COMPARE(data.name(), sceneFieldCustom(34));
-    CORRADE_COMPARE(data.size(), 3);
-    CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedByte);
-    CORRADE_COMPARE(data.mappingData().size(), 3);
-    CORRADE_COMPARE(data.mappingData().stride(), sizeof(UnsignedByte));
-    CORRADE_VERIFY(data.mappingData().data() == offsetMappingData);
-    CORRADE_COMPARE(data.fieldType(), SceneFieldType::Int);
-    CORRADE_COMPARE(data.fieldArraySize(), 4);
-    CORRADE_COMPARE(data.fieldData().size(), 3);
-    CORRADE_COMPARE(data.fieldData().stride(), 4*sizeof(Int));
-    CORRADE_VERIFY(data.fieldData().data() == offsetFieldData);
-}
-
 void SceneDataTest::constructFieldArrayTypeErased() {
     UnsignedByte offsetMappingData[3];
     Int offsetFieldData[3*4];
@@ -1245,6 +1229,24 @@ void SceneDataTest::constructFieldArrayTypeErased() {
     CORRADE_COMPARE(data.mappingData().size(), 3);
     CORRADE_COMPARE(data.mappingData().stride(), sizeof(UnsignedByte));
     CORRADE_VERIFY(data.mappingData().data() == offsetMappingData);
+    CORRADE_COMPARE(data.fieldArraySize(), 4);
+    CORRADE_COMPARE(data.fieldData().size(), 3);
+    CORRADE_COMPARE(data.fieldData().stride(), 4*sizeof(Int));
+    CORRADE_VERIFY(data.fieldData().data() == offsetFieldData);
+}
+
+void SceneDataTest::constructFieldArrayTypeErased2D() {
+    char offsetMappingData[3*sizeof(UnsignedByte)];
+    char offsetFieldData[3*4*sizeof(Int)];
+    SceneFieldData data{sceneFieldCustom(34), Containers::StridedArrayView2D<char>{offsetMappingData, {3, sizeof(UnsignedByte)}}, SceneFieldType::Int, Containers::StridedArrayView2D<char>{offsetFieldData, {3, 4*sizeof(Int)}}, 4, SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(data.name(), sceneFieldCustom(34));
+    CORRADE_COMPARE(data.size(), 3);
+    CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedByte);
+    CORRADE_COMPARE(data.mappingData().size(), 3);
+    CORRADE_COMPARE(data.mappingData().stride(), sizeof(UnsignedByte));
+    CORRADE_VERIFY(data.mappingData().data() == offsetMappingData);
+    CORRADE_COMPARE(data.fieldType(), SceneFieldType::Int);
     CORRADE_COMPARE(data.fieldArraySize(), 4);
     CORRADE_COMPARE(data.fieldData().size(), 3);
     CORRADE_COMPARE(data.fieldData().stride(), 4*sizeof(Int));
@@ -1506,7 +1508,7 @@ void SceneDataTest::constructFieldWrongStringDataAccess() {
         "Trade::SceneFieldData::stringData(): the field is Trade::SceneFieldType::Quaternion, not a string\n");
 }
 
-void SceneDataTest::constructField2DWrongSize() {
+void SceneDataTest::constructFieldTypeErased2DWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     char mappingData[5*sizeof(UnsignedInt)];
@@ -1541,7 +1543,7 @@ void SceneDataTest::constructField2DWrongSize() {
         "Trade::SceneFieldData: second field view dimension size 2 doesn't match Trade::SceneFieldType::StringRange16\n");
 }
 
-void SceneDataTest::constructField2DNonContiguous() {
+void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     char mappingData[8*sizeof(UnsignedInt)];
@@ -1642,7 +1644,7 @@ void SceneDataTest::constructFieldArrayNotAllowed() {
         "Trade::SceneFieldData: Trade::SceneField::Rotation can't be an array field\n");
 }
 
-void SceneDataTest::constructFieldArray2DWrongSize() {
+void SceneDataTest::constructFieldArrayTypeErased2DWrongSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     char rotationMappingData[4*sizeof(UnsignedInt)];
@@ -1658,7 +1660,7 @@ void SceneDataTest::constructFieldArray2DWrongSize() {
         "Trade::SceneFieldData: second field view dimension size 8 doesn't match Trade::SceneFieldType::Int and field array size 3\n");
 }
 
-void SceneDataTest::constructFieldArray2DNonContiguous() {
+void SceneDataTest::constructFieldArrayTypeErased2DNonContiguous() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     char offsetMappingData[18*sizeof(UnsignedInt)];

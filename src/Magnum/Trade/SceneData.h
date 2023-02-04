@@ -884,7 +884,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags) noexcept: SceneFieldData{name, mappingType, mappingData, fieldType, fieldData, 0, flags} {}
 
         /**
-         * @brief Construct from 2D views
+         * @brief Construct from 2D type-erased views
          * @param name              Field name
          * @param mappingData       Object mapping data
          * @param fieldType         Field type. `SceneFieldType::String*`
@@ -990,7 +990,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept;
 
         /**
-         * @brief Construct a string field from 2D views
+         * @brief Construct a string field from 2D type-erased views
          * @param name          Field name
          * @param mappingData   Object mapping data
          * @param stringData    String to which the field offset or range data
