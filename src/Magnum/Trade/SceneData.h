@@ -986,8 +986,13 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
            checking happens in the SceneField constructor, at which point the
            size would be gone anyway as SceneFieldData can store only the begin
            pointer inside. Using it would also mean we'd need to include its
-           full definition in this header. */
-        constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept;
+           full definition in this header.
+
+           Not constexpr because internally we store the 48-bit
+           `stringData - fieldData` offset, which is not possible to do in a
+           constexpr context. Only the offset-only constructor is usable for
+           creating constexpr string fields. */
+        explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept;
 
         /**
          * @brief Construct a string field from 2D type-erased views
@@ -1034,11 +1039,12 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          *      @relativeref{SceneFieldType,StringRangeNullTerminated32} and
          *      @relativeref{SceneFieldType,StringRangeNullTerminated64}.
          */
-        /* See above for why const char* is used instead of StringView */
-        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept;
+        /* See above for why const char* is used instead of StringView and why
+           this function is not constexpr */
+        template<class T> explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept;
 
         /** @overload */
-        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, Containers::stridedArrayView(mappingData), stringData, fieldType, fieldData, flags} {}
+        template<class T> explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, Containers::stridedArrayView(mappingData), stringData, fieldType, fieldData, flags} {}
 
         /**
          * @brief Construct an offset-only field
@@ -3684,25 +3690,7 @@ template<class T, class U> constexpr SceneFieldData::SceneFieldData(const SceneF
     flags
 } {}
 
-constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept:
-    _size{(CORRADE_CONSTEXPR_ASSERT(mappingData.size() == fieldData.size(),
-        "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size()), mappingData.size())},
-    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
-        "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
-    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::OffsetOnly),
-        "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::OffsetOnly) << "for a view"), flags|Implementation::implicitSceneFieldFlagsFor(fieldType))},
-    _mappingTypeStringType{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeString(fieldType),
-        "Trade::SceneFieldData: can't use a string constructor for" << fieldType), UnsignedByte(UnsignedByte(mappingType)|(UnsignedShort(fieldType) << 3)))},
-    _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
-        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride()), Short(mappingData.stride()))},
-    _mappingData{mappingData.data()},
-    _field{
-        (CORRADE_CONSTEXPR_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
-            "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride()), Short(fieldData.stride())),
-        stringData - static_cast<const char*>(fieldData.data())},
-    _fieldData{fieldData.data()} {}
-
-template<class T> constexpr SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, Implementation::sceneMappingTypeFor<typename std::remove_const<T>::type>(), mappingData, stringData, fieldType, fieldData, flags} {}
+template<class T> inline SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, Implementation::sceneMappingTypeFor<typename std::remove_const<T>::type>(), mappingData, stringData, fieldType, fieldData, flags} {}
 
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_t size, const SceneMappingType mappingType, const std::size_t mappingOffset, const std::ptrdiff_t mappingStride, const SceneFieldType fieldType, const std::size_t fieldOffset, const std::ptrdiff_t fieldStride, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
     _size{size},

@@ -575,6 +575,36 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
     CORRADE_ASSERT(fieldData.isContiguous<1>(), "Trade::SceneFieldData: second field view dimension is not contiguous", );
 }
 
+SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept:
+    _size{mappingData.size()},
+    _name{name},
+    _flags{flags|Implementation::implicitSceneFieldFlagsFor(fieldType)},
+    _mappingTypeStringType{UnsignedByte(UnsignedByte(mappingType)|(UnsignedShort(fieldType) << 3))},
+    _mappingStride{Short(mappingData.stride())},
+    _mappingData{mappingData.data()},
+    _field{Short(fieldData.stride()),
+        /* This expression is the reason why the constructor can't be constexpr
+           -- the only possibility for this to work would be if
+           fieldData.data() would give back a const char* pointer to avoid the
+           cast (which is dangerous on its own, as the data is inherently
+           sparse), and even then it'd probably fail due to the two pointers
+           being two unrelated pieces of memory */
+        stringData - static_cast<const char*>(fieldData.data())},
+    _fieldData{fieldData.data()} {
+    CORRADE_ASSERT(mappingData.size() == fieldData.size(),
+        "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size(), );
+    CORRADE_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
+        "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name, );
+    CORRADE_ASSERT(!(flags & SceneFieldFlag::OffsetOnly),
+        "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::OffsetOnly) << "for a view", );
+    CORRADE_ASSERT(Implementation::isSceneFieldTypeString(fieldType),
+        "Trade::SceneFieldData: can't use a string constructor for" << fieldType, );
+    CORRADE_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride(), );
+    CORRADE_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride(), );
+}
+
 SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, stringData, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, flags} {
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
