@@ -113,9 +113,9 @@ struct SceneDataTest: TestSuite::Tester {
     void construct();
     void constructZeroFields();
     void constructZeroObjects();
-    void constructSpecialStrides();
     void constructNotOwned();
     template<class T> void constructString();
+    void constructSpecialStrides();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void constructDeprecated();
     void constructDeprecatedBoth2DAnd3D();
@@ -419,17 +419,16 @@ SceneDataTest::SceneDataTest() {
 
               &SceneDataTest::construct,
               &SceneDataTest::constructZeroFields,
-              &SceneDataTest::constructZeroObjects,
-              &SceneDataTest::constructSpecialStrides});
+              &SceneDataTest::constructZeroObjects});
 
     addInstancedTests({&SceneDataTest::constructNotOwned},
         Containers::arraySize(NotOwnedData));
 
-    addTests<SceneDataTest>({
-        &SceneDataTest::constructString<UnsignedByte>,
-        &SceneDataTest::constructString<UnsignedShort>,
-        &SceneDataTest::constructString<UnsignedInt>,
-        &SceneDataTest::constructString<UnsignedLong>});
+    addTests({&SceneDataTest::constructString<UnsignedByte>,
+              &SceneDataTest::constructString<UnsignedShort>,
+              &SceneDataTest::constructString<UnsignedInt>,
+              &SceneDataTest::constructString<UnsignedLong>,
+              &SceneDataTest::constructSpecialStrides});
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addInstancedTests({&SceneDataTest::constructDeprecated},
@@ -2157,59 +2156,6 @@ void SceneDataTest::constructZeroObjects() {
     CORRADE_COMPARE(scene.mapping(SceneField::MeshMaterial).data(), nullptr);
 }
 
-void SceneDataTest::constructSpecialStrides() {
-    Containers::StridedArrayView1D<UnsignedShort> broadcastedData;
-    Containers::StridedArrayView1D<UnsignedShort> nonBroadcastedData;
-    Containers::ArrayTuple data{
-        {NoInit, 1, broadcastedData},
-        {NoInit, 4, nonBroadcastedData}
-    };
-
-    broadcastedData[0] = 15;
-    Utility::copy({1, 2, 3, 4}, nonBroadcastedData);
-
-    SceneFieldData broadcastedMapping{sceneFieldCustom(38),
-        broadcastedData.broadcasted<0>(4), nonBroadcastedData};
-    SceneFieldData broadcastedField{sceneFieldCustom(39),
-        nonBroadcastedData, broadcastedData.broadcasted<0>(4)};
-    SceneFieldData flippedField{sceneFieldCustom(40),
-        nonBroadcastedData.flipped<0>(), nonBroadcastedData.flipped<0>()};
-    SceneFieldData flippedFieldOffsetOnly{sceneFieldCustom(41),
-        4, SceneMappingType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2,
-        SceneFieldType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2};
-    SceneData scene{SceneMappingType::UnsignedShort, 8, std::move(data), {
-        broadcastedMapping, broadcastedField, flippedField, flippedFieldOffsetOnly
-    }};
-
-    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(0),
-        Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
-        TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(0),
-        Containers::arrayView<UnsignedShort>({1, 2, 3, 4}),
-        TestSuite::Compare::Container);
-
-    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(1),
-        Containers::arrayView<UnsignedShort>({1, 2, 3, 4}),
-        TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(1),
-        Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
-        TestSuite::Compare::Container);
-
-    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(2),
-        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
-        TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(2),
-        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
-        TestSuite::Compare::Container);
-
-    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(3),
-        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
-        TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(3),
-        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
-        TestSuite::Compare::Container);
-}
-
 void SceneDataTest::constructNotOwned() {
     auto&& instanceData = NotOwnedData[testCaseInstanceId()];
     setTestCaseDescription(instanceData.name);
@@ -2561,6 +2507,59 @@ template<class T> void SceneDataTest::constructString() {
         CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
         CORRADE_COMPARE(i[i.size()], '\0');
     }
+}
+
+void SceneDataTest::constructSpecialStrides() {
+    Containers::StridedArrayView1D<UnsignedShort> broadcastedData;
+    Containers::StridedArrayView1D<UnsignedShort> nonBroadcastedData;
+    Containers::ArrayTuple data{
+        {NoInit, 1, broadcastedData},
+        {NoInit, 4, nonBroadcastedData}
+    };
+
+    broadcastedData[0] = 15;
+    Utility::copy({1, 2, 3, 4}, nonBroadcastedData);
+
+    SceneFieldData broadcastedMapping{sceneFieldCustom(38),
+        broadcastedData.broadcasted<0>(4), nonBroadcastedData};
+    SceneFieldData broadcastedField{sceneFieldCustom(39),
+        nonBroadcastedData, broadcastedData.broadcasted<0>(4)};
+    SceneFieldData flippedField{sceneFieldCustom(40),
+        nonBroadcastedData.flipped<0>(), nonBroadcastedData.flipped<0>()};
+    SceneFieldData flippedFieldOffsetOnly{sceneFieldCustom(41),
+        4, SceneMappingType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2,
+        SceneFieldType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2};
+    SceneData scene{SceneMappingType::UnsignedShort, 8, std::move(data), {
+        broadcastedMapping, broadcastedField, flippedField, flippedFieldOffsetOnly
+    }};
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(0),
+        Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(0),
+        Containers::arrayView<UnsignedShort>({1, 2, 3, 4}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(1),
+        Containers::arrayView<UnsignedShort>({1, 2, 3, 4}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(1),
+        Containers::arrayView<UnsignedShort>({15, 15, 15, 15}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(2),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(2),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedShort>(3),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<UnsignedShort>(3),
+        Containers::arrayView<UnsignedShort>({4, 3, 2, 1}),
+        TestSuite::Compare::Container);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
