@@ -804,16 +804,8 @@ void SceneDataTest::debugFieldFlagsSupersets() {
     }
 }
 
-const UnsignedShort RotationMapping2D[3] {
-    17,
-    35,
-    98
-};
-constexpr Complexd RotationField2D[3] {
-    Complexd{Constantsd::sqrtHalf(), Constantsd::sqrtHalf()}, /* 45° */
-    Complexd{1.0, 0.0}, /* 0° */
-    Complexd{0.0, 1.0}, /* 90° */
-};
+constexpr UnsignedShort RotationMapping2D[3]{};
+constexpr Complexd RotationField2D[3]{};
 
 void SceneDataTest::constructField() {
     const UnsignedShort rotationMappingData[3]{};
@@ -843,13 +835,14 @@ void SceneDataTest::constructField() {
     CORRADE_COMPARE(rotations.fieldData(someArray).stride(), sizeof(Complexd));
     CORRADE_COMPARE(rotations.fieldData(someArray).data(), rotationFieldData);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Won't bother anymore */
     constexpr SceneFieldData crotations{SceneField::Rotation, Containers::arrayView(RotationMapping2D), Containers::arrayView(RotationField2D), SceneFieldFlag::ImplicitMapping};
     constexpr SceneField name = crotations.name();
     constexpr SceneFieldFlags flags = crotations.flags();
+    constexpr std::size_t size = crotations.size();
     constexpr SceneMappingType mappingType = crotations.mappingType();
     CORRADE_COMPARE(name, SceneField::Rotation);
     CORRADE_COMPARE(flags, SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(size, 3);
     CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedShort);
     /* These are not marked constexpr because it'd work only partially, not for
        string fields (tested in constructFieldOffsetOnlyString()) */
@@ -864,7 +857,6 @@ void SceneDataTest::constructField() {
     CORRADE_COMPARE(crotations.fieldData().size(), 3);
     CORRADE_COMPARE(crotations.fieldData().stride(), sizeof(Complexd));
     CORRADE_COMPARE(crotations.fieldData().data(), RotationField2D);
-    #endif
 }
 
 void SceneDataTest::constructFieldDefault() {
@@ -999,6 +991,9 @@ void SceneDataTest::constructFieldStringNegativeOffset() {
     CORRADE_COMPARE(names.stringData(someArray), static_cast<const void*>(data.nameString));
 }
 
+constexpr char ScalingMappingData[3*sizeof(UnsignedLong)]{};
+constexpr char ScalingFieldData[3*sizeof(Vector3)]{};
+
 void SceneDataTest::constructFieldTypeErased() {
     const UnsignedLong scalingMappingData[3]{};
     const Vector3 scalingFieldData[3];
@@ -1015,6 +1010,30 @@ void SceneDataTest::constructFieldTypeErased() {
     CORRADE_COMPARE(scalings.fieldData().size(), 3);
     CORRADE_COMPARE(scalings.fieldData().stride(), sizeof(Vector3));
     CORRADE_COMPARE(scalings.fieldData().data(), scalingFieldData);
+
+    constexpr SceneFieldData cscalings{SceneField::Scaling, SceneMappingType::UnsignedLong, Containers::StridedArrayView1D<const void>{ScalingMappingData, 3, sizeof(UnsignedLong)}, SceneFieldType::Vector3, Containers::StridedArrayView1D<const void>{ScalingFieldData, 3, sizeof(Vector3)}, SceneFieldFlag::OrderedMapping};
+    constexpr SceneField name = cscalings.name();
+    constexpr SceneFieldFlags flags = cscalings.flags();
+    constexpr std::size_t size = cscalings.size();
+    constexpr SceneMappingType mappingType = cscalings.mappingType();
+    CORRADE_COMPARE(name, SceneField::Scaling);
+    CORRADE_COMPARE(flags, SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedLong);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldTypeErasedString()) */
+    CORRADE_COMPARE(cscalings.fieldType(), SceneFieldType::Vector3);
+    CORRADE_COMPARE(cscalings.fieldArraySize(), 0);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(cscalings.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(cscalings.mappingData().size(), 3);
+    CORRADE_COMPARE(cscalings.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(cscalings.mappingData().data(), ScalingMappingData);
+    CORRADE_COMPARE(cscalings.fieldData().size(), 3);
+    CORRADE_COMPARE(cscalings.fieldData().stride(), sizeof(Vector3));
+    CORRADE_COMPARE(cscalings.fieldData().data(), ScalingFieldData);
 }
 
 void SceneDataTest::constructFieldTypeErasedString() {
@@ -1060,6 +1079,9 @@ void SceneDataTest::constructFieldTypeErased2D() {
     CORRADE_COMPARE(rotations.fieldData().size(), 3);
     CORRADE_COMPARE(rotations.fieldData().stride(), 2*sizeof(Complexd));
     CORRADE_COMPARE(rotations.fieldData().data(), rotationFieldView.data());
+
+    /* 2D type-erased construction is not constexpr due to branching to select
+       a corresponding SceneMappingType */
 }
 
 void SceneDataTest::constructFieldTypeErased2DString() {
@@ -1083,6 +1105,9 @@ void SceneDataTest::constructFieldTypeErased2DString() {
     CORRADE_COMPARE(names.fieldData().stride(), 2*sizeof(UnsignedShort)*2);
     CORRADE_COMPARE(names.fieldData().data(), nameFieldView.data());
     CORRADE_COMPARE(names.stringData(), static_cast<const void*>(nameStringData));
+
+    /* 2D type-erased construction is not constexpr due to branching to select
+       a corresponding SceneMappingType */
 }
 
 void SceneDataTest::constructFieldNonOwningArray() {
@@ -1117,6 +1142,33 @@ void SceneDataTest::constructFieldOffsetOnly() {
     CORRADE_COMPARE(a.fieldData(data).size(), 2);
     CORRADE_COMPARE(a.fieldData(data).stride(), sizeof(Data));
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.fieldData(data)),
+        Containers::arrayView<Vector2>({{2.0f, 3.0f}, {67.0f, -1.1f}}),
+        TestSuite::Compare::Container);
+
+    constexpr SceneFieldData ca{SceneField::Translation, 2, SceneMappingType::UnsignedShort, offsetof(Data, object), sizeof(Data), SceneFieldType::Vector2, offsetof(Data, translation), sizeof(Data), SceneFieldFlag::ImplicitMapping};
+    constexpr SceneField name = ca.name();
+    constexpr SceneFieldFlags flags = ca.flags();
+    constexpr std::size_t size = ca.size();
+    constexpr SceneMappingType mappingType = ca.mappingType();
+    CORRADE_COMPARE(name, SceneField::Translation);
+    CORRADE_COMPARE(flags, SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(size, 2);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedShort);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(ca.fieldType(), SceneFieldType::Vector2);
+    CORRADE_COMPARE(ca.fieldArraySize(), 0);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(ca.mappingData(data).size(), 2);
+    CORRADE_COMPARE(ca.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedShort>(ca.mappingData(data)),
+        Containers::arrayView<UnsignedShort>({2, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(ca.fieldData(data).size(), 2);
+    CORRADE_COMPARE(ca.fieldData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(ca.fieldData(data)),
         Containers::arrayView<Vector2>({{2.0f, 3.0f}, {67.0f, -1.1f}}),
         TestSuite::Compare::Container);
 }
@@ -1232,18 +1284,27 @@ void SceneDataTest::constructFieldArray() {
     CORRADE_VERIFY(data.fieldData().data() == offsetFieldData);
 
     constexpr SceneFieldData cdata{sceneFieldCustom(34), Containers::arrayView(ArrayOffsetMappingData), Containers::StridedArrayView2D<const Int>{ArrayOffsetFieldData, {3, 4}}, SceneFieldFlag::OrderedMapping};
-    CORRADE_COMPARE(cdata.flags(), SceneFieldFlag::OrderedMapping);
-    CORRADE_COMPARE(cdata.name(), sceneFieldCustom(34));
-    CORRADE_COMPARE(cdata.size(), 3);
-    CORRADE_COMPARE(cdata.mappingType(), SceneMappingType::UnsignedByte);
-    CORRADE_COMPARE(cdata.mappingData().size(), 3);
-    CORRADE_COMPARE(cdata.mappingData().stride(), sizeof(UnsignedByte));
-    CORRADE_VERIFY(cdata.mappingData().data() == ArrayOffsetMappingData);
+    constexpr SceneField name = cdata.name();
+    constexpr SceneFieldFlags flags = cdata.flags();
+    constexpr std::size_t size = cdata.size();
+    constexpr SceneMappingType mappingType = cdata.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(34));
+    CORRADE_COMPARE(flags, SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedByte);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
     CORRADE_COMPARE(cdata.fieldType(), SceneFieldType::Int);
     CORRADE_COMPARE(cdata.fieldArraySize(), 4);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(cdata.mappingData().size(), 3);
+    CORRADE_COMPARE(cdata.mappingData().stride(), sizeof(UnsignedByte));
+    CORRADE_COMPARE(cdata.mappingData().data(), ArrayOffsetMappingData);
     CORRADE_COMPARE(cdata.fieldData().size(), 3);
     CORRADE_COMPARE(cdata.fieldData().stride(), 4*sizeof(Int));
-    CORRADE_VERIFY(cdata.fieldData().data() == ArrayOffsetFieldData);
+    CORRADE_COMPARE(cdata.fieldData().data(), ArrayOffsetFieldData);
 }
 
 void SceneDataTest::constructFieldArrayTypeErased() {
@@ -1263,6 +1324,29 @@ void SceneDataTest::constructFieldArrayTypeErased() {
     CORRADE_COMPARE(data.fieldData().size(), 3);
     CORRADE_COMPARE(data.fieldData().stride(), 4*sizeof(Int));
     CORRADE_VERIFY(data.fieldData().data() == offsetFieldData);
+
+    constexpr SceneFieldData cdata{sceneFieldCustom(34), SceneMappingType::UnsignedByte, Containers::StridedArrayView1D<const void>{ArrayOffsetMappingData}, SceneFieldType::Int, Containers::StridedArrayView1D<const void>{ArrayOffsetFieldData, 3, 4*sizeof(Int)}, 4, SceneFieldFlag::OrderedMapping};
+    constexpr SceneField name = cdata.name();
+    constexpr SceneFieldFlags flags = cdata.flags();
+    constexpr std::size_t size = cdata.size();
+    constexpr SceneMappingType mappingType = cdata.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(34));
+    CORRADE_COMPARE(flags, SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedByte);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(cdata.fieldType(), SceneFieldType::Int);
+    CORRADE_COMPARE(cdata.fieldArraySize(), 4);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(cdata.mappingData().size(), 3);
+    CORRADE_COMPARE(cdata.mappingData().stride(), sizeof(UnsignedByte));
+    CORRADE_COMPARE(cdata.mappingData().data(), ArrayOffsetMappingData);
+    CORRADE_COMPARE(cdata.fieldData().size(), 3);
+    CORRADE_COMPARE(cdata.fieldData().stride(), 4*sizeof(Int));
+    CORRADE_COMPARE(cdata.fieldData().data(), ArrayOffsetFieldData);
 }
 
 void SceneDataTest::constructFieldArrayTypeErased2D() {
@@ -1281,38 +1365,72 @@ void SceneDataTest::constructFieldArrayTypeErased2D() {
     CORRADE_COMPARE(data.fieldData().size(), 3);
     CORRADE_COMPARE(data.fieldData().stride(), 4*sizeof(Int));
     CORRADE_VERIFY(data.fieldData().data() == offsetFieldData);
+
+    /* 2D type-erased construction is not constexpr due to branching to select
+       a corresponding SceneMappingType */
 }
 
 void SceneDataTest::constructFieldArrayOffsetOnly() {
     struct Data {
         Byte parent;
         UnsignedByte object;
-        Int offset[4];
+        Int offset[2];
+    } data[]{
+        {0, 2, {0, 1}},
+        {0, 15, {2, 3}},
+        {0, 22, {4, 5}}
     };
 
-    SceneFieldData data{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 4, SceneFieldFlag::ImplicitMapping};
-    CORRADE_COMPARE(data.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
-    CORRADE_COMPARE(data.name(), sceneFieldCustom(34));
-    CORRADE_COMPARE(data.size(), 3);
-    CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedByte);
-    CORRADE_COMPARE(data.fieldType(), SceneFieldType::Int);
-    CORRADE_COMPARE(data.fieldArraySize(), 4);
+    SceneFieldData a{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 2, SceneFieldFlag::ImplicitMapping};
+    CORRADE_COMPARE(a.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(a.name(), sceneFieldCustom(34));
+    CORRADE_COMPARE(a.size(), 3);
+    CORRADE_COMPARE(a.mappingType(), SceneMappingType::UnsignedByte);
+    CORRADE_COMPARE(a.mappingData(data).size(), 3);
+    CORRADE_COMPARE(a.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(a.mappingData(data)),
+        Containers::arrayView<UnsignedByte>({2, 15, 22}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(a.fieldType(), SceneFieldType::Int);
+    CORRADE_COMPARE(a.fieldArraySize(), 2);
+    CORRADE_COMPARE(a.fieldData(data).size(), 3);
+    CORRADE_COMPARE(a.fieldData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS((Containers::arrayCast<2, const Int>(a.fieldData(data), 2).transposed<0, 1>())[0],
+        Containers::arrayView({0, 2, 4}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<2, const Int>(a.fieldData(data), 2).transposed<0, 1>())[1],
+        Containers::arrayView({1, 3, 5}),
+        TestSuite::Compare::Container);
 
-    Data actual[3];
-    CORRADE_COMPARE(data.fieldData(actual).size(), 3);
-    CORRADE_COMPARE(data.fieldData(actual).stride(), sizeof(Data));
-    CORRADE_VERIFY(data.fieldData(actual).data() == &actual[0].offset);
-    CORRADE_COMPARE(data.mappingData(actual).size(), 3);
-    CORRADE_COMPARE(data.mappingData(actual).stride(), sizeof(Data));
-    CORRADE_VERIFY(data.mappingData(actual).data() == &actual[0].object);
-
-    constexpr SceneFieldData cdata{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 4, SceneFieldFlag::OrderedMapping};
-    CORRADE_COMPARE(cdata.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
-    CORRADE_COMPARE(cdata.name(), sceneFieldCustom(34));
-    CORRADE_COMPARE(cdata.size(), 3);
-    CORRADE_COMPARE(cdata.mappingType(), SceneMappingType::UnsignedByte);
-    CORRADE_COMPARE(cdata.fieldType(), SceneFieldType::Int);
-    CORRADE_COMPARE(cdata.fieldArraySize(), 4);
+    constexpr SceneFieldData ca{sceneFieldCustom(34), 3, SceneMappingType::UnsignedByte, offsetof(Data, object), sizeof(Data), SceneFieldType::Int, offsetof(Data, offset), sizeof(Data), 2, SceneFieldFlag::OrderedMapping};
+    constexpr SceneField name = ca.name();
+    constexpr SceneFieldFlags flags = ca.flags();
+    constexpr std::size_t size = ca.size();
+    constexpr SceneMappingType mappingType = ca.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(34));
+    CORRADE_COMPARE(flags, SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedByte);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(ca.fieldType(), SceneFieldType::Int);
+    CORRADE_COMPARE(ca.fieldArraySize(), 2);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(ca.mappingData(data).size(), 3);
+    CORRADE_COMPARE(ca.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(ca.mappingData(data)),
+        Containers::arrayView<UnsignedByte>({2, 15, 22}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(ca.fieldData(data).size(), 3);
+    CORRADE_COMPARE(ca.fieldData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS((Containers::arrayCast<2, const Int>(ca.fieldData(data), 2).transposed<0, 1>())[0],
+        Containers::arrayView({0, 2, 4}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<2, const Int>(ca.fieldData(data), 2).transposed<0, 1>())[1],
+        Containers::arrayView({1, 3, 5}),
+        TestSuite::Compare::Container);
 }
 
 void SceneDataTest::constructFieldInconsistentViewSize() {
