@@ -99,7 +99,7 @@ struct SceneDataTest: TestSuite::Tester {
     void constructFieldTooLargeMappingStride();
     void constructFieldTooLargeFieldStride();
     void constructFieldFlagNotAllowed();
-    void constructFieldWrongDataAccess();
+    void constructFieldWrongOffsetOnlyDataAccess();
     void constructFieldWrongStringDataAccess();
     void constructField2DWrongSize();
     void constructField2DNonContiguous();
@@ -406,7 +406,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructFieldTooLargeMappingStride,
               &SceneDataTest::constructFieldTooLargeFieldStride,
               &SceneDataTest::constructFieldFlagNotAllowed,
-              &SceneDataTest::constructFieldWrongDataAccess,
+              &SceneDataTest::constructFieldWrongOffsetOnlyDataAccess,
               &SceneDataTest::constructFieldWrongStringDataAccess,
               &SceneDataTest::constructField2DWrongSize,
               &SceneDataTest::constructField2DNonContiguous,
@@ -1460,7 +1460,7 @@ void SceneDataTest::constructFieldFlagNotAllowed() {
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view\n");
 }
 
-void SceneDataTest::constructFieldWrongDataAccess() {
+void SceneDataTest::constructFieldWrongOffsetOnlyDataAccess() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort rotationMappingData[3]{};
