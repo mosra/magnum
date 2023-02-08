@@ -1126,6 +1126,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /** @brief Move assignment */
         MeshData& operator=(MeshData&&) noexcept;
 
+        /** @brief Primitive */
+        MeshPrimitive primitive() const { return _primitive; }
+
         /**
          * @brief Index data flags
          *
@@ -1141,9 +1144,6 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *      @ref mutableAttribute()
          */
         DataFlags vertexDataFlags() const { return _vertexDataFlags; }
-
-        /** @brief Primitive */
-        MeshPrimitive primitive() const { return _primitive; }
 
         /**
          * @brief Raw index data
