@@ -677,11 +677,11 @@ Options controlling the build:
     versa. To some extent it's also possible to have only a subset of plugins
     built as static --- set `MAGNUM_<PLUGIN>_BUILD_STATIC` for particular
     plugins to `ON` or `OFF` to override this option.
--   `MAGNUM_BUILD_DEPRECATED` --- Include deprecated APIs in the build. Enabled
-    by default to preserve backwards compatibility, disabling it forces you to
-    update your code whenever there's a breaking API change. It's however
-    recommended to have this option disabled when deploying a final application
-    as it can result in smaller binaries.
+-   `MAGNUM_BUILD_DEPRECATED` --- Build with deprecated features included.
+    Enabled by default to preserve backwards compatibility, disabling it forces
+    you to update your code whenever there's a breaking change in the APIs or
+    in library behavior. It's however recommended to have this option disabled
+    when deploying a final application as it can result in smaller binaries.
 -   `MAGNUM_DISTANCEFIELDCONVERTER_STATIC_PLUGINS`,
     `MAGNUM_FONTCONVERTER_STATIC_PLUGINS`,
     `MAGNUM_IMAGECONVERTER_STATIC_PLUGINS`,

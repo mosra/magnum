@@ -128,7 +128,7 @@
 #
 # Features of found Magnum library are exposed in these variables:
 #
-#  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
+#  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated features
 #   included
 #  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
 #  MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS - Defined if static libraries keep the

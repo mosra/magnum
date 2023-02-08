@@ -316,7 +316,7 @@ Features of found Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including
 @ref Magnum/Magnum.h "Magnum/Magnum.h":
 
--   `MAGNUM_BUILD_DEPRECATED` --- Defined if compiled with deprecated APIs
+-   `MAGNUM_BUILD_DEPRECATED` --- Defined if compiled with deprecated features
     included
 -   `MAGNUM_BUILD_STATIC` --- Defined if compiled as static libraries. Default
     are shared libraries.
