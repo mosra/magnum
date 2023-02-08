@@ -948,7 +948,7 @@ class Color4: public Vector4<T> {
         #endif
 
         /**
-         * @brief Create linear RGBA color from 32-bit sRGB + alpha representation
+         * @brief Create linear RGBA color from 24-bit sRGB + alpha representation
          * @param srgb      24-bit sRGB color
          * @param a         Linear alpha value, defaults to @cpp 1.0 @ce for
          *      floating-point types and maximum positive value for integral
@@ -996,7 +996,7 @@ class Color4: public Vector4<T> {
         }
 
         /**
-         * @brief Create linear RGBA color from 32-bit linear RGB + alpha representation
+         * @brief Create linear RGBA color from 24-bit linear RGB + alpha representation
          * @param linear    24-bit linear RGB color
          * @param a         Linear alpha value, defaults to @cpp 1.0 @ce for
          *      floating-point types and maximum positive value for integral
