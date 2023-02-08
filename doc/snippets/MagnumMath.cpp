@@ -776,8 +776,8 @@ static_cast<void>(b);
 {
 /* [Color3-unpack] */
 Color3ub a{0xff, 0x33, 0x66};
-auto bFromSrgb = Color3::fromSrgb(a);       // {1.0f, 0.03311f, 0.1329f}
-auto bFromLinear = Math::unpack<Color3>(a); // {1.0f, 0.2f, 0.4f}
+Color4 bFromSrgb = Color3::fromSrgb(a);       // {1.0f, 0.03311f, 0.1329f}
+Color4 bFromLinear = Math::unpack<Color3>(a); // {1.0f, 0.2f, 0.4f}
 /* [Color3-unpack] */
 static_cast<void>(bFromLinear);
 static_cast<void>(bFromSrgb);
@@ -794,8 +794,8 @@ static_cast<void>(srgb);
 {
 /* [Color3-pack] */
 Color3 a{1.0f, 0.2f, 0.4f};
-auto bSrgb = a.toSrgb<UnsignedByte>();  // {0xff, 0x7c, 0xaa}
-auto bLinear = Math::pack<Color3ub>(a); // {0xff, 0x33, 0x66}
+Vector3ub bSrgb = a.toSrgb<UnsignedByte>(); // {0xff, 0x7c, 0xaa}
+Color3ub bLinear = Math::pack<Color3ub>(a); // {0xff, 0x33, 0x66}
 /* [Color3-pack] */
 static_cast<void>(bLinear);
 static_cast<void>(bSrgb);
@@ -821,8 +821,8 @@ static_cast<void>(b);
 {
 /* [Color4-unpack] */
 Color4ub a{0xff, 0x33, 0x66, 0x99};
-auto bFromSrgb = Color4::fromSrgbAlpha(a);  // {1.0f, 0.03311f, 0.1329f, 0.6f}
-auto bFromLinear = Math::unpack<Color4>(a); // {1.0f, 0.2f, 0.4f, 0.6f}
+Color4 bFromSrgb = Color4::fromSrgbAlpha(a);  // {1.0f, 0.0331f, 0.1329f, 0.6f}
+Color4 bFromLinear = Math::unpack<Color4>(a); // {1.0f, 0.2f, 0.4f, 0.6f}
 /* [Color4-unpack] */
 static_cast<void>(bFromLinear);
 static_cast<void>(bFromSrgb);
@@ -839,8 +839,8 @@ static_cast<void>(srgbAlpha);
 {
 /* [Color4-pack] */
 Color4 a{1.0f, 0.2f, 0.4f, 0.6f};
-auto bSrgb = a.toSrgbAlpha<UnsignedByte>(); // {0xff, 0x7c, 0xaa, 0x99}
-auto bLinear = Math::pack<Color4ub>(a);     // {0xff, 0x33, 0x66, 0x99}
+Vector4ub bSrgb = a.toSrgbAlpha<UnsignedByte>(); // {0xff, 0x7c, 0xaa, 0x99}
+Color4ub bLinear = Math::pack<Color4ub>(a);      // {0xff, 0x33, 0x66, 0x99}
 /* [Color4-pack] */
 static_cast<void>(bLinear);
 static_cast<void>(bSrgb);
