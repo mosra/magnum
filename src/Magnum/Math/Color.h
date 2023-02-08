@@ -150,6 +150,30 @@ template<class T, class Integral> inline Color4<T> fromSrgbAlphaIntegral(const V
     return fromSrgbAlpha<T>(unpack<Vector4<typename Color4<T>::FloatingPointType>>(srgbAlpha));
 }
 
+/* Integer linear RGB -> linear RGB conversion */
+template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>::type fromLinearRgbInt(UnsignedInt linear) {
+    return {unpack<T>(UnsignedByte(linear >> 16)),
+            unpack<T>(UnsignedByte(linear >> 8)),
+            unpack<T>(UnsignedByte(linear))};
+}
+template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, Color4<T>>::type fromLinearRgbaInt(UnsignedInt linear) {
+    return {unpack<T>(UnsignedByte(linear >> 24)),
+            unpack<T>(UnsignedByte(linear >> 16)),
+            unpack<T>(UnsignedByte(linear >> 8)),
+            unpack<T>(UnsignedByte(linear))};
+}
+template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color3<T>>::type fromLinearRgbInt(UnsignedInt linear) {
+    return {pack<T>(unpack<Float>(UnsignedByte(linear >> 16))),
+            pack<T>(unpack<Float>(UnsignedByte(linear >> 8))),
+            pack<T>(unpack<Float>(UnsignedByte(linear)))};
+}
+template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color4<T>>::type fromLinearRgbaInt(UnsignedInt linear) {
+    return {pack<T>(unpack<Float>(UnsignedByte(linear >> 24))),
+            pack<T>(unpack<Float>(UnsignedByte(linear >> 16))),
+            pack<T>(unpack<Float>(UnsignedByte(linear >> 8))),
+            pack<T>(unpack<Float>(UnsignedByte(linear)))};
+}
+
 /* RGB -> sRGB conversion */
 template<class T> Vector3<typename Color3<T>::FloatingPointType> toSrgb(typename std::enable_if<IsFloatingPoint<T>::value, const Color3<T>&>::type rgb) {
     constexpr const T a = T(0.055);
@@ -171,6 +195,30 @@ template<class T, class Integral> inline Vector3<Integral> toSrgbIntegral(const 
 template<class T, class Integral> inline Vector4<Integral> toSrgbAlphaIntegral(const Color4<T>& rgba) {
     static_assert(IsIntegral<Integral>::value, "only conversion from different integral type is supported");
     return pack<Vector4<Integral>>(toSrgbAlpha<T>(rgba));
+}
+
+/* Linear RGB -> integer linear RGB conversion */
+template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, UnsignedInt>::type toLinearRgbInt(const Color3<T>& linear) {
+    return (pack<UnsignedByte>(linear[0]) << 16) |
+           (pack<UnsignedByte>(linear[1]) << 8) |
+            pack<UnsignedByte>(linear[2]);
+}
+template<class T> inline typename std::enable_if<IsFloatingPoint<T>::value, UnsignedInt>::type toLinearRgbaInt(const Color4<T>& linear) {
+    return (pack<UnsignedByte>(linear[0]) << 24) |
+           (pack<UnsignedByte>(linear[1]) << 16) |
+           (pack<UnsignedByte>(linear[2]) << 8) |
+            pack<UnsignedByte>(linear[3]);
+}
+template<class T> inline typename std::enable_if<IsIntegral<T>::value, UnsignedInt>::type toLinearRgbInt(const Color3<T>& linear) {
+    return (pack<UnsignedByte>(unpack<Float>(linear[0])) << 16) |
+           (pack<UnsignedByte>(unpack<Float>(linear[1])) << 8) |
+            pack<UnsignedByte>(unpack<Float>(linear[2]));
+}
+template<class T> inline typename std::enable_if<IsIntegral<T>::value, UnsignedInt>::type toLinearRgbaInt(const Color4<T>& linear) {
+    return (pack<UnsignedByte>(unpack<Float>(linear[0])) << 24) |
+           (pack<UnsignedByte>(unpack<Float>(linear[1])) << 16) |
+           (pack<UnsignedByte>(unpack<Float>(linear[2])) << 8) |
+            pack<UnsignedByte>(unpack<Float>(linear[3]));
 }
 
 /* CIE XYZ -> RGB conversion */
@@ -241,9 +289,11 @@ bit count of given integer type. Note that constructor conversion between
 different types (like in @ref Vector classes) doesn't do any (un)packing, you
 need to use either @ref pack() / @ref unpack(), the integer variants of
 @ref toSrgb() / @ref fromSrgb() or @ref toSrgbInt() / @ref fromSrgbInt()
-instead:
+instead. For convenience, conversion from and to 8bpp representation without
+sRGB conversion is possible with @ref fromLinearRgbInt() and
+@ref toLinearRgbInt().
 
-@snippet MagnumMath.cpp Color3-pack
+@snippet MagnumMath.cpp Color3
 
 Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0\degree, 360.0\degree] @f$, saturation and
@@ -425,8 +475,8 @@ template<class T> class Color3: public Vector3<T> {
          * Note that the integral value is endian-dependent (the red channel
          * being in the *last* byte on little-endian platforms), for conversion
          * from endian-independent sRGB / linear representation use
-         * @ref fromSrgb(const Vector3<Integral>&) / @ref unpack().
-         * @see @ref Color4::fromSrgbAlphaInt()
+         * @ref fromSrgb(const Vector3<Integral>&).
+         * @see @ref fromLinearRgbInt(), @ref Color4::fromSrgbAlphaInt()
          */
         static Color3<T> fromSrgbInt(UnsignedInt srgb) {
             return fromSrgb<UnsignedByte>({UnsignedByte(srgb >> 16),
@@ -443,6 +493,29 @@ template<class T> class Color3: public Vector3<T> {
             return fromSrgbInt(srgb);
         }
         #endif
+
+        /**
+         * @brief Create linear RGB color from 24-bit linear representation
+         * @param linear    24-bit linear RGB color
+         * @m_since_latest
+         *
+         * Compared to @ref fromSrgbInt() *does not* peform a sRGB conversion
+         * on the input. See @ref toLinearRgbInt() for an inverse operation,
+         * there's also a @link operator""_rgbf() @endlink that does this
+         * conversion directly from hexadecimal literals. The following two
+         * statements are equivalent:
+         *
+         * @snippet MagnumMath.cpp Color3-fromLinearRgbInt
+         *
+         * Note that the integral value is endian-dependent (the red channel
+         * being in the *last* byte on little-endian platforms), for conversion
+         * from endian-independent linear RGB representation use
+         * @ref unpack() "unpack<Color3>()" on a @ref Color3ub input.
+         * @see @ref Color4::fromLinearRgbaInt()
+         */
+        static Color3<T> fromLinearRgbInt(UnsignedInt linear) {
+            return Implementation::fromLinearRgbInt<T>(linear);
+        }
 
         /**
          * @brief Create RGB color from [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
@@ -587,7 +660,8 @@ template<class T> class Color3: public Vector3<T> {
          *
          * @snippet MagnumMath.cpp Color3-pack
          *
-         * @see @ref toSrgbInt(), @ref Color4::toSrgbAlpha()
+         * @see @ref toSrgbInt(), @ref Color4::toSrgbAlpha(),
+         *      @ref toLinearRgbInt()
          */
         template<class Integral> Vector3<Integral> toSrgb() const {
             return Implementation::toSrgbIntegral<T, Integral>(*this);
@@ -596,15 +670,31 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Convert to 24-bit integral sRGB representation
          *
-         * See @ref toSrgb() const for more information. Note that the integral
-         * value is endian-dependent (the red channel being in the *last* byte
-         * on little-endian platforms), for conversion to an endian-independent
-         * sRGB / linear representation use @ref toSrgb() const / @ref pack().
-         * @see @ref Color4::toSrgbAlphaInt()
+         * See @ref toSrgb() const for more information and @ref fromSrgbInt()
+         * for an inverse operation. Note that the integral value is
+         * endian-dependent (the red channel being in the *last* byte on
+         * little-endian platforms), for conversion to an endian-independent
+         * sRGB representation use @ref toSrgb() const "toSrgb<UnsignedByte>() const".
+         * @see @ref toLinearRgbInt(), @ref Color4::toSrgbAlphaInt()
          */
         UnsignedInt toSrgbInt() const {
             const auto srgb = toSrgb<UnsignedByte>();
             return (srgb[0] << 16) | (srgb[1] << 8) | srgb[2];
+        }
+
+        /**
+         * @brief Convert to 24-bit integral linear RGB representation
+         *
+         * Compared to @ref toSrgbInt() *does not* perform a sRGB conversion on
+         * the output. See @ref fromLinearRgbInt() for an inverse operation.
+         * Note that the integral value is endian-dependent (the red channel
+         * being in the *last* byte on little-endian platforms), for conversion
+         * to an endian-independent linear representation use
+         * @ref pack() "pack<Color3ub>()".
+         * @see @ref Color4::toLinearRgbaInt()
+         */
+        UnsignedInt toLinearRgbInt() const {
+            return Implementation::toLinearRgbInt(*this);
         }
 
         /**
@@ -883,6 +973,43 @@ class Color4: public Vector4<T> {
         #endif
 
         /**
+         * @brief Create linear RGBA color from 32-bit linear representation
+         * @param linear    32-bit linear RGBA color
+         * @m_since_latest
+         *
+         * Compared to @ref fromSrgbAlphaInt() *does not* peform a sRGB
+         * conversion on the input. See @ref toLinearRgbaInt() for an inverse
+         * operation, there's also a @link operator""_rgbaf() @endlink that
+         * does this conversion directly from hexadecimal literals. The
+         * following two statements are equivalent:
+         *
+         * @snippet MagnumMath.cpp Color4-fromLinearRgbaInt
+         *
+         * Note that the integral value is endian-dependent (the red channel
+         * being in the *last* byte on little-endian platforms), for conversion
+         * from endian-independent linear RGBA representation use
+         * @ref unpack() "unpack<Color4>()" on a @ref Color4ub input.
+         * @see @ref Color3::fromLinearRgbInt()
+         */
+        static Color4<T> fromLinearRgbaInt(UnsignedInt linear) {
+            return Implementation::fromLinearRgbaInt<T>(linear);
+        }
+
+        /**
+         * @brief Create linear RGBA color from 32-bit linear RGB + alpha representation
+         * @param linear    24-bit linear RGB color
+         * @param a         Linear alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
+         * @m_since_latest
+         *
+         * Same as above, but with alpha as a separate parameter.
+         */
+        static Color4<T> fromLinearRgbInt(UnsignedInt linear, T a = Implementation::fullChannel<T>()) {
+            return {Implementation::fromLinearRgbInt<T>(linear), a};
+        }
+
+        /**
          * @brief Create RGBA color from [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
          * @param xyz   Color in CIE XYZ color space
          * @param a     Alpha value, defaults to @cpp 1.0 @ce for
@@ -1019,7 +1146,7 @@ class Color4: public Vector4<T> {
          *
          * @snippet MagnumMath.cpp Color4-pack
          *
-         * @see @ref toSrgbAlphaInt()
+         * @see @ref toSrgbAlphaInt(), @ref toLinearRgbaInt()
          */
         template<class Integral> Vector4<Integral> toSrgbAlpha() const {
             return Implementation::toSrgbAlphaIntegral<T, Integral>(*this);
@@ -1028,16 +1155,34 @@ class Color4: public Vector4<T> {
         /**
          * @brief Convert to 32-bit integral sRGB + linear alpha representation
          *
-         * See @ref Color3::toSrgb() const for more information. Use @ref rgb()
+         * See @ref Color3::toSrgb() const for more information and
+         * @ref fromSrgbAlphaInt() for an inverse operation. Use @ref rgb()
          * together with @ref Color3::toSrgbInt() to output a 24-bit sRGB
          * color. Note that the integral value is endian-dependent (the red
          * channel being in the *last* byte on little-endian platforms), for
-         * conversion to an endian-independent sRGB / linear representation use
-         * @ref toSrgbAlpha() const / @ref pack().
+         * conversion to an endian-independent sRGB representation use
+         * @ref toSrgbAlpha() const "toSrgbAlpha<UnsignedByte>() const".
+         * @see @ref toLinearRgbaInt()
          */
         UnsignedInt toSrgbAlphaInt() const {
             const auto srgbAlpha = toSrgbAlpha<UnsignedByte>();
             return (srgbAlpha[0] << 24) | (srgbAlpha[1] << 16) | (srgbAlpha[2] << 8) | srgbAlpha[3];
+        }
+
+        /**
+         * @brief Convert to 32-bit integral linear RGBA representation
+         *
+         * Compared to @ref toSrgbAlphaInt() *does not* perform a sRGB
+         * conversion on the output. See @ref fromLinearRgbaInt() for an
+         * inverse operation. Use @ref rgb() together with
+         * @ref Color3::toLinearRgbInt() to output a 24-bit linear RGBA color.
+         * Note that the integral value is endian-dependent (the red channel
+         * being in the *last* byte on little-endian platforms), for conversion
+         * to an endian-independent linear representation use
+         * @ref pack() "pack<Color4ub>()".
+         */
+        UnsignedInt toLinearRgbaInt() const {
+            return Implementation::toLinearRgbaInt(*this);
         }
 
         /**
@@ -1303,7 +1448,7 @@ constexpr Vector4<UnsignedByte> operator "" _srgba(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color3
 @brief Float linear RGB literal
 
-Unpacks the 8-bit values into three floats. Example usage:
+Calls @ref Color3::fromLinearRgbInt() on the literal value. Example usage:
 
 @snippet MagnumMath.cpp _rgbf
 
@@ -1337,7 +1482,7 @@ inline Color3<Float> operator "" _srgbf(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color4
 @brief Float linear RGBA literal
 
-Unpacks the 8-bit values into four floats. Example usage:
+Calls @ref Color4::fromLinearRgbaInt() on the literal value. Example usage:
 
 @snippet MagnumMath.cpp _rgbaf
 

@@ -112,8 +112,12 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void srgb();
     void fromSrgbDefaultAlpha();
     void srgbToIntegral();
+    /* no linearRgbToIntegral() as there's no builtin linear RGB -> integral
+       APIs (it's done with pack() instead) */
     void fromIntegralSrgb();
+    void fromIntegralLinearRgb();
     void integralSrgbToIntegral();
+    void integralLinearRgbToIntegral();
     void srgbMonotonic();
     void srgb8bitRoundtrip();
     void srgbLiterals();
@@ -243,7 +247,9 @@ ColorTest::ColorTest() {
               &ColorTest::fromSrgbDefaultAlpha,
               &ColorTest::srgbToIntegral,
               &ColorTest::fromIntegralSrgb,
-              &ColorTest::integralSrgbToIntegral});
+              &ColorTest::fromIntegralLinearRgb,
+              &ColorTest::integralSrgbToIntegral,
+              &ColorTest::integralLinearRgbToIntegral});
 
     /* Comparing with the previous one, so not 65536 */
     addRepeatedTests({&ColorTest::srgbMonotonic}, 65535);
@@ -891,6 +897,27 @@ void ColorTest::fromIntegralSrgb() {
     CORRADE_COMPARE(linear.toSrgbAlphaInt(), 0xf32a8023);
 }
 
+void ColorTest::fromIntegralLinearRgb() {
+    /* Like fromIntegralSrgb(), but without the sRGB conversion -- thus only
+       the int-taking / int-producing APIs are tested, and compared to
+       unpack() / pack() as the ground truth */
+
+    Color4ub linear8{0xf3, 0x2a, 0x80, 0x23};
+    Color4 linear{0.952941f, 0.164706f, 0.501961f, 0.137255f};
+
+    CORRADE_COMPARE(unpack<Color3>(linear8.rgb()), linear.rgb());
+    CORRADE_COMPARE(Color3::fromLinearRgbInt(0xf32a80), linear.rgb());
+    CORRADE_COMPARE(unpack<Color4>(linear8), linear);
+    CORRADE_COMPARE(Color4::fromLinearRgbaInt(0xf32a8023), linear);
+    /* No unpack<T>(rgb, alpha) variant that would make sense to compare to */
+    CORRADE_COMPARE(Color4::fromLinearRgbInt(0xf32a80, 0.175f), (Color4{linear.rgb(), 0.175f}));
+
+    CORRADE_COMPARE(pack<Color3ub>(linear.rgb()), linear8.rgb());
+    CORRADE_COMPARE(linear.rgb().toLinearRgbInt(), 0xf32a80);
+    CORRADE_COMPARE(pack<Color4ub>(linear), linear8);
+    CORRADE_COMPARE(linear.toLinearRgbaInt(), 0xf32a8023);
+}
+
 void ColorTest::integralSrgbToIntegral() {
     Vector4ub srgb{0xf3, 0x2a, 0x80, 0x23};
     Color4us linear{58737, 1517, 14146, 8995};
@@ -907,6 +934,28 @@ void ColorTest::integralSrgbToIntegral() {
     CORRADE_COMPARE(linear.rgb().toSrgbInt(), 0xf32a80);
     CORRADE_COMPARE(linear.toSrgbAlpha<UnsignedByte>(), srgb);
     CORRADE_COMPARE(linear.toSrgbAlphaInt(), 0xf32a8023);
+}
+
+void ColorTest::integralLinearRgbToIntegral() {
+    /* Compared to integralSrgbToIntegral() this operates with linear values on
+       both sides again, similarly as fromIntegralLinearRgb(), but as there's
+       no direct operation to go from 8-bit to a 16-bit type and vice versa,
+       it's always combination of unpack() and pack() */
+
+    Color4ub linear8{0xf3, 0x2a, 0x80, 0x23};
+    Color4us linear16{62451, 10794, 32896, 8995};
+
+    CORRADE_COMPARE(pack<Color3us>(unpack<Color3>(linear8.rgb())), linear16.rgb());
+    CORRADE_COMPARE(Color3us::fromLinearRgbInt(0xf32a80), linear16.rgb());
+    CORRADE_COMPARE(pack<Color4us>(unpack<Color4>(linear8)), linear16);
+    CORRADE_COMPARE(Color4us::fromLinearRgbaInt(0xf32a8023), linear16);
+    /* No unpack<T>(rgb, alpha) variant that would make sense to compare to */
+    CORRADE_COMPARE(Color4us::fromLinearRgbInt(0xf32a80, 15299),
+        (Color4us{linear16.rgb(), 15299}));
+    CORRADE_COMPARE(pack<Color3ub>(unpack<Color3>(linear16.rgb())), linear8.rgb());
+    CORRADE_COMPARE(linear16.rgb().toLinearRgbInt(), 0xf32a80);
+    CORRADE_COMPARE(pack<Color4ub>(unpack<Color4>(linear16)), linear8);
+    CORRADE_COMPARE(linear16.toLinearRgbaInt(), 0xf32a8023);
 }
 
 void ColorTest::srgbMonotonic() {

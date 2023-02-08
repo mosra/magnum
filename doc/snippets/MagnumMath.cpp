@@ -757,6 +757,20 @@ if(!(b < a - epsilon || a + epsilon < b)) {
 }
 
 {
+/* [Color3] */
+Color3 a{1.0f, 0.2f, 0.4f};
+Vector3ub bSrgb = a.toSrgb<UnsignedByte>(); // {0xff, 0x7c, 0xaa}
+UnsignedInt bSrgbInt = a.toSrgbInt();       // 0xff7caa
+Color3ub bLinear = Math::pack<Color3ub>(a); // {0xff, 0x33, 0x66}
+UnsignedInt bLinearInt = a.toSrgbInt();     // 0xff3366
+/* [Color3] */
+static_cast<void>(bLinear);
+static_cast<void>(bLinearInt);
+static_cast<void>(bSrgb);
+static_cast<void>(bSrgbInt);
+}
+
+{
 /* [Color3-fromSrgb] */
 Vector3ub srgb;
 auto rgb = Color3::fromSrgb(srgb);
@@ -769,6 +783,15 @@ static_cast<void>(rgb);
 Color3 a = Color3::fromSrgbInt(0xff3366);
 Color3 b = 0xff3366_srgbf;
 /* [Color3-fromSrgbInt] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [Color3-fromLinearRgbInt] */
+Color3 a = Color3::fromLinearRgbInt(0xff3366);
+Color3 b = 0xff3366_rgbf;
+/* [Color3-fromLinearRgbInt] */
 static_cast<void>(a);
 static_cast<void>(b);
 }
@@ -814,6 +837,15 @@ static_cast<void>(rgba);
 Color4 a = Color4::fromSrgbAlphaInt(0xff336680);
 Color4 b = 0xff336680_srgbaf;
 /* [Color4-fromSrgbAlphaInt] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [Color4-fromLinearRgbaInt] */
+Color4 a = Color4::fromLinearRgbaInt(0xff336680);
+Color4 b = 0xff336680_rgbaf;
+/* [Color4-fromLinearRgbaInt] */
 static_cast<void>(a);
 static_cast<void>(b);
 }
