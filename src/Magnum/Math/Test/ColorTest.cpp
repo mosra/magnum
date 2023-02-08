@@ -874,11 +874,11 @@ void ColorTest::fromIntegralSrgb() {
     Color4 linear{0.896269f, 0.0231534f, 0.215861f, 0.137255f};
 
     CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>(srgb.rgb()), linear.rgb());
-    CORRADE_COMPARE(Color3::fromSrgb(0xf32a80), linear.rgb());
+    CORRADE_COMPARE(Color3::fromSrgbInt(0xf32a80), linear.rgb());
     CORRADE_COMPARE(Color4::fromSrgbAlpha(srgb), linear);
-    CORRADE_COMPARE(Color4::fromSrgbAlpha(0xf32a8023), linear);
+    CORRADE_COMPARE(Color4::fromSrgbAlphaInt(0xf32a8023), linear);
     CORRADE_COMPARE(Color4::fromSrgb(srgb.rgb(), 0.175f), (Color4{linear.rgb(), 0.175f}));
-    CORRADE_COMPARE(Color4::fromSrgb(0xf32a80, 0.175f), (Color4{linear.rgb(), 0.175f}));
+    CORRADE_COMPARE(Color4::fromSrgbInt(0xf32a80, 0.175f), (Color4{linear.rgb(), 0.175f}));
 
     CORRADE_COMPARE(linear.rgb().toSrgb<UnsignedByte>(), srgb.rgb());
     CORRADE_COMPARE(linear.rgb().toSrgbInt(), 0xf32a80);
@@ -891,12 +891,12 @@ void ColorTest::integralSrgbToIntegral() {
     Math::Color4<UnsignedShort> linear{58737, 1517, 14146, 8995};
 
     CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb(srgb.rgb()), linear.rgb());
-    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb(0xf32a80), linear.rgb());
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgbInt(0xf32a80), linear.rgb());
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha(srgb), linear);
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha(0xf32a8023), linear);
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlphaInt(0xf32a8023), linear);
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb(srgb.rgb(), 15299),
         (Math::Color4<UnsignedShort>{linear.rgb(), 15299}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb(0xf32a80, 15299),
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbInt(0xf32a80, 15299),
         (Math::Color4<UnsignedShort>{linear.rgb(), 15299}));
     CORRADE_COMPARE(linear.rgb().toSrgb<UnsignedByte>(), srgb.rgb());
     CORRADE_COMPARE(linear.rgb().toSrgbInt(), 0xf32a80);
@@ -921,7 +921,7 @@ void ColorTest::srgbMonotonic() {
 }
 
 void ColorTest::srgb8bitRoundtrip() {
-    CORRADE_COMPARE(Color3::fromSrgb(testCaseRepeatId()).toSrgbInt(), testCaseRepeatId());
+    CORRADE_COMPARE(Color3::fromSrgbInt(testCaseRepeatId()).toSrgbInt(), testCaseRepeatId());
 }
 
 void ColorTest::srgbLiterals() {

@@ -905,6 +905,13 @@ See also:
     @relativeref{Magnum,BitVector3} and @relativeref{Magnum,BitVector4} to not
     imply storing the 8-bit @cpp bool @ce type and for consistency with the new
     @relativeref{Corrade,Containers::BitArray} types
+-   @cpp Math::Color3::fromSrgb() @ce, @cpp Math::Color4::fromSrgb() @ce and
+    @cpp Math::Color4::fromSrgbAlpha() @ce taking a 32-bit integer are
+    deprecated in favor of @ref Math::Color3::fromSrgbInt(),
+    @ref Math::Color4::fromSrgbInt() and @ref Math::Color4::fromSrgbAlphaInt()
+    for consistency with @relativeref{Math::Color3,toSrgbInt()} and
+    @relativeref{Math::Color4,toSrgbAlphaInt()} and to prevent accidental type
+    mismatches
 -   Markup styling for Emscripten application was switched to prefer using
     CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
     @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,

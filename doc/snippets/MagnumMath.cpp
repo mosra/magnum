@@ -126,7 +126,7 @@ static_cast<void>(cyan);
 {
 /* [matrix-vector-construct-color-colorspace] */
 auto fadedRed = Color3::fromHsv({219.0_degf, 0.50f, 0.57f});
-auto linear = Color3::fromSrgb(0x33b27f);   // {0.2f, 0.7f, 0.5f}
+auto linear = Color3::fromSrgbInt(0x33b27f); // {0.2f, 0.7f, 0.5f}
 auto white = Color3::fromXyz({0.950456f, 1.0f, 1.08906f});
 UnsignedInt srgb = linear.toSrgbInt();      // 0x33b27f
 /* [matrix-vector-construct-color-colorspace] */
@@ -765,10 +765,10 @@ static_cast<void>(rgb);
 }
 
 {
-/* [Color3-fromSrgb-int] */
-Color3 a = Color3::fromSrgb(0xff3366);
+/* [Color3-fromSrgbInt] */
+Color3 a = Color3::fromSrgbInt(0xff3366);
 Color3 b = 0xff3366_srgbf;
-/* [Color3-fromSrgb-int] */
+/* [Color3-fromSrgbInt] */
 static_cast<void>(a);
 static_cast<void>(b);
 }
@@ -810,10 +810,10 @@ static_cast<void>(rgba);
 }
 
 {
-/* [Color4-fromSrgbAlpha-int] */
-Color4 a = Color4::fromSrgbAlpha(0xff336680);
+/* [Color4-fromSrgbAlphaInt] */
+Color4 a = Color4::fromSrgbAlphaInt(0xff336680);
 Color4 b = 0xff336680_srgbaf;
-/* [Color4-fromSrgbAlpha-int] */
+/* [Color4-fromSrgbAlphaInt] */
 static_cast<void>(a);
 static_cast<void>(b);
 }

@@ -230,17 +230,18 @@ template<> constexpr long double fullChannel<long double>() { return 1.0l; }
 @brief Color in linear RGB color space
 
 The class can store either a floating-point or an integral representation of a
-linear RGB color. Colors in sRGB color space should not beused directly in
-calculations --- they should be converted to linear RGB using @ref fromSrgb(),
-calculation done on the linear representation and then converted back to sRGB
-using @ref toSrgb().
+linear RGB color. Colors in sRGB color space should not be used directly in
+calculations --- they should be converted to linear RGB using @ref fromSrgb()
+/ @ref fromSrgbInt(), calculation done on the linear representation and then
+converted back to sRGB using @ref toSrgb() / @ref toSrgbInt().
 
 Integral colors are assumed to be in a packed representation where the
 @f$ [0.0, 1.0] @f$ range is mapped to @f$ [0, 2^b - 1] @f$ with @f$ b @f$ being
 bit count of given integer type. Note that constructor conversion between
 different types (like in @ref Vector classes) doesn't do any (un)packing, you
-need to use either @ref pack() / @ref unpack() or the integer variants of
-@ref toSrgb() / @ref fromSrgb() instead:
+need to use either @ref pack() / @ref unpack(), the integer variants of
+@ref toSrgb() / @ref fromSrgb() or @ref toSrgbInt() / @ref fromSrgbInt()
+instead:
 
 @snippet MagnumMath.cpp Color3-pack
 
@@ -375,7 +376,7 @@ template<class T> class Color3: public Vector3<T> {
          *          \left( \dfrac{\boldsymbol{c}_\mathrm{sRGB} + a}{1 + a} \right)^{2.4}, & \boldsymbol{c}_\mathrm{sRGB} > 0.04045
          *      \end{cases}
          * @f]
-         * @see @ref fromSrgb(const Vector3<Integral>&), @ref fromSrgb(UnsignedInt),
+         * @see @ref fromSrgb(const Vector3<Integral>&), @ref fromSrgbInt(),
          *      @link operator""_srgbf() @endlink, @ref toSrgb(),
          *      @ref Color4::fromSrgbAlpha()
          */
@@ -400,7 +401,7 @@ template<class T> class Color3: public Vector3<T> {
          *
          * @snippet MagnumMath.cpp Color3-unpack
          *
-         * @see @ref fromSrgb(UnsignedInt), @link operator""_srgbf() @endlink,
+         * @see @ref fromSrgbInt(), @link operator""_srgbf() @endlink,
          *      @ref Color4::fromSrgbAlpha(const Vector4<Integral>&)
          */
         /* Input is a Vector3 to hint that it doesn't have any (additive,
@@ -409,28 +410,39 @@ template<class T> class Color3: public Vector3<T> {
             return Implementation::fromSrgbIntegral<T, Integral>(srgb);
         }
 
-        /** @overload
+        /**
          * @brief Create linear RGB color from 24-bit sRGB representation
          * @param srgb  24-bit sRGB color
+         * @m_since_latest
          *
          * See @ref fromSrgb() for more information and @ref toSrgbInt() for an
          * inverse operation. There's also a @link operator""_srgbf() @endlink
          * that does this conversion directly from hexadecimal literals. The
          * following two statements are equivalent:
          *
-         * @snippet MagnumMath.cpp Color3-fromSrgb-int
+         * @snippet MagnumMath.cpp Color3-fromSrgbInt
          *
          * Note that the integral value is endian-dependent (the red channel
          * being in the *last* byte on little-endian platforms), for conversion
          * from endian-independent sRGB / linear representation use
          * @ref fromSrgb(const Vector3<Integral>&) / @ref unpack().
-         * @see @ref Color4::fromSrgbAlpha(UnsignedInt)
+         * @see @ref Color4::fromSrgbAlphaInt()
          */
-        static Color3<T> fromSrgb(UnsignedInt srgb) {
+        static Color3<T> fromSrgbInt(UnsignedInt srgb) {
             return fromSrgb<UnsignedByte>({UnsignedByte(srgb >> 16),
                                            UnsignedByte(srgb >> 8),
                                            UnsignedByte(srgb)});
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief fromSrgbInt()
+         * @m_deprecated_since_latest Use @ref fromSrgbInt() instead.
+         */
+        CORRADE_DEPRECATED("use fromSrgInt() instead") static Color3<T> fromSrgb(UnsignedInt srgb) {
+            return fromSrgbInt(srgb);
+        }
+        #endif
 
         /**
          * @brief Create RGB color from [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
@@ -786,7 +798,7 @@ class Color4: public Vector4<T> {
          *
          * @snippet MagnumMath.cpp Color4-unpack
          *
-         * @see @ref fromSrgbAlpha(UnsignedInt)
+         * @see @ref fromSrgbAlphaInt(UnsignedInt)
          */
         /* Input is a Vector4 to hint that it doesn't have any (additive,
            multiplicative) semantics of a linear RGB color */
@@ -802,7 +814,7 @@ class Color4: public Vector4<T> {
          *      types
          *
          * Same as above, but with alpha as a separate parameter.
-         * @see @ref fromSrgb(UnsignedInt, T)
+         * @see @ref fromSrgbInt(UnsignedInt, T)
          */
         /* Input is a Vector3 to hint that it doesn't have any (additive,
            multiplicative) semantics of a linear RGB color */
@@ -810,31 +822,42 @@ class Color4: public Vector4<T> {
             return {Implementation::fromSrgbIntegral<T, Integral>(srgb), a};
         }
 
-        /** @overload
+        /**
          * @brief Create linear RGBA color from 32-bit sRGB + alpha representation
          * @param srgbAlpha     32-bit sRGB color with linear alpha
+         * @m_since_latest
          *
-         * See @ref Color3::fromSrgb() for more information and
+         * See @ref Color3::fromSrgbInt() for more information and
          * @ref toSrgbAlphaInt() for an inverse operation. There's also a
          * @link operator""_srgbaf() @endlink that does this conversion
          * directly from hexadecimal literals. The following two statements are
          * equivalent:
          *
-         * @snippet MagnumMath.cpp Color4-fromSrgbAlpha-int
+         * @snippet MagnumMath.cpp Color4-fromSrgbAlphaInt
          *
          * Note that the integral value is endian-dependent (the red channel
          * being in the *last* byte on little-endian platforms), for conversion
          * from an endian-independent sRGB / linear representation use
          * @ref fromSrgbAlpha(const Vector4<Integral>&) / @ref unpack().
          */
-        static Color4<T> fromSrgbAlpha(UnsignedInt srgbAlpha) {
+        static Color4<T> fromSrgbAlphaInt(UnsignedInt srgbAlpha) {
             return fromSrgbAlpha<UnsignedByte>({UnsignedByte(srgbAlpha >> 24),
                                                 UnsignedByte(srgbAlpha >> 16),
                                                 UnsignedByte(srgbAlpha >> 8),
                                                 UnsignedByte(srgbAlpha)});
         }
 
-        /** @overload
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief fromSrgbAlphaInt()
+         * @m_deprecated_since_latest Use @ref fromSrgbAlphaInt() instead.
+         */
+        CORRADE_DEPRECATED("use fromSrgInt() instead") static Color4<T> fromSrgbAlpha(UnsignedInt srgb) {
+            return fromSrgbAlphaInt(srgb);
+        }
+        #endif
+
+        /**
          * @brief Create linear RGBA color from 32-bit sRGB + alpha representation
          * @param srgb      24-bit sRGB color
          * @param a         Linear alpha value, defaults to @cpp 1.0 @ce for
@@ -843,11 +866,21 @@ class Color4: public Vector4<T> {
          *
          * Same as above, but with alpha as a separate parameter.
          */
-        static Color4<T> fromSrgb(UnsignedInt srgb, T a = Implementation::fullChannel<T>()) {
+        static Color4<T> fromSrgbInt(UnsignedInt srgb, T a = Implementation::fullChannel<T>()) {
             return fromSrgb<UnsignedByte>({UnsignedByte(srgb >> 16),
                                            UnsignedByte(srgb >> 8),
                                            UnsignedByte(srgb)}, a);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief fromSrgbInt()
+         * @m_deprecated_since_latest Use @ref fromSrgbInt() instead.
+         */
+        CORRADE_DEPRECATED("use fromSrgInt() instead") static Color4<T> fromSrgb(UnsignedInt srgb, T a = Implementation::fullChannel<T>()) {
+            return fromSrgbInt(srgb, a);
+        }
+        #endif
 
         /**
          * @brief Create RGBA color from [CIE XYZ representation](https://en.wikipedia.org/wiki/CIE_1931_color_space)
@@ -1209,7 +1242,8 @@ RGB. Use this literal to document that given value is in sRGB. Example usage:
     in calculations --- they should be converted to linear RGB, calculation
     done on the linear representation and then converted back to sRGB. Use the
     @link operator""_srgbf() @endlink literal if you want to get a linear RGB
-    representation directly or convert the value using @ref Color3::fromSrgb().
+    representation directly or convert the value using @ref Color3::fromSrgb()
+    / @ref Color3::fromSrgbInt().
 
 @see @link operator""_srgba() @endlink, @link operator""_rgb() @endlink
 @m_keywords{_srgb srgb}
@@ -1254,7 +1288,8 @@ usage:
     in calculations --- they should be converted to linear RGB, calculation
     done on the linear representation and then converted back to sRGB. Use the
     @link operator""_srgbaf() @endlink literal if you want to get a linear RGBA
-    representation directly or convert the value using @ref Color4::fromSrgbAlpha().
+    representation directly or convert the value using
+    @ref Color4::fromSrgbAlpha() / @ref Color4::fromSrgbAlphaInt().
 
 @see @link operator""_srgb() @endlink, @link operator""_rgba() @endlink
 @m_keywords{_srgba srgba}
@@ -1287,7 +1322,7 @@ inline Color3<Float> operator "" _rgbf(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color3
 @brief Float sRGB literal
 
-Calls @ref Color3::fromSrgb(UnsignedInt) on the literal value. Example usage:
+Calls @ref Color3::fromSrgbInt() on the literal value. Example usage:
 
 @snippet MagnumMath.cpp _srgbf
 
@@ -1296,7 +1331,7 @@ Calls @ref Color3::fromSrgb(UnsignedInt) on the literal value. Example usage:
 @m_keywords{_srgbf srgbf}
 */
 inline Color3<Float> operator "" _srgbf(unsigned long long value) {
-    return Color3<Float>::fromSrgb(UnsignedInt(value));
+    return Color3<Float>::fromSrgbInt(UnsignedInt(value));
 }
 
 /** @relatesalso Magnum::Math::Color4
@@ -1321,8 +1356,7 @@ inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color4
 @brief Float sRGB + alpha literal
 
-Calls @ref Color4::fromSrgbAlpha(UnsignedInt) on the literal value. Example
-usage:
+Calls @ref Color4::fromSrgbAlphaInt() on the literal value. Example usage:
 
 @snippet MagnumMath.cpp _srgbaf
 
@@ -1331,7 +1365,7 @@ usage:
 @m_keywords{_srgbaf srgbaf}
 */
 inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
-    return Color4<Float>::fromSrgbAlpha(UnsignedInt(value));
+    return Color4<Float>::fromSrgbAlphaInt(UnsignedInt(value));
 }
 
 }
