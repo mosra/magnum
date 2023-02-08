@@ -765,24 +765,6 @@ class Color4: public Vector4<T> {
             return {Implementation::fromSrgbAlpha<T>(srgbAlpha)};
         }
 
-        /**
-         * @brief Create linear RGBA color from sRGB representation
-         * @param srgb      Color in sRGB color space
-         * @param a         Alpha value, defaults to @cpp 1.0 @ce for
-         *      floating-point types and maximum positive value for integral
-         *      types
-         *
-         * Applies inverse sRGB curve onto RGB channels of the input. Alpha
-         * value is taken as-is. See @ref Color3::fromSrgb() for more
-         * information.
-         * @see @link operator""_srgbaf @endlink, @ref toSrgbAlpha()
-         */
-        /* Input is a Vector3 to hint that it doesn't have any (additive,
-           multiplicative) semantics of a linear RGB color */
-        static Color4<T> fromSrgb(const Vector3<FloatingPointType>& srgb, T a = Implementation::fullChannel<T>()) {
-            return {Implementation::fromSrgb<T>(srgb), a};
-        }
-
         /** @overload
          * @brief Create linear RGB color from integral sRGB + alpha representation
          * @param srgbAlpha Color in sRGB color space with linear alpha
@@ -804,6 +786,24 @@ class Color4: public Vector4<T> {
            multiplicative) semantics of a linear RGB color */
         template<class Integral> static Color4<T> fromSrgbAlpha(const Vector4<Integral>& srgbAlpha) {
             return {Implementation::fromSrgbAlphaIntegral<T, Integral>(srgbAlpha)};
+        }
+
+        /**
+         * @brief Create linear RGBA color from sRGB representation
+         * @param srgb      Color in sRGB color space
+         * @param a         Alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
+         *
+         * Applies inverse sRGB curve onto RGB channels of the input. Alpha
+         * value is taken as-is. See @ref Color3::fromSrgb() for more
+         * information.
+         * @see @link operator""_srgbaf @endlink, @ref toSrgbAlpha()
+         */
+        /* Input is a Vector3 to hint that it doesn't have any (additive,
+           multiplicative) semantics of a linear RGB color */
+        static Color4<T> fromSrgb(const Vector3<FloatingPointType>& srgb, T a = Implementation::fullChannel<T>()) {
+            return {Implementation::fromSrgb<T>(srgb), a};
         }
 
         /** @overload
