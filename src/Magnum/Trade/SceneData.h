@@ -1841,7 +1841,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         SceneFieldType fieldType(UnsignedInt id) const;
 
         /**
-         * @brief Size of given field
+         * @brief Number of entries in a field
          * @m_since_latest
          *
          * Size of the view returned by @ref mapping() / @ref mutableMapping()
@@ -2035,7 +2035,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         bool hasFieldObject(SceneField fieldName, UnsignedLong object) const;
 
         /**
-         * @brief Field flags
+         * @brief Flags of a named field
          * @m_since_latest
          *
          * The @p name is expected to exist.
@@ -2053,7 +2053,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         SceneFieldType fieldType(SceneField name) const;
 
         /**
-         * @brief Number of entries for given named field
+         * @brief Number of entries in a named field
          * @m_since_latest
          *
          * The @p name is expected to exist.

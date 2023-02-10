@@ -749,7 +749,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         UnsignedLong objectCount() const;
 
         /**
-         * @brief Scene for given name
+         * @brief Scene ID for given name
          * @return Scene ID from range [0, @ref sceneCount()) or @cpp -1 @ce if
          *      no scene for given name exists
          *
