@@ -397,9 +397,13 @@ enum class SceneFieldType: UnsignedShort {
     /* 1-12 used by String* types defined below as they need to fit into 4 bits
        to be stored in a single byte together with SceneMappingType */
 
-    /* 13 reserved for Bit, which needs StridedBitArrayView first */
+    /**
+     * A single bit or an array of bits. Use @ref SceneData::fieldBits() or
+     * @relativeref{SceneData,fieldBitArrays()} for convenient access.
+     */
+    Bit = 13,
 
-    Float = 14,     /**< @relativeref{Magnum,Float} */
+    Float,          /**< @relativeref{Magnum,Float} */
     Half,           /**< @relativeref{Magnum,Half} */
     Double,         /**< @relativeref{Magnum,Double} */
     UnsignedByte,   /**< @relativeref{Magnum,UnsignedByte} */
@@ -685,6 +689,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneFieldType value);
 @brief Size of given scene field type
 @m_since_latest
 
+Expects that @p type isn't @ref SceneFieldType::Bit, for which the size isn't
+representable in bytes.
 @see @ref sceneFieldTypeAlignment()
 */
 MAGNUM_TRADE_EXPORT UnsignedInt sceneFieldTypeSize(SceneFieldType type);
@@ -693,6 +699,8 @@ MAGNUM_TRADE_EXPORT UnsignedInt sceneFieldTypeSize(SceneFieldType type);
 @brief Alignment of given scene field type
 @m_since_latest
 
+Expects that @p type isn't @ref SceneFieldType::Bit, for which the alignment
+isn't representable in bytes.
 @see @ref sceneFieldTypeSize()
 */
 MAGNUM_TRADE_EXPORT UnsignedInt sceneFieldTypeAlignment(SceneFieldType type);
@@ -835,6 +843,16 @@ field specifying data for object @cpp 0 @ce, second entry for object
 with @ref SceneFieldFlag::ImplicitMapping, which is a superset of
 @relativeref{SceneFieldFlag,OrderedMapping}.
 
+@subsection Trade-SceneFieldData-usage-bits Bit fields
+
+Bit fields have dedicated constructors taking a
+@ref Containers::StridedBitArrayView1D or
+@ref Containers::StridedBitArrayView2D, and because the type is always
+@ref SceneFieldType::Bit, it's omitted. For offset-only bit fields there's a
+@ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, std::size_t, std::size_t, std::ptrdiff_t, UnsignedShort, SceneFieldFlags)
+constructor that omits @ref SceneFieldType as well, but contains an additional
+bit offset parameter.
+
 @subsection Trade-SceneFieldData-usage-strings String fields
 
 String fields have to be constructed using dedicated constructors that
@@ -865,8 +883,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param name              Field name
          * @param mappingType       Object mapping type
          * @param mappingData       Object mapping data
-         * @param fieldType         Field type. `SceneFieldType::String*`
-         *      values are not allowed here.
+         * @param fieldType         Field type. @ref SceneFieldType::Bit and
+         *      `SceneFieldType::String*` values are not allowed here.
          * @param fieldData         Field data
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
          *      non-array fields.
@@ -887,8 +905,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @brief Construct from 2D type-erased views
          * @param name              Field name
          * @param mappingData       Object mapping data
-         * @param fieldType         Field type. `SceneFieldType::String*`
-         *      values are not allowed here.
+         * @param fieldType         Field type. @ref SceneFieldType::Bit and
+         *      `SceneFieldType::String*` values are not allowed here.
          * @param fieldData         Field data
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
          *      non-array fields.
@@ -958,6 +976,126 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
 
         /** @overload */
         template<class T, class U> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& mappingData, const Containers::StridedArrayView2D<U>& fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, Containers::stridedArrayView(mappingData), fieldData, flags} {}
+
+        /**
+         * @brief Construct a bit field with a type-erased mapping view
+         * @param name          Field name
+         * @param mappingType   Object mapping type
+         * @param mappingData   Object mapping data
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
+         *
+         * Field type is implicitly @ref SceneFieldType::Bit and array size is
+         * @cpp 0 @ce. Expects that @p mappingData and @p fieldData have the
+         * same size. At the moment only custom fields can be bits, which means
+         * this constructor can't be used with a builtin @p name.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const Containers::StridedBitArrayView1D& fieldData, SceneFieldFlags flags = {}) noexcept;
+        #else
+        /* Has to be a template to avoid having to include StridedBitArrayView
+           here -- compared to StridedArrayView it's used rather rarely */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const Containers::BasicStridedBitArrayView<1, T>& fieldData, SceneFieldFlags flags = {}) noexcept;
+        /* Uhh, and because of the template we need this overload as well */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, Containers::BasicBitArrayView<T> fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, mappingType, mappingData, Containers::BasicStridedBitArrayView<1, T>{fieldData}, flags} {}
+        #endif
+
+        /**
+         * @brief Construct a bit field with a 2D type-erased mapping view
+         * @param name          Field name
+         * @param mappingData   Object mapping data
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
+         *
+         * Field type is implicitly @ref SceneFieldType::Bit and array size is
+         * @cpp 0 @ce. Expects that @p mappingData and @p fieldData have the
+         * same size in the first dimension and that the second dimension of
+         * @p mappingData is contiguous and its size is either 1, 2, 4 or 8,
+         * corresponding to one of the @ref SceneMappingType values. At the
+         * moment only custom fields can be bits, which means this constructor
+         * can't be used with a builtin @p name.
+         */
+        explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const Containers::StridedBitArrayView1D& fieldData, SceneFieldFlags flags = {}) noexcept;
+
+        /**
+         * @brief Construct a bit field
+         * @param name          Field name
+         * @param mappingData   Object mapping data
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
+         *
+         * Detects @ref SceneMappingType based on @p T and calls @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, const Containers::StridedBitArrayView1D&, SceneFieldFlags).
+         */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const Containers::StridedBitArrayView1D& fieldData, SceneFieldFlags flags = {}) noexcept;
+
+        /** @overload */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& mappingData, const Containers::StridedBitArrayView1D& fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, stridedArrayView(mappingData), fieldData, flags} {}
+
+        /**
+         * @brief Construct an array bit field with a type-erased mapping view
+         * @param name          Field name
+         * @param mappingType   Object mapping type
+         * @param mappingData   Object mapping data
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
+         *
+         * Field type is implicitly @ref SceneFieldType::Bit. Expects that
+         * @p mappingData and @p fieldData have the same size in the first
+         * dimension and that the second dimension of @p fieldData is
+         * contiguous. At the moment only custom fields can be bits, which
+         * means this constructor can't be used with a builtin @p name.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const Containers::StridedBitArrayView2D& fieldData, SceneFieldFlags flags = {}) noexcept;
+        #else
+        /* Has to be a template to avoid having to include StridedBitArrayView
+           here -- compared to StridedArrayView it's used rather rarely */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const Containers::BasicStridedBitArrayView<2, T>& fieldData, SceneFieldFlags flags = {}) noexcept;
+        #endif
+
+        /**
+         * @brief Construct an array bit field with a 2D type-erased mapping view
+         * @param name          Field name
+         * @param mappingData   Object mapping data
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
+         *
+         * Field type is implicitly @ref SceneFieldType::Bit and array size is
+         * @cpp 0 @ce. Expects that @p mappingData and @p fieldData have the
+         * same size in the first dimension, that the second dimension of
+         * @p mappingData is contiguous and its size is either 1, 2, 4 or 8,
+         * corresponding to one of the @ref SceneMappingType values, and that
+         * the second dimension of @p fieldData is contiguous. At the moment
+         * only custom fields can be bits, which means this constructor
+         * can't be used with a builtin @p name.
+         */
+        explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const Containers::StridedBitArrayView2D& fieldData, SceneFieldFlags flags = {}) noexcept;
+
+        /**
+         * @brief Construct an array bit field
+         * @param name          Field name
+         * @param mappingData   Object mapping data
+         * @param fieldData     Field data
+         * @param flags         Field flags. @ref SceneFieldFlag::OffsetOnly
+         *      and @ref SceneFieldFlag::NullTerminatedString is not allowed
+         *      here.
+         *
+         * Detects @ref SceneMappingType based on @p T and calls @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, const Containers::StridedBitArrayView2D&, SceneFieldFlags).
+         */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const Containers::StridedBitArrayView2D& fieldData, SceneFieldFlags flags = {}) noexcept;
+
+        /** @overload */
+        template<class T> constexpr explicit SceneFieldData(SceneField name, const Containers::ArrayView<T>& mappingData, const Containers::StridedBitArrayView2D& fieldData, SceneFieldFlags flags = {}) noexcept: SceneFieldData{name, stridedArrayView(mappingData), fieldData, flags} {}
 
         /**
          * @brief Construct a string field from type-erased views
@@ -1053,8 +1191,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param mappingType       Object mapping type
          * @param mappingOffset     Object mapping data offset
          * @param mappingStride     Object mapping data stride
-         * @param fieldType         Field type. `SceneFieldType::String*`
-         *      values are not allowed here.
+         * @param fieldType         Field type. @ref SceneFieldType::Bit and
+         *      `SceneFieldType::String*` values are not allowed here.
          * @param fieldOffset       Field data offset
          * @param fieldStride       Field data stride
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
@@ -1082,6 +1220,46 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
 
         /** @overload */
         explicit constexpr SceneFieldData(SceneField name, std::size_t size, SceneMappingType mappingType, std::size_t mappingOffset, std::ptrdiff_t mappingStride, SceneFieldType fieldType, std::size_t fieldOffset, std::ptrdiff_t fieldStride, SceneFieldFlags flags) noexcept: SceneFieldData{name, size, mappingType, mappingOffset, mappingStride, fieldType, fieldOffset, fieldStride, 0, flags} {}
+
+        /**
+         * @brief Construct an offset-only bit field
+         * @param name              Field name
+         * @param size              Number of entries
+         * @param mappingType       Object mapping type
+         * @param mappingOffset     Object mapping data offset
+         * @param mappingStride     Object mapping data stride
+         * @param fieldOffset       Field data offset in bytes
+         * @param fieldBitOffset    Field data bit offset
+         * @param fieldStride       Field data stride *in bits*
+         * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
+         *      non-array fields.
+         * @param flags             Field flags.
+         *      @ref SceneFieldFlag::OffsetOnly is set implicitly.
+         *      @ref SceneFieldFlag::NullTerminatedString is not allowed here.
+         *
+         * Instances created this way refer to offsets in unspecified
+         * external scene data instead of containing the data views directly.
+         * Useful when the location of the scene data array is not known at
+         * field construction time. At the moment only custom fields can be
+         * bits, which means this constructor can't be used with a builtin
+         * @p name. Expects that @p fieldBitOffset is less than @cpp 8 @ce, for
+         * consistency with @ref Corrade::Containers::BasicStridedBitArrayView "Containers::StridedBitArrayView"
+         * also expects that @p size fits into 29 bits on 32-bit platforms and
+         * into 61 bits on 64-bit platforms.
+         *
+         * Note that due to the @cpp constexpr @ce nature of this constructor,
+         * no @p mappingType checks against @p mappingStride can be done.
+         * You're encouraged to use the @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, const Containers::StridedBitArrayView1D&, SceneFieldFlags)
+         * or @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, const Containers::StridedBitArrayView2D&, SceneFieldFlags)
+         * constructors if you want additional safeguards.
+         * @see @ref flags(),
+         *      @ref mappingData(Containers::ArrayView<const void>) const,
+         *      @ref fieldData(Containers::ArrayView<const void>) const
+         */
+        explicit constexpr SceneFieldData(SceneField name, std::size_t size, SceneMappingType mappingType, std::size_t mappingOffset, std::ptrdiff_t mappingStride, std::size_t fieldOffset, std::size_t fieldBitOffset, std::ptrdiff_t fieldStride, UnsignedShort fieldArraySize = 0, SceneFieldFlags flags = {}) noexcept;
+
+        /** @overload */
+        explicit constexpr SceneFieldData(SceneField name, std::size_t size, SceneMappingType mappingType, std::size_t mappingOffset, std::ptrdiff_t mappingStride, std::size_t fieldOffset, std::size_t fieldBitOffset, std::ptrdiff_t fieldStride, SceneFieldFlags flags) noexcept: SceneFieldData{name, size, mappingType, mappingOffset, mappingStride, fieldOffset, fieldBitOffset, fieldStride, 0, flags} {}
 
         /**
          * @brief Construct an offset-only string field
@@ -1170,21 +1348,52 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         /**
          * @brief Type-erased field data
          *
-         * Expects that the field does not have @ref SceneFieldFlag::OffsetOnly
-         * set, in that case use the @ref fieldData(Containers::ArrayView<const void>) const
-         * overload instead.
-         * @see @ref flags()
+         * Expects that the field is not @ref SceneFieldType::Bit and does not
+         * have @ref SceneFieldFlag::OffsetOnly set. For bit fields use
+         * @ref fieldBitData() instead, for offset-only fields use the
+         * @ref fieldData(Containers::ArrayView<const void>) const overload
+         * instead.
+         * @see @ref fieldType(), @ref flags()
          */
         Containers::StridedArrayView1D<const void> fieldData() const;
 
         /**
          * @brief Type-erased field data for an offset-only field
          *
-         * If the field does not have @ref SceneFieldFlag::OffsetOnly set, the
-         * @p data parameter is ignored.
-         * @see @ref flags(), @ref fieldData() const
+         * Expects that the field is not @ref SceneFieldType::Bit, in that case
+         * use @ref fieldBitData(Containers::ArrayView<const void>) const
+         * instead. If the field does not have @ref SceneFieldFlag::OffsetOnly
+         * set, the @p data parameter is ignored.
+         * @see @ref fieldType(), @ref flags(), @ref fieldData() const
          */
         Containers::StridedArrayView1D<const void> fieldData(Containers::ArrayView<const void> data) const;
+
+        /**
+         * @brief Bit field data
+         *
+         * Expects that the field is @ref SceneFieldType::Bit and does not have
+         * @ref SceneFieldFlag::OffsetOnly set. For non-bit fields use
+         * @ref fieldData() instead, for offset-only bit fields use the
+         * @ref fieldBitData(Containers::ArrayView<const void>) const overload
+         * instead. The returned view is 2D with the second dimension being
+         * always @cpp 1 @ce for non-array fields. The second dimension is
+         * always contiguous.
+         * @see @ref fieldType(), @ref flags()
+         */
+        Containers::StridedBitArrayView2D fieldBitData() const;
+
+        /**
+         * @brief Bit field data for an offset-only field
+         *
+         * Expects that the field is @ref SceneFieldType::Bit, otherwise use
+         * @ref fieldData(Containers::ArrayView<const void>) const instead. If
+         * the field does not have @ref SceneFieldFlag::OffsetOnly set, the
+         * @p data parameter is ignored. The returned view is 2D with the
+         * second dimension being always @cpp 1 @ce for non-array fields. The
+         * second dimension is always contiguous.
+         * @see @ref fieldType(), @ref flags(), @ref fieldBitData() const
+         */
+        Containers::StridedBitArrayView2D fieldBitData(Containers::ArrayView<const void> data) const;
 
         /**
          * @brief Base data pointer for a string field
@@ -1222,6 +1431,13 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
     private:
         friend SceneData;
 
+        /* Delegated to from all StridedBitArrayView constructors, contains
+           assertions common for all variants */
+        constexpr explicit SceneFieldData(SceneField name, SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const void* fieldData, UnsignedByte fieldBitOffset, std::size_t fieldSize, std::ptrdiff_t fieldStride, UnsignedShort fieldArraySize, SceneFieldFlags flags) noexcept;
+        /* Delegated to from all StridedBitArrayView constructors with a 2D
+           mapping view, contains common SceneMappingType handling */
+        explicit SceneFieldData(SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const void* fieldData, UnsignedByte fieldBitOffset, std::size_t fieldSize, std::ptrdiff_t fieldStride, UnsignedShort fieldArraySize, SceneFieldFlags flags) noexcept;
+
         union Data {
             /* FFS C++ why this doesn't JUST WORK goddamit?! It's already past
                the End Of Times AND YET this piece of complex shit can't do the
@@ -1256,10 +1472,10 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
            plenty, making it relative to _fieldData.pointer accounts for cases
            where an absolute pointer itself wouldn't fit into 48 bits.
 
-            0            2            4            6            8 LE
-            +------------+------------+------------+------------+
-            |            |    type    | array size |  (unused)  |
-            +   stride   +------------+------------+------------+
+            0            2            4            6       7    8 LE
+            +------------+------------+------------+------+-----+
+            |            |    type    | array size | bOff |     |
+            +   stride   +------------+------------+------+-----+
             |            |          string data offset          |
             +------------+--------------------------------------+
             8            6            4            2            0 BE */
@@ -1268,14 +1484,15 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
                needed. I just want to initialize one or the other union
                field! */
             constexpr explicit Field(): data{} {}
-            constexpr explicit Field(Short stride, SceneFieldType type, UnsignedShort arraySize): data{stride, type, arraySize} {}
+            constexpr explicit Field(Short stride, SceneFieldType type, UnsignedShort arraySize, UnsignedByte bitOffset = 0): data{stride, type, arraySize, bitOffset} {}
             constexpr explicit Field(Short stride, Long offset): strideOffset{(UnsignedLong(stride) & 0xffff)|((UnsignedLong(offset) & 0xffffffffffffull) << 16)} {}
 
             struct {
                 Short stride;
                 SceneFieldType type;
                 UnsignedShort arraySize;
-                /* 2 bytes unused */
+                UnsignedByte bitOffset; /* for FieldType::Bit, 5 bits unused */
+                /* 1 byte unused */
             } data;
             UnsignedLong strideOffset; /* Upper 48 bits on LE, lower 48 on BE */
         } _field;
@@ -1448,7 +1665,9 @@ scale, it may prove problematic with huge scenes. Or maybe the internal
 representation is already optimized for best processing efficiency and the
 convenience functions would ruin that. The @ref SceneData class thus provides
 access directly to the stored object mapping and field data using the
-@ref mapping() and @ref field() accessors.
+@ref mapping() and @ref field() accessors, together with specialized
+@ref fieldBits() for accessing bit fields and @ref fieldStrings() for accessing
+string fields.
 
 However, since each @ref SceneField can be in a variety of types, you're
 expected to either check that the type is indeed what you expect using
@@ -2201,6 +2420,9 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * get the field in a concrete type. You can also use
          * @ref field(SceneField) const to directly get data for given named
          * field.
+         *
+         * For @ref SceneFieldType::Bit use @ref fieldBits() or
+         * @ref fieldBitArrays() instead.
          * @see @ref Corrade::Containers::StridedArrayView::isContiguous(),
          *      @ref sceneFieldTypeSize(), @ref mutableField(UnsignedInt)
          */
@@ -2224,6 +2446,8 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * is expected to correspond to @ref fieldType(UnsignedInt) const. The
          * field is also expected to not be an array, in that case you need to
          * use the overload below by using @cpp T[] @ce instead of @cpp T @ce.
+         * For @ref SceneFieldType::Bit use @ref fieldBits() or
+         * @ref fieldBitArrays() instead.
          *
          * You can also use the non-templated @ref parentsAsArray(),
          * @ref transformations2DAsArray(), @ref transformations3DAsArray(),
@@ -2354,6 +2578,100 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * fields the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(SceneField name);
+
+        /**
+         * @brief Contents of given bit field
+         * @m_since_latest
+         *
+         * Expects that @p id is smaller than @ref fieldCount() const and that
+         * the field is @ref SceneFieldType::Bit. The field is also expected to
+         * not be an array, in that case you need to use
+         * @ref fieldBitArrays(UnsignedInt) const instead.
+         * @see @ref fieldType(UnsignedInt) const,
+         *      @ref fieldArraySize(UnsignedInt) const
+         */
+        Containers::StridedBitArrayView1D fieldBits(UnsignedInt id) const;
+
+        /**
+         * @brief Contents of given array bit field
+         * @m_since_latest
+         *
+         * Same as above, except that it works with array fields as well. The
+         * second dimension is guaranteed to be contiguous and have the same
+         * size as reported by @ref fieldArraySize(UnsignedInt) const for given
+         * field. For non-array fields the second dimension has a size of
+         * @cpp 1 @ce.
+         */
+        Containers::StridedBitArrayView2D fieldBitArrays(UnsignedInt id) const;
+
+        /**
+         * @brief Mutable contents of given bit field
+         * @m_since_latest
+         *
+         * Like @ref fieldBits(UnsignedInt) const, but returns a mutable view.
+         * Expects that the scene is mutable.
+         * @see @ref dataFlags()
+         */
+        Containers::MutableStridedBitArrayView1D mutableFieldBits(UnsignedInt id);
+
+        /**
+         * @brief Mutable contents of given array bit field
+         * @m_since_latest
+         *
+         * Same as above, except that it works with array fields as well. The
+         * second dimension is guaranteed to be contiguous and have the same
+         * size as reported by @ref fieldArraySize(UnsignedInt) const for given
+         * field. For non-array fields the second dimension has a size of
+         * @cpp 1 @ce.
+         */
+        Containers::MutableStridedBitArrayView2D mutableFieldBitArrays(UnsignedInt id);
+
+        /**
+         * @brief Contents of given named bit field
+         * @m_since_latest
+         *
+         * Expects that @p name exists and that the field is
+         * @ref SceneFieldType::Bit. The field is also expected to not be an
+         * array, in that case you need to use
+         * @ref fieldBitArrays(SceneField) const instead.
+         * @see @ref hasField(), @ref fieldType(SceneField) const,
+         *      @ref fieldArraySize(SceneField) const
+         */
+        Containers::StridedBitArrayView1D fieldBits(SceneField name) const;
+
+        /**
+         * @brief Contents of given array bit field
+         * @m_since_latest
+         *
+         * Same as above, except that it works with array fields as well. The
+         * second dimension is guaranteed to be contiguous and have the same
+         * size as reported by @ref fieldArraySize(SceneField) const for given
+         * field. For non-array fields the second dimension has a size of
+         * @cpp 1 @ce.
+         */
+        Containers::StridedBitArrayView2D fieldBitArrays(SceneField name) const;
+
+        /**
+         * @brief Mutable contents of given bit field
+         * @m_since_latest
+         *
+         * Like @ref fieldBits(SceneField) const, but returns a mutable view.
+         * Expects that the scene is mutable.
+         * @see @ref dataFlags()
+         */
+        Containers::MutableStridedBitArrayView1D mutableFieldBits(SceneField name);
+
+        /**
+         * @brief Mutable contents of given array bit field
+         * @m_since_latest
+         *
+         * Same as above, except that it works with array fields as well. The
+         * second dimension is guaranteed to be contiguous and have the same
+         * size as reported by @ref fieldArraySize(SceneField) const for given
+         * field. For non-array fields the second dimension has a size of
+         * @cpp 1 @ce.
+         */
+        Containers::MutableStridedBitArrayView2D mutableFieldBitArrays(SceneField name);
 
         /**
          * @brief Base data pointer for given string field
@@ -3676,7 +3994,9 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappi
         (CORRADE_CONSTEXPR_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
             "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride()), Short(fieldData.stride())),
         (CORRADE_CONSTEXPR_ASSERT(!Implementation::isSceneFieldTypeString(fieldType),
-            "Trade::SceneFieldData: use a string constructor for" << fieldType), fieldType),
+            "Trade::SceneFieldData: use a string constructor for" << fieldType),
+         CORRADE_CONSTEXPR_ASSERT(fieldType != SceneFieldType::Bit,
+            "Trade::SceneFieldData: use a bit constructor for" << fieldType), fieldType),
         (CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
             "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
     _fieldData{fieldData.data()} {}
@@ -3693,6 +4013,45 @@ template<class T, class U> constexpr SceneFieldData::SceneFieldData(const SceneF
     (CORRADE_CONSTEXPR_ASSERT(fieldData.stride()[1] == sizeof(U), "Trade::SceneFieldData: second field view dimension is not contiguous"), UnsignedShort(fieldData.size()[1])),
     flags
 } {}
+
+/* Assumes that fieldDataBitOffset and fieldDataSize is already bounds-checked,
+   either by the StridedBitArrayView itself or by the offset-only constructor;
+   and fieldArraySize as well by the constructor taking the 2D bit view */
+constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const void* const fieldData, const UnsignedByte fieldBitOffset, const std::size_t fieldSize, const std::ptrdiff_t fieldStride, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
+    _size{(CORRADE_CONSTEXPR_ASSERT(mappingData.size() == fieldSize,
+        "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldSize), mappingData.size())},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, SceneFieldType::Bit),
+        "Trade::SceneFieldData:" << SceneFieldType::Bit << "is not a valid type for" << name), name)},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)),
+        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)) << "for a view of" << SceneFieldType::Bit), flags)},
+    /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
+       set but not used" */
+    _mappingTypeStringType(UnsignedByte(mappingType)),
+    _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingData.stride() >= -32768 && mappingData.stride() <= 32767,
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride()), Short(mappingData.stride()))},
+    _mappingData{mappingData.data()},
+    _field{
+        (CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
+            "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride)),
+        SceneFieldType::Bit, fieldArraySize, fieldBitOffset},
+    _fieldData{fieldData} {}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T> constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const Containers::BasicStridedBitArrayView<1, T>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, mappingType, mappingData, fieldData.data(), UnsignedByte(fieldData.offset()), fieldData.size(), fieldData.stride(), 0, flags} {}
+#endif
+
+template<class T> constexpr SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const Containers::StridedBitArrayView1D& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, Implementation::sceneMappingTypeFor<typename std::remove_const<T>::type>(), mappingData, fieldData, flags} {}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T> constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const Containers::BasicStridedBitArrayView<2, T>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, mappingType, mappingData, fieldData.data(), UnsignedByte(fieldData.offset()), fieldData.size()[0],
+    (CORRADE_CONSTEXPR_ASSERT(fieldData.stride()[1] == 1,
+        "Trade::SceneFieldData: second field view dimension is not contiguous"), fieldData.stride()[0]),
+    /* There's no need to check that the array size fits into 16 bits, as the
+       stronger requirement is that the signed stride fits into 16 bits */
+    UnsignedShort(fieldData.size()[1]), flags} {}
+#endif
+
+template<class T> constexpr SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const Containers::StridedBitArrayView2D& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, Implementation::sceneMappingTypeFor<typename std::remove_const<T>::type>(), mappingData, fieldData, flags} {}
 
 template<class T> inline SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView1D<T>& mappingData, const char* stringData, SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, Implementation::sceneMappingTypeFor<typename std::remove_const<T>::type>(), mappingData, stringData, fieldType, fieldData, flags} {}
 
@@ -3712,9 +4071,32 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
         (CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
             "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride)),
         (CORRADE_CONSTEXPR_ASSERT(!Implementation::isSceneFieldTypeString(fieldType),
-            "Trade::SceneFieldData: use a string constructor for" << fieldType), fieldType),
+            "Trade::SceneFieldData: use a string constructor for" << fieldType),
+         CORRADE_CONSTEXPR_ASSERT(fieldType != SceneFieldType::Bit,
+            "Trade::SceneFieldData: use a bit constructor for" << fieldType), fieldType),
         (CORRADE_CONSTEXPR_ASSERT(!fieldArraySize || Implementation::isSceneFieldArrayAllowed(name),
             "Trade::SceneFieldData:" << name << "can't be an array field"), fieldArraySize)},
+    _fieldData{fieldOffset} {}
+
+constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_t size, const SceneMappingType mappingType, const std::size_t mappingOffset, const std::ptrdiff_t mappingStride, const std::size_t fieldOffset, const std::size_t fieldBitOffset, const std::ptrdiff_t fieldStride, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
+    _size{(CORRADE_CONSTEXPR_ASSERT(size < std::size_t{1} << (sizeof(std::size_t)*8 - 3),
+        "Trade::SceneFieldData: size expected to be smaller than 2^" << Debug::nospace << (sizeof(std::size_t)*8 - 3) << "bits, got" << size), size)},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, SceneFieldType::Bit),
+        "Trade::SceneFieldData:" << SceneFieldType::Bit << "is not a valid type for" << name), name)},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::NullTerminatedString),
+        "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::NullTerminatedString) << "for" << SceneFieldType::Bit), flags|SceneFieldFlag::OffsetOnly)},
+    /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
+       set but not used" */
+    _mappingTypeStringType(UnsignedByte(mappingType)),
+    _mappingStride{(CORRADE_CONSTEXPR_ASSERT(mappingStride >= -32768 && mappingStride <= 32767,
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingStride), Short(mappingStride))},
+    _mappingData{mappingOffset},
+    _field{
+        (CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
+            "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride)),
+        SceneFieldType::Bit, fieldArraySize,
+        (CORRADE_CONSTEXPR_ASSERT(fieldBitOffset < 8,
+            "Trade::SceneFieldData: bit offset expected to be smaller than 8, got" << fieldBitOffset), UnsignedByte(fieldBitOffset))},
     _fieldData{fieldOffset} {}
 
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_t size, const SceneMappingType mappingType, const std::size_t mappingOffset, const std::ptrdiff_t mappingStride, const std::size_t stringOffset, const SceneFieldType fieldType, const std::size_t fieldOffset, const std::ptrdiff_t fieldStride, const SceneFieldFlags flags) noexcept:

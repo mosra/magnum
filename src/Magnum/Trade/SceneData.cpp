@@ -30,6 +30,7 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/StridedArrayViewStl.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
@@ -147,6 +148,7 @@ Debug& operator<<(Debug& debug, const SceneFieldType value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case SceneFieldType::value: return debug << (debug.immediateFlags() & Debug::Flag::Packed ? "" : "::") << Debug::nospace << #value;
+        _c(Bit)
         _c(Float)
         _c(Half)
         _c(Double)
@@ -265,6 +267,8 @@ UnsignedInt sceneFieldTypeSize(const SceneFieldType type) {
     #pragma GCC diagnostic error "-Wswitch"
     #endif
     switch(type) {
+        case SceneFieldType::Bit:
+            CORRADE_ASSERT_UNREACHABLE("Trade::sceneFieldTypeSize(): can't use with" << SceneFieldType::Bit, {});
         case SceneFieldType::UnsignedByte:
         case SceneFieldType::Byte:
         case SceneFieldType::StringOffset8:
@@ -402,6 +406,8 @@ UnsignedInt sceneFieldTypeAlignment(const SceneFieldType type) {
     #pragma GCC diagnostic error "-Wswitch"
     #endif
     switch(type) {
+        case SceneFieldType::Bit:
+            CORRADE_ASSERT_UNREACHABLE("Trade::sceneFieldTypeAlignment(): can't use with" << SceneFieldType::Bit, {});
         case SceneFieldType::UnsignedByte:
         case SceneFieldType::Vector2ub:
         case SceneFieldType::Vector3ub:
@@ -551,6 +557,11 @@ Debug& operator<<(Debug& debug, const SceneFieldFlags value) {
 }
 
 SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, fieldArraySize, flags} {
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* This caused an assertion in the delegated-to constructor, bail instead
+       of cascading the asserts further */
+    if(fieldType == SceneFieldType::Bit) return;
+    #endif
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
@@ -572,6 +583,38 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
     else CORRADE_ASSERT_UNREACHABLE("Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got" << mappingData.size()[1], );
 
     CORRADE_ASSERT(mappingData.isContiguous<1>(), "Trade::SceneFieldData: second mapping view dimension is not contiguous", );
+    CORRADE_ASSERT(fieldData.isContiguous<1>(), "Trade::SceneFieldData: second field view dimension is not contiguous", );
+}
+
+SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const void* fieldData, UnsignedByte fieldBitOffset, std::size_t fieldSize, std::ptrdiff_t fieldStride, UnsignedShort fieldArraySize, SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, fieldData, fieldBitOffset, fieldSize, fieldStride, fieldArraySize, flags} {
+    /* Yes, this calls into a constexpr function defined in the header --
+       because I feel that makes more sense than duplicating the full assert
+       logic */
+
+    if(mappingData.size()[1] == 8)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedLong);
+    else if(mappingData.size()[1] == 4)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedInt);
+    else if(mappingData.size()[1] == 2)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedShort);
+    else if(mappingData.size()[1] == 1)
+        _mappingTypeStringType = UnsignedByte(SceneMappingType::UnsignedByte);
+    else CORRADE_ASSERT_UNREACHABLE("Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got" << mappingData.size()[1], );
+
+    CORRADE_ASSERT(mappingData.isContiguous<1>(), "Trade::SceneFieldData: second mapping view dimension is not contiguous", );
+}
+
+SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const Containers::StridedBitArrayView1D& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, mappingData, fieldData.data(), UnsignedByte(fieldData.offset()), fieldData.size(), fieldData.stride(), 0, flags} {}
+
+SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const Containers::StridedBitArrayView2D& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, mappingData, fieldData.data(), UnsignedByte(fieldData.offset()), fieldData.size()[0], fieldData.stride()[0],
+    /* There's no need to check that the array size fits into 16 bits, as the
+       stronger requirement is that the signed stride fits into 16 bits */
+    UnsignedShort(fieldData.size()[1]),
+    flags}
+{
+    /* Yes, this calls into a constexpr function defined in the header --
+       because I feel that makes more sense than duplicating the full assert
+       logic */
     CORRADE_ASSERT(fieldData.isContiguous<1>(), "Trade::SceneFieldData: second field view dimension is not contiguous", );
 }
 
@@ -647,6 +690,8 @@ Containers::StridedArrayView1D<const void> SceneFieldData::mappingData(const Con
 Containers::StridedArrayView1D<const void> SceneFieldData::fieldData() const {
     CORRADE_ASSERT(!(_flags & SceneFieldFlag::OffsetOnly),
         "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array", {});
+    CORRADE_ASSERT(fieldType() != SceneFieldType::Bit,
+        "Trade::SceneFieldData::fieldData(): the field is" << SceneFieldType::Bit << Debug::nospace << ", use fieldBitData() instead", {});
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
         /** @todo better ideas for the StridedArrayView API? */
@@ -654,10 +699,35 @@ Containers::StridedArrayView1D<const void> SceneFieldData::fieldData() const {
 }
 
 Containers::StridedArrayView1D<const void> SceneFieldData::fieldData(const Containers::ArrayView<const void> data) const {
+    CORRADE_ASSERT(fieldType() != SceneFieldType::Bit,
+        "Trade::SceneFieldData::fieldData(): the field is" << SceneFieldType::Bit << Debug::nospace << ", use fieldBitData() instead", {});
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
         /** @todo better ideas for the StridedArrayView API? */
         data, _flags & SceneFieldFlag::OffsetOnly ? static_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _size, _field.data.stride};
+}
+
+Containers::StridedBitArrayView2D SceneFieldData::fieldBitData() const {
+    CORRADE_ASSERT(!(_flags & SceneFieldFlag::OffsetOnly),
+        "Trade::SceneFieldData::fieldBitData(): the field is offset-only, supply a data array", {});
+    CORRADE_ASSERT(fieldType() == SceneFieldType::Bit,
+        "Trade::SceneFieldData::fieldBitData(): the field is" << fieldType() << Debug::nospace << ", not a bit", {});
+    return Containers::StridedBitArrayView2D{
+        /* We're *sure* the view is correct, so faking the view size */
+        /** @todo better ideas for the StridedBitArrayView API? */
+        {_fieldData.pointer, _field.data.bitOffset, ~std::size_t{} >> 3},
+        {std::size_t(_size), _field.data.arraySize ? _field.data.arraySize : 1},
+        {_field.data.stride, 1}};
+}
+
+Containers::StridedBitArrayView2D SceneFieldData::fieldBitData(const Containers::ArrayView<const void> data) const {
+    CORRADE_ASSERT(fieldType() == SceneFieldType::Bit,
+        "Trade::SceneFieldData::fieldBitData(): the field is" << fieldType() << Debug::nospace << ", not a bit", {});
+    return Containers::StridedBitArrayView2D{
+        {data, 0, data.size()*8},
+        _flags & SceneFieldFlag::OffsetOnly ? static_cast<const char*>(data.data()) + _fieldData.offset : _fieldData.pointer, _field.data.bitOffset,
+        {std::size_t(_size), _field.data.arraySize ? _field.data.arraySize : 1},
+        {_field.data.stride, 1}};
 }
 
 namespace {
@@ -770,28 +840,50 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
            accessing the memory would be invalid anyway and enforcing this
            would lead to unnecessary friction with optional fields. */
         if(field._size) {
+            /* Sizes, strides and array sizes are in bits for
+               SceneFieldType::Bit, additionally bit fields contain also bit
+               offset in the first byte */
+            const bool isBitField = field.fieldType() == SceneFieldType::Bit;
             const UnsignedShort fieldArraySize = field.fieldArraySize();
-            const UnsignedInt fieldTypeSize = sceneFieldTypeSize(field.fieldType())*(fieldArraySize ? fieldArraySize : 1);
+            const UnsignedInt fieldTypeSize = (isBitField ? 1 : sceneFieldTypeSize(field.fieldType()))*(fieldArraySize ? fieldArraySize : 1);
+            /* For negative strides the size is negative */
+            const std::ptrdiff_t signedMappingSize = (field._size - 1)*field._mappingStride;
+            const std::ptrdiff_t signedFieldSize = (isBitField ? field._field.data.bitOffset : 0) + (field._size - 1)*field._field.data.stride;
 
-            /* Both pointer and offset-only rely on basically same calculation,
-               do it with offsets in a single place and only interpret as
-               pointers in the non-offset-only check. Yes, yes, this may read
-               the `pointer` union member through `offset`. */
-            std::size_t mappingBegin = field._mappingData.offset;
-            std::size_t fieldBegin = field._fieldData.offset;
-            std::size_t mappingEnd = mappingBegin + (field._size - 1)*field._mappingStride;
-            std::size_t fieldEnd = fieldBegin + (field._size - 1)*field._field.data.stride;
-            /* Flip for negative strides */
-            if(mappingBegin > mappingEnd) std::swap(mappingBegin, mappingEnd);
-            if(fieldBegin > fieldEnd) std::swap(fieldBegin, fieldEnd);
-            /* Add the last element size to the higher address */
-            mappingEnd += mappingTypeSize;
-            fieldEnd += fieldTypeSize;
+            /* Calculate begin and end offsets. Both pointer and offset-only
+               rely on basically same calculation, do it with offsets in a
+               single place and only interpret as pointers in the
+               non-offset-only check. */
+            std::ptrdiff_t mappingBegin = 0;
+            std::ptrdiff_t mappingEnd = mappingTypeSize;
+            std::ptrdiff_t fieldBegin = 0;
+            std::ptrdiff_t fieldEnd = fieldTypeSize;
+            /* For negative strides the begin pointer is moved backwards */
+            if(field._mappingStride < 0)
+                mappingBegin += signedMappingSize;
+            else
+                mappingEnd += signedMappingSize;
+            if(field._field.data.stride < 0)
+                fieldBegin += signedFieldSize;
+            else
+                fieldEnd += signedFieldSize;
+            /* For bit fields round the offset to whole bytes -- begin down,
+               end up */
+            if(isBitField) {
+                fieldBegin = fieldBegin/8;
+                fieldEnd = (fieldEnd + 7)/8;
+            }
+            /* Add the base data offset to both begin and end. Yes, yes, this
+               may read the `pointer` union member through `offset`. */
+            mappingBegin += field._mappingData.offset;
+            mappingEnd += field._mappingData.offset;
+            fieldBegin += field._fieldData.offset;
+            fieldEnd += field._fieldData.offset;
 
             if(field._flags & SceneFieldFlag::OffsetOnly) {
-                CORRADE_ASSERT(mappingEnd <= _data.size(),
+                CORRADE_ASSERT(std::size_t(mappingEnd) <= _data.size(),
                     "Trade::SceneData: offset-only mapping data of field" << i << "span" << mappingEnd << "bytes but passed data array has only" << _data.size(), );
-                CORRADE_ASSERT(fieldEnd <= _data.size(),
+                CORRADE_ASSERT(std::size_t(fieldEnd) <= _data.size(),
                     "Trade::SceneData: offset-only field data of field" << i << "span" << fieldEnd << "bytes but passed data array has only" << _data.size(), );
             } else {
                 CORRADE_ASSERT(reinterpret_cast<const void*>(mappingBegin) >= _data.begin() && reinterpret_cast<const void*>(mappingEnd) <= _data.end(),
@@ -1045,6 +1137,8 @@ SceneFieldData SceneData::fieldData(const UnsignedInt id) const {
     const SceneFieldFlags flags = field._flags & ~SceneFieldFlag::OffsetOnly;
     if(field._mappingTypeStringType & Implementation::SceneMappingStringTypeMask)
         return SceneFieldData{field._name, field.mappingType(), fieldDataMappingViewInternal(field), field.stringData(_data), field.fieldType(), fieldDataFieldViewInternal(field), flags};
+    else if(field._field.data.type == SceneFieldType::Bit)
+        return SceneFieldData{field._name, field.mappingType(), fieldDataMappingViewInternal(field), field._flags & SceneFieldFlag::OffsetOnly ? _data.data() + field._fieldData.offset : field._fieldData.pointer, field._field.data.bitOffset, std::size_t(field._size), field._field.data.stride, field._field.data.arraySize, flags};
     else
         return SceneFieldData{field._name, field.mappingType(), fieldDataMappingViewInternal(field), field._field.data.type, fieldDataFieldViewInternal(field), field._field.data.arraySize, flags};
 }
@@ -1303,6 +1397,8 @@ Containers::StridedArrayView2D<const char> SceneData::field(const UnsignedInt id
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::field(): index" << id << "out of range for" << _fields.size() << "fields", {});
     const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field.fieldType() != SceneFieldType::Bit,
+        "Trade::SceneData::field():" << field._name << "is" << field.fieldType() << Debug::nospace << ", use fieldBits() or fieldBitArrays() to access it", {});
     const UnsignedShort fieldArraySize = field.fieldArraySize();
     /* Build a 2D view using information about mapping type size */
     return Containers::arrayCast<2, const char>(
@@ -1316,6 +1412,8 @@ Containers::StridedArrayView2D<char> SceneData::mutableField(const UnsignedInt i
     CORRADE_ASSERT(id < _fields.size(),
         "Trade::SceneData::mutableField(): index" << id << "out of range for" << _fields.size() << "fields", {});
     const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field.fieldType() != SceneFieldType::Bit,
+        "Trade::SceneData::mutableField():" << field._name << "is" << field.fieldType() << Debug::nospace << ", use mutableFieldBits() or mutableFieldBitArrays() to access it", {});
     const UnsignedShort fieldArraySize = field.fieldArraySize();
     /* Build a 2D view using information about attribute type size */
     const auto out = Containers::arrayCast<2, const char>(
@@ -1341,6 +1439,100 @@ Containers::StridedArrayView2D<char> SceneData::mutableField(const SceneField na
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::mutableField(): field" << name << "not found", {});
     return mutableField(fieldId);
+}
+
+Containers::StridedBitArrayView1D SceneData::fieldBits(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < _fields.size(),
+        "Trade::SceneData::fieldBits(): index" << id << "out of range for" << _fields.size() << "fields", {});
+    const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field.fieldType() == SceneFieldType::Bit,
+        "Trade::SceneData::fieldBits():" << field._name << "is" << field._field.data.type << Debug::nospace << ", not a bit", {});
+    CORRADE_ASSERT(!field.fieldArraySize(),
+        "Trade::SceneData::fieldBits():" << field._name << "is an array field, use fieldBitArrays() to access it", {});
+    /** @todo this is duplicated four times with a few variants in the
+        fieldBits() overloads below plus once more in fieldData(), any way to
+        deduplicate this without writing an equally nasty helper or using
+        expensive transposes to get a 1D array from 2D? */
+    return Containers::StridedBitArrayView1D{
+        {_data.data(), 0, _data.size()*8},
+        field._flags & SceneFieldFlag::OffsetOnly ? _data.data() + field._fieldData.offset : field._fieldData.pointer,
+        field._field.data.bitOffset,
+        field._size, field._field.data.stride};
+}
+
+Containers::StridedBitArrayView2D SceneData::fieldBitArrays(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < _fields.size(),
+        "Trade::SceneData::fieldBitArrays(): index" << id << "out of range for" << _fields.size() << "fields", {});
+    const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field.fieldType() == SceneFieldType::Bit,
+        "Trade::SceneData::fieldBitArrays():" << field._name << "is" << field._field.data.type << Debug::nospace << ", not a bit", {});
+    return Containers::StridedBitArrayView2D{
+        {_data.data(), 0, _data.size()*8},
+        field._flags & SceneFieldFlag::OffsetOnly ? _data.data() + field._fieldData.offset : field._fieldData.pointer,
+        field._field.data.bitOffset,
+        {std::size_t(field._size), field._field.data.arraySize ? field._field.data.arraySize : 1},
+        {field._field.data.stride, 1}};
+}
+
+Containers::MutableStridedBitArrayView1D SceneData::mutableFieldBits(const UnsignedInt id) {
+    CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
+        "Trade::SceneData::mutableFieldBits(): data not mutable", {});
+    CORRADE_ASSERT(id < _fields.size(),
+        "Trade::SceneData::mutableFieldBits(): index" << id << "out of range for" << _fields.size() << "fields", {});
+    const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field.fieldType() == SceneFieldType::Bit,
+        "Trade::SceneData::mutableFieldBits():" << field._name << "is" << field._field.data.type << Debug::nospace << ", not a bit", {});
+    CORRADE_ASSERT(!field.fieldArraySize(),
+        "Trade::SceneData::mutableFieldBits():" << field._name << "is an array field, use fieldBitArrays() to access it", {});
+    return Containers::MutableStridedBitArrayView1D{
+        {_data.data(), 0, _data.size()*8},
+        field._flags & SceneFieldFlag::OffsetOnly ? _data.data() + field._fieldData.offset : static_cast<char*>(const_cast<void*>(field._fieldData.pointer)),
+        field._field.data.bitOffset,
+        field._size, field._field.data.stride};
+}
+
+Containers::MutableStridedBitArrayView2D SceneData::mutableFieldBitArrays(const UnsignedInt id) {
+    CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
+        "Trade::SceneData::mutableFieldBitArrays(): data not mutable", {});
+    CORRADE_ASSERT(id < _fields.size(),
+        "Trade::SceneData::mutableFieldBitArrays(): index" << id << "out of range for" << _fields.size() << "fields", {});
+    const SceneFieldData& field = _fields[id];
+    CORRADE_ASSERT(field.fieldType() == SceneFieldType::Bit,
+        "Trade::SceneData::mutableFieldBitArrays():" << field._name << "is" << field._field.data.type << Debug::nospace << ", not a bit", {});
+    return Containers::MutableStridedBitArrayView2D{
+        {_data.data(), 0, _data.size()*8},
+        field._flags & SceneFieldFlag::OffsetOnly ? _data.data() + field._fieldData.offset : static_cast<char*>(const_cast<void*>(field._fieldData.pointer)),
+        field._field.data.bitOffset,
+        {std::size_t(field._size), field._field.data.arraySize ? field._field.data.arraySize : 1},
+        {field._field.data.stride, 1}};
+}
+
+Containers::StridedBitArrayView1D SceneData::fieldBits(const SceneField name) const {
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::fieldBits(): field" << name << "not found", {});
+    return fieldBits(fieldId);
+}
+
+Containers::StridedBitArrayView2D SceneData::fieldBitArrays(const SceneField name) const {
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::fieldBitArrays(): field" << name << "not found", {});
+    return fieldBitArrays(fieldId);
+}
+
+Containers::MutableStridedBitArrayView1D SceneData::mutableFieldBits(const SceneField name) {
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::mutableFieldBits(): field" << name << "not found", {});
+    return mutableFieldBits(fieldId);
+}
+
+Containers::MutableStridedBitArrayView2D SceneData::mutableFieldBitArrays(const SceneField name) {
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::mutableFieldBitArrays(): field" << name << "not found", {});
+    return mutableFieldBitArrays(fieldId);
 }
 
 const char* SceneData::fieldDataStringDataInternal(const SceneFieldData& field) const {

@@ -23,10 +23,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* Including first to verify the StridedBitArrayView include is not needed */
+#include "Magnum/Trade/SceneData.h"
+
 #include <sstream>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -40,7 +44,6 @@
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Trade/SceneData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
@@ -77,31 +80,42 @@ struct SceneDataTest: TestSuite::Tester {
     void constructField();
     void constructFieldDefault();
     void constructFieldCustom();
+    void constructFieldBit();
     void constructFieldString();
     void constructFieldStringNegativeStride();
     void constructFieldStringNegativeOffset();
     void constructFieldTypeErased();
+    void constructFieldTypeErasedBit();
     void constructFieldTypeErasedString();
     void constructFieldTypeErased2D();
+    void constructFieldTypeErased2DBit();
     void constructFieldTypeErased2DString();
     void constructFieldNonOwningArray();
     void constructFieldOffsetOnly();
+    void constructFieldOffsetOnlyBit();
     void constructFieldOffsetOnlyString();
     void constructFieldOffsetOnlyStringNegativeStride();
     void constructFieldArray();
+    void constructFieldArrayBit();
     void constructFieldArrayTypeErased();
+    void constructFieldArrayTypeErasedBit();
     /* no constructFieldArrayTypeErasedString(), strings can't be arrays */
     void constructFieldArrayTypeErased2D();
+    void constructFieldArrayTypeErased2DBit();
     /* no constructFieldArrayTypeErased2DString(), strings can't be arrays */
     void constructFieldArrayOffsetOnly();
+    void constructFieldArrayOffsetOnlyBit();
+    /* no constructFieldArrayOffsetOnlyString(), strings can't be arrays */
 
     void constructFieldWrongType();
+    void constructFieldWrongTypeBit();
     void constructFieldWrongTypeString();
     void constructFieldInconsistentViewSize();
     void constructFieldTooLargeMappingStride();
     void constructFieldTooLargeFieldStride();
     void constructFieldFlagNotAllowed();
     void constructFieldWrongOffsetOnlyDataAccess();
+    void constructFieldWrongBitDataAccess();
     void constructFieldWrongStringDataAccess();
     void constructFieldTypeErased2DWrongSize();
     void constructFieldTypeErased2DNonContiguous();
@@ -109,13 +123,17 @@ struct SceneDataTest: TestSuite::Tester {
     void constructFieldArrayNotAllowed();
     void constructFieldArrayTypeErased2DWrongSize();
     void constructFieldArrayTypeErased2DNonContiguous();
+    void constructFieldBitTooLargeBitOffset();
+    void constructFieldBitTooLargeSize();
 
     void construct();
     void constructZeroFields();
     void constructZeroObjects();
     void constructNotOwned();
+    void constructBit();
     template<class T> void constructString();
     void constructSpecialStrides();
+    void constructSpecialStridesBit();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void constructDeprecated();
     void constructDeprecatedBoth2DAnd3D();
@@ -126,6 +144,7 @@ struct SceneDataTest: TestSuite::Tester {
     void constructInconsistentMappingType();
     void constructMappingDataNotContained();
     void constructFieldDataNotContained();
+    void constructBitFieldDataNotContained();
     void constructStringDataNotContained();
     void constructMappingTypeTooSmall();
     void constructNotOwnedFlagOwned();
@@ -344,6 +363,23 @@ const struct {
     {"none", 0, 3, 0, false, false, false, false}
 };
 
+const struct {
+    const char* name;
+    std::ptrdiff_t stride;
+    std::size_t offset, bitOffset, arrayBitOffset;
+    UnsignedByte expectedBits;
+    UnsignedByte expectedArrayBits[2];
+} ConstructSpecialStridesBitData[]{
+    {"negative stride", -2*8, 3*2, 3, 5,
+        0x0d /* 0b1101 */,
+        {0x03 /* 0b0011 */, 0x0d /* 0b1101 */}},
+    {"zero stride, all ones", 0, 0, 3, 5,
+        0x0f, {0x00, 0x0f}},
+    /* No change for the array, as it exhibits both values */
+    {"zero stride, all zeros", 0, 0, 2, 5,
+        0x00, {0x00, 0x0f}},
+};
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 const struct {
     const char* name;
@@ -386,29 +422,39 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructField,
               &SceneDataTest::constructFieldDefault,
               &SceneDataTest::constructFieldCustom,
+              &SceneDataTest::constructFieldBit,
               &SceneDataTest::constructFieldString,
               &SceneDataTest::constructFieldStringNegativeStride,
               &SceneDataTest::constructFieldStringNegativeOffset,
               &SceneDataTest::constructFieldTypeErased,
+              &SceneDataTest::constructFieldTypeErasedBit,
               &SceneDataTest::constructFieldTypeErasedString,
               &SceneDataTest::constructFieldTypeErased2D,
+              &SceneDataTest::constructFieldTypeErased2DBit,
               &SceneDataTest::constructFieldTypeErased2DString,
               &SceneDataTest::constructFieldNonOwningArray,
               &SceneDataTest::constructFieldOffsetOnly,
+              &SceneDataTest::constructFieldOffsetOnlyBit,
               &SceneDataTest::constructFieldOffsetOnlyString,
               &SceneDataTest::constructFieldOffsetOnlyStringNegativeStride,
               &SceneDataTest::constructFieldArray,
+              &SceneDataTest::constructFieldArrayBit,
               &SceneDataTest::constructFieldArrayTypeErased,
+              &SceneDataTest::constructFieldArrayTypeErasedBit,
               &SceneDataTest::constructFieldArrayTypeErased2D,
+              &SceneDataTest::constructFieldArrayTypeErased2DBit,
               &SceneDataTest::constructFieldArrayOffsetOnly,
+              &SceneDataTest::constructFieldArrayOffsetOnlyBit,
 
               &SceneDataTest::constructFieldWrongType,
+              &SceneDataTest::constructFieldWrongTypeBit,
               &SceneDataTest::constructFieldWrongTypeString,
               &SceneDataTest::constructFieldInconsistentViewSize,
               &SceneDataTest::constructFieldTooLargeMappingStride,
               &SceneDataTest::constructFieldTooLargeFieldStride,
               &SceneDataTest::constructFieldFlagNotAllowed,
               &SceneDataTest::constructFieldWrongOffsetOnlyDataAccess,
+              &SceneDataTest::constructFieldWrongBitDataAccess,
               &SceneDataTest::constructFieldWrongStringDataAccess,
               &SceneDataTest::constructFieldTypeErased2DWrongSize,
               &SceneDataTest::constructFieldTypeErased2DNonContiguous,
@@ -416,6 +462,8 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructFieldArrayNotAllowed,
               &SceneDataTest::constructFieldArrayTypeErased2DWrongSize,
               &SceneDataTest::constructFieldArrayTypeErased2DNonContiguous,
+              &SceneDataTest::constructFieldBitTooLargeBitOffset,
+              &SceneDataTest::constructFieldBitTooLargeSize,
 
               &SceneDataTest::construct,
               &SceneDataTest::constructZeroFields,
@@ -424,11 +472,15 @@ SceneDataTest::SceneDataTest() {
     addInstancedTests({&SceneDataTest::constructNotOwned},
         Containers::arraySize(NotOwnedData));
 
-    addTests({&SceneDataTest::constructString<UnsignedByte>,
+    addTests({&SceneDataTest::constructBit,
+              &SceneDataTest::constructString<UnsignedByte>,
               &SceneDataTest::constructString<UnsignedShort>,
               &SceneDataTest::constructString<UnsignedInt>,
               &SceneDataTest::constructString<UnsignedLong>,
               &SceneDataTest::constructSpecialStrides});
+
+    addInstancedTests({&SceneDataTest::constructSpecialStridesBit},
+        Containers::arraySize(ConstructSpecialStridesBitData));
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     addInstancedTests({&SceneDataTest::constructDeprecated},
@@ -442,6 +494,7 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructInconsistentMappingType,
               &SceneDataTest::constructMappingDataNotContained,
               &SceneDataTest::constructFieldDataNotContained,
+              &SceneDataTest::constructBitFieldDataNotContained,
               &SceneDataTest::constructStringDataNotContained,
               &SceneDataTest::constructMappingTypeTooSmall,
               &SceneDataTest::constructNotOwnedFlagOwned,
@@ -744,12 +797,16 @@ void SceneDataTest::fieldTypeSizeAlignmentInvalid() {
     sceneFieldTypeAlignment(SceneFieldType{});
     sceneFieldTypeSize(SceneFieldType(0xdead));
     sceneFieldTypeAlignment(SceneFieldType(0xdead));
+    sceneFieldTypeSize(SceneFieldType::Bit);
+    sceneFieldTypeAlignment(SceneFieldType::Bit);
 
     CORRADE_COMPARE(out.str(),
         "Trade::sceneFieldTypeSize(): invalid type Trade::SceneFieldType(0x0)\n"
         "Trade::sceneFieldTypeAlignment(): invalid type Trade::SceneFieldType(0x0)\n"
         "Trade::sceneFieldTypeSize(): invalid type Trade::SceneFieldType(0xdead)\n"
-        "Trade::sceneFieldTypeAlignment(): invalid type Trade::SceneFieldType(0xdead)\n");
+        "Trade::sceneFieldTypeAlignment(): invalid type Trade::SceneFieldType(0xdead)\n"
+        "Trade::sceneFieldTypeSize(): can't use with Trade::SceneFieldType::Bit\n"
+        "Trade::sceneFieldTypeAlignment(): can't use with Trade::SceneFieldType::Bit\n");
 }
 
 void SceneDataTest::debugFieldType() {
@@ -882,6 +939,67 @@ void SceneDataTest::constructFieldCustom() {
     CORRADE_VERIFY(ranges.mappingData().data() == rangeMappingData);
     CORRADE_COMPARE(ranges.fieldType(), SceneFieldType::Range2Dh);
     CORRADE_VERIFY(ranges.fieldData().data() == rangeFieldData);
+}
+
+constexpr UnsignedShort HiddenMapping[8]{};
+constexpr char HiddenField[5]{};
+
+void SceneDataTest::constructFieldBit() {
+    const UnsignedShort hiddenMappingData[8]{};
+    const char hiddenFieldData[5]{};
+
+    SceneFieldData hidden{sceneFieldCustom(773), Containers::arrayView(hiddenMappingData), Containers::StridedBitArrayView1D{Containers::BitArrayView{hiddenFieldData + 1, 5, 24}, 8, 3}, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(hidden.flags(), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(hidden.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(hidden.size(), 8);
+    CORRADE_COMPARE(hidden.mappingType(), SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(hidden.mappingData().size(), 8);
+    CORRADE_COMPARE(hidden.mappingData().stride(), sizeof(UnsignedShort));
+    CORRADE_COMPARE(hidden.mappingData().data(), hiddenMappingData);
+    CORRADE_COMPARE(hidden.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(hidden.fieldArraySize(), 0);
+    CORRADE_COMPARE(hidden.fieldBitData().data(), hiddenFieldData + 1);
+    CORRADE_COMPARE(hidden.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(hidden.fieldBitData().size(), (Containers::Size2D{8, 1}));
+    CORRADE_COMPARE(hidden.fieldBitData().stride(), (Containers::Stride2D{3, 1}));
+
+    /* This is allowed too for simplicity, the parameter has to be large enough
+       tho */
+    char someArray[8*2];
+    CORRADE_COMPARE(hidden.mappingType(), SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(hidden.mappingData(someArray).size(), 8);
+    CORRADE_COMPARE(hidden.mappingData(someArray).stride(), sizeof(UnsignedShort));
+    CORRADE_COMPARE(hidden.mappingData(someArray).data(), hiddenMappingData);
+    CORRADE_COMPARE(hidden.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(hidden.fieldArraySize(), 0);
+    CORRADE_COMPARE(hidden.fieldBitData(someArray).data(), hiddenFieldData + 1);
+    CORRADE_COMPARE(hidden.fieldBitData(someArray).offset(), 5);
+    CORRADE_COMPARE(hidden.fieldBitData(someArray).size(), (Containers::Size2D{8, 1}));
+    CORRADE_COMPARE(hidden.fieldBitData(someArray).stride(), (Containers::Stride2D{3, 1}));
+
+    constexpr SceneFieldData chidden{sceneFieldCustom(773), Containers::arrayView(HiddenMapping), Containers::StridedBitArrayView1D{Containers::BitArrayView{HiddenField + 1, 5, 24}, 8, 3}, SceneFieldFlag::ImplicitMapping};
+    constexpr SceneField name = chidden.name();
+    constexpr SceneFieldFlags flags = chidden.flags();
+    constexpr std::size_t size = chidden.size();
+    constexpr SceneMappingType mappingType = chidden.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(773));
+    CORRADE_COMPARE(flags, SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(size, 8);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedShort);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(chidden.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(chidden.fieldArraySize(), 0);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(chidden.mappingData(someArray).size(), 8);
+    CORRADE_COMPARE(chidden.mappingData(someArray).stride(), sizeof(UnsignedShort));
+    CORRADE_COMPARE(chidden.mappingData(someArray).data(), HiddenMapping);
+    CORRADE_COMPARE(chidden.fieldBitData(someArray).data(), HiddenField + 1);
+    CORRADE_COMPARE(chidden.fieldBitData(someArray).offset(), 5);
+    CORRADE_COMPARE(chidden.fieldBitData(someArray).size(), (Containers::Size2D{8, 1}));
+    CORRADE_COMPARE(chidden.fieldBitData(someArray).stride(), (Containers::Stride2D{3, 1}));
 }
 
 void SceneDataTest::constructFieldString() {
@@ -1035,6 +1153,50 @@ void SceneDataTest::constructFieldTypeErased() {
     CORRADE_COMPARE(cscalings.fieldData().data(), ScalingFieldData);
 }
 
+void SceneDataTest::constructFieldTypeErasedBit() {
+    const UnsignedShort hiddenMappingData[8]{};
+    const char hiddenFieldData[5]{};
+
+    SceneFieldData hidden{sceneFieldCustom(773), SceneMappingType::UnsignedShort, Containers::arrayCast<const char>(Containers::stridedArrayView(hiddenMappingData)), Containers::StridedBitArrayView1D{Containers::BitArrayView{hiddenFieldData + 1, 5, 24}, 8, 3}, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(hidden.flags(), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(hidden.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(hidden.size(), 8);
+    CORRADE_COMPARE(hidden.mappingType(), SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(hidden.mappingData().size(), 8);
+    CORRADE_COMPARE(hidden.mappingData().stride(), sizeof(UnsignedShort));
+    CORRADE_COMPARE(hidden.mappingData().data(), hiddenMappingData);
+    CORRADE_COMPARE(hidden.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(hidden.fieldArraySize(), 0);
+    CORRADE_COMPARE(hidden.fieldBitData().data(), hiddenFieldData + 1);
+    CORRADE_COMPARE(hidden.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(hidden.fieldBitData().size(), (Containers::Size2D{8, 1}));
+    CORRADE_COMPARE(hidden.fieldBitData().stride(), (Containers::Stride2D{3, 1}));
+
+    constexpr SceneFieldData chidden{sceneFieldCustom(773), SceneMappingType::UnsignedShort, Containers::StridedArrayView1D<const void>{HiddenMapping, 8, sizeof(UnsignedShort)}, Containers::StridedBitArrayView1D{Containers::BitArrayView{HiddenField + 1, 5, 24}, 8, 3}, SceneFieldFlag::ImplicitMapping};
+    constexpr SceneField name = chidden.name();
+    constexpr SceneFieldFlags flags = chidden.flags();
+    constexpr std::size_t size = chidden.size();
+    constexpr SceneMappingType mappingType = chidden.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(773));
+    CORRADE_COMPARE(flags, SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(size, 8);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedShort);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(chidden.mappingData().size(), 8);
+    CORRADE_COMPARE(chidden.mappingData().stride(), sizeof(UnsignedShort));
+    CORRADE_COMPARE(chidden.mappingData().data(), HiddenMapping);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(chidden.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(chidden.fieldArraySize(), 0);
+    CORRADE_COMPARE(chidden.fieldBitData().data(), HiddenField + 1);
+    CORRADE_COMPARE(chidden.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(chidden.fieldBitData().size(), (Containers::Size2D{8, 1}));
+    CORRADE_COMPARE(chidden.fieldBitData().stride(), (Containers::Stride2D{3, 1}));
+}
+
 void SceneDataTest::constructFieldTypeErasedString() {
     const UnsignedLong nameMappingData[3]{};
     const char nameStringData[15]{};
@@ -1078,6 +1240,32 @@ void SceneDataTest::constructFieldTypeErased2D() {
     CORRADE_COMPARE(rotations.fieldData().size(), 3);
     CORRADE_COMPARE(rotations.fieldData().stride(), 2*sizeof(Complexd));
     CORRADE_COMPARE(rotations.fieldData().data(), rotationFieldView.data());
+
+    /* 2D type-erased construction is not constexpr due to branching to select
+       a corresponding SceneMappingType */
+}
+
+void SceneDataTest::constructFieldTypeErased2DBit() {
+    char hiddenMappingData[16*sizeof(UnsignedShort)]{};
+    char hiddenFieldData[5]{};
+    auto hiddenMappingView = Containers::StridedArrayView2D<char>{hiddenMappingData, {16, sizeof(UnsignedShort)}}.every(2);
+    /* No type-erased 2D view for the bit field data -- the 2D view constructor
+       is the array constructor which is tested in constructFieldArrayBit() */
+
+    SceneFieldData hidden{sceneFieldCustom(773), hiddenMappingView, Containers::StridedBitArrayView1D{Containers::BitArrayView{hiddenFieldData + 1, 5, 24}, 8, 3}, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(hidden.flags(), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(hidden.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(hidden.size(), 8);
+    CORRADE_COMPARE(hidden.mappingType(), SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(hidden.mappingData().size(), 8);
+    CORRADE_COMPARE(hidden.mappingData().stride(), 2*sizeof(UnsignedShort));
+    CORRADE_COMPARE(hidden.mappingData().data(), hiddenMappingData);
+    CORRADE_COMPARE(hidden.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(hidden.fieldArraySize(), 0);
+    CORRADE_COMPARE(hidden.fieldBitData().data(), hiddenFieldData + 1);
+    CORRADE_COMPARE(hidden.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(hidden.fieldBitData().size(), (Containers::Size2D{8, 1}));
+    CORRADE_COMPARE(hidden.fieldBitData().stride(), (Containers::Stride2D{3, 1}));
 
     /* 2D type-erased construction is not constexpr due to branching to select
        a corresponding SceneMappingType */
@@ -1169,6 +1357,66 @@ void SceneDataTest::constructFieldOffsetOnly() {
     CORRADE_COMPARE(ca.fieldData(data).stride(), sizeof(Data));
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(ca.fieldData(data)),
         Containers::arrayView<Vector2>({{2.0f, 3.0f}, {67.0f, -1.1f}}),
+        TestSuite::Compare::Container);
+}
+
+void SceneDataTest::constructFieldOffsetOnlyBit() {
+    struct Data {
+        Byte parent;
+        UnsignedInt object;
+        char yesInFifthBit;
+    } data[]{
+        {0, 2, '\x10'},
+        {0, 15, '\xef'},
+        {0, 22, '\x10'}
+    };
+
+    SceneFieldData a{sceneFieldCustom(773), 3, SceneMappingType::UnsignedInt, offsetof(Data, object), sizeof(Data), offsetof(Data, yesInFifthBit), 4, sizeof(Data)*8, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(a.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(a.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(a.size(), 3);
+    CORRADE_COMPARE(a.mappingType(), SceneMappingType::UnsignedInt);
+    CORRADE_COMPARE(a.mappingData(data).size(), 3);
+    CORRADE_COMPARE(a.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedInt>(a.mappingData(data)),
+        Containers::arrayView<UnsignedInt>({2, 15, 22}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(a.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(a.fieldArraySize(), 0);
+    CORRADE_COMPARE(a.fieldBitData(data).data(), &data[0].yesInFifthBit);
+    CORRADE_COMPARE(a.fieldBitData(data).offset(), 4);
+    CORRADE_COMPARE(a.fieldBitData(data).size(), (Containers::Size2D{3, 1}));
+    CORRADE_COMPARE(a.fieldBitData(data).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+    CORRADE_COMPARE_AS((a.fieldBitData(data).transposed<0, 1>())[0],
+        Containers::stridedArrayView({true, false, true}).sliceBit(0),
+        TestSuite::Compare::Container);
+
+    constexpr SceneFieldData ca{sceneFieldCustom(773), 3, SceneMappingType::UnsignedInt, offsetof(Data, object), sizeof(Data), offsetof(Data, yesInFifthBit), 4, sizeof(Data)*8, SceneFieldFlag::OrderedMapping};
+    constexpr SceneField name = ca.name();
+    constexpr SceneFieldFlags flags = ca.flags();
+    constexpr std::size_t size = ca.size();
+    constexpr SceneMappingType mappingType = ca.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(773));
+    CORRADE_COMPARE(flags, SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedInt);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(ca.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(ca.fieldArraySize(), 0);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(ca.mappingData(data).size(), 3);
+    CORRADE_COMPARE(ca.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedInt>(ca.mappingData(data)),
+        Containers::arrayView<UnsignedInt>({2, 15, 22}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(ca.fieldBitData(data).offset(), 4);
+    CORRADE_COMPARE(ca.fieldBitData(data).size(), (Containers::Size2D{3, 1}));
+    CORRADE_COMPARE(ca.fieldBitData(data).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+    CORRADE_COMPARE_AS((ca.fieldBitData(data).transposed<0, 1>())[0],
+        Containers::stridedArrayView({true, false, true}).sliceBit(0),
         TestSuite::Compare::Container);
 }
 
@@ -1306,6 +1554,53 @@ void SceneDataTest::constructFieldArray() {
     CORRADE_COMPARE(cdata.fieldData().data(), ArrayOffsetFieldData);
 }
 
+constexpr UnsignedLong ArrayHiddenMapping[3]{};
+constexpr char ArrayHiddenField[5]{};
+
+void SceneDataTest::constructFieldArrayBit() {
+    const UnsignedLong hiddenMappingData[3]{};
+    const char hiddenFieldData[5]{};
+
+    SceneFieldData data{sceneFieldCustom(773), Containers::arrayView(hiddenMappingData), Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData + 1, 5, 24}, {3, 4}, {8, 1}}, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(data.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(data.size(), 3);
+    CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(data.mappingData().size(), 3);
+    CORRADE_COMPARE(data.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(data.mappingData().data(), hiddenMappingData);
+    CORRADE_COMPARE(data.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(data.fieldArraySize(), 4);
+    CORRADE_COMPARE(data.fieldBitData().data(), hiddenFieldData + 1);
+    CORRADE_COMPARE(data.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(data.fieldBitData().size(), (Containers::Size2D{3, 4}));
+    CORRADE_COMPARE(data.fieldBitData().stride(), (Containers::Stride2D{8, 1}));
+
+    constexpr SceneFieldData cdata{sceneFieldCustom(773), Containers::arrayView(ArrayHiddenMapping), Containers::StridedBitArrayView2D{Containers::BitArrayView{ArrayHiddenField + 1, 5, 24}, {3, 4}, {8, 1}}, SceneFieldFlag::OrderedMapping};
+    constexpr SceneField name = cdata.name();
+    constexpr SceneFieldFlags flags = cdata.flags();
+    constexpr std::size_t size = cdata.size();
+    constexpr SceneMappingType mappingType = cdata.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(773));
+    CORRADE_COMPARE(flags, SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedLong);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(cdata.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(cdata.fieldArraySize(), 4);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(cdata.mappingData().size(), 3);
+    CORRADE_COMPARE(cdata.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(cdata.mappingData().data(), ArrayHiddenMapping);
+    CORRADE_COMPARE(cdata.fieldBitData().data(), ArrayHiddenField + 1);
+    CORRADE_COMPARE(cdata.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(cdata.fieldBitData().size(), (Containers::Size2D{3, 4}));
+    CORRADE_COMPARE(cdata.fieldBitData().stride(), (Containers::Stride2D{8, 1}));
+}
+
 void SceneDataTest::constructFieldArrayTypeErased() {
     UnsignedByte offsetMappingData[3];
     Int offsetFieldData[3*4];
@@ -1348,6 +1643,50 @@ void SceneDataTest::constructFieldArrayTypeErased() {
     CORRADE_COMPARE(cdata.fieldData().data(), ArrayOffsetFieldData);
 }
 
+void SceneDataTest::constructFieldArrayTypeErasedBit() {
+    const UnsignedLong hiddenMappingData[3]{};
+    const char hiddenFieldData[5]{};
+
+    SceneFieldData data{sceneFieldCustom(773), SceneMappingType::UnsignedLong, Containers::arrayCast<const char>(Containers::stridedArrayView(hiddenMappingData)), Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData + 1, 5, 24}, {3, 4}, {8, 1}}, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(data.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(data.size(), 3);
+    CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(data.mappingData().size(), 3);
+    CORRADE_COMPARE(data.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(data.mappingData().data(), hiddenMappingData);
+    CORRADE_COMPARE(data.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(data.fieldArraySize(), 4);
+    CORRADE_COMPARE(data.fieldBitData().data(), hiddenFieldData + 1);
+    CORRADE_COMPARE(data.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(data.fieldBitData().size(), (Containers::Size2D{3, 4}));
+    CORRADE_COMPARE(data.fieldBitData().stride(), (Containers::Stride2D{8, 1}));
+
+    constexpr SceneFieldData cdata{sceneFieldCustom(773), SceneMappingType::UnsignedLong, Containers::StridedArrayView1D<const void>{ArrayHiddenMapping}, Containers::StridedBitArrayView2D{Containers::BitArrayView{ArrayHiddenField + 1, 5, 24}, {3, 4}, {8, 1}}, SceneFieldFlag::OrderedMapping};
+    constexpr SceneField name = cdata.name();
+    constexpr SceneFieldFlags flags = cdata.flags();
+    constexpr std::size_t size = cdata.size();
+    constexpr SceneMappingType mappingType = cdata.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(773));
+    CORRADE_COMPARE(flags, SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedLong);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(cdata.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(cdata.fieldArraySize(), 4);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(cdata.mappingData().size(), 3);
+    CORRADE_COMPARE(cdata.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(cdata.mappingData().data(), ArrayHiddenMapping);
+    CORRADE_COMPARE(cdata.fieldBitData().data(), ArrayHiddenField + 1);
+    CORRADE_COMPARE(cdata.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(cdata.fieldBitData().size(), (Containers::Size2D{3, 4}));
+    CORRADE_COMPARE(cdata.fieldBitData().stride(), (Containers::Stride2D{8, 1}));
+}
+
 void SceneDataTest::constructFieldArrayTypeErased2D() {
     char offsetMappingData[3*sizeof(UnsignedByte)];
     char offsetFieldData[3*4*sizeof(Int)];
@@ -1364,6 +1703,29 @@ void SceneDataTest::constructFieldArrayTypeErased2D() {
     CORRADE_COMPARE(data.fieldData().size(), 3);
     CORRADE_COMPARE(data.fieldData().stride(), 4*sizeof(Int));
     CORRADE_VERIFY(data.fieldData().data() == offsetFieldData);
+
+    /* 2D type-erased construction is not constexpr due to branching to select
+       a corresponding SceneMappingType */
+}
+
+void SceneDataTest::constructFieldArrayTypeErased2DBit() {
+    char hiddenMappingData[3*sizeof(UnsignedLong)]{};
+    char hiddenFieldData[5]{};
+
+    SceneFieldData data{sceneFieldCustom(773), Containers::StridedArrayView2D<const char>{hiddenMappingData, {3, sizeof(UnsignedLong)}}, Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData + 1, 5, 24}, {3, 4}, {8, 1}}, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(data.flags(), SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(data.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(data.size(), 3);
+    CORRADE_COMPARE(data.mappingType(), SceneMappingType::UnsignedLong);
+    CORRADE_COMPARE(data.mappingData().size(), 3);
+    CORRADE_COMPARE(data.mappingData().stride(), sizeof(UnsignedLong));
+    CORRADE_COMPARE(data.mappingData().data(), hiddenMappingData);
+    CORRADE_COMPARE(data.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(data.fieldArraySize(), 4);
+    CORRADE_COMPARE(data.fieldBitData().data(), hiddenFieldData + 1);
+    CORRADE_COMPARE(data.fieldBitData().offset(), 5);
+    CORRADE_COMPARE(data.fieldBitData().size(), (Containers::Size2D{3, 4}));
+    CORRADE_COMPARE(data.fieldBitData().stride(), (Containers::Stride2D{8, 1}));
 
     /* 2D type-erased construction is not constexpr due to branching to select
        a corresponding SceneMappingType */
@@ -1432,20 +1794,88 @@ void SceneDataTest::constructFieldArrayOffsetOnly() {
         TestSuite::Compare::Container);
 }
 
+void SceneDataTest::constructFieldArrayOffsetOnlyBit() {
+    struct Data {
+        Byte parent;
+        UnsignedInt object;
+        char yesNoInUpperBits;
+    } data[]{
+        {0, 2, '\x80'},
+        {0, 15, '\x7f'},
+        {0, 22, '\x80'}
+    };
+
+    SceneFieldData a{sceneFieldCustom(773), 3, SceneMappingType::UnsignedInt, offsetof(Data, object), sizeof(Data), offsetof(Data, yesNoInUpperBits), 6, sizeof(Data)*8, 2, SceneFieldFlag::OrderedMapping};
+    CORRADE_COMPARE(a.flags(), SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(a.name(), sceneFieldCustom(773));
+    CORRADE_COMPARE(a.size(), 3);
+    CORRADE_COMPARE(a.mappingType(), SceneMappingType::UnsignedInt);
+    CORRADE_COMPARE(a.mappingData(data).size(), 3);
+    CORRADE_COMPARE(a.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedInt>(a.mappingData(data)),
+        Containers::arrayView<UnsignedInt>({2, 15, 22}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(a.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(a.fieldArraySize(), 2);
+    CORRADE_COMPARE(a.fieldBitData(data).offset(), 6);
+    CORRADE_COMPARE(a.fieldBitData(data).size(), (Containers::Size2D{3, 2}));
+    CORRADE_COMPARE(a.fieldBitData(data).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+    CORRADE_COMPARE_AS((a.fieldBitData(data).transposed<0, 1>())[0],
+        Containers::stridedArrayView({false, true, false}).sliceBit(0),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((a.fieldBitData(data).transposed<0, 1>())[1],
+        Containers::stridedArrayView({true, false, true}).sliceBit(0),
+        TestSuite::Compare::Container);
+
+    constexpr SceneFieldData ca{sceneFieldCustom(773), 3, SceneMappingType::UnsignedInt, offsetof(Data, object), sizeof(Data), offsetof(Data, yesNoInUpperBits), 6, sizeof(Data)*8, 2, SceneFieldFlag::OrderedMapping};
+    constexpr SceneField name = ca.name();
+    constexpr SceneFieldFlags flags = ca.flags();
+    constexpr std::size_t size = ca.size();
+    constexpr SceneMappingType mappingType = ca.mappingType();
+    CORRADE_COMPARE(name, sceneFieldCustom(773));
+    CORRADE_COMPARE(flags, SceneFieldFlag::OffsetOnly|SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(size, 3);
+    CORRADE_COMPARE(mappingType, SceneMappingType::UnsignedInt);
+    /* These are not marked constexpr because it'd work only partially, not for
+       string fields (tested in constructFieldOffsetOnlyString()) */
+    CORRADE_COMPARE(ca.fieldType(), SceneFieldType::Bit);
+    CORRADE_COMPARE(ca.fieldArraySize(), 2);
+    /* These are deliberately not constexpr to save header size a bit --
+       compared to SceneField APIs they get used very little and it's mostly
+       useless in a constexpr context anyway */
+    CORRADE_COMPARE(ca.mappingData(data).size(), 3);
+    CORRADE_COMPARE(ca.mappingData(data).stride(), sizeof(Data));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedInt>(ca.mappingData(data)),
+        Containers::arrayView<UnsignedInt>({2, 15, 22}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(ca.fieldBitData(data).offset(), 6);
+    CORRADE_COMPARE(ca.fieldBitData(data).size(), (Containers::Size2D{3, 2}));
+    CORRADE_COMPARE(ca.fieldBitData(data).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+    CORRADE_COMPARE_AS((ca.fieldBitData(data).transposed<0, 1>())[0],
+        Containers::stridedArrayView({false, true, false}).sliceBit(0),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((ca.fieldBitData(data).transposed<0, 1>())[1],
+        Containers::stridedArrayView({true, false, true}).sliceBit(0),
+        TestSuite::Compare::Container);
+}
+
 void SceneDataTest::constructFieldInconsistentViewSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort mappingData[3]{};
     const Complexd rotationFieldData[2];
+    const char hiddenFieldData[1]{};
     const char helloStringData[5]{};
     const UnsignedLong helloOffsetsData[2]{};
 
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData)};
+    SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 2}};
     SceneFieldData{sceneFieldCustom(32), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset64, Containers::arrayView(helloOffsetsData)};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: expected Trade::SceneField::Rotation mapping and field view to have the same size but got 3 and 2\n"
+        "Trade::SceneFieldData: expected Trade::SceneField::Custom(773) mapping and field view to have the same size but got 3 and 2\n"
         "Trade::SceneFieldData: expected Trade::SceneField::Custom(32) mapping and field view to have the same size but got 3 and 2\n");
 }
 
@@ -1459,11 +1889,31 @@ void SceneDataTest::constructFieldWrongType() {
     Error redirectError{&out};
     SceneFieldData{SceneField::Transformation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
     SceneFieldData{SceneField::Transformation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion)};
-    /** @todo test also builtin string fields with non-string types once there
-        are any */
+    /** @todo test also builtin bit and string fields with non-string types
+        once there are any */
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: Trade::SceneFieldType::Quaternion is not a valid type for Trade::SceneField::Transformation\n"
         "Trade::SceneFieldData: Trade::SceneFieldType::Quaternion is not a valid type for Trade::SceneField::Transformation\n");
+}
+
+void SceneDataTest::constructFieldWrongTypeBit() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    const UnsignedShort hiddenMappingData[3]{};
+    const bool hiddenFieldData[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Non-bit constructors with SceneFieldType::Bit. Only type-erased, 2D and
+       offset-only construction, the regular and array constructor from typed
+       views have SceneFieldType implicit. */
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedShort, Containers::arrayView(hiddenMappingData), SceneFieldType::Bit, Containers::arrayView(hiddenFieldData)};
+    SceneFieldData{sceneFieldCustom(773), Containers::arrayCast<2, const char>(Containers::arrayView(hiddenMappingData)), SceneFieldType::Bit, Containers::arrayCast<2, const char>(Containers::arrayView(hiddenFieldData))};
+    SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::Bit, 0, 1};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: use a bit constructor for Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: use a bit constructor for Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: use a bit constructor for Trade::SceneFieldType::Bit\n");
 }
 
 void SceneDataTest::constructFieldWrongTypeString() {
@@ -1512,6 +1962,11 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 32767, SceneFieldType::UnsignedInt, 0, 4};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 65536, -32768, SceneFieldType::UnsignedInt, 0, 4};
 
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32767}, Containers::BitArrayView{enough, 0, 2}};
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}.flipped<0>(), Containers::BitArrayView{enough, 0, 2}};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 0, 32767, 0, 0, 4};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 65536, -32768, 0, 0, 4};
+
     SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32767}, helloStringData, SceneFieldType::StringOffset32, enough};
     SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}.flipped<0>(), helloStringData, SceneFieldType::StringOffset32, enough};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 32767, 0, SceneFieldType::StringOffset32, 0, 4};
@@ -1524,11 +1979,21 @@ void SceneDataTest::constructFieldTooLargeMappingStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 32768, SceneFieldType::UnsignedInt, 0, 4};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 65538, -32769, SceneFieldType::UnsignedInt, 0, 4};
 
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}, Containers::BitArrayView{enough, 0, 2}};
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>(), Containers::BitArrayView{enough, 0, 2}};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 0, 32768, 0, 0, 4};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 65538, -32769, 0, 0, 4};
+
     SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}, helloStringData, SceneFieldType::StringOffset32, enough};
     SceneFieldData{sceneFieldCustom(25), SceneMappingType::UnsignedInt, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>(), helloStringData, SceneFieldType::StringOffset32, enough};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 32768, 0, SceneFieldType::StringOffset32, 0, 4};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 65538, -32769, 0, SceneFieldType::StringOffset32, 0, 4};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
+
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got -32769\n"
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got 32768\n"
@@ -1553,6 +2018,11 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 0, 32767};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 65536, -32768};
 
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, enough, Containers::StridedBitArrayView1D{Containers::BitArrayView{toomuch}, 2, 32767}};
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, enough, Containers::StridedBitArrayView1D{Containers::BitArrayView{toomuch}, 2, 32768}.flipped<0>()};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 0, 32767};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 65536, -32768};
+
     SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32767}};
     SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}.flipped<0>()};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 0, 32767};
@@ -1565,11 +2035,21 @@ void SceneDataTest::constructFieldTooLargeFieldStride() {
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 0, 32768};
     SceneFieldData{SceneField::Mesh, 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 65538, -32769};
 
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, enough, Containers::StridedBitArrayView1D{Containers::BitArrayView{toomuch}, 2, 32768}};
+    SceneFieldData{sceneFieldCustom(773), SceneMappingType::UnsignedInt, enough, Containers::StridedBitArrayView1D{Containers::BitArrayView{toomuch}, 2, 32769}.flipped<0>()};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 0, 32768};
+    SceneFieldData{sceneFieldCustom(773), 2, SceneMappingType::UnsignedInt, 0, 4, SceneFieldType::UnsignedInt, 65538, -32769};
+
     SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32768}};
     SceneFieldData{sceneFieldCustom(35), SceneMappingType::UnsignedInt, enough, helloStringData, SceneFieldType::StringRangeNullTerminated32, Containers::StridedArrayView1D<UnsignedInt>{Containers::arrayCast<UnsignedInt>(toomuch), 2, 32769}.flipped<0>()};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 0, 32768};
     SceneFieldData{sceneFieldCustom(35), 2, SceneMappingType::UnsignedInt, 0, 4, 0, SceneFieldType::StringRangeNullTerminated32, 65538, -32769};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
+        "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
+
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got -32769\n"
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got 32768\n"
@@ -1586,11 +2066,13 @@ void SceneDataTest::constructFieldFlagNotAllowed() {
 
     const UnsignedShort mappingData[3]{};
     const Quaternion rotationFieldData[3];
+    const char hiddenFieldData[1]{};
     const char helloStringData[5]{};
     const UnsignedShort helloFieldData[3]{};
 
     /* These are fine */
     SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion), SceneFieldFlag::OffsetOnly};
+    SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), 0, 0, sizeof(Quaternion), SceneFieldFlag::OffsetOnly};
     SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::NullTerminatedString};
     SceneFieldData{sceneFieldCustom(24), 3, SceneMappingType::UnsignedShort, 0, 2, 0, SceneFieldType::StringOffset32, 0, 4, SceneFieldFlag::NullTerminatedString};
 
@@ -1600,12 +2082,24 @@ void SceneDataTest::constructFieldFlagNotAllowed() {
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::NullTerminatedString};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString};
     SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::Quaternion, 0, 16, SceneFieldFlag::NullTerminatedString};
+
+    SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}, SceneFieldFlag::OffsetOnly};
+    SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}, SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}, SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, 2, 0, 0, 16, SceneFieldFlag::NullTerminatedString};
+
     SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::OffsetOnly};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view of Trade::SceneFieldType::Quaternion\n"
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Quaternion\n"
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Quaternion\n"
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneFieldType::Quaternion\n"
+
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view of Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneFieldType::Bit\n"
+
         "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view\n");
 }
 
@@ -1618,24 +2112,52 @@ void SceneDataTest::constructFieldWrongOffsetOnlyDataAccess() {
 
     SceneFieldData a{SceneField::Rotation, Containers::arrayView(rotationMappingData), Containers::arrayView(rotationFieldData)};
     SceneFieldData b{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion)};
-    SceneFieldData c{sceneFieldCustom(25), 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), 0, SceneFieldType::StringRange32, 0, 64};
+    SceneFieldData c{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), 0, 0, 1};
+    SceneFieldData d{sceneFieldCustom(25), 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), 0, SceneFieldType::StringRange32, 0, 64};
     CORRADE_COMPARE(a.flags(), SceneFieldFlags{});
     CORRADE_COMPARE(b.flags(), SceneFieldFlag::OffsetOnly);
     CORRADE_COMPARE(c.flags(), SceneFieldFlag::OffsetOnly);
+    CORRADE_COMPARE(d.flags(), SceneFieldFlag::OffsetOnly);
 
     a.mappingData(rotationMappingData); /* This is fine, no asserts */
-    a.fieldData(rotationFieldData);
-    c.stringData(hello);
+    b.fieldData(rotationFieldData);
+    c.fieldBitData(hello);
+    d.stringData(hello);
 
     std::ostringstream out;
     Error redirectError{&out};
     b.mappingData();
     b.fieldData();
-    c.stringData();
+    d.fieldBitData();
+    d.stringData();
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData::mappingData(): the field is offset-only, supply a data array\n"
         "Trade::SceneFieldData::fieldData(): the field is offset-only, supply a data array\n"
+        "Trade::SceneFieldData::fieldBitData(): the field is offset-only, supply a data array\n"
         "Trade::SceneFieldData::stringData(): the field is offset-only, supply a data array\n");
+}
+
+void SceneDataTest::constructFieldWrongBitDataAccess() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    const UnsignedShort mappingData[3]{};
+    const char hiddenFieldData[3]{};
+    const Quaternion rotationFieldData[3];
+
+    SceneFieldData a{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}};
+    SceneFieldData b{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData)};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    a.fieldData();
+    a.fieldData(hiddenFieldData);
+    b.fieldBitData();
+    b.fieldBitData(rotationFieldData);
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData::fieldData(): the field is Trade::SceneFieldType::Bit, use fieldBitData() instead\n"
+        "Trade::SceneFieldData::fieldData(): the field is Trade::SceneFieldType::Bit, use fieldBitData() instead\n"
+        "Trade::SceneFieldData::fieldBitData(): the field is Trade::SceneFieldType::Quaternion, not a bit\n"
+        "Trade::SceneFieldData::fieldBitData(): the field is Trade::SceneFieldType::Quaternion, not a bit\n");
 }
 
 void SceneDataTest::constructFieldWrongStringDataAccess() {
@@ -1660,6 +2182,7 @@ void SceneDataTest::constructFieldTypeErased2DWrongSize() {
 
     char mappingData[5*sizeof(UnsignedInt)];
     char rotationFieldData[4*sizeof(Complex)];
+    char hiddenFieldData[1]{};
     char helloStringData[3]{};
     char helloFieldData[4*sizeof(UnsignedShort)]{};
 
@@ -1669,6 +2192,12 @@ void SceneDataTest::constructFieldTypeErased2DWrongSize() {
         Containers::StridedArrayView2D<char>{mappingData, {4, 5}}.every(2),
         SceneFieldType::Complex,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, sizeof(Complex)}}.every(2)};
+    SceneFieldData{sceneFieldCustom(773),
+        Containers::StridedArrayView2D<char>{mappingData, {4, 5}}.every(2),
+        Containers::StridedBitArrayView1D{Containers::BitArrayView{hiddenFieldData}, 4}.every(2)};
+    SceneFieldData{sceneFieldCustom(773),
+        Containers::StridedArrayView2D<char>{mappingData, {4, 5}}.every(2),
+        Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData}, {4, 2}}.every(2)};
     SceneFieldData{sceneFieldCustom(32),
         Containers::StridedArrayView2D<char>{mappingData, {4, 5}}.every(2),
         helloStringData,
@@ -1678,12 +2207,15 @@ void SceneDataTest::constructFieldTypeErased2DWrongSize() {
         Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedInt)}}.every(2),
         SceneFieldType::Vector3,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, sizeof(Complex)}}.every(2)};
+    /* All second field dimension sizes are fine for SceneFieldType::Bit */
     SceneFieldData{sceneFieldCustom(32),
         Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedInt)}}.every(2),
         helloStringData,
         SceneFieldType::StringRange16,
         Containers::StridedArrayView2D<char>{helloFieldData, {4, sizeof(UnsignedShort)}}.every(2)};
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
+        "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
         "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
         "Trade::SceneFieldData: expected second mapping view dimension size 1, 2, 4 or 8 but got 5\n"
         "Trade::SceneFieldData: second field view dimension size 8 doesn't match Trade::SceneFieldType::Vector3\n"
@@ -1695,6 +2227,7 @@ void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
 
     char mappingData[8*sizeof(UnsignedInt)];
     char rotationFieldData[8*sizeof(Complex)];
+    char hiddenFieldData[1]{};
     char helloStringData[3]{};
     char helloFieldData[8*sizeof(UnsignedShort)]{};
 
@@ -1704,6 +2237,9 @@ void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
         Containers::StridedArrayView2D<char>{mappingData, {4, 2*sizeof(UnsignedInt)}}.every({1, 2}),
         SceneFieldType::Complex,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, sizeof(Complex)}}};
+    SceneFieldData{sceneFieldCustom(773),
+        Containers::StridedArrayView2D<char>{mappingData, {4, 2*sizeof(UnsignedInt)}}.every({1, 2}),
+        Containers::StridedBitArrayView1D{Containers::BitArrayView{hiddenFieldData}, 4}};
     SceneFieldData{sceneFieldCustom(32),
         Containers::StridedArrayView2D<char>{mappingData, {4, 2*sizeof(UnsignedInt)}}.every({1, 2}),
         helloStringData,
@@ -1713,6 +2249,9 @@ void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
         Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedInt)}},
         SceneFieldType::Complex,
         Containers::StridedArrayView2D<char>{rotationFieldData, {4, 2*sizeof(Complex)}}.every({1, 2})};
+    /* SceneFieldType::Bit has no type-erased 2D field case, the constructor
+       taking a 2D bit array view is tested in
+       constructFieldArrayNonContiguous() below */
     SceneFieldData{sceneFieldCustom(32),
         /* Just to cover the case of a 1-byte mapping type (lazy) */
         Containers::StridedArrayView2D<char>{mappingData, {4, sizeof(UnsignedByte)}, {4, 1}},
@@ -1722,6 +2261,7 @@ void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
+        "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
         "Trade::SceneFieldData: second field view dimension is not contiguous\n"
         "Trade::SceneFieldData: second field view dimension is not contiguous\n");
 }
@@ -1729,13 +2269,19 @@ void SceneDataTest::constructFieldTypeErased2DNonContiguous() {
 void SceneDataTest::constructFieldArrayNonContiguous() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    UnsignedByte offsetMappingData[3];
+    UnsignedByte mappingData[3];
     Int offsetFieldData[3*4];
+    char hiddenFieldData[2]{};
 
     std::ostringstream out;
     Error redirectError{&out};
-    SceneFieldData data{sceneFieldCustom(34), Containers::arrayView(offsetMappingData), Containers::StridedArrayView2D<Int>{offsetFieldData, {3, 4}}.every({1, 2})};
-    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: second field view dimension is not contiguous\n");
+    SceneFieldData data{sceneFieldCustom(34), Containers::arrayView(mappingData), Containers::StridedArrayView2D<Int>{offsetFieldData, {3, 4}}.every({1, 2})};
+    SceneFieldData{sceneFieldCustom(773),
+        Containers::arrayView(mappingData),
+        Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData}, {3, 4}}.every({1, 2})};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: second field view dimension is not contiguous\n"
+        "Trade::SceneFieldData: second field view dimension is not contiguous\n");
 }
 
 void SceneDataTest::constructFieldArrayNotAllowed() {
@@ -1749,7 +2295,9 @@ void SceneDataTest::constructFieldArrayNotAllowed() {
     auto rotationMappingChar = Containers::arrayCast<2, const char>(rotationMapping);
     auto rotationField2DChar = Containers::arrayCast<2, const char>(rotationFields2D);
 
-    /* This is all fine */
+    /* This is all fine -- builtin fields can be created with the array
+       constructors if the array size is set to 0, custom fields of any type
+       can do anything */
     SceneFieldData{SceneField::Rotation,
         SceneMappingType::UnsignedShort, rotationMapping,
         SceneFieldType::Quaternion, rotationField, 0};
@@ -1810,22 +2358,61 @@ void SceneDataTest::constructFieldArrayTypeErased2DWrongSize() {
 void SceneDataTest::constructFieldArrayTypeErased2DNonContiguous() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    char offsetMappingData[18*sizeof(UnsignedInt)];
+    char mappingData[18*sizeof(UnsignedInt)];
     char offsetFieldData[18*sizeof(Int)];
+    char hiddenFieldData[2]{};
 
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{sceneFieldCustom(37),
-        Containers::StridedArrayView2D<char>{offsetMappingData, {3, 2*sizeof(UnsignedInt)}}.every({1, 2}),
+        Containers::StridedArrayView2D<char>{mappingData, {3, 2*sizeof(UnsignedInt)}}.every({1, 2}),
         SceneFieldType::Int,
         Containers::StridedArrayView2D<char>{offsetFieldData, {3, 3*sizeof(Int)}}, 3};
+    SceneFieldData{sceneFieldCustom(773),
+        Containers::StridedArrayView2D<char>{mappingData, {3, sizeof(UnsignedInt)}}.every({1, 2}),
+        Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData}, {3, 4}}};
     SceneFieldData{sceneFieldCustom(37),
-        Containers::StridedArrayView2D<char>{offsetMappingData, {3, sizeof(UnsignedInt)}},
+        Containers::StridedArrayView2D<char>{mappingData, {3, sizeof(UnsignedInt)}},
         SceneFieldType::Int,
         Containers::StridedArrayView2D<char>{offsetFieldData, {3, 6*sizeof(Int)}}.every({1, 2}), 3};
+    SceneFieldData{sceneFieldCustom(773),
+        Containers::StridedArrayView2D<char>{mappingData, {3, sizeof(UnsignedInt)}},
+        Containers::StridedBitArrayView2D{Containers::BitArrayView{hiddenFieldData}, {3, 4}}.every({1, 2})};
     CORRADE_COMPARE(out.str(),
         "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
+        "Trade::SceneFieldData: second mapping view dimension is not contiguous\n"
+        "Trade::SceneFieldData: second field view dimension is not contiguous\n"
         "Trade::SceneFieldData: second field view dimension is not contiguous\n");
+}
+
+void SceneDataTest::constructFieldBitTooLargeBitOffset() {
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
+
+    /* Only checked in the offset-only constructor, the StridedBitArrayView
+       checks this on its own already. There it's a debug-only assert, be
+       consistent and have it debug-only here as well. */
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedInt, 0, sizeof(UnsignedInt), 0, 8, 1};
+    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: bit offset expected to be smaller than 8, got 8\n");
+}
+
+void SceneDataTest::constructFieldBitTooLargeSize() {
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
+
+    /* Only checked in the offset-only constructor, the StridedBitArrayView
+       checks this on its own already. There it's a debug-only assert, be
+       consistent and have it debug-only here as well. */
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    SceneFieldData{sceneFieldCustom(773), std::size_t{1} << (sizeof(std::size_t)*8 - 3), SceneMappingType::UnsignedInt, 0, sizeof(UnsignedInt), 0, 0, 1};
+    #ifndef CORRADE_TARGET_32BIT
+    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: size expected to be smaller than 2^61 bits, got 2305843009213693952\n");
+    #else
+    CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: size expected to be smaller than 2^29 bits, got 536870912\n");
+    #endif
 }
 
 void SceneDataTest::construct() {
@@ -2209,6 +2796,212 @@ void SceneDataTest::constructNotOwned() {
         CORRADE_COMPARE(scene.mutableField<UnsignedByte>(0)[2], 0);
 }
 
+void SceneDataTest::constructBit() {
+    struct Data {
+        UnsignedByte object;
+        /* Bit 3 is one field, 5-7 the other; both are then included as both
+           direct and offset-only fields, the array then also with a negative
+           stride */
+        UnsignedByte bits;
+    } data[]{
+        {4, 0x01 << 3 | 0x02 << 5},
+        {0, 0x01 << 3 | 0x02 << 5},
+        {9, 0x00 << 3 | 0x05 << 5},
+        {2, 0x01 << 3 | 0x07 << 5},
+    };
+    auto view = Containers::stridedArrayView(data);
+
+    constexpr SceneField bitField = sceneFieldCustom(0);
+    constexpr SceneField arrayField = sceneFieldCustom(1);
+    constexpr SceneField bitFieldOffsetOnly = sceneFieldCustom(10);
+    constexpr SceneField arrayFieldOffsetOnly = sceneFieldCustom(11);
+
+    SceneData scene{SceneMappingType::UnsignedByte, 10, DataFlag::Mutable, data, {
+        SceneFieldData{bitField, view.slice(&Data::object),
+            Containers::StridedBitArrayView1D{Containers::BitArrayView{data}, &data[0].bits, 3, 4, sizeof(Data)*8}, SceneFieldFlag::ImplicitMapping},
+        SceneFieldData{arrayField, view.slice(&Data::object),
+            Containers::StridedBitArrayView2D{Containers::BitArrayView{data}, &data[0].bits, 5, {4, 3}, {sizeof(Data)*8, 1}}, SceneFieldFlag::OrderedMapping},
+        /* The two above, just as offset-only */
+        SceneFieldData{bitFieldOffsetOnly, 4,
+            SceneMappingType::UnsignedByte, 0, sizeof(Data),
+            offsetof(Data, bits), 3, sizeof(Data)*8, SceneFieldFlag::ImplicitMapping},
+        SceneFieldData{arrayFieldOffsetOnly, 4,
+            SceneMappingType::UnsignedByte, 0, sizeof(Data),
+            offsetof(Data, bits), 5, sizeof(Data)*8, 3, SceneFieldFlag::OrderedMapping},
+    }};
+
+    /* Raw field data access has special handling for bits, as offset-only
+       fields are always converted to real views */
+    for(UnsignedInt i: {0, 2}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldData(i).flags(), SceneFieldFlag::ImplicitMapping);
+        CORRADE_COMPARE(scene.fieldData(i).mappingType(), SceneMappingType::UnsignedByte);
+        CORRADE_COMPARE(scene.fieldData(i).mappingData().data(), &data[0].object);
+        CORRADE_COMPARE(scene.fieldData(i).mappingData().size(), 4);
+        CORRADE_COMPARE(scene.fieldData(i).mappingData().stride(), sizeof(Data));
+        CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(scene.fieldData(i).mappingData()),
+            Containers::arrayView<UnsignedByte>({4, 0, 9, 2}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.fieldData(i).fieldType(), SceneFieldType::Bit);
+        CORRADE_COMPARE(scene.fieldData(i).fieldArraySize(), 0);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().data(), &data[0].bits);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().offset(), 3);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().size(), (Containers::Size2D{4, 1}));
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        CORRADE_COMPARE_AS((scene.fieldData(i).fieldBitData().transposed<0, 1>())[0], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+    }
+    for(UnsignedInt i: {1, 3}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldData(i).flags(), SceneFieldFlag::OrderedMapping);
+        CORRADE_COMPARE(scene.fieldData(i).mappingType(), SceneMappingType::UnsignedByte);
+        CORRADE_COMPARE(scene.fieldData(i).mappingData().data(), &data[0].object);
+        CORRADE_COMPARE(scene.fieldData(i).mappingData().size(), 4);
+        CORRADE_COMPARE(scene.fieldData(i).mappingData().stride(), sizeof(Data));
+        CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(scene.fieldData(i).mappingData()),
+            Containers::arrayView<UnsignedByte>({4, 0, 9, 2}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE(scene.fieldData(i).fieldType(), SceneFieldType::Bit);
+        CORRADE_COMPARE(scene.fieldData(i).fieldArraySize(), 3);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().data(), &data[0].bits);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().offset(), 5);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        /* Testing just the first slice, should be enough. The whole data is
+           tested properly below */
+        CORRADE_COMPARE_AS((scene.fieldData(i).fieldBitData().transposed<0, 1>())[0], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+    }
+
+    /* Field propery access -- nothing special is done for bits, so just verify
+       roughly that the calls work */
+    CORRADE_COMPARE(scene.fieldFlags(bitFieldOffsetOnly), SceneFieldFlag::OffsetOnly|SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(scene.fieldType(arrayField), SceneFieldType::Bit);
+    CORRADE_COMPARE(scene.fieldArraySize(arrayFieldOffsetOnly), 3);
+
+    /* Single-bit field access using an ID and a name. The view and offset-only
+       variants should give the same results, const and mutable variant as
+       well, the array variant should working here too. */
+    for(UnsignedInt i: {0, 2}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldBits(i).size(), 4);
+        CORRADE_COMPARE(scene.fieldBits(i).stride(), sizeof(Data)*8);
+        CORRADE_COMPARE_AS(scene.fieldBits(i), Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBits(i).size(), 4);
+        CORRADE_COMPARE(scene.mutableFieldBits(i).stride(), sizeof(Data)*8);
+        CORRADE_COMPARE_AS(scene.mutableFieldBits(i), Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.fieldBitArrays(i).size(), (Containers::Size2D{4, 1}));
+        CORRADE_COMPARE(scene.fieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).size(), (Containers::Size2D{4, 1}));
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+    }
+    for(SceneField i: {bitField, bitFieldOffsetOnly}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldBits(i).size(), 4);
+        CORRADE_COMPARE(scene.fieldBits(i).stride(), sizeof(Data)*8);
+        CORRADE_COMPARE_AS(scene.fieldBits(i), Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBits(i).size(), 4);
+        CORRADE_COMPARE(scene.mutableFieldBits(i).stride(), sizeof(Data)*8);
+        CORRADE_COMPARE_AS(scene.mutableFieldBits(i), Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.fieldBitArrays(i).size(), (Containers::Size2D{4, 1}));
+        CORRADE_COMPARE(scene.fieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).size(), (Containers::Size2D{4, 1}));
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+    }
+
+    /* Bit array field access using ID and name. The view and offset-only
+       variants should give the same results, const and mutable variant as
+       well. */
+    for(UnsignedInt i: {1, 3}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldBitArrays(i).size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.fieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        /* Taking all first array items, all second etc, because that's less
+           comparisons than comparing 3 bits 4 times */
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[1], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[2], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        /* Taking all first array items, all second etc, because that's less
+           comparisons than comparing 3 bits 4 times */
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[1], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[2], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+    }
+    for(SceneField i: {arrayField, arrayFieldOffsetOnly}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldBitArrays(i).size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.fieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        /* Taking all first array items, all second etc, because that's less
+           comparisons than comparing 3 bits 4 times */
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[1], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[2], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).stride(), (Containers::Stride2D{sizeof(Data)*8, 1}));
+        /* Taking all first array items, all second etc, because that's less
+           comparisons than comparing 3 bits 4 times */
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[0], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[1], Containers::stridedArrayView({
+            true, true, false, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[2], Containers::stridedArrayView({
+            false, false, true, true
+        }).sliceBit(0), TestSuite::Compare::Container);
+    }
+}
+
 template<class T> struct StringFieldTraits;
 template<> struct StringFieldTraits<UnsignedByte> {
     static const char* name() { return "8"; }
@@ -2576,6 +3369,109 @@ void SceneDataTest::constructSpecialStrides() {
         TestSuite::Compare::Container);
 }
 
+void SceneDataTest::constructSpecialStridesBit() {
+    auto&& instanceData = ConstructSpecialStridesBitData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    /* Similar to constructBit(), except that the strides are negative and
+       zero, and only properties related to those are tested */
+
+    struct Data {
+        UnsignedByte object;
+        /* Bit 3 is one field, 5-7 the other; both are then included as both
+           direct and offset-only fields, the array then also with a negative
+           stride */
+        UnsignedByte bits;
+    } data[]{
+        {4, 0x01 << 3 | 0x02 << 5},
+        {0, 0x01 << 3 | 0x02 << 5},
+        {9, 0x00 << 3 | 0x05 << 5},
+        {2, 0x01 << 3 | 0x07 << 5},
+    };
+    auto view = Containers::stridedArrayView(data);
+
+    constexpr SceneField bitField = sceneFieldCustom(0);
+    constexpr SceneField arrayField = sceneFieldCustom(1);
+    constexpr SceneField bitFieldOffsetOnly = sceneFieldCustom(10);
+    constexpr SceneField arrayFieldOffsetOnly = sceneFieldCustom(11);
+
+    SceneData scene{SceneMappingType::UnsignedByte, 10, DataFlag::Mutable, data, {
+        SceneFieldData{bitField, view.slice(&Data::object),
+            Containers::StridedBitArrayView1D{Containers::BitArrayView{data}, &data[0].bits + instanceData.offset, instanceData.bitOffset, 4, instanceData.stride}, SceneFieldFlag::ImplicitMapping},
+        SceneFieldData{arrayField, view.slice(&Data::object),
+            Containers::StridedBitArrayView2D{Containers::BitArrayView{data}, &data[0].bits + instanceData.offset, instanceData.arrayBitOffset, {4, 3}, {instanceData.stride, 1}}, SceneFieldFlag::OrderedMapping},
+        /* The two above, just as offset-only */
+        SceneFieldData{bitFieldOffsetOnly, 4,
+            SceneMappingType::UnsignedByte, 0, sizeof(Data),
+            offsetof(Data, bits) + instanceData.offset, instanceData.bitOffset, instanceData.stride, SceneFieldFlag::ImplicitMapping},
+        SceneFieldData{arrayFieldOffsetOnly, 4,
+            SceneMappingType::UnsignedByte, 0, sizeof(Data),
+            offsetof(Data, bits) + instanceData.offset, instanceData.arrayBitOffset, instanceData.stride, 3, SceneFieldFlag::OrderedMapping},
+    }};
+
+    /* Raw field data access */
+    for(UnsignedInt i: {0, 2}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().size(), (Containers::Size2D{4, 1}));
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().stride(), (Containers::Stride2D{instanceData.stride, 1}));
+        CORRADE_COMPARE_AS((scene.fieldData(i).fieldBitData().transposed<0, 1>())[0],
+            (Containers::BitArrayView{&instanceData.expectedBits, 0, 4}),
+            TestSuite::Compare::Container);
+    }
+    for(UnsignedInt i: {1, 3}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.fieldData(i).fieldBitData().stride(), (Containers::Stride2D{instanceData.stride, 1}));
+        /* Testing just the first slice, should be enough. The whole data is
+           tested properly below */
+        CORRADE_COMPARE_AS((scene.fieldData(i).fieldBitData().transposed<0, 1>())[0],
+            (Containers::BitArrayView{&instanceData.expectedArrayBits[0], 0, 4}),
+            TestSuite::Compare::Container);
+    }
+
+    /* Bit fields */
+    for(SceneField i: {bitField, bitFieldOffsetOnly}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldBits(i).stride(), instanceData.stride);
+        CORRADE_COMPARE_AS(scene.fieldBits(i),
+            (Containers::BitArrayView{&instanceData.expectedBits, 0, 4}),
+            TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBits(i).stride(), instanceData.stride);
+        CORRADE_COMPARE_AS(scene.mutableFieldBits(i),
+            (Containers::BitArrayView{&instanceData.expectedBits, 0, 4}),
+            TestSuite::Compare::Container<Containers::StridedBitArrayView1D>);
+    }
+
+    /* Bit array fields */
+    for(SceneField i: {arrayField, arrayFieldOffsetOnly}) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(scene.fieldBitArrays(i).size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.fieldBitArrays(i).stride(), (Containers::Stride2D{instanceData.stride, 1}));
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[0],
+            (Containers::BitArrayView{&instanceData.expectedArrayBits[0], 0, 4}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[1],
+            (Containers::BitArrayView{&instanceData.expectedArrayBits[1], 0, 4}),
+            TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((scene.fieldBitArrays(i).transposed<0, 1>())[2],
+            (Containers::BitArrayView{&instanceData.expectedArrayBits[0], 0, 4}),
+            TestSuite::Compare::Container);
+
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).size(), (Containers::Size2D{4, 3}));
+        CORRADE_COMPARE(scene.mutableFieldBitArrays(i).stride(), (Containers::Stride2D{instanceData.stride, 1}));
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[0],
+            (Containers::BitArrayView{&instanceData.expectedArrayBits[0], 0, 4}),
+            TestSuite::Compare::Container<Containers::StridedBitArrayView1D>);
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[1],
+            (Containers::BitArrayView{&instanceData.expectedArrayBits[1], 0, 4}),
+            TestSuite::Compare::Container<Containers::StridedBitArrayView1D>);
+        CORRADE_COMPARE_AS((scene.mutableFieldBitArrays(i).transposed<0, 1>())[2],
+            (Containers::BitArrayView{&instanceData.expectedArrayBits[0], 0, 4}),
+            TestSuite::Compare::Container<Containers::StridedBitArrayView1D>);
+    }
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 void SceneDataTest::constructDeprecated() {
     auto&& data = ChildrenDeprecatedData[testCaseInstanceId()];
@@ -2726,7 +3622,9 @@ void SceneDataTest::constructFieldDataNotContained() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Mostly the same as constructMappingDataNotContained() with mapping and
-       field views swapped, and added checks for array fields */
+       field views swapped, and added checks for array fields. Bit fields have
+       many special cases on their own and are tested in
+       constructBitFieldDataNotContained() below. */
 
     const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
     Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
@@ -2781,6 +3679,107 @@ void SceneDataTest::constructFieldDataNotContained() {
 
         "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
         "Trade::SceneData: offset-only field data of field 0 span 25 bytes but passed data array has only 24\n");
+}
+
+void SceneDataTest::constructBitFieldDataNotContained() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* Tested separately from constructFieldDataNotContained() as there's
+       enough bit-related cases on its own. It goes through the same variants,
+       but explicitly checks also non-zero bit offset. */
+
+    const Containers::Array<char> data{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
+    Containers::Array<char> sameDataButMovable{reinterpret_cast<char*>(0xbadda9), 10, [](char*, std::size_t){}};
+    Containers::ArrayView<UnsignedByte> mappingData{reinterpret_cast<UnsignedByte*>(0xbadda9), 10};
+    Containers::StridedBitArrayView1D dataOneByteOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbaddaa), 0, 80}, 10, 8};
+    Containers::StridedBitArrayView1D dataTwoBitsOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda9), 0, 90}, 10, 9};
+    Containers::StridedBitArrayView1D dataOneBitOffsetOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda9), 4, 95}, 5, 19};
+    Containers::StridedBitArrayView1D dataOneBitOffsetBeforeOut{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda8), 7, 80}, 10, 8};
+    Containers::BitArrayView dataOut{reinterpret_cast<void*>(0xdead), 7, 10};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* Basic "obviously wrong" case with owned data */
+    SceneData{SceneMappingType::UnsignedByte, 10, std::move(sameDataButMovable), {
+        /* This is here to test that not just the first attribute gets checked
+           and that the message shows proper ID */
+        SceneFieldData{SceneField::Light, mappingData, mappingData},
+        SceneFieldData{sceneFieldCustom(773), mappingData, dataOut}
+    }};
+    /* A "slightly off" view that exceeds the original by one byte and two bits,
+       respectively */
+    SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
+        SceneFieldData{sceneFieldCustom(773), mappingData, dataOneByteOut}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
+        SceneFieldData{sceneFieldCustom(773), mappingData, dataTwoBitsOut}
+    }};
+    /* Verify the bit offset is taken into account. On begin it shouldn't be
+       rounded up, otherwise the second variant would pass.*/
+    SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
+        SceneFieldData{sceneFieldCustom(773), mappingData.prefix(5), dataOneBitOffsetOut}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
+        SceneFieldData{sceneFieldCustom(773), mappingData, dataOneBitOffsetBeforeOut}
+    }};
+    /* Verify array size is taken into account as well. If not, the data would
+       span only 9 bytes instead of 11, which would pass. */
+    SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
+        SceneFieldData{sceneFieldCustom(773), mappingData.prefix(9), Containers::StridedBitArrayView2D{Containers::BitArrayView{reinterpret_cast<void*>(0xbadda9), 0, 81}, {9, 9}}}
+    }};
+    /* Not checking for nullptr data, since that got checked for mapping view
+       already and there's no way to trigger it for fields */
+    /* Offset-only fields with a different message, again both one byte and one
+       bit off, one bit with offset */
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+        SceneFieldData{sceneFieldCustom(773), 10, SceneMappingType::UnsignedByte, 0, 1, 1, 0, 8}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+        SceneFieldData{sceneFieldCustom(773), 10, SceneMappingType::UnsignedByte, 0, 1, 0, 0, 9}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+        SceneFieldData{sceneFieldCustom(773), 5, SceneMappingType::UnsignedByte, 0, 1, 0, 4, 19}
+    }};
+    /* One with array */
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+        SceneFieldData{sceneFieldCustom(773), 9, SceneMappingType::UnsignedByte, 0, 1, 0, 0, 9, 9}
+    }};
+    /* And the final boss, negative strides -- one byte off and two bits off.
+       Both only caught if the element size gets properly added to the larger
+       offset, not just the "end". */
+    SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
+        SceneFieldData{sceneFieldCustom(773), mappingData, dataOneByteOut.flipped<0>()}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 10, {}, data, {
+        SceneFieldData{sceneFieldCustom(773), mappingData, dataTwoBitsOut.flipped<0>()}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+        SceneFieldData{sceneFieldCustom(773), 10, SceneMappingType::UnsignedByte, 0, 1, 10, 0, -8}
+    }};
+    SceneData{SceneMappingType::UnsignedByte, 10, Containers::Array<char>{10}, {
+        SceneFieldData{sceneFieldCustom(773), 9, SceneMappingType::UnsignedByte, 0, 1, 10, 0, -9}
+    }};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneData: field data [0xdead:0xdeb0] of field 1 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+
+        "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+        "Trade::SceneData: field data [0xbadda9:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+        "Trade::SceneData: field data [0xbadda9:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+        "Trade::SceneData: field data [0xbadda8:0xbaddb2] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+
+        "Trade::SceneData: field data [0xbadda9:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+
+        "Trade::SceneData: offset-only field data of field 0 span 11 bytes but passed data array has only 10\n"
+        "Trade::SceneData: offset-only field data of field 0 span 11 bytes but passed data array has only 10\n"
+        "Trade::SceneData: offset-only field data of field 0 span 11 bytes but passed data array has only 10\n"
+
+        "Trade::SceneData: offset-only field data of field 0 span 11 bytes but passed data array has only 10\n"
+
+        "Trade::SceneData: field data [0xbaddaa:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+        "Trade::SceneData: field data [0xbadda9:0xbaddb4] of field 0 are not contained in passed data array [0xbadda9:0xbaddb3]\n"
+        "Trade::SceneData: offset-only field data of field 0 span 11 bytes but passed data array has only 10\n"
+        "Trade::SceneData: offset-only field data of field 0 span 11 bytes but passed data array has only 10\n"
+    );
 }
 
 void SceneDataTest::constructStringDataNotContained() {
@@ -5530,6 +6529,11 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField<UnsignedInt>(2);
     scene.mutableField<UnsignedInt[]>(2);
 
+    scene.fieldBits(2);
+    scene.fieldBitArrays(2);
+    scene.mutableFieldBits(2);
+    scene.mutableFieldBitArrays(2);
+
     scene.fieldStringData(2);
     scene.fieldStrings(2);
 
@@ -5547,6 +6551,11 @@ void SceneDataTest::fieldNotFound() {
     scene.mutableField(sceneFieldCustom(666));
     scene.mutableField<UnsignedInt>(sceneFieldCustom(666));
     scene.mutableField<UnsignedInt[]>(sceneFieldCustom(666));
+
+    scene.fieldBits(sceneFieldCustom(666));
+    scene.fieldBitArrays(sceneFieldCustom(666));
+    scene.mutableFieldBits(sceneFieldCustom(666));
+    scene.mutableFieldBitArrays(sceneFieldCustom(666));
 
     scene.fieldStringData(sceneFieldCustom(666));
     scene.fieldStrings(sceneFieldCustom(666));
@@ -5599,6 +6608,11 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::mutableField(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::mutableField(): index 2 out of range for 2 fields\n"
 
+        "Trade::SceneData::fieldBits(): index 2 out of range for 2 fields\n"
+        "Trade::SceneData::fieldBitArrays(): index 2 out of range for 2 fields\n"
+        "Trade::SceneData::mutableFieldBits(): index 2 out of range for 2 fields\n"
+        "Trade::SceneData::mutableFieldBitArrays(): index 2 out of range for 2 fields\n"
+
         "Trade::SceneData::fieldStringData(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldStrings(): index 2 out of range for 2 fields\n"
 
@@ -5616,6 +6630,11 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::mutableField(): field Trade::SceneField::Custom(666) not found\n"
+
+        "Trade::SceneData::fieldBits(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::fieldBitArrays(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::mutableFieldBits(): field Trade::SceneField::Custom(666) not found\n"
+        "Trade::SceneData::mutableFieldBitArrays(): field Trade::SceneField::Custom(666) not found\n"
 
         "Trade::SceneData::fieldStringData(): field Trade::SceneField::Custom(666) not found\n"
         "Trade::SceneData::fieldStrings(): field Trade::SceneField::Custom(666) not found\n"
@@ -5663,6 +6682,7 @@ void SceneDataTest::fieldWrongType() {
         UnsignedInt object;
         UnsignedShort foobar;
         UnsignedShort mesh;
+        bool yes;
     } fields[2]{};
 
     Containers::StridedArrayView1D<Field> view = fields;
@@ -5670,14 +6690,26 @@ void SceneDataTest::fieldWrongType() {
     SceneData scene{SceneMappingType::UnsignedInt, 5, DataFlag::Mutable, fields, {
         SceneFieldData{sceneFieldCustom(35), view.slice(&Field::object), view.slice(&Field::foobar)},
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)},
+        SceneFieldData{sceneFieldCustom(773), view.slice(&Field::object), view.slice(&Field::yes).sliceBit(0)},
     }};
 
     std::ostringstream out;
     Error redirectError{&out};
+    scene.field(2);
+    scene.mutableField(2);
+
     scene.field<UnsignedByte>(1);
     scene.field<UnsignedByte[]>(1);
     scene.mutableField<UnsignedByte>(1);
     scene.mutableField<UnsignedByte[]>(1);
+    /* Accessing SceneFieldType::Bit through field<T>(2) etc. is handled by the
+       same code path as accessing via a mismatched type, no need to test those
+       explicitly */
+
+    scene.fieldBits(1);
+    scene.fieldBitArrays(1);
+    scene.mutableFieldBits(1);
+    scene.mutableFieldBitArrays(1);
 
     scene.fieldStringData(1);
     scene.fieldStrings(1);
@@ -5687,14 +6719,33 @@ void SceneDataTest::fieldWrongType() {
     scene.mutableField<UnsignedByte>(SceneField::Mesh);
     scene.mutableField<UnsignedByte[]>(SceneField::Mesh);
 
+    scene.field(sceneFieldCustom(773));
+    scene.mutableField(sceneFieldCustom(773));
+    /* Accessing SceneFieldType::Bit through field<T>(2) etc. is handled by the
+       same code path as accessing via a mismatched type, no need to test those
+       explicitly */
+
+    scene.fieldBits(SceneField::Mesh);
+    scene.fieldBitArrays(SceneField::Mesh);
+    scene.mutableFieldBits(SceneField::Mesh);
+    scene.mutableFieldBitArrays(SceneField::Mesh);
+
     scene.fieldStringData(SceneField::Mesh);
     scene.fieldStrings(SceneField::Mesh);
 
     CORRADE_COMPARE(out.str(),
+        "Trade::SceneData::field(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use fieldBits() or fieldBitArrays() to access it\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use mutableFieldBits() or mutableFieldBitArrays() to access it\n"
+
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
+
+        "Trade::SceneData::fieldBits(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
+        "Trade::SceneData::fieldBitArrays(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
+        "Trade::SceneData::mutableFieldBits(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
+        "Trade::SceneData::mutableFieldBitArrays(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
 
         "Trade::SceneData::fieldStringData(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n"
         "Trade::SceneData::fieldStrings(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n"
@@ -5703,6 +6754,14 @@ void SceneDataTest::fieldWrongType() {
         "Trade::SceneData::field(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort but requested a type equivalent to Trade::SceneFieldType::UnsignedByte\n"
+
+        "Trade::SceneData::field(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use fieldBits() or fieldBitArrays() to access it\n"
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(773) is Trade::SceneFieldType::Bit, use mutableFieldBits() or mutableFieldBitArrays() to access it\n"
+
+        "Trade::SceneData::fieldBits(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
+        "Trade::SceneData::fieldBitArrays(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
+        "Trade::SceneData::mutableFieldBits(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
+        "Trade::SceneData::mutableFieldBitArrays(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a bit\n"
 
         "Trade::SceneData::fieldStringData(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n"
         "Trade::SceneData::fieldStrings(): Trade::SceneField::Mesh is Trade::SceneFieldType::UnsignedShort, not a string\n");
@@ -5784,16 +6843,18 @@ void SceneDataTest::fieldWrongArrayAccess() {
     struct Field {
         UnsignedInt object;
         UnsignedInt foobar;
+        bool yes;
     } fields[2]{};
 
     Containers::StridedArrayView1D<Field> view = fields;
 
     SceneData scene{SceneMappingType::UnsignedInt, 5, DataFlag::Mutable, fields, {
         SceneFieldData{sceneFieldCustom(35), view.slice(&Field::object), Containers::arrayCast<2, UnsignedInt>(view.slice(&Field::foobar))},
+        SceneFieldData{sceneFieldCustom(773), view.slice(&Field::object), Containers::StridedBitArrayView2D{Containers::BitArrayView{fields}, &fields[0].yes, 0, {2, 3}, {sizeof(Field)*8, 1}}},
     }};
 
     /* Array access is allowed for non-array fields (the second dimension is
-       then always 1), tested directly in construct() */
+       then always 1), tested directly in construct() and constructBit() */
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -5801,11 +6862,19 @@ void SceneDataTest::fieldWrongArrayAccess() {
     scene.mutableField<UnsignedInt>(0);
     scene.field<UnsignedInt>(sceneFieldCustom(35));
     scene.mutableField<UnsignedInt>(sceneFieldCustom(35));
+    scene.fieldBits(1);
+    scene.mutableFieldBits(1);
+    scene.fieldBits(sceneFieldCustom(773));
+    scene.mutableFieldBits(sceneFieldCustom(773));
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
-        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n");
+        "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
+        "Trade::SceneData::fieldBits(): Trade::SceneField::Custom(773) is an array field, use fieldBitArrays() to access it\n"
+        "Trade::SceneData::mutableFieldBits(): Trade::SceneField::Custom(773) is an array field, use fieldBitArrays() to access it\n"
+        "Trade::SceneData::fieldBits(): Trade::SceneField::Custom(773) is an array field, use fieldBitArrays() to access it\n"
+        "Trade::SceneData::mutableFieldBits(): Trade::SceneField::Custom(773) is an array field, use fieldBitArrays() to access it\n");
 }
 
 void SceneDataTest::parentFor() {
