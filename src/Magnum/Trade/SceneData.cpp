@@ -1294,8 +1294,6 @@ Containers::StridedArrayView2D<const char> SceneData::mapping(const SceneField f
 }
 
 Containers::StridedArrayView2D<char> SceneData::mutableMapping(const SceneField fieldName) {
-    CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
-        "Trade::SceneData::mutableMapping(): data not mutable", {});
     const UnsignedInt fieldId = findFieldIdInternal(fieldName);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{}, "Trade::SceneData::mutableMapping(): field" << fieldName << "not found", {});
     return mutableMapping(fieldId);
@@ -1339,8 +1337,6 @@ Containers::StridedArrayView2D<const char> SceneData::field(const SceneField nam
 }
 
 Containers::StridedArrayView2D<char> SceneData::mutableField(const SceneField name) {
-    CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
-        "Trade::SceneData::mutableField(): data not mutable", {});
     const UnsignedInt fieldId = findFieldIdInternal(name);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
         "Trade::SceneData::mutableField(): field" << name << "not found", {});
