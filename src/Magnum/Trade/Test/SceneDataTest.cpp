@@ -2001,23 +2001,23 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.field<Matrix4>(0).size(), 5);
     CORRADE_COMPARE(scene.field<Int>(1).size(), 5);
     CORRADE_COMPARE(scene.field<UnsignedByte>(2).size(), 2);
-    CORRADE_COMPARE(scene.field<Float[]>(3).size()[0], 2);
-    CORRADE_COMPARE(scene.field<Float[]>(3).size()[1], 2);
+    CORRADE_COMPARE(scene.field<Float[]>(3).size(), (Containers::Size2D{2, 2}));
     CORRADE_COMPARE(scene.mutableField<Matrix4>(0).size(), 5);
     CORRADE_COMPARE(scene.mutableField<Int>(1).size(), 5);
     CORRADE_COMPARE(scene.mutableField<UnsignedByte>(2).size(), 2);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(3).size()[0], 2);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(3).size()[1], 2);
+    CORRADE_COMPARE(scene.mutableField<Float[]>(3).size(), (Containers::Size2D{2, 2}));
     CORRADE_COMPARE(scene.field<Matrix4>(0)[2], Matrix4::translation(Vector3::zAxis(5.0f)));
     CORRADE_COMPARE(scene.field<Int>(1)[4], -1);
     CORRADE_COMPARE(scene.field<UnsignedByte>(2)[1], 7);
-    CORRADE_COMPARE(scene.field<Float[]>(3)[0][0], 37.5f);
-    CORRADE_COMPARE(scene.field<Float[]>(3)[0][1], 1.5f);
+    CORRADE_COMPARE_AS(scene.field<Float[]>(3)[0],
+        Containers::arrayView({37.5f, 1.5f}),
+        TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.mutableField<Matrix4>(0)[2], Matrix4::translation(Vector3::zAxis(5.0f)));
     CORRADE_COMPARE(scene.mutableField<Int>(1)[4], -1);
     CORRADE_COMPARE(scene.mutableField<UnsignedByte>(2)[1], 7);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(3)[0][0], 37.5f);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(3)[0][1], 1.5f);
+    CORRADE_COMPARE_AS(scene.mutableField<Float[]>(3)[0],
+        Containers::stridedArrayView({37.5f, 1.5f}),
+        TestSuite::Compare::Container);
 
     /* Field property access by name */
     CORRADE_COMPARE(scene.fieldFlags(SceneField::Transformation), SceneFieldFlags{});
@@ -2095,23 +2095,23 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE(scene.field<Matrix4>(SceneField::Transformation).size(), 5);
     CORRADE_COMPARE(scene.field<Int>(SceneField::Parent).size(), 5);
     CORRADE_COMPARE(scene.field<UnsignedByte>(SceneField::Mesh).size(), 2);
-    CORRADE_COMPARE(scene.field<Float[]>(sceneFieldCustom(37)).size()[0], 2);
-    CORRADE_COMPARE(scene.field<Float[]>(sceneFieldCustom(37)).size()[1], 2);
+    CORRADE_COMPARE(scene.field<Float[]>(sceneFieldCustom(37)).size(), (Containers::Size2D{2, 2}));
     CORRADE_COMPARE(scene.mutableField<Matrix4>(SceneField::Transformation).size(), 5);
     CORRADE_COMPARE(scene.mutableField<Int>(SceneField::Parent).size(), 5);
     CORRADE_COMPARE(scene.mutableField<UnsignedByte>(SceneField::Mesh).size(), 2);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(sceneFieldCustom(37)).size()[0], 2);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(sceneFieldCustom(37)).size()[1], 2);
+    CORRADE_COMPARE(scene.mutableField<Float[]>(sceneFieldCustom(37)).size(), (Containers::Size2D{2, 2}));
     CORRADE_COMPARE(scene.field<Matrix4>(SceneField::Transformation)[2], Matrix4::translation(Vector3::zAxis(5.0f)));
     CORRADE_COMPARE(scene.field<Int>(SceneField::Parent)[4], -1);
     CORRADE_COMPARE(scene.field<UnsignedByte>(SceneField::Mesh)[1], 7);
-    CORRADE_COMPARE(scene.field<Float[]>(sceneFieldCustom(37))[0][0], 37.5f);
-    CORRADE_COMPARE(scene.field<Float[]>(sceneFieldCustom(37))[0][1], 1.5f);
+    CORRADE_COMPARE_AS(scene.field<Float[]>(sceneFieldCustom(37))[0],
+        Containers::arrayView({37.5f, 1.5f}),
+        TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.mutableField<Matrix4>(SceneField::Transformation)[2], Matrix4::translation(Vector3::zAxis(5.0f)));
     CORRADE_COMPARE(scene.mutableField<Int>(SceneField::Parent)[4], -1);
     CORRADE_COMPARE(scene.mutableField<UnsignedByte>(SceneField::Mesh)[1], 7);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(sceneFieldCustom(37))[0][0], 37.5f);
-    CORRADE_COMPARE(scene.mutableField<Float[]>(sceneFieldCustom(37))[0][1], 1.5f);
+    CORRADE_COMPARE_AS(scene.mutableField<Float[]>(sceneFieldCustom(37))[0],
+        Containers::stridedArrayView({37.5f, 1.5f}),
+        TestSuite::Compare::Container);
 }
 
 void SceneDataTest::constructZeroFields() {
