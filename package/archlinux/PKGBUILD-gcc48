@@ -15,7 +15,7 @@ _rootdir=$startdir/../../
 
 build() {
     # Disable flags unknown to GCC 4.8
-    newcxxflags=$(echo $CXXFLAGS | sed s/-fstack-protector-strong.//g | sed s/.-fno-plt//g)
+    newcxxflags=$(echo $CXXFLAGS | sed s/-fstack-protector-strong.//g | sed s/.-fno-plt//g | sed s/.-fstack-clash-protection//g | sed s/.-fcf-protection//g)
     export CXXFLAGS="$newcxxflags"
 
     if [ ! -d "$_rootdir/build-gcc48" ] ; then
