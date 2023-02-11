@@ -861,7 +861,14 @@ void SceneDataTest::debugFieldFlagsSupersets() {
 }
 
 constexpr UnsignedShort RotationMapping2D[3]{};
-constexpr Complexd RotationField2D[3]{};
+constexpr Complexd RotationField2D[3]
+    /* Can't use {} because GCC 4.8 then complains that "array must be
+       initialized with a brace-enclosed initializer". OTOH, can't use this
+       without {} because MSVC then thinks it's not a constant expression. */
+    #if !defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG) || __GNUC__ >= 5
+    {}
+    #endif
+    ;
 
 void SceneDataTest::constructField() {
     const UnsignedShort rotationMappingData[3]{};
