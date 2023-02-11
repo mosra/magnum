@@ -1411,6 +1411,15 @@ void MeshDataTest::construct() {
         CORRADE_COMPARE(data.mutableAttribute<Short[]>(4)[1][1], 2);
     }
 
+    /* Accessing a non-array attribute as an array should be possible as well
+       -- the second dimension is then just 1 */
+    CORRADE_COMPARE(data.attribute<Vector3[]>(0).size(), (Containers::Size2D{instanceData.expectedVertexCount, 1}));
+    CORRADE_COMPARE(data.mutableAttribute<Vector3[]>(0).size(), (Containers::Size2D{instanceData.expectedVertexCount, 1}));
+    if(instanceData.vertexCount) {
+        CORRADE_COMPARE(data.attribute<Vector3[]>(0)[1][0], (Vector3{0.4f, 0.5f, 0.6f}));
+        CORRADE_COMPARE(data.mutableAttribute<Vector3[]>(0)[1][0], (Vector3{0.4f, 0.5f, 0.6f}));
+    }
+
     /* Attribute access by name */
     CORRADE_VERIFY(data.hasAttribute(MeshAttribute::Position));
     CORRADE_VERIFY(data.hasAttribute(MeshAttribute::Normal));
@@ -1511,6 +1520,15 @@ void MeshDataTest::construct() {
         /* Array */
         CORRADE_COMPARE(data.mutableAttribute<Short[]>(meshAttributeCustom(13))[2][0], 22);
         CORRADE_COMPARE(data.mutableAttribute<Short[]>(meshAttributeCustom(13))[2][1], -1);
+    }
+
+    /* Accessing a non-array attribute as an array should be possible as well
+       -- the second dimension is then just 1 */
+    CORRADE_COMPARE(data.attribute<Vector3[]>(MeshAttribute::Position).size(), (Containers::Size2D{instanceData.expectedVertexCount, 1}));
+    CORRADE_COMPARE(data.mutableAttribute<Vector3[]>(MeshAttribute::Position).size(), (Containers::Size2D{instanceData.expectedVertexCount, 1}));
+    if(instanceData.vertexCount) {
+        CORRADE_COMPARE(data.attribute<Vector3[]>(MeshAttribute::Position)[1][0], (Vector3{0.4f, 0.5f, 0.6f}));
+        CORRADE_COMPARE(data.mutableAttribute<Vector3[]>(MeshAttribute::Position)[1][0], (Vector3{0.4f, 0.5f, 0.6f}));
     }
 }
 
@@ -3964,32 +3982,25 @@ void MeshDataTest::attributeWrongArrayAccess() {
         {1.1f, 2.2f}, {3.3f, 4.4f}, {5.5f, 6.6f}, {7.7f, 8.8f},
         {0.1f, 0.2f}, {0.3f, 0.4f}, {0.5f, 0.6f}, {0.7f, 0.8f},
     };
-    Containers::StridedArrayView1D<Vector2> positions{vertexData, 3, 4*sizeof(Vector2)};
     Containers::StridedArrayView2D<Vector2> positions2D{vertexData, {3, 4}};
 
     MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
-        MeshAttributeData{MeshAttribute::Position, positions},
         MeshAttributeData{meshAttributeCustom(35), positions2D}
     }};
 
+    /* Array access is allowed for non-array attributes (the second dimension
+       is then always 1), tested directly in construct() */
+
     std::ostringstream out;
     Error redirectError{&out};
-    data.attribute<Vector2[]>(0);
-    data.attribute<Vector2>(1);
-    data.mutableAttribute<Vector2[]>(0);
-    data.mutableAttribute<Vector2>(1);
-    data.attribute<Vector2[]>(MeshAttribute::Position);
+    data.attribute<Vector2>(0);
+    data.mutableAttribute<Vector2>(0);
     data.attribute<Vector2>(meshAttributeCustom(35));
-    data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
     data.mutableAttribute<Vector2>(meshAttributeCustom(35));
     CORRADE_COMPARE(out.str(),
-        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
-        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
         "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
-        "Trade::MeshData::attribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
         "Trade::MeshData::attribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n"
-        "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Position is not an array attribute, can't use T[] to access it\n"
         "Trade::MeshData::mutableAttribute(): Trade::MeshAttribute::Custom(35) is an array attribute, use T[] to access it\n");
 }
 

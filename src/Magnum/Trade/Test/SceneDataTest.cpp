@@ -2019,6 +2019,13 @@ void SceneDataTest::construct() {
         Containers::stridedArrayView({37.5f, 1.5f}),
         TestSuite::Compare::Container);
 
+    /* Accessing a non-array field as an array should be possible as well --
+       the second dimension is then just 1 */
+    CORRADE_COMPARE(scene.field<UnsignedByte[]>(2).size(), (Containers::Size2D{2, 1}));
+    CORRADE_COMPARE(scene.mutableField<UnsignedByte[]>(2).size(), (Containers::Size2D{2, 1}));
+    CORRADE_COMPARE(scene.field<UnsignedByte[]>(2)[1][0], 7);
+    CORRADE_COMPARE(scene.mutableField<UnsignedByte[]>(2)[1][0], 7);
+
     /* Field property access by name */
     CORRADE_COMPARE(scene.fieldFlags(SceneField::Transformation), SceneFieldFlags{});
     CORRADE_COMPARE(scene.fieldFlags(SceneField::Parent), SceneFieldFlag::OffsetOnly);
@@ -2112,6 +2119,13 @@ void SceneDataTest::construct() {
     CORRADE_COMPARE_AS(scene.mutableField<Float[]>(sceneFieldCustom(37))[0],
         Containers::stridedArrayView({37.5f, 1.5f}),
         TestSuite::Compare::Container);
+
+    /* Accessing a non-array field as an array should be possible as well --
+       the second dimension is then just 1 */
+    CORRADE_COMPARE(scene.field<UnsignedByte[]>(SceneField::Mesh).size(), (Containers::Size2D{2, 1}));
+    CORRADE_COMPARE(scene.mutableField<UnsignedByte[]>(SceneField::Mesh).size(), (Containers::Size2D{2, 1}));
+    CORRADE_COMPARE(scene.field<UnsignedByte[]>(SceneField::Mesh)[1][0], 7);
+    CORRADE_COMPARE(scene.mutableField<UnsignedByte[]>(SceneField::Mesh)[1][0], 7);
 }
 
 void SceneDataTest::constructZeroFields() {
@@ -5769,35 +5783,28 @@ void SceneDataTest::fieldWrongArrayAccess() {
 
     struct Field {
         UnsignedInt object;
-        UnsignedInt mesh;
         UnsignedInt foobar;
     } fields[2]{};
 
     Containers::StridedArrayView1D<Field> view = fields;
 
     SceneData scene{SceneMappingType::UnsignedInt, 5, DataFlag::Mutable, fields, {
-        SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)},
         SceneFieldData{sceneFieldCustom(35), view.slice(&Field::object), Containers::arrayCast<2, UnsignedInt>(view.slice(&Field::foobar))},
     }};
 
+    /* Array access is allowed for non-array fields (the second dimension is
+       then always 1), tested directly in construct() */
+
     std::ostringstream out;
     Error redirectError{&out};
-    scene.field<UnsignedInt[]>(0);
-    scene.field<UnsignedInt>(1);
-    scene.mutableField<UnsignedInt[]>(0);
-    scene.mutableField<UnsignedInt>(1);
-    scene.field<UnsignedInt[]>(SceneField::Mesh);
+    scene.field<UnsignedInt>(0);
+    scene.mutableField<UnsignedInt>(0);
     scene.field<UnsignedInt>(sceneFieldCustom(35));
-    scene.mutableField<UnsignedInt[]>(SceneField::Mesh);
     scene.mutableField<UnsignedInt>(sceneFieldCustom(35));
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::field(): Trade::SceneField::Mesh is not an array field, can't use T[] to access it\n"
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
-        "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is not an array field, can't use T[] to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
-        "Trade::SceneData::field(): Trade::SceneField::Mesh is not an array field, can't use T[] to access it\n"
         "Trade::SceneData::field(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n"
-        "Trade::SceneData::mutableField(): Trade::SceneField::Mesh is not an array field, can't use T[] to access it\n"
         "Trade::SceneData::mutableField(): Trade::SceneField::Custom(35) is an array field, use T[] to access it\n");
 }
 

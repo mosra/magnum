@@ -1579,11 +1579,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Data for given array attribute in a concrete type
          *
-         * Same as above, except that it works with array attributes instead
+         * Same as above, except that it works with array attributes as well
          * --- you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref attributeArraySize() for given attribute.
+         * @ref attributeArraySize() for given attribute. For non-array
+         * attributes the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(UnsignedInt id) const;
 
@@ -1599,11 +1600,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Mutable data for given array attribute in a concrete type
          *
-         * Same as above, except that it works with array attributes instead
+         * Same as above, except that it works with array attributes as well
          * --- you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref attributeArraySize() for given attribute.
+         * @ref attributeArraySize() for given attribute. For non-array
+         * attributes the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(UnsignedInt id);
 
@@ -1661,11 +1663,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Data for given named array attribute in a concrete type
          *
-         * Same as above, except that it works with array attributes instead
+         * Same as above, except that it works with array attributes as well
          * --- you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref attributeArraySize() for given attribute.
+         * @ref attributeArraySize() for given attribute. For non-array
+         * attributes the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(MeshAttribute name, UnsignedInt id = 0) const;
 
@@ -1681,11 +1684,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Mutable data for given named array attribute in a concrete type
          *
-         * Same as above, except that it works with array attributes instead
+         * Same as above, except that it works with array attributes as well
          * --- you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref attributeArraySize() for given attribute.
+         * @ref attributeArraySize() for given attribute. For non-array
+         * attributes the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
 
@@ -2492,10 +2496,8 @@ template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttrib
         prefix << "can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), false);
     CORRADE_ASSERT(Implementation::isVertexFormatCompatible<typename std::remove_extent<T>::type>(attribute._format),
         prefix << attribute._name << "is" << attribute._format << "but requested a type equivalent to" << Implementation::vertexFormatFor<typename std::remove_extent<T>::type>(), false);
-    if(attribute._arraySize) CORRADE_ASSERT(std::is_array<T>::value,
+    CORRADE_ASSERT(!attribute._arraySize || std::is_array<T>::value,
         prefix << attribute._name << "is an array attribute, use T[] to access it", false);
-    else CORRADE_ASSERT(!std::is_array<T>::value,
-        prefix << attribute._name << "is not an array attribute, can't use T[] to access it", false);
     return true;
 }
 #endif

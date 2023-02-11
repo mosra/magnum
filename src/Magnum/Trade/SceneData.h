@@ -2243,11 +2243,12 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Data for given array field in a concrete type
          * @m_since_latest
          *
-         * Same as above, except that it works with array fields instead ---
+         * Same as above, except that it works with array fields as well ---
          * you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref fieldArraySize(UnsignedInt) const for given field.
+         * @ref fieldArraySize(UnsignedInt) const for given field. For
+         * non-array fields the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> field(UnsignedInt id) const;
 
@@ -2265,11 +2266,12 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Mutable data for given array field in a concrete type
          * @m_since_latest
          *
-         * Same as above, except that it works with array fields instead ---
+         * Same as above, except that it works with array fields as well ---
          * you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref fieldArraySize(UnsignedInt) const for given field.
+         * @ref fieldArraySize(UnsignedInt) const for given field. For
+         * non-array fields the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(UnsignedInt id);
 
@@ -2321,11 +2323,12 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Data for given named array field in a concrete type
          * @m_since_latest
          *
-         * Same as above, except that it works with array fields instead ---
+         * Same as above, except that it works with array fields as well ---
          * you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref fieldArraySize(SceneField) const for given field.
+         * @ref fieldArraySize(SceneField) const for given field. For non-array
+         * fields the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> field(SceneField name) const;
 
@@ -2343,11 +2346,12 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Mutable data for given named array field in a concrete type
          * @m_since_latest
          *
-         * Same as above, except that it works with array fields instead ---
+         * Same as above, except that it works with array fields as well ---
          * you're expected to select this overload by passing @cpp T[] @ce
          * instead of @cpp T @ce. The second dimension is guaranteed to be
          * contiguous and have the same size as reported by
-         * @ref fieldArraySize(SceneField) const for given field.
+         * @ref fieldArraySize(SceneField) const for given field. For non-array
+         * fields the second dimension has a size of @cpp 1 @ce.
          */
         template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableField(SceneField name);
 
@@ -3773,10 +3777,8 @@ template<class T> Containers::StridedArrayView1D<T> SceneData::mutableMapping(co
 template<class T> bool SceneData::checkFieldTypeCompatibility(const SceneFieldData& field, const char* const prefix) const {
     CORRADE_ASSERT(Implementation::SceneFieldTypeTraits<typename std::remove_extent<T>::type>::isCompatible(field.fieldType()),
         prefix << field._name << "is" << field.fieldType() << "but requested a type equivalent to" << Implementation::SceneFieldTypeFor<typename std::remove_extent<T>::type>::type(), false);
-    if(field.fieldArraySize()) CORRADE_ASSERT(std::is_array<T>::value,
+    CORRADE_ASSERT(!field.fieldArraySize() || std::is_array<T>::value,
         prefix << field._name << "is an array field, use T[] to access it", false);
-    else CORRADE_ASSERT(!std::is_array<T>::value,
-        prefix << field._name << "is not an array field, can't use T[] to access it", false);
     return true;
 }
 #endif
