@@ -1449,6 +1449,10 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
             std::size_t offset;
         };
 
+        /** @todo to make more room for extra properties inside Field or to
+            support array string fields, this could be size (6 bytes) + array
+            size (2 bytes) together, similarly to how string data offset is
+            packed below */
         UnsignedLong _size;
         SceneField _name;
         SceneFieldFlags _flags;
