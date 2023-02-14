@@ -18,15 +18,19 @@ build() {
         mkdir "$_rootdir/build-clang"
         cd "$_rootdir/build-clang"
 
+        # RelWithDebInfo is enabled but not built -- it's meant for profiling
+        # from within the build dir
         cmake .. \
+            -DCMAKE_CONFIGURATION_TYPES="Debug;Release;RelWithDebInfo" \
+            -DCMAKE_CROSS_CONFIGS=all \
+            -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -g -DNDEBUG -fno-omit-frame-pointer" \
             -DCMAKE_CXX_COMPILER=clang++ \
-            -G Ninja
+            -G "Ninja Multi-Config"
     fi
 
     cd "$_rootdir/build-clang"
 
     cmake .. \
-        -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DMAGNUM_WITH_AUDIO=ON \
         -DMAGNUM_WITH_VK=ON \
@@ -61,16 +65,26 @@ build() {
         -DMAGNUM_BUILD_TESTS=ON \
         -DMAGNUM_BUILD_GL_TESTS=ON \
         -DMAGNUM_BUILD_VK_TESTS=ON
-    ninja
+    ninja all:Debug all:Release
 }
 
 check() {
     cd "$_rootdir/build-clang"
     export CORRADE_TEST_SKIP_BENCHMARKS=ON
-    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j9
+
+    for config in Debug Release; do
+        CORRADE_TEST_COLOR=ON ctest -C $config --output-on-failure -j9
+    done
 }
 
 package() {
     cd "$_rootdir/build-clang"
-    DESTDIR="$pkgdir/" ninja install
+    DESTDIR="$pkgdir/" ninja install:Debug
+
+    # Prevent the Release build from overwriting Debug binaries
+    for i in $(ls $pkgdir/usr/bin/magnum-*); do
+        mv ${i}{,d}
+    done
+
+    DESTDIR="$pkgdir/" ninja install/strip:Release
 }
