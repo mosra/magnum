@@ -1316,7 +1316,7 @@ void SceneDataTest::constructFieldOffsetOnly() {
         Byte parent;
         UnsignedShort object;
         Vector2 translation;
-    } data[] {
+    } data[]{
         {0, 2, {2.0f, 3.0f}},
         {0, 15, {67.0f, -1.1f}}
     };
@@ -3211,7 +3211,7 @@ template<class T> void SceneDataTest::constructString() {
     }), TestSuite::Compare::Container);
 
     /* Raw field data access. ID vs name of this API tested thoroughly enough
-       in  construct(). */
+       in construct(). */
     CORRADE_COMPARE_AS(scene.field<T>(nameField), Containers::arrayView<T>({
         5, 14
     }), TestSuite::Compare::Container);
