@@ -145,7 +145,7 @@ template<class K, class V, class R
          * functions return @cpp nullptr @ce, @ref at() always returns a
          * default-constructed value.
          */
-        explicit Track() noexcept: _data{}, _interpolator{}, _before{}, _after{} {}
+        explicit Track() noexcept: _data{}, _interpolator{}, _interpolation{}, _before{}, _after{} {}
 
         /**
          * @brief Construct with custom interpolator
