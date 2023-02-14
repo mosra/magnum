@@ -230,7 +230,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                 /* None found */
                 if(selectedDevice == UnsignedInt(count)) {
                     Error e;
-                    e << "Platform::WindowlessEglApplication::tryCreateContext(): unable to find EGL device for CUDA device" << configuration.cudaDevice();
+                    e << "Platform::WindowlessEglApplication::tryCreateContext(): unable to find CUDA device" << configuration.cudaDevice() << "among" << count << "EGL devices in total";
                     return;
                 }
 
