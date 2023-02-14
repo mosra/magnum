@@ -678,10 +678,9 @@ const struct {
         /* The file should contain also material names and everything */
         "materials-pbr.gltf", nullptr,
         "MaterialTools::phongToPbrMetallicRoughness(): unconvertable Trade::MaterialAttribute::AmbientColor attribute, skipping\n"
-        /** @todo remove this once StridedBitArray exists and SceneData +
-            UfbxImporter uses it for bit values */
-        "Trade::GltfSceneConverter::add(): custom scene field Visibility has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"
-        "Trade::GltfSceneConverter::add(): custom scene field GeometryTransformHelper has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"},
+        /** @todo remove this once GltfSceneConverter supports bit fields */
+        "Trade::GltfSceneConverter::add(): custom scene field Visibility has unsupported type Trade::SceneFieldType::Bit, skipping\n"
+        "Trade::GltfSceneConverter::add(): custom scene field GeometryTransformHelper has unsupported type Trade::SceneFieldType::Bit, skipping\n"},
     {"Phong to PBR, verbose", {InPlaceInit, {
             /* Same as above, just with -v added */
             "-I", "UfbxImporter", "-C", "GltfSceneConverter", "--phong-to-pbr",
@@ -702,10 +701,9 @@ const struct {
         "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 2\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 1 out of 2\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"
-        /** @todo remove this once StridedBitArray exists and SceneData +
-            UfbxImporter uses it for bit values */
-        "Trade::GltfSceneConverter::add(): custom scene field Visibility has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"
-        "Trade::GltfSceneConverter::add(): custom scene field GeometryTransformHelper has unsupported type Trade::SceneFieldType::UnsignedByte, skipping\n"},
+        /** @todo remove this once GltfSceneConverter supports bit fields */
+        "Trade::GltfSceneConverter::add(): custom scene field Visibility has unsupported type Trade::SceneFieldType::Bit, skipping\n"
+        "Trade::GltfSceneConverter::add(): custom scene field GeometryTransformHelper has unsupported type Trade::SceneFieldType::Bit, skipping\n"},
     {"data unsupported by the converter", {InPlaceInit, {
             "-I", "GltfImporter", "-i", "experimentalKhrTextureKtx",
             "-C", "StanfordSceneConverter",
