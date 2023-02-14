@@ -32,9 +32,11 @@ set(MagnumMaterialTools_SRCS
     PhongToPbrMetallicRoughness.cpp)
 
 # Files compiled with different flags for main library and unit test library
-set(MagnumMaterialTools_GracefulAssert_SRCS )
+set(MagnumMaterialTools_GracefulAssert_SRCS
+    Filter.cpp)
 
 set(MagnumMaterialTools_HEADERS
+    Filter.h
     PhongToPbrMetallicRoughness.h
 
     visibility.h)
@@ -57,11 +59,7 @@ endif()
 # Main MaterialTools library
 add_library(MagnumMaterialTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMaterialToolsObjects>
-    ${MagnumMaterialTools_HEADERS}
-    ${MagnumMaterialTools_PRIVATE_HEADERS}
-    # XCode workaround, see file comment for details.
-    # TODO remove once MagnumMaterialTools_GracefulAssert_SRCS is non-empty
-    ${PROJECT_SOURCE_DIR}/src/dummy.cpp)
+    ${MagnumMaterialTools_GracefulAssert_SRCS})
 set_target_properties(MagnumMaterialTools PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT MAGNUM_BUILD_STATIC)
     set_target_properties(MagnumMaterialTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
@@ -79,19 +77,19 @@ install(TARGETS MagnumMaterialTools
 install(FILES ${MagnumMaterialTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/MaterialTools)
 
 if(MAGNUM_BUILD_TESTS)
-    # # Library with graceful assert for testing
-    # add_library(MagnumMaterialToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-    #     $<TARGET_OBJECTS:MagnumMaterialToolsObjects>
-    #     ${MagnumMaterialTools_GracefulAssert_SRCS})
-    # set_target_properties(MagnumMaterialToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
-    # target_compile_definitions(MagnumMaterialToolsTestLib PRIVATE
-    #     "CORRADE_GRACEFUL_ASSERT" "MagnumMaterialTools_EXPORTS")
-    # if(MAGNUM_BUILD_STATIC_PIC)
-    #     set_target_properties(MagnumMaterialToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    # endif()
-    # target_link_libraries(MagnumMaterialToolsTestLib PUBLIC
-    #     Magnum
-    #     MagnumTrade)
+    # Library with graceful assert for testing
+    add_library(MagnumMaterialToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        $<TARGET_OBJECTS:MagnumMaterialToolsObjects>
+        ${MagnumMaterialTools_GracefulAssert_SRCS})
+    set_target_properties(MagnumMaterialToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    target_compile_definitions(MagnumMaterialToolsTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumMaterialTools_EXPORTS")
+    if(MAGNUM_BUILD_STATIC_PIC)
+        set_target_properties(MagnumMaterialToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumMaterialToolsTestLib PUBLIC
+        Magnum
+        MagnumTrade)
 
     add_subdirectory(Test ${EXCLUDE_FROM_ALL_IF_TEST_TARGET})
 endif()
