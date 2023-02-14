@@ -23,14 +23,6 @@
 #   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #   DEALINGS IN THE SOFTWARE.
 #
-
-# On 4.8.2 strict aliasing causes failure of DebugToolsCylinderRendererTest
-# without any warning, only in release build, any attempt to add debug print
-# results in issue disappearing. Not an issue on Clang or GCC < 4.8.
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.0")
-    add_compile_options("-fno-strict-aliasing")
-endif()
-
 # On MSVC remove /W3, as we are replacing it with /W4. Could be removed as of
 # 3.15 with this: https://cmake.org/cmake/help/latest/policy/CMP0092.html
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
