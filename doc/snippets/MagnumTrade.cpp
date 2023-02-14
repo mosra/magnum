@@ -149,7 +149,11 @@ if(!image) Fatal{} << "Importing the image failed";
 }
 
 {
-Containers::Pointer<Trade::AbstractImporter> importer;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the converter pointer. I don't care, I just want you to check compilation
+   errors, not more! */
+PluginManager::Manager<Trade::AbstractImporter> manager;
+Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractImporter-usage-data] */
 Utility::Resource rs{"data"};
 Containers::ArrayView<const char> data = rs.getRaw("image.png");
@@ -162,7 +166,11 @@ if(!importer->openData(data)) /* or openMemory() */
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
 {
-Containers::Pointer<Trade::AbstractImporter> importer;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the converter pointer. I don't care, I just want you to check compilation
+   errors, not more! */
+PluginManager::Manager<Trade::AbstractImporter> manager;
+Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractImporter-usage-callbacks] */
 struct Data {
     std::unordered_map<std::string, Containers::Optional<
@@ -196,7 +204,11 @@ importer->openFile("scene.gltf"); // memory-maps all files
 #endif
 
 {
-Containers::Pointer<Trade::AbstractImporter> importer;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the converter pointer. I don't care, I just want you to check compilation
+   errors, not more! */
+PluginManager::Manager<Trade::AbstractImporter> manager;
+Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractImporter-setFileCallback] */
 importer->setFileCallback([](const std::string& filename,
     InputFileCallbackPolicy, void*) {
@@ -207,7 +219,11 @@ importer->setFileCallback([](const std::string& filename,
 }
 
 {
-Containers::Pointer<Trade::AbstractImporter> importer;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the converter pointer. I don't care, I just want you to check compilation
+   errors, not more! */
+PluginManager::Manager<Trade::AbstractImporter> manager;
+Containers::Pointer<Trade::AbstractImporter> importer = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractImporter-setFileCallback-template] */
 const Utility::Resource rs{"data"};
 importer->setFileCallback([](const std::string& filename,

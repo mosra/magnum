@@ -39,6 +39,8 @@
 #include "Magnum/Text/DistanceFieldGlyphCache.h"
 #include "Magnum/Text/Renderer.h"
 
+#define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
@@ -61,7 +63,11 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
 {
-Containers::Pointer<Text::AbstractFont> font;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractFont-usage-callbacks] */
 struct Data {
     std::unordered_map<std::string, Containers::Optional<
@@ -95,7 +101,11 @@ font->openFile("magnum-font.conf", 13.0f);
 #endif
 
 {
-Containers::Pointer<Text::AbstractFont> font;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractFont-setFileCallback] */
 font->setFileCallback([](const std::string& filename,
     InputFileCallbackPolicy, void*) {
@@ -106,7 +116,11 @@ font->setFileCallback([](const std::string& filename,
 }
 
 {
-Containers::Pointer<Text::AbstractFont> font;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractFont-setFileCallback-template] */
 const Utility::Resource rs{"data"};
 font->setFileCallback([](const std::string& filename,
@@ -117,8 +131,12 @@ font->setFileCallback([](const std::string& filename,
 }
 
 {
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
 /* [DistanceFieldGlyphCache-usage] */
-Containers::Pointer<Text::AbstractFont> font;
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
 Text::DistanceFieldGlyphCache cache{Vector2i{2048}, Vector2i{384}, 16};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -127,8 +145,12 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 }
 
 {
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
 /* [GlyphCache-usage] */
-Containers::Pointer<Text::AbstractFont> font;
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
 Text::GlyphCache cache{Vector2i{512}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -138,9 +160,13 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 
 {
 Matrix3 projectionMatrix;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the font pointer. I don't care, I just want you to check compilation errors,
+   not more! */
+PluginManager::Manager<Text::AbstractFont> manager;
 /* [Renderer-usage1] */
 /* Font instance, received from a plugin manager */
-Containers::Pointer<Text::AbstractFont> font;
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
 
 /* Configured glyph cache */
 Text::GlyphCache cache{Vector2i{512}};

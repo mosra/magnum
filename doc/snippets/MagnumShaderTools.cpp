@@ -100,7 +100,11 @@ Containers::Optional<Containers::Array<char>> spirv =
 }
 
 {
-Containers::Pointer<ShaderTools::AbstractConverter> converter;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the converter pointer. I don't care, I just want you to check compilation
+   errors, not more! */
+PluginManager::Manager<ShaderTools::AbstractConverter> manager;
+Containers::Pointer<ShaderTools::AbstractConverter> converter = manager.loadAndInstantiate("SomethingWhatever");
 Containers::Array<char> extract(const std::string&, const std::string&);
 /* [AbstractConverter-usage-callbacks] */
 struct Data {
@@ -136,7 +140,11 @@ auto result = converter->validateFile(ShaderTools::Stage::Fragment, "ssao.frag")
 }
 
 {
-Containers::Pointer<ShaderTools::AbstractConverter> converter;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the converter pointer. I don't care, I just want you to check compilation
+   errors, not more! */
+PluginManager::Manager<ShaderTools::AbstractConverter> manager;
+Containers::Pointer<ShaderTools::AbstractConverter> converter = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractConverter-setInputFileCallback] */
 converter->setInputFileCallback([](const std::string& filename,
     InputFileCallbackPolicy, void*) {
@@ -147,7 +155,11 @@ converter->setInputFileCallback([](const std::string& filename,
 }
 
 {
-Containers::Pointer<ShaderTools::AbstractConverter> converter;
+/* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
+   the converter pointer. I don't care, I just want you to check compilation
+   errors, not more! */
+PluginManager::Manager<ShaderTools::AbstractConverter> manager;
+Containers::Pointer<ShaderTools::AbstractConverter> converter = manager.loadAndInstantiate("SomethingWhatever");
 /* [AbstractConverter-setInputFileCallback-template] */
 const Utility::Resource rs{"data"};
 converter->setInputFileCallback([](const std::string& filename,
