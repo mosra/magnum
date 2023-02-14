@@ -48,8 +48,13 @@ namespace Magnum { namespace GL {
 @requires_gles Shader image load/store is not available in WebGL.
 */
 enum class ImageAccess: GLenum {
+    /** Access the image for reading only */
     ReadOnly = GL_READ_ONLY,
+
+    /** Access the image for writing only */
     WriteOnly = GL_WRITE_ONLY,
+
+    /** Access the image for both reading and writing */
     ReadWrite = GL_READ_WRITE
 };
 
