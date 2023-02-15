@@ -359,7 +359,7 @@ See @ref building, @ref cmake and @ref opengl for more information.
 @brief Material tools
 @m_since_latest
 
-Tools for converting materials.
+Tools for converting, optimizing, filtering and merging materials.
 
 This library is built if `MAGNUM_WITH_MATERIALTOOLS` is enabled when building
 Magnum. To use this library with CMake, request the `MaterialTools` component
