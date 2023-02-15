@@ -26,11 +26,14 @@
 #include "PhongToPbrMetallicRoughness.h"
 
 #include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Vector4.h"
+#include "Magnum/MaterialTools/Filter.h"
+#include "Magnum/MaterialTools/Merge.h"
 #include "Magnum/Trade/MaterialData.h"
 
 namespace Magnum { namespace MaterialTools {
@@ -38,13 +41,13 @@ namespace Magnum { namespace MaterialTools {
 using namespace Containers::Literals;
 
 Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trade::MaterialData& material, const PhongToPbrMetallicRoughnessFlags flags) {
-    /* Output attributes, reserve assuming some input attributes will get
-       replaced with different */
+    /* Attributes to merge into the base layer. We'll need at most 5 -- color,
+       texture and texture layer/coordinates/matrix. */
     Containers::Array<Trade::MaterialAttributeData> attributes;
-    arrayReserve(attributes, material.attributeData().size());
+    arrayReserve(attributes, 5);
 
-    /* Attributes to skip in the base layer */
-    Containers::BitArray attributesToSkip{ValueInit, material.attributeCount(0)};
+    /* Attributes to keep */
+    Containers::BitArray attributesToKeep{DirectInit, material.attributeDataOffset(material.layerCount()), true};
 
     /* Decide about unconvertable attributes */
     /** @todo conversion of these:
@@ -67,7 +70,7 @@ Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trad
 
         Warning{} << "MaterialTools::phongToPbrMetallicRoughness(): unconvertable" << attribute << "attribute, skipping";
         if(flags >= PhongToPbrMetallicRoughnessFlag::DropUnconvertableAttributes)
-            attributesToSkip.set(*id);
+            attributesToKeep.reset(*id);
     }
     for(const Trade::MaterialAttribute attribute: {
         Trade::MaterialAttribute::AmbientTexture,
@@ -87,13 +90,13 @@ Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trad
 
         Warning{} << "MaterialTools::phongToPbrMetallicRoughness(): unconvertable" << attribute << "attribute, skipping";
         if(flags >= PhongToPbrMetallicRoughnessFlag::DropUnconvertableAttributes) {
-            attributesToSkip.set(*id);
+            attributesToKeep.reset(*id);
             if(matrixId)
-                attributesToSkip.set(*matrixId);
+                attributesToKeep.reset(*matrixId);
             if(coordinatesId)
-                attributesToSkip.set(*coordinatesId);
+                attributesToKeep.reset(*coordinatesId);
             if(layerId)
-                attributesToSkip.set(*layerId);
+                attributesToKeep.reset(*layerId);
         }
     }
 
@@ -105,7 +108,7 @@ Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trad
 
         /* Skip unless we're told to keep the original attributes */
         if(!(flags >= PhongToPbrMetallicRoughnessFlag::KeepOriginalAttributes))
-            attributesToSkip.set(*id);
+            attributesToKeep.reset(*id);
     }
 
     /* Diffuse texture and related attributes */
@@ -127,40 +130,23 @@ Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trad
 
         /* Skip unless we're told to keep the original attributes */
         if(!(flags >= PhongToPbrMetallicRoughnessFlag::KeepOriginalAttributes)) {
-            attributesToSkip.set(*id);
+            attributesToKeep.reset(*id);
             if(matrixId)
-                attributesToSkip.set(*matrixId);
+                attributesToKeep.reset(*matrixId);
             if(coordinatesId)
-                attributesToSkip.set(*coordinatesId);
+                attributesToKeep.reset(*coordinatesId);
             if(layerId)
-                attributesToSkip.set(*layerId);
+                attributesToKeep.reset(*layerId);
         }
     }
 
-    /* New layer offsets. If there's no layer data in the original, the whole
-       attribute array is the base layer */
-    Containers::Array<UnsignedInt> layers;
-    if(material.layerData()) {
-        /* Calculate the difference in base layer size */
-        Int baseLayerSizeDifference = attributes.size();
-        /** @todo have popcount() on BitArray */
-        for(std::size_t i = 0; i != attributesToSkip.size(); ++i)
-            if(attributesToSkip[i]) --baseLayerSizeDifference;
-
-        /* Fill the new layer offset array */
-        layers = Containers::Array<UnsignedInt>{NoInit, material.layerData().size()};
-        for(std::size_t i = 0; i != layers.size(); ++i)
-            layers[i] = material.layerData()[i] + baseLayerSizeDifference;
-    }
-
-    /* Add the remaining attribute data including the extra layers, except ones
-       that are meant to be skipped in the base layer */
-    for(std::size_t i = 0; i != material.attributeData().size(); ++i)
-        if(i >= attributesToSkip.size() || !attributesToSkip[i])
-            arrayAppend(attributes, material.attributeData()[i]);
-
-    /* Replace Phong with PbrMetallicRoughness in the output */
-    return Trade::MaterialData{(material.types() & ~Trade::MaterialType::Phong)|Trade::MaterialType::PbrMetallicRoughness, std::move(attributes), std::move(layers)};
+    /* Filter & merge the attributes -- they have to be moved into the
+       constructor in order to get sorted. Remove the Phong type from the
+       output as well. There should be no conflicts if we did everything above
+       correctly, so just unpack the Optional directly. */
+    return *CORRADE_INTERNAL_ASSERT_EXPRESSION(merge(
+        filterAttributes(material, attributesToKeep, ~Trade::MaterialType::Phong),
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, std::move(attributes)}));
 }
 
 }}
