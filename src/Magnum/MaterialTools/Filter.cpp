@@ -41,7 +41,7 @@ namespace {
    - if neither is nullptr then inputAttributesToKeep is patched to have zero
      bits for all attributes in filtered-out layers,
    - both can't be nullptr */
-Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialData& material, const Containers::BitArrayView inputAttributesToKeep, const Containers::BitArrayView inputLayersToKeep) {
+Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialData& material, const Containers::BitArrayView inputAttributesToKeep, const Containers::BitArrayView inputLayersToKeep, const Trade::MaterialTypes typesToKeep) {
     const std::size_t totalAttributeCount = material.attributeDataOffset(material.layerCount());
 
     /* Generate the input attribute bit array or make a mutable copy. Using an
@@ -106,32 +106,32 @@ Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialDa
     }
     CORRADE_INTERNAL_ASSERT(attributeOffset == attributes.size());
 
-    return Trade::MaterialData{material.types(), std::move(attributes), std::move(layers)};
+    return Trade::MaterialData{material.types() & typesToKeep, std::move(attributes), std::move(layers)};
 }
 
 }
 
-Trade::MaterialData filterAttributes(const Trade::MaterialData& material, const Containers::BitArrayView attributesToKeep) {
+Trade::MaterialData filterAttributes(const Trade::MaterialData& material, const Containers::BitArrayView attributesToKeep, const Trade::MaterialTypes typesToKeep) {
     CORRADE_ASSERT(attributesToKeep.size() == material.attributeData().size(),
         "MaterialTools::filterAttributes(): expected" << material.attributeData().size() << "bits but got" << attributesToKeep.size(), (Trade::MaterialData{{}, {}}));
 
-    return filterAttributesLayersImplementation(material, attributesToKeep, nullptr);
+    return filterAttributesLayersImplementation(material, attributesToKeep, nullptr, typesToKeep);
 }
 
-Trade::MaterialData filterLayers(const Trade::MaterialData& material, const Containers::BitArrayView layersToKeep) {
+Trade::MaterialData filterLayers(const Trade::MaterialData& material, const Containers::BitArrayView layersToKeep, const Trade::MaterialTypes typesToKeep) {
     CORRADE_ASSERT(layersToKeep.size() == material.layerCount(),
         "MaterialTools::filterLayers(): expected" << material.layerCount() << "bits but got" << layersToKeep.size(), (Trade::MaterialData{{}, {}}));
 
-    return filterAttributesLayersImplementation(material, nullptr, layersToKeep);
+    return filterAttributesLayersImplementation(material, nullptr, layersToKeep, typesToKeep);
 }
 
-Trade::MaterialData filterAttributesLayers(const Trade::MaterialData& material, const Containers::BitArrayView attributesToKeep, const Containers::BitArrayView layersToKeep) {
+Trade::MaterialData filterAttributesLayers(const Trade::MaterialData& material, const Containers::BitArrayView attributesToKeep, const Containers::BitArrayView layersToKeep, const Trade::MaterialTypes typesToKeep) {
     CORRADE_ASSERT(attributesToKeep.size() == material.attributeData().size(),
         "MaterialTools::filterAttributesLayers(): expected" << material.attributeData().size() << "attribute bits but got" << attributesToKeep.size(), (Trade::MaterialData{{}, {}}));
     CORRADE_ASSERT(layersToKeep.size() == material.layerCount(),
         "MaterialTools::filterAttributesLayers(): expected" << material.layerCount() << "layer bits but got" << layersToKeep.size(), (Trade::MaterialData{{}, {}}));
 
-    return filterAttributesLayersImplementation(material, attributesToKeep, layersToKeep);
+    return filterAttributesLayersImplementation(material, attributesToKeep, layersToKeep, typesToKeep);
 }
 
 }}

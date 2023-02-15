@@ -30,6 +30,8 @@
  * @m_since_latest
  */
 
+#include <Corrade/Containers/EnumSet.h>
+
 #include "Magnum/MaterialTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
@@ -44,14 +46,14 @@ Returns a material with only the attributes for which the corresponding bit in
 bit ranges corresponding to @ref Trade::MaterialData::attributeDataOffset() for
 a particular layer. The output layer ranges are then recalculated based on how
 many attributes are left in those. Empty layers are kept,
-@ref Trade::MaterialData::types() are transferred unchanged.
+@ref Trade::MaterialData::types() are ANDed with @p typesToKeep.
 
 The size of @p attributesToKeep is expected to be equal to the number of
 attributes in all layers (i.e., size of the
 @ref Trade::MaterialData::attributeData() array).
 @see @ref filterLayers(), @ref filterAttributesLayers()
 */
-MAGNUM_MATERIALTOOLS_EXPORT Trade::MaterialData filterAttributes(const Trade::MaterialData& material, Containers::BitArrayView attributesToKeep);
+MAGNUM_MATERIALTOOLS_EXPORT Trade::MaterialData filterAttributes(const Trade::MaterialData& material, Containers::BitArrayView attributesToKeep, Trade::MaterialTypes typesToKeep = ~Trade::MaterialTypes{});
 
 /**
 @brief Filter material layers
@@ -60,13 +62,13 @@ MAGNUM_MATERIALTOOLS_EXPORT Trade::MaterialData filterAttributes(const Trade::Ma
 Returns a material with only the layers for which the corresponding bit in
 @p layersToKeep was set. The only exception is the base layer, which is left
 empty if removed. Attributes in other layers are kept untouched,
-@ref Trade::MaterialData::types() are transferred unchanged.
+@ref Trade::MaterialData::types() are ANDed with @p typesToKeep.
 
 The size of @p layerCount is expected to be equal to
 @ref Trade::MaterialData::layerCount().
 @see @ref filterAttributes(), @ref filterAttributesLayers()
 */
-MAGNUM_MATERIALTOOLS_EXPORT Trade::MaterialData filterLayers(const Trade::MaterialData& material, Containers::BitArrayView layersToKeep);
+MAGNUM_MATERIALTOOLS_EXPORT Trade::MaterialData filterLayers(const Trade::MaterialData& material, Containers::BitArrayView layersToKeep, Trade::MaterialTypes typesToKeep = ~Trade::MaterialTypes{});
 
 /**
 @brief Filter material attributes and layers
@@ -76,7 +78,7 @@ Performs what @ref filterAttributes() and @ref filterLayers() do, but in a
 single step. Bits in @p attributesToKeep that correspond to layers that are
 removed are ignored.
 */
-MAGNUM_MATERIALTOOLS_EXPORT Trade::MaterialData filterAttributesLayers(const Trade::MaterialData& material, Containers::BitArrayView attributesToKeep, Containers::BitArrayView layersToKeep);
+MAGNUM_MATERIALTOOLS_EXPORT Trade::MaterialData filterAttributesLayers(const Trade::MaterialData& material, Containers::BitArrayView attributesToKeep, Containers::BitArrayView layersToKeep, Trade::MaterialTypes typesToKeep = ~Trade::MaterialTypes{});
 
 }}
 

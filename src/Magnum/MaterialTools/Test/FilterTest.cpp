@@ -82,7 +82,7 @@ void FilterTest::attributes() {
         {Trade::MaterialAttribute::TextureCoordinates, 11u},        /* 3 */
         {Trade::MaterialAttribute::TextureLayer, 0u},               /* 4 */
     };
-    Trade::MaterialData material{Trade::MaterialType::PbrClearCoat|Trade::MaterialType::Flat, Trade::DataFlags{}, attributes};
+    Trade::MaterialData material{Trade::MaterialType::PbrClearCoat|Trade::MaterialType::Flat|Trade::MaterialType::Phong, Trade::DataFlags{}, attributes};
 
     Containers::BitArray attributesToKeep{DirectInit, 5, true};
     attributesToKeep.reset(1);
@@ -92,13 +92,13 @@ void FilterTest::attributes() {
     /* The types are kept intact even if they don't make sense, that's a job
        for some higher-level utility that understands their relations to
        present attributes */
-    CORRADE_COMPARE_AS(filterAttributes(material, attributesToKeep), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat|Trade::MaterialType::Flat, {
+    CORRADE_COMPARE_AS(filterAttributes(material, attributesToKeep, Trade::MaterialType::PbrClearCoat|Trade::MaterialType::PbrMetallicRoughness), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColorTexture, 7u},
     }}), DebugTools::CompareMaterial);
 
     /* Removing all shouldn't do anything unexpected */
-    CORRADE_COMPARE_AS(filterAttributes(material, Containers::BitArray{ValueInit, 5}), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat|Trade::MaterialType::Flat, {
+    CORRADE_COMPARE_AS(filterAttributes(material, Containers::BitArray{ValueInit, 5}, {}), (Trade::MaterialData{{}, {
     }}), DebugTools::CompareMaterial);
 }
 
@@ -170,14 +170,14 @@ void FilterTest::layers() {
         {"againSomething", false},                                  /* 6 #9 */
     };
     const UnsignedInt layers[]{3, 3, 6, 8, 8, 9, 10};
-    Trade::MaterialData material{Trade::MaterialType::PbrClearCoat, Trade::DataFlags{}, attributes, Trade::DataFlags{}, layers};
+    Trade::MaterialData material{Trade::MaterialType::PbrClearCoat|Trade::MaterialType::PbrMetallicRoughness, Trade::DataFlags{}, attributes, Trade::DataFlags{}, layers};
 
     Containers::BitArray layersToKeep{DirectInit, 7, true};
     layersToKeep.reset(1);
     layersToKeep.reset(2);
     layersToKeep.reset(5);
 
-    CORRADE_COMPARE_AS(filterLayers(material, layersToKeep), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    CORRADE_COMPARE_AS(filterLayers(material, layersToKeep, Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrSpecularGlossiness), (Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColor, 0xffcc66ff_rgbaf},
         {Trade::MaterialAttribute::BaseColorTexture, 7u},
@@ -188,7 +188,7 @@ void FilterTest::layers() {
     }, {3, 5, 5, 6}}), DebugTools::CompareMaterial);
 
     /* Removing all shouldn't do anything unexpected */
-    CORRADE_COMPARE_AS(filterLayers(material, Containers::BitArray{ValueInit, 7}), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    CORRADE_COMPARE_AS(filterLayers(material, Containers::BitArray{ValueInit, 7}, {}), (Trade::MaterialData{{}, {
     }}), DebugTools::CompareMaterial);
 }
 
@@ -247,7 +247,7 @@ void FilterTest::attributesLayers() {
         {"againSomething", false},                                  /* 6 #9 */
     };
     const UnsignedInt layers[]{3, 3, 6, 8, 8, 9, 10};
-    Trade::MaterialData material{Trade::MaterialType::PbrClearCoat, Trade::DataFlags{}, attributes, Trade::DataFlags{}, layers};
+    Trade::MaterialData material{Trade::MaterialType::PbrClearCoat|Trade::MaterialType::PbrMetallicRoughness, Trade::DataFlags{}, attributes, Trade::DataFlags{}, layers};
 
     Containers::BitArray attributesToKeep{DirectInit, 10, true};
     attributesToKeep.reset(1);
@@ -259,7 +259,7 @@ void FilterTest::attributesLayers() {
     layersToKeep.reset(1);
     layersToKeep.reset(2);
 
-    CORRADE_COMPARE_AS(filterAttributesLayers(material, attributesToKeep, layersToKeep), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    CORRADE_COMPARE_AS(filterAttributesLayers(material, attributesToKeep, layersToKeep, Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrSpecularGlossiness), (Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColorTexture, 7u},
         {"texturePointer", nullptr},
@@ -269,11 +269,11 @@ void FilterTest::attributesLayers() {
     }, {2, 3, 3, 3, 4}}), DebugTools::CompareMaterial);
 
     /* Removing all attributes should keep all layers but make them empty */
-    CORRADE_COMPARE_AS(filterAttributesLayers(material, Containers::BitArray{ValueInit, 10}, Containers::BitArray{DirectInit, 7, true}), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    CORRADE_COMPARE_AS(filterAttributesLayers(material, Containers::BitArray{ValueInit, 10}, Containers::BitArray{DirectInit, 7, true}, {}), (Trade::MaterialData{{}, {
     }, {0, 0, 0, 0, 0, 0, 0}}), DebugTools::CompareMaterial);
 
     /* Removing all layers should make the material completely empty */
-    CORRADE_COMPARE_AS(filterLayers(material, Containers::BitArray{ValueInit, 7}), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    CORRADE_COMPARE_AS(filterAttributesLayers(material, Containers::BitArray{ValueInit, 10}, Containers::BitArray{ValueInit, 7}, {}), (Trade::MaterialData{{}, {
     }}), DebugTools::CompareMaterial);
 }
 
