@@ -2095,7 +2095,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * The @p attributeData gets sorted by name internally, expecting no
          * duplicates inside each layer. The @p layerData is expected to be
          * either empty or a monotonically non-decreasing sequence of offsets
-         * not larger than @p attributeData size, with *i*-th item specifying
+         * counting up to @p attributeData size, with *i*-th item specifying
          * end offset of *i*-th layer.
          *
          * The @ref attributeDataFlags() / @ref layerDataFlags() are implicitly
@@ -2123,7 +2123,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * The @p data is expected to be already sorted by name, without
          * duplicates inside each layer. The @p layerData is expected to be
          * either empty or a monotonically non-decreasing sequence of offsets
-         * not larger than @p attributeData size, with *i*-th item specifying
+         * counting up to @p attributeData size, with *i*-th item specifying
          * end offset of *i*-th layer.
          *
          * The @p attributeDataFlags / @p layerDataFlags parameters can contain

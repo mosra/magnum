@@ -152,7 +152,7 @@ const struct {
             {Trade::MaterialAttribute::AlphaMask, 0.7f},
             {Trade::MaterialLayer::ClearCoat},
             {Trade::MaterialAttribute::LayerFactor, 0.35f},
-        }, {2, 4}},
+        }, {3, 5}},
         Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
             {Trade::MaterialAttribute::BaseColor, 0xff3366ff_rgbaf},
             {Trade::MaterialAttribute::BaseColorTexture, 0u},
@@ -161,7 +161,7 @@ const struct {
             {Trade::MaterialAttribute::AlphaMask, 0.7f},
             {Trade::MaterialLayer::ClearCoat},
             {Trade::MaterialAttribute::LayerFactor, 0.35f},
-        }, {4, 6}}},
+        }, {5, 7}}},
     {"diffuse texture properties without texture", {},
         Trade::MaterialData{{}, {
             {Trade::MaterialAttribute::DiffuseColor, 0xff3366cc_rgbaf},

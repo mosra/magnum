@@ -321,6 +321,9 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
 
         begin = end;
     }
+
+    CORRADE_ASSERT(layerOffsets.back() == _data.size(),
+        "Trade::MaterialData: last layer offset" << layerOffsets.back() << "too short for" << _data.size() << "attributes in total", );
 }
 
 MaterialData::MaterialData(const MaterialTypes types, const std::initializer_list<MaterialAttributeData> attributeData, const std::initializer_list<UnsignedInt> layerData, const void* const importerState): MaterialData{types, Implementation::initializerListToArrayWithDefaultDeleter(attributeData), Implementation::initializerListToArrayWithDefaultDeleter(layerData), importerState} {}
@@ -358,6 +361,9 @@ MaterialData::MaterialData(const MaterialTypes types, const DataFlags attributeD
 
         begin = end;
     }
+
+    CORRADE_ASSERT(layerOffsets.back() == _data.size(),
+        "Trade::MaterialData: last layer offset" << layerOffsets.back() << "too short for" << _data.size() << "attributes in total", );
     #endif
 }
 

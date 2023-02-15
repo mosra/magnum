@@ -6515,7 +6515,7 @@ void AbstractImporterTest::materialNonOwningDeleters() {
             return MaterialData{{}, {}, attributeData, {}, layerData};
         }
 
-        UnsignedInt layerData[1]{};
+        UnsignedInt layerData[1]{1};
         MaterialAttributeData attributeData[1]{
             {MaterialAttribute::DiffuseColor, Color4{}}
         };

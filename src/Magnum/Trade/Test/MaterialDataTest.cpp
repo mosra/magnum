@@ -100,6 +100,7 @@ struct MaterialDataTest: TestSuite::Tester {
     void constructLayers();
     void constructLayersNotMonotonic();
     void constructLayersOffsetOutOfBounds();
+    void constructLayersLastOffsetTooShort();
 
     void constructNonOwned();
     void constructNonOwnedLayers();
@@ -108,6 +109,7 @@ struct MaterialDataTest: TestSuite::Tester {
     void constructNonOwnedDuplicateAttribute();
     void constructNonOwnedLayersNotMonotonic();
     void constructNonOwnedLayersOffsetOutOfBounds();
+    void constructNonOwnedLayersLastOffsetTooShort();
     void constructNonOwnedAttributeFlagOwned();
     void constructNonOwnedLayerFlagOwned();
 
@@ -267,6 +269,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructLayers,
               &MaterialDataTest::constructLayersNotMonotonic,
               &MaterialDataTest::constructLayersOffsetOutOfBounds,
+              &MaterialDataTest::constructLayersLastOffsetTooShort,
 
               &MaterialDataTest::constructNonOwned,
               &MaterialDataTest::constructNonOwnedLayers,
@@ -275,6 +278,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructNonOwnedDuplicateAttribute,
               &MaterialDataTest::constructNonOwnedLayersNotMonotonic,
               &MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds,
+              &MaterialDataTest::constructNonOwnedLayersLastOffsetTooShort,
               &MaterialDataTest::constructNonOwnedAttributeFlagOwned,
               &MaterialDataTest::constructNonOwnedLayerFlagOwned,
 
@@ -1511,6 +1515,20 @@ void MaterialDataTest::constructLayersOffsetOutOfBounds() {
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
 }
 
+void MaterialDataTest::constructLayersLastOffsetTooShort() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{MaterialType::Phong, {
+        {MaterialAttribute::DoubleSided, true},
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::LayerFactor, 0.5f},
+        {MaterialAttribute::NormalTexture, 3u}
+    }, {1, 3}};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: last layer offset 3 too short for 4 attributes in total\n");
+}
+
 void MaterialDataTest::constructNonOwned() {
     constexpr MaterialAttributeData attributes[]{
         {"AmbientTextureMatrix"_s, Matrix3{{0.5f, 0.0f, 0.0f},
@@ -1698,6 +1716,28 @@ void MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds() {
         {}, attributes,
         {}, layers};
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
+}
+
+void MaterialDataTest::constructNonOwnedLayersLastOffsetTooShort() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    MaterialAttributeData attributes[]{
+        {MaterialAttribute::DoubleSided, true},
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::LayerFactor, 0.5f},
+        {MaterialAttribute::NormalTexture, 3u}
+    };
+
+    UnsignedInt layers[]{
+        1, 3
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{MaterialType::Phong,
+        {}, attributes,
+        {}, layers};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: last layer offset 3 too short for 4 attributes in total\n");
 }
 
 void MaterialDataTest::constructNonOwnedAttributeFlagOwned() {
@@ -2953,7 +2993,7 @@ void MaterialDataTest::accessNotFoundInLayerString() {
     MaterialData data{{}, {
         {MaterialAttribute::LayerName, "ClearCoat"},
         {"DiffuseColor", 0xff3366aa_rgbaf}
-    }, {0, 1}};
+    }, {0, 2}};
 
     /* These are fine */
     CORRADE_VERIFY(!data.hasAttribute("ClearCoat", "DiffuseColour"));

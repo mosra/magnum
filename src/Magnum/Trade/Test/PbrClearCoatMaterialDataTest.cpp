@@ -464,7 +464,7 @@ void PbrClearCoatMaterialDataTest::commonCoordinatesLayerImplicit() {
         {textureName, 5u},
         {textureName + "Coordinates", 0u},
         {textureName + "Layer", 0u},
-    }, {0, 3}};
+    }, {0, 4}};
 
     /* Zero is treated same as if there would be no attribute at all */
     CORRADE_VERIFY(!data.hasTextureCoordinates());
