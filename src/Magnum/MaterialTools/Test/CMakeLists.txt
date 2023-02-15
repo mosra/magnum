@@ -28,4 +28,5 @@
 set(CMAKE_FOLDER "Magnum/MaterialTools/Test")
 
 corrade_add_test(MaterialToolsFilterTest FilterTest.cpp LIBRARIES MagnumDebugTools MagnumMaterialToolsTestLib)
+corrade_add_test(MaterialToolsMergeTest MergeTest.cpp LIBRARIES MagnumDebugTools MagnumMaterialToolsTestLib)
 corrade_add_test(MaterialToolsPhongToPbrMetall___Test PhongToPbrMetallicRoughnessTest.cpp LIBRARIES MagnumDebugTools MagnumMaterialTools)
