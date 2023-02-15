@@ -42,8 +42,6 @@ namespace {
      bits for all attributes in filtered-out layers,
    - both can't be nullptr */
 Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialData& material, const Containers::BitArrayView inputAttributesToKeep, const Containers::BitArrayView inputLayersToKeep) {
-    CORRADE_INTERNAL_ASSERT(inputAttributesToKeep.data() || inputLayersToKeep.data());
-
     const std::size_t totalAttributeCount = material.attributeDataOffset(material.layerCount());
 
     /* Generate the input attribute bit array or make a mutable copy. Using an

@@ -50,6 +50,8 @@ struct FilterTest: TestSuite::Tester {
     void attributesLayers();
     void attributesLayersRemoveBaseLayer();
     void attributesLayersWrongBitCount();
+
+    void emptyInput();
 };
 
 FilterTest::FilterTest() {
@@ -63,7 +65,9 @@ FilterTest::FilterTest() {
 
               &FilterTest::attributesLayers,
               &FilterTest::attributesLayersRemoveBaseLayer,
-              &FilterTest::attributesLayersWrongBitCount});
+              &FilterTest::attributesLayersWrongBitCount,
+
+              &FilterTest::emptyInput});
 }
 
 using namespace Math::Literals;
@@ -316,6 +320,25 @@ void FilterTest::attributesLayersWrongBitCount() {
     CORRADE_COMPARE(out.str(),
         "MaterialTools::filterAttributesLayers(): expected 4 attribute bits but got 5\n"
         "MaterialTools::filterAttributesLayers(): expected 2 layer bits but got 3\n");
+}
+
+void FilterTest::emptyInput() {
+    Trade::MaterialData empty{Trade::MaterialType::PbrClearCoat, {}};
+
+    /* We have no attributes but we always have one implicit layer */
+    const bool yes[1]{};
+    Containers::BitArrayView layersToKeep{yes, 0, 1};
+
+    /* It shouldn't assert or do any other crazy thing */
+    CORRADE_COMPARE_AS(filterAttributes(empty, nullptr),
+        empty,
+        DebugTools::CompareMaterial);
+    CORRADE_COMPARE_AS(filterLayers(empty, layersToKeep),
+        empty,
+        DebugTools::CompareMaterial);
+    CORRADE_COMPARE_AS(filterAttributesLayers(empty, nullptr, layersToKeep),
+        empty,
+        DebugTools::CompareMaterial);
 }
 
 }}}}
