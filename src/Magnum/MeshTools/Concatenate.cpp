@@ -169,14 +169,25 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
             CORRADE_ASSERT(out.attributeFormat(dst) == mesh.attributeFormat(src),
                 assertPrefix << "expected" << out.attributeFormat(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeFormat(src) << "in mesh" << i << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
-            CORRADE_ASSERT(out.attributeArraySize(dst) == mesh.attributeArraySize(src),
-                assertPrefix << "expected array size" << out.attributeArraySize(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeArraySize(src) << "in mesh" << i << "attribute" << src,
+            CORRADE_ASSERT(!out.attributeArraySize(dst) == !mesh.attributeArraySize(src),
+                assertPrefix << "attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ")" << (out.attributeArraySize(dst) ? "is" : "isn't") << "an array but attribute" << src << "in mesh" << i << (mesh.attributeArraySize(src) ? "is" : "isn't"),
+                (Trade::MeshData{MeshPrimitive{}, 0}));
+            CORRADE_ASSERT(out.attributeArraySize(dst) >= mesh.attributeArraySize(src),
+                assertPrefix << "expected array size" << out.attributeArraySize(dst) << "or less for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeArraySize(src) << "in mesh" << i << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
 
+            const Containers::StridedArrayView2D<const char> srcAttribute = mesh.attribute(src);
+            const Containers::StridedArrayView2D<char> dstAttribute = out.mutableAttribute(dst);
+
             /* Copy the data to a slice of the output, mark the attribute as
-               copied */
-            Utility::copy(mesh.attribute(src), out.mutableAttribute(dst)
-                .slice(vertexOffset, vertexOffset + mesh.vertexCount()));
+               copied. For non-array attributes the second dimension should be
+               matching (because the format is matching), for array attributes
+               we may be copying to just a prefix of the elements in
+               dstAttribute. */
+            CORRADE_INTERNAL_ASSERT(out.attributeArraySize(dst) || srcAttribute.size()[1] == dstAttribute.size()[1]);
+            Utility::copy(srcAttribute, dstAttribute.sliceSize(
+                {vertexOffset, 0},
+                {mesh.vertexCount(), srcAttribute.size()[1]}));
             found->second.second = true;
         }
 

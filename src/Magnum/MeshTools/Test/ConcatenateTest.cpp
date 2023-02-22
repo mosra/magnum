@@ -25,8 +25,10 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove when Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
@@ -50,7 +52,8 @@ struct ConcatenateTest: TestSuite::Tester {
     void concatenateUnsupportedPrimitive();
     void concatenateInconsistentPrimitive();
     void concatenateInconsistentAttributeFormat();
-    void concatenateInconsistentAttributeArraySize();
+    void concatenateInconsistentArrayAttribute();
+    void concatenateTooLargeAttributeArraySize();
     void concatenateImplementationSpecificIndexType();
     void concatenateImplementationSpecificVertexFormat();
     void concatenateIntoNoMeshes();
@@ -81,7 +84,8 @@ ConcatenateTest::ConcatenateTest() {
               &ConcatenateTest::concatenateUnsupportedPrimitive,
               &ConcatenateTest::concatenateInconsistentPrimitive,
               &ConcatenateTest::concatenateInconsistentAttributeFormat,
-              &ConcatenateTest::concatenateInconsistentAttributeArraySize,
+              &ConcatenateTest::concatenateInconsistentArrayAttribute,
+              &ConcatenateTest::concatenateTooLargeAttributeArraySize,
               &ConcatenateTest::concatenateImplementationSpecificIndexType,
               &ConcatenateTest::concatenateImplementationSpecificVertexFormat,
               &ConcatenateTest::concatenateIntoNoMeshes});
@@ -94,7 +98,7 @@ struct VertexDataA {
     Vector2 texcoords2;
     Int:32;
     Vector3 position;
-    Short data[2];
+    Short data[3];
 };
 
 void ConcatenateTest::concatenate() {
@@ -106,8 +110,8 @@ void ConcatenateTest::concatenate() {
     /* First is non-indexed, this layout (including the gap) will be
        preserved */
     const VertexDataA vertexDataA[]{
-        {{0.1f, 0.2f}, {0.5f, 0.6f}, {1.0f, 2.0f, 3.0f}, {15, 3}},
-        {{0.3f, 0.4f}, {0.7f, 0.8f}, {4.0f, 5.0f, 6.0f}, {14, 2}}
+        {{0.1f, 0.2f}, {0.5f, 0.6f}, {1.0f, 2.0f, 3.0f}, {15, 3, -1}},
+        {{0.3f, 0.4f}, {0.7f, 0.8f}, {4.0f, 5.0f, 6.0f}, {14, 2, -4}}
     };
     Containers::StridedArrayView1D<const VertexDataA> verticesA = vertexDataA;
     Trade::MeshData a{MeshPrimitive::Points, {}, vertexDataA, {
@@ -119,7 +123,7 @@ void ConcatenateTest::concatenate() {
             verticesA.slice(&VertexDataA::position)},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Short, verticesA.slice(&VertexDataA::data), 2}
+            VertexFormat::Short, verticesA.slice(&VertexDataA::data), 3}
     }};
 
     /* Second is indexed, has only one texture coordinate of the two, an extra
@@ -127,13 +131,13 @@ void ConcatenateTest::concatenate() {
        zero-filled) */
     const struct VertexDataB {
         Color4 color;
-        Short data[2];
+        Short data[3];
         Vector2 texcoords1;
     } vertexDataB[]{
-        {0x112233_rgbf, {28, -15}, {0.15f, 0.25f}},
-        {0x445566_rgbf, {29, -16}, {0.35f, 0.45f}},
-        {0x778899_rgbf, {30, -17}, {0.55f, 0.65f}},
-        {0xaabbcc_rgbf, {40, -18}, {0.75f, 0.85f}}
+        {0x112233_rgbf, {28, -15, 0}, {0.15f, 0.25f}},
+        {0x445566_rgbf, {29, -16, 1}, {0.35f, 0.45f}},
+        {0x778899_rgbf, {30, -17, 2}, {0.55f, 0.65f}},
+        {0xaabbcc_rgbf, {40, -18, 3}, {0.75f, 0.85f}}
     };
     Containers::StridedArrayView1D<const VertexDataB> verticesB = vertexDataB;
     const UnsignedShort indicesB[]{0, 2, 1, 0, 3, 2};
@@ -143,7 +147,7 @@ void ConcatenateTest::concatenate() {
                 verticesB.slice(&VertexDataB::color)},
             /* Array attribute to verify it's correctly propagated */
             Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-                VertexFormat::Short, verticesB.slice(&VertexDataB::data), 2},
+                VertexFormat::Short, verticesB.slice(&VertexDataB::data), 3},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
                 verticesB.slice(&VertexDataB::texcoords1)}
         }};
@@ -157,10 +161,11 @@ void ConcatenateTest::concatenate() {
         Vector3 position;
         Vector2 texcoords3;
         Vector2 texcoords1;
+        Short data[1];
     } vertexDataC[]{
-        {{0.425f, 0.475f}, {1.5f, 2.5f, 3.5f}, {0.725f, 0.775f}, {0.125f, 0.175f}},
-        {{0.525f, 0.575f}, {4.5f, 5.5f, 6.5f}, {0.825f, 0.875f}, {0.225f, 0.275f}},
-        {{0.625f, 0.675f}, {7.5f, 8.5f, 9.5f}, {0.925f, 0.975f}, {0.325f, 0.375f}},
+        {{0.425f, 0.475f}, {1.5f, 2.5f, 3.5f}, {0.725f, 0.775f}, {0.125f, 0.175f}, {320}},
+        {{0.525f, 0.575f}, {4.5f, 5.5f, 6.5f}, {0.825f, 0.875f}, {0.225f, 0.275f}, {3200}},
+        {{0.625f, 0.675f}, {7.5f, 8.5f, 9.5f}, {0.925f, 0.975f}, {0.325f, 0.375f}, {32000}},
     };
     Containers::StridedArrayView1D<const VertexDataC> verticesC = vertexDataC;
     Trade::MeshData c{MeshPrimitive::Points, {}, vertexDataC, {
@@ -172,6 +177,9 @@ void ConcatenateTest::concatenate() {
             verticesC.slice(&VertexDataC::texcoords2)},
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
             verticesC.slice(&VertexDataC::texcoords3)},
+        /* Array attribute with less elements. The rest will be zero-filled. */
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::Short, verticesC.slice(&VertexDataC::data), 1},
     }};
 
     /* To catch when the default argument becomes different */
@@ -213,12 +221,13 @@ void ConcatenateTest::concatenate() {
         }), TestSuite::Compare::Container);
     CORRADE_COMPARE(dst.attributeName(3), Trade::meshAttributeCustom(42));
     CORRADE_COMPARE(dst.attributeFormat(3), VertexFormat::Short);
-    CORRADE_COMPARE(dst.attributeArraySize(3), 2);
-    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2s>(dst.attribute<Short[]>(3))),
-        Containers::arrayView<Vector2s>({
-            {15, 3}, {14, 2},
-            {28, -15}, {29, -16}, {30, -17}, {40, -18},
-            {}, {}, {}, /* Missing in the third mesh */
+    CORRADE_COMPARE(dst.attributeArraySize(3), 3);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector3s>(dst.attribute<Short[]>(3))),
+        Containers::arrayView<Vector3s>({
+            {15, 3, -1}, {14, 2, -4},
+            {28, -15, 0}, {29, -16, 1}, {30, -17, 2}, {40, -18, 3},
+            /* Last two components missing in the third mesh, kept at zeros */
+            {320, 0, 0}, {3200, 0, 0}, {32000, 0, 0},
         }), TestSuite::Compare::Container);
     CORRADE_VERIFY(dst.isIndexed());
     CORRADE_COMPARE(dst.indexType(), MeshIndexType::UnsignedInt);
@@ -239,7 +248,7 @@ void ConcatenateTest::concatenate() {
         CORRADE_COMPARE(dst.attributeOffset(3), 2*sizeof(Vector2) + 4 + sizeof(Vector3));
     } else {
         /* Everything gets tightly packed */
-        CORRADE_COMPARE(dst.attributeStride(0), 2*sizeof(Vector2) + sizeof(Vector3) + 2*sizeof(Short));
+        CORRADE_COMPARE(dst.attributeStride(0), 2*sizeof(Vector2) + sizeof(Vector3) + 3*sizeof(Short));
         CORRADE_COMPARE(dst.attributeOffset(0), 0);
         CORRADE_COMPARE(dst.attributeOffset(1), sizeof(Vector2));
         CORRADE_COMPARE(dst.attributeOffset(2), 2*sizeof(Vector2));
@@ -622,7 +631,7 @@ void ConcatenateTest::concatenateInconsistentAttributeFormat() {
         "MeshTools::concatenateInto(): expected VertexFormat::Vector3ubNormalized for attribute 2 (Trade::MeshAttribute::Color) but got VertexFormat::Vector3usNormalized in mesh 3 attribute 1\n");
 }
 
-void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
+void ConcatenateTest::concatenateInconsistentArrayAttribute() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Things are a bit duplicated to test correct numbering */
@@ -632,22 +641,70 @@ void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::ByteNormalized, nullptr, 5}
+            VertexFormat::ByteNormalized, nullptr, 4}
     }};
-    Trade::MeshData b{MeshPrimitive::Lines, nullptr, {
+    /* Copy of `a` so we can (destructively) concatenateInto() it and then use
+       `a` again in another assert */
+    Trade::MeshData a2{MeshPrimitive::Lines, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
             VertexFormat::ByteNormalized, nullptr, 4}
     }};
+    Trade::MeshData b{MeshPrimitive::Lines, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::ByteNormalized, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::concatenate({a, a, a, a, b});
+    MeshTools::concatenate({b, b, b, b, a});
+    MeshTools::concatenateInto(a2, {a, a, a, b});
+    MeshTools::concatenateInto(b, {b, b, b, a});
+    CORRADE_COMPARE_AS(out.str(),
+        "MeshTools::concatenate(): attribute 2 (Trade::MeshAttribute::Custom(42)) is an array but attribute 1 in mesh 4 isn't\n"
+        "MeshTools::concatenate(): attribute 1 (Trade::MeshAttribute::Custom(42)) isn't an array but attribute 2 in mesh 4 is\n"
+        "MeshTools::concatenateInto(): attribute 2 (Trade::MeshAttribute::Custom(42)) is an array but attribute 1 in mesh 3 isn't\n"
+        "MeshTools::concatenateInto(): attribute 1 (Trade::MeshAttribute::Custom(42)) isn't an array but attribute 2 in mesh 3 is\n",
+        TestSuite::Compare::String);
+}
+
+void ConcatenateTest::concatenateTooLargeAttributeArraySize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* Things are a bit duplicated to test correct numbering */
+    Trade::MeshData a{MeshPrimitive::Lines, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::ByteNormalized, nullptr, 4}
+    }};
+    Trade::MeshData b{MeshPrimitive::Lines, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::ByteNormalized, nullptr, 5}
+    }};
+
+    /* Using a lower array size in subsequent meshes is fine (tested in
+       concatenate() above) */
+    MeshTools::concatenate({b, a});
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::concatenate({a, a, a, a, b});
     MeshTools::concatenateInto(a, {a, a, a, b});
-    CORRADE_COMPARE(out.str(),
-        "MeshTools::concatenate(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 4 attribute 1\n"
-        "MeshTools::concatenateInto(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 3 attribute 1\n");
+    CORRADE_COMPARE_AS(out.str(),
+        "MeshTools::concatenate(): expected array size 4 or less for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 5 in mesh 4 attribute 1\n"
+        "MeshTools::concatenateInto(): expected array size 4 or less for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 5 in mesh 3 attribute 1\n",
+        TestSuite::Compare::String);
 }
 
 void ConcatenateTest::concatenateImplementationSpecificIndexType() {

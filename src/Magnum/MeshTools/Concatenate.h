@@ -64,11 +64,14 @@ All attributes from the first mesh are taken, expected to not have an
 implementation-specific format. For each following mesh attributes present in
 the first are copied, superfluous attributes ignored and missing attributes
 zeroed out. Matching attributes are expected to have the same type, all meshes
-are expected to have the same primitive. The vertex data are concatenated in
-the same order as passed, with no duplicate removal. Returned instance vertex
-and index data flags always have both @ref Trade::DataFlag::Owned and
-@ref Trade::DataFlag::Mutable to guarante mutable access to particular parts of
-the concatenated mesh --- for example for applying transformations.
+are expected to have the same primitive. In case of array attributes,
+attributes in subsequent meshes are expected to be arrays as well and have the
+same or smaller array size. Unused components at the end are zeroed out. The
+vertex data are concatenated in the same order as passed, with no duplicate
+removal. Returned instance vertex and index data flags always have both
+@ref Trade::DataFlag::Owned and @ref Trade::DataFlag::Mutable to guarante
+mutable access to particular parts of the concatenated mesh --- for example for
+applying transformations.
 
 The data layouting is done by @ref interleavedLayout() with the @p flags
 parameter propagated to it, see its documentation for detailed behavior
