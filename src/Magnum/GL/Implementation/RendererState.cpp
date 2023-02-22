@@ -241,12 +241,11 @@ void RendererState::applyPixelStorageInternal(const Magnum::PixelStorage& storag
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     if(state.rowLength == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.rowLength != storage.rowLength())
     {
-        /** @todo Use real value for GL_PACK_ROW_LENGTH_NV when it is in headers */
         #ifndef MAGNUM_TARGET_GLES2
         glPixelStorei(isUnpack ? GL_UNPACK_ROW_LENGTH : GL_PACK_ROW_LENGTH,
             state.rowLength = storage.rowLength());
         #elif !defined(MAGNUM_TARGET_WEBGL)
-        glPixelStorei(isUnpack ? GL_UNPACK_ROW_LENGTH_EXT : 0xD02 /*GL_PACK_ROW_LENGTH_NV*/,
+        glPixelStorei(isUnpack ? GL_UNPACK_ROW_LENGTH_EXT : GL_PACK_ROW_LENGTH_NV,
             state.rowLength = storage.rowLength());
         #endif
     }
