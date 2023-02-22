@@ -109,21 +109,17 @@ void ConcatenateTest::concatenate() {
         {{0.1f, 0.2f}, {0.5f, 0.6f}, {1.0f, 2.0f, 3.0f}, {15, 3}},
         {{0.3f, 0.4f}, {0.7f, 0.8f}, {4.0f, 5.0f, 6.0f}, {14, 2}}
     };
+    Containers::StridedArrayView1D<const VertexDataA> verticesA = vertexDataA;
     Trade::MeshData a{MeshPrimitive::Points, {}, vertexDataA, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-            Containers::stridedArrayView(vertexDataA,
-                &vertexDataA[0].texcoords1, 2, sizeof(VertexDataA))},
+            verticesA.slice(&VertexDataA::texcoords1)},
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-            Containers::stridedArrayView(vertexDataA,
-                &vertexDataA[0].texcoords2, 2, sizeof(VertexDataA))},
+            verticesA.slice(&VertexDataA::texcoords2)},
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            Containers::stridedArrayView(vertexDataA,
-                &vertexDataA[0].position, 2, sizeof(VertexDataA))},
+            verticesA.slice(&VertexDataA::position)},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Short,
-            Containers::stridedArrayView(vertexDataA,
-                &vertexDataA[0].data, 2, sizeof(VertexDataA)), 2}
+            VertexFormat::Short, verticesA.slice(&VertexDataA::data), 2}
     }};
 
     /* Second is indexed, has only one texture coordinate of the two, an extra
@@ -139,20 +135,17 @@ void ConcatenateTest::concatenate() {
         {0x778899_rgbf, {30, -17}, {0.55f, 0.65f}},
         {0xaabbcc_rgbf, {40, -18}, {0.75f, 0.85f}}
     };
+    Containers::StridedArrayView1D<const VertexDataB> verticesB = vertexDataB;
     const UnsignedShort indicesB[]{0, 2, 1, 0, 3, 2};
     Trade::MeshData b{MeshPrimitive::Points,
         {}, indicesB, Trade::MeshIndexData{indicesB}, {}, vertexDataB, {
             Trade::MeshAttributeData{Trade::MeshAttribute::Color,
-                Containers::stridedArrayView(vertexDataB,
-                    &vertexDataB[0].color, 4, sizeof(VertexDataB))},
+                verticesB.slice(&VertexDataB::color)},
             /* Array attribute to verify it's correctly propagated */
             Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-                VertexFormat::Short,
-                Containers::stridedArrayView(vertexDataB,
-                    &vertexDataB[0].data, 4, sizeof(VertexDataB)), 2},
+                VertexFormat::Short, verticesB.slice(&VertexDataB::data), 2},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-                Containers::stridedArrayView(vertexDataB,
-                    &vertexDataB[0].texcoords1, 4, sizeof(VertexDataB))}
+                verticesB.slice(&VertexDataB::texcoords1)}
         }};
 
     /* Third is again non-indexed, has one texcoord attribute more (which will
@@ -169,19 +162,16 @@ void ConcatenateTest::concatenate() {
         {{0.525f, 0.575f}, {4.5f, 5.5f, 6.5f}, {0.825f, 0.875f}, {0.225f, 0.275f}},
         {{0.625f, 0.675f}, {7.5f, 8.5f, 9.5f}, {0.925f, 0.975f}, {0.325f, 0.375f}},
     };
+    Containers::StridedArrayView1D<const VertexDataC> verticesC = vertexDataC;
     Trade::MeshData c{MeshPrimitive::Points, {}, vertexDataC, {
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-            Containers::stridedArrayView(vertexDataC,
-                &vertexDataC[0].texcoords1, 3, sizeof(VertexDataC))},
+            verticesC.slice(&VertexDataC::texcoords1)},
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            Containers::stridedArrayView(vertexDataC,
-                &vertexDataC[0].position, 3, sizeof(VertexDataC))},
+            verticesC.slice(&VertexDataC::position)},
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-            Containers::stridedArrayView(vertexDataC,
-                &vertexDataC[0].texcoords2, 3, sizeof(VertexDataC))},
+            verticesC.slice(&VertexDataC::texcoords2)},
         Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-            Containers::stridedArrayView(vertexDataC,
-                &vertexDataC[0].texcoords3, 3, sizeof(VertexDataC))},
+            verticesC.slice(&VertexDataC::texcoords3)},
     }};
 
     /* To catch when the default argument becomes different */
