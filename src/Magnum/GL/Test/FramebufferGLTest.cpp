@@ -1107,6 +1107,13 @@ void FramebufferGLTest::multipleColorOutputs() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+
+    /* Mapping just a single output. The comment re EXT_draw_buffers applies
+       here as well, so we can map just the 0th attachment, no other one. */
+    framebuffer.mapForDraw(Framebuffer::ColorAttachment{0});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::clear() {
