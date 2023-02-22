@@ -378,7 +378,7 @@ bool Buffer::unmap() { return Context::current().state().buffer.unmapImplementat
 
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
 Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
-    Containers::Array<char> data(size);
+    Containers::Array<char> data{NoInit, std::size_t(size)};
     if(size) Context::current().state().buffer.getSubDataImplementation(*this, offset, size, data);
     return data;
 }
