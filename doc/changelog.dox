@@ -94,6 +94,9 @@ See also:
     have undefined behavior and may cause stability issues. This option is also
     programatically settable via a new
     @ref GL::Context::Configuration::Flag::GpuValidationNoError flag.
+-   Implemented the GL 4.3 @gl_extension{ARB,framebuffer_no_attachments}
+    extension and matching GLES 3.1 functionality, exposed as
+    @ref GL::Framebuffer::setDefaultSize() and related APIs
 -   Implemented @gl_extension{EXT,texture_norm16} and
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all

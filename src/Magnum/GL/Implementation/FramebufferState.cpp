@@ -417,6 +417,33 @@ FramebufferState::FramebufferState(Context& context, Containers::StaticArrayView
     invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Attachment-less framebuffer implementation on desktop GL */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::framebuffer_no_attachments>()) {
+        extensions[Extensions::ARB::framebuffer_no_attachments::Index] =
+                   Extensions::ARB::framebuffer_no_attachments::string();
+        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+            extensions[Extensions::ARB::direct_state_access::Index] =
+                       Extensions::ARB::direct_state_access::string();
+            parameterImplementation = &Framebuffer::parameterImplementationDSA;
+        } else {
+            parameterImplementation = &Framebuffer::parameterImplementationDefault;
+        }
+    }
+
+    /* Attachment-less framebuffer implementation on ES3 */
+    #else
+    if(context.isVersionSupported(Version::GLES310))
+        parameterImplementation = &Framebuffer::parameterImplementationDefault;
+
+    /* Not available otherwise */
+    #endif
+    else {
+        parameterImplementation = nullptr;
+    }
+    #endif
+
     /* Blit implementation on desktop GL */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {

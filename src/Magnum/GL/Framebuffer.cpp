@@ -356,6 +356,29 @@ Framebuffer& Framebuffer::detach(const BufferAttachment attachment) {
     return *this;
 }
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+Framebuffer& Framebuffer::setDefaultSize(const Vector2i& size) {
+    Context::current().state().framebuffer.parameterImplementation(*this, GL_FRAMEBUFFER_DEFAULT_WIDTH, size.x());
+    Context::current().state().framebuffer.parameterImplementation(*this, GL_FRAMEBUFFER_DEFAULT_HEIGHT, size.y());
+    return *this;
+}
+
+Framebuffer& Framebuffer::setDefaultLayerCount(const Int count) {
+    Context::current().state().framebuffer.parameterImplementation(*this, GL_FRAMEBUFFER_DEFAULT_LAYERS, count);
+    return *this;
+}
+
+Framebuffer& Framebuffer::setDefaultSampleCount(const Int count) {
+    Context::current().state().framebuffer.parameterImplementation(*this, GL_FRAMEBUFFER_DEFAULT_SAMPLES, count);
+    return *this;
+}
+
+Framebuffer& Framebuffer::setDefaultFixedSampleLocations(bool fixed) {
+    Context::current().state().framebuffer.parameterImplementation(*this, GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS, fixed ? GL_TRUE : GL_FALSE);
+    return *this;
+}
+#endif
+
 void Framebuffer::renderbufferImplementationDefault(Framebuffer& self, const BufferAttachment attachment, const GLuint renderbufferId) {
     glFramebufferRenderbuffer(GLenum(self.bindInternal()), GLenum(attachment), GL_RENDERBUFFER, renderbufferId);
 }
@@ -416,6 +439,18 @@ void Framebuffer::textureLayerImplementationDefault(Framebuffer& self, BufferAtt
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::textureLayerImplementationDSA(Framebuffer& self, const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel, const GLint layer) {
     glNamedFramebufferTextureLayer(self._id, GLenum(attachment), textureId, mipLevel, layer);
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void Framebuffer::parameterImplementationDefault(Framebuffer& self, const GLenum parameter, const GLint value) {
+    glFramebufferParameteri(GLenum(self.bindInternal()), parameter, value);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void Framebuffer::parameterImplementationDSA(Framebuffer& self, const GLenum parameter, const GLint value) {
+    glNamedFramebufferParameteri(self._id, parameter, value);
 }
 #endif
 

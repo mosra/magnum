@@ -114,6 +114,10 @@ struct FramebufferGLTest: OpenGLTester {
 
     void multipleColorOutputs();
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void setDefaultSize();
+    #endif
+
     void clear();
     #ifndef MAGNUM_TARGET_GLES2
     void clearColorI();
@@ -259,6 +263,10 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::detach,
 
               &FramebufferGLTest::multipleColorOutputs,
+
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &FramebufferGLTest::setDefaultSize,
+              #endif
 
               &FramebufferGLTest::clear,
               #ifndef MAGNUM_TARGET_GLES2
@@ -1040,6 +1048,31 @@ void FramebufferGLTest::detach() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void FramebufferGLTest::setDefaultSize() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_no_attachments>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_no_attachments::string() << "is not supported.");
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP(Version::GLES310 << "is not supported.");
+    #endif
+
+    Framebuffer framebuffer{{{}, Vector2i{128}}};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::IncompleteMissingAttachment);
+
+    framebuffer.setDefaultSize({256, 256})
+        .setDefaultLayerCount(3)
+        .setDefaultSampleCount(1)
+        .setDefaultFixedSampleLocations(false);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+#endif
 
 void FramebufferGLTest::multipleColorOutputs() {
     #ifndef MAGNUM_TARGET_GLES

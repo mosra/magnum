@@ -904,6 +904,123 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          */
         Framebuffer& detach(BufferAttachment attachment);
 
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Set default framebuffer size
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Used in case the framebuffer has no attachments. Otherwise the size
+         * is inferred from renderbuffers or textures specified via
+         * @ref attachRenderbuffer(), @ref attachTexture(),
+         * @ref attachCubeMapTexture(), @ref attachTextureLayer() or
+         * @ref attachLayeredTexture() and this setting is ignored. Initial
+         * value is a zero vector.
+         * @see @ref setDefaultLayerCount(), @ref setDefaultSampleCount(),
+         *      @ref setDefaultFixedSampleLocations(),
+         *      @ref Renderbuffer::setStorage(), @ref Texture::setStorage(),
+         *      @ref TextureArray::setStorage(),
+         *      @ref CubeMapTexture::setStorage(),
+         *      @ref CubeMapTextureArray::setStorage(),
+         *      @ref MultisampleTexture::setStorage(),
+         *      @ref RectangleTexture::setStorage(),
+         *      @fn_gl2_keyword{NamedFramebufferParameteri,FramebufferParameteri},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl_keyword{FramebufferParameteri} with
+         *      @def_gl_keyword{FRAMEBUFFER_DEFAULT_WIDTH} and
+         *      @def_gl_keyword{FRAMEBUFFER_DEFAULT_HEIGHT}
+         * @requires_gl43 @gl_extension{ARB,framebuffer_no_attachments}
+         * @requires_gles31 Attachment-less framebuffers are not available in
+         *      OpenGL ES 3.0 and older.
+         * @requires_gles Attachment-less framebuffers are not available in
+         *      WebGL.
+         */
+        Framebuffer& setDefaultSize(const Vector2i& size);
+
+        /**
+         * @brief Set default framebuffer layer count
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Used in case the framebuffer has no attachments. Otherwise the layer
+         * count is inferred from renderbuffers or textures specified via
+         * @ref attachRenderbuffer(), @ref attachTexture(),
+         * @ref attachCubeMapTexture(), @ref attachTextureLayer() or
+         * @ref attachLayeredTexture() and this setting is ignored. Initial
+         * value is @cpp 0 @ce.
+         * @see @ref setDefaultSize(), @ref setDefaultSampleCount(),
+         *      @ref setDefaultFixedSampleLocations(),
+         *      @ref Texture3D::setStorage(), @ref TextureArray::setStorage(),
+         *      @ref CubeMapTexture::setStorage(),
+         *      @ref CubeMapTextureArray::setStorage(),
+         *      @ref MultisampleTexture2DArray::setStorage(),
+         *      @fn_gl2_keyword{NamedFramebufferParameteri,FramebufferParameteri},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl_keyword{FramebufferParameteri} with
+         *      @def_gl_keyword{FRAMEBUFFER_DEFAULT_LAYERS}
+         * @requires_gl43 @gl_extension{ARB,framebuffer_no_attachments}
+         * @requires_gles31 Attachment-less framebuffers are not available in
+         *      OpenGL ES 3.0 and older.
+         * @requires_gles Attachment-less framebuffers are not available in
+         *      WebGL.
+         */
+        Framebuffer& setDefaultLayerCount(Int count);
+
+        /**
+         * @brief Set default framebuffer sample count
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Used in case the framebuffer has no attachments. Otherwise the
+         * sample count is inferred from renderbuffers or textures specified
+         * via @ref attachRenderbuffer(), @ref attachTexture(),
+         * @ref attachCubeMapTexture(), @ref attachTextureLayer() or
+         * @ref attachLayeredTexture() and this setting is ignored. Initial
+         * value is @cpp 0 @ce.
+         * @see @ref setDefaultSize(), @ref setDefaultLayerCount(),
+         *      @ref setDefaultFixedSampleLocations(),
+         *      @ref Renderbuffer::setStorageMultisample(),
+         *      @ref MultisampleTexture::setStorage(),
+         *      @fn_gl2_keyword{NamedFramebufferParameteri,FramebufferParameteri},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl_keyword{FramebufferParameteri} with
+         *      @def_gl_keyword{FRAMEBUFFER_DEFAULT_SAMPLES}
+         * @requires_gl43 @gl_extension{ARB,framebuffer_no_attachments}
+         * @requires_gles31 Attachment-less framebuffers are not available in
+         *      OpenGL ES 3.0 and older.
+         * @requires_gles Attachment-less framebuffers are not available in
+         *      WebGL.
+         */
+        Framebuffer& setDefaultSampleCount(Int count);
+
+        /**
+         * @brief Set default framebuffer fixed sample locations
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Used in case the framebuffer has no attachments. Otherwise the
+         * fixed sample locations setting is inferred from renderbuffers or
+         * textures specified via @ref attachRenderbuffer(),
+         * @ref attachTexture(), @ref attachCubeMapTexture(),
+         * @ref attachTextureLayer() or @ref attachLayeredTexture() and this
+         * setting is ignored. Initial value is @cpp false @ce.
+         * @see @ref setDefaultSize(), @ref setDefaultLayerCount(),
+         *      @ref setDefaultSampleCount(),
+         *      @ref MultisampleTexture::setStorage(),
+         *      @ref MultisampleTextureSampleLocations,
+         *      @fn_gl2_keyword{NamedFramebufferParameteri,FramebufferParameteri},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl_keyword{FramebufferParameteri} with
+         *      @def_gl_keyword{FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS}
+         * @requires_gl43 @gl_extension{ARB,framebuffer_no_attachments}
+         * @requires_gles31 Attachment-less framebuffers are not available in
+         *      OpenGL ES 3.0 and older.
+         * @requires_gles Attachment-less framebuffers are not available in
+         *      WebGL.
+         */
+        Framebuffer& setDefaultFixedSampleLocations(bool fixed);
+        #endif
+
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         Framebuffer& setViewport(const Range2Di& rectangle) {
@@ -968,6 +1085,13 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #endif
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL textureLayerImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        static void MAGNUM_GL_LOCAL parameterImplementationDefault(Framebuffer& self, GLenum parameter, GLint value);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_GL_LOCAL parameterImplementationDSA(Framebuffer& self, GLenum parameter, GLint value);
         #endif
 };
 

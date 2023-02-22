@@ -163,7 +163,7 @@ OpenGL function                         | Matching API
 @fn_gl{Finish}                          | @ref GL::Renderer::finish()
 @fn_gl{Flush}                           | @ref GL::Renderer::flush()
 @fn_gl{FlushMappedBufferRange}, \n `glFlushMappedNamedBufferRange()` | @ref GL::Buffer::flushMappedRange()
-@fn_gl2{FramebufferParameter,FramebufferParameteri}, \n `glNamedFramebufferParameter()` | |
+@fn_gl2{FramebufferParameter,FramebufferParameteri}, \n `glNamedFramebufferParameter()` | @ref GL::Framebuffer::setDefaultSize(), \n @ref GL::Framebuffer::setDefaultLayerCount(), \n @ref GL::Framebuffer::setDefaultSampleCount(), \n @ref GL::Framebuffer::setDefaultFixedSampleLocations()
 @fn_gl{FramebufferRenderbuffer}, \n `glNamedFramebufferRenderbuffer()` | @ref GL::Framebuffer::attachRenderbuffer(), \n @ref GL::Framebuffer::detach()
 @fn_gl_extension{FramebufferSampleLocationsfv,ARB,sample_locations}, \n `glNamedFramebufferSampleLocationsfvARB` | |
 @fn_gl{FramebufferTexture}, \n `glNamedFramebufferTexture()` | @ref GL::Framebuffer::attachLayeredTexture()

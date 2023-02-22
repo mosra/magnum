@@ -203,7 +203,7 @@ GLSL 4.30                                   | done
 @gl_extension{KHR,debug}                    | missing log retrieval, sync, pipeline and sampler label
 @gl_extension{ARB,explicit_uniform_location} | done
 @gl_extension{ARB,fragment_layer_viewport}  | done (shading language only)
-@gl_extension{ARB,framebuffer_no_attachments} | |
+@gl_extension{ARB,framebuffer_no_attachments} | done
 @gl_extension{ARB,internalformat_query2}    | only compressed texture block queries
 @gl_extension{ARB,invalidate_subdata}       | done
 @gl_extension{ARB,multi_draw_indirect}      | |

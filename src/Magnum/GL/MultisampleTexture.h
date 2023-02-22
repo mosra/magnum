@@ -57,7 +57,8 @@ namespace Implementation {
 /**
 @brief Multisample texture sample locations
 
-@see @ref MultisampleTexture::setStorage()
+@see @ref MultisampleTexture::setStorage(),
+    @ref Framebuffer::setDefaultFixedSampleLocations()
 @m_enum_values_as_keywords
 */
 enum class MultisampleTextureSampleLocations: GLboolean {

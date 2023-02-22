@@ -90,6 +90,9 @@ struct FramebufferState {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(*textureLayerImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLuint, GLint, GLint);
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void(*parameterImplementation)(Framebuffer&, GLenum, GLint);
+    #endif
 
     void(*createRenderbufferImplementation)(Renderbuffer&);
     void(*renderbufferStorageImplementation)(Renderbuffer&, RenderbufferFormat, const Vector2i&);
