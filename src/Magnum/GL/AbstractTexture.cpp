@@ -154,10 +154,13 @@ void AbstractTexture::unbind(const Int firstTextureUnit, const std::size_t count
     Context::current().state().texture.bindMultiImplementation(firstTextureUnit, {nullptr, count});
 }
 
-/** @todoc const std::initializer_list makes Doxygen grumpy */
 void AbstractTexture::bind(const Int firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures) {
     /* State tracker is updated in the implementations */
     Context::current().state().texture.bindMultiImplementation(firstTextureUnit, {textures.begin(), textures.size()});
+}
+
+void AbstractTexture::bind(const Int firstTextureUnit, const std::initializer_list<AbstractTexture*> textures) {
+    bind(firstTextureUnit, Containers::arrayView(textures));
 }
 
 void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, const Containers::ArrayView<AbstractTexture* const> textures) {
@@ -284,8 +287,11 @@ void AbstractTexture::unbindImage(const Int imageUnit) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayView makes Doxygen grumpy */
-void AbstractTexture::bindImages(const Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures) {
+void AbstractTexture::unbindImages(const Int firstImageUnit, const std::size_t count) {
+    bindImages(firstImageUnit, {nullptr, count});
+}
+
+void AbstractTexture::bindImages(const Int firstImageUnit, const Containers::ArrayView<AbstractTexture* const> textures) {
     Implementation::TextureState& textureState = Context::current().state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */
@@ -311,6 +317,10 @@ void AbstractTexture::bindImages(const Int firstImageUnit, Containers::ArrayView
 
     /* Avoid doing the binding if there is nothing different */
     if(different) glBindImageTextures(firstImageUnit, textures.size(), ids);
+}
+
+void AbstractTexture::bindImages(const Int firstImageUnit, const std::initializer_list<AbstractTexture*> textures) {
+    bindImages(firstImageUnit, Containers::arrayView(textures));
 }
 #endif
 

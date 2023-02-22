@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::GL::Mesh, enum @ref Magnum::GL::MeshPrimitive, @ref Magnum::GL::MeshIndexType, function @ref Magnum::GL::meshPrimitive(), @ref Magnum::GL::meshIndexType()
  */
 
-#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
 #include "Magnum/Tags.h"

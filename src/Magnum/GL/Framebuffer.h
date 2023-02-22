@@ -30,8 +30,6 @@
  * @brief Class @ref Magnum::GL::Framebuffer
  */
 
-#include <Corrade/Containers/ArrayView.h>
-
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractFramebuffer.h"
 

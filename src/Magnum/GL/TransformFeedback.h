@@ -33,7 +33,6 @@
 #endif
 
 #include <utility>
-#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -375,9 +374,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
         TransformFeedback& attachBuffers(UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers);
 
         /** @overload */
-        TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers) {
-            return attachBuffers(firstIndex, Containers::arrayView(buffers));
-        }
+        TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers);
 
         /**
          * @brief Begin transform feedback

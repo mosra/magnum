@@ -30,7 +30,6 @@
  */
 
 #include <utility> /* std::swap() */
-#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Tags.h"

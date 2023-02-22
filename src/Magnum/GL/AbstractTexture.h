@@ -30,7 +30,6 @@
  */
 
 #include <utility> /* std::swap() */
-#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/ImageFlags.h"
@@ -252,9 +251,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         static void bind(Int firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures);
 
         /** @overload */
-        static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
-            AbstractTexture::bind(firstTextureUnit, Containers::arrayView(textures.begin(), textures.size()));
-        }
+        static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
@@ -293,9 +290,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @requires_gl44 Extension @gl_extension{ARB,multi_bind}
          * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
          */
-        static void unbindImages(Int firstImageUnit, std::size_t count) {
-            bindImages(firstImageUnit, {nullptr, count});
-        }
+        static void unbindImages(Int firstImageUnit, std::size_t count);
 
         /**
          * @brief Bind textures to given range of texture units
@@ -320,9 +315,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         static void bindImages(Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures);
 
         /** @overload */
-        static void bindImages(Int firstImageUnit, std::initializer_list<AbstractTexture*> textures) {
-            bindImages(firstImageUnit, Containers::arrayView(textures.begin(), textures.size()));
-        }
+        static void bindImages(Int firstImageUnit, std::initializer_list<AbstractTexture*> textures);
         #endif
 
         /** @brief Copying is not allowed */

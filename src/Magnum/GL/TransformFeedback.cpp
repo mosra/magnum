@@ -223,6 +223,10 @@ TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex
     return *this;
 }
 
+TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, const std::initializer_list<Buffer*> buffers) {
+    return attachBuffers(firstIndex, Containers::arrayView(buffers));
+}
+
 void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
