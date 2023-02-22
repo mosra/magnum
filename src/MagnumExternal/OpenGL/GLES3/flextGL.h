@@ -2162,7 +2162,7 @@ struct FlextGL {
 
     void(APIENTRY *ActiveShaderProgramEXT)(GLuint, GLuint);
     void(APIENTRY *BindProgramPipelineEXT)(GLuint);
-    GLuint(APIENTRY *CreateShaderProgramvEXT)(GLenum, GLsizei, const GLchar **);
+    GLuint(APIENTRY *CreateShaderProgramvEXT)(GLenum, GLsizei, const GLchar *const*);
     void(APIENTRY *DeleteProgramPipelinesEXT)(GLsizei, const GLuint *);
     void(APIENTRY *GenProgramPipelinesEXT)(GLsizei, GLuint *);
     void(APIENTRY *GetProgramPipelineInfoLogEXT)(GLuint, GLsizei, GLsizei *, GLchar *);

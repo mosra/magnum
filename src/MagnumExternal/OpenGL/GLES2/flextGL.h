@@ -629,6 +629,12 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 
 #define GL_READ_BUFFER_NV 0x0C02
 
+/* GL_NV_pack_subimage */
+
+#define GL_PACK_ROW_LENGTH_NV 0x0D02
+#define GL_PACK_SKIP_ROWS_NV 0x0D03
+#define GL_PACK_SKIP_PIXELS_NV 0x0D04
+
 /* GL_NV_framebuffer_blit */
 
 #define GL_READ_FRAMEBUFFER_NV 0x8CA8
@@ -1335,7 +1341,7 @@ struct FlextGL {
 
     void(APIENTRY *ActiveShaderProgramEXT)(GLuint, GLuint);
     void(APIENTRY *BindProgramPipelineEXT)(GLuint);
-    GLuint(APIENTRY *CreateShaderProgramvEXT)(GLenum, GLsizei, const GLchar **);
+    GLuint(APIENTRY *CreateShaderProgramvEXT)(GLenum, GLsizei, const GLchar *const*);
     void(APIENTRY *DeleteProgramPipelinesEXT)(GLsizei, const GLuint *);
     void(APIENTRY *GenProgramPipelinesEXT)(GLsizei, GLuint *);
     void(APIENTRY *GetProgramPipelineInfoLogEXT)(GLuint, GLsizei, GLsizei *, GLchar *);
