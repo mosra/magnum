@@ -394,6 +394,9 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_sRGB_RG8{},
     #endif
     Extensions::EXT::texture_sRGB_decode{},
+    #ifndef MAGNUM_TARGET_GLES2
+    Extensions::EXT::texture_view{},
+    #endif
     Extensions::IMG::texture_compression_pvrtc{},
     Extensions::KHR::blend_equation_advanced_coherent{},
     Extensions::KHR::context_flush_control{},
@@ -424,6 +427,7 @@ constexpr Extension ExtensionList[]{
     #endif
     Extensions::OES::texture_float_linear{},
     #ifndef MAGNUM_TARGET_GLES2
+    Extensions::OES::texture_view{},
     Extensions::OVR::multiview{},
     #endif
     #ifndef MAGNUM_TARGET_GLES2

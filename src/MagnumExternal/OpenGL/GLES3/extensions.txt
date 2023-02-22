@@ -18,6 +18,7 @@ extension EXT_tessellation_shader                   optional
 extension EXT_texture_border_clamp                  optional
 extension EXT_texture_buffer                        optional
 extension EXT_texture_cube_map_array                optional
+extension EXT_texture_view                          optional
 extension EXT_primitive_bounding_box                optional
 # extension KHR_texture_compression_astc_ldr        optional
 extension KHR_debug                                 optional
@@ -33,6 +34,7 @@ extension OES_shader_image_atomic                   optional
 extension OES_shader_multisample_interpolation      optional
 extension OES_texture_stencil8                      optional
 extension OES_texture_storage_multisample_2d_array  optional
+extension OES_texture_view                          optional
 
 extension ANDROID_extension_pack_es31a              optional
 # extension ANGLE_texture_compression_dxt1          optional

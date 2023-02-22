@@ -463,23 +463,24 @@ namespace ANDROID {
     #ifndef MAGNUM_TARGET_GLES2
     _extension( 59,EXT,texture_buffer,              GLES310, GLES320) // #183
     _extension( 60,EXT,texture_cube_map_array,      GLES310, GLES320) // #184
-    _extension( 61,EXT,primitive_bounding_box,      GLES310, GLES320) // #186
+    _extension( 61,EXT,texture_view,                GLES310,    None) // #185
+    _extension( 62,EXT,primitive_bounding_box,      GLES310, GLES320) // #186
     #endif
-    _extension( 62,EXT,draw_elements_base_vertex,   GLES200,    None) // #204
+    _extension( 63,EXT,draw_elements_base_vertex,   GLES200,    None) // #204
     #ifndef MAGNUM_TARGET_GLES2
-    _extension( 63,EXT,texture_norm16,              GLES310,    None) // #207
-    _extension( 64,EXT,texture_sRGB_R8,             GLES300,    None) // #221
-    _extension( 65,EXT,texture_sRGB_RG8,            GLES300,    None) // #223
+    _extension( 64,EXT,texture_norm16,              GLES310,    None) // #207
+    _extension( 65,EXT,texture_sRGB_R8,             GLES300,    None) // #221
+    _extension( 66,EXT,texture_sRGB_RG8,            GLES300,    None) // #223
     #endif
-    _extension( 66,EXT,polygon_offset_clamp,        GLES200,    None) // #252
+    _extension( 67,EXT,polygon_offset_clamp,        GLES200,    None) // #252
     #ifndef MAGNUM_TARGET_GLES2
-    _extension( 67,EXT,clip_cull_distance,          GLES300,    None) // #257
-    _extension( 68,EXT,texture_compression_rgtc,    GLES300,    None) // #286
-    _extension( 69,EXT,texture_compression_bptc,    GLES300,    None) // #287
+    _extension( 68,EXT,clip_cull_distance,          GLES300,    None) // #257
+    _extension( 69,EXT,texture_compression_rgtc,    GLES300,    None) // #286
+    _extension( 70,EXT,texture_compression_bptc,    GLES300,    None) // #287
     #endif
-    _extension( 70,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
+    _extension( 71,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
 } namespace IMG {
-    _extension( 71,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
+    _extension( 72,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
 } namespace KHR {
     _extension( 80,KHR,texture_compression_astc_ldr,GLES200, GLES320) // #117
     _extension( 81,KHR,texture_compression_astc_hdr,GLES200,    None) // #117
@@ -562,16 +563,17 @@ namespace ANDROID {
     _extension(146,OES,texture_stencil8,            GLES200, GLES320) // #173
     #ifndef MAGNUM_TARGET_GLES2
     _extension(147,OES,texture_storage_multisample_2d_array, GLES310, GLES320) // #174
+    _extension(148,OES,texture_view,                GLES310,    None) // #218
     #endif
-    _extension(148,OES,draw_elements_base_vertex,   GLES200,    None) // #219
+    _extension(149,OES,draw_elements_base_vertex,   GLES200,    None) // #219
 } namespace OVR {
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(149,OVR,multiview,                   GLES300,    None) // #241
-    _extension(150,OVR,multiview2,                  GLES300,    None) // #242
+    _extension(150,OVR,multiview,                   GLES300,    None) // #241
+    _extension(151,OVR,multiview2,                  GLES300,    None) // #242
     #endif
 } namespace MAGNUM {
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(151,MAGNUM,shader_vertex_id,         GLES300, GLES300)
+    _extension(152,MAGNUM,shader_vertex_id,         GLES300, GLES300)
     #endif
 }
 #endif

@@ -491,6 +491,9 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.TexBufferEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint)>(loader.load("glTexBufferEXT"));
     flextGL.TexBufferRangeEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr)>(loader.load("glTexBufferRangeEXT"));
 
+    /* GL_EXT_texture_view */
+    flextGL.TextureViewEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLenum, GLuint, GLuint, GLuint, GLuint)>(loader.load("glTextureViewEXT"));
+
     /* GL_KHR_blend_equation_advanced */
     flextGL.BlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glBlendBarrierKHR"));
 
@@ -540,6 +543,9 @@ void flextGLInit(Magnum::GL::Context&) {
 
     /* GL_OES_texture_storage_multisample_2d_array */
     flextGL.TexStorage3DMultisampleOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(loader.load("glTexStorage3DMultisampleOES"));
+
+    /* GL_OES_texture_view */
+    flextGL.TextureViewOES = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLenum, GLuint, GLuint, GLuint, GLuint)>(loader.load("glTextureViewOES"));
 
     /* GL_OVR_multiview */
     flextGL.FramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei)>(loader.load("glFramebufferTextureMultiviewOVR"));

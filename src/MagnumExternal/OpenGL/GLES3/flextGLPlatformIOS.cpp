@@ -129,6 +129,7 @@
 #undef glTexParameterIuivEXT
 #undef glTexBufferEXT
 #undef glTexBufferRangeEXT
+#undef glTextureViewEXT
 #undef glBlendBarrierKHR
 #undef glDebugMessageCallbackKHR
 #undef glDebugMessageControlKHR
@@ -159,6 +160,7 @@
 #undef glUnmapBufferOES
 #undef glMinSampleShadingOES
 #undef glTexStorage3DMultisampleOES
+#undef glTextureViewOES
 #undef glFramebufferTextureMultiviewOVR
 
 #define GLES_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
@@ -342,6 +344,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.TexBufferRangeEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr)>(glTexBufferRangeEXT);
     #endif
 
+    /* GL_EXT_texture_view */
+    #if GL_EXT_texture_view
+    flextGL.TextureViewEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLenum, GLuint, GLuint, GLuint, GLuint)>(glTextureViewEXT);
+    #endif
+
     /* GL_KHR_blend_equation_advanced */
     #if GL_KHR_blend_equation_advanced
     flextGL.BlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(glBlendBarrierKHR);
@@ -410,6 +417,11 @@ void flextGLInit(Magnum::GL::Context&) {
     /* GL_OES_texture_storage_multisample_2d_array */
     #if GL_OES_texture_storage_multisample_2d_array
     flextGL.TexStorage3DMultisampleOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(glTexStorage3DMultisampleOES);
+    #endif
+
+    /* GL_OES_texture_view */
+    #if GL_OES_texture_view
+    flextGL.TextureViewOES = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLenum, GLuint, GLuint, GLuint, GLuint)>(glTextureViewOES);
     #endif
 
     /* GL_OVR_multiview */

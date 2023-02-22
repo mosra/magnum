@@ -1293,6 +1293,14 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_INT_IMAGE_CUBE_MAP_ARRAY_EXT 0x905F
 #define GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY_EXT 0x906A
 
+/* GL_EXT_texture_view */
+
+#define GL_TEXTURE_VIEW_MIN_LEVEL_EXT 0x82DB
+#define GL_TEXTURE_VIEW_NUM_LEVELS_EXT 0x82DC
+#define GL_TEXTURE_VIEW_MIN_LAYER_EXT 0x82DD
+#define GL_TEXTURE_VIEW_NUM_LAYERS_EXT 0x82DE
+#define GL_TEXTURE_IMMUTABLE_LEVELS 0x82DF
+
 /* GL_EXT_primitive_bounding_box */
 
 #define GL_PRIMITIVE_BOUNDING_BOX_EXT 0x92BE
@@ -1444,6 +1452,14 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_SAMPLER_2D_MULTISAMPLE_ARRAY_OES 0x910B
 #define GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY_OES 0x910C
 #define GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY_OES 0x910D
+
+/* GL_OES_texture_view */
+
+#define GL_TEXTURE_VIEW_MIN_LEVEL_OES 0x82DB
+#define GL_TEXTURE_VIEW_NUM_LEVELS_OES 0x82DC
+#define GL_TEXTURE_VIEW_MIN_LAYER_OES 0x82DD
+#define GL_TEXTURE_VIEW_NUM_LAYERS_OES 0x82DE
+#define GL_TEXTURE_IMMUTABLE_LEVELS 0x82DF
 
 /* GL_APPLE_texture_format_BGRA8888 */
 
@@ -2229,6 +2245,10 @@ struct FlextGL {
     void(APIENTRY *TexBufferEXT)(GLenum, GLenum, GLuint);
     void(APIENTRY *TexBufferRangeEXT)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr);
 
+    /* GL_EXT_texture_view */
+
+    void(APIENTRY *TextureViewEXT)(GLuint, GLenum, GLuint, GLenum, GLuint, GLuint, GLuint, GLuint);
+
     /* GL_KHR_blend_equation_advanced */
 
     void(APIENTRY *BlendBarrierKHR)(void);
@@ -2288,6 +2308,10 @@ struct FlextGL {
     /* GL_OES_texture_storage_multisample_2d_array */
 
     void(APIENTRY *TexStorage3DMultisampleOES)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean);
+
+    /* GL_OES_texture_view */
+
+    void(APIENTRY *TextureViewOES)(GLuint, GLenum, GLuint, GLenum, GLuint, GLuint, GLuint, GLuint);
 
     /* GL_OVR_multiview */
 
@@ -2776,6 +2800,10 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glTexBufferEXT flextGL.TexBufferEXT
 #define glTexBufferRangeEXT flextGL.TexBufferRangeEXT
 
+/* GL_EXT_texture_view */
+
+#define glTextureViewEXT flextGL.TextureViewEXT
+
 /* GL_KHR_blend_equation_advanced */
 
 #define glBlendBarrierKHR flextGL.BlendBarrierKHR
@@ -2835,6 +2863,10 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 /* GL_OES_texture_storage_multisample_2d_array */
 
 #define glTexStorage3DMultisampleOES flextGL.TexStorage3DMultisampleOES
+
+/* GL_OES_texture_view */
+
+#define glTextureViewOES flextGL.TextureViewOES
 
 /* GL_OVR_multiview */
 
