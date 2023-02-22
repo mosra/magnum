@@ -79,62 +79,62 @@ Int BufferTexture::size() {
     /* Can't use DataHelper<1>::imageSize(*this, 0)[0] because for 1D textures
        it's not defined on ES */
     Int size;
-    (this->*Context::current().state().texture.getLevelParameterivImplementation)(0, GL_TEXTURE_WIDTH, &size);
+    Context::current().state().texture.getLevelParameterivImplementation(*this, 0, GL_TEXTURE_WIDTH, &size);
     return size;
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
     buffer.createIfNotAlready();
-    (this->*Context::current().state().texture.setBufferImplementation)(internalFormat, &buffer);
+    Context::current().state().texture.setBufferImplementation(*this, internalFormat, &buffer);
     return *this;
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     buffer.createIfNotAlready();
-    (this->*Context::current().state().texture.setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+    Context::current().state().texture.setBufferRangeImplementation(*this, internalFormat, buffer, offset, size);
     return *this;
 }
 
-void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer) {
-    bindInternal();
+void BufferTexture::setBufferImplementationDefault(BufferTexture& self, BufferTextureFormat internalFormat, Buffer* buffer) {
+    self.bindInternal();
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer ? buffer->id() : 0);
 }
 
 #ifdef MAGNUM_TARGET_GLES
-void BufferTexture::setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer* buffer) {
-    bindInternal();
+void BufferTexture::setBufferImplementationEXT(BufferTexture& self, BufferTextureFormat internalFormat, Buffer* buffer) {
+    self.bindInternal();
     glTexBufferEXT(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer ? buffer->id() : 0);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void BufferTexture::setBufferImplementationDSA(const BufferTextureFormat internalFormat, Buffer* buffer) {
-    glTextureBuffer(id(), GLenum(internalFormat), buffer ? buffer->id() : 0);
+void BufferTexture::setBufferImplementationDSA(BufferTexture& self, const BufferTextureFormat internalFormat, Buffer* buffer) {
+    glTextureBuffer(self.id(), GLenum(internalFormat), buffer ? buffer->id() : 0);
 }
 #endif
 
-void BufferTexture::setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
-    bindInternal();
+void BufferTexture::setBufferRangeImplementationDefault(BufferTexture& self, BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    self.bindInternal();
     glTexBufferRange(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
 }
 
 #ifdef MAGNUM_TARGET_GLES
-void BufferTexture::setBufferRangeImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
-    bindInternal();
+void BufferTexture::setBufferRangeImplementationEXT(BufferTexture& self, BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    self.bindInternal();
     glTexBufferRangeEXT(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void BufferTexture::setBufferRangeImplementationDSA(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
-    glTextureBufferRange(id(), GLenum(internalFormat), buffer.id(), offset, size);
+void BufferTexture::setBufferRangeImplementationDSA(BufferTexture& self, const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    glTextureBufferRange(self.id(), GLenum(internalFormat), buffer.id(), offset, size);
 }
 #endif
 
 BufferTexture& BufferTexture::resetBuffer() {
     /* R8 is the default state according to ARB_texture_buffer_object, so use
        that */
-    (this->*Context::current().state().texture.setBufferImplementation)(BufferTextureFormat::R8, nullptr);
+    Context::current().state().texture.setBufferImplementation(*this, BufferTextureFormat::R8, nullptr);
     return *this;
 }
 

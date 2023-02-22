@@ -32,18 +32,6 @@
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
-#ifdef CORRADE_TARGET_MSVC
-#include "Magnum/GL/AbstractTexture.h"
-
-#ifndef MAGNUM_TARGET_GLES2
-/* Otherwise the member function pointers will have different size based on
-   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
-   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
-#include "Magnum/GL/BufferTexture.h"
-#include "Magnum/GL/CubeMapTexture.h"
-#endif
-#endif
-
 #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 #include "Magnum/Math/BitVector.h"
 #endif
@@ -85,72 +73,72 @@ struct TextureState {
     Int(*compressedBlockDataSizeImplementation)(GLenum, TextureFormat);
     void(*unbindImplementation)(GLint);
     void(*bindMultiImplementation)(GLint, Containers::ArrayView<AbstractTexture* const>);
-    void(AbstractTexture::*createImplementation)();
-    void(AbstractTexture::*bindImplementation)(GLint);
-    void(AbstractTexture::*bindInternalImplementation)(GLint);
-    void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
-    void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);
+    void(*createImplementation)(AbstractTexture&);
+    void(*bindImplementation)(AbstractTexture&, GLint);
+    void(*bindInternalImplementation)(AbstractTexture&, GLint);
+    void(*parameteriImplementation)(AbstractTexture&, GLenum, GLint);
+    void(*parameterfImplementation)(AbstractTexture&, GLenum, GLfloat);
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractTexture::*parameterivImplementation)(GLenum, const GLint*);
+    void(*parameterivImplementation)(AbstractTexture&, GLenum, const GLint*);
     #endif
-    void(AbstractTexture::*parameterfvImplementation)(GLenum, const GLfloat*);
+    void(*parameterfvImplementation)(AbstractTexture&, GLenum, const GLfloat*);
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(AbstractTexture::*parameterIuivImplementation)(GLenum, const GLuint*);
-    void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
+    void(*parameterIuivImplementation)(AbstractTexture&, GLenum, const GLuint*);
+    void(*parameterIivImplementation)(AbstractTexture&, GLenum, const GLint*);
     #endif
-    void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
+    void(*setMaxAnisotropyImplementation)(AbstractTexture&, GLfloat);
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(AbstractTexture::*getLevelParameterivImplementation)(GLint, GLenum, GLint*);
+    void(*getLevelParameterivImplementation)(AbstractTexture&, GLint, GLenum, GLint*);
     #endif
-    void(AbstractTexture::*mipmapImplementation)();
+    void(*mipmapImplementation)(AbstractTexture&);
     #ifndef MAGNUM_TARGET_GLES
-    void(AbstractTexture::*storage1DImplementation)(GLsizei, TextureFormat, const Math::Vector<1, GLsizei>&);
+    void(*storage1DImplementation)(AbstractTexture&, GLsizei, TextureFormat, const Math::Vector<1, GLsizei>&);
     #endif
-    void(AbstractTexture::*storage2DImplementation)(GLsizei, TextureFormat, const Vector2i&);
+    void(*storage2DImplementation)(AbstractTexture&, GLsizei, TextureFormat, const Vector2i&);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void(AbstractTexture::*storage3DImplementation)(GLsizei, TextureFormat, const Vector3i&);
+    void(*storage3DImplementation)(AbstractTexture&, GLsizei, TextureFormat, const Vector3i&);
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(AbstractTexture::*storage2DMultisampleImplementation)(GLsizei, TextureFormat, const Vector2i&, GLboolean);
-    void(AbstractTexture::*storage3DMultisampleImplementation)(GLsizei, TextureFormat, const Vector3i&, GLboolean);
+    void(*storage2DMultisampleImplementation)(AbstractTexture&, GLsizei, TextureFormat, const Vector2i&, GLboolean);
+    void(*storage3DMultisampleImplementation)(AbstractTexture&, GLsizei, TextureFormat, const Vector3i&, GLboolean);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    void(AbstractTexture::*getImageImplementation)(GLint, PixelFormat, PixelType, std::size_t, GLvoid*);
-    void(AbstractTexture::*getCompressedImageImplementation)(GLint, std::size_t, GLvoid*);
+    void(*getImageImplementation)(AbstractTexture&, GLint, PixelFormat, PixelType, std::size_t, GLvoid*);
+    void(*getCompressedImageImplementation)(AbstractTexture&, GLint, std::size_t, GLvoid*);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    void(AbstractTexture::*subImage1DImplementation)(GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, PixelFormat, PixelType, const GLvoid*);
-    void(AbstractTexture::*compressedSubImage1DImplementation)(GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, CompressedPixelFormat, const GLvoid*, GLsizei);
+    void(*subImage1DImplementation)(AbstractTexture&, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, PixelFormat, PixelType, const GLvoid*);
+    void(*compressedSubImage1DImplementation)(AbstractTexture&, GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, CompressedPixelFormat, const GLvoid*, GLsizei);
     #endif
-    void (AbstractTexture::*image2DImplementation)(GLenum, GLint, TextureFormat, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
-    void(AbstractTexture::*subImage2DImplementation)(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
-    void(AbstractTexture::*compressedSubImage2DImplementation)(GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);
+    void(*image2DImplementation)(AbstractTexture&, GLenum, GLint, TextureFormat, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+    void(*subImage2DImplementation)(AbstractTexture&, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+    void(*compressedSubImage2DImplementation)(AbstractTexture&, GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void (AbstractTexture::*image3DImplementation)(GLint, TextureFormat, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
-    void(AbstractTexture::*subImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
-    void(AbstractTexture::*compressedSubImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, CompressedPixelFormat, const GLvoid*, GLsizei);
+    void(*image3DImplementation)(AbstractTexture&, GLint, TextureFormat, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+    void(*subImage3DImplementation)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+    void(*compressedSubImage3DImplementation)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, CompressedPixelFormat, const GLvoid*, GLsizei);
     #endif
-    void(AbstractTexture::*invalidateImageImplementation)(GLint);
-    void(AbstractTexture::*invalidateSubImageImplementation)(GLint, const Vector3i&, const Vector3i&);
+    void(*invalidateImageImplementation)(AbstractTexture&, GLint);
+    void(*invalidateSubImageImplementation)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&);
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(BufferTexture::*setBufferImplementation)(BufferTextureFormat, Buffer*);
-    void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
+    void(*setBufferImplementation)(BufferTexture&, BufferTextureFormat, Buffer*);
+    void(*setBufferRangeImplementation)(BufferTexture&, BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(CubeMapTexture::*getCubeLevelParameterivImplementation)(GLint, GLenum, GLint*);
+    void(*getCubeLevelParameterivImplementation)(CubeMapTexture&, GLint, GLenum, GLint*);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    GLint(CubeMapTexture::*getCubeLevelCompressedImageSizeImplementation)(GLint);
-    void(CubeMapTexture::*getCubeImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
-    void(CubeMapTexture::*getCubeImage3DImplementation)(GLint, const Vector3i&, PixelFormat, PixelType, std::size_t, GLvoid*, const PixelStorage&);
-    void(CubeMapTexture::*getCompressedCubeImage3DImplementation)(GLint, const Vector2i&, std::size_t, std::size_t, GLvoid*);
-    void(CubeMapTexture::*getCompressedCubeImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, std::size_t, GLvoid*);
+    GLint(*getCubeLevelCompressedImageSizeImplementation)(CubeMapTexture&, GLint);
+    void(*getCubeImageImplementation)(CubeMapTexture&, CubeMapCoordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
+    void(*getCubeImage3DImplementation)(CubeMapTexture&, GLint, const Vector3i&, PixelFormat, PixelType, std::size_t, GLvoid*, const PixelStorage&);
+    void(*getCompressedCubeImage3DImplementation)(CubeMapTexture&, GLint, const Vector2i&, std::size_t, std::size_t, GLvoid*);
+    void(*getCompressedCubeImageImplementation)(CubeMapTexture&, CubeMapCoordinate, GLint, const Vector2i&, std::size_t, GLvoid*);
     #endif
-    void(CubeMapTexture::*cubeSubImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
-    void(CubeMapTexture::*cubeSubImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*);
-    void(CubeMapTexture::*cubeCompressedSubImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);
+    void(*cubeSubImage3DImplementation)(CubeMapTexture&, GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+    void(*cubeSubImageImplementation)(CubeMapTexture&, CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*);
+    void(*cubeCompressedSubImageImplementation)(CubeMapTexture&, CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);
 
     GLint maxSize,
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

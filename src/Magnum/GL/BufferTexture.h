@@ -254,20 +254,20 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
 
         explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id, GL_TEXTURE_BUFFER, flags} {}
 
-        void MAGNUM_GL_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer);
+        static void MAGNUM_GL_LOCAL setBufferImplementationDefault(BufferTexture& self, BufferTextureFormat internalFormat, Buffer* buffer);
         #ifdef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer* buffer);
+        static void MAGNUM_GL_LOCAL setBufferImplementationEXT(BufferTexture& self, BufferTextureFormat internalFormat, Buffer* buffer);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer);
+        static void MAGNUM_GL_LOCAL setBufferImplementationDSA(BufferTexture& self, BufferTextureFormat internalFormat, Buffer* buffer);
         #endif
 
-        void MAGNUM_GL_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        static void MAGNUM_GL_LOCAL setBufferRangeImplementationDefault(BufferTexture& self, BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #ifdef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setBufferRangeImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        static void MAGNUM_GL_LOCAL setBufferRangeImplementationEXT(BufferTexture& self, BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        static void MAGNUM_GL_LOCAL setBufferRangeImplementationDSA(BufferTexture& self, BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #endif
 };
 

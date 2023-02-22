@@ -562,10 +562,10 @@ void AbstractShaderProgram::bindFragmentDataLocationIndexed(const UnsignedInt lo
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgram::setTransformFeedbackOutputs(const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
-    (this->*Context::current().state().shaderProgram.transformFeedbackVaryingsImplementation)(outputs, bufferMode);
+    Context::current().state().shaderProgram.transformFeedbackVaryingsImplementation(*this, outputs, bufferMode);
 }
 
-void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
+void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(AbstractShaderProgram& self, const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
     Containers::ArrayView<Containers::String> nameData;
     Containers::ArrayView<const char*> names;
     Containers::ArrayTuple data{
@@ -577,11 +577,11 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(const
         names[i] = nameData[i].data();
     }
 
-    glTransformFeedbackVaryings(_id, outputs.size(), names, GLenum(bufferMode));
+    glTransformFeedbackVaryings(self._id, outputs.size(), names, GLenum(bufferMode));
 }
 
 #ifdef CORRADE_TARGET_WINDOWS
-void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorkaround(const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
+void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorkaround(AbstractShaderProgram& self, const Containers::StringIterable& outputs, const TransformFeedbackBufferMode bufferMode) {
     /* NVidia on Windows doesn't copy the names when calling
        glTransformFeedbackVaryings() so it then might fail at link time because
        the char* get dangling. We have to do the copy on the engine side and
@@ -593,7 +593,7 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
        in a member variable. */
     Containers::ArrayView<Containers::String> nameData;
     Containers::ArrayView<const char*> names;
-    _transformFeedbackVaryingNames = Containers::ArrayTuple{
+    self._transformFeedbackVaryingNames = Containers::ArrayTuple{
         {NoInit, outputs.size(), nameData},
         {NoInit, outputs.size(), names}
     };
@@ -602,7 +602,7 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
         names[i] = nameData[i].data();
     }
 
-    glTransformFeedbackVaryings(_id, outputs.size(), names, GLenum(bufferMode));
+    glTransformFeedbackVaryings(self._id, outputs.size(), names, GLenum(bufferMode));
 }
 #endif
 #endif

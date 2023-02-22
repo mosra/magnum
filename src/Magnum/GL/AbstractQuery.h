@@ -182,11 +182,11 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
         GLenum _target;
 
     private:
-        void MAGNUM_GL_LOCAL createImplementationDefault();
+        static void MAGNUM_GL_LOCAL createImplementationDefault(AbstractQuery& self);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationDSA();
-        void MAGNUM_GL_LOCAL createImplementationDSAExceptXfbOverflow();
-        void MAGNUM_GL_LOCAL createImplementationDSAExceptPipelineStats();
+        static void MAGNUM_GL_LOCAL createImplementationDSA(AbstractQuery& self);
+        static void MAGNUM_GL_LOCAL createImplementationDSAExceptXfbOverflow(AbstractQuery& self);
+        static void MAGNUM_GL_LOCAL createImplementationDSAExceptPipelineStats(AbstractQuery& self);
         #endif
 
         ObjectFlags _flags;

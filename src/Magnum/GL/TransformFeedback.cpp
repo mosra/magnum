@@ -114,18 +114,18 @@ Int TransformFeedback::maxVertexStreams() {
 #endif
 
 TransformFeedback::TransformFeedback(): _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().transformFeedback.createImplementation)();
+    Context::current().state().transformFeedback.createImplementation(*this);
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
-void TransformFeedback::createImplementationDefault() {
-    glGenTransformFeedbacks(1, &_id);
+void TransformFeedback::createImplementationDefault(TransformFeedback& self) {
+    glGenTransformFeedbacks(1, &self._id);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void TransformFeedback::createImplementationDSA() {
-    glCreateTransformFeedbacks(1, &_id);
-    _flags |= ObjectFlag::Created;
+void TransformFeedback::createImplementationDSA(TransformFeedback& self) {
+    glCreateTransformFeedbacks(1, &self._id);
+    self._flags |= ObjectFlag::Created;
 }
 #endif
 
@@ -177,49 +177,49 @@ TransformFeedback& TransformFeedback::setLabel(const Containers::StringView labe
 #endif
 
 TransformFeedback& TransformFeedback::attachBuffer(const UnsignedInt index, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
-    (this->*Context::current().state().transformFeedback.attachRangeImplementation)(index, buffer, offset, size);
+    Context::current().state().transformFeedback.attachRangeImplementation(*this, index, buffer, offset, size);
     return *this;
 }
 
 TransformFeedback& TransformFeedback::attachBuffer(const UnsignedInt index, Buffer& buffer) {
-    (this->*Context::current().state().transformFeedback.attachBaseImplementation)(index, buffer);
+    Context::current().state().transformFeedback.attachBaseImplementation(*this, index, buffer);
     return *this;
 }
 
-void TransformFeedback::attachImplementationFallback(const GLuint index, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
-    bindInternal();
+void TransformFeedback::attachImplementationFallback(TransformFeedback& self, const GLuint index, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    self.bindInternal();
     buffer.bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), index, offset, size);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void TransformFeedback::attachImplementationDSA(const GLuint index, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
-    glTransformFeedbackBufferRange(_id, index, buffer.id(), offset, size);
+void TransformFeedback::attachImplementationDSA(TransformFeedback& self, const GLuint index, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    glTransformFeedbackBufferRange(self._id, index, buffer.id(), offset, size);
 }
 #endif
 
-void TransformFeedback::attachImplementationFallback(const GLuint index, Buffer& buffer) {
-    bindInternal();
+void TransformFeedback::attachImplementationFallback(TransformFeedback& self, const GLuint index, Buffer& buffer) {
+    self.bindInternal();
     buffer.bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), index);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void TransformFeedback::attachImplementationDSA(const GLuint index, Buffer& buffer) {
-    glTransformFeedbackBufferBase(_id, index, buffer.id());
+void TransformFeedback::attachImplementationDSA(TransformFeedback& self, const GLuint index, Buffer& buffer) {
+    glTransformFeedbackBufferBase(self._id, index, buffer.id());
 }
 #endif
 
 TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-    (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, buffers);
+    Context::current().state().transformFeedback.attachRangesImplementation(*this, firstIndex, buffers);
     return *this;
 }
 
 TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, std::initializer_list<Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-    (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, Containers::arrayView(buffers));
+    Context::current().state().transformFeedback.attachRangesImplementation(*this, firstIndex, Containers::arrayView(buffers));
     return *this;
 }
 
 TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, Containers::ArrayView<Buffer* const> buffers) {
-    (this->*Context::current().state().transformFeedback.attachBasesImplementation)(firstIndex, buffers);
+    Context::current().state().transformFeedback.attachBasesImplementation(*this, firstIndex, buffers);
     return *this;
 }
 
@@ -227,29 +227,29 @@ TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex
     return attachBuffers(firstIndex, Containers::arrayView(buffers));
 }
 
-void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-    bindInternal();
+void TransformFeedback::attachImplementationFallback(TransformFeedback& self, const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+    self.bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+void TransformFeedback::attachImplementationDSA(TransformFeedback& self, const GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         Buffer* buffer = buffers[i].first();
-        glTransformFeedbackBufferRange(_id, firstIndex + i, buffer ? buffer->id() : 0, buffers[i].second(), buffers[i].third());
+        glTransformFeedbackBufferRange(self._id, firstIndex + i, buffer ? buffer->id() : 0, buffers[i].second(), buffers[i].third());
     }
 }
 #endif
 
-void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
-    bindInternal();
+void TransformFeedback::attachImplementationFallback(TransformFeedback& self, const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
+    self.bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
+void TransformFeedback::attachImplementationDSA(TransformFeedback& self, const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i)
-        glTransformFeedbackBufferBase(_id, firstIndex + i, *(buffers.begin() + i) ? (*(buffers.begin() + i))->id() : 0);
+        glTransformFeedbackBufferBase(self._id, firstIndex + i, *(buffers.begin() + i) ? (*(buffers.begin() + i))->id() : 0);
 }
 #endif
 

@@ -28,13 +28,6 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 
-#ifdef CORRADE_TARGET_MSVC
-/* Otherwise the member function pointers will have different size based on
-   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
-   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
-#include "Magnum/GL/AbstractQuery.h"
-#endif
-
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct QueryState {
@@ -42,7 +35,7 @@ struct QueryState {
 
     void reset();
 
-    void(AbstractQuery::*createImplementation)();
+    void(*createImplementation)(AbstractQuery&);
 };
 
 }}}

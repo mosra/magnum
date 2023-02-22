@@ -797,63 +797,63 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         static void MAGNUM_GL_LOCAL blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
         #endif
 
-        void MAGNUM_GL_LOCAL bindImplementationDefault(FramebufferTarget target);
-        FramebufferTarget MAGNUM_GL_LOCAL bindImplementationDefault();
+        static void MAGNUM_GL_LOCAL bindImplementationDefault(AbstractFramebuffer& self, FramebufferTarget target);
+        static FramebufferTarget MAGNUM_GL_LOCAL bindImplementationDefault(AbstractFramebuffer& self);
         #ifdef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL bindImplementationSingle(FramebufferTarget);
-        FramebufferTarget MAGNUM_GL_LOCAL bindImplementationSingle();
+        static void MAGNUM_GL_LOCAL bindImplementationSingle(AbstractFramebuffer& self, FramebufferTarget);
+        static FramebufferTarget MAGNUM_GL_LOCAL bindImplementationSingle(AbstractFramebuffer& self);
         #endif
 
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationGlobal(GLenum what);
+        static GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationGlobal(AbstractFramebuffer& self, GLenum what);
         #ifndef MAGNUM_TARGET_GLES
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebuffer(GLenum what);
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebufferDSA(GLenum what);
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebufferDSAMesa(GLenum what);
+        static GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebuffer(AbstractFramebuffer& self, GLenum what);
+        static GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebufferDSA(AbstractFramebuffer& self, GLenum what);
+        static GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebufferDSAMesa(AbstractFramebuffer& self, GLenum what);
         #endif
 
-        GLenum MAGNUM_GL_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
+        static GLenum MAGNUM_GL_LOCAL checkStatusImplementationDefault(AbstractFramebuffer& self, FramebufferTarget target);
         #ifdef MAGNUM_TARGET_GLES2
-        GLenum MAGNUM_GL_LOCAL checkStatusImplementationSingle(FramebufferTarget);
+        static GLenum MAGNUM_GL_LOCAL checkStatusImplementationSingle(AbstractFramebuffer& self, FramebufferTarget);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        GLenum MAGNUM_GL_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
+        static GLenum MAGNUM_GL_LOCAL checkStatusImplementationDSA(AbstractFramebuffer& self, FramebufferTarget target);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL clearImplementationDefault(GLenum buffer, GLint drawbuffer, const GLint* value);
-        void MAGNUM_GL_LOCAL clearImplementationDefault(GLenum buffer, GLint drawbuffer, const GLuint* value);
-        void MAGNUM_GL_LOCAL clearImplementationDefault(GLenum buffer, GLint drawbuffer, const GLfloat* value);
-        void MAGNUM_GL_LOCAL clearImplementationDefault(GLenum buffer, GLfloat depth, GLint stencil);
+        static void MAGNUM_GL_LOCAL clearImplementationDefault(AbstractFramebuffer& self, GLenum buffer, GLint drawbuffer, const GLint* value);
+        static void MAGNUM_GL_LOCAL clearImplementationDefault(AbstractFramebuffer& self, GLenum buffer, GLint drawbuffer, const GLuint* value);
+        static void MAGNUM_GL_LOCAL clearImplementationDefault(AbstractFramebuffer& self, GLenum buffer, GLint drawbuffer, const GLfloat* value);
+        static void MAGNUM_GL_LOCAL clearImplementationDefault(AbstractFramebuffer& self, GLenum buffer, GLfloat depth, GLint stencil);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL clearImplementationDSA(GLenum buffer, GLint drawbuffer, const GLint* value);
-        void MAGNUM_GL_LOCAL clearImplementationDSA(GLenum buffer, GLint drawbuffer, const GLuint* value);
-        void MAGNUM_GL_LOCAL clearImplementationDSA(GLenum buffer, GLint drawbuffer, const GLfloat* value);
-        void MAGNUM_GL_LOCAL clearImplementationDSA(GLenum buffer, GLfloat depth, GLint stencil);
+        static void MAGNUM_GL_LOCAL clearImplementationDSA(AbstractFramebuffer& self, GLenum buffer, GLint drawbuffer, const GLint* value);
+        static void MAGNUM_GL_LOCAL clearImplementationDSA(AbstractFramebuffer& self, GLenum buffer, GLint drawbuffer, const GLuint* value);
+        static void MAGNUM_GL_LOCAL clearImplementationDSA(AbstractFramebuffer& self, GLenum buffer, GLint drawbuffer, const GLfloat* value);
+        static void MAGNUM_GL_LOCAL clearImplementationDSA(AbstractFramebuffer& self, GLenum buffer, GLfloat depth, GLint stencil);
         #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers);
+        static void MAGNUM_GL_LOCAL drawBuffersImplementationDefault(AbstractFramebuffer& self, GLsizei count, const GLenum* buffers);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers);
+        static void MAGNUM_GL_LOCAL drawBuffersImplementationDSA(AbstractFramebuffer& self, GLsizei count, const GLenum* buffers);
         #endif
         #else
-        void MAGNUM_GL_LOCAL drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers);
+        static void MAGNUM_GL_LOCAL drawBuffersImplementationEXT(AbstractFramebuffer& self, GLsizei count, const GLenum* buffers);
         #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL drawBuffersImplementationNV(GLsizei count, const GLenum* buffers);
+        static void MAGNUM_GL_LOCAL drawBuffersImplementationNV(AbstractFramebuffer& self, GLsizei count, const GLenum* buffers);
         #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL drawBufferImplementationDefault(GLenum buffer);
-        void MAGNUM_GL_LOCAL drawBufferImplementationDSA(GLenum buffer);
+        static void MAGNUM_GL_LOCAL drawBufferImplementationDefault(AbstractFramebuffer& self, GLenum buffer);
+        static void MAGNUM_GL_LOCAL drawBufferImplementationDSA(AbstractFramebuffer& self, GLenum buffer);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        void MAGNUM_GL_LOCAL readBufferImplementationDefault(GLenum buffer);
+        static void MAGNUM_GL_LOCAL readBufferImplementationDefault(AbstractFramebuffer& self, GLenum buffer);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL readBufferImplementationDSA(GLenum buffer);
+        static void MAGNUM_GL_LOCAL readBufferImplementationDSA(AbstractFramebuffer& self, GLenum buffer);
         #endif
 
         static void MAGNUM_GL_LOCAL readImplementationDefault(const Range2Di& rectangle, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
@@ -879,17 +879,17 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         static void MAGNUM_GL_LOCAL copySub3DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, Int level, const Vector3i& offset);
         #endif
 
-        void MAGNUM_GL_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
-        void MAGNUM_GL_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);
+        static void MAGNUM_GL_LOCAL invalidateImplementationNoOp(AbstractFramebuffer& self, GLsizei, const GLenum*);
+        static void MAGNUM_GL_LOCAL invalidateImplementationDefault(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL invalidateImplementationDSA(GLsizei count, const GLenum* attachments);
+        static void MAGNUM_GL_LOCAL invalidateImplementationDSA(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&);
-        void MAGNUM_GL_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        static void MAGNUM_GL_LOCAL invalidateImplementationNoOp(AbstractFramebuffer& self, GLsizei, const GLenum*, const Range2Di&);
+        static void MAGNUM_GL_LOCAL invalidateImplementationDefault(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL invalidateImplementationDSA(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        static void MAGNUM_GL_LOCAL invalidateImplementationDSA(AbstractFramebuffer& self, GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
         #endif
         #endif
 };

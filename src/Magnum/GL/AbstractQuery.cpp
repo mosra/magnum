@@ -40,7 +40,7 @@
 namespace Magnum { namespace GL {
 
 AbstractQuery::AbstractQuery(GLenum target): _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().query.createImplementation)();
+    Context::current().state().query.createImplementation(*this);
 }
 
 AbstractQuery::~AbstractQuery() {
@@ -54,42 +54,42 @@ AbstractQuery::~AbstractQuery() {
     #endif
 }
 
-void AbstractQuery::createImplementationDefault() {
+void AbstractQuery::createImplementationDefault(AbstractQuery& self) {
     #ifndef MAGNUM_TARGET_GLES2
-    glGenQueries(1, &_id);
+    glGenQueries(1, &self._id);
     #else
-    glGenQueriesEXT(1, &_id);
+    glGenQueriesEXT(1, &self._id);
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractQuery::createImplementationDSA() {
-    glCreateQueries(_target, 1, &_id);
-    _flags |= ObjectFlag::Created;
+void AbstractQuery::createImplementationDSA(AbstractQuery& self) {
+    glCreateQueries(self._target, 1, &self._id);
+    self._flags |= ObjectFlag::Created;
 }
 
-void AbstractQuery::createImplementationDSAExceptXfbOverflow() {
-    if(_target == GL_TRANSFORM_FEEDBACK_OVERFLOW || _target == GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW)
-        createImplementationDefault();
+void AbstractQuery::createImplementationDSAExceptXfbOverflow(AbstractQuery& self) {
+    if(self._target == GL_TRANSFORM_FEEDBACK_OVERFLOW || self._target == GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW)
+        createImplementationDefault(self);
     else
-        createImplementationDSA();
+        createImplementationDSA(self);
 }
 
-void AbstractQuery::createImplementationDSAExceptPipelineStats() {
-    if(_target == GL_VERTICES_SUBMITTED ||
-       _target == GL_PRIMITIVES_SUBMITTED ||
-       _target == GL_VERTEX_SHADER_INVOCATIONS ||
-       _target == GL_TESS_CONTROL_SHADER_PATCHES ||
-       _target == GL_TESS_EVALUATION_SHADER_INVOCATIONS ||
-       _target == GL_GEOMETRY_SHADER_INVOCATIONS ||
-       _target == GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED ||
-       _target == GL_FRAGMENT_SHADER_INVOCATIONS ||
-       _target == GL_COMPUTE_SHADER_INVOCATIONS ||
-       _target == GL_CLIPPING_INPUT_PRIMITIVES ||
-       _target == GL_CLIPPING_OUTPUT_PRIMITIVES)
-        createImplementationDefault();
+void AbstractQuery::createImplementationDSAExceptPipelineStats(AbstractQuery& self) {
+    if(self._target == GL_VERTICES_SUBMITTED ||
+       self._target == GL_PRIMITIVES_SUBMITTED ||
+       self._target == GL_VERTEX_SHADER_INVOCATIONS ||
+       self._target == GL_TESS_CONTROL_SHADER_PATCHES ||
+       self._target == GL_TESS_EVALUATION_SHADER_INVOCATIONS ||
+       self._target == GL_GEOMETRY_SHADER_INVOCATIONS ||
+       self._target == GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED ||
+       self._target == GL_FRAGMENT_SHADER_INVOCATIONS ||
+       self._target == GL_COMPUTE_SHADER_INVOCATIONS ||
+       self._target == GL_CLIPPING_INPUT_PRIMITIVES ||
+       self._target == GL_CLIPPING_OUTPUT_PRIMITIVES)
+        createImplementationDefault(self);
     else
-        createImplementationDSA();
+        createImplementationDSA(self);
 }
 #endif
 

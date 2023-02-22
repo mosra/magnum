@@ -32,13 +32,6 @@
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
-#ifdef CORRADE_TARGET_MSVC
-/* Otherwise the member function pointers will have different size based on
-   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
-   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
-#include "Magnum/GL/TransformFeedback.h"
-#endif
-
 #ifdef MAGNUM_TARGET_GLES2
 #error this header is not available in OpenGL ES 2.0 build
 #endif
@@ -60,11 +53,11 @@ struct TransformFeedbackState {
 
     GLuint binding;
 
-    void(TransformFeedback::*createImplementation)();
-    void(TransformFeedback::*attachRangeImplementation)(GLuint, Buffer&, GLintptr, GLsizeiptr);
-    void(TransformFeedback::*attachBaseImplementation)(GLuint, Buffer&);
-    void(TransformFeedback::*attachRangesImplementation)(GLuint, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>>);
-    void(TransformFeedback::*attachBasesImplementation)(GLuint, Containers::ArrayView<Buffer* const>);
+    void(*createImplementation)(TransformFeedback&);
+    void(*attachRangeImplementation)(TransformFeedback&, GLuint, Buffer&, GLintptr, GLsizeiptr);
+    void(*attachBaseImplementation)(TransformFeedback&, GLuint, Buffer&);
+    void(*attachRangesImplementation)(TransformFeedback&, GLuint, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>>);
+    void(*attachBasesImplementation)(TransformFeedback&, GLuint, Containers::ArrayView<Buffer* const>);
 };
 
 }}}

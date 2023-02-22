@@ -171,23 +171,23 @@ void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const 
 
 Buffer::Buffer(const TargetHint targetHint): _flags{ObjectFlag::DeleteOnDestruction} {
     const Implementation::BufferState& state = Context::current().state().buffer;
-    (this->*state.createImplementation)();
-    (this->*state.setTargetHintImplementation)(targetHint);
+    state.createImplementation(*this);
+    state.setTargetHintImplementation(*this, targetHint);
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 Buffer::Buffer(GLuint id, TargetHint targetHint, ObjectFlags flags) noexcept: _id{id}, _flags{flags} {
-    (this->*Context::current().state().buffer.setTargetHintImplementation)(targetHint);
+    Context::current().state().buffer.setTargetHintImplementation(*this, targetHint);
 }
 
-void Buffer::createImplementationDefault() {
-    glGenBuffers(1, &_id);
+void Buffer::createImplementationDefault(Buffer& self) {
+    glGenBuffers(1, &self._id);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::createImplementationDSA() {
-    glCreateBuffers(1, &_id);
-    _flags |= ObjectFlag::Created;
+void Buffer::createImplementationDSA(Buffer& self) {
+    glCreateBuffers(1, &self._id);
+    self._flags |= ObjectFlag::Created;
 }
 #endif
 
@@ -205,19 +205,19 @@ Buffer::~Buffer() {
 }
 
 Buffer& Buffer::setTargetHint(TargetHint hint) {
-    (this->*Context::current().state().buffer.setTargetHintImplementation)(hint);
+    Context::current().state().buffer.setTargetHintImplementation(*this, hint);
     return *this;
 }
 
-void Buffer::setTargetHintImplementationDefault(const TargetHint hint) {
-    _targetHint = hint;
+void Buffer::setTargetHintImplementationDefault(Buffer& self, const TargetHint hint) {
+    self._targetHint = hint;
 }
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-void Buffer::setTargetHintImplementationSwiftShader(const TargetHint hint) {
+void Buffer::setTargetHintImplementationSwiftShader(Buffer& self, const TargetHint hint) {
     /* See the "swiftshader-broken-xfb-buffer-binding-target" workaround for
        details */
-    _targetHint = hint == TargetHint::TransformFeedback ? TargetHint::Array : hint;
+    self._targetHint = hint == TargetHint::TransformFeedback ? TargetHint::Array : hint;
 }
 #endif
 
@@ -314,7 +314,7 @@ Buffer& Buffer::bind(const Target target, const UnsignedInt index) {
 
 #ifndef MAGNUM_TARGET_GLES
 Buffer& Buffer::setStorage(const Containers::ArrayView<const void> data, const StorageFlags flags) {
-    (this->*Context::current().state().buffer.storageImplementation)(data, flags);
+    Context::current().state().buffer.storageImplementation(*this, data, flags);
     return *this;
 }
 
@@ -329,7 +329,7 @@ Int Buffer::size() {
      *      couldn't find any matching extension, though)
      */
     GLint size;
-    (this->*Context::current().state().buffer.getParameterImplementation)(GL_BUFFER_SIZE, &size);
+    Context::current().state().buffer.getParameterImplementation(*this, GL_BUFFER_SIZE, &size);
     return size;
 }
 
@@ -340,46 +340,46 @@ Containers::Array<char> Buffer::data() {
 #endif
 
 Buffer& Buffer::setData(const Containers::ArrayView<const void> data, const BufferUsage usage) {
-    (this->*Context::current().state().buffer.dataImplementation)(data.size(), data, usage);
+    Context::current().state().buffer.dataImplementation(*this, data.size(), data, usage);
     return *this;
 }
 
 Buffer& Buffer::setSubData(const GLintptr offset, const Containers::ArrayView<const void> data) {
-    (this->*Context::current().state().buffer.subDataImplementation)(offset, data.size(), data);
+    Context::current().state().buffer.subDataImplementation(*this, offset, data.size(), data);
     return *this;
 }
 
 Buffer& Buffer::invalidateData() {
-    (this->*Context::current().state().buffer.invalidateImplementation)();
+    Context::current().state().buffer.invalidateImplementation(*this);
     return *this;
 }
 
 Buffer& Buffer::invalidateSubData(const GLintptr offset, const GLsizeiptr length) {
-    (this->*Context::current().state().buffer.invalidateSubImplementation)(offset, length);
+    Context::current().state().buffer.invalidateSubImplementation(*this, offset, length);
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 char* Buffer::map(const MapAccess access) {
-    return static_cast<char*>((this->*Context::current().state().buffer.mapImplementation)(access));
+    return static_cast<char*>(Context::current().state().buffer.mapImplementation(*this, access));
 }
 
 Containers::ArrayView<char> Buffer::map(const GLintptr offset, const GLsizeiptr length, const MapFlags flags) {
-    return {static_cast<char*>((this->*Context::current().state().buffer.mapRangeImplementation)(offset, length, flags)), std::size_t(length)};
+    return {static_cast<char*>(Context::current().state().buffer.mapRangeImplementation(*this, offset, length, flags)), std::size_t(length)};
 }
 
 Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length) {
-    (this->*Context::current().state().buffer.flushMappedRangeImplementation)(offset, length);
+    Context::current().state().buffer.flushMappedRangeImplementation(*this, offset, length);
     return *this;
 }
 
-bool Buffer::unmap() { return (this->*Context::current().state().buffer.unmapImplementation)(); }
+bool Buffer::unmap() { return Context::current().state().buffer.unmapImplementation(*this); }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
 Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
     Containers::Array<char> data(size);
-    if(size) (this->*Context::current().state().buffer.getSubDataImplementation)(offset, size, data);
+    if(size) Context::current().state().buffer.getSubDataImplementation(*this, offset, size, data);
     return data;
 }
 #endif
@@ -452,129 +452,129 @@ void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, const GLintptr r
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::storageImplementationDefault(Containers::ArrayView<const void> data, StorageFlags flags) {
-    glBufferStorage(GLenum(bindSomewhereInternal(_targetHint)), data.size(), data.data(), GLbitfield(flags));
+void Buffer::storageImplementationDefault(Buffer& self, Containers::ArrayView<const void> data, StorageFlags flags) {
+    glBufferStorage(GLenum(self.bindSomewhereInternal(self._targetHint)), data.size(), data.data(), GLbitfield(flags));
 }
 
-void Buffer::storageImplementationDSA(Containers::ArrayView<const void> data, const StorageFlags flags) {
-    glNamedBufferStorage(_id, data.size(), data.data(), GLbitfield(flags));
+void Buffer::storageImplementationDSA(Buffer& self, Containers::ArrayView<const void> data, const StorageFlags flags) {
+    glNamedBufferStorage(self._id, data.size(), data.data(), GLbitfield(flags));
 }
 #endif
 
-void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const data) {
-    glGetBufferParameteriv(GLenum(bindSomewhereInternal(_targetHint)), value, data);
+void Buffer::getParameterImplementationDefault(Buffer& self, const GLenum value, GLint* const data) {
+    glGetBufferParameteriv(GLenum(self.bindSomewhereInternal(self._targetHint)), value, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data) {
-    glGetNamedBufferParameteriv(_id, value, data);
+void Buffer::getParameterImplementationDSA(Buffer& self, const GLenum value, GLint* const data) {
+    glGetNamedBufferParameteriv(self._id, value, data);
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
-void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
-    glGetBufferSubData(GLenum(bindSomewhereInternal(_targetHint)), offset, size, data);
+void Buffer::getSubDataImplementationDefault(Buffer& self, const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+    glGetBufferSubData(GLenum(self.bindSomewhereInternal(self._targetHint)), offset, size, data);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
-    glGetNamedBufferSubData(_id, offset, size, data);
+void Buffer::getSubDataImplementationDSA(Buffer& self, const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+    glGetNamedBufferSubData(self._id, offset, size, data);
 }
 #endif
 
-void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
-    glBufferData(GLenum(bindSomewhereInternal(_targetHint)), size, data, GLenum(usage));
+void Buffer::dataImplementationDefault(Buffer& self, GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
+    glBufferData(GLenum(self.bindSomewhereInternal(self._targetHint)), size, data, GLenum(usage));
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::dataImplementationDSA(const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
-    glNamedBufferData(_id, size, data, GLenum(usage));
+void Buffer::dataImplementationDSA(Buffer& self, const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
+    glNamedBufferData(self._id, size, data, GLenum(usage));
 }
 #endif
 
-void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-    glBufferSubData(GLenum(bindSomewhereInternal(_targetHint)), offset, size, data);
+void Buffer::subDataImplementationDefault(Buffer& self, GLintptr offset, GLsizeiptr size, const GLvoid* data) {
+    glBufferSubData(GLenum(self.bindSomewhereInternal(self._targetHint)), offset, size, data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::subDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, const GLvoid* const data) {
-    glNamedBufferSubData(_id, offset, size, data);
-}
-#endif
-
-void Buffer::invalidateImplementationNoOp() {}
-
-#ifndef MAGNUM_TARGET_GLES
-void Buffer::invalidateImplementationARB() {
-    createIfNotAlready();
-    glInvalidateBufferData(_id);
+void Buffer::subDataImplementationDSA(Buffer& self, const GLintptr offset, const GLsizeiptr size, const GLvoid* const data) {
+    glNamedBufferSubData(self._id, offset, size, data);
 }
 #endif
 
-void Buffer::invalidateSubImplementationNoOp(GLintptr, GLsizeiptr) {}
+void Buffer::invalidateImplementationNoOp(Buffer&) {}
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) {
-    createIfNotAlready();
-    glInvalidateBufferSubData(_id, offset, length);
+void Buffer::invalidateImplementationARB(Buffer& self) {
+    self.createIfNotAlready();
+    glInvalidateBufferData(self._id);
+}
+#endif
+
+void Buffer::invalidateSubImplementationNoOp(Buffer&, GLintptr, GLsizeiptr) {}
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::invalidateSubImplementationARB(Buffer& self, GLintptr offset, GLsizeiptr length) {
+    self.createIfNotAlready();
+    glInvalidateBufferSubData(self._id, offset, length);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_WEBGL
-void* Buffer::mapImplementationDefault(MapAccess access) {
+void* Buffer::mapImplementationDefault(Buffer& self, MapAccess access) {
     #ifndef MAGNUM_TARGET_GLES
-    return glMapBuffer(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
+    return glMapBuffer(GLenum(self.bindSomewhereInternal(self._targetHint)), GLenum(access));
     #else
-    return glMapBufferOES(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
+    return glMapBufferOES(GLenum(self.bindSomewhereInternal(self._targetHint)), GLenum(access));
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void* Buffer::mapImplementationDSA(const MapAccess access) {
-    return glMapNamedBuffer(_id, GLenum(access));
+void* Buffer::mapImplementationDSA(Buffer& self, const MapAccess access) {
+    return glMapNamedBuffer(self._id, GLenum(access));
 }
 #endif
 
-void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
+void* Buffer::mapRangeImplementationDefault(Buffer& self, GLintptr offset, GLsizeiptr length, MapFlags access) {
     #ifndef MAGNUM_TARGET_GLES2
-    return glMapBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
+    return glMapBufferRange(GLenum(self.bindSomewhereInternal(self._targetHint)), offset, length, GLenum(access));
     #else
-    return glMapBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
+    return glMapBufferRangeEXT(GLenum(self.bindSomewhereInternal(self._targetHint)), offset, length, GLenum(access));
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void* Buffer::mapRangeImplementationDSA(const GLintptr offset, const GLsizeiptr length, const MapFlags access) {
-    return glMapNamedBufferRange(_id, offset, length, GLenum(access));
+void* Buffer::mapRangeImplementationDSA(Buffer& self, const GLintptr offset, const GLsizeiptr length, const MapFlags access) {
+    return glMapNamedBufferRange(self._id, offset, length, GLenum(access));
 }
 #endif
 
-void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
+void Buffer::flushMappedRangeImplementationDefault(Buffer& self, GLintptr offset, GLsizeiptr length) {
     #ifndef MAGNUM_TARGET_GLES2
-    glFlushMappedBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
+    glFlushMappedBufferRange(GLenum(self.bindSomewhereInternal(self._targetHint)), offset, length);
     #else
-    glFlushMappedBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
+    glFlushMappedBufferRangeEXT(GLenum(self.bindSomewhereInternal(self._targetHint)), offset, length);
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::flushMappedRangeImplementationDSA(const GLintptr offset, const GLsizeiptr length) {
-    glFlushMappedNamedBufferRange(_id, offset, length);
+void Buffer::flushMappedRangeImplementationDSA(Buffer& self, const GLintptr offset, const GLsizeiptr length) {
+    glFlushMappedNamedBufferRange(self._id, offset, length);
 }
 #endif
 
-bool Buffer::unmapImplementationDefault() {
+bool Buffer::unmapImplementationDefault(Buffer& self) {
     #ifndef MAGNUM_TARGET_GLES2
-    return glUnmapBuffer(GLenum(bindSomewhereInternal(_targetHint)));
+    return glUnmapBuffer(GLenum(self.bindSomewhereInternal(self._targetHint)));
     #else
-    return glUnmapBufferOES(GLenum(bindSomewhereInternal(_targetHint)));
+    return glUnmapBufferOES(GLenum(self.bindSomewhereInternal(self._targetHint)));
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
-bool Buffer::unmapImplementationDSA() {
-    return glUnmapNamedBuffer(_id);
+bool Buffer::unmapImplementationDSA(Buffer& self) {
+    return glUnmapNamedBuffer(self._id);
 }
 #endif
 #endif
@@ -608,29 +608,29 @@ void Buffer::textureWorkaroundAppleBefore() {
     }
 }
 
-void Buffer::dataImplementationApple(const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
-    textureWorkaroundAppleBefore();
-    dataImplementationDefault(size, data, usage);
+void Buffer::dataImplementationApple(Buffer& self, const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
+    self.textureWorkaroundAppleBefore();
+    dataImplementationDefault(self, size, data, usage);
 }
 
-void Buffer::subDataImplementationApple(const GLintptr offset, const GLsizeiptr size, const GLvoid* const data) {
-    textureWorkaroundAppleBefore();
-    subDataImplementationDefault(offset, size, data);
+void Buffer::subDataImplementationApple(Buffer& self, const GLintptr offset, const GLsizeiptr size, const GLvoid* const data) {
+    self.textureWorkaroundAppleBefore();
+    subDataImplementationDefault(self, offset, size, data);
 }
 
-void* Buffer::mapImplementationApple(const MapAccess access) {
-    textureWorkaroundAppleBefore();
-    return mapImplementationDefault(access);
+void* Buffer::mapImplementationApple(Buffer& self, const MapAccess access) {
+    self.textureWorkaroundAppleBefore();
+    return mapImplementationDefault(self, access);
 }
 
-void* Buffer::mapRangeImplementationApple(const GLintptr offset, const GLsizeiptr length, const MapFlags access) {
-    textureWorkaroundAppleBefore();
-    return mapRangeImplementationDefault(offset, length, access);
+void* Buffer::mapRangeImplementationApple(Buffer& self, const GLintptr offset, const GLsizeiptr length, const MapFlags access) {
+    self.textureWorkaroundAppleBefore();
+    return mapRangeImplementationDefault(self, offset, length, access);
 }
 
-bool Buffer::unmapImplementationApple() {
-    textureWorkaroundAppleBefore();
-    return unmapImplementationDefault();
+bool Buffer::unmapImplementationApple(Buffer& self) {
+    self.textureWorkaroundAppleBefore();
+    return unmapImplementationDefault(self);
 }
 #endif
 

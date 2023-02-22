@@ -73,17 +73,17 @@ Int Renderbuffer::maxSamples() {
 #endif
 
 Renderbuffer::Renderbuffer(): _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().framebuffer.createRenderbufferImplementation)();
+    Context::current().state().framebuffer.createRenderbufferImplementation(*this);
 }
 
-void Renderbuffer::createImplementationDefault() {
-    glGenRenderbuffers(1, &_id);
+void Renderbuffer::createImplementationDefault(Renderbuffer& self) {
+    glGenRenderbuffers(1, &self._id);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Renderbuffer::createImplementationDSA() {
-    glCreateRenderbuffers(1, &_id);
-    _flags |= ObjectFlag::Created;
+void Renderbuffer::createImplementationDSA(Renderbuffer& self) {
+    glCreateRenderbuffers(1, &self._id);
+    self._flags |= ObjectFlag::Created;
 }
 #endif
 
@@ -123,12 +123,12 @@ Renderbuffer& Renderbuffer::setLabel(const Containers::StringView label) {
 #endif
 
 void Renderbuffer::setStorage(const RenderbufferFormat internalFormat, const Vector2i& size) {
-    (this->*Context::current().state().framebuffer.renderbufferStorageImplementation)(internalFormat, size);
+    Context::current().state().framebuffer.renderbufferStorageImplementation(*this, internalFormat, size);
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void Renderbuffer::setStorageMultisample(const Int samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    (this->*Context::current().state().framebuffer.renderbufferStorageMultisampleImplementation)(samples, internalFormat, size);
+    Context::current().state().framebuffer.renderbufferStorageMultisampleImplementation(*this, samples, internalFormat, size);
 }
 #endif
 
@@ -143,37 +143,37 @@ void Renderbuffer::bind() {
     glBindRenderbuffer(GL_RENDERBUFFER, _id);
 }
 
-void Renderbuffer::storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size) {
-    bind();
+void Renderbuffer::storageImplementationDefault(Renderbuffer& self, RenderbufferFormat internalFormat, const Vector2i& size) {
+    self.bind();
     glRenderbufferStorage(GL_RENDERBUFFER, GLenum(internalFormat), size.x(), size.y());
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Renderbuffer::storageImplementationDSA(const RenderbufferFormat internalFormat, const Vector2i& size) {
-    glNamedRenderbufferStorage(_id, GLenum(internalFormat), size.x(), size.y());
+void Renderbuffer::storageImplementationDSA(Renderbuffer& self, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    glNamedRenderbufferStorage(self._id, GLenum(internalFormat), size.x(), size.y());
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void Renderbuffer::storageMultisampleImplementationDefault(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    bind();
+void Renderbuffer::storageMultisampleImplementationDefault(Renderbuffer& self, const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    self.bind();
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
 }
 #elif !defined(MAGNUM_TARGET_WEBGL)
-void Renderbuffer::storageMultisampleImplementationANGLE(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    bind();
+void Renderbuffer::storageMultisampleImplementationANGLE(Renderbuffer& self, const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    self.bind();
     glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
 }
 
-void Renderbuffer::storageMultisampleImplementationNV(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    bind();
+void Renderbuffer::storageMultisampleImplementationNV(Renderbuffer& self, const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    self.bind();
     glRenderbufferStorageMultisampleNV(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void Renderbuffer::storageMultisampleImplementationDSA(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    glNamedRenderbufferStorageMultisample(_id, samples, GLenum(internalFormat), size.x(), size.y());
+void Renderbuffer::storageMultisampleImplementationDSA(Renderbuffer& self, const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
+    glNamedRenderbufferStorageMultisample(self._id, samples, GLenum(internalFormat), size.x(), size.y());
 }
 #endif
 

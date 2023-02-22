@@ -64,24 +64,24 @@ struct BufferState {
     void(*bindRangesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>>);
     void(*copyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
     #endif
-    void(Buffer::*createImplementation)();
-    void(Buffer::*setTargetHintImplementation)(Buffer::TargetHint);
+    void(*createImplementation)(Buffer&);
+    void(*setTargetHintImplementation)(Buffer&, Buffer::TargetHint);
     #ifndef MAGNUM_TARGET_GLES
-    void(Buffer::*storageImplementation)(Containers::ArrayView<const void>, Buffer::StorageFlags);
+    void(*storageImplementation)(Buffer&, Containers::ArrayView<const void>, Buffer::StorageFlags);
     #endif
-    void(Buffer::*getParameterImplementation)(GLenum, GLint*);
+    void(*getParameterImplementation)(Buffer&, GLenum, GLint*);
     #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
-    void(Buffer::*getSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
+    void(*getSubDataImplementation)(Buffer&, GLintptr, GLsizeiptr, GLvoid*);
     #endif
-    void(Buffer::*dataImplementation)(GLsizeiptr, const GLvoid*, BufferUsage);
-    void(Buffer::*subDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
-    void(Buffer::*invalidateImplementation)();
-    void(Buffer::*invalidateSubImplementation)(GLintptr, GLsizeiptr);
+    void(*dataImplementation)(Buffer&, GLsizeiptr, const GLvoid*, BufferUsage);
+    void(*subDataImplementation)(Buffer&, GLintptr, GLsizeiptr, const GLvoid*);
+    void(*invalidateImplementation)(Buffer&);
+    void(*invalidateSubImplementation)(Buffer&, GLintptr, GLsizeiptr);
     #ifndef MAGNUM_TARGET_WEBGL
-    void*(Buffer::*mapImplementation)(Buffer::MapAccess);
-    void*(Buffer::*mapRangeImplementation)(GLintptr, GLsizeiptr, Buffer::MapFlags);
-    void(Buffer::*flushMappedRangeImplementation)(GLintptr, GLsizeiptr);
-    bool(Buffer::*unmapImplementation)();
+    void*(*mapImplementation)(Buffer&, Buffer::MapAccess);
+    void*(*mapRangeImplementation)(Buffer&, GLintptr, GLsizeiptr, Buffer::MapFlags);
+    void(*flushMappedRangeImplementation)(Buffer&, GLintptr, GLsizeiptr);
+    bool(*unmapImplementation)(Buffer&);
     #endif
 
     /* Currently bound buffer for all targets */

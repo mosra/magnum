@@ -531,173 +531,173 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         static void MAGNUM_GL_LOCAL bindImplementationMulti(GLint firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures);
         #endif
 
-        void MAGNUM_GL_LOCAL createImplementationDefault();
+        static void MAGNUM_GL_LOCAL createImplementationDefault(AbstractTexture& self);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationDSA();
+        static void MAGNUM_GL_LOCAL createImplementationDSA(AbstractTexture& self);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt dimensions> std::size_t MAGNUM_GL_LOCAL compressedSubImageSize(TextureFormat format, const Math::Vector<dimensions, Int>& size);
         #endif
 
-        void MAGNUM_GL_LOCAL bindImplementationDefault(GLint textureUnit);
+        static void MAGNUM_GL_LOCAL bindImplementationDefault(AbstractTexture& self, GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL bindImplementationMulti(GLint textureUnit);
-        void MAGNUM_GL_LOCAL bindImplementationDSA(GLint textureUnit);
+        static void MAGNUM_GL_LOCAL bindImplementationMulti(AbstractTexture& self, GLint textureUnit);
+        static void MAGNUM_GL_LOCAL bindImplementationDSA(AbstractTexture& self, GLint textureUnit);
         #ifdef CORRADE_TARGET_WINDOWS
-        void MAGNUM_GL_LOCAL bindImplementationDSAIntelWindows(GLint textureUnit);
+        static void MAGNUM_GL_LOCAL bindImplementationDSAIntelWindows(AbstractTexture& self, GLint textureUnit);
         #endif
         #ifdef CORRADE_TARGET_APPLE
-        void MAGNUM_GL_LOCAL bindImplementationAppleBufferTextureWorkaround(GLint textureUnit);
+        static void MAGNUM_GL_LOCAL bindImplementationAppleBufferTextureWorkaround(AbstractTexture& self, GLint textureUnit);
         #endif
         #endif
 
-        void MAGNUM_GL_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);
-        void MAGNUM_GL_LOCAL parameterImplementationDefault(GLenum parameter, GLfloat value);
+        static void MAGNUM_GL_LOCAL parameterImplementationDefault(AbstractTexture& self, GLenum parameter, GLint value);
+        static void MAGNUM_GL_LOCAL parameterImplementationDefault(AbstractTexture& self, GLenum parameter, GLfloat value);
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL parameterImplementationDefault(GLenum parameter, const GLint* values);
+        static void MAGNUM_GL_LOCAL parameterImplementationDefault(AbstractTexture& self, GLenum parameter, const GLint* values);
         #endif
-        void MAGNUM_GL_LOCAL parameterImplementationDefault(GLenum parameter, const GLfloat* values);
+        static void MAGNUM_GL_LOCAL parameterImplementationDefault(AbstractTexture& self, GLenum parameter, const GLfloat* values);
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL parameterIImplementationDefault(GLenum parameter, const GLuint* values);
-        void MAGNUM_GL_LOCAL parameterIImplementationDefault(GLenum parameter, const GLint* values);
+        static void MAGNUM_GL_LOCAL parameterIImplementationDefault(AbstractTexture& self, GLenum parameter, const GLuint* values);
+        static void MAGNUM_GL_LOCAL parameterIImplementationDefault(AbstractTexture& self, GLenum parameter, const GLint* values);
         #ifdef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL parameterIImplementationEXT(GLenum parameter, const GLuint* values);
-        void MAGNUM_GL_LOCAL parameterIImplementationEXT(GLenum parameter, const GLint* values);
+        static void MAGNUM_GL_LOCAL parameterIImplementationEXT(AbstractTexture& self, GLenum parameter, const GLuint* values);
+        static void MAGNUM_GL_LOCAL parameterIImplementationEXT(AbstractTexture& self, GLenum parameter, const GLint* values);
         #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);
-        void MAGNUM_GL_LOCAL parameterImplementationDSA(GLenum parameter, GLfloat value);
-        void MAGNUM_GL_LOCAL parameterImplementationDSA(GLenum parameter, const GLint* values);
-        void MAGNUM_GL_LOCAL parameterImplementationDSA(GLenum parameter, const GLfloat* values);
-        void MAGNUM_GL_LOCAL parameterIImplementationDSA(GLenum parameter, const GLuint* values);
-        void MAGNUM_GL_LOCAL parameterIImplementationDSA(GLenum parameter, const GLint* values);
+        static void MAGNUM_GL_LOCAL parameterImplementationDSA(AbstractTexture& self, GLenum parameter, GLint value);
+        static void MAGNUM_GL_LOCAL parameterImplementationDSA(AbstractTexture& self, GLenum parameter, GLfloat value);
+        static void MAGNUM_GL_LOCAL parameterImplementationDSA(AbstractTexture& self, GLenum parameter, const GLint* values);
+        static void MAGNUM_GL_LOCAL parameterImplementationDSA(AbstractTexture& self, GLenum parameter, const GLfloat* values);
+        static void MAGNUM_GL_LOCAL parameterIImplementationDSA(AbstractTexture& self, GLenum parameter, const GLuint* values);
+        static void MAGNUM_GL_LOCAL parameterIImplementationDSA(AbstractTexture& self, GLenum parameter, const GLint* values);
         #endif
 
-        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
-        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationArbOrExt(GLfloat anisotropy);
+        static void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationNoOp(AbstractTexture& self, GLfloat);
+        static void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationArbOrExt(AbstractTexture& self, GLfloat anisotropy);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
+        static void MAGNUM_GL_LOCAL getLevelParameterImplementationDefault(AbstractTexture& self, GLint level, GLenum parameter, GLint* values);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL getLevelParameterImplementationDSA(GLint level, GLenum parameter, GLint* values);
+        static void MAGNUM_GL_LOCAL getLevelParameterImplementationDSA(AbstractTexture& self, GLint level, GLenum parameter, GLint* values);
         #endif
         #endif
 
-        void MAGNUM_GL_LOCAL mipmapImplementationDefault();
+        static void MAGNUM_GL_LOCAL mipmapImplementationDefault(AbstractTexture& self);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL mipmapImplementationDSA();
+        static void MAGNUM_GL_LOCAL mipmapImplementationDSA(AbstractTexture& self);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
-        void MAGNUM_GL_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
-        void MAGNUM_GL_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        static void MAGNUM_GL_LOCAL storageImplementationFallback(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDefault(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDSA(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-        void MAGNUM_GL_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationFallback(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        void MAGNUM_GL_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDefault(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDSA(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
-        void MAGNUM_GL_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationFallback(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        void MAGNUM_GL_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDefault(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDSA(AbstractTexture& self, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationFallback(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationFallback(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationFallback(AbstractTexture& self, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationFallback(AbstractTexture& self, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationDefault(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationDefault(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationDefault(AbstractTexture& self, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationDefault(AbstractTexture& self, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         #ifdef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationOES(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationOES(AbstractTexture& self, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationDSA(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationDSA(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationDSA(AbstractTexture& self, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationDSA(AbstractTexture& self, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL getImageImplementationDefault(GLint level, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_GL_LOCAL getImageImplementationDSA(GLint level, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_GL_LOCAL getImageImplementationRobustness(GLint level, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getImageImplementationDefault(AbstractTexture& self, GLint level, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getImageImplementationDSA(AbstractTexture& self, GLint level, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getImageImplementationRobustness(AbstractTexture& self, GLint level, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
 
-        void MAGNUM_GL_LOCAL getCompressedImageImplementationDefault(GLint level, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_GL_LOCAL getCompressedImageImplementationDSA(GLint level, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_GL_LOCAL getCompressedImageImplementationRobustness(GLint level, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getCompressedImageImplementationDefault(AbstractTexture& self, GLint level, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getCompressedImageImplementationDSA(AbstractTexture& self, GLint level, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getCompressedImageImplementationRobustness(AbstractTexture& self, GLint level, std::size_t dataSize, GLvoid* data);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL subImageImplementationDefault(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, PixelFormat format, PixelType type, const GLvoid* data);
-        void MAGNUM_GL_LOCAL subImageImplementationDSA(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, PixelFormat format, PixelType type, const GLvoid* data);
+        static void MAGNUM_GL_LOCAL subImageImplementationDefault(AbstractTexture& self, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, PixelFormat format, PixelType type, const GLvoid* data);
+        static void MAGNUM_GL_LOCAL subImageImplementationDSA(AbstractTexture& self, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, PixelFormat format, PixelType type, const GLvoid* data);
 
-        void MAGNUM_GL_LOCAL compressedSubImageImplementationDefault(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
-        void MAGNUM_GL_LOCAL compressedSubImageImplementationDSA(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
+        static void MAGNUM_GL_LOCAL compressedSubImageImplementationDefault(AbstractTexture& self, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
+        static void MAGNUM_GL_LOCAL compressedSubImageImplementationDSA(AbstractTexture& self, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif
 
-        void MAGNUM_GL_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL imageImplementationDefault(AbstractTexture& self, GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL imageImplementationSvga3DSliceBySlice(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL imageImplementationSvga3DSliceBySlice(AbstractTexture& self, GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #endif
         /* Had to put explicit "2D" in the name so it's not overloaded and
            Clang is able to pass it as template parameter to
            subImageImplementationSvga3DSliceBySlice(). GCC had no problem with
            the original. */
-        void MAGNUM_GL_LOCAL subImage2DImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL subImage2DImplementationDefault(AbstractTexture& self, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #ifndef MAGNUM_TARGET_GLES
-        template<void(AbstractTexture::*original)(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void MAGNUM_GL_LOCAL subImageImplementationSvga3DSliceBySlice(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage& storage);
+        template<void(*original)(AbstractTexture&, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> static void MAGNUM_GL_LOCAL subImageImplementationSvga3DSliceBySlice(AbstractTexture& self, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage& storage);
         #endif
-        void MAGNUM_GL_LOCAL compressedSubImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
+        static void MAGNUM_GL_LOCAL compressedSubImageImplementationDefault(AbstractTexture& self, GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL subImage2DImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
-        void MAGNUM_GL_LOCAL compressedSubImageImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
+        static void MAGNUM_GL_LOCAL subImage2DImplementationDSA(AbstractTexture& self, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL compressedSubImageImplementationDSA(AbstractTexture& self, GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        void MAGNUM_GL_LOCAL imageImplementationDefault(GLint level, TextureFormat internalFormat, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL imageImplementationDefault(AbstractTexture& self, GLint level, TextureFormat internalFormat, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL imageImplementationSvga3DSliceBySlice(GLint level, TextureFormat internalFormat, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL imageImplementationSvga3DSliceBySlice(AbstractTexture& self, GLint level, TextureFormat internalFormat, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #endif
         /* Had to put explicit "3D" in the name so it's not overloaded and
            Clang is able to pass it as template parameter to
            subImageImplementationSvga3DSliceBySlice(). GCC had no problem with
            the original. */
-        void MAGNUM_GL_LOCAL subImage3DImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL subImage3DImplementationDefault(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #ifndef MAGNUM_TARGET_WEBGL
-        template<void(AbstractTexture::*original)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void MAGNUM_GL_LOCAL subImageImplementationSvga3DSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage& storage);
+        template<void(*original)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> static void MAGNUM_GL_LOCAL subImageImplementationSvga3DSliceBySlice(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage& storage);
         #endif
-        void MAGNUM_GL_LOCAL compressedSubImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
+        static void MAGNUM_GL_LOCAL compressedSubImageImplementationDefault(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL subImage3DImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        static void MAGNUM_GL_LOCAL subImage3DImplementationDSA(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #ifndef MAGNUM_TARGET_WEBGL
         #endif
-        void MAGNUM_GL_LOCAL compressedSubImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
+        static void MAGNUM_GL_LOCAL compressedSubImageImplementationDSA(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif
 
-        void MAGNUM_GL_LOCAL invalidateImageImplementationNoOp(GLint level);
+        static void MAGNUM_GL_LOCAL invalidateImageImplementationNoOp(AbstractTexture& self, GLint level);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL invalidateImageImplementationARB(GLint level);
+        static void MAGNUM_GL_LOCAL invalidateImageImplementationARB(AbstractTexture& self, GLint level);
         #endif
 
-        void MAGNUM_GL_LOCAL invalidateSubImageImplementationNoOp(GLint level, const Vector3i& offset, const Vector3i& size);
+        static void MAGNUM_GL_LOCAL invalidateSubImageImplementationNoOp(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL invalidateSubImageImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size);
+        static void MAGNUM_GL_LOCAL invalidateSubImageImplementationARB(AbstractTexture& self, GLint level, const Vector3i& offset, const Vector3i& size);
         #endif
 
         GLuint _id;
@@ -828,14 +828,14 @@ inline GLuint AbstractTexture::release() {
 #ifdef CORRADE_TARGET_CLANG_CL
 /* Otherwise Clang-CL complains these functions are not defined */
 #ifndef MAGNUM_TARGET_GLES
-extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDefault>(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
-extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDSA>(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDefault>(AbstractTexture&, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDSA>(AbstractTexture&, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
 #endif
 
 #ifndef MAGNUM_TARGET_WEBGL
-extern template void  AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDefault>(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+extern template void  AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDefault>(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
 #ifndef MAGNUM_TARGET_GLES
-extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDSA>(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDSA>(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
 #endif
 #endif
 #endif

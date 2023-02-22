@@ -428,23 +428,23 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
 
-        void MAGNUM_GL_LOCAL createImplementationDefault();
+        static void MAGNUM_GL_LOCAL createImplementationDefault(TransformFeedback& self);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationDSA();
+        static void MAGNUM_GL_LOCAL createImplementationDSA(TransformFeedback& self);
         #endif
 
-        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint index, Buffer& buffer, GLintptr offset, GLsizeiptr size);
-        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint index, Buffer& buffer);
+        static void MAGNUM_GL_LOCAL attachImplementationFallback(TransformFeedback& self, GLuint index, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        static void MAGNUM_GL_LOCAL attachImplementationFallback(TransformFeedback& self, GLuint index, Buffer& buffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint index, Buffer& buffer, GLintptr offset, GLsizeiptr size);
-        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint index, Buffer& buffer);
+        static void MAGNUM_GL_LOCAL attachImplementationDSA(TransformFeedback& self, GLuint index, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        static void MAGNUM_GL_LOCAL attachImplementationDSA(TransformFeedback& self, GLuint index, Buffer& buffer);
         #endif
 
-        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
-        void MAGNUM_GL_LOCAL attachImplementationFallback(GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
+        static void MAGNUM_GL_LOCAL attachImplementationFallback(TransformFeedback& self, GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_GL_LOCAL attachImplementationFallback(TransformFeedback& self, GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
-        void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
+        static void MAGNUM_GL_LOCAL attachImplementationDSA(TransformFeedback& self, GLuint firstIndex, Containers::ArrayView<const Containers::Triple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_GL_LOCAL attachImplementationDSA(TransformFeedback& self, GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #endif
 
         GLuint _id;

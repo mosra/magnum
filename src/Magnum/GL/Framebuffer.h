@@ -933,41 +933,41 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
     private:
         explicit Framebuffer(GLuint id, const Range2Di& viewport, ObjectFlags flags) noexcept: AbstractFramebuffer{id, viewport, flags} {}
 
-        void MAGNUM_GL_LOCAL createImplementationDefault();
+        static void MAGNUM_GL_LOCAL createImplementationDefault(Framebuffer& self);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationDSA();
+        static void MAGNUM_GL_LOCAL createImplementationDSA(Framebuffer& self);
         #endif
 
-        void MAGNUM_GL_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, GLuint renderbufferId);
+        static void MAGNUM_GL_LOCAL renderbufferImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLuint renderbufferId);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, GLuint renderbufferId);
+        static void MAGNUM_GL_LOCAL renderbufferImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLuint renderbufferId);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
+        static void MAGNUM_GL_LOCAL texture1DImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
-        void MAGNUM_GL_LOCAL texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        static void MAGNUM_GL_LOCAL texture2DImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
-        void MAGNUM_GL_LOCAL textureCubeMapImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        static void MAGNUM_GL_LOCAL texture2DImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        static void MAGNUM_GL_LOCAL textureCubeMapImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
 
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-        void MAGNUM_GL_LOCAL textureImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
+        static void MAGNUM_GL_LOCAL textureImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level);
         #ifdef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL textureImplementationEXT(BufferAttachment attachment, GLuint textureId, GLint level);
+        static void MAGNUM_GL_LOCAL textureImplementationEXT(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL textureImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);
+        static void MAGNUM_GL_LOCAL textureImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        void MAGNUM_GL_LOCAL textureLayerImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
+        static void MAGNUM_GL_LOCAL textureLayerImplementationDefault(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL textureLayerImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
+        static void MAGNUM_GL_LOCAL textureLayerImplementationDSA(Framebuffer& self, BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #endif
 };
 

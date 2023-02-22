@@ -44,7 +44,7 @@ struct ShaderProgramState {
     void reset();
 
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(const Containers::StringIterable&, AbstractShaderProgram::TransformFeedbackBufferMode);
+    void(*transformFeedbackVaryingsImplementation)(AbstractShaderProgram&, const Containers::StringIterable&, AbstractShaderProgram::TransformFeedbackBufferMode);
     #endif
     void(*cleanLogImplementation)(Containers::String&);
     /* This is a direct pointer to a GL function, so needs a __stdcall on

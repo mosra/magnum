@@ -1258,62 +1258,62 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         MAGNUM_GL_LOCAL void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
         #endif
 
-        void MAGNUM_GL_LOCAL createImplementationDefault(bool);
-        void MAGNUM_GL_LOCAL createImplementationVAO(bool createObject);
+        static void MAGNUM_GL_LOCAL createImplementationDefault(Mesh& self, bool);
+        static void MAGNUM_GL_LOCAL createImplementationVAO(Mesh& self, bool createObject);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationVAODSA(bool createObject);
+        static void MAGNUM_GL_LOCAL createImplementationVAODSA(Mesh& self, bool createObject);
         #endif
 
-        void MAGNUM_GL_LOCAL moveConstructImplementationDefault(Mesh&& other);
-        void MAGNUM_GL_LOCAL moveConstructImplementationVAO(Mesh&& other);
-        void MAGNUM_GL_LOCAL moveAssignImplementationDefault(Mesh&& other);
-        void MAGNUM_GL_LOCAL moveAssignImplementationVAO(Mesh&& other);
+        static void MAGNUM_GL_LOCAL moveConstructImplementationDefault(Mesh& self, Mesh&& other);
+        static void MAGNUM_GL_LOCAL moveConstructImplementationVAO(Mesh& self, Mesh&& other);
+        static void MAGNUM_GL_LOCAL moveAssignImplementationDefault(Mesh& self, Mesh&& other);
+        static void MAGNUM_GL_LOCAL moveAssignImplementationVAO(Mesh& self, Mesh&& other);
 
-        void MAGNUM_GL_LOCAL destroyImplementationDefault(bool);
-        void MAGNUM_GL_LOCAL destroyImplementationVAO(bool deleteObject);
+        static void MAGNUM_GL_LOCAL destroyImplementationDefault(Mesh& self, bool);
+        static void MAGNUM_GL_LOCAL destroyImplementationVAO(Mesh& self, bool deleteObject);
 
         void attributePointerInternal(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor);
         void MAGNUM_GL_LOCAL attributePointerInternal(AttributeLayout&& attribute);
-        void MAGNUM_GL_LOCAL attributePointerImplementationDefault(AttributeLayout&& attribute);
-        void MAGNUM_GL_LOCAL attributePointerImplementationVAO(AttributeLayout&& attribute);
+        static void MAGNUM_GL_LOCAL attributePointerImplementationDefault(Mesh& self, AttributeLayout&& attribute);
+        static void MAGNUM_GL_LOCAL attributePointerImplementationVAO(Mesh& self, AttributeLayout&& attribute);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL attributePointerImplementationVAODSA(AttributeLayout&& attribute);
+        static void MAGNUM_GL_LOCAL attributePointerImplementationVAODSA(Mesh& self, AttributeLayout&& attribute);
         #ifdef CORRADE_TARGET_WINDOWS
-        void MAGNUM_GL_LOCAL attributePointerImplementationVAODSAIntelWindows(AttributeLayout&& attribute);
+        static void MAGNUM_GL_LOCAL attributePointerImplementationVAODSAIntelWindows(Mesh& self, AttributeLayout&& attribute);
         #endif
         #endif
         #ifdef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL attributePointerImplementationDefaultAngleAlwaysInstanced(AttributeLayout&& attribute);
-        void MAGNUM_GL_LOCAL attributePointerImplementationVAOAngleAlwaysInstanced(AttributeLayout&& attribute);
+        static void MAGNUM_GL_LOCAL attributePointerImplementationDefaultAngleAlwaysInstanced(Mesh& self, AttributeLayout&& attribute);
+        static void MAGNUM_GL_LOCAL attributePointerImplementationVAOAngleAlwaysInstanced(Mesh& self, AttributeLayout&& attribute);
         #endif
         void MAGNUM_GL_LOCAL vertexAttribPointer(AttributeLayout& attribute);
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationVAO(GLuint index, GLuint divisor);
-        void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationVAODSA(GLuint index, GLuint divisor);
+        static void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationVAO(Mesh& self, GLuint index, GLuint divisor);
+        static void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationVAODSA(Mesh& self, GLuint index, GLuint divisor);
         #elif defined(MAGNUM_TARGET_GLES2)
-        void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationANGLE(GLuint index, GLuint divisor);
+        static void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationANGLE(Mesh& self, GLuint index, GLuint divisor);
         #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationEXT(GLuint index, GLuint divisor);
-        void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationNV(GLuint index, GLuint divisor);
+        static void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationEXT(Mesh& self, GLuint index, GLuint divisor);
+        static void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationNV(Mesh& self, GLuint index, GLuint divisor);
         #endif
         #endif
 
         void acquireVertexBuffer(Buffer&& buffer);
-        void MAGNUM_GL_LOCAL acquireVertexBufferImplementationDefault(Buffer&& buffer);
-        void MAGNUM_GL_LOCAL acquireVertexBufferImplementationVAO(Buffer&& buffer);
+        static void MAGNUM_GL_LOCAL acquireVertexBufferImplementationDefault(Mesh& self, Buffer&& buffer);
+        static void MAGNUM_GL_LOCAL acquireVertexBufferImplementationVAO(Mesh& self, Buffer&& buffer);
 
-        void MAGNUM_GL_LOCAL bindIndexBufferImplementationDefault(Buffer&);
-        void MAGNUM_GL_LOCAL bindIndexBufferImplementationVAO(Buffer& buffer);
+        static void MAGNUM_GL_LOCAL bindIndexBufferImplementationDefault(Mesh& self, Buffer&);
+        static void MAGNUM_GL_LOCAL bindIndexBufferImplementationVAO(Mesh& self, Buffer& buffer);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL bindIndexBufferImplementationVAODSA(Buffer& buffer);
+        static void MAGNUM_GL_LOCAL bindIndexBufferImplementationVAODSA(Mesh& self, Buffer& buffer);
         #endif
 
-        void MAGNUM_GL_LOCAL bindImplementationDefault();
-        void MAGNUM_GL_LOCAL bindImplementationVAO();
+        static void MAGNUM_GL_LOCAL bindImplementationDefault(Mesh& self);
+        static void MAGNUM_GL_LOCAL bindImplementationVAO(Mesh& self);
 
-        void MAGNUM_GL_LOCAL unbindImplementationDefault();
-        void MAGNUM_GL_LOCAL unbindImplementationVAO();
+        static void MAGNUM_GL_LOCAL unbindImplementationDefault(Mesh& self);
+        static void MAGNUM_GL_LOCAL unbindImplementationVAO(Mesh& self);
 
         #ifdef MAGNUM_TARGET_GLES
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

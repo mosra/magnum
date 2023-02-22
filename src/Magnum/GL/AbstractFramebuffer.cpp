@@ -119,70 +119,70 @@ void AbstractFramebuffer::bind() {
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
     #ifndef MAGNUM_TARGET_GLES2
-    bindImplementationDefault(target);
+    bindImplementationDefault(*this, target);
     #elif defined(MAGNUM_TARGET_WEBGL)
     static_cast<void>(target);
-    bindImplementationSingle();
+    bindImplementationSingle(*this);
     #else
-    (this->*Context::current().state().framebuffer.bindImplementation)(target);
+    Context::current().state().framebuffer.bindImplementation(*this, target);
     #endif
 }
 
 #ifdef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
+void AbstractFramebuffer::bindImplementationSingle(AbstractFramebuffer& self, FramebufferTarget) {
     Implementation::FramebufferState& state = Context::current().state().framebuffer;
     CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
-    if(state.readBinding == _id) return;
+    if(state.readBinding == self._id) return;
 
-    state.readBinding = state.drawBinding = _id;
+    state.readBinding = state.drawBinding = self._id;
 
     /* Binding the framebuffer finally creates it */
-    _flags |= ObjectFlag::Created;
-    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    self._flags |= ObjectFlag::Created;
+    glBindFramebuffer(GL_FRAMEBUFFER, self._id);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 inline
 #endif
-void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
+void AbstractFramebuffer::bindImplementationDefault(AbstractFramebuffer& self, FramebufferTarget target) {
     Implementation::FramebufferState& state = Context::current().state().framebuffer;
 
     if(target == FramebufferTarget::Read) {
-        if(state.readBinding == _id) return;
-        state.readBinding = _id;
+        if(state.readBinding == self._id) return;
+        state.readBinding = self._id;
     } else if(target == FramebufferTarget::Draw) {
-        if(state.drawBinding == _id) return;
-        state.drawBinding = _id;
+        if(state.drawBinding == self._id) return;
+        state.drawBinding = self._id;
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* Binding the framebuffer finally creates it */
-    _flags |= ObjectFlag::Created;
-    glBindFramebuffer(GLenum(target), _id);
+    self._flags |= ObjectFlag::Created;
+    glBindFramebuffer(GLenum(target), self._id);
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
     #ifndef MAGNUM_TARGET_GLES2
-    return bindImplementationDefault();
+    return bindImplementationDefault(*this);
     #elif defined(MAGNUM_TARGET_WEBGL)
-    return bindImplementationSingle();
+    return bindImplementationSingle(*this);
     #else
-    return (this->*Context::current().state().framebuffer.bindInternalImplementation)();
+    return Context::current().state().framebuffer.bindInternalImplementation(*this);
     #endif
 }
 
 #ifdef MAGNUM_TARGET_GLES2
-FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
+FramebufferTarget AbstractFramebuffer::bindImplementationSingle(AbstractFramebuffer& self) {
     Implementation::FramebufferState& state = Context::current().state().framebuffer;
     CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
 
     /* Bind the framebuffer, if not already */
-    if(state.readBinding != _id) {
-        state.readBinding = state.drawBinding = _id;
+    if(state.readBinding != self._id) {
+        state.readBinding = state.drawBinding = self._id;
 
         /* Binding the framebuffer finally creates it */
-        _flags |= ObjectFlag::Created;
-        glBindFramebuffer(GL_FRAMEBUFFER, _id);
+        self._flags |= ObjectFlag::Created;
+        glBindFramebuffer(GL_FRAMEBUFFER, self._id);
     }
 
     /* On ES2 w/o separate read/draw bindings the return value is used as a
@@ -196,59 +196,59 @@ FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
 #ifndef MAGNUM_TARGET_GLES2
 inline
 #endif
-FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
+FramebufferTarget AbstractFramebuffer::bindImplementationDefault(AbstractFramebuffer& self) {
     Implementation::FramebufferState& state = Context::current().state().framebuffer;
 
     /* Return target to which the framebuffer is already bound */
-    if(state.readBinding == _id)
+    if(state.readBinding == self._id)
         return FramebufferTarget::Read;
-    if(state.drawBinding == _id)
+    if(state.drawBinding == self._id)
         return FramebufferTarget::Draw;
 
     /* Or bind it, if not already */
-    state.readBinding = _id;
+    state.readBinding = self._id;
 
     /* Binding the framebuffer finally creates it */
-    _flags |= ObjectFlag::Created;
-    glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
+    self._flags |= ObjectFlag::Created;
+    glBindFramebuffer(GLenum(FramebufferTarget::Read), self._id);
     return FramebufferTarget::Read;
 }
 
 PixelFormat AbstractFramebuffer::implementationColorReadFormat() {
-    return PixelFormat((this->*Context::current().state().framebuffer.implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_FORMAT));
+    return PixelFormat(Context::current().state().framebuffer.implementationColorReadFormatTypeImplementation(*this, GL_IMPLEMENTATION_COLOR_READ_FORMAT));
 }
 
 PixelType AbstractFramebuffer::implementationColorReadType() {
-    return PixelType((this->*Context::current().state().framebuffer.implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_TYPE));
+    return PixelType(Context::current().state().framebuffer.implementationColorReadFormatTypeImplementation(*this, GL_IMPLEMENTATION_COLOR_READ_TYPE));
 }
 
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationGlobal(const GLenum what) {
-    bindInternal(FramebufferTarget::Read);
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationGlobal(AbstractFramebuffer& self, const GLenum what) {
+    self.bindInternal(FramebufferTarget::Read);
     GLint formatType;
     glGetIntegerv(what, &formatType);
     return formatType;
 }
 
 #ifndef MAGNUM_TARGET_GLES
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebuffer(const GLenum what) {
-    const FramebufferTarget target = bindInternal();
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebuffer(AbstractFramebuffer& self, const GLenum what) {
+    const FramebufferTarget target = self.bindInternal();
     GLint formatType;
     glGetFramebufferParameteriv(GLenum(target), what, &formatType);
     return formatType;
 }
 
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSA(const GLenum what) {
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSA(AbstractFramebuffer& self, const GLenum what) {
     GLint formatType;
-    glGetNamedFramebufferParameteriv(_id, what, &formatType);
+    glGetNamedFramebufferParameteriv(self._id, what, &formatType);
     return formatType;
 }
 
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSAMesa(const GLenum what) {
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSAMesa(AbstractFramebuffer& self, const GLenum what) {
     /* Mesa needs the framebuffer bound for read even with DSA. See the
        "mesa-implementation-color-read-format-dsa-explicit-binding" workaround
        for details. */
-    bindInternal(FramebufferTarget::Read);
-    return implementationColorReadFormatTypeImplementationFramebufferDSA(what);
+    self.bindInternal(FramebufferTarget::Read);
+    return implementationColorReadFormatTypeImplementationFramebufferDSA(self, what);
 }
 #endif
 
@@ -335,17 +335,17 @@ AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask)
 
 #ifndef MAGNUM_TARGET_GLES2
 AbstractFramebuffer& AbstractFramebuffer::clearDepth(const Float depth) {
-    (this->*Context::current().state().framebuffer.clearFImplementation)(GL_DEPTH, 0, &depth);
+    Context::current().state().framebuffer.clearFImplementation(*this, GL_DEPTH, 0, &depth);
     return *this;
 }
 
 AbstractFramebuffer& AbstractFramebuffer::clearStencil(const Int stencil) {
-    (this->*Context::current().state().framebuffer.clearIImplementation)(GL_STENCIL, 0, &stencil);
+    Context::current().state().framebuffer.clearIImplementation(*this, GL_STENCIL, 0, &stencil);
     return *this;
 }
 
 AbstractFramebuffer& AbstractFramebuffer::clearDepthStencil(const Float depth, const Int stencil) {
-    (this->*Context::current().state().framebuffer.clearFIImplementation)(GL_DEPTH_STENCIL, depth, stencil);
+    Context::current().state().framebuffer.clearFIImplementation(*this, GL_DEPTH_STENCIL, depth, stencil);
     return *this;
 }
 #endif
@@ -497,14 +497,15 @@ void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, CubeMapTexture
 }
 #endif
 
-void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum* const) {}
+void AbstractFramebuffer::invalidateImplementationNoOp(AbstractFramebuffer&, GLsizei, const GLenum* const) {}
 
-void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments) {
+void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments) {
     #ifndef MAGNUM_TARGET_GLES2
-    glInvalidateFramebuffer(GLenum(bindInternal()), count, attachments);
+    glInvalidateFramebuffer(GLenum(self.bindInternal()), count, attachments);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glDiscardFramebufferEXT(GLenum(bindInternal()), count, attachments);
+    glDiscardFramebufferEXT(GLenum(self.bindInternal()), count, attachments);
     #else
+    static_cast<void>(self);
     static_cast<void>(count);
     static_cast<void>(attachments);
     CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
@@ -512,124 +513,124 @@ void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, c
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::invalidateImplementationDSA(const GLsizei count, const GLenum* const attachments) {
-    glInvalidateNamedFramebufferData(_id, count, attachments);
+void AbstractFramebuffer::invalidateImplementationDSA(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments) {
+    glInvalidateNamedFramebufferData(self._id, count, attachments);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&) {}
+void AbstractFramebuffer::invalidateImplementationNoOp(AbstractFramebuffer&, GLsizei, const GLenum*, const Range2Di&) {}
 
-void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
-    glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
+void AbstractFramebuffer::invalidateImplementationDefault(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
+    glInvalidateSubFramebuffer(GLenum(self.bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::invalidateImplementationDSA(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
-    glInvalidateNamedFramebufferSubData(_id, count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
+void AbstractFramebuffer::invalidateImplementationDSA(AbstractFramebuffer& self, const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
+    glInvalidateNamedFramebufferSubData(self._id, count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }
 #endif
 #endif
 
-GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
-    bindInternal(target);
+GLenum AbstractFramebuffer::checkStatusImplementationDefault(AbstractFramebuffer& self, const FramebufferTarget target) {
+    self.bindInternal(target);
     return glCheckFramebufferStatus(GLenum(target));
 }
 
 #ifdef MAGNUM_TARGET_GLES2
-GLenum AbstractFramebuffer::checkStatusImplementationSingle(FramebufferTarget) {
-    bindInternal(FramebufferTarget{});
+GLenum AbstractFramebuffer::checkStatusImplementationSingle(AbstractFramebuffer& self, FramebufferTarget) {
+    self.bindInternal(FramebufferTarget{});
     return glCheckFramebufferStatus(GL_FRAMEBUFFER);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
-    return glCheckNamedFramebufferStatus(_id, GLenum(target));
+GLenum AbstractFramebuffer::checkStatusImplementationDSA(AbstractFramebuffer& self, const FramebufferTarget target) {
+    return glCheckNamedFramebufferStatus(self._id, GLenum(target));
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLint drawbuffer, const GLint* const value) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::clearImplementationDefault(AbstractFramebuffer& self, const GLenum buffer, const GLint drawbuffer, const GLint* const value) {
+    self.bindInternal(FramebufferTarget::Draw);
     glClearBufferiv(buffer, drawbuffer, value);
 }
 
-void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLint drawbuffer, const GLuint* const value) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::clearImplementationDefault(AbstractFramebuffer& self, const GLenum buffer, const GLint drawbuffer, const GLuint* const value) {
+    self.bindInternal(FramebufferTarget::Draw);
     glClearBufferuiv(buffer, drawbuffer, value);
 }
 
-void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLint drawbuffer, const GLfloat* const value) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::clearImplementationDefault(AbstractFramebuffer& self, const GLenum buffer, const GLint drawbuffer, const GLfloat* const value) {
+    self.bindInternal(FramebufferTarget::Draw);
     glClearBufferfv(buffer, drawbuffer, value);
 }
 
-void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLfloat depth, const GLint stencil) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::clearImplementationDefault(AbstractFramebuffer& self, const GLenum buffer, const GLfloat depth, const GLint stencil) {
+    self.bindInternal(FramebufferTarget::Draw);
     glClearBufferfi(buffer, 0, depth, stencil);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLint* const value) {
-    glClearNamedFramebufferiv(_id, buffer, drawbuffer, value);
+void AbstractFramebuffer::clearImplementationDSA(AbstractFramebuffer& self, const GLenum buffer, const GLint drawbuffer, const GLint* const value) {
+    glClearNamedFramebufferiv(self._id, buffer, drawbuffer, value);
 }
 
-void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLuint* const value) {
-    glClearNamedFramebufferuiv(_id, buffer, drawbuffer, value);
+void AbstractFramebuffer::clearImplementationDSA(AbstractFramebuffer& self, const GLenum buffer, const GLint drawbuffer, const GLuint* const value) {
+    glClearNamedFramebufferuiv(self._id, buffer, drawbuffer, value);
 }
 
-void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLfloat* const value) {
-    glClearNamedFramebufferfv(_id, buffer, drawbuffer, value);
+void AbstractFramebuffer::clearImplementationDSA(AbstractFramebuffer& self, const GLenum buffer, const GLint drawbuffer, const GLfloat* const value) {
+    glClearNamedFramebufferfv(self._id, buffer, drawbuffer, value);
 }
 
-void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLfloat depth, const GLint stencil) {
-    glClearNamedFramebufferfi(_id, buffer, 0, depth, stencil);
+void AbstractFramebuffer::clearImplementationDSA(AbstractFramebuffer& self, const GLenum buffer, const GLfloat depth, const GLint stencil) {
+    glClearNamedFramebufferfi(self._id, buffer, 0, depth, stencil);
 }
 #endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::drawBuffersImplementationDefault(AbstractFramebuffer& self, GLsizei count, const GLenum* buffers) {
+    self.bindInternal(FramebufferTarget::Draw);
 
     glDrawBuffers(count, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::drawBuffersImplementationDSA(const GLsizei count, const GLenum* const buffers) {
-    glNamedFramebufferDrawBuffers(_id, count, buffers);
+void AbstractFramebuffer::drawBuffersImplementationDSA(AbstractFramebuffer& self, const GLsizei count, const GLenum* const buffers) {
+    glNamedFramebufferDrawBuffers(self._id, count, buffers);
 }
 #endif
 #else
-void AbstractFramebuffer::drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::drawBuffersImplementationEXT(AbstractFramebuffer& self, GLsizei count, const GLenum* buffers) {
+    self.bindInternal(FramebufferTarget::Draw);
     glDrawBuffersEXT(count, buffers);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-void AbstractFramebuffer::drawBuffersImplementationNV(GLsizei count, const GLenum* buffers) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::drawBuffersImplementationNV(AbstractFramebuffer& self, GLsizei count, const GLenum* buffers) {
+    self.bindInternal(FramebufferTarget::Draw);
     glDrawBuffersNV(count, buffers);
 }
 #endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
-    bindInternal(FramebufferTarget::Draw);
+void AbstractFramebuffer::drawBufferImplementationDefault(AbstractFramebuffer& self, GLenum buffer) {
+    self.bindInternal(FramebufferTarget::Draw);
 
     glDrawBuffer(buffer);
 }
 
-void AbstractFramebuffer::drawBufferImplementationDSA(const GLenum buffer) {
-    glNamedFramebufferDrawBuffer(_id, buffer);
+void AbstractFramebuffer::drawBufferImplementationDSA(AbstractFramebuffer& self, const GLenum buffer) {
+    glNamedFramebufferDrawBuffer(self._id, buffer);
 }
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
-    bindInternal(FramebufferTarget::Read);
+void AbstractFramebuffer::readBufferImplementationDefault(AbstractFramebuffer& self, GLenum buffer) {
+    self.bindInternal(FramebufferTarget::Read);
 
     #ifndef MAGNUM_TARGET_GLES2
     glReadBuffer(buffer);
@@ -640,8 +641,8 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractFramebuffer::readBufferImplementationDSA(const GLenum buffer) {
-    glNamedFramebufferReadBuffer(_id, buffer);
+void AbstractFramebuffer::readBufferImplementationDSA(AbstractFramebuffer& self, const GLenum buffer) {
+    glNamedFramebufferReadBuffer(self._id, buffer);
 }
 #endif
 

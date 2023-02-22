@@ -30,13 +30,6 @@
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
-#ifdef CORRADE_TARGET_MSVC
-/* Otherwise the member function pointers will have different size based on
-   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
-   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
-#include "Magnum/GL/Shader.h"
-#endif
-
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct ShaderState {
@@ -50,7 +43,7 @@ struct ShaderState {
         #endif
     };
 
-    void(Shader::*addSourceImplementation)(Containers::String&&);
+    void(*addSourceImplementation)(Shader&, Containers::String&&);
     void(*cleanLogImplementation)(Containers::String&);
     /* This is a direct pointer to a GL function, so needs a __stdcall on
        Windows to compile properly on 32 bits */

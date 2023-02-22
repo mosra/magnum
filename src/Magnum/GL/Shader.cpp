@@ -780,18 +780,18 @@ Shader& Shader::addSourceInternal(Containers::String&& source) {
             (_sources.size() + 1)/2));
         else arrayAppend(_sources, Containers::String::nullTerminatedGlobalView(""_s));
 
-        (this->*Context::current().state().shader.addSourceImplementation)(std::move(source));
+        Context::current().state().shader.addSourceImplementation(*this, std::move(source));
     }
 
     return *this;
 }
 
-void Shader::addSourceImplementationDefault(Containers::String&& source) {
-    arrayAppend(_sources, std::move(source));
+void Shader::addSourceImplementationDefault(Shader& self, Containers::String&& source) {
+    arrayAppend(self._sources, std::move(source));
 }
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
-void Shader::addSourceImplementationEmscriptenPthread(Containers::String&& source) {
+void Shader::addSourceImplementationEmscriptenPthread(Shader& self, Containers::String&& source) {
     /* Modify the string to remove non-ASCII characters. Ensure we're only
        modifying a string we actually own, if not make a copy first. See the
        "emscripten-pthreads-broken-unicode-shader-sources" workaround
@@ -799,7 +799,7 @@ void Shader::addSourceImplementationEmscriptenPthread(Containers::String&& sourc
     if(!source.isSmall() && !source.deleter())
         source = Containers::String{source};
     for(char& c: source) if(c < 0) c = ' ';
-    arrayAppend(_sources, std::move(source));
+    arrayAppend(self._sources, std::move(source));
 }
 #endif
 

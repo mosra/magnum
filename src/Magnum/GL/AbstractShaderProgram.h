@@ -1877,11 +1877,11 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
     private:
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDefault(const Containers::StringIterable& outputs, TransformFeedbackBufferMode bufferMode);
+        static void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDefault(AbstractShaderProgram& self, const Containers::StringIterable& outputs, TransformFeedbackBufferMode bufferMode);
         #ifdef CORRADE_TARGET_WINDOWS
         /* See the "nv-windows-dangling-transform-feedback-varying-names"
            workaround */
-        void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDanglingWorkaround(const Containers::StringIterable& outputs, TransformFeedbackBufferMode bufferMode);
+        static void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDanglingWorkaround(AbstractShaderProgram& self, const Containers::StringIterable& outputs, TransformFeedbackBufferMode bufferMode);
         #endif
         #endif
 

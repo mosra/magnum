@@ -1364,33 +1364,33 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 
         explicit Buffer(GLuint id, TargetHint targetHint, ObjectFlags flags) noexcept;
 
-        void MAGNUM_GL_LOCAL createImplementationDefault();
+        static void MAGNUM_GL_LOCAL createImplementationDefault(Buffer& self);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationDSA();
+        static void MAGNUM_GL_LOCAL createImplementationDSA(Buffer& self);
         #endif
 
-        void MAGNUM_GL_LOCAL setTargetHintImplementationDefault(TargetHint hint);
+        static void MAGNUM_GL_LOCAL setTargetHintImplementationDefault(Buffer& self, TargetHint hint);
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-        void MAGNUM_GL_LOCAL setTargetHintImplementationSwiftShader(TargetHint hint);
+        static void MAGNUM_GL_LOCAL setTargetHintImplementationSwiftShader(Buffer& self, TargetHint hint);
         #endif
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageImplementationDefault(Containers::ArrayView<const void> data, StorageFlags flags);
-        void MAGNUM_GL_LOCAL storageImplementationDSA(Containers::ArrayView<const void> data, StorageFlags flags);
+        static void MAGNUM_GL_LOCAL storageImplementationDefault(Buffer& self, Containers::ArrayView<const void> data, StorageFlags flags);
+        static void MAGNUM_GL_LOCAL storageImplementationDSA(Buffer& self, Containers::ArrayView<const void> data, StorageFlags flags);
         #endif
 
-        void MAGNUM_GL_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
+        static void MAGNUM_GL_LOCAL getParameterImplementationDefault(Buffer& self, GLenum value, GLint* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
+        static void MAGNUM_GL_LOCAL getParameterImplementationDSA(Buffer& self, GLenum value, GLint* data);
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20017)
-        void MAGNUM_GL_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getSubDataImplementationDefault(Buffer& self, GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        static void MAGNUM_GL_LOCAL getSubDataImplementationDSA(Buffer& self, GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
 
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1398,66 +1398,66 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         void MAGNUM_GL_LOCAL textureWorkaroundAppleAfter();
         #endif
 
-        void MAGNUM_GL_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
+        static void MAGNUM_GL_LOCAL dataImplementationDefault(Buffer& self, GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        void MAGNUM_GL_LOCAL dataImplementationApple(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
+        static void MAGNUM_GL_LOCAL dataImplementationApple(Buffer& self, GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
+        static void MAGNUM_GL_LOCAL dataImplementationDSA(Buffer& self, GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
 
-        void MAGNUM_GL_LOCAL subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        static void MAGNUM_GL_LOCAL subDataImplementationDefault(Buffer& self, GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        void MAGNUM_GL_LOCAL subDataImplementationApple(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        static void MAGNUM_GL_LOCAL subDataImplementationApple(Buffer& self, GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        static void MAGNUM_GL_LOCAL subDataImplementationDSA(Buffer& self, GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
 
-        void MAGNUM_GL_LOCAL invalidateImplementationNoOp();
+        static void MAGNUM_GL_LOCAL invalidateImplementationNoOp(Buffer& self);
         /* No need for Apple-specific invalidateImplementation, as
            GL_ARB_invalidate_subdata isn't supported */
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL invalidateImplementationARB();
+        static void MAGNUM_GL_LOCAL invalidateImplementationARB(Buffer& self);
         #endif
 
-        void MAGNUM_GL_LOCAL invalidateSubImplementationNoOp(GLintptr offset, GLsizeiptr length);
+        static void MAGNUM_GL_LOCAL invalidateSubImplementationNoOp(Buffer& self, GLintptr offset, GLsizeiptr length);
         /* No need for Apple-specific invalidateSubImplementation, as
            GL_ARB_invalidate_subdata isn't supported */
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length);
+        static void MAGNUM_GL_LOCAL invalidateSubImplementationARB(Buffer& self, GLintptr offset, GLsizeiptr length);
         #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL * mapImplementationDefault(MapAccess access);
+        static void MAGNUM_GL_LOCAL * mapImplementationDefault(Buffer& self, MapAccess access);
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        void MAGNUM_GL_LOCAL * mapImplementationApple(MapAccess access);
+        static void MAGNUM_GL_LOCAL * mapImplementationApple(Buffer& self, MapAccess access);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL * mapImplementationDSA(MapAccess access);
+        static void MAGNUM_GL_LOCAL * mapImplementationDSA(Buffer& self, MapAccess access);
         #endif
 
-        void MAGNUM_GL_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);
+        static void MAGNUM_GL_LOCAL * mapRangeImplementationDefault(Buffer& self, GLintptr offset, GLsizeiptr length, MapFlags access);
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        void MAGNUM_GL_LOCAL * mapRangeImplementationApple(GLintptr offset, GLsizeiptr length, MapFlags access);
+        static void MAGNUM_GL_LOCAL * mapRangeImplementationApple(Buffer& self, GLintptr offset, GLsizeiptr length, MapFlags access);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL * mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access);
+        static void MAGNUM_GL_LOCAL * mapRangeImplementationDSA(Buffer& self, GLintptr offset, GLsizeiptr length, MapFlags access);
         #endif
 
-        void MAGNUM_GL_LOCAL flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length);
+        static void MAGNUM_GL_LOCAL flushMappedRangeImplementationDefault(Buffer& self, GLintptr offset, GLsizeiptr length);
         /* No need for Apple-specific flushMappedRangeImplementation, as this
            doesn't seem to hit the crashy code path */
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length);
+        static void MAGNUM_GL_LOCAL flushMappedRangeImplementationDSA(Buffer& self, GLintptr offset, GLsizeiptr length);
         #endif
 
-        bool MAGNUM_GL_LOCAL unmapImplementationDefault();
+        static bool MAGNUM_GL_LOCAL unmapImplementationDefault(Buffer& self);
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        bool MAGNUM_GL_LOCAL unmapImplementationApple();
+        static bool MAGNUM_GL_LOCAL unmapImplementationApple(Buffer& self);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        bool MAGNUM_GL_LOCAL unmapImplementationDSA();
+        static bool MAGNUM_GL_LOCAL unmapImplementationDSA(Buffer& self);
         #endif
         #endif
 

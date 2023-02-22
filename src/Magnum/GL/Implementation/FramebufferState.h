@@ -27,13 +27,6 @@
 
 #include "Magnum/GL/Framebuffer.h"
 
-#ifdef CORRADE_TARGET_MSVC
-/* Otherwise the member function pointers will have different size based on
-   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
-   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
-#include "Magnum/GL/Renderbuffer.h"
-#endif
-
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct FramebufferState {
@@ -46,21 +39,21 @@ struct FramebufferState {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(*blitImplementation)(AbstractFramebuffer&, AbstractFramebuffer&, const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
     #endif
-    GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
+    GLenum(*checkStatusImplementation)(AbstractFramebuffer&, FramebufferTarget);
 
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractFramebuffer::*clearIImplementation)(GLenum, GLint, const GLint*);
-    void(AbstractFramebuffer::*clearUIImplementation)(GLenum, GLint, const GLuint*);
-    void(AbstractFramebuffer::*clearFImplementation)(GLenum, GLint, const GLfloat*);
-    void(AbstractFramebuffer::*clearFIImplementation)(GLenum, GLfloat, GLint);
+    void(*clearIImplementation)(AbstractFramebuffer&, GLenum, GLint, const GLint*);
+    void(*clearUIImplementation)(AbstractFramebuffer&, GLenum, GLint, const GLuint*);
+    void(*clearFImplementation)(AbstractFramebuffer&, GLenum, GLint, const GLfloat*);
+    void(*clearFIImplementation)(AbstractFramebuffer&, GLenum, GLfloat, GLint);
     #endif
 
-    void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
+    void(*drawBuffersImplementation)(AbstractFramebuffer&, GLsizei, const GLenum*);
     #ifndef MAGNUM_TARGET_GLES
-    void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);
+    void(*drawBufferImplementation)(AbstractFramebuffer&, GLenum);
     #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void(AbstractFramebuffer::*readBufferImplementation)(GLenum);
+    void(*readBufferImplementation)(AbstractFramebuffer&, GLenum);
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void(*copySub1DImplementation)(const Range2Di&, AbstractTexture&, Int, Int);
@@ -71,37 +64,37 @@ struct FramebufferState {
     void(*copySub3DImplementation)(const Range2Di&, AbstractTexture&, Int, const Vector3i&);
     #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void(AbstractFramebuffer::*invalidateImplementation)(GLsizei, const GLenum*);
+    void(*invalidateImplementation)(AbstractFramebuffer&, GLsizei, const GLenum*);
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
+    void(*invalidateSubImplementation)(AbstractFramebuffer&, GLsizei, const GLenum*, const Range2Di&);
     #endif
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(AbstractFramebuffer::*bindImplementation)(FramebufferTarget);
-    FramebufferTarget(AbstractFramebuffer::*bindInternalImplementation)();
+    void(*bindImplementation)(AbstractFramebuffer&, FramebufferTarget);
+    FramebufferTarget(*bindInternalImplementation)(AbstractFramebuffer&);
     #endif
 
-    GLenum(AbstractFramebuffer::*implementationColorReadFormatTypeImplementation)(GLenum what);
+    GLenum(*implementationColorReadFormatTypeImplementation)(AbstractFramebuffer&, GLenum what);
 
-    void(Framebuffer::*createImplementation)();
-    void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, GLuint);
+    void(*createImplementation)(Framebuffer&);
+    void(*renderbufferImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLuint);
     #ifndef MAGNUM_TARGET_GLES
-    void(Framebuffer::*texture1DImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
+    void(*texture1DImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLuint, GLint);
     #endif
-    void(Framebuffer::*texture2DImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
-    void(Framebuffer::*textureCubeMapImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
+    void(*texture2DImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
+    void(*textureCubeMapImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-    void(Framebuffer::*textureImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
-    void(Framebuffer::*layeredTextureCubeMapArrayImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
+    void(*textureImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLuint, GLint);
+    void(*layeredTextureCubeMapArrayImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLuint, GLint);
     #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void(Framebuffer::*textureLayerImplementation)(Framebuffer::BufferAttachment, GLuint, GLint, GLint);
+    void(*textureLayerImplementation)(Framebuffer&, Framebuffer::BufferAttachment, GLuint, GLint, GLint);
     #endif
 
-    void(Renderbuffer::*createRenderbufferImplementation)();
-    void(Renderbuffer::*renderbufferStorageImplementation)(RenderbufferFormat, const Vector2i&);
+    void(*createRenderbufferImplementation)(Renderbuffer&);
+    void(*renderbufferStorageImplementation)(Renderbuffer&, RenderbufferFormat, const Vector2i&);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
+    void(*renderbufferStorageMultisampleImplementation)(Renderbuffer&, GLsizei, RenderbufferFormat, const Vector2i&);
     #endif
 
     void(*readImplementation)(const Range2Di&, PixelFormat, PixelType, std::size_t, GLvoid*);

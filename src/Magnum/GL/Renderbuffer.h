@@ -247,26 +247,26 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
     private:
         explicit Renderbuffer(GLuint id, ObjectFlags flags) noexcept: _id{id}, _flags{flags} {}
 
-        void MAGNUM_GL_LOCAL createImplementationDefault();
+        static void MAGNUM_GL_LOCAL createImplementationDefault(Renderbuffer& self);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationDSA();
+        static void MAGNUM_GL_LOCAL createImplementationDSA(Renderbuffer& self);
         #endif
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
 
-        void MAGNUM_GL_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDefault(Renderbuffer& self, RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageImplementationDSA(Renderbuffer& self, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationDefault(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationDefault(Renderbuffer& self, GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationDSA(Renderbuffer& self, GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
         #elif !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationANGLE(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationNV(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationANGLE(Renderbuffer& self, GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        static void MAGNUM_GL_LOCAL storageMultisampleImplementationNV(Renderbuffer& self, GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
 
         void MAGNUM_GL_LOCAL bind();

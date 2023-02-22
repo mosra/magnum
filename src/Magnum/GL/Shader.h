@@ -770,9 +770,9 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         /* Used by addSource(Containers::String&&) */
         Shader& addSourceInternal(Containers::String&& source);
 
-        void MAGNUM_GL_LOCAL addSourceImplementationDefault(Containers::String&& source);
+        static void MAGNUM_GL_LOCAL addSourceImplementationDefault(Shader& self, Containers::String&& source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
-        void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(Containers::String&& source);
+        static void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(Shader& self, Containers::String&& source);
         #endif
 
         static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(Containers::String& message);

@@ -39,18 +39,18 @@ struct MeshState {
 
     void reset();
 
-    void(Mesh::*createImplementation)(bool);
-    void(Mesh::*moveConstructImplementation)(Mesh&&);
-    void(Mesh::*moveAssignImplementation)(Mesh&&);
-    void(Mesh::*destroyImplementation)(bool);
-    void(Mesh::*attributePointerImplementation)(Mesh::AttributeLayout&&);
+    void(*createImplementation)(Mesh&, bool);
+    void(*moveConstructImplementation)(Mesh&, Mesh&&);
+    void(*moveAssignImplementation)(Mesh&, Mesh&&);
+    void(*destroyImplementation)(Mesh&, bool);
+    void(*attributePointerImplementation)(Mesh&, Mesh::AttributeLayout&&);
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-    void(Mesh::*vertexAttribDivisorImplementation)(GLuint, GLuint);
+    void(*vertexAttribDivisorImplementation)(Mesh&, GLuint, GLuint);
     #endif
-    void(Mesh::*acquireVertexBufferImplementation)(Buffer&&);
-    void(Mesh::*bindIndexBufferImplementation)(Buffer&);
-    void(Mesh::*bindImplementation)();
-    void(Mesh::*unbindImplementation)();
+    void(*acquireVertexBufferImplementation)(Mesh&, Buffer&&);
+    void(*bindIndexBufferImplementation)(Mesh&, Buffer&);
+    void(*bindImplementation)(Mesh&);
+    void(*unbindImplementation)(Mesh&);
 
     #ifdef MAGNUM_TARGET_GLES
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
