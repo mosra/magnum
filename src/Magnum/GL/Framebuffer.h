@@ -41,6 +41,8 @@
 /* For label() / setLabel(), which used to be a std::string. Not ideal for the
    return type, but at least something. */
 #include <Corrade/Containers/StringStl.h>
+/* For mapForDraw(), which used to take a std::pair */
+#include <Corrade/Containers/Pair.h>
 #endif
 
 namespace Magnum { namespace GL {
@@ -526,6 +528,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         /**
          * @brief Map shader output to attachments
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
          * @p attachments is list of shader outputs mapped to framebuffer
          * color attachment IDs. Shader outputs which are not listed are not
@@ -546,7 +549,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
-        Framebuffer& mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
+        Framebuffer& mapForDraw(Containers::ArrayView<const Containers::Pair<UnsignedInt, DrawAttachment>> attachments);
+
+        /** @overload */
+        Framebuffer& mapForDraw(std::initializer_list<Containers::Pair<UnsignedInt, DrawAttachment>> attachments);
 
         /**
          * @brief Map shader output to an attachment
@@ -591,6 +597,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         /**
          * @brief Invalidate framebuffer
          * @param attachments       Attachments to invalidate
+         * @m_since_latest
          *
          * If extension @gl_extension{ARB,invalidate_subdata} (part of OpenGL
          * 4.3), extension @gl_extension{EXT,discard_framebuffer} in OpenGL ES
@@ -605,6 +612,13 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.
          */
+        void invalidate(Containers::ArrayView<const InvalidationAttachment> attachments);
+
+        /**
+         * @overload
+         * @requires_webgl20 Framebuffer invalidation is not available in WebGL
+         *      1.0.
+         */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
         #endif
 
@@ -613,17 +627,25 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @brief Invalidate framebuffer rectangle
          * @param attachments       Attachments to invalidate
          * @param rectangle         Rectangle to invalidate
+         * @m_since_latest
          *
          * If extension @gl_extension{ARB,invalidate_subdata} (part of OpenGL
          * 4.3) is not available, this function does nothing. If
          * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
+         * @see @ref invalidate(Containers::ArrayView<const InvalidationAttachment>),
          *      @fn_gl2_keyword{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
          *      eventually @fn_gl_keyword{InvalidateSubFramebuffer}
-         * @requires_gles30 Use @ref invalidate(std::initializer_list<InvalidationAttachment>)
+         * @requires_gles30 Use @ref invalidate(Containers::ArrayView<const InvalidationAttachment>)
          *      in OpenGL ES 2.0 instead.
+         * @requires_webgl20 Framebuffer invalidation is not available in WebGL
+         *      1.0.
+         */
+        void invalidate(Containers::ArrayView<const InvalidationAttachment> attachments, const Range2Di& rectangle);
+
+        /**
+         * @overload
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.
          */

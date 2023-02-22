@@ -449,6 +449,12 @@ See also:
     upload/download where needed. The compressed variant is still only GL 4.5+,
     as that needs the @ref CompressedImageView APIs to be aware of compression
     format properties, which isn't implemented yet.
+-   Added @ref GL::DefaultFramebuffer::mapForDraw(),
+    @ref GL::Framebuffer::mapForDraw(),
+    @ref GL::DefaultFramebuffer::invalidate() and
+    @ref GL::Framebuffer::invalidate() overloads taking a
+    @relativeref{Corrade,Containers::ArrayView} instead of a
+    @ref std::initializer_list
 -   Added @ref GL::Framebuffer::Status::IncompleteDimensions for ES2. This enum
     isn't available on ES3 or desktop GL, but NVidia drivers are known to emit
     it, which is why it got added.

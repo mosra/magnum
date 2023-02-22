@@ -27,6 +27,7 @@
 #include "Framebuffer.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/String.h>
 #endif
@@ -182,21 +183,25 @@ Framebuffer& Framebuffer::clearColor(const Int attachment, const Vector4ui& colo
 }
 #endif
 
-Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
+Framebuffer& Framebuffer::mapForDraw(const Containers::ArrayView<const Containers::Pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
     for(const auto& attachment: attachments)
-        if(attachment.first > max) max = attachment.first;
+        if(attachment.first() > max) max = attachment.first();
 
     /* Create linear array from associative */
     /** @todo C++14: use VLA to avoid heap allocation */
     static_assert(GL_NONE == 0, "Expecting zero GL_NONE for zero-initialization");
     Containers::Array<GLenum> _attachments{ValueInit, max+1};
     for(const auto& attachment: attachments)
-        _attachments[attachment.first] = GLenum(attachment.second);
+        _attachments[attachment.first()] = GLenum(attachment.second());
 
     (this->*Context::current().state().framebuffer.drawBuffersImplementation)(max+1, _attachments);
     return *this;
+}
+
+Framebuffer& Framebuffer::mapForDraw(std::initializer_list<Containers::Pair<UnsignedInt, DrawAttachment>> attachments) {
+    return mapForDraw(Containers::arrayView(attachments));
 }
 
 Framebuffer& Framebuffer::mapForDraw(const DrawAttachment attachment) {
@@ -214,7 +219,7 @@ Framebuffer& Framebuffer::mapForRead(const ColorAttachment attachment) {
     return *this;
 }
 
-void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
+void Framebuffer::invalidate(const Containers::ArrayView<const InvalidationAttachment> attachments) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
@@ -223,14 +228,22 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     (this->*Context::current().state().framebuffer.invalidateImplementation)(attachments.size(), _attachments);
 }
 
+void Framebuffer::invalidate(const std::initializer_list<InvalidationAttachment> attachments) {
+    invalidate(Containers::arrayView(attachments));
+}
+
 #ifndef MAGNUM_TARGET_GLES2
-void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
+void Framebuffer::invalidate(const Containers::ArrayView<const InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
     (this->*Context::current().state().framebuffer.invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
+}
+
+void Framebuffer::invalidate(const std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
+    invalidate(Containers::arrayView(attachments), rectangle);
 }
 #endif
 #endif

@@ -60,21 +60,25 @@ DefaultFramebuffer& DefaultFramebuffer::clearColor(const Vector4ui& color) {
 }
 #endif
 
-DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
+DefaultFramebuffer& DefaultFramebuffer::mapForDraw(const Containers::ArrayView<const Containers::Pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
     for(const auto& attachment: attachments)
-        if(attachment.first > max) max = attachment.first;
+        if(attachment.first() > max) max = attachment.first();
 
     /* Create linear array from associative */
     /** @todo C++14: use VLA to avoid heap allocation */
     static_assert(GL_NONE == 0, "Expecting zero GL_NONE for zero-initialization");
     Containers::Array<GLenum> _attachments{ValueInit, max+1};
     for(const auto& attachment: attachments)
-        _attachments[attachment.first] = GLenum(attachment.second);
+        _attachments[attachment.first()] = GLenum(attachment.second());
 
     (this->*Context::current().state().framebuffer.drawBuffersImplementation)(max+1, _attachments);
     return *this;
+}
+
+DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<Containers::Pair<UnsignedInt, DrawAttachment>> attachments) {
+    return mapForDraw(Containers::arrayView(attachments));
 }
 
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(const DrawAttachment attachment) {
@@ -92,7 +96,7 @@ DefaultFramebuffer& DefaultFramebuffer::mapForRead(const ReadAttachment attachme
     return *this;
 }
 
-void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
+void DefaultFramebuffer::invalidate(Containers::ArrayView<const InvalidationAttachment> attachments) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
@@ -100,16 +104,24 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
 
     (this->*Context::current().state().framebuffer.invalidateImplementation)(attachments.size(), _attachments);
 }
+
+void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments) {
+    invalidate(Containers::arrayView(attachments));
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
+void DefaultFramebuffer::invalidate(const Containers::ArrayView<const InvalidationAttachment> attachments, const Range2Di& rectangle) {
     /** @todo C++14: use VLA to avoid heap allocation */
     Containers::Array<GLenum> _attachments(attachments.size());
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
     (this->*Context::current().state().framebuffer.invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
+}
+
+void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle) {
+    invalidate(Containers::arrayView(attachments), rectangle);
 }
 #endif
 
