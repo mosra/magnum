@@ -678,11 +678,19 @@ unless it doesn't affect public API at all.
 
 @section developers-gl-functionality Checklist for adding / removing GL functionality
 
-1.  Check if given desktop functionality has equivalent in ES or WebGL, add
-    missing extensions if needed (see @ref developers-gl-extensions)
+1.  Check if given desktop functionality has equivalent in ES or WebGL:
+    -   check for similarly named APIs in `MagnumExternal/OpenGL/GLES2/flextGL.h`
+        and others
+    -   if not there or if there only in a core version and not an extension,
+        the extension may not be included --- check the cached `spec/gl.xml`
+        file inside the flextGL clone
+    -   for WebGL it might also be ANGLE-only, look for it in
+        https://chromium.googlesource.com/angle/angle/+/refs/heads/main/extensions
+    -   add missing extensions as described in @ref developers-gl-extensions
 2.  Check if there's a DSA / non-DSA way to do the thing. Omit the non-DSA way
-    if all drivers that support given functionality support DSA as well and
-    there's no corresponding non-DSA functionality in ES or WebGL.
+    if all drivers that support given functionality support DSA as well (i.e.,
+    the functionality was not introduced before DSA became core) and there's no
+    corresponding non-DSA functionality in ES or WebGL.
 3.  If the functionality uses different entry points / defines on desktop and
     ES / WebGL platforms, use @cpp #ifdef MAGNUM_TARGET_GLES @ce,
     @cpp #ifdef MAGNUM_TARGET_GLES2 @ce and @cpp #ifdef MAGNUM_TARGET_WEBGL @ce
@@ -692,6 +700,9 @@ unless it doesn't affect public API at all.
     separate code paths:
     -   new private and `MAGNUM_LOCAL` `thingImplementation*()` functions, each
         implementing one code path, preferably @cpp static @ce
+    -   ideally make the signature in a way that makes it possible to just
+        call the GL API directly via a function pointer and have
+        `thingImplementation*()` only for fallbackse
     -   a `thingImplementation` (member) function pointer in `src/Magnum/Implementation/SomeState.h`
         that gets populated in `src/Magnum/GL/Implementation/SomeState.cpp`
         based on extension / version availability
@@ -715,17 +726,19 @@ unless it doesn't affect public API at all.
         etc., use @c \@fn_gl_keyword{}  etc. to expose them in search if
         desired (see @ref coding-style-documentation-commands-ref)
     -   list version / extension requirements using @c \@requires_glXY etc.
-        (see @ref coding-style-documentation-commands-requires)
+        (see @ref coding-style-documentation-commands-requires), check how
+        similar requirements are listed elsewhere and try to match that
 8.  Add the function or limit query to the mapping table in `doc/opengl-mapping.dox`,
     possibly to multiple places
 9.  Update relevant extension support in tables in `doc/opengl-support.dox`
 10. Mention the new stuff in `doc/changelog.dox`
 11. @ref building-doc "Build documentation":
-    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
-        and verify there are no new warnings
+    -   run [doxygen.py](https://mcss.mosra.cz/documentation/doxygen/) on
+        `Doxyfile-mcss` and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
+    -   make sure links to GL APIs and extensions are working
 12. Build and test for relevant platforms locally (as the public CI can't test
-    GL things yet)
+    GL things in full, only the ES subset)
 13. Push to a temporary branch (e.g., `next`)
 14. Iterate until the CIs are green
 15. Merge to `master`
