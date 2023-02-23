@@ -4021,7 +4021,7 @@ template<class T, class U> constexpr SceneFieldData::SceneFieldData(const SceneF
 /* Assumes that fieldDataBitOffset and fieldDataSize is already bounds-checked,
    either by the StridedBitArrayView itself or by the offset-only constructor;
    and fieldArraySize as well by the constructor taking the 2D bit view */
-constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const void* const fieldData, const UnsignedByte fieldBitOffset, const std::size_t fieldSize, const std::ptrdiff_t fieldStride, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
+constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const void* const fieldData, const UnsignedByte fieldBitOffset, CORRADE_UNUSED const std::size_t fieldSize, const std::ptrdiff_t fieldStride, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
     _size{(CORRADE_CONSTEXPR_ASSERT(mappingData.size() == fieldSize,
         "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldSize), mappingData.size())},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, SceneFieldType::Bit),
