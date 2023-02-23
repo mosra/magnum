@@ -71,7 +71,8 @@ ShaderState::ShaderState(Context& context, Containers::StaticArrayView<Implement
     }
 
      if(context.isExtensionSupported<GL::Extensions::KHR::parallel_shader_compile>()) {
-        extensions[Extensions::KHR::parallel_shader_compile::Index] = Extensions::KHR::parallel_shader_compile::string();
+        extensions[Extensions::KHR::parallel_shader_compile::Index] =
+                   Extensions::KHR::parallel_shader_compile::string();
         completionStatusImplementation = glGetShaderiv;
     } else {
         completionStatusImplementation = &Shader::completionStatusImplementationFallback;

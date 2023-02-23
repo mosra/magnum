@@ -235,6 +235,8 @@ TextureState::TextureState(Context& context,
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
     } else if(context.isExtensionSupported<Extensions::EXT::texture_border_clamp>()) {
+        extensions[Extensions::EXT::texture_border_clamp::Index] =
+                   Extensions::EXT::texture_border_clamp::string();
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationEXT;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationEXT;
     } else {
@@ -247,6 +249,8 @@ TextureState::TextureState(Context& context,
         setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
     } else if(context.isExtensionSupported<Extensions::EXT::texture_buffer>()) {
+        extensions[Extensions::EXT::texture_buffer::Index] =
+                   Extensions::EXT::texture_buffer::string();
         setBufferImplementation = &BufferTexture::setBufferImplementationEXT;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationEXT;
     } else {
