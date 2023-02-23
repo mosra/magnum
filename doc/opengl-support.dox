@@ -215,7 +215,7 @@ GLSL 4.30                                   | done
 @gl_extension{ARB,texture_buffer_range}     | done
 @gl_extension{ARB,texture_query_levels}     | done (shading language only)
 @gl_extension{ARB,texture_storage_multisample} | done
-@gl_extension{ARB,texture_view}             | |
+@gl_extension{ARB,texture_view}             | done
 @gl_extension{ARB,vertex_attrib_binding}    | |
 
 @subsection opengl-support-44 OpenGL 4.4
@@ -475,7 +475,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,pvrtc_sRGB}               | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
-@gl_extension{EXT,texture_view}             | |
+@gl_extension{EXT,texture_view}             | done
 @gl_extension{EXT,draw_elements_base_vertex} | done
 @gl_extension{EXT,texture_norm16}           | done
 @gl_extension{EXT,texture_sRGB_R8}          | done
@@ -505,7 +505,7 @@ Extension                                   | Status
 @gl_extension{OES,stencil1}                 | done
 @gl_extension{OES,stencil4}                 | done
 @gl_extension{OES,texture_float_linear}     | done
-@gl_extension{OES,texture_view}             | |
+@gl_extension{OES,texture_view}             | done
 @gl_extension{OES,draw_elements_base_vertex} | done
 @gl_extension{OVR,multiview}                | |
 @gl_extension{OVR,multiview2}               | |

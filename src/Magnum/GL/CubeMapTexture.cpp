@@ -41,6 +41,10 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TextureState.h"
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/GL/CubeMapTextureArray.h"
+#endif
+
 namespace Magnum { namespace GL {
 
 static_assert(GL_TEXTURE_CUBE_MAP_POSITIVE_X - GL_TEXTURE_CUBE_MAP_POSITIVE_X == 0 &&
@@ -54,6 +58,30 @@ static_assert(GL_TEXTURE_CUBE_MAP_POSITIVE_X - GL_TEXTURE_CUBE_MAP_POSITIVE_X ==
 Vector2i CubeMapTexture::maxSize() {
     return Vector2i{Implementation::maxCubeMapTextureSideSize()};
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+CubeMapTexture CubeMapTexture::view(CubeMapTexture& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    CubeMapTexture out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, 0, 6);
+    return out;
+}
+
+CubeMapTexture CubeMapTexture::view(CubeMapTextureArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layer) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    CubeMapTexture out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layer, 6);
+    return out;
+}
+#endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Vector2i CubeMapTexture::imageSize(const Int level) {

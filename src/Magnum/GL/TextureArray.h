@@ -136,6 +136,86 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
+        /**
+         * @brief Create a view on another texture array
+         * @m_since_latest
+         *
+         * The @p internalFormat has to either match the format of @p original,
+         * or be compatible with it, such as having the same pixel size and
+         * other restrictions described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with @def_gl{TEXTURE_1D_ARRAY} or
+         *      @def_gl{TEXTURE_2D_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         * @requires_gles Texture views are not available in WebGL.
+         */
+        static TextureArray<dimensions> view(TextureArray<dimensions>& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layerOffset, Int layerCount);
+
+        /**
+         * @brief Create a view on a texture
+         * @m_since_latest
+         *
+         * The @p internalFormat has to either match the format of @p original,
+         * or be compatible with it, such as having the same pixel size and
+         * other restrictions described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with @def_gl{TEXTURE_1D_ARRAY} or
+         *      @def_gl{TEXTURE_2D_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         * @requires_gles Texture views are not available in WebGL.
+         */
+        static TextureArray<dimensions> view(Texture<dimensions>& original, TextureFormat internalFormat, Int levelOffset, Int levelCount);
+
+        /**
+         * @brief Create a view on a cube map texture
+         * @m_since_latest
+         *
+         * Enabled only on a @ref Texture2DArray. The @p internalFormat has to
+         * either match the format of @p original, or be compatible with it,
+         * such as having the same pixel size and other restrictions described
+         * in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with @def_gl{TEXTURE_2D_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         * @requires_gles Texture views are not available in WebGL.
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        #endif
+        static TextureArray<dimensions> view(CubeMapTexture& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layerOffset, Int layerCount);
+
+        /**
+         * @brief Create a view on a cube map texture array
+         * @m_since_latest
+         *
+         * Enabled only on a @ref Texture2DArray. The @p internalFormat has to
+         * either match the format of @p original, or be compatible with it,
+         * such as having the same pixel size and other restrictions described
+         * in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with @def_gl{TEXTURE_2D_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         * @requires_gles Texture views are not available in WebGL.
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        #endif
+        static TextureArray<dimensions> view(CubeMapTextureArray& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layerOffset, Int layerCount);
+        #endif
+
         /**
          * @brief Wrap existing OpenGL texture array object
          * @param id            OpenGL texture array ID
@@ -492,7 +572,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setStorage() for more information.
-         * @see @ref maxSize()
+         * @see @ref view(), @ref maxSize()
          */
         TextureArray<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const VectorTypeFor<dimensions+1, Int>& size) {
             DataHelper<dimensions+1>::setStorage(*this, levels, internalFormat, size);

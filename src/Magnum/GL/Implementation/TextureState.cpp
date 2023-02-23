@@ -255,6 +255,30 @@ TextureState::TextureState(Context& context,
     }
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Texture view implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::texture_view>()) {
+        extensions[Extensions::ARB::texture_view::Index] =
+                   Extensions::ARB::texture_view::string();
+        viewImplementation = glTextureView;
+    }
+    #else
+    if(context.isExtensionSupported<Extensions::EXT::texture_view>()) {
+        extensions[Extensions::EXT::texture_view::Index] =
+                   Extensions::EXT::texture_view::string();
+        viewImplementation = glTextureViewEXT;
+    } else if(context.isExtensionSupported<Extensions::OES::texture_view>()) {
+        extensions[Extensions::OES::texture_view::Index] =
+                   Extensions::OES::texture_view::string();
+        viewImplementation = glTextureViewOES;
+    }
+    #endif
+    else {
+        viewImplementation = nullptr;
+    }
+    #endif
+
     /* Data invalidation implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::invalidate_subdata>()) {

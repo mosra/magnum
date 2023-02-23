@@ -120,6 +120,40 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
         #endif
 
         /**
+         * @brief Create a view on another cube map texture array
+         * @m_since_latest
+         *
+         * The @p internalFormat has to either match the format of @p original,
+         * or be compatible with it, such as having the same pixel size and
+         * other restrictions described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with
+         *      @def_gl{TEXTURE_CUBE_MAP_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         */
+        static CubeMapTextureArray view(CubeMapTextureArray& original, TextureFormat internalFormat, Int levelOffset, Int levelCount, Int layerOffset, Int layerCount);
+
+        /**
+         * @brief Create a view on a cube map texture
+         * @m_since_latest
+         *
+         * The @p internalFormat has to either match the format of @p original,
+         * or be compatible with it, such as having the same pixel size and
+         * other restrictions described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with
+         *      @def_gl{TEXTURE_CUBE_MAP_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         */
+        static CubeMapTextureArray view(CubeMapTexture& original, TextureFormat internalFormat, Int levelOffset, Int levelCount);
+
+        /**
          * @brief Wrap existing OpenGL cube map array texture object
          * @param id            OpenGL cube map array texture ID
          * @param flags         Object creation flags
@@ -461,7 +495,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * Z coordinate of @p size must be multiple of 6.
          *
          * See @ref Texture::setStorage() for more information.
-         * @see @ref maxSize()
+         * @see @ref view(), @ref maxSize()
          */
         CubeMapTextureArray& setStorage(Int levels, TextureFormat internalFormat, const Vector3i& size) {
             DataHelper<3>::setStorage(*this, levels, internalFormat, size);

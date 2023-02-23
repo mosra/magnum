@@ -504,6 +504,12 @@ void AbstractTexture::setDepthStencilMode(const SamplerDepthStencilMode mode) {
 }
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractTexture::viewInternal(AbstractTexture& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
+    Context::current().state().texture.viewImplementation(_id, _target, original._id, GLenum(internalFormat), levelOffset, levelCount, layerOffset, layerCount);
+}
+#endif
+
 void AbstractTexture::invalidateImage(const Int level) {
     Context::current().state().texture.invalidateImageImplementation(*this, level);
 }

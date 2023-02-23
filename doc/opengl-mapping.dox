@@ -381,7 +381,7 @@ OpenGL function                         | Matching API
 @fn_gl{TexStorage2DMultisample}, \n `glTextureStorage2DMultisample()`, \n @fn_gl{TexStorage3DMultisample}, \n `glTextureStorage3DMultisample()` | @ref GL::MultisampleTexture::setStorage()
 @fn_gl{TexSubImage1D}, \n `glTextureSubImage1D()`, \n @fn_gl{TexSubImage2D}, \n `glTextureSubImage2D()`, \n @fn_gl{TexSubImage3D}, \n `glTextureSubImage3D()` | @ref GL::Texture::setSubImage(), \n @ref GL::TextureArray::setSubImage(), \n @ref GL::CubeMapTexture::setSubImage(), \n @ref GL::CubeMapTextureArray::setSubImage(), \n @ref GL::RectangleTexture::setSubImage()
 @fn_gl{TextureBarrier}                  | @ref GL::Renderer::setTextureBarrier()
-@fn_gl{TextureView}                     | |
+@fn_gl{TextureView}                     | @ref GL::Texture::view(), \n @ref GL::TextureArray::view(), \n @ref GL::CubeMapTexture::view(), \n @ref GL::CubeMapTextureArray::view(), @ref GL::MultisampleTexture::view(), \n @ref GL::RectangleTexture::view()
 @fn_gl{TransformFeedbackBufferBase}, \n @fn_gl{TransformFeedbackBufferRange} | @ref GL::TransformFeedback::attachBuffer(), \n @ref GL::TransformFeedback::attachBuffers()
 @fn_gl{TransformFeedbackVaryings}       | @ref GL::AbstractShaderProgram::setTransformFeedbackOutputs()
 

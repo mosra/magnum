@@ -97,6 +97,10 @@ See also:
 -   Implemented the GL 4.3 @gl_extension{ARB,framebuffer_no_attachments}
     extension and matching GLES 3.1 functionality, exposed as
     @ref GL::Framebuffer::setDefaultSize() and related APIs
+-   Implemented the GL 4.3 @gl_extension{ARB,texture_view} extension and
+    matching @gl_extension{OES,texture_view} and @gl_extension{EXT,texture_view}
+    extensions on GLES 3.1+, exposed as @ref GL::Texture::view() and similar
+    APIs on other texture types
 -   Implemented @gl_extension{EXT,texture_norm16} and
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all

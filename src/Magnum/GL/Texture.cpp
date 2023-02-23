@@ -40,6 +40,12 @@
 #include "Magnum/GL/BufferImage.h"
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/GL/TextureArray.h"
+#include "Magnum/GL/CubeMapTexture.h"
+#include "Magnum/GL/CubeMapTextureArray.h"
+#endif
+
 namespace Magnum { namespace GL {
 
 namespace Implementation {
@@ -64,6 +70,21 @@ template<> MAGNUM_GL_EXPORT Vector3i maxTextureSize<3>() {
 #endif
 
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+template<UnsignedInt dimensions> Texture<dimensions> Texture<dimensions>::view(Texture<dimensions>& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture<dimensions> out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, 0, 1);
+    return out;
+}
+
+/* Other view() overloads at the end */
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::image(const Int level, Image<dimensions>&& image) {
@@ -120,6 +141,60 @@ template class MAGNUM_GL_EXPORT Texture<1>;
 #if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_WEBGL)
 template class MAGNUM_GL_EXPORT Texture<2>;
 template class MAGNUM_GL_EXPORT Texture<3>;
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+/* Because these refer to concrete types different than the class itself, they
+   have to be after the explicit type instantiations. Additionally, on Windows
+   (MSVC, clang-cl and MinGw) these need an explicit export otherwise the
+   symbol doesn't get exported.
+
+   Other view() overloads at the top. */
+#ifndef MAGNUM_TARGET_GLES
+template<> template<> MAGNUM_GL_EXPORT Texture1D Texture1D::view(Texture1DArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layer) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture1D out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layer, 1);
+    return out;
+}
+#endif
+
+template<> template<> MAGNUM_GL_EXPORT Texture2D Texture2D::view(Texture2DArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layer) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture2D out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layer, 1);
+    return out;
+}
+
+template<> template<> MAGNUM_GL_EXPORT Texture2D Texture2D::view(CubeMapTexture& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layer) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture2D out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layer, 1);
+    return out;
+}
+
+template<> template<> MAGNUM_GL_EXPORT Texture2D Texture2D::view(CubeMapTextureArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layer) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture2D out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layer, 1);
+    return out;
+}
 #endif
 
 }}

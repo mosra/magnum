@@ -122,6 +122,66 @@ template<UnsignedInt dimensions> class MAGNUM_GL_EXPORT MultisampleTexture: publ
         }
 
         /**
+         * @brief Create a view on a multisample texture
+         * @m_since_latest
+         *
+         * The @p internalFormat has to either match the format of @p original,
+         * or be compatible with it, such as having the same pixel size and
+         * other restrictions described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with
+         *      @def_gl{TEXTURE_2D_MULTISAMPLE} or
+         *      @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         */
+        static MultisampleTexture<dimensions> view(MultisampleTexture2D& original, TextureFormat internalFormat);
+
+        /**
+         * @brief Create a view on a layer of a multisample texture array
+         * @m_since_latest
+         *
+         * Enabled only on a @ref MultisampleTexture2D. The @p internalFormat
+         * has to either match the format of @p original, or be compatible with
+         * it, such as having the same pixel size and other restrictions
+         * described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with
+         *      @def_gl{TEXTURE_2D_MULTISAMPLE}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        #endif
+        static MultisampleTexture<dimensions> view(MultisampleTexture2DArray& original, TextureFormat internalFormat, Int layer);
+
+        /**
+         * @brief Create a view on a multisample texture array
+         * @m_since_latest
+         *
+         * Enabled only on a @ref MultisampleTexture2DArray. The
+         * @p internalFormat has to either match the format of @p original, or
+         * be compatible with it, such as having the same pixel size and other
+         * restrictions described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with
+         *      @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @gl_extension{OES,texture_view} or
+         *      @gl_extension{EXT,texture_view}
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        #endif
+        static MultisampleTexture<dimensions> view(MultisampleTexture2DArray& original, TextureFormat internalFormat, Int layerOffset, Int layerCount);
+
+        /**
          * @brief Wrap existing OpenGL multisample texture object
          * @param id            OpenGL multisample texture ID
          * @param flags         Object creation flags
@@ -259,8 +319,8 @@ template<UnsignedInt dimensions> class MAGNUM_GL_EXPORT MultisampleTexture: publ
          * OpenGL 4.3) is not available, the texture is bound and the feature
          * is emulated using plain @gl_extension{ARB,texture_multisample}
          * functionality.
-         * @see @ref maxSize(), @ref maxColorSamples(), @ref maxDepthSamples(),
-         *      @ref maxIntegerSamples(), @fn_gl2_keyword{TextureStorage2DMultisample,TexStorage2DMultisample} /
+         * @see @ref view(), @ref maxSize(), @ref maxColorSamples(),
+         *      @ref maxDepthSamples(), @ref maxIntegerSamples(), @fn_gl2_keyword{TextureStorage2DMultisample,TexStorage2DMultisample} /
          *      @fn_gl2_keyword{TextureStorage3DMultisample,TexStorage3DMultisample},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
          *      and @fn_gl_keyword{TexStorage2DMultisample} / @fn_gl_keyword{TexStorage3DMultisample}

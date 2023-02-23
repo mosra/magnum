@@ -48,6 +48,10 @@
 #include <Corrade/Containers/String.h>
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/GL/CubeMapTextureArray.h"
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct CubeMapTextureGLTest: OpenGLTester {
@@ -85,6 +89,11 @@ struct CubeMapTextureGLTest: OpenGLTester {
     #endif
 
     void storageImageSize();
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void view();
+    void viewOnArray();
+    #endif
 
     void storage();
     void image();
@@ -348,7 +357,13 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::samplingBorder,
               #endif
 
-              &CubeMapTextureGLTest::storageImageSize});
+              &CubeMapTextureGLTest::storageImageSize,
+
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &CubeMapTextureGLTest::view,
+              &CubeMapTextureGLTest::viewOnArray
+              #endif
+              });
 
     addInstancedTests({
         &CubeMapTextureGLTest::storage,
@@ -735,6 +750,52 @@ void CubeMapTextureGLTest::storageImageSize() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     #endif
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void CubeMapTextureGLTest::view() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
+        CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_view>() &&
+       !Context::current().isExtensionSupported<Extensions::OES::texture_view>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::texture_view::string() << "nor" << Extensions::OES::texture_view::string() << "is supported.");
+    #endif
+
+    CubeMapTexture texture;
+    texture.setStorage(5, TextureFormat::RGBA8, {32, 32});
+
+    auto view = CubeMapTexture::view(texture, TextureFormat::RGBA8, 2, 3);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(view.imageSize(0), (Vector2i{8, 8}));
+    CORRADE_COMPARE(view.imageSize(1), (Vector2i{4, 4}));
+    CORRADE_COMPARE(view.imageSize(2), (Vector2i{2, 2}));
+}
+
+void CubeMapTextureGLTest::viewOnArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
+        CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_view>() &&
+       !Context::current().isExtensionSupported<Extensions::OES::texture_view>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::texture_view::string() << "nor" << Extensions::OES::texture_view::string() << "is supported.");
+    #endif
+
+    CubeMapTextureArray texture;
+    texture.setStorage(5, TextureFormat::RGBA8, {32, 32, 12});
+
+    auto view = CubeMapTexture::view(texture, TextureFormat::RGBA8, 2, 3, 6);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(view.imageSize(0), (Vector2i{8, 8}));
+    CORRADE_COMPARE(view.imageSize(1), (Vector2i{4, 4}));
+    CORRADE_COMPARE(view.imageSize(2), (Vector2i{2, 2}));
+}
+#endif
 
 void CubeMapTextureGLTest::storage() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);

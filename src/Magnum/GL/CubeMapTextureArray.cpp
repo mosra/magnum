@@ -31,6 +31,7 @@
 #include "Magnum/Image.h"
 #include "Magnum/GL/BufferImage.h"
 #include "Magnum/GL/Context.h"
+#include "Magnum/GL/CubeMapTexture.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/maxTextureSize.h"
 
@@ -47,6 +48,28 @@ Vector3i CubeMapTextureArray::maxSize() {
 
     return Vector3i{Vector2i{Implementation::maxCubeMapTextureSideSize()},
                              Implementation::maxTextureArrayLayers()};
+}
+
+CubeMapTextureArray CubeMapTextureArray::view(CubeMapTextureArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    CubeMapTextureArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
+    return out;
+}
+
+CubeMapTextureArray CubeMapTextureArray::view(CubeMapTexture& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    CubeMapTextureArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, 0, 6);
+    return out;
 }
 
 #ifndef MAGNUM_TARGET_GLES

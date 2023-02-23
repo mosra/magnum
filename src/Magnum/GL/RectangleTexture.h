@@ -102,6 +102,20 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
+         * @brief Create a view on another rectangle texture
+         * @m_since_latest
+         *
+         * The @p internalFormat has to either match the format of @p original,
+         * or be compatible with it, such as having the same pixel size and
+         * other restrictions described in the OpenGL specification.
+         * @see @ref setStorage(), @fn_gl_keyword{GenTextures},
+         *      @fn_gl_keyword{TextureView} with
+         *      @def_gl{TEXTURE_RECTANGLE}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_view}
+         */
+        static RectangleTexture view(RectangleTexture& original, TextureFormat internalFormat);
+
+        /**
          * @brief Wrap existing OpenGL rectangle texture object
          * @param id            OpenGL rectangle texture ID
          * @param flags         Object creation flags

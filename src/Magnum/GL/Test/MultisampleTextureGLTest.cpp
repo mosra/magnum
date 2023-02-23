@@ -59,6 +59,11 @@ struct MultisampleTextureGLTest: OpenGLTester {
     void storage2D();
     void storage2DArray();
 
+    void view2D();
+    void view2DOnArray();
+    void view2DArray();
+    void view2DArrayOnNonArray();
+
     void invalidateImage2D();
     void invalidateImage2DArray();
 
@@ -86,6 +91,11 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
 
               &MultisampleTextureGLTest::storage2D,
               &MultisampleTextureGLTest::storage2DArray,
+
+              &MultisampleTextureGLTest::view2D,
+              &MultisampleTextureGLTest::view2DOnArray,
+              &MultisampleTextureGLTest::view2DArray,
+              &MultisampleTextureGLTest::view2DArrayOnNonArray,
 
               &MultisampleTextureGLTest::invalidateImage2D,
               &MultisampleTextureGLTest::invalidateImage2DArray,
@@ -397,6 +407,100 @@ void MultisampleTextureGLTest::storage2DArray() {
     CORRADE_COMPARE(texture.imageSize(), Vector3i(16, 16, 5));
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MultisampleTextureGLTest::view2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
+        CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_view>() &&
+       !Context::current().isExtensionSupported<Extensions::OES::texture_view>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::texture_view::string() << "nor" << Extensions::OES::texture_view::string() << "is supported.");
+    #endif
+
+    MultisampleTexture2D texture;
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {32, 8});
+
+    auto view = MultisampleTexture2D::view(texture, TextureFormat::RGBA8);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(view.imageSize(), (Vector2i{32, 8}));
+}
+
+void MultisampleTextureGLTest::view2DOnArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
+        CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_view>() &&
+       !Context::current().isExtensionSupported<Extensions::OES::texture_view>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::texture_view::string() << "nor" << Extensions::OES::texture_view::string() << "is supported.");
+    #endif
+
+    MultisampleTexture2DArray texture;
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {32, 8, 7});
+
+    auto view = MultisampleTexture2D::view(texture, TextureFormat::RGBA8, 4);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(view.imageSize(), (Vector2i{32, 8}));
+}
+
+void MultisampleTextureGLTest::view2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
+        CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_view>() &&
+       !Context::current().isExtensionSupported<Extensions::OES::texture_view>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::texture_view::string() << "nor" << Extensions::OES::texture_view::string() << "is supported.");
+    #endif
+
+    MultisampleTexture2DArray texture;
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {32, 8, 7});
+
+    auto view = MultisampleTexture2DArray::view(texture, TextureFormat::RGBA8, 4, 3);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(view.imageSize(), (Vector3i{32, 8, 3}));
+}
+
+void MultisampleTextureGLTest::view2DArrayOnNonArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
+        CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_view>() &&
+       !Context::current().isExtensionSupported<Extensions::OES::texture_view>())
+        CORRADE_SKIP("Neither" << Extensions::EXT::texture_view::string() << "nor" << Extensions::OES::texture_view::string() << "is supported.");
+    #endif
+
+    MultisampleTexture2D texture;
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {32, 8});
+
+    auto view = MultisampleTexture2DArray::view(texture, TextureFormat::RGBA8);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(view.imageSize(), (Vector3i{32, 8, 1}));
 }
 
 void MultisampleTextureGLTest::invalidateImage2D() {

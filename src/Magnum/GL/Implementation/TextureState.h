@@ -118,6 +118,9 @@ struct TextureState {
     void(*subImage3DImplementation)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
     void(*compressedSubImage3DImplementation)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&, CompressedPixelFormat, const GLvoid*, GLsizei);
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void(APIENTRY *viewImplementation)(GLuint, GLenum, GLuint, GLenum, GLuint, GLuint, GLuint, GLuint);
+    #endif
     void(*invalidateImageImplementation)(AbstractTexture&, GLint);
     void(*invalidateSubImageImplementation)(AbstractTexture&, GLint, const Vector3i&, const Vector3i&);
 

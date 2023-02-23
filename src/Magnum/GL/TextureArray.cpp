@@ -39,6 +39,12 @@
 #include "Magnum/GL/BufferImage.h"
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/CubeMapTexture.h"
+#include "Magnum/GL/CubeMapTextureArray.h"
+#endif
+
 namespace Magnum { namespace GL {
 
 namespace {
@@ -56,6 +62,32 @@ template<UnsignedInt dimensions> VectorTypeFor<dimensions+1, Int> TextureArray<d
     return {typename VectorOrScalar<dimensions>::Type{Implementation::maxTextureSideSize()},
             Implementation::maxTextureArrayLayers()};
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+template<UnsignedInt dimensions> TextureArray<dimensions> TextureArray<dimensions>::view(TextureArray<dimensions>& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    TextureArray<dimensions> out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
+    return out;
+}
+
+template<UnsignedInt dimensions> TextureArray<dimensions> TextureArray<dimensions>::view(Texture<dimensions>& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    TextureArray<dimensions> out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, 0, 1);
+    return out;
+}
+
+/* Other view() overloads at the end */
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> Image<dimensions+1> TextureArray<dimensions>::image(const Int level, Image<dimensions+1>&& image) {
@@ -110,6 +142,36 @@ template<UnsignedInt dimensions> TextureArray<dimensions>& TextureArray<dimensio
 template class MAGNUM_GL_EXPORT TextureArray<1>;
 #endif
 template class MAGNUM_GL_EXPORT TextureArray<2>;
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+/* Because these refer to concrete types different than the class itself, they
+   have to be after the explicit type instantiations. Additionally, on Windows
+   (MSVC, clang-cl and MinGw) these need an explicit export otherwise the
+   symbol doesn't get exported.
+
+   Other view() overloads at the top. */
+template<> template<> MAGNUM_GL_EXPORT Texture2DArray Texture2DArray::view(CubeMapTexture& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture2DArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
+    return out;
+}
+
+template<> template<> MAGNUM_GL_EXPORT Texture2DArray Texture2DArray::view(CubeMapTextureArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture2DArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
+    return out;
+}
+#endif
 
 }}
 #endif

@@ -62,6 +62,8 @@ struct RectangleTextureGLTest: OpenGLTester {
 
     void storage();
 
+    void view();
+
     void image();
     void imageBuffer();
     void imageQueryView();
@@ -134,7 +136,9 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::samplingSwizzle,
               &RectangleTextureGLTest::samplingDepthStencilMode,
 
-              &RectangleTextureGLTest::storage});
+              &RectangleTextureGLTest::storage,
+
+              &RectangleTextureGLTest::view});
 
     addInstancedTests({
         &RectangleTextureGLTest::image,
@@ -352,6 +356,18 @@ void RectangleTextureGLTest::storage() {
     CORRADE_COMPARE(texture.imageSize(), Vector2i(32));
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void RectangleTextureGLTest::view() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
+        CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
+
+    RectangleTexture texture;
+    texture.setStorage(TextureFormat::RGBA8, {32, 8});
+
+    auto view = RectangleTexture::view(texture, TextureFormat::RGBA8);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(view.imageSize(), (Vector2i{32, 8}));
 }
 
 void RectangleTextureGLTest::image() {

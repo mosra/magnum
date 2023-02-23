@@ -52,6 +52,17 @@ Vector2i RectangleTexture::maxSize() {
     return Vector2i{value};
 }
 
+RectangleTexture RectangleTexture::view(RectangleTexture& original, const TextureFormat internalFormat) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    RectangleTexture out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, 0, 1, 0, 1);
+    return out;
+}
+
 Image2D RectangleTexture::image(Image2D&& image) {
     this->image(image);
     return std::move(image);
