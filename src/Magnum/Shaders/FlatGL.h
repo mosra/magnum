@@ -1409,10 +1409,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
          * @ref setJointMatrices() / @ref setJointMatrix(). If
          * @ref Flag::UniformBuffers is set, @p count describes size of a
          * @ref TransformationUniform2D / @ref TransformationUniform3D buffer
-         * bound with @ref bindJointBuffer(); as uniform buffers are required
-         * to have a statically defined size. The per-vertex joints then index
-         * into the array offset by @ref FlatDrawUniform::jointOffset. If
-         * @p count is @cpp 0 @ce, skinning is not performed.
+         * bound with @ref bindJointBuffer(). Uniform buffers have a statically
+         * defined size and @cpp count*sizeof(TransformationUniform2D) @ce /
+         * @cpp count*sizeof(TransformationUniform3D) @ce has to be within
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
+         *
+         * The per-vertex joints then index into the array offset by
+         * @ref FlatDrawUniform::jointOffset. If @p count is @cpp 0 @ce,
+         * skinning is not performed.
          *
          * The @p perVertexCount and @p secondaryPerVertexCount then describe
          * how many components are taken from @ref JointIds / @ref Weights and
@@ -1450,9 +1454,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref FlatMaterialUniform buffer bound with
-         * @ref bindMaterialBuffer(); as uniform buffers are required to have a
-         * statically defined size. The per-draw materials are then specified
-         * via @ref FlatDrawUniform::materialId. Default value is @cpp 1 @ce.
+         * @ref bindMaterialBuffer(). Uniform buffers have a statically defined
+         * size and @cpp count*sizeof(FlatMaterialUniform) @ce has to be within
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
+         *
+         * The per-draw materials are then specified via
+         * @ref FlatDrawUniform::materialId. Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setDrawCount(),
@@ -1461,8 +1468,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        Configuration& setMaterialCount(UnsignedInt materialCount) {
-            _materialCount = materialCount;
+        Configuration& setMaterialCount(UnsignedInt count) {
+            _materialCount = count;
             return *this;
         }
 
@@ -1482,10 +1489,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
          * @ref TransformationProjectionUniform3D /
          * @ref FlatDrawUniform / @ref TextureTransformationUniform buffer
          * bound with @ref bindTransformationProjectionBuffer(),
-         * @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer(); as
-         * uniform buffers are required to have a statically defined size. The
-         * draw offset is then set via @ref setDrawOffset(). Default value is
-         * @cpp 1 @ce.
+         * @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer().
+         * Uniform buffers have a statically defined size and the maximum of
+         * @cpp count*sizeof(TransformationProjectionUniform2D) @ce /
+         * @cpp count*sizeof(TransformationProjectionUniform3D) @ce,
+         * @cpp count*sizeof(FlatDrawUniform) @ce and
+         * @cpp count*sizeof(TextureTransformationUniform) @ce has to be within
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
+         *
+         * The draw offset is then set via @ref setDrawOffset(). Default value
+         * is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setMaterialCount(),
@@ -1494,8 +1507,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL<dimensions>:
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        Configuration& setDrawCount(UnsignedInt drawCount) {
-            _drawCount = drawCount;
+        Configuration& setDrawCount(UnsignedInt count) {
+            _drawCount = count;
             return *this;
         }
         #endif

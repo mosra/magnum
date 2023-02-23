@@ -673,10 +673,13 @@ template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Config
          *
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref DistanceFieldVectorMaterialUniform buffer bound with
-         * @ref bindMaterialBuffer(); as uniform buffers are required to have a
-         * statically defined size. The per-draw materials are then specified
-         * via @ref DistanceFieldVectorDrawUniform::materialId. Default value
-         * is @cpp 1 @ce.
+         * @ref bindMaterialBuffer(). Uniform buffers have a statically defined
+         * size and @cpp count*sizeof(DistanceFieldVectorMaterialUniform) @ce
+         * has to be within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
+         *
+         * The per-draw materials are then specified via
+         * @ref DistanceFieldVectorDrawUniform::materialId. Default value is
+         * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setDrawCount(),
@@ -685,8 +688,8 @@ template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Config
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        Configuration& setMaterialCount(UnsignedInt materialCount) {
-            _materialCount = materialCount;
+        Configuration& setMaterialCount(UnsignedInt count) {
+            _materialCount = count;
             return *this;
         }
 
@@ -707,9 +710,16 @@ template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Config
          * @ref DistanceFieldVectorDrawUniform /
          * @ref TextureTransformationUniform buffer bound with
          * @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer() and
-         * @ref bindTextureTransformationBuffer(); as uniform buffers are
-         * required to have a statically defined size. The draw offset is then
-         * set via @ref setDrawOffset(). Default value is @cpp 1 @ce.
+         * @ref bindTextureTransformationBuffer(). Uniform buffers have a
+         * statically defined size and the maximum of
+         * @cpp count*sizeof(TransformationProjectionUniform2D) @ce /
+         * @cpp count*sizeof(TransformationProjectionUniform3D) @ce,
+         * @cpp count*sizeof(DistanceFieldVectorDrawUniform) @ce and
+         * @cpp count*sizeof(TextureTransformationUniform) @ce has to be within
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
+         *
+         * The draw offset is then set via @ref setDrawOffset(). Default value
+         * is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setMaterialCount(),
@@ -718,8 +728,8 @@ template<UnsignedInt dimensions> class DistanceFieldVectorGL<dimensions>::Config
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        Configuration& setDrawCount(UnsignedInt drawCount) {
-            _drawCount = drawCount;
+        Configuration& setDrawCount(UnsignedInt count) {
+            _drawCount = count;
             return *this;
         }
         #endif

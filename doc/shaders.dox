@@ -198,7 +198,9 @@ like this, uniform upload and binding is the same as before:
     and deduplicated among several buffers is to maximize use of that memory.
     With that you should always be able to submit at least 256 draws at once as
     the biggest per-draw uniform structure used by builtin shaders has a size
-    of a 4x4 matrix.
+    of a 4x4 matrix. See documentation of
+    @ref Shaders::FlatGL::Configuration::setDrawCount() "Shaders::*::Configuration::setDrawCount()"
+    and related APIs of a particular shader for concrete limits.
 @par
     For larger batches the expected workflow is to still upload everything at
     once but then bind and draw smaller (and properly aligned) subranges that

@@ -476,9 +476,14 @@ template<UnsignedInt dimensions> class VertexColorGL<dimensions>::Configuration 
          * If @ref Flag::UniformBuffers is set, describes size of a
          * @ref TransformationProjectionUniform2D /
          * @ref TransformationProjectionUniform3D buffer bound with
-         * @ref bindTransformationProjectionBuffer(); as uniform buffers are
-         * required to have a statically defined size. The draw offset is then
-         * set via @ref setDrawOffset(). Default value is @cpp 1 @ce.
+         * @ref bindTransformationProjectionBuffer(). Uniform buffers have a
+         * statically defined size and
+         * @cpp count*sizeof(TransformationProjectionUniform2D) @ce /,
+         * @cpp count*sizeof(TransformationProjectionUniform3D) @ce has to be
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
+         *
+         * The draw offset is then set via @ref setDrawOffset(). Default value
+         * is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref VertexColorGL::drawCount()
@@ -486,8 +491,8 @@ template<UnsignedInt dimensions> class VertexColorGL<dimensions>::Configuration 
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
-        Configuration& setDrawCount(UnsignedInt drawCount) {
-            _drawCount = drawCount;
+        Configuration& setDrawCount(UnsignedInt count) {
+            _drawCount = count;
             return *this;
         }
         #endif
