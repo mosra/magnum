@@ -733,6 +733,9 @@ See also:
 -   @ref Trade::ObjImporter "ObjImporter" uses exceptions internally and needs
     an explicit exception-enabling flag when built with Emscripten 1.39.0 and
     newer
+-   It's now possible to use `<PackageName>_ROOT` to point to install locations
+    of dependencies such as Corrade on CMake 3.12+, in addition to putting them
+    all together inside `CMAKE_PREFIX_PATH`. See also [mosra/magnum#614](https://github.com/mosra/magnum/issues/614).
 -   On CMake 3.16 and newer, `FindMagnum.cmake` can provide additional details
     if some component is not found.
 -   The Homebrew package now uses `std_cmake_args` instead of hardcoded build

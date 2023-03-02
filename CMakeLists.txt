@@ -39,6 +39,11 @@ endif()
 if(POLICY CMP0071)
     cmake_policy(SET CMP0071 NEW)
 endif()
+# Allow <PackageName>_ROOT to be used on 3.12+ to point to per-package install
+# locations that find_package(PackageName) subsequently picks up
+if(POLICY CMP0074)
+    cmake_policy(SET CMP0074 NEW)
+endif()
 # Superprojects can use just set(MAGNUM_WITH_BLAH ON) without FORCE CACHE on
 # 3.13+
 if(POLICY CMP0077)

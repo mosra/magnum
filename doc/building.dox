@@ -371,7 +371,9 @@ See @ref building-features "below" for additional configuration options.
 If you have the dependencies installed in non-standard location (other than
 `/usr`, e.g. `/home/xyz/projects`), set `CMAKE_PREFIX_PATH` to that directory
 to help CMake find them. You can enter more different dirs if you separate them
-with semicolons.
+with semicolons. On CMake 3.12+ you can also use `<PackageName>_ROOT` variables
+to point to dependency-specific locations, e.g.
+`-DCorrade_ROOT=/home/xyz/projects/corrade-install`.
 
 Also, if you plan to install the library to non-standard location, you might
 want to set `CMAKE_INSTALL_RPATH` to `lib/` subdir of given prefix (e.g.
@@ -392,7 +394,7 @@ want to set `CMAKE_INSTALL_RPATH` to `lib/` subdir of given prefix (e.g.
 
 On Windows you can use MSVC, clang-cl or the MinGW-w64 compiler. It's then up
 to you whether you will use QtCreator, Visual Studio or another IDE or do the
-build from a command line. Note that for most convenient usage it's best use
+build from a command line. Note that for most convenient usage it's best to use
 some dedicated directory (e.g. `C:/Sys`) for installing dependencies instead of
 putting each dependency to its own directory in `C:/Program Files` or
 elsewhere. Then you can just add its `bin/` subdir (e.g. `C:/Sys/bin`) to
@@ -403,7 +405,9 @@ prepared for exactly this.
 Then, when running CMake, set `CMAKE_PREFIX_PATH` and `CMAKE_INSTALL_PREFIX`
 value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`). If you have
 dependencies scattered across multiple locations, enter them into
-`CMAKE_PREFIX_PATH` separated with semicolons.
+`CMAKE_PREFIX_PATH` separated with semicolons. On CMake 3.12+ you can also
+use `<PackageName>_ROOT` variables to point to dependency-specific locations,
+e.g. `-DCorrade_ROOT=C:/projects/corrade-install`.
 
 @subsubsection building-windows-msvc Using Visual Studio
 
