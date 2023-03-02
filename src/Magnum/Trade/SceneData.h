@@ -31,6 +31,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Utility/Macros.h> /* CORRADE_UNUSED */
 
 #include "Magnum/Trade/Data.h"
 #include "Magnum/Trade/Trade.h"
@@ -38,7 +39,6 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/StlForwardVector.h>
-#include <Corrade/Utility/Macros.h>
 #endif
 
 namespace Magnum { namespace Trade {
