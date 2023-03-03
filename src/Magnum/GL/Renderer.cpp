@@ -149,18 +149,8 @@ void Renderer::setPointSize(const Float size) {
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void Renderer::setMinSampleShading(const Float value) {
-    (Context::current().state().renderer.minSampleShadingImplementation)(value);
+    Context::current().state().renderer.minSampleShadingImplementation(value);
 }
-
-void Renderer::minSampleShadingImplementationDefault(const GLfloat value) {
-    glMinSampleShading(value);
-}
-
-#ifdef MAGNUM_TARGET_GLES
-void Renderer::minSampleShadingImplementationOES(const GLfloat value) {
-    glMinSampleShadingOES(value);
-}
-#endif
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -402,7 +392,7 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
 }
 
 Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
-    return Context::current().state().renderer.graphicsResetStatusImplementation();
+    return Renderer::GraphicsResetStatus(Context::current().state().renderer.graphicsResetStatusImplementation());
 }
 #endif
 
@@ -418,21 +408,9 @@ void Renderer::clearDepthfImplementationDefault(const GLfloat depth) {
 }
 #endif
 
-void Renderer::clearDepthfImplementationES(const GLfloat depth) {
-    glClearDepthf(depth);
-}
-
 #ifndef MAGNUM_TARGET_WEBGL
-Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationDefault() {
-    return GraphicsResetStatus::NoError;
-}
-
-Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustness() {
-    #ifndef MAGNUM_TARGET_GLES
-    return GraphicsResetStatus(glGetGraphicsResetStatusARB());
-    #else
-    return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
-    #endif
+GLenum Renderer::graphicsResetStatusImplementationDefault() {
+    return GL_NO_ERROR;
 }
 #endif
 

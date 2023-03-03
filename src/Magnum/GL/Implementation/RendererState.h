@@ -36,12 +36,12 @@ struct RendererState {
     explicit RendererState(Context& context, ContextState& contextState, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     Range1D(*lineWidthRangeImplementation)();
-    void(*clearDepthfImplementation)(GLfloat);
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(*minSampleShadingImplementation)(GLfloat);
-    #endif
     /* These are direct pointers to the GL functions, so need a __stdcall on
        Windows to compile properly on 32 bits */
+    void(APIENTRY *clearDepthfImplementation)(GLfloat);
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void(APIENTRY *minSampleShadingImplementation)(GLfloat);
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(APIENTRY *patchParameteriImplementation)(GLenum, GLint);
     #endif
@@ -55,7 +55,7 @@ struct RendererState {
     void(APIENTRY *colorMaskiImplementation)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    Renderer::GraphicsResetStatus(*graphicsResetStatusImplementation)();
+    GLenum(APIENTRY *graphicsResetStatusImplementation)();
 
     Renderer::ResetNotificationStrategy resetNotificationStrategy;
     #endif

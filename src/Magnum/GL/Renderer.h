@@ -2193,21 +2193,13 @@ class MAGNUM_GL_EXPORT Renderer {
         static MAGNUM_GL_LOCAL Range1D lineWidthRangeImplementationMesaForwardCompatible();
         #endif
 
+        /* These have to be compatible with direct pointers to the GL functions
+           which need a __stdcall on Windows to compile properly on 32 bits */
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_GL_LOCAL clearDepthfImplementationDefault(GLfloat depth);
+        static void APIENTRY MAGNUM_GL_LOCAL clearDepthfImplementationDefault(GLfloat depth);
         #endif
-        static void MAGNUM_GL_LOCAL clearDepthfImplementationES(GLfloat depth);
-
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        static MAGNUM_GL_LOCAL void minSampleShadingImplementationDefault(GLfloat value);
-        #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void minSampleShadingImplementationOES(GLfloat value);
-        #endif
-        #endif
-
         #ifndef MAGNUM_TARGET_WEBGL
-        static GraphicsResetStatus MAGNUM_GL_LOCAL graphicsResetStatusImplementationDefault();
-        static GraphicsResetStatus MAGNUM_GL_LOCAL graphicsResetStatusImplementationRobustness();
+        static GLenum APIENTRY MAGNUM_GL_LOCAL graphicsResetStatusImplementationDefault();
         #endif
 };
 

@@ -50,7 +50,7 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
                    Extensions::ARB::ES2_compatibility::string();
         #endif
 
-        clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
+        clearDepthfImplementation = glClearDepthf;
     }
     #ifndef MAGNUM_TARGET_GLES
     else clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
@@ -67,12 +67,13 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
         #ifndef MAGNUM_TARGET_GLES
         extensions[Extensions::ARB::robustness::Index] =
                    Extensions::ARB::robustness::string();
+        graphicsResetStatusImplementation = glGetGraphicsResetStatusARB;
         #else
         extensions[Extensions::EXT::robustness::Index] =
                    Extensions::EXT::robustness::string();
+        graphicsResetStatusImplementation = glGetGraphicsResetStatusEXT;
         #endif
 
-        graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationRobustness;
     } else graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationDefault;
     #else
     static_cast<void>(context);
@@ -104,15 +105,15 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    minSampleShadingImplementation = &Renderer::minSampleShadingImplementationDefault;
+    minSampleShadingImplementation = glMinSampleShading;
     #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(context.isVersionSupported(Version::GLES320)) {
-        minSampleShadingImplementation = &Renderer::minSampleShadingImplementationDefault;
+        minSampleShadingImplementation = glMinSampleShading;
     } else if(context.isExtensionSupported<Extensions::OES::sample_shading>()) {
         extensions[Extensions::OES::sample_shading::Index] =
                    Extensions::OES::sample_shading::string();
 
-        minSampleShadingImplementation = &Renderer::minSampleShadingImplementationOES;
+        minSampleShadingImplementation = glMinSampleShadingOES;
     } else {
         minSampleShadingImplementation = nullptr;
     }
