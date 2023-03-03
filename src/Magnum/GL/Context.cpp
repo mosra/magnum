@@ -110,6 +110,7 @@ constexpr Extension ExtensionList[]{
     Extensions::KHR::texture_compression_astc_hdr{},
     Extensions::KHR::texture_compression_astc_ldr{},
     Extensions::KHR::texture_compression_astc_sliced_3d{},
+    Extensions::NV::depth_buffer_float{},
     Extensions::NV::fragment_shader_barycentric{},
     Extensions::NV::sample_locations{},
     Extensions::OVR::multiview{},
@@ -135,8 +136,7 @@ constexpr Extension ExtensionList300[]{
     Extensions::EXT::texture_shared_exponent{},
     Extensions::EXT::transform_feedback{},
     Extensions::MAGNUM::shader_vertex_id{},
-    Extensions::NV::conditional_render{},
-    Extensions::NV::depth_buffer_float{}
+    Extensions::NV::conditional_render{}
 };
 constexpr Extension ExtensionList310[]{
     Extensions::ARB::copy_buffer{},

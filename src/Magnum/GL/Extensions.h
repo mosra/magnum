@@ -261,7 +261,7 @@ namespace AMD {
     _extension(171,MAGNUM,shader_vertex_id,             GL300, GL300)
 } namespace NV {
     _extension(175,NV,primitive_restart,                GL210, GL310) // #285
-    _extension(176,NV,depth_buffer_float,               GL210, GL300) // #334
+    _extension(176,NV,depth_buffer_float,               GL210,  None) // #334
     _extension(177,NV,conditional_render,               GL210, GL300) // #346
     /* NV_draw_texture not supported */                               // #430
     _extension(178,NV,sample_locations,                 GL210,  None) // #472
