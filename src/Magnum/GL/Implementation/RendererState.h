@@ -39,6 +39,7 @@ struct RendererState {
     /* These are direct pointers to the GL functions, so need a __stdcall on
        Windows to compile properly on 32 bits */
     void(APIENTRY *clearDepthfImplementation)(GLfloat);
+    void(APIENTRY *depthRangefImplementation)(GLfloat, GLfloat);
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(APIENTRY *minSampleShadingImplementation)(GLfloat);
     #endif

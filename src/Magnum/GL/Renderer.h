@@ -693,7 +693,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * Initial value is @cpp 1.0 @ce.
          * @see @ref Feature::DepthTest, @ref AbstractFramebuffer::clearDepth(),
          *      @ref AbstractFramebuffer::clearDepthStencil(),
-         *      @fn_gl_keyword{ClearDepth}
+         *      @ref setDepthRange(), @fn_gl_keyword{ClearDepth}
          * @requires_gl See @ref setClearDepth(Float), which is available in
          *      OpenGL ES and WebGL.
          * @deprecated_gl Prefer to use @ref AbstractFramebuffer::clearDepth()
@@ -713,7 +713,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @ref setClearDepth(Double).
          * @see @ref Feature::DepthTest, @ref AbstractFramebuffer::clearDepth(),
          *      @ref AbstractFramebuffer::clearDepthStencil(),
-         *      @fn_gl2_keyword{ClearDepthf,ClearDepth}
+         *      @ref setDepthRange(), @fn_gl2_keyword{ClearDepthf,ClearDepth}
          * @deprecated_gl Prefer to use @ref AbstractFramebuffer::clearDepth()
          *      / @ref AbstractFramebuffer::clearDepthStencil() instead of
          *      @ref setClearDepth() and @ref AbstractFramebuffer::clear() as
@@ -1191,6 +1191,31 @@ class MAGNUM_GL_EXPORT Renderer {
          * @see @ref Feature::DepthTest, @fn_gl_keyword{DepthFunc}
          */
         static void setDepthFunction(DepthFunction function);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set depth range
+         * @m_since_latest
+         *
+         * Initial value is @cpp 0.0 @ce and @cpp 1.0 @ce.
+         * @see @fn_gl_keyword{DepthRange}
+         * @requires_gl See @ref setClearDepth(Float), which is available in
+         *      OpenGL ES and WebGL.
+         */
+        static void setDepthRange(Double near, Double far);
+        #endif
+
+        /**
+         * @overload
+         * @m_since_latest
+         *
+         * Initial value is @cpp 0.0 @ce and @cpp 1.0 @ce. If OpenGL ES, OpenGL
+         * 4.1 or extension @gl_extension{ARB,ES2_compatibility} is not
+         * available, this function behaves exactly as
+         * @ref setDepthRange(Double, Double).
+         * @see @fn_gl2_keyword{DepthRangef,DepthRange}
+         */
+        static void setDepthRange(Float near, Float far);
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */
@@ -2239,6 +2264,7 @@ class MAGNUM_GL_EXPORT Renderer {
            which need a __stdcall on Windows to compile properly on 32 bits */
         #ifndef MAGNUM_TARGET_GLES
         static void APIENTRY MAGNUM_GL_LOCAL clearDepthfImplementationDefault(GLfloat depth);
+        static void APIENTRY MAGNUM_GL_LOCAL depthRangefImplementationDefault(GLfloat near, GLfloat far);
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
         static GLenum APIENTRY MAGNUM_GL_LOCAL graphicsResetStatusImplementationDefault();

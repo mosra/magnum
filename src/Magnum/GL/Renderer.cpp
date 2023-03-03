@@ -302,6 +302,22 @@ void Renderer::setDepthFunction(const DepthFunction function) {
     glDepthFunc(GLenum(function));
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void Renderer::setDepthRange(const Double near, const Double far) {
+    glDepthRange(near, far);
+}
+#endif
+
+void Renderer::setDepthRange(const Float near, const Float far) {
+    Context::current().state().renderer.depthRangefImplementation(near, far);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderer::depthRangefImplementationDefault(const Float near, const Float far) {
+    glDepthRange(GLdouble(near), GLdouble(far));
+}
+#endif
+
 void Renderer::setColorMask(const GLboolean allowRed, const GLboolean allowGreen, const GLboolean allowBlue, const GLboolean allowAlpha) {
     glColorMask(allowRed, allowGreen, allowBlue, allowAlpha);
 }

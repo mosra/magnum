@@ -68,6 +68,7 @@ struct RendererGLTest: OpenGLTester {
     void drawBuffersIndexed();
     void drawBuffersBlend();
     #endif
+    template<class T> void clearDepthDepthRange();
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -87,9 +88,12 @@ RendererGLTest::RendererGLTest() {
               #endif
               #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &RendererGLTest::drawBuffersIndexed,
-              &RendererGLTest::drawBuffersBlend
+              &RendererGLTest::drawBuffersBlend,
               #endif
-              });
+              #ifndef MAGNUM_TARGET_GLES
+              &RendererGLTest::clearDepthDepthRange<Double>,
+              #endif
+              &RendererGLTest::clearDepthDepthRange<Float>});
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -298,6 +302,17 @@ void RendererGLTest::drawBuffersBlend() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
+
+template<class T> void RendererGLTest::clearDepthDepthRange() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Just setting the default value to verify it doesn't crash or emit an
+       error in either of the overloads */
+    Renderer::setClearDepth(T(1.0));
+    Renderer::setDepthRange(T(0.0), T(1.0));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
 
 }}}}
 

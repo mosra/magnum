@@ -153,6 +153,7 @@ See also:
     @relativeref{GL::Renderer,Feature::SampleAlphaToOne},
     @relativeref{GL::Renderer,Feature::SampleCoverage} and
     @ref GL::Renderer::setSampleCoverage() GL 1.3 APIs
+-   Exposed missing @ref GL::Renderer::setDepthRange() GL 1.0 API
 -   A new @cpp "nv-egl-crashy-query-device-attrib" @ce workaround for a crash
     happening during EGL initialization in recent NVidia drivers.  See
     @ref opengl-workarounds and [mosra/magnum#491](https://github.com/mosra/magnum/pull/491)

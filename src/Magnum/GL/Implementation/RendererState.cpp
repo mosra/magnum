@@ -40,7 +40,7 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
     : resetNotificationStrategy()
     #endif
 {
-    /* Float depth clear value implementation */
+    /* Float depth clear value / range implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::ES2_compatibility>())
     #endif
@@ -51,9 +51,13 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
         #endif
 
         clearDepthfImplementation = glClearDepthf;
+        depthRangefImplementation = glDepthRangef;
     }
     #ifndef MAGNUM_TARGET_GLES
-    else clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
+    else {
+        clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
+        depthRangefImplementation = &Renderer::depthRangefImplementationDefault;
+    }
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
