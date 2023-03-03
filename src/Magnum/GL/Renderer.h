@@ -707,12 +707,13 @@ class MAGNUM_GL_EXPORT Renderer {
         /**
          * @overload
          *
-         * If OpenGL ES, OpenGL 4.1 or extension @gl_extension{ARB,ES2_compatibility}
-         * is not available, this function behaves exactly as
+         * Initial value is @cpp 1.0f @ce. If OpenGL ES, OpenGL 4.1 or
+         * extension @gl_extension{ARB,ES2_compatibility} is not available,
+         * this function behaves exactly as
          * @ref setClearDepth(Double).
          * @see @ref Feature::DepthTest, @ref AbstractFramebuffer::clearDepth(),
          *      @ref AbstractFramebuffer::clearDepthStencil(),
-         *      @fn_gl_keyword{ClearDepth}
+         *      @fn_gl2_keyword{ClearDepthf,ClearDepth}
          * @deprecated_gl Prefer to use @ref AbstractFramebuffer::clearDepth()
          *      / @ref AbstractFramebuffer::clearDepthStencil() instead of
          *      @ref setClearDepth() and @ref AbstractFramebuffer::clear() as
