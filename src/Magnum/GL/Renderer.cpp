@@ -100,9 +100,15 @@ void Renderer::setClearDepth(const Double depth) {
 }
 #endif
 
-void Renderer::setClearDepth(Float depth) {
+void Renderer::setClearDepth(const Float depth) {
     Context::current().state().renderer.clearDepthfImplementation(depth);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderer::clearDepthfImplementationDefault(const GLfloat depth) {
+    glClearDepth(GLdouble(depth));
+}
+#endif
 
 void Renderer::setClearStencil(const Int stencil) {
     glClearStencil(stencil);
@@ -398,6 +404,10 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
 Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
     return Renderer::GraphicsResetStatus(Context::current().state().renderer.graphicsResetStatusImplementation());
 }
+
+GLenum Renderer::graphicsResetStatusImplementationDefault() {
+    return GL_NO_ERROR;
+}
 #endif
 
 void Renderer::initializeContextBasedFunctionality() {
@@ -405,18 +415,6 @@ void Renderer::initializeContextBasedFunctionality() {
     using namespace Math::Literals;
     setClearColor(0x1f1f1f_rgbf);
 }
-
-#ifndef MAGNUM_TARGET_GLES
-void Renderer::clearDepthfImplementationDefault(const GLfloat depth) {
-    glClearDepth(GLdouble(depth));
-}
-#endif
-
-#ifndef MAGNUM_TARGET_WEBGL
-GLenum Renderer::graphicsResetStatusImplementationDefault() {
-    return GL_NO_ERROR;
-}
-#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Renderer::Error value) {
