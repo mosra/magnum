@@ -52,7 +52,6 @@ following:
 
 @subsection opengl-support-30 OpenGL 3.0
 
-@todo @gl_extension{EXT,texture_array} overlaps with @gl_extension{ARB,framebuffer_object}
 @todo Add @gl_extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @gl_extension{NV,depth_buffer_float} for non-linear depth buffer
 
 @m_class{m-fullwidth}
