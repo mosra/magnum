@@ -147,6 +147,10 @@ void Renderer::setPointSize(const Float size) {
 }
 #endif
 
+void Renderer::setSampleCoverage(const Float value, const bool invert) {
+    glSampleCoverage(value, invert);
+}
+
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void Renderer::setMinSampleShading(const Float value) {
     Context::current().state().renderer.minSampleShadingImplementation(value);

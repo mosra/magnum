@@ -352,7 +352,7 @@ OpenGL function                         | Matching API
 
 OpenGL function                         | Matching API
 --------------------------------------- | ------------
-@fn_gl{SampleCoverage}                  | |
+@fn_gl{SampleCoverage}                  | @ref GL::Renderer::setSampleCoverage()
 @fn_gl{SampleMaski}                     | |
 @fn_gl{SamplerParameter}                | |
 @fn_gl{Scissor}                         | @ref GL::Renderer::setScissor()

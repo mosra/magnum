@@ -450,6 +450,38 @@ class MAGNUM_GL_EXPORT Renderer {
             RasterizerDiscard = GL_RASTERIZER_DISCARD,
             #endif
 
+            /**
+             * Transforms a fragment's alpha value into a coverage value to
+             * determine its contribution to the final pixel value in a
+             * multisampled framebuffer.
+             * @m_since_latest
+             * @see @ref Feature::SampleAlphaToOne,
+             *      @ref Feature::SampleCoverage, @ref setSampleCoverage()
+             */
+            SampleAlphaToCoverage = GL_SAMPLE_ALPHA_TO_COVERAGE,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Replaces each sample alpha value by the maximum representable
+             * alpha value.
+             * @m_since_latest
+             * @see @ref Feature::SampleAlphaToCoverage,
+             *      @ref Feature::SampleCoverage, @ref setSampleCoverage()
+             * @requires_gl Sample alpha to one is not available in OpenGL ES
+             *      and WebGL.
+             */
+            SampleAlphaToOne = GL_SAMPLE_ALPHA_TO_ONE,
+            #endif
+
+            /**
+             * Combines the fragment coverage with the coverage value set in
+             * @ref setSampleCoverage().
+             * @m_since_latest
+             * @see @ref Feature::SampleAlphaToCoverage,
+             *      @ref Feature::SampleAlphaToOne
+             */
+            SampleCoverage = GL_SAMPLE_COVERAGE,
+
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Sample shading.
@@ -862,6 +894,15 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setPointSize(Float size);
         #endif
+
+        /**
+         * @brief Set sample coverage parameters
+         * @m_since_latest
+         *
+         * Initial value is @cpp 1.0f @ce and @cpp false @ce.
+         * @see @ref Feature::SampleCoverage, @fn_gl_keyword{SampleCoverage}
+         */
+        static void setSampleCoverage(Float value, bool invert);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
