@@ -96,7 +96,7 @@ void Renderer::setClearColor(const Color4& color) {
 
 #ifndef MAGNUM_TARGET_GLES
 void Renderer::setClearDepth(const Double depth) {
-    glClearDepth(depth);
+    Context::current().state().renderer.clearDepthImplementation(depth);
 }
 #endif
 
@@ -105,6 +105,10 @@ void Renderer::setClearDepth(const Float depth) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Renderer::clearDepthfImplementationNV(const GLfloat depth) {
+    glClearDepthdNV(GLdouble(depth));
+}
+
 void Renderer::clearDepthfImplementationDefault(const GLfloat depth) {
     glClearDepth(GLdouble(depth));
 }
@@ -304,7 +308,7 @@ void Renderer::setDepthFunction(const DepthFunction function) {
 
 #ifndef MAGNUM_TARGET_GLES
 void Renderer::setDepthRange(const Double near, const Double far) {
-    glDepthRange(near, far);
+    Context::current().state().renderer.depthRangeImplementation(near, far);
 }
 #endif
 
@@ -313,6 +317,10 @@ void Renderer::setDepthRange(const Float near, const Float far) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Renderer::depthRangefImplementationNV(const Float near, const Float far) {
+    glDepthRangedNV(GLdouble(near), GLdouble(far));
+}
+
 void Renderer::depthRangefImplementationDefault(const Float near, const Float far) {
     glDepthRange(GLdouble(near), GLdouble(far));
 }

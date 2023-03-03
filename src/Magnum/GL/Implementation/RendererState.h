@@ -38,6 +38,10 @@ struct RendererState {
     Range1D(*lineWidthRangeImplementation)();
     /* These are direct pointers to the GL functions, so need a __stdcall on
        Windows to compile properly on 32 bits */
+    #ifndef MAGNUM_TARGET_GLES
+    void(APIENTRY *clearDepthImplementation)(GLdouble);
+    void(APIENTRY *depthRangeImplementation)(GLdouble, GLdouble);
+    #endif
     void(APIENTRY *clearDepthfImplementation)(GLfloat);
     void(APIENTRY *depthRangefImplementation)(GLfloat, GLfloat);
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

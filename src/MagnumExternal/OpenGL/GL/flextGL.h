@@ -1778,6 +1778,13 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_MAX_SHADER_COMPILER_THREADS_KHR 0x91B0
 #define GL_COMPLETION_STATUS_KHR 0x91B1
 
+/* GL_NV_depth_buffer_float */
+
+#define GL_DEPTH_COMPONENT32F_NV 0x8DAB
+#define GL_DEPTH32F_STENCIL8_NV 0x8DAC
+#define GL_FLOAT_32_UNSIGNED_INT_24_8_REV_NV 0x8DAD
+#define GL_DEPTH_BUFFER_FLOAT_MODE_NV 0x8DAF
+
 /* GL_NV_sample_locations */
 
 #define GL_SAMPLE_LOCATION_SUBPIXEL_BITS_NV 0x933D
@@ -1884,6 +1891,11 @@ struct FlextGL {
     /* GL_KHR_parallel_shader_compile */
 
     void(APIENTRY *MaxShaderCompilerThreadsKHR)(GLuint);
+
+    /* GL_NV_depth_buffer_float */
+
+    void(APIENTRY *ClearDepthdNV)(GLdouble);
+    void(APIENTRY *DepthRangedNV)(GLdouble, GLdouble);
 
     /* GL_NV_sample_locations */
 
@@ -2692,6 +2704,11 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 /* GL_KHR_parallel_shader_compile */
 
 #define glMaxShaderCompilerThreadsKHR flextGL.MaxShaderCompilerThreadsKHR
+
+/* GL_NV_depth_buffer_float */
+
+#define glClearDepthdNV flextGL.ClearDepthdNV
+#define glDepthRangedNV flextGL.DepthRangedNV
 
 /* GL_NV_sample_locations */
 

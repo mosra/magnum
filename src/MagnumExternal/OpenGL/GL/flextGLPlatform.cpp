@@ -189,6 +189,10 @@ void flextGLInit(Magnum::GL::Context& context) {
     /* GL_KHR_parallel_shader_compile */
     flextGL.MaxShaderCompilerThreadsKHR = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glMaxShaderCompilerThreadsKHR"));
 
+    /* GL_NV_depth_buffer_float */
+    flextGL.ClearDepthdNV = reinterpret_cast<void(APIENTRY*)(GLdouble)>(loader.load("glClearDepthdNV"));
+    flextGL.DepthRangedNV = reinterpret_cast<void(APIENTRY*)(GLdouble, GLdouble)>(loader.load("glDepthRangedNV"));
+
     /* GL_NV_sample_locations */
     flextGL.FramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLfloat *)>(loader.load("glFramebufferSampleLocationsfvNV"));
     flextGL.NamedFramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLfloat *)>(loader.load("glNamedFramebufferSampleLocationsfvNV"));

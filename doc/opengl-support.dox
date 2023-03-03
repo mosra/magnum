@@ -52,8 +52,6 @@ following:
 
 @subsection opengl-support-30 OpenGL 3.0
 
-@todo Add @gl_extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @gl_extension{NV,depth_buffer_float} for non-linear depth buffer
-
 @m_class{m-fullwidth}
 
 Extension                                   | Status
@@ -79,7 +77,7 @@ GLSL 1.30                                   | done
 @gl_extension{EXT,texture_integer}          | done (GL 3.0 subset)
 @gl_extension{EXT,transform_feedback}       | done
 `MAGNUM_shader_vertex_id` \n @m_span{m-text m-dim} Pseudo-extension denoting support for the @glsl gl_VertexID @ce GLSL builtin. @m_endspan | done
-@gl_extension{NV,depth_buffer_float}        | |
+@gl_extension{NV,depth_buffer_float}        | done
 @gl_extension{NV,conditional_render}        | done
 
 @subsection opengl-support-31 OpenGL 3.1

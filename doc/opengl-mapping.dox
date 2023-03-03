@@ -101,7 +101,7 @@ OpenGL function                         | Matching API
 @fn_gl{ClearBufferData}, \n `glClearNamedBufferData()` | |
 @fn_gl{ClearBufferSubData}, \n `glClearNamedBufferSubData()` | |
 @fn_gl{ClearColor}                      | @ref GL::Renderer::setClearColor()
-@fn_gl{ClearDepth}                      | @ref GL::Renderer::setClearDepth()
+@fn_gl{ClearDepth}, \n @fn_gl_extension{ClearDepthd,NV,depth_buffer_float} | @ref GL::Renderer::setClearDepth()
 @fn_gl{ClearStencil}                    | @ref GL::Renderer::setClearStencil()
 @fn_gl{ClearTexImage}                   | |
 @fn_gl{ClearTexSubImage}                | |
@@ -131,7 +131,7 @@ OpenGL function                         | Matching API
 @fn_gl{DebugMessageInsert}, \n @fn_gl_extension{InsertEventMarker,EXT,debug_marker}, \n @fn_gl_extension{StringMarker,GREMEDY,string_marker} | @ref GL::DebugMessage::insert()
 @fn_gl{DepthFunc}                       | @ref GL::Renderer::setDepthFunction()
 @fn_gl{DepthMask}                       | @ref GL::Renderer::setDepthMask()
-@fn_gl{DepthRange}                      | @ref GL::Renderer::setDepthRange()
+@fn_gl{DepthRange}, \n @fn_gl_extension_keyword{DepthRanged,NV,depth_buffer_float} | @ref GL::Renderer::setDepthRange()
 @fn_gl{DepthRangeArray}                 | |
 @fn_gl{DepthRangeIndexed}               | |
 @fn_gl{DetachShader}                    | |

@@ -40,25 +40,46 @@ RendererState::RendererState(Context& context, ContextState& contextState, Conta
     : resetNotificationStrategy()
     #endif
 {
-    /* Float depth clear value / range implementation */
+    /* Depth clear value / range implementation. If the NV_depth_buffer_float
+       extension is present, prefer it for both the float and double overloads
+       to avoid accidents. Otherwise use the float variant if available, and
+       fall back to the double variant otherwise. */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::ES2_compatibility>())
+    if(context.isExtensionSupported<Extensions::NV::depth_buffer_float>()) {
+        extensions[Extensions::NV::depth_buffer_float::Index] =
+                   Extensions::NV::depth_buffer_float::string();
+
+        clearDepthImplementation = glClearDepthdNV;
+        depthRangeImplementation = glDepthRangedNV;
+        clearDepthfImplementation = &Renderer::clearDepthfImplementationNV;
+        depthRangefImplementation = &Renderer::depthRangefImplementationNV;
+    } else
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions[Extensions::ARB::ES2_compatibility::Index] =
-                   Extensions::ARB::ES2_compatibility::string();
+        clearDepthImplementation = glClearDepth;
+        depthRangeImplementation = glDepthRange;
         #endif
 
-        clearDepthfImplementation = glClearDepthf;
-        depthRangefImplementation = glDepthRangef;
+        #ifndef MAGNUM_TARGET_GLES
+        if(context.isExtensionSupported<Extensions::ARB::ES2_compatibility>())
+        #endif
+        {
+            #ifndef MAGNUM_TARGET_GLES
+            extensions[Extensions::ARB::ES2_compatibility::Index] =
+                    Extensions::ARB::ES2_compatibility::string();
+            #endif
+
+            clearDepthfImplementation = glClearDepthf;
+            depthRangefImplementation = glDepthRangef;
+        }
+        #ifndef MAGNUM_TARGET_GLES
+        else {
+            clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
+            depthRangefImplementation = &Renderer::depthRangefImplementationDefault;
+        }
+        #endif
     }
-    #ifndef MAGNUM_TARGET_GLES
-    else {
-        clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
-        depthRangefImplementation = &Renderer::depthRangefImplementationDefault;
-    }
-    #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     /* Graphics reset status implementation */
