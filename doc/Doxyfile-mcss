@@ -16,6 +16,11 @@ TAGFILES               = ../../corrade/build/doc-mcss/corrade.tag=../../../../co
 ## marked with m-doc-external CSS class to avoid ugly underline.
 ## Important: keep this in sync with Doxyfile and Doxyfile-public!
 
+## Note: Doxygen is unable to replace \1\2 in the alias, leaving \2 verbatim in
+## the output. Probably some STUPID off-by-one error somewhere. To work around
+## that, <b></b> is used in plain HTML and a ZWNJ Unicode character (which is
+## invisible!) in XML attributes. Currently the case is fn_gl_extension and
+## fn_gl_extension_keyword.
 ALIASES                = \
     "debugoperator{1}=@relatesalso \1 @brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
     "debugoperatorenum{1}=@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
@@ -92,7 +97,7 @@ ALIASES                = \
     "m_enum_values_as_keywords=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:enum-values-as-keywords=\"true\" />@endxmlonly" \
     "fn_gl_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"gl\1()\" />@endxmlonly @fn_gl{\1}" \
     "fn_gl2_keyword{2}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"gl\1()\" />@endxmlonly @fn_gl2{\1,\2}" \
-    "fn_gl_extension_keyword{3}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"gl\1\2()\" />@endxmlonly @fn_gl_extension{\1,\2,\3}" \
+    "fn_gl_extension_keyword{3}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"gl\1‌\2()\" />@endxmlonly @fn_gl_extension{\1,\2,\3}" \
     "def_gl_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"GL_\1\" />@endxmlonly @def_gl{\1}" \
     "def_gl_extension_keyword{3}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"GL_\1_\2\" />@endxmlonly @def_gl_extension{\1,\2,\3}" \
     "fn_vk_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"vk\1()\" />@endxmlonly @fn_vk{\1}" \
