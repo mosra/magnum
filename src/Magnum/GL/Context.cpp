@@ -361,6 +361,7 @@ constexpr Extension ExtensionList[]{
     #endif
     Extensions::EXT::debug_label{},
     Extensions::EXT::debug_marker{},
+    Extensions::EXT::depth_clamp{},
     Extensions::EXT::disjoint_timer_query{},
     Extensions::EXT::draw_elements_base_vertex{},
     Extensions::EXT::multi_draw_arrays{},

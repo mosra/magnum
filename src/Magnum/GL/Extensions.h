@@ -479,8 +479,9 @@ namespace ANDROID {
     _extension( 70,EXT,texture_compression_bptc,    GLES300,    None) // #287
     #endif
     _extension( 71,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
+    _extension( 72,EXT,depth_clamp,                 GLES200,    None) // #309
 } namespace IMG {
-    _extension( 72,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
+    _extension( 73,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
 } namespace KHR {
     _extension( 80,KHR,texture_compression_astc_ldr,GLES200, GLES320) // #117
     _extension( 81,KHR,texture_compression_astc_hdr,GLES200,    None) // #117

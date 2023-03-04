@@ -324,14 +324,18 @@ class MAGNUM_GL_EXPORT Renderer {
             #endif
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
              * @requires_gl32 Extension @gl_extension{ARB,depth_clamp}
-             * @requires_gl Depth clamping is not available in OpenGL ES and
-             *      WebGL.
+             * @requires_es_extension Extension @gl_extension{EXT,depth_clamp}
+             * @requires_gles Depth clamping is not available in WebGL.
              */
+            #ifndef MAGNUM_TARGET_GLES
             DepthClamp = GL_DEPTH_CLAMP,
+            #else
+            DepthClamp = GL_DEPTH_CLAMP_EXT,
+            #endif
             #endif
 
             /**
