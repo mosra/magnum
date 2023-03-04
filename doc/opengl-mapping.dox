@@ -106,7 +106,7 @@ OpenGL function                         | Matching API
 @fn_gl{ClearTexImage}                   | |
 @fn_gl{ClearTexSubImage}                | |
 @fn_gl{ClientWaitSync}                  | |
-@fn_gl{ClipControl}                     | |
+@fn_gl{ClipControl}                     | @ref GL::Renderer::setClipControl()
 @fn_gl{ColorMask}, \n `glColorMaski()`  | @ref GL::Renderer::setColorMask()
 @fn_gl{CompileShader}                   | @ref GL::Shader::compile()
 @fn_gl{CompressedTexImage1D}, \n @fn_gl{CompressedTexImage2D}, \n @fn_gl{CompressedTexImage3D} | @ref GL::Texture::setCompressedImage(), \n @ref GL::TextureArray::setCompressedImage(), \n @ref GL::CubeMapTexture::setCompressedImage(), \n @ref GL::CubeMapTextureArray::setCompressedImage(), \n @ref GL::RectangleTexture::setCompressedImage()

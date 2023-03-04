@@ -1187,7 +1187,61 @@ class MAGNUM_GL_EXPORT Renderer {
          * @}
          */
 
-        /** @{ @name Depth testing */
+        /** @{ @name Depth testing and clip control */
+
+        #ifndef MAGNUM_TARGET_WEBGL
+        /**
+         * @brief Clip origin
+         * @m_since_latest
+         *
+         * @see @ref setClipControl()
+         * @m_enum_values_as_keywords
+         * @requires_gl45 Extension @gl_extension{ARB,clip_control}
+         * @requires_es_extension Extension @gl_extension{EXT,clip_control}
+         * @requires_gles Clip control is not available in WebGL.
+         */
+        enum class ClipOrigin: GLenum {
+            /** Lower left */
+            #ifndef MAGNUM_TARGET_GLES
+            LowerLeft = GL_LOWER_LEFT,
+            #else
+            LowerLeft = GL_LOWER_LEFT_EXT,
+            #endif
+
+            /** Upper left */
+            #ifndef MAGNUM_TARGET_GLES
+            UpperLeft = GL_UPPER_LEFT,
+            #else
+            UpperLeft = GL_UPPER_LEFT_EXT,
+            #endif
+        };
+
+        /**
+         * @brief Clip depth
+         * @m_since_latest
+         *
+         * @see @ref setClipControl()
+         * @m_enum_values_as_keywords
+         * @requires_gl45 Extension @gl_extension{ARB,clip_control}
+         * @requires_es_extension Extension @gl_extension{EXT,clip_control}
+         * @requires_gles Clip control is not available in WebGL.
+         */
+        enum class ClipDepth: GLenum {
+            /** -1 to 1 */
+            #ifndef MAGNUM_TARGET_GLES
+            NegativeOneToOne = GL_NEGATIVE_ONE_TO_ONE,
+            #else
+            NegativeOneToOne = GL_NEGATIVE_ONE_TO_ONE_EXT,
+            #endif
+
+            /** 0 to 1 */
+            #ifndef MAGNUM_TARGET_GLES
+            ZeroToOne = GL_ZERO_TO_ONE,
+            #else
+            ZeroToOne = GL_ZERO_TO_ONE_EXT,
+            #endif
+        };
+        #endif
 
         /**
          * @brief Depth function
@@ -1235,6 +1289,21 @@ class MAGNUM_GL_EXPORT Renderer {
          * behaves exactly as @ref setDepthRange(Double, Double).
          */
         static void setDepthRange(Float near, Float far);
+
+        #ifndef MAGNUM_TARGET_WEBGL
+        /**
+         * @brief Set clipping behavior
+         * @m_since_latest
+         *
+         * Initial value is @ref ClipOrigin::LowerLeft and
+         * @ref ClipDepth::NegativeOneToOne.
+         * @see @fn_gl_keyword{ClipControl}
+         * @requires_gl45 Extension @gl_extension{ARB,clip_control}
+         * @requires_es_extension Extension @gl_extension{EXT,clip_control}
+         * @requires_gles Clip control is not available in WebGL.
+         */
+        static void setClipControl(ClipOrigin origin, ClipDepth depth);
+        #endif
 
         /* Since 1.8.17, the original short-hand group closing doesn't work
            anymore. FFS. */

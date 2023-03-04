@@ -153,6 +153,9 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.VertexAttrib4fv = reinterpret_cast<void(APIENTRY*)(GLuint, const GLfloat *)>(loader.load("glVertexAttrib4fv"));
     flextGL.VertexAttribPointer = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *)>(loader.load("glVertexAttribPointer"));
 
+    /* GL_EXT_clip_control */
+    flextGL.ClipControlEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glClipControlEXT"));
+
     /* GL_EXT_debug_label */
     flextGL.GetObjectLabelEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *)>(loader.load("glGetObjectLabelEXT"));
     flextGL.LabelObjectEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(loader.load("glLabelObjectEXT"));

@@ -161,6 +161,9 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.TexParameterIuiv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLuint *)>(loader.load("glTexParameterIuiv"));
     flextGL.TexStorage3DMultisample = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(loader.load("glTexStorage3DMultisample"));
 
+    /* GL_EXT_clip_control */
+    flextGL.ClipControlEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glClipControlEXT"));
+
     /* GL_EXT_copy_image */
     flextGL.CopyImageSubDataEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei)>(loader.load("glCopyImageSubDataEXT"));
 

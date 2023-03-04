@@ -356,6 +356,7 @@ constexpr Extension ExtensionList[]{
     Extensions::APPLE::texture_format_BGRA8888{},
     Extensions::ARM::shader_framebuffer_fetch{},
     Extensions::ARM::shader_framebuffer_fetch_depth_stencil{},
+    Extensions::EXT::clip_control{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::clip_cull_distance{},
     #endif

@@ -33,6 +33,7 @@
 #undef glMultiDrawArraysInstancedANGLE
 #undef glMultiDrawElementsANGLE
 #undef glMultiDrawElementsInstancedANGLE
+#undef glClipControlEXT
 #undef glCopyImageSubDataEXT
 #undef glGetObjectLabelEXT
 #undef glLabelObjectEXT
@@ -182,6 +183,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.MultiDrawArraysInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei)>(glMultiDrawArraysInstancedANGLE);
     flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei)>(glMultiDrawElementsANGLE);
     flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei)>(glMultiDrawElementsInstancedANGLE);
+    #endif
+
+    /* GL_EXT_clip_control */
+    #if GL_EXT_clip_control
+    flextGL.ClipControlEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(glClipControlEXT);
     #endif
 
     /* GL_EXT_copy_image */

@@ -69,6 +69,9 @@ struct RendererGLTest: OpenGLTester {
     void drawBuffersBlend();
     #endif
     template<class T> void clearDepthDepthRange();
+    #ifndef MAGNUM_TARGET_WEBGL
+    void clipControl();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -93,7 +96,11 @@ RendererGLTest::RendererGLTest() {
               #ifndef MAGNUM_TARGET_GLES
               &RendererGLTest::clearDepthDepthRange<Double>,
               #endif
-              &RendererGLTest::clearDepthDepthRange<Float>});
+              &RendererGLTest::clearDepthDepthRange<Float>,
+              #ifndef MAGNUM_TARGET_WEBGL
+              &RendererGLTest::clipControl
+              #endif
+              });
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -313,6 +320,24 @@ template<class T> void RendererGLTest::clearDepthDepthRange() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void RendererGLTest::clipControl() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::clip_control>())
+        CORRADE_SKIP(Extensions::ARB::clip_control::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::clip_control>())
+        CORRADE_SKIP(Extensions::EXT::clip_control::string() << "is not supported.");
+    #endif
+
+    /* Just setting the default value to verify it doesn't crash or emit an
+       error */
+    Renderer::setClipControl(Renderer::ClipOrigin::LowerLeft, Renderer::ClipDepth::NegativeOneToOne);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 }}}}
 

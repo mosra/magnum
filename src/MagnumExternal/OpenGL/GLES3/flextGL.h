@@ -1629,6 +1629,15 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT 0x8C4E
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT 0x8C4F
 
+/* GL_EXT_clip_control */
+
+#define GL_LOWER_LEFT_EXT 0x8CA1
+#define GL_UPPER_LEFT_EXT 0x8CA2
+#define GL_NEGATIVE_ONE_TO_ONE_EXT 0x935E
+#define GL_ZERO_TO_ONE_EXT 0x935F
+#define GL_CLIP_ORIGIN_EXT 0x935C
+#define GL_CLIP_DEPTH_MODE_EXT 0x935D
+
 /* GL_EXT_depth_clamp */
 
 #define GL_DEPTH_CLAMP_EXT 0x864F
@@ -2101,6 +2110,10 @@ struct FlextGL {
     void(APIENTRY *TexParameterIuiv)(GLenum, GLenum, const GLuint *);
     void(APIENTRY *TexStorage3DMultisample)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean);
 
+    /* GL_EXT_clip_control */
+
+    void(APIENTRY *ClipControlEXT)(GLenum, GLenum);
+
     /* GL_EXT_copy_image */
 
     void(APIENTRY *CopyImageSubDataEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei);
@@ -2451,6 +2464,10 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glTexParameterIiv flextGL.TexParameterIiv
 #define glTexParameterIuiv flextGL.TexParameterIuiv
 #define glTexStorage3DMultisample flextGL.TexStorage3DMultisample
+
+/* GL_EXT_clip_control */
+
+#define glClipControlEXT flextGL.ClipControlEXT
 
 /* GL_EXT_copy_image */
 

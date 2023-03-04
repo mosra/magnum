@@ -326,6 +326,16 @@ void Renderer::depthRangefImplementationDefault(const Float near, const Float fa
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+void Renderer::setClipControl(const ClipOrigin origin, const ClipDepth depth) {
+    #ifndef MAGNUM_TARGET_GLES
+    glClipControl(GLenum(origin), GLenum(depth));
+    #else
+    glClipControlEXT(GLenum(origin), GLenum(depth));
+    #endif
+}
+#endif
+
 void Renderer::setColorMask(const GLboolean allowRed, const GLboolean allowGreen, const GLboolean allowBlue, const GLboolean allowAlpha) {
     glColorMask(allowRed, allowGreen, allowBlue, allowAlpha);
 }

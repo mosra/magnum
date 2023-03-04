@@ -54,6 +54,9 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.RenderbufferStorageMultisampleAPPLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei)>(loader.load("glRenderbufferStorageMultisampleAPPLE"));
     flextGL.ResolveMultisampleFramebufferAPPLE = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glResolveMultisampleFramebufferAPPLE"));
 
+    /* GL_EXT_clip_control */
+    flextGL.ClipControlEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glClipControlEXT"));
+
     /* GL_EXT_debug_label */
     flextGL.GetObjectLabelEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *)>(loader.load("glGetObjectLabelEXT"));
     flextGL.LabelObjectEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(loader.load("glLabelObjectEXT"));

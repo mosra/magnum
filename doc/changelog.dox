@@ -101,6 +101,9 @@ See also:
     matching @gl_extension{OES,texture_view} and @gl_extension{EXT,texture_view}
     extensions on GLES 3.1+, exposed as @ref GL::Texture::view() and similar
     APIs on other texture types
+-   Implemented the GL 4.5 @gl_extension{ARB,clip_control} extension and
+    matching @gl_extension{EXT,clip_control} extension on GLES, exposed as
+    @ref GL::Renderer::setClipControl(). See also [mosra/magnum#543](https://github.com/mosra/magnum/issues/543).
 -   Implemented @gl_extension{EXT,texture_norm16} and
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all

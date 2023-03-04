@@ -36,6 +36,7 @@
 #undef glMultiDrawElementsInstancedANGLE
 #undef glRenderbufferStorageMultisampleAPPLE
 #undef glResolveMultisampleFramebufferAPPLE
+#undef glClipControlEXT
 #undef glGetObjectLabelEXT
 #undef glLabelObjectEXT
 #undef glInsertEventMarkerEXT
@@ -200,6 +201,11 @@ void flextGLInit(Magnum::GL::Context&) {
     #if GL_APPLE_framebuffer_multisample
     flextGL.RenderbufferStorageMultisampleAPPLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei)>(glRenderbufferStorageMultisampleAPPLE);
     flextGL.ResolveMultisampleFramebufferAPPLE = reinterpret_cast<void(APIENTRY*)(void)>(glResolveMultisampleFramebufferAPPLE);
+    #endif
+
+    /* GL_EXT_clip_control */
+    #if GL_EXT_clip_control
+    flextGL.ClipControlEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(glClipControlEXT);
     #endif
 
     /* GL_EXT_debug_label */
