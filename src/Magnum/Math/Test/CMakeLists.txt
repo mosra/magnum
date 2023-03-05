@@ -41,6 +41,13 @@ corrade_add_test(MathVectorTest VectorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector2Test Vector2Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector3Test Vector3Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector4Test Vector4Test.cpp LIBRARIES MagnumMathTestLib)
+
+foreach(_test VectorTest Vector2Test Vector3Test Vector4Test)
+    corrade_add_test(Cpp14Math${_test} ${_test}.cpp LIBRARIES MagnumMathTestLib)
+    set_target_properties(Cpp14Math${_test} PROPERTIES CORRADE_CXX_STANDARD 14)
+    target_compile_definitions(Cpp14Math${_test} PRIVATE TESTING_CONSTEXPR CORRADE_GRACEFUL_ASSERT)
+endforeach()
+
 corrade_add_test(MathColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
 
 corrade_add_test(MathRectangularMatrixTest RectangularMatrixTest.cpp LIBRARIES MagnumMathTestLib)
