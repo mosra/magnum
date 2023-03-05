@@ -696,28 +696,6 @@ vert.addSource(Utility::format(
 
 {
 GL::Mesh mesh;
-/* [PhongGL-usage-instancing] */
-struct {
-    Matrix4 transformation;
-    Matrix3x3 normal;
-} instanceData[] {
-    {Matrix4::translation({1.0f, 2.0f, 0.0f})*Matrix4::rotationX(90.0_degf), {}},
-    {Matrix4::translation({2.0f, 1.0f, 0.0f})*Matrix4::rotationY(90.0_degf), {}},
-    {Matrix4::translation({3.0f, 0.0f, 1.0f})*Matrix4::rotationZ(90.0_degf), {}},
-    // ...
-};
-for(auto& instance: instanceData)
-    instance.normal = instance.transformation.normalMatrix();
-
-mesh.setInstanceCount(Containers::arraySize(instanceData))
-    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
-        Shaders::PhongGL::TransformationMatrix{},
-        Shaders::PhongGL::NormalMatrix{});
-/* [PhongGL-usage-instancing] */
-}
-
-{
-GL::Mesh mesh;
 /* [MeshVisualizerGL2D-usage-instancing] */
 Matrix3 instancedTransformations[] {
     Matrix3::translation({1.0f, 2.0f}),
@@ -1062,6 +1040,28 @@ shader.bindTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr, nullptr
     .setDiffuseColor(Color4{diffuseRgb, 0.0f})
     .setSpecularColor(Color4{specularRgb, 0.0f});
 /* [PhongGL-usage-alpha] */
+}
+
+{
+GL::Mesh mesh;
+/* [PhongGL-usage-instancing] */
+struct {
+    Matrix4 transformation;
+    Matrix3x3 normal;
+} instanceData[] {
+    {Matrix4::translation({1.0f, 2.0f, 0.0f})*Matrix4::rotationX(90.0_degf), {}},
+    {Matrix4::translation({2.0f, 1.0f, 0.0f})*Matrix4::rotationY(90.0_degf), {}},
+    {Matrix4::translation({3.0f, 0.0f, 1.0f})*Matrix4::rotationZ(90.0_degf), {}},
+    // ...
+};
+for(auto& instance: instanceData)
+    instance.normal = instance.transformation.normalMatrix();
+
+mesh.setInstanceCount(Containers::arraySize(instanceData))
+    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        Shaders::PhongGL::TransformationMatrix{},
+        Shaders::PhongGL::NormalMatrix{});
+/* [PhongGL-usage-instancing] */
 }
 
 #ifndef MAGNUM_TARGET_GLES2
