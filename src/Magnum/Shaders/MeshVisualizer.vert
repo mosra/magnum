@@ -516,7 +516,11 @@ void main() {
     #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
     mediump const mat3 normalMatrix = mat3(draws[drawId].normalMatrix);
     #endif
+    #if MATERIAL_COUNT > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    #else
+    #define materialId 0u
+    #endif
     lowp float colorMapOffset = materials[materialId].material_colorMapOffset;
     lowp float colorMapScale = materials[materialId].material_colorMapScale;
     #if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)

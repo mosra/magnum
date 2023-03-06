@@ -292,7 +292,11 @@ void main() {
     #define drawId drawOffset
     #endif
 
+    #if MATERIAL_COUNT > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
+    #else
+    #define materialId 0u
+    #endif
     #if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
     lowp const vec4 color = materials[materialId].color;
     lowp const vec4 wireframeColor = materials[materialId].wireframeColor;
