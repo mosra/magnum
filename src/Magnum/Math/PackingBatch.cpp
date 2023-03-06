@@ -26,6 +26,7 @@
 #include "PackingBatch.h"
 
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Math/Packing.h"
@@ -398,6 +399,65 @@ void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, c
 
 void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
     castIntoImplementation(src, dst);
+}
+
+namespace {
+
+template<class T> inline void copyImplementation(const Corrade::Containers::StridedArrayView2D<const T>& src, const Corrade::Containers::StridedArrayView2D<T>& dst) {
+    /* Utility::copy() has its own assertions, but those are debug-only for
+       perf reasons and don't require the second dimension to be contiguous.
+       Here the use case is different and the behavior should be consistent
+       with other castInto() overloads to avoid surprises. */
+    CORRADE_ASSERT(src.size() == dst.size(),
+        "Math::castInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
+    CORRADE_ASSERT(src.template isContiguous<1>(),
+        "Math::castInto(): second source view dimension is not contiguous", );
+    CORRADE_ASSERT(dst.template isContiguous<1>(),
+        "Math::castInto(): second destination view dimension is not contiguous", );
+
+    Corrade::Utility::copy(src, dst);
+}
+
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
+    copyImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst) {
+    copyImplementation(src, dst);
 }
 
 static_assert(sizeof(HalfMantissaTable) + sizeof(HalfOffsetTable) + sizeof(HalfExponentTable) == 8576,

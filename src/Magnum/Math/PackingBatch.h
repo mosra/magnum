@@ -557,6 +557,73 @@ contiguous.
 */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
+/**
+@brief Copy values
+@param[in]  src     Source values
+@param[out] dst     Destination values
+@m_since_latest
+
+Provided for convenience when writing generic code, delegates to @relativeref{Corrade,Utility::copy()}. Expects that @p src and @p dst have the
+same size, for consistency with other @ref castInto() expects also that the
+second dimension in both is contiguous even though it's not required by
+@relativeref{Corrade,Utility::copy()}.
+*/
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+
 /* Since 1.8.17, the original short-hand group closing doesn't work anymore.
    FFS. */
 /**

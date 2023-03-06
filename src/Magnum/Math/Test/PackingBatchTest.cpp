@@ -56,8 +56,7 @@ struct PackingBatchTest: Corrade::TestSuite::Tester {
 
     template<class T, class U> void castUnsignedInteger();
     template<class T, class U> void castSignedInteger();
-
-    void castFloatDouble();
+    template<class T, class U> void castFloatDouble();
 
     template<class T> void assertionsPackUnpack();
     void assertionsPackUnpackHalf();
@@ -90,20 +89,29 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::castSignedFloatingPoint<Double, Short>,
               &PackingBatchTest::castSignedFloatingPoint<Double, Int>,
 
+              &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedByte>,
               &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedShort>,
               &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedInt>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedShort>,
               &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedInt>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedInt, UnsignedInt>,
               &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedLong>,
               &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedLong>,
               &PackingBatchTest::castUnsignedInteger<UnsignedInt, UnsignedLong>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedLong, UnsignedLong>,
+              &PackingBatchTest::castSignedInteger<Byte, Byte>,
               &PackingBatchTest::castSignedInteger<Byte, Short>,
               &PackingBatchTest::castSignedInteger<Byte, Int>,
+              &PackingBatchTest::castSignedInteger<Short, Short>,
               &PackingBatchTest::castSignedInteger<Short, Int>,
+              &PackingBatchTest::castSignedInteger<Int, Int>,
               &PackingBatchTest::castSignedInteger<Byte, Long>,
               &PackingBatchTest::castSignedInteger<Short, Long>,
               &PackingBatchTest::castSignedInteger<Int, Long>,
-
-              &PackingBatchTest::castFloatDouble,
+              &PackingBatchTest::castSignedInteger<Long, Long>,
+              &PackingBatchTest::castFloatDouble<Float, Double>,
+              &PackingBatchTest::castFloatDouble<Float, Float>,
+              &PackingBatchTest::castFloatDouble<Double, Double>,
 
               &PackingBatchTest::assertionsPackUnpack<UnsignedByte>,
               &PackingBatchTest::assertionsPackUnpack<Byte>,
@@ -122,19 +130,29 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::assertionsCast<Double, Short>,
               &PackingBatchTest::assertionsCast<Double, UnsignedInt>,
               &PackingBatchTest::assertionsCast<Double, Int>,
+              &PackingBatchTest::assertionsCast<UnsignedByte, UnsignedByte>,
               &PackingBatchTest::assertionsCast<UnsignedShort, UnsignedByte>,
+              &PackingBatchTest::assertionsCast<UnsignedShort, UnsignedShort>,
               &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedByte>,
               &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedShort>,
+              &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedInt>,
               &PackingBatchTest::assertionsCast<UnsignedLong, UnsignedByte>,
               &PackingBatchTest::assertionsCast<UnsignedLong, UnsignedShort>,
               &PackingBatchTest::assertionsCast<UnsignedLong, UnsignedInt>,
+              &PackingBatchTest::assertionsCast<UnsignedLong, UnsignedLong>,
+              &PackingBatchTest::assertionsCast<Byte, Byte>,
               &PackingBatchTest::assertionsCast<Short, Byte>,
+              &PackingBatchTest::assertionsCast<Short, Short>,
               &PackingBatchTest::assertionsCast<Int, Byte>,
               &PackingBatchTest::assertionsCast<Int, Short>,
+              &PackingBatchTest::assertionsCast<Int, Int>,
               &PackingBatchTest::assertionsCast<Long, Byte>,
               &PackingBatchTest::assertionsCast<Long, Short>,
               &PackingBatchTest::assertionsCast<Long, Int>,
-              &PackingBatchTest::assertionsCast<Double, Float>});
+              &PackingBatchTest::assertionsCast<Long, Long>,
+              &PackingBatchTest::assertionsCast<Float, Float>,
+              &PackingBatchTest::assertionsCast<Double, Float>,
+              &PackingBatchTest::assertionsCast<Double, Double>});
 }
 
 typedef Math::Constants<Float> Constants;
@@ -603,38 +621,38 @@ template<class T, class U> void PackingBatchTest::castSignedInteger() {
         Corrade::TestSuite::Compare::Container);
 }
 
-void PackingBatchTest::castFloatDouble() {
+template<class T, class U> void PackingBatchTest::castFloatDouble() {
     struct Data {
-        Math::Vector2<Float> src;
-        Math::Vector2<Double> dst;
+        Math::Vector2<T> src;
+        Math::Vector2<U> dst;
     } data[]{
-        {{0.25f, -89.5f}, {}},
-        {{-119.0f, 22.75f}, {}},
-        {{13.0f, 127.5f}, {}}
+        {{T(0.25), T(-89.5)}, {}},
+        {{T(-119.0), T(22.75)}, {}},
+        {{T(13.0), T(127.5)}, {}}
     };
 
-    constexpr Math::Vector2<Double> expectedTargetType[] {
-        {0.25, -89.5},
-        {-119.0, 22.75},
-        {13.0, 127.5}
+    constexpr Math::Vector2<U> expectedTargetType[] {
+        {U(0.25), U(-89.5)},
+        {U(-119.0), U(22.75)},
+        {U(13.0), U(127.5)}
     };
 
-    constexpr Math::Vector2<Float> expectedOriginalType[] {
-        {0.25f, -89.5f},
-        {-119.0f, 22.75f},
-        {13.0f, 127.5f}
+    constexpr Math::Vector2<T> expectedOriginalType[] {
+        {T(0.25), T(-89.5)},
+        {T(-119.0), T(22.75)},
+        {T(13.0), T(127.5)}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<Float>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<Double>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, Float>(src),
-             Corrade::Containers::arrayCast<2, Double>(dst));
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Corrade::Containers::arrayCast<2, T>(src),
+             Corrade::Containers::arrayCast<2, U>(dst));
     CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedTargetType),
         Corrade::TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, Double>(dst),
-             Corrade::Containers::arrayCast<2, Float>(src));
+    castInto(Corrade::Containers::arrayCast<2, U>(dst),
+             Corrade::Containers::arrayCast<2, T>(src));
     CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
         Corrade::TestSuite::Compare::Container);
 }
