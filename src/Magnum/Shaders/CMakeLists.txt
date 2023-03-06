@@ -31,7 +31,11 @@ if(NOT MAGNUM_WITH_GL)
     message(SEND_ERROR "Shaders are available only if MAGNUM_WITH_GL is enabled")
 endif()
 
-corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gl.conf)
+if(MAGNUM_TARGET_GLES2)
+    corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gles2.conf)
+else()
+    corrade_add_resource(MagnumShaders_RESOURCES_GL resources-gl.conf)
+endif()
 
 set(MagnumShaders_SRCS
     ${MagnumShaders_RESOURCES_GL})
