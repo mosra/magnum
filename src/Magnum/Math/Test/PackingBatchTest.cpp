@@ -95,12 +95,13 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedInt>,
               &PackingBatchTest::castUnsignedInteger<UnsignedByte, UnsignedLong>,
               &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedLong>,
-              &PackingBatchTest::castUnsignedInteger<UnsignedShort, UnsignedLong>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedInt, UnsignedLong>,
               &PackingBatchTest::castSignedInteger<Byte, Short>,
               &PackingBatchTest::castSignedInteger<Byte, Int>,
               &PackingBatchTest::castSignedInteger<Short, Int>,
               &PackingBatchTest::castSignedInteger<Byte, Long>,
               &PackingBatchTest::castSignedInteger<Short, Long>,
+              &PackingBatchTest::castSignedInteger<Int, Long>,
 
               &PackingBatchTest::castFloatDouble,
 
