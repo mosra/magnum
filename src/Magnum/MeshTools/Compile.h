@@ -326,8 +326,12 @@ similarly with other builtin shaders.
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 
-@requires_gles30 Not defined on OpenGL ES 2.0 builds.
-@requires_webgl20 Not defined on WebGL 1.0 builds.
+@requires_gles30 Skinning implementation in builtin shaders requires integer
+    support which is not available in OpenGL ES 2.0, thus neither this function
+    is defined in OpenGL ES 2.0 builds.
+@requires_webgl20 Skinning implementation in builtin shaders requires integer
+    support which is not available in WebGL 1.0, thus neither this function is
+    defined in WebGL 1.0 builds.
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Trade::MeshData& meshData);
 #endif
