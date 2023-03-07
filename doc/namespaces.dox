@@ -685,19 +685,24 @@ See @ref building, @ref cmake and @ref shaders for more information.
 
 @parblock
 
-@m_div{m-col-m-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-flat.png width=256px
 @ref FlatGL @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
 @m_enddiv
 
-@m_div{m-col-m-4 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-phong.png width=256px
 @ref PhongGL @m_class{m-label m-primary} **3D**
 @m_enddiv
 
 @m_div{m-clearfix-t} @m_enddiv
 
-@m_div{m-col-m-4 m-push-t-3 m-push-m-0 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html shaders-line.png width=256px
+@ref LineGL @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@m_enddiv
+
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
 @image html shaders-vertexcolor.png width=256px
 @ref VertexColorGL @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
 @m_enddiv

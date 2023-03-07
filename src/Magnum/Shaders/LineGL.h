@@ -68,6 +68,8 @@ Renders lines expanded to quads in screen space. Compared to builtin GPU line
 rendering, the lines can be of arbitrary width, with configurable join and cap
 styles, and antialiased independently of MSAA being used or not.
 
+@image html shaders-line.png width=256px
+
 @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
 @requires_gles30 Requires integer support in shaders which is not available in
     OpenGL ES 2.0.

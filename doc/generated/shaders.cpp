@@ -55,12 +55,14 @@
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/MeshTools/Compile.h>
+#include <Magnum/MeshTools/CompileLines.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Primitives/Square.h>
 #include <Magnum/Primitives/Circle.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/UVSphere.h>
 #include <Magnum/Shaders/FlatGL.h>
+#include <Magnum/Shaders/LineGL.h>
 #include <Magnum/Shaders/MeshVisualizerGL.h>
 #include <Magnum/Shaders/PhongGL.h>
 #include <Magnum/Shaders/VertexColorGL.h>
@@ -80,6 +82,7 @@ struct ShaderVisualizer: Platform::WindowlessApplication {
     int exec() override;
 
     Containers::StringView phong();
+    Containers::StringView line();
     Containers::StringView meshVisualizer2D();
     Containers::StringView meshVisualizer2DPrimitiveId();
     Containers::StringView meshVisualizer3D();
@@ -132,6 +135,7 @@ int ShaderVisualizer::exec() {
     GL::Renderer::setClearColor(0x000000_srgbaf);
 
     for(auto fun: {&ShaderVisualizer::phong,
+                   &ShaderVisualizer::line,
                    &ShaderVisualizer::meshVisualizer2D,
                    &ShaderVisualizer::meshVisualizer2DPrimitiveId,
                    &ShaderVisualizer::meshVisualizer3D,
@@ -173,6 +177,43 @@ Containers::StringView ShaderVisualizer::phong() {
         .draw(MeshTools::compile(Primitives::uvSphereSolid(16, 32)));
 
     return "phong.png";
+}
+
+Containers::StringView ShaderVisualizer::line() {
+    struct Vertex {
+        Vector2 position;
+        Color3ub color;
+    };
+    Containers::Array<Vertex> vertices{NoInit, 1024};
+    const auto map = DebugTools::ColorMap::turbo();
+
+    for(std::size_t i = 0; i != vertices.size(); ++i) {
+        const Rad t{Constants::tau()*Float(i)/Float(vertices.size())};
+        vertices[i].position = {
+            /* Original from https://www.quantamagazine.org/how-to-create-art-with-mathematics-20151008/
+                Math::cos(t) + Math::cos(6*t)/2 + Math::sin(14*t)/3,
+                Math::sin(t) + Math::sin(6*t)/2 + Math::cos(14*t)/3 */
+            Math::cos(t) + Math::cos(6*t)/3 + Math::sin(14*t)/3,
+            Math::sin(t) + Math::sin(6*t)/3 + Math::cos(14*t)/3
+        };
+        vertices[i].color = map[i/4];
+    }
+
+    Trade::MeshData mesh{MeshPrimitive::LineLoop, {}, vertices, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, stridedArrayView(vertices).slice(&Vertex::position)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color, stridedArrayView(vertices).slice(&Vertex::color)},
+    }};
+
+    Shaders::LineGL2D shader{Shaders::LineGL2D::Configuration{}
+        .setFlags(Shaders::LineGL2D::Flag::VertexColor)};
+    shader
+        .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
+        .setViewportSize(Vector2{ImageSize})
+        .setWidth(5.0f)
+        .setSmoothness(1.0f)
+        .draw(MeshTools::compileLines(mesh));
+
+    return "line.png";
 }
 
 Containers::StringView ShaderVisualizer::meshVisualizer2D() {
