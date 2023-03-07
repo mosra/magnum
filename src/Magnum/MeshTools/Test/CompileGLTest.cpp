@@ -98,38 +98,37 @@ CORRADE_ENUMSET_OPERATORS(Flags)
 #endif
 
 struct CompileGLTest: GL::OpenGLTester {
-    public:
-        explicit CompileGLTest();
+    explicit CompileGLTest();
 
-        void renderSetup();
-        void renderTeardown();
+    void renderSetup();
+    void renderTeardown();
 
-        /** @todo remove the template once MeshDataXD is gone */
-        template<class T> void twoDimensions();
-        template<class T> void threeDimensions();
+    /** @todo remove the template once MeshDataXD is gone */
+    template<class T> void twoDimensions();
+    template<class T> void threeDimensions();
 
-        void packedAttributes();
+    void packedAttributes();
 
-        #ifndef MAGNUM_TARGET_GLES2
-        /* Tests also compiledPerVertexJointCount() */
-        void skinning();
-        void skinningPackedAttributes();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Tests also compiledPerVertexJointCount() */
+    void skinning();
+    void skinningPackedAttributes();
+    #endif
 
-        void conflictingAttributes();
-        void unsupportedIndexStride();
+    void conflictingAttributes();
+    void unsupportedIndexStride();
 
-        void customAttribute();
-        void unsupportedAttribute();
-        void unsupportedAttributeStride();
-        void implementationSpecificAttributeFormat();
+    void customAttribute();
+    void unsupportedAttribute();
+    void unsupportedAttributeStride();
+    void implementationSpecificAttributeFormat();
 
-        void generateNormalsNoPosition();
-        void generateNormals2DPosition();
-        void generateNormalsNoFloats();
+    void generateNormalsNoPosition();
+    void generateNormals2DPosition();
+    void generateNormalsNoFloats();
 
-        void externalBuffers();
-        void externalBuffersInvalid();
+    void externalBuffers();
+    void externalBuffersInvalid();
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
