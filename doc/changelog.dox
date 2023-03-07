@@ -227,6 +227,9 @@ See also:
     and @ref MeshTools::transformTextureCoordinates2D() APIs for converting
     positions, normals, tangents, bitangents and texture coordinates directly
     in @ref Trade::MeshData instances
+-   New @ref MeshTools::compileLines() utility for creating meshes compatible
+    with the new @ref Shaders::LineGL. See also
+    [mosra/magnum#601](https://github.com/mosra/magnum/pull/601).
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
@@ -270,6 +273,10 @@ See also:
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
+-   New @ref Shaders::LineGL shader for rendering wide anti-aliased lines with
+    configurable join and cap rasterization. See also
+    [mosra/magnum#601](https://github.com/mosra/magnum/pull/601) and
+    [mosra/magnum#610](https://github.com/mosra/magnum/pull/610).
 -   All builtin shaders now have opt-in support for uniform buffers on desktop,
     OpenGL ES 3.0+ and WebGL 2.0, including multi-draw functionality for
     massive driver overhead reduction. The @ref shaders overview page was
