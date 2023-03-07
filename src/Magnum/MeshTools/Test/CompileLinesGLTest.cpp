@@ -260,8 +260,8 @@ void CompileLinesGLTest::linePrimitiveCompatibility() {
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileLinesTestFiles/line-primitive.tga"),
         /* Two/three pixel difference on NVidia vs. Mesa Intel vs Mesa
-           llvmpipe */
-        (DebugTools::CompareImageToFile{_manager, 36.0f, 0.105f}));
+           llvmpipe, some more on SwiftShader */
+        (DebugTools::CompareImageToFile{_manager, 54.25f, 0.139f}));
 
     _framebuffer.clear(GL::FramebufferClear::Color);
 
@@ -274,8 +274,8 @@ void CompileLinesGLTest::linePrimitiveCompatibility() {
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileLinesTestFiles/line-primitive.tga"),
         /* Two/three pixel difference on NVidia vs. Mesa Intel vs Mesa
-           llvmpipe */
-        (DebugTools::CompareImageToFile{_manager, 36.0f, 0.07f}));
+           llvmpipe, some more on SwiftShader */
+        (DebugTools::CompareImageToFile{_manager, 54.25f, 0.139f}));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 }
