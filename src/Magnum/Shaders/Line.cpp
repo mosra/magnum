@@ -26,6 +26,7 @@
 #include "Line.h"
 
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/EnumSet.hpp>
 
 #include "Magnum/Shaders/Implementation/lineMiterLimit.h"
 
@@ -71,6 +72,33 @@ Debug& operator<<(Debug& debug, const LineJoinStyle value) {
     }
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const LineVertexAnnotation value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Shaders::LineVertexAnnotation" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case LineVertexAnnotation::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
+        _c(Up)
+        _c(Join)
+        _c(Begin)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const LineVertexAnnotations value) {
+    return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Shaders::LineVertexAnnotations{}", {
+        LineVertexAnnotation::Up,
+        LineVertexAnnotation::Join,
+        LineVertexAnnotation::Begin,
+    });
 }
 
 }}

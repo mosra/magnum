@@ -53,6 +53,10 @@ struct LineTest: TestSuite::Tester {
 
     void debugCapStyle();
     void debugJoinStyle();
+    void debugVertexAnnotation();
+    void debugVertexAnnotationPacked();
+    void debugVertexAnnotations();
+    void debugVertexAnnotationsPacked();
 };
 
 using namespace Math::Literals;
@@ -99,7 +103,11 @@ LineTest::LineTest() {
         Containers::arraySize(MaterialUniformSetMiterAngleLimitInvalidData));
 
     addTests({&LineTest::debugCapStyle,
-              &LineTest::debugJoinStyle});
+              &LineTest::debugJoinStyle,
+              &LineTest::debugVertexAnnotation,
+              &LineTest::debugVertexAnnotationPacked,
+              &LineTest::debugVertexAnnotations,
+              &LineTest::debugVertexAnnotationsPacked});
 }
 
 template<class> struct UniformTraits;
@@ -299,6 +307,36 @@ void LineTest::debugJoinStyle() {
     std::ostringstream out;
     Debug{&out} << LineJoinStyle::Bevel << LineJoinStyle(0xb0);
     CORRADE_COMPARE(out.str(), "Shaders::LineJoinStyle::Bevel Shaders::LineJoinStyle(0xb0)\n");
+}
+
+void LineTest::debugVertexAnnotation() {
+    /* The values are guaranteed to fit into 8 bytes but the type itself is
+       32bit to avoid surprises when passing it to the default-constructed
+       LineGL::Annotation attribute (which defaults to 32bit), so it should
+       also print the whole 32bit value. */
+    std::ostringstream out;
+    Debug{&out} << LineVertexAnnotation::Join << LineVertexAnnotation(0xcafecafe);
+    CORRADE_COMPARE(out.str(), "Shaders::LineVertexAnnotation::Join Shaders::LineVertexAnnotation(0xcafecafe)\n");
+}
+
+void LineTest::debugVertexAnnotationPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << LineVertexAnnotation::Join << Debug::packed << LineVertexAnnotation(0xcafecafe) << LineVertexAnnotation::Begin;
+    CORRADE_COMPARE(out.str(), "Join 0xcafecafe Shaders::LineVertexAnnotation::Begin\n");
+}
+
+void LineTest::debugVertexAnnotations() {
+    std::ostringstream out;
+    Debug{&out} << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << LineVertexAnnotations{};
+    CORRADE_COMPARE(out.str(), "Shaders::LineVertexAnnotation::Up|Shaders::LineVertexAnnotation::Join|Shaders::LineVertexAnnotation(0xb00) Shaders::LineVertexAnnotations{}\n");
+}
+
+void LineTest::debugVertexAnnotationsPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << (LineVertexAnnotation::Up|LineVertexAnnotation::Join|LineVertexAnnotation(0xb00)) << Debug::packed << LineVertexAnnotations{} << LineVertexAnnotation::Begin;
+    CORRADE_COMPARE(out.str(), "Up|Join|0xb00 {} Shaders::LineVertexAnnotation::Begin\n");
 }
 
 }}}}

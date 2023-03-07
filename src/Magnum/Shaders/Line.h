@@ -212,6 +212,18 @@ MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, LineCapStyle value);
 MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, LineJoinStyle value);
 
 /**
+ * @debugoperatorenum{LineVertexAnnotation}
+ * @m_since_latest
+ */
+MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, LineVertexAnnotation value);
+
+/**
+ * @debugoperatorenum{LineVertexAnnotations}
+ * @m_since_latest
+ */
+MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, LineVertexAnnotations value);
+
+/**
 @brief Per-draw uniform for line shaders
 @m_since_latest
 
