@@ -189,7 +189,9 @@ void CompileLinesGLTest::twoDimensions() {
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join({MESHTOOLS_TEST_DIR, "CompileLinesTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences in vertex color rendering on NVidia vs Mesa
+           Intel */
+        (DebugTools::CompareImageToFile{_manager, 0.25f, 0.007f}));
 }
 
 void CompileLinesGLTest::threeDimensions() {
@@ -257,7 +259,9 @@ void CompileLinesGLTest::linePrimitiveCompatibility() {
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileLinesTestFiles/line-primitive.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Two/three pixel difference on NVidia vs. Mesa Intel vs Mesa
+           llvmpipe */
+        (DebugTools::CompareImageToFile{_manager, 36.0f, 0.105f}));
 
     _framebuffer.clear(GL::FramebufferClear::Color);
 
@@ -269,7 +273,9 @@ void CompileLinesGLTest::linePrimitiveCompatibility() {
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Path::join(MESHTOOLS_TEST_DIR, "CompileLinesTestFiles/line-primitive.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Two/three pixel difference on NVidia vs. Mesa Intel vs Mesa
+           llvmpipe */
+        (DebugTools::CompareImageToFile{_manager, 36.0f, 0.07f}));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 }

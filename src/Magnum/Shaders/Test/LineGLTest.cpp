@@ -1360,7 +1360,8 @@ template<LineGL2D::Flag flag> void LineGLTest::renderLineCapsJoins2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0025f}));
 
     {
         /** @todo drop this when fixed */
@@ -1425,8 +1426,9 @@ void LineGLTest::renderLineCapsJoins2DReversed() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
+        /* Minor differences on NVidia vs Mesa Intel */
         /** @todo sync this with render2D() once the overlaps are fixed */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0005f}));
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0025f}));
 }
 
 void LineGLTest::renderLineCapsJoins2DTransformed() {
@@ -1486,7 +1488,8 @@ void LineGLTest::renderLineCapsJoins2DTransformed() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0025f}));
 }
 
 template<LineGL3D::Flag flag> void LineGLTest::renderCube3D() {
@@ -1668,7 +1671,8 @@ template<LineGL3D::Flag flag> void LineGLTest::renderCube3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
         Utility::Path::join({SHADERS_TEST_DIR, "LineTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0031f}));
 }
 
 void LineGLTest::renderPerspective3D() {
@@ -1790,7 +1794,8 @@ template<class T, LineGL2D::Flag flag> void LineGLTest::renderVertexColor2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/vertex-color.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 0.34f, 0.0019f}));
 }
 
 template<class T, LineGL3D::Flag flag> void LineGLTest::renderVertexColor3D() {
@@ -1881,7 +1886,8 @@ template<class T, LineGL3D::Flag flag> void LineGLTest::renderVertexColor3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/vertex-color.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 0.34f, 0.0019f}));
 }
 
 template<LineGL2D::Flag flag> void LineGLTest::renderObjectId2D() {
@@ -2169,7 +2175,8 @@ template<LineGL2D::Flag flag> void LineGLTest::renderInstanced2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/instanced.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.001f}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
        on known places have expected values. SwiftShader insists that the read
@@ -2303,7 +2310,8 @@ template<LineGL3D::Flag flag> void LineGLTest::renderInstanced3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/instanced.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.001f}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
        on known places have expected values. SwiftShader insists that the read
@@ -2520,7 +2528,8 @@ void LineGLTest::renderMulti2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/multidraw.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.00125f}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
        on known places have expected values. SwiftShader insists that the read
@@ -2734,7 +2743,8 @@ void LineGLTest::renderMulti3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/multidraw.tga"),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on NVidia vs Mesa Intel */
+        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.00125f}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
        on known places have expected values. SwiftShader insists that the read
