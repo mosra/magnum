@@ -1013,6 +1013,8 @@ template<UnsignedInt dimensions> Containers::Array<Vertex<dimensions>> generateL
     return vertices;
 }
 
+/* Order consistent with what MeshTools::compileLines() does to avoid pointless
+   differences */
 Containers::Array<UnsignedInt> generateLineMeshIndices(Containers::StridedArrayView1D<const LineVertexAnnotations> vertexAnnotations) {
     Containers::Array<UnsignedInt> indices;
     for(UnsignedInt i = 0; i != vertexAnnotations.size()/4; ++i) {
@@ -1022,12 +1024,12 @@ Containers::Array<UnsignedInt> generateLineMeshIndices(Containers::StridedArrayV
            |/ /  |
            1 1---3 */
         arrayAppend(indices, {
+            i*4 + 2,
             i*4 + 0,
             i*4 + 1,
-            i*4 + 2,
-            i*4 + 2,
             i*4 + 1,
-            i*4 + 3
+            i*4 + 3,
+            i*4 + 2
         });
 
         /* Add also indices for the bevel in both orientations (one will always
