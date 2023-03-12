@@ -149,10 +149,47 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @brief Copy constructor */
         constexpr /*implicit*/ Vector2(const Vector<2, T>& other) noexcept: Vector<2, T>(other) {}
 
-        T& x() { return Vector<2, T>::_data[0]; } /**< @brief X component */
+        /**
+         * @brief X component
+         *
+         * @see @ref r()
+         */
+        T& x() { return Vector<2, T>::_data[0]; }
         constexpr T x() const { return Vector<2, T>::_data[0]; } /**< @overload */
-        T& y() { return Vector<2, T>::_data[1]; } /**< @brief Y component */
+
+        /**
+         * @brief Y component
+         *
+         * @see @ref g()
+         */
+        T& y() { return Vector<2, T>::_data[1]; }
         constexpr T y() const { return Vector<2, T>::_data[1]; } /**< @overload */
+
+        /**
+         * @brief R component
+         * @m_since_latest
+         *
+         * Equivalent to @ref x().
+         */
+        T& r() { return Vector<2, T>::_data[0]; }
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        constexpr T r() const { return Vector<2, T>::_data[0]; }
+
+        /**
+         * @brief Y component
+         * @m_since_latest
+         *
+         * Equivalent to @ref y().
+         */
+        T& g() { return Vector<2, T>::_data[1]; }
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        constexpr T g() const { return Vector<2, T>::_data[1]; }
 
         /**
          * @brief Perpendicular vector

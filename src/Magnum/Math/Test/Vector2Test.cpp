@@ -204,13 +204,19 @@ void Vector2Test::convert() {
 void Vector2Test::access() {
     Vector2 vec(1.0f, -2.0f);
     CORRADE_COMPARE(vec.x(), 1.0f);
+    CORRADE_COMPARE(vec.r(), 1.0f);
     CORRADE_COMPARE(vec.y(), -2.0f);
+    CORRADE_COMPARE(vec.g(), -2.0f);
 
     constexpr Vector2 cvec(1.0f, -2.0f);
     constexpr Float x = cvec.x();
+    constexpr Float r = cvec.r();
     constexpr Float y = cvec.y();
+    constexpr Float g = cvec.g();
     CORRADE_COMPARE(x, 1.0f);
+    CORRADE_COMPARE(r, 1.0f);
     CORRADE_COMPARE(y, -2.0f);
+    CORRADE_COMPARE(g, -2.0f);
 }
 
 void Vector2Test::cross() {

@@ -262,12 +262,17 @@ void Vector3Test::scales() {
 void Vector3Test::twoComponent() {
     Vector3 a(1.0f, 2.0f, 3.0f);
     CORRADE_COMPARE(a.xy(), Vector2(1.0f, 2.0f));
+    CORRADE_COMPARE(a.rg(), Vector2(1.0f, 2.0f));
 
     constexpr Vector3 b(1.0f, 2.0f, 3.0f);
-    constexpr Vector2 c = b.xy();
-    constexpr Float d = b.xy().y();
-    CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
-    CORRADE_COMPARE(d, 2.0f);
+    constexpr Vector2 c1 = b.xy();
+    constexpr Vector2 c2 = b.rg();
+    constexpr Float d1 = b.xy().y();
+    constexpr Float d2 = b.rg().g();
+    CORRADE_COMPARE(c1, Vector2(1.0f, 2.0f));
+    CORRADE_COMPARE(c2, Vector2(1.0f, 2.0f));
+    CORRADE_COMPARE(d1, 2.0f);
+    CORRADE_COMPARE(d2, 2.0f);
 }
 
 void Vector3Test::strictWeakOrdering() {

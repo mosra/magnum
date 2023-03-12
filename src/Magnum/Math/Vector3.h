@@ -229,12 +229,28 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief XY part of the vector
          * @return First two components of the vector
          *
-         * @see @ref gather(), @ref scatter()
+         * @see @ref rg(), @ref gather(), @ref scatter()
          */
         Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
         constexpr const Vector2<T> xy() const {
             return {Vector<3, T>::_data[0], Vector<3, T>::_data[1]};
         } /**< @overload */
+
+        /**
+         * @brief RG part of the vector
+         * @return First two components of the vector
+         * @m_since_latest
+         *
+         * Equivalent to @ref xy().
+         */
+        Vector2<T>& rg() { return Vector2<T>::from(Vector<3, T>::data()); }
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        constexpr const Vector2<T> rg() const {
+            return {Vector<3, T>::_data[0], Vector<3, T>::_data[1]};
+        }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Vector3)
 
