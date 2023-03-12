@@ -338,6 +338,11 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param depth         Value to clear with
          * @return Reference to self (for method chaining)
          *
+         * Note that, unlike the color and stencil buffer which are often
+         * cleared to a zero value, the depth buffer should be cleared to
+         * @cpp 1.0f @ce --- unless a different (or inverse) range was set in
+         * @ref Renderer::setDepthRange(), @cpp 0.0f @ce is the depth at
+         * the near plane, which isn't a desirable value to clear to.
          * @see @ref clear(), @fn_gl_keyword{ClearNamedFramebuffer}, eventually
          *      @fn_gl{BindFramebuffer}, then @fn_gl_keyword{ClearBuffer}
          * @requires_gl30 Direct framebuffer clearing is not available in
