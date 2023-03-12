@@ -38,14 +38,17 @@ namespace Magnum { namespace Math {
 
 2D version of a cross product, also called a [perp-dot product](https://en.wikipedia.org/wiki/Vector_projection#Scalar_rejection),
 equivalent to calling @ref cross(const Vector3<T>&, const Vector3<T>&) with Z
-coordinate set to `0` and extracting only Z coordinate from the result (X and Y
-coordinates are always zero). Returns `0` either when one of the vectors is
-zero or they are parallel or antiparallel and `1` when two *normalized* vectors
-are perpendicular. @f[
+coordinate set to @cpp 0 @ce and extracting only Z coordinate from the result
+(X and Y coordinates are always zero). Returns @cpp 0 @ce either when one of
+the vectors is zero or they are parallel or antiparallel and @cpp 1 @ce when
+two *normalized* vectors are perpendicular. @f[
     \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
 @f]
 
-Value of a 2D cross product is related to a distance of a point and a line, see
+If @f$ \boldsymbol{a} @f$, @f$ \boldsymbol{b} @f$ and @f$ \boldsymbol{c} @f$
+are corners of a triangle, @f$ \frac{1}{2}|(\boldsymbol{c} - \boldsymbol{b}) \times (\boldsymbol{a} - \boldsymbol{b})| @f$
+is its area. Value of a 2D cross product is also related to a distance of a
+point and a line, see
 @ref Distance::linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
 for more information.
 @see @ref Vector2::perpendicular(),
