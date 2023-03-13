@@ -3755,8 +3755,6 @@ void PhongGLTest::renderLightCulling() {
             .setDiffuseColor(0xccffcc_rgbf)
             .setSpecularColor(0x6666ff_rgbf)
     }};
-    /* Put one light into the first 32-bit component, one into the second to
-       test that both halves are checked correctly */
     PhongLightUniform lights[64];
     lights[57] = PhongLightUniform{}
         .setPosition({-3.0f, -3.0f, 2.0f, 0.0f})
