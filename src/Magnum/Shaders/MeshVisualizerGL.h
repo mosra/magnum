@@ -170,10 +170,10 @@ configure the shader.
 @endparblock
 
 The shader expects that you enable wireframe visualization by passing an
-appropriate @ref Flag to the constructor --- there's no default behavior with
-nothing enabled. The shader is a 2D variant of @ref MeshVisualizerGL3D with
-mostly identical workflow. See its documentation for more information,
-workflows that differ are shown below.
+appropriate @ref Flag to @ref Configuration::setFlags() --- there's no default
+behavior with nothing enabled. The shader is a 2D variant of
+@ref MeshVisualizerGL3D with mostly identical workflow. See its documentation
+for more information, workflows that differ are shown below.
 
 @section Shaders-MeshVisualizerGL2D-instancing Instanced rendering
 
@@ -1390,8 +1390,8 @@ shader.
 
 The shader expects that you enable wireframe visualization, tangent space
 visualization or object/primitive ID visualization by passing an appropriate
-@ref Flag to the constructor --- there's no default behavior with nothing
-enabled.
+@ref Flag to @ref Configuration::setFlags() --- there's no default behavior
+with nothing enabled.
 
 @section Shaders-MeshVisualizerGL3D-wireframe Wireframe visualization
 

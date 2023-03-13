@@ -69,11 +69,11 @@ Common rendering setup:
 
 If you want to use textures, you need to provide also the
 @ref TextureCoordinates attribute. Pass appropriate @ref Flag combination to
-the constructor and then at render time don't forget to also call appropriate
-subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture() and
-@ref bindSpecularTexture() (or the combined @ref bindTextures()). The texture
-is multiplied by the color, which is by default set to fully opaque white for
-enabled textures. Mesh setup with a diffuse and a specular texture:
+@ref Configuration::setFlags() and then at render time don't forget to also
+call appropriate subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture()
+and @ref bindSpecularTexture() (or the combined @ref bindTextures()). The
+texture is multiplied by the color, which is by default set to fully opaque
+white for enabled textures. Mesh setup with a diffuse and a specular texture:
 
 @snippet MagnumShaders-gl.cpp PhongGL-usage-texture1
 
@@ -84,8 +84,8 @@ Common rendering setup:
 @section Shaders-PhongGL-lights Light specification
 
 By default, the shader provides a single directional "fill" light, coming from
-the center of the camera. Using the @p lightCount parameter in constructor, you
-can specify how many lights you want, and then control light parameters using
+the center of the camera. With @ref Configuration::setLightCount() you can
+specify how many lights you want, and then control light parameters using
 @ref setLightPositions(), @ref setLightColors(), @ref setLightSpecularColors()
 and @ref setLightRanges(). Light positions are specified as four-component
 vectors, the last component distinguishing between directional and point
