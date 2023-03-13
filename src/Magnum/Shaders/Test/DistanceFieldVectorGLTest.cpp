@@ -187,7 +187,10 @@ constexpr struct {
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
        and 3+1 in 2D, per-material 4 */
     {"multiple materials, draws", DistanceFieldVectorGL2D::Flag::UniformBuffers, 16, 48},
-    {"multidraw with all the things", DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation, 16, 48}
+    {"multidraw with all the things", DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation, 16, 48},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with all the things", DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw|DistanceFieldVectorGL2D::Flag::TextureTransformation, 0, 0}
+    #endif
 };
 
 constexpr struct {
@@ -196,6 +199,7 @@ constexpr struct {
     UnsignedInt materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData[]{
+    /* These two fail for UBOs but not SSBOs */
     {"zero draws", DistanceFieldVectorGL2D::Flag::UniformBuffers, 1, 0,
         "draw count can't be zero"},
     {"zero materials", DistanceFieldVectorGL2D::Flag::UniformBuffers, 0, 1,
@@ -232,21 +236,40 @@ constexpr struct {
     const char* expected3D;
     DistanceFieldVectorGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
-        {}, 1, 1, 16,
+        {}, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
+    #endif
     {"draw offset", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
-        {}, 2, 3, 1,
+        {}, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
+    #endif
     {"multidraw", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
-        DistanceFieldVectorGL2D::Flag::MultiDraw, 2, 3, 1,
+        DistanceFieldVectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.67f, 0.012f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, shader storage", "multidraw2D-distancefield.tga", "multidraw3D-distancefield.tga",
+        DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.67f, 0.012f},
+    #endif
 };
 #endif
 
@@ -312,10 +335,16 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
         &DistanceFieldVectorGLTest::renderDefaults2D,
         #ifndef MAGNUM_TARGET_GLES2
         &DistanceFieldVectorGLTest::renderDefaults2D<DistanceFieldVectorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &DistanceFieldVectorGLTest::renderDefaults2D<DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &DistanceFieldVectorGLTest::renderDefaults3D,
         #ifndef MAGNUM_TARGET_GLES2
         &DistanceFieldVectorGLTest::renderDefaults3D<DistanceFieldVectorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &DistanceFieldVectorGLTest::renderDefaults3D<DistanceFieldVectorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         &DistanceFieldVectorGLTest::renderSetup,
@@ -326,10 +355,16 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
         &DistanceFieldVectorGLTest::render2D,
         #ifndef MAGNUM_TARGET_GLES2
         &DistanceFieldVectorGLTest::render2D<DistanceFieldVectorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &DistanceFieldVectorGLTest::render2D<DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &DistanceFieldVectorGLTest::render3D,
         #ifndef MAGNUM_TARGET_GLES2
         &DistanceFieldVectorGLTest::render3D<DistanceFieldVectorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &DistanceFieldVectorGLTest::render3D<DistanceFieldVectorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderData),
@@ -422,6 +457,18 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & DistanceFieldVectorGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw) {
@@ -736,6 +783,19 @@ constexpr GL::TextureFormat TextureFormatR =
 
 template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::renderDefaults2D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -779,7 +839,12 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
         shader.draw(square);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers) {
+    else if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -825,6 +890,19 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
 
 template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::renderDefaults3D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == DistanceFieldVectorGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -868,7 +946,12 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
         shader.draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == DistanceFieldVectorGL3D::Flag::UniformBuffers) {
+    else if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
         }};
@@ -917,6 +1000,19 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -968,7 +1064,12 @@ template<DistanceFieldVectorGL2D::Flag flag> void DistanceFieldVectorGLTest::ren
             .draw(square);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers) {
+    else if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(
@@ -1026,6 +1127,19 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == DistanceFieldVectorGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1080,7 +1194,12 @@ template<DistanceFieldVectorGL3D::Flag flag> void DistanceFieldVectorGLTest::ren
             .draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == DistanceFieldVectorGL3D::Flag::UniformBuffers) {
+    else if(flag == DistanceFieldVectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -1144,6 +1263,18 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw) {
@@ -1252,11 +1383,11 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 0);
     drawData[1*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.bindWithOffset ? 0 : 1);
     drawData[2*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     DistanceFieldVectorGL2D shader{DistanceFieldVectorGL2D::Configuration{}
@@ -1265,8 +1396,8 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
         .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             0*data.uniformIncrement*sizeof(DistanceFieldVectorMaterialUniform),
             sizeof(DistanceFieldVectorMaterialUniform));
@@ -1348,6 +1479,18 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= DistanceFieldVectorGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= DistanceFieldVectorGL2D::Flag::MultiDraw) {
@@ -1461,11 +1604,11 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 0);
     drawData[1*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.bindWithOffset ? 0 : 1);
     drawData[2*data.uniformIncrement] = DistanceFieldVectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 0);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     DistanceFieldVectorGL3D shader{DistanceFieldVectorGL3D::Configuration{}
@@ -1474,8 +1617,8 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
         .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             0*data.uniformIncrement*sizeof(DistanceFieldVectorMaterialUniform),
             sizeof(DistanceFieldVectorMaterialUniform));

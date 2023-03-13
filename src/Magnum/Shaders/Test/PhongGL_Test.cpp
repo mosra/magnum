@@ -55,15 +55,12 @@ const struct {
     UnsignedInt count, perDrawCount;
     const char* message;
 } ConfigurationSetLightCountInvalidData[] {
-    {"per-draw count larger than count",
-        10, 11,
-        "per-draw light count expected to be not larger than total count of 10, got 11"},
     {"count but no per-draw count",
         10, 0,
-        "count has to be non-zero iff per-draw count is non-zero"},
-    {"per-draw count but no count",
-        0, 2,
-        "count has to be non-zero iff per-draw count is non-zero"},
+        "count has to be zero if per-draw count is zero"},
+    /* The rest depends on flags being set and is thus verified in constructor,
+       tested in PhongGLTest::constructInvalid() and
+       constructUniformBuffersInvalid() */
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -80,13 +77,10 @@ const struct {
         "expected at most 4 secondary per-vertex joints, got 5"},
     {"joint count but no per-vertex joint count",
         10, 0, 0,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
-    {"per-vertex joint count but no joint count",
-        0, 2, 0,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
-    {"secondary per-vertex joint count but no joint count",
-        0, 0, 3,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
+        "count has to be zero if per-vertex joint count is zero"},
+    /* The rest depends on flags being set and is thus verified in constructor,
+       tested in PhongGLTest::constructInvalid() and
+       constructUniformBuffersInvalid() */
 };
 #endif
 
@@ -195,12 +189,24 @@ void PhongGL_Test::debugFlagsSupersets() {
     }
 
     #ifndef MAGNUM_TARGET_GLES2
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
         Debug{&out} << (PhongGL::Flag::MultiDraw|PhongGL::Flag::UniformBuffers);
         CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::MultiDraw\n");
     }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::PhongGL::Flag::MultiDraw|Shaders::PhongGL::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
     #endif
 }
 

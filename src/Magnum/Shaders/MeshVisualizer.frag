@@ -32,6 +32,10 @@
 #define const
 #endif
 
+#if defined(SHADER_STORAGE_BUFFERS) && !defined(GL_ES)
+#extension GL_ARB_shader_storage_buffer_object: require
+#endif
+
 #if defined(WIREFRAME_RENDERING) && defined(GL_ES) && __VERSION__ < 300
 #extension GL_OES_standard_derivatives : enable
 #endif
@@ -115,11 +119,24 @@ layout(location = 6)
 uniform highp uint objectId; /* defaults to zero */
 #endif
 
-/* Uniform buffers */
+/* Uniform / shader storage buffers */
 
 #else
+/* For SSBOs, the per-draw and material arrays are unbounded */
+#ifdef SHADER_STORAGE_BUFFERS
+#define DRAW_COUNT
+#define MATERIAL_COUNT
+#define BUFFER_OR_UNIFORM buffer
+#define BUFFER_READONLY readonly
+#else
+#define BUFFER_OR_UNIFORM uniform
+#define BUFFER_READONLY
+#endif
+
 #ifndef MULTI_DRAW
-#if DRAW_COUNT > 1
+/* With SSBOs DRAW_COUNT is defined to be empty, +0 makes the condition not
+   cause a compile error */
+#if defined(SHADER_STORAGE_BUFFERS) || DRAW_COUNT+0 > 1
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -151,11 +168,11 @@ struct DrawUniform {
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 2
     #endif
-) uniform Draw {
-    DrawUniform draws[DRAW_COUNT];
+) BUFFER_OR_UNIFORM Draw {
+    BUFFER_READONLY DrawUniform draws[DRAW_COUNT];
 };
 
 /* Keep in sync with MeshVisualizer.vert and MeshVisualizer.geom. Can't
@@ -175,11 +192,11 @@ struct MaterialUniform {
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 4
     #endif
-) uniform Material {
-    MaterialUniform materials[MATERIAL_COUNT];
+) BUFFER_OR_UNIFORM Material {
+    BUFFER_READONLY MaterialUniform materials[MATERIAL_COUNT];
 };
 #endif
 
@@ -261,7 +278,9 @@ void main() {
     #ifdef OBJECT_ID
     highp const uint objectId = draws[drawId].draw_objectId;
     #endif
-    #if MATERIAL_COUNT > 1
+    /* With SSBOs MATERIAL_COUNT is defined to be empty, +0 makes the condition
+       not cause a compile error */
+    #if defined(SHADER_STORAGE_BUFFERS) || MATERIAL_COUNT+0 > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     #else
     #define materialId 0u

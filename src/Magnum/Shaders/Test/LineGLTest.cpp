@@ -163,7 +163,10 @@ const struct {
     {"multiple materials, draws", LineGL2D::Flag::UniformBuffers, {}, {}, 16, 41},
     {"object ID", LineGL2D::Flag::UniformBuffers|LineGL2D::Flag::ObjectId, {}, {}, 1, 1},
     {"instanced object ID", LineGL2D::Flag::UniformBuffers|LineGL2D::Flag::InstancedObjectId, {}, {}, 1, 1},
-    {"multidraw with all the things", LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ObjectId|LineGL2D::Flag::InstancedTransformation|LineGL2D::Flag::InstancedObjectId, {}, {}, 16, 41}
+    {"multidraw with all the things", LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ObjectId|LineGL2D::Flag::InstancedTransformation|LineGL2D::Flag::InstancedObjectId, {}, {}, 16, 41},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with all the things", LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ObjectId|LineGL2D::Flag::InstancedTransformation|LineGL2D::Flag::InstancedObjectId, {}, {}, 0, 0},
+    #endif
 };
 
 const struct {
@@ -172,6 +175,7 @@ const struct {
     UnsignedInt materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData[]{
+    /* These two fail for UBOs but not SSBOs */
     {"zero draws", LineGL2D::Flag::UniformBuffers, 1, 0,
         "draw count can't be zero"},
     {"zero materials", LineGL2D::Flag::UniformBuffers, 0, 1,
@@ -333,20 +337,51 @@ const struct {
     UnsignedInt expectedId[3];
     LineGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
 } RenderMultiData[]{
     {"bind with offset",
-        {}, {}, 1, 1, 16},
+        {},
+        {},
+        1, 1, true, 16},
     {"bind with offset, object ID",
-        {1211, 5627, 36363}, LineGL2D::Flag::ObjectId, 1, 1, 16},
+        {1211, 5627, 36363},
+        LineGL2D::Flag::ObjectId,
+        1, 1, true, 16},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, object ID, shader storage",
+        {1211, 5627, 36363},
+        LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::ObjectId,
+        0, 0, true, 16},
+    #endif
     {"draw offset",
-        {}, {}, 2, 3, 1},
+        {},
+        {},
+        2, 3, false, 1},
     {"draw offset, object ID",
-        {1211, 5627, 36363}, LineGL2D::Flag::ObjectId, 2, 3, 1},
+        {1211, 5627, 36363},
+        LineGL2D::Flag::ObjectId,
+        2, 3, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, object ID, shader storage",
+        {1211, 5627, 36363},
+        LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::ObjectId,
+        0, 0, false, 1},
+    #endif
     {"multidraw",
-        {}, LineGL2D::Flag::MultiDraw, 2, 3, 1},
+        {},
+        LineGL2D::Flag::MultiDraw,
+        2, 3, false, 1},
     {"multidraw, object ID",
-        {1211, 5627, 36363}, LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ObjectId, 2, 3, 1},
+        {1211, 5627, 36363},
+        LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ObjectId,
+        2, 3, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, object ID, shader storage",
+        {1211, 5627, 36363},
+        LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ObjectId,
+        0, 0, false, 1},
+    #endif
 };
 
 LineGLTest::LineGLTest() {
@@ -405,8 +440,15 @@ LineGLTest::LineGLTest() {
     addTests<LineGLTest>({
         &LineGLTest::renderDefaults2D,
         &LineGLTest::renderDefaults2D<LineGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderDefaults2D<LineGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &LineGLTest::renderDefaults3D,
-        &LineGLTest::renderDefaults3D<LineGL3D::Flag::UniformBuffers>},
+        &LineGLTest::renderDefaults3D<LineGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderDefaults3D<LineGL3D::Flag::ShaderStorageBuffers>
+        #endif
+        },
         &LineGLTest::renderSetupSmall,
         &LineGLTest::renderTeardown);
 
@@ -414,6 +456,9 @@ LineGLTest::LineGLTest() {
     addInstancedTests<LineGLTest>({
         &LineGLTest::renderLineCapsJoins2D,
         &LineGLTest::renderLineCapsJoins2D<LineGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderLineCapsJoins2D<LineGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &LineGLTest::renderLineCapsJoins2DReversed,
         &LineGLTest::renderLineCapsJoins2DTransformed},
         Containers::arraySize(RenderLineCapsJoins2DData),
@@ -423,7 +468,11 @@ LineGLTest::LineGLTest() {
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<LineGLTest>({
         &LineGLTest::renderCube3D,
-        &LineGLTest::renderCube3D<LineGL3D::Flag::UniformBuffers>},
+        &LineGLTest::renderCube3D<LineGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderCube3D<LineGL3D::Flag::ShaderStorageBuffers>
+        #endif
+        },
         Containers::arraySize(RenderCube3DData),
         &LineGLTest::renderSetupLarge,
         &LineGLTest::renderTeardown);
@@ -436,12 +485,25 @@ LineGLTest::LineGLTest() {
     addTests<LineGLTest>({
         &LineGLTest::renderVertexColor2D<Color3>,
         &LineGLTest::renderVertexColor2D<Color3, LineGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderVertexColor2D<Color3, LineGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &LineGLTest::renderVertexColor2D<Color4>,
         &LineGLTest::renderVertexColor2D<Color4, LineGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderVertexColor2D<Color4, LineGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &LineGLTest::renderVertexColor3D<Color3>,
         &LineGLTest::renderVertexColor3D<Color3, LineGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderVertexColor3D<Color3, LineGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         &LineGLTest::renderVertexColor3D<Color4>,
-        &LineGLTest::renderVertexColor3D<Color4, LineGL3D::Flag::UniformBuffers>},
+        &LineGLTest::renderVertexColor3D<Color4, LineGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderVertexColor3D<Color4, LineGL3D::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         &LineGLTest::renderSetupSmall,
         &LineGLTest::renderTeardown);
 
@@ -449,8 +511,15 @@ LineGLTest::LineGLTest() {
     addInstancedTests<LineGLTest>({
         &LineGLTest::renderObjectId2D,
         &LineGLTest::renderObjectId2D<LineGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderObjectId2D<LineGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &LineGLTest::renderObjectId3D,
-        &LineGLTest::renderObjectId3D<LineGL3D::Flag::UniformBuffers>},
+        &LineGLTest::renderObjectId3D<LineGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderObjectId3D<LineGL3D::Flag::ShaderStorageBuffers>
+        #endif
+        },
         Containers::arraySize(RenderObjectIdData),
         &LineGLTest::renderSetupSmall,
         &LineGLTest::renderTeardown);
@@ -459,8 +528,15 @@ LineGLTest::LineGLTest() {
     addInstancedTests<LineGLTest>({
         &LineGLTest::renderInstanced2D,
         &LineGLTest::renderInstanced2D<LineGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderInstanced2D<LineGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &LineGLTest::renderInstanced3D,
-        &LineGLTest::renderInstanced3D<LineGL2D::Flag::UniformBuffers>},
+        &LineGLTest::renderInstanced3D<LineGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &LineGLTest::renderInstanced3D<LineGL2D::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderInstancedData),
         &LineGLTest::renderSetupSmall,
         &LineGLTest::renderTeardown);
@@ -555,6 +631,18 @@ template<UnsignedInt dimensions> void LineGLTest::constructUniformBuffers() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if((data.flags & LineGL2D::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= LineGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= LineGL2D::Flag::MultiDraw) {
@@ -1080,6 +1168,19 @@ GL::Mesh generateLineMesh(std::initializer_list<Vector3> lineSegments) {
 }
 
 template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1120,7 +1221,12 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
 
     if(flag == LineGL2D::Flag{}) {
         shader.draw(lines);
-    } else if(flag == LineGL2D::Flag::UniformBuffers) {
+    } else if(flag == LineGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -1153,6 +1259,19 @@ template<LineGL2D::Flag flag> void LineGLTest::renderDefaults2D() {
 }
 
 template<LineGL3D::Flag flag> void LineGLTest::renderDefaults3D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1196,7 +1315,12 @@ template<LineGL3D::Flag flag> void LineGLTest::renderDefaults3D() {
 
     if(flag == LineGL3D::Flag{}) {
         shader.draw(lines);
-    } else if(flag == LineGL3D::Flag::UniformBuffers) {
+    } else if(flag == LineGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
         }};
@@ -1282,6 +1406,19 @@ template<LineGL2D::Flag flag> void LineGLTest::renderLineCapsJoins2D() {
     auto&& data = RenderLineCapsJoins2DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1322,7 +1459,12 @@ template<LineGL2D::Flag flag> void LineGLTest::renderLineCapsJoins2D() {
         if(data.miterAngleLimit)
             shader.setMiterAngleLimit(*data.miterAngleLimit);
         shader.draw(lines);
-    } else if(flag == LineGL2D::Flag::UniformBuffers) {
+    } else if(flag == LineGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -1498,6 +1640,19 @@ template<LineGL3D::Flag flag> void LineGLTest::renderCube3D() {
     auto&& data = RenderCube3DData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1628,7 +1783,12 @@ template<LineGL3D::Flag flag> void LineGLTest::renderCube3D() {
         if(data.miterLengthLimit)
             shader.setMiterLengthLimit(*data.miterLengthLimit);
         shader.draw(lines);
-    } else if(flag == LineGL3D::Flag::UniformBuffers) {
+    } else if(flag == LineGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(projection*transformation)
@@ -1713,6 +1873,19 @@ void LineGLTest::renderPerspective3D() {
 }
 
 template<class T, LineGL2D::Flag flag> void LineGLTest::renderVertexColor2D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -1765,7 +1938,12 @@ template<class T, LineGL2D::Flag flag> void LineGLTest::renderVertexColor2D() {
             .setWidth(4.0f)
             .setSmoothness(1.0f)
             .draw(lines);
-    } else if(flag == LineGL2D::Flag::UniformBuffers) {
+    } else if(flag == LineGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -1802,6 +1980,19 @@ template<class T, LineGL2D::Flag flag> void LineGLTest::renderVertexColor2D() {
 }
 
 template<class T, LineGL3D::Flag flag> void LineGLTest::renderVertexColor3D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -1857,7 +2048,12 @@ template<class T, LineGL3D::Flag flag> void LineGLTest::renderVertexColor3D() {
             .setWidth(4.0f)
             .setSmoothness(1.0f)
             .draw(lines);
-    } else if(flag == LineGL3D::Flag::UniformBuffers) {
+    } else if(flag == LineGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
         }};
@@ -1897,6 +2093,19 @@ template<LineGL2D::Flag flag> void LineGLTest::renderObjectId2D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1936,7 +2145,12 @@ template<LineGL2D::Flag flag> void LineGLTest::renderObjectId2D() {
             .setSmoothness(data.smoothness)
             .setObjectId(47365)
             .draw(lines);
-    } else if(flag == LineGL2D::Flag::UniformBuffers) {
+    } else if(flag == LineGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -1983,6 +2197,19 @@ template<LineGL3D::Flag flag> void LineGLTest::renderObjectId3D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2024,7 +2251,12 @@ template<LineGL3D::Flag flag> void LineGLTest::renderObjectId3D() {
             .setSmoothness(data.smoothness)
             .setObjectId(47365)
             .draw(lines);
-    } else if(flag == LineGL3D::Flag::UniformBuffers) {
+    } else if(flag == LineGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
         }};
@@ -2071,6 +2303,19 @@ template<LineGL2D::Flag flag> void LineGLTest::renderInstanced2D() {
     auto&& data = RenderInstancedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2137,8 +2382,12 @@ template<LineGL2D::Flag flag> void LineGLTest::renderInstanced2D() {
             /* Gets added to the per-instance ID, if that's enabled as well */
             shader.setObjectId(1000);
         shader.draw(lines);
-
-    } else if(flag == LineGL2D::Flag::UniformBuffers) {
+    } else if(flag == LineGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(
@@ -2206,6 +2455,19 @@ template<LineGL3D::Flag flag> void LineGLTest::renderInstanced3D() {
     auto&& data = RenderInstancedData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == LineGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == LineGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2272,8 +2534,12 @@ template<LineGL3D::Flag flag> void LineGLTest::renderInstanced3D() {
             /* Gets added to the per-instance ID, if that's enabled as well */
             shader.setObjectId(1000);
         shader.draw(lines);
-
-    } else if(flag == LineGL2D::Flag::UniformBuffers) {
+    } else if(flag == LineGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == LineGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -2346,6 +2612,18 @@ void LineGLTest::renderMulti2D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= LineGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= LineGL2D::Flag::MultiDraw) {
@@ -2448,13 +2726,13 @@ void LineGLTest::renderMulti2D() {
     /* Material offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = LineDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(1211);
     drawData[1*data.uniformIncrement] = LineDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         .setObjectId(5627);
     drawData[2*data.uniformIncrement] = LineDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
@@ -2464,8 +2742,8 @@ void LineGLTest::renderMulti2D() {
         GL::Renderer::BlendFunction::One,
         GL::Renderer::BlendFunction::OneMinusSourceAlpha);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(LineMaterialUniform),
             sizeof(LineMaterialUniform));
@@ -2562,6 +2840,18 @@ void LineGLTest::renderMulti3D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= LineGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= LineGL2D::Flag::MultiDraw) {
@@ -2663,13 +2953,13 @@ void LineGLTest::renderMulti3D() {
     /* Material offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = LineDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(1211);
     drawData[1*data.uniformIncrement] = LineDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         .setObjectId(5627);
     drawData[2*data.uniformIncrement] = LineDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
@@ -2679,8 +2969,8 @@ void LineGLTest::renderMulti3D() {
         GL::Renderer::BlendFunction::One,
         GL::Renderer::BlendFunction::OneMinusSourceAlpha);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(LineMaterialUniform),
             sizeof(LineMaterialUniform));

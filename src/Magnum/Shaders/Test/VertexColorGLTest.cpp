@@ -164,7 +164,10 @@ constexpr struct {
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4 in 3D case
        and 3 in 2D; one needs to be reserved for drawOffset */
     {"multiple draws", VertexColorGL2D::Flag::UniformBuffers, 63},
-    {"multidraw with all the things", VertexColorGL2D::Flag::MultiDraw, 63}
+    {"multidraw with all the things", VertexColorGL2D::Flag::MultiDraw, 63},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with all the things", VertexColorGL2D::Flag::ShaderStorageBuffers|VertexColorGL2D::Flag::MultiDraw, 0}
+    #endif
 };
 #endif
 
@@ -175,21 +178,40 @@ constexpr struct {
     const char* expected3D;
     VertexColorGL2D::Flags flags;
     UnsignedInt drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D.tga", "multidraw3D.tga",
-        {}, 1, 16,
+        {}, 1, true, 16,
         /* Minor differences on ARM Mali */
         0.34f, 0.01f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VertexColorGL2D::Flag::ShaderStorageBuffers, 1, true, 16,
+        /* Minor differences on ARM Mali */
+        0.34f, 0.01f},
+    #endif
     {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
-        {}, 3, 1,
+        {}, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.34f, 0.01f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VertexColorGL2D::Flag::ShaderStorageBuffers, 3, false, 1,
+        /* Minor differences on ARM Mali */
+        0.34f, 0.01f},
+    #endif
     {"multidraw", "multidraw2D.tga", "multidraw3D.tga",
-        VertexColorGL2D::Flag::MultiDraw, 3, 1,
+        VertexColorGL2D::Flag::MultiDraw, 3, false, 1,
+        /* Minor differences on ARM Mali */
+        0.34f, 0.01f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VertexColorGL2D::Flag::ShaderStorageBuffers|VertexColorGL2D::Flag::MultiDraw, 0, false, 1,
         /* Minor differences on ARM Mali */
         0.34f, 0.01f}
+    #endif
 };
 #endif
 
@@ -240,35 +262,59 @@ VertexColorGLTest::VertexColorGLTest() {
         &VertexColorGLTest::renderDefaults2D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::renderDefaults2D<Color3, VertexColorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::renderDefaults2D<Color3, VertexColorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VertexColorGLTest::renderDefaults2D<Color4>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::renderDefaults2D<Color4, VertexColorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::renderDefaults2D<Color4, VertexColorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VertexColorGLTest::renderDefaults3D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::renderDefaults3D<Color3, VertexColorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::renderDefaults3D<Color3, VertexColorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VertexColorGLTest::renderDefaults3D<Color4>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::renderDefaults3D<Color4, VertexColorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::renderDefaults3D<Color4, VertexColorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
 
         &VertexColorGLTest::render2D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::render2D<Color3, VertexColorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::render2D<Color3, VertexColorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VertexColorGLTest::render2D<Color4>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::render2D<Color4, VertexColorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::render2D<Color4, VertexColorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VertexColorGLTest::render3D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::render3D<Color3, VertexColorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::render3D<Color3, VertexColorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VertexColorGLTest::render3D<Color4>,
         #ifndef MAGNUM_TARGET_GLES2
         &VertexColorGLTest::render3D<Color4, VertexColorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VertexColorGLTest::render3D<Color4, VertexColorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         &VertexColorGLTest::renderSetup,
@@ -353,6 +399,18 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & VertexColorGL<dimensions>::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= VertexColorGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= VertexColorGL2D::Flag::MultiDraw) {
@@ -479,6 +537,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    /* This fails for UBOs but not SSBOs */
     std::ostringstream out;
     Error redirectError{&out};
     VertexColorGL<dimensions>{typename VertexColorGL<dimensions>::Configuration{}
@@ -580,6 +639,19 @@ void VertexColorGLTest::renderTeardown() {
 
 template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefaults2D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VertexColorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VertexColorGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -611,7 +683,12 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
         shader.draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VertexColorGL2D::Flag::UniformBuffers) {
+    else if(flag == VertexColorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VertexColorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -643,6 +720,19 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
 
 template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefaults3D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VertexColorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VertexColorGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -678,7 +768,12 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VertexColorGL3D::Flag::UniformBuffers) {
+    else if(flag == VertexColorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VertexColorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
         }};
@@ -706,6 +801,19 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
 
 template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VertexColorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VertexColorGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -740,7 +848,12 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D()
         .draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VertexColorGL2D::Flag::UniformBuffers) {
+    else if(flag == VertexColorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VertexColorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -774,6 +887,19 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D()
 
 template<class T, VertexColorGL3D::Flag flag> void VertexColorGLTest::render3D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VertexColorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VertexColorGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -812,7 +938,12 @@ template<class T, VertexColorGL3D::Flag flag> void VertexColorGLTest::render3D()
         .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VertexColorGL3D::Flag::UniformBuffers) {
+    else if(flag == VertexColorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VertexColorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -857,6 +988,18 @@ void VertexColorGLTest::renderMulti2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= VertexColorGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= VertexColorGL2D::Flag::MultiDraw) {
@@ -929,8 +1072,8 @@ void VertexColorGLTest::renderMulti2D() {
         .setFlags(VertexColorGL2D::Flag::UniformBuffers|data.flags)
         .setDrawCount(data.drawCount)};
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             0*data.uniformIncrement*sizeof(TransformationProjectionUniform2D),
             sizeof(TransformationProjectionUniform2D));
@@ -987,6 +1130,18 @@ void VertexColorGLTest::renderMulti3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= VertexColorGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= VertexColorGL3D::Flag::MultiDraw) {
@@ -1062,8 +1217,8 @@ void VertexColorGLTest::renderMulti3D() {
         .setFlags(VertexColorGL3D::Flag::UniformBuffers|data.flags)
         .setDrawCount(data.drawCount)};
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindTransformationProjectionBuffer(transformationProjectionUniform,
             0*data.uniformIncrement*sizeof(TransformationProjectionUniform3D),
             sizeof(TransformationProjectionUniform3D));

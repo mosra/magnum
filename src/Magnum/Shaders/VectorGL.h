@@ -46,6 +46,9 @@ namespace Implementation {
         TextureTransformation = 1 << 0,
         #ifndef MAGNUM_TARGET_GLES2
         UniformBuffers = 1 << 1,
+        #ifndef MAGNUM_TARGET_WEBGL
+        ShaderStorageBuffers = UniformBuffers|(1 << 3),
+        #endif
         MultiDraw = UniformBuffers|(1 << 2)
         #endif
     };
@@ -172,6 +175,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
              * @ref bindTransformationProjectionBuffer(),
              * @ref bindDrawBuffer(), @ref bindTextureTransformationBuffer()
              * and @ref bindMaterialBuffer() instead of direct uniform setters.
+             * @see @ref Flag::ShaderStorageBuffers
              * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
@@ -180,6 +184,23 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
              * @m_since_latest
              */
             UniformBuffers = 1 << 1,
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Use shader storage buffers. Superset of functionality provided
+             * by @ref Flag::UniformBuffers, compared to it doesn't have any
+             * size limits on @ref Configuration::setMaterialCount() and
+             * @relativeref{Configuration,setDrawCount()} in exchange for
+             * potentially more costly access and narrower platform support.
+             * @requires_gl43 Extension @gl_extension{ARB,shader_storage_buffer_object}
+             * @requires_gles31 Shader storage buffers are not available in
+             *      OpenGL ES 3.0 and older.
+             * @requires_gles Shader storage buffers are not available in
+             *      WebGL.
+             * @m_since_latest
+             */
+            ShaderStorageBuffers = UniformBuffers|(1 << 3),
+            #endif
 
             /**
              * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
@@ -337,7 +358,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          *
          * Statically defined size of the @ref VectorMaterialUniform uniform
          * buffer bound with @ref bindMaterialBuffer(). Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref Flag::UniformBuffers is set and @ref Flag::ShaderStorageBuffers
+         * is not set.
          * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -354,7 +376,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
          * @ref TextureTransformationUniform uniform buffers bound with
          * @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer() and
          * @ref bindTextureTransformationBuffer(). Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref Flag::UniformBuffers is set and @ref Flag::ShaderStorageBuffers
+         * is not set.
          * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -429,7 +452,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @{
-         * @name Uniform buffer binding and related uniform setters
+         * @name Uniform / shader storage buffer binding and related uniform setters
          *
          * Used if @ref Flag::UniformBuffers is set.
          */
@@ -461,7 +484,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         VectorGL<dimensions>& setDrawOffset(UnsignedInt offset);
 
         /**
-         * @brief Bind a transformation and projection uniform buffer
+         * @brief Bind a transformation and projection uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -482,7 +505,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         VectorGL<dimensions>& bindTransformationProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a draw uniform buffer
+         * @brief Bind a draw uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -503,7 +526,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         VectorGL<dimensions>& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a texture transformation uniform buffer
+         * @brief Bind a texture transformation uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -523,7 +546,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VectorGL: public GL
         VectorGL<dimensions>& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a material uniform buffer
+         * @brief Bind a material uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -626,10 +649,11 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
          * @ref VectorMaterialUniform buffer bound with
          * @ref bindMaterialBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(VectorMaterialUniform) @ce has to be
-         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The per-draw materials are then specified via
-         * @ref VectorDrawUniform::materialId. Default value is @cpp 1 @ce.
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(),
+         * if @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-draw materials are
+         * specified via @ref VectorDrawUniform::materialId. Default value is
+         * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setDrawCount(),
@@ -665,10 +689,10 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::Configuration {
          * @cpp count*sizeof(TransformationProjectionUniform3D) @ce,
          * @cpp count*sizeof(VectorDrawUniform) @ce and
          * @cpp count*sizeof(TextureTransformationUniform) @ce has to be within
-         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The draw offset is then set via @ref setDrawOffset(). Default value
-         * is @cpp 1 @ce.
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The draw offset is then set via
+         * @ref setDrawOffset(). Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setMaterialCount(),

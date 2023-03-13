@@ -186,7 +186,10 @@ constexpr struct {
     /* SwiftShader has 256 uniform vectors at most, per-draw is 4+1 in 3D case
        and 3+1 in 2D, per-material 3 */
     {"multiple materials, draws", VectorGL2D::Flag::UniformBuffers, 15, 42},
-    {"multidraw with all the things", VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation, 15, 42}
+    {"multidraw with all the things", VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation, 15, 42},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with all the things", VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw|VectorGL2D::Flag::TextureTransformation, 0, 0}
+    #endif
 };
 #endif
 
@@ -197,6 +200,7 @@ constexpr struct {
     UnsignedInt materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData[]{
+    /* These two fail for UBOs but not SSBOs */
     {"zero draws", VectorGL2D::Flag::UniformBuffers, 1, 0,
         "draw count can't be zero"},
     {"zero materials", VectorGL2D::Flag::UniformBuffers, 0, 1,
@@ -228,21 +232,40 @@ constexpr struct {
     const char* expected3D;
     VectorGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset", "multidraw2D.tga", "multidraw3D.tga",
-        {}, 1, 1, 16,
+        {}, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, true, 16,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
+    #endif
     {"draw offset", "multidraw2D.tga", "multidraw3D.tga",
-        {}, 2, 3, 1,
+        {}, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::ShaderStorageBuffers, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
+    #endif
     {"multidraw", "multidraw2D.tga", "multidraw3D.tga",
-        VectorGL2D::Flag::MultiDraw, 2, 3, 1,
+        VectorGL2D::Flag::MultiDraw, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         1.34f, 0.02f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, shader storage", "multidraw2D.tga", "multidraw3D.tga",
+        VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::MultiDraw, 0, 0, false, 1,
+        /* Minor differences on ARM Mali */
+        1.34f, 0.02f},
+    #endif
 };
 #endif
 
@@ -308,10 +331,16 @@ VectorGLTest::VectorGLTest() {
         &VectorGLTest::renderDefaults2D,
         #ifndef MAGNUM_TARGET_GLES2
         &VectorGLTest::renderDefaults2D<VectorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VectorGLTest::renderDefaults2D<VectorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VectorGLTest::renderDefaults3D,
         #ifndef MAGNUM_TARGET_GLES2
         &VectorGLTest::renderDefaults3D<VectorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VectorGLTest::renderDefaults3D<VectorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         &VectorGLTest::renderSetup,
@@ -322,10 +351,16 @@ VectorGLTest::VectorGLTest() {
         &VectorGLTest::render2D,
         #ifndef MAGNUM_TARGET_GLES2
         &VectorGLTest::render2D<VectorGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VectorGLTest::render2D<VectorGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &VectorGLTest::render3D,
         #ifndef MAGNUM_TARGET_GLES2
         &VectorGLTest::render3D<VectorGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &VectorGLTest::render3D<VectorGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderData),
@@ -419,6 +454,18 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffers() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & VectorGL<dimensions>::Flag::UniformBuffers) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= VectorGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= VectorGL2D::Flag::MultiDraw) {
@@ -727,6 +774,19 @@ constexpr GL::TextureFormat TextureFormatR =
 
 template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VectorGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -770,7 +830,12 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
         shader.draw(square);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VectorGL2D::Flag::UniformBuffers) {
+    else if(flag == VectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -807,6 +872,19 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
 
 template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VectorGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -850,7 +928,12 @@ template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
         shader.draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VectorGL2D::Flag::UniformBuffers) {
+    else if(flag == VectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
         }};
@@ -890,6 +973,19 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VectorGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -940,7 +1036,12 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
         shader.draw(square);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VectorGL2D::Flag::UniformBuffers) {
+    else if(flag == VectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(
@@ -996,6 +1097,19 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == VectorGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == VectorGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1048,7 +1162,12 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
         shader.draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == VectorGL3D::Flag::UniformBuffers) {
+    else if(flag == VectorGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == VectorGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -1109,6 +1228,18 @@ void VectorGLTest::renderMulti2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= VectorGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= VectorGL2D::Flag::MultiDraw) {
@@ -1217,11 +1348,11 @@ void VectorGLTest::renderMulti2D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = VectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.bindWithOffset ? 0 : 1);
     drawData[1*data.uniformIncrement] = VectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 0);
     drawData[2*data.uniformIncrement] = VectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.bindWithOffset ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     VectorGL2D shader{VectorGL2D::Configuration{}
@@ -1230,8 +1361,8 @@ void VectorGLTest::renderMulti2D() {
         .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(VectorMaterialUniform),
             sizeof(VectorMaterialUniform));
@@ -1313,6 +1444,18 @@ void VectorGLTest::renderMulti3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= VectorGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= VectorGL3D::Flag::MultiDraw) {
@@ -1426,11 +1569,11 @@ void VectorGLTest::renderMulti3D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = VectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.bindWithOffset ? 0 : 1);
     drawData[1*data.uniformIncrement] = VectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 0);
     drawData[2*data.uniformIncrement] = VectorDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1);
+        .setMaterialId(data.bindWithOffset ? 0 : 1);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     VectorGL3D shader{VectorGL3D::Configuration{}
@@ -1439,8 +1582,8 @@ void VectorGLTest::renderMulti3D() {
         .setDrawCount(data.drawCount)};
     shader.bindVectorTexture(vector);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(VectorMaterialUniform),
             sizeof(VectorMaterialUniform));

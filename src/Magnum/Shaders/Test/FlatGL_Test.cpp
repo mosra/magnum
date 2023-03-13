@@ -64,13 +64,10 @@ const struct {
         "expected at most 4 secondary per-vertex joints, got 5"},
     {"joint count but no per-vertex joint count",
         10, 0, 0,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
-    {"per-vertex joint count but no joint count",
-        0, 2, 0,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
-    {"secondary per-vertex joint count but no joint count",
-        0, 0, 3,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
+        "count has to be zero if per-vertex joint count is zero"},
+    /* The rest depends on flags being set and is thus verified in constructor,
+       tested in FlatGLTest::constructInvalid() and
+       constructUniformBuffersInvalid() */
 };
 #endif
 
@@ -171,12 +168,24 @@ void FlatGL_Test::debugFlagsSupersets() {
     }
 
     #ifndef MAGNUM_TARGET_GLES2
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
         Debug{&out} << (FlatGL3D::Flag::MultiDraw|FlatGL3D::Flag::UniformBuffers);
         CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::MultiDraw\n");
     }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (FlatGL3D::Flag::MultiDraw|FlatGL3D::Flag::ShaderStorageBuffers|FlatGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::FlatGL::Flag::MultiDraw|Shaders::FlatGL::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
     #endif
 }
 

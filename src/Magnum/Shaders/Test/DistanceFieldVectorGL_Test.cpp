@@ -99,10 +99,24 @@ void DistanceFieldVectorGL_Test::debugFlags() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void DistanceFieldVectorGL_Test::debugFlagsSupersets() {
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
-    std::ostringstream out;
-    Debug{&out} << (DistanceFieldVectorGL3D::Flag::MultiDraw|DistanceFieldVectorGL3D::Flag::UniformBuffers);
-    CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVectorGL::Flag::MultiDraw\n");
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
+    {
+        std::ostringstream out;
+        Debug{&out} << (DistanceFieldVectorGL3D::Flag::MultiDraw|DistanceFieldVectorGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVectorGL::Flag::MultiDraw\n");
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (DistanceFieldVectorGL2D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVectorGL::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (DistanceFieldVectorGL3D::Flag::MultiDraw|DistanceFieldVectorGL3D::Flag::ShaderStorageBuffers|DistanceFieldVectorGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVectorGL::Flag::MultiDraw|Shaders::DistanceFieldVectorGL::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
 }
 #endif
 

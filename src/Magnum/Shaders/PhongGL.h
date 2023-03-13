@@ -789,6 +789,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * @ref bindDrawBuffer(), @ref bindTextureTransformationBuffer(),
              * @ref bindMaterialBuffer() and @ref bindLightBuffer() instead of
              * direct uniform setters.
+             * @see @ref Flag::ShaderStorageBuffers
              * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
@@ -797,6 +798,25 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * @m_since_latest
              */
             UniformBuffers = 1 << 12,
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Use shader storage buffers. Superset of functionality provided
+             * by @ref Flag::UniformBuffers, compared to it doesn't have any
+             * size limits on @ref Configuration::setLightCount(),
+             * @relativeref{Configuration,setJointCount()},
+             * @relativeref{Configuration,setMaterialCount()} and
+             * @relativeref{Configuration,setDrawCount()} in exchange for
+             * potentially more costly access and narrower platform support.
+             * @requires_gl43 Extension @gl_extension{ARB,shader_storage_buffer_object}
+             * @requires_gles31 Shader storage buffers are not available in
+             *      OpenGL ES 3.0 and older.
+             * @requires_gles Shader storage buffers are not available in
+             *      WebGL.
+             * @m_since_latest
+             */
+            ShaderStorageBuffers = UniformBuffers|(1 << 19),
+            #endif
 
             /**
              * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
@@ -1032,7 +1052,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * If @ref Flag::UniformBuffers is set, this is the statically defined
          * size of the @ref PhongLightUniform uniform buffer bound with
-         * @ref bindLightBuffer().
+         * @ref bindLightBuffer(). Has no use if @ref Flag::ShaderStorageBuffers
+         * is set.
          * @see @ref perDrawLightCount(), @ref Configuration::setLightCount()
          */
         UnsignedInt lightCount() const { return _lightCount; }
@@ -1060,7 +1081,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * matrices accepted by @ref setJointMatrices() / @ref setJointMatrix().
          * If @ref Flag::UniformBuffers is set, this is the statically defined
          * size of the @ref TransformationUniform3D uniform buffer bound with
-         * @ref bindJointBuffer().
+         * @ref bindJointBuffer(). Has no use if @ref Flag::ShaderStorageBuffers
+         * is set.
          * @see @ref Configuration::setJointCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -1099,7 +1121,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Statically defined size of the @ref PhongMaterialUniform uniform
          * buffer bound with @ref bindMaterialBuffer(). Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref Flag::UniformBuffers is set and @ref Flag::ShaderStorageBuffers
+         * is not set.
          * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -1114,7 +1137,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref PhongDrawUniform and @ref TextureTransformationUniform uniform
          * buffers bound with @ref bindTransformationBuffer(),
          * @ref bindDrawBuffer() and @ref bindTextureTransformationBuffer().
-         * Has use only if @ref Flag::UniformBuffers is set.
+         * Has use only if @ref Flag::UniformBuffers is set and
+         * @ref Flag::ShaderStorageBuffers is not set.
          * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -1691,7 +1715,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @{
-         * @name Uniform buffer binding and related uniform setters
+         * @name Uniform / shader storage buffer binding and related uniform setters
          *
          * Used if @ref Flag::UniformBuffers is set.
          */
@@ -1721,7 +1745,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& setDrawOffset(UnsignedInt offset);
 
         /**
-         * @brief Bind a projection uniform buffer
+         * @brief Bind a projection uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1742,7 +1766,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a transformation uniform buffer
+         * @brief Bind a transformation uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1763,7 +1787,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a draw uniform buffer
+         * @brief Bind a draw uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1784,7 +1808,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a texture transformation uniform buffer
+         * @brief Bind a texture transformation uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1804,7 +1828,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindTextureTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a material uniform buffer
+         * @brief Bind a material uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1825,7 +1849,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindMaterialBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a light uniform buffer
+         * @brief Bind a light uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1844,7 +1868,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         PhongGL& bindLightBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a joint matrix uniform buffer
+         * @brief Bind a joint matrix uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2169,15 +2193,18 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
          * @ref PhongLightUniform buffer bound with @ref bindLightBuffer().
          * Uniform buffers have a statically defined size and
          * @cpp count*sizeof(PhongLightUniform) @ce has to be within
-         * @ref GL::AbstractShaderProgram::maxUniformBlockSize(). The per-draw
-         * lights are then specified via @ref PhongDrawUniform::lightOffset and
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-draw lights are specified
+         * via @ref PhongDrawUniform::lightOffset and
          * @ref PhongDrawUniform::lightCount.
          *
          * The @p perDrawCount parameter describes how many lights out of
          * @p count get applied to each draw. Useful mainly in combination with
          * @ref Flag::LightCulling, without it can be used for conveniently
          * reducing the light count without having to reduce sizes of the light
-         * arrays as well. It's expected to not be larger than @p count. If set
+         * arrays as well. Unless @ref Flag::ShaderStorageBuffers is set,
+         * @p perDrawCount is expected to not be larger than @p count. If set
          * to @cpp 0 @ce, no lighting calculations are performed and only the
          * ambient contribution to the color is used. If @p perDrawCount is
          * @cpp 0 @ce, @p count is expected to be zero as well.
@@ -2234,9 +2261,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
          * @ref TransformationUniform3D buffer bound with
          * @ref bindJointBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(TransformationUniform3D) @ce has to be
-         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(). The
-         * per-vertex joints then index into the array offset by
-         * @ref PhongDrawUniform::jointOffset.
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-vertex joints index into
+         * the array offset by @ref PhongDrawUniform::jointOffset.
          *
          * The @p perVertexCount and @p secondaryPerVertexCount parameters
          * describe how many components are taken from @ref JointIds /
@@ -2245,8 +2273,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
          * @cpp 4 @ce, setting either of these to @cpp 0 @ce means given
          * attribute is not used at all. If both @p perVertexCount and
          * @p secondaryPerVertexCount are set to @cpp 0 @ce, skinning is not
-         * performed; if either of them is non-zero, @p count is expected to be
-         * non-zero as well.
+         * performed. Unless @ref Flag::ShaderStorageBuffers is set, if either
+         * of them is non-zero, @p count is expected to be non-zero as well.
          *
          * Default value for all three is @cpp 0 @ce.
          * @see @ref PhongGL::jointCount(), @ref PhongGL::perVertexJointCount(),
@@ -2276,10 +2304,11 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
          * @ref PhongMaterialUniform buffer bound with
          * @ref bindMaterialBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(PhongMaterialUniform) @ce has to be
-         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The per-draw materials are then specified via
-         * @ref PhongDrawUniform::materialId. Default value is @cpp 1 @ce.
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-draw materials are
+         * specified via @ref PhongDrawUniform::materialId. Default value is
+         * @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setLightCount(), @ref setDrawCount(),
@@ -2313,10 +2342,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
          * @cpp count*sizeof(TransformationUniform3D) @ce,
          * @cpp count*sizeof(PhongDrawUniform) @ce and
          * @cpp count*sizeof(TextureTransformationUniform) @ce has to be within
-         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The draw offset is then set via @ref setDrawOffset(). Default value
-         * is @cpp 1 @ce.
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffers are
+         * unbounded and @p count is ignored. The draw offset is set via
+         * @ref setDrawOffset(). Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setLightCount(), @ref setMaterialCount(),

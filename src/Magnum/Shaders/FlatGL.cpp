@@ -89,11 +89,18 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
-        "Shaders::FlatGL: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
-        "Shaders::FlatGL: draw count can't be zero", CompileState{NoCreate});
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_NO_ASSERT)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!(configuration.flags() >= Flag::ShaderStorageBuffers))
+    #endif
+    {
+        CORRADE_ASSERT(!configuration.jointCount() == (!configuration.perVertexJointCount() && !configuration.secondaryPerVertexJointCount()),
+            "Shaders::FlatGL: joint count can't be zero if per-vertex joint count is non-zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
+            "Shaders::FlatGL: material count can't be zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
+            "Shaders::FlatGL: draw count can't be zero", CompileState{NoCreate});
+    }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -115,6 +122,15 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::gpu_shader4);
     if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_storage_buffer_object);
+        #else
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GLES310);
+        #endif
+    }
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::MultiDraw) {
@@ -210,9 +226,15 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         #endif
         {
             vert.addSource(Utility::format(
-                "#define JOINT_COUNT {}\n"
-                "#define PER_VERTEX_JOINT_COUNT {}u\n"
-                "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n",
+                /* SSBOs have an unbounded joints array */
+                #ifndef MAGNUM_TARGET_WEBGL
+                configuration.flags() >= Flag::ShaderStorageBuffers ?
+                    "#define PER_VERTEX_JOINT_COUNT {1}u\n"
+                    "#define SECONDARY_PER_VERTEX_JOINT_COUNT {2}u\n" :
+                #endif
+                    "#define JOINT_COUNT {}\n"
+                    "#define PER_VERTEX_JOINT_COUNT {1}u\n"
+                    "#define SECONDARY_PER_VERTEX_JOINT_COUNT {2}u\n",
                 configuration.jointCount(),
                 configuration.perVertexJointCount(),
                 configuration.secondaryPerVertexJointCount()));
@@ -222,7 +244,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         #ifndef MAGNUM_TARGET_WEBGL
         /* The _LOCATION is needed only if explicit uniform location (desktop /
            ES3.1) is supported, a plain string can be added otherwise. This is
-           an immediate uniform also in the UBO case. */
+           an immediate uniform also in the UBO / SSBO case. */
         #ifndef MAGNUM_TARGET_GLES
         if(context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
         #else
@@ -242,10 +264,21 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        vert.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n",
-            configuration.drawCount()));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw arrays so just a plain string can be
+           passed */
+        if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+            vert.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            vert.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n",
+                configuration.drawCount()));
+        }
         vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
@@ -268,12 +301,23 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        frag.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n"
-            "#define MATERIAL_COUNT {}\n",
-            configuration.drawCount(),
-            configuration.materialCount()));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw and material arrays so just a plain
+           string can be passed */
+        if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+            frag.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            frag.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n"
+                "#define MATERIAL_COUNT {}\n",
+                configuration.drawCount(),
+                configuration.materialCount()));
+        }
         frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
@@ -372,7 +416,11 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
         if(_flags >= Flag::DynamicPerVertexJointCount)
             _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
+            if(_drawCount > 1
+                #ifndef MAGNUM_TARGET_WEBGL
+                || flags() >= Flag::ShaderStorageBuffers
+                #endif
+            ) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
@@ -406,7 +454,12 @@ template<UnsignedInt dimensions> FlatGL<dimensions>::FlatGL(CompileState&& state
         if(_flags & Flag::Textured) setUniform(uniformLocation("textureData"_s), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
-        if(_flags >= Flag::UniformBuffers) {
+        /* SSBOs have bindings defined in the source always */
+        if(_flags >= Flag::UniformBuffers
+            #ifndef MAGNUM_TARGET_WEBGL
+            && !(_flags >= Flag::ShaderStorageBuffers)
+            #endif
+        ) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
             if(_flags & Flag::TextureTransformation)
@@ -571,37 +624,62 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setPerI
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setDrawOffset(const UnsignedInt offset) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
+        "Shaders::FlatGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+    #else
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::FlatGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
+    #endif
+    if(_drawCount > 1
+        #ifndef MAGNUM_TARGET_WEBGL
+        || _flags >= Flag::ShaderStorageBuffers
+        #endif
+    ) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
     return *this;
 }
 
@@ -610,7 +688,11 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTex
         "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
     return *this;
 }
 
@@ -619,35 +701,55 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindTex
         "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::FlatGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindJointBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, JointBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::bindJointBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::FlatGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -702,8 +804,8 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::Configuration& Fla
         "Shaders::FlatGL::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::FlatGL::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
-    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::FlatGL::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
+    CORRADE_ASSERT(perVertexCount || secondaryPerVertexCount || !count,
+        "Shaders::FlatGL::Configuration::setJointCount(): count has to be zero if per-vertex joint count is zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;
@@ -723,6 +825,11 @@ Debug& operator<<(Debug& debug, const FlatGLFlag value) {
        `Flag::InstancedObjectId|Flag(0x800)` in the output. */
     if(value == FlatGLFlag(UnsignedShort(FlatGLFlag::InstancedObjectId|FlatGLFlag::ObjectIdTexture)))
         return debug << FlatGLFlag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << FlatGLFlag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == FlatGLFlag(UnsignedShort(FlatGLFlag::MultiDraw|FlatGLFlag::ShaderStorageBuffers)))
+        return debug << FlatGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << FlatGLFlag::ShaderStorageBuffers;
+    #endif
     #endif
 
     debug << "Shaders::FlatGL::Flag" << Debug::nospace;
@@ -743,6 +850,9 @@ Debug& operator<<(Debug& debug, const FlatGLFlag value) {
         _c(InstancedTextureOffset)
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
         _c(MultiDraw)
         _c(TextureArrays)
         _c(DynamicPerVertexJointCount)
@@ -772,7 +882,15 @@ Debug& operator<<(Debug& debug, const FlatGLFlags value) {
         #endif
         FlatGLFlag::InstancedTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        FlatGLFlag(UnsignedShort(FlatGLFlag::MultiDraw|FlatGLFlag::ShaderStorageBuffers)),
+        #endif
         FlatGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        FlatGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
         FlatGLFlag::UniformBuffers,
         FlatGLFlag::TextureArrays,
         FlatGLFlag::DynamicPerVertexJointCount,

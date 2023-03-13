@@ -363,15 +363,23 @@ constexpr struct {
         8, 4, 16, 24, 16, 4, 0},
     {"multidraw with all the things except instancing", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::LightCulling|PhongGL::Flag::DynamicPerVertexJointCount,
         8, 4, 16, 24, 16, 3, 4},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with all the things except secondary per-vertex sets", PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::LightCulling|PhongGL::Flag::DynamicPerVertexJointCount,
+        0, 4, 0, 0, 0, 4, 0},
+    {"shader storage + multidraw with all the things except instancing", PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::LightCulling|PhongGL::Flag::DynamicPerVertexJointCount,
+        0, 4, 0, 0, 0, 3, 4},
+    #endif
 };
 #endif
 
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
-    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
+    UnsignedInt lightCount, perDrawLightCount, jointCount, perVertexJointCount, secondaryPerVertexJointCount;
     const char* message;
 } ConstructInvalidData[] {
+    {"per-draw light count larger than total count", {}, 10, 11, 0, 0, 0,
+        "per-draw light count expected to not be larger than total count of 10, got 11"},
     {"texture transformation but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
@@ -380,32 +388,32 @@ constexpr struct {
             |PhongGL::Flag::ObjectId
             #endif
             ,
-        0, 0, 0,
+        1, 1, 0, 0, 0,
         "texture transformation enabled but the shader is not textured"},
     #ifndef MAGNUM_TARGET_GLES2
     {"texture arrays but not textured",
         /* ObjectId shares bits with ObjectIdTexture but should still trigger
            the assert */
         PhongGL::Flag::TextureArrays|PhongGL::Flag::ObjectId,
-        0, 0, 0,
+        1, 1, 0, 0, 0,
         "texture arrays enabled but the shader is not textured"},
     {"conflicting bitangent and instanced object id attribute",
         PhongGL::Flag::Bitangent|PhongGL::Flag::InstancedObjectId,
-        0, 0, 0,
+        1, 1, 0, 0, 0,
         "Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead"},
     #endif
     {"specular texture but no specular",
         PhongGL::Flag::SpecularTexture|PhongGL::Flag::NoSpecular,
-        0, 0, 0,
+        1, 1, 0, 0, 0,
         "specular texture requires the shader to not have specular disabled"},
     #ifndef MAGNUM_TARGET_GLES2
     {"dynamic per-vertex joint count but no static per-vertex joint count",
         PhongGL::Flag::DynamicPerVertexJointCount,
-        0, 0, 0,
+        1, 1, 0, 0, 0,
         "dynamic per-vertex joint count enabled for zero joints"},
     {"instancing together with secondary per-vertex sets",
         PhongGL::Flag::InstancedTransformation,
-        10, 4, 1,
+        1, 1, 10, 4, 1,
         "TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead"}
     #endif
 };
@@ -414,17 +422,39 @@ constexpr struct {
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
-    UnsignedInt materialCount, drawCount;
+    UnsignedInt lightCount, perDrawLightCount, jointCount, perVertexJointCount, secondaryPerVertexJointCount, materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData[]{
-    {"zero draws", PhongGL::Flag::UniformBuffers, 1, 0,
+    /* These three fail for UBOs but not SSBOs */
+    {"per-draw light count larger than total count",
+        PhongGL::Flag::UniformBuffers,
+        10, 11, 0, 0, 0, 1, 1,
+        "per-draw light count expected to not be larger than total count of 10, got 11"},
+    {"zero draws",
+        PhongGL::Flag::UniformBuffers,
+        1, 1, 0, 0, 0, 1, 0,
         "draw count can't be zero"},
-    {"zero materials", PhongGL::Flag::UniformBuffers, 0, 1,
+    {"zero materials",
+        PhongGL::Flag::UniformBuffers,
+        1, 1, 0, 0, 0, 0, 1,
         "material count can't be zero"},
-    {"texture arrays but no transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays, 1, 1,
+    {"texture arrays but no transformation",
+        PhongGL::Flag::UniformBuffers|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
+        1, 1, 0, 0, 0, 1, 1,
         "texture arrays require texture transformation enabled as well if uniform buffers are used"},
-    {"light culling but no UBOs", PhongGL::Flag::LightCulling, 1, 1,
-        "light culling requires uniform buffers to be enabled"}
+    {"light culling but no UBOs",
+        PhongGL::Flag::LightCulling,
+        1, 1, 0, 0, 0, 1, 1,
+        "light culling requires uniform buffers to be enabled"},
+    /* These two fail for UBOs but not SSBOs */
+    {"per-vertex joint count but no joint count",
+        PhongGL::Flag::UniformBuffers,
+        1, 1, 0, 2, 0, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
+    {"secondary per-vertex joint count but no joint count",
+        PhongGL::Flag::UniformBuffers,
+        1, 1, 0, 0, 3, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
 };
 #endif
 
@@ -801,10 +831,14 @@ const struct {
 #ifndef MAGNUM_TARGET_GLES2
 const struct {
     const char* name;
+    PhongGL::Flags flags;
     UnsignedInt count, perDrawCount;
 } RenderLightCullingData[]{
-    {"same count and per-draw count", 64, 64},
-    {"per-draw count lower", 64, 2}
+    {"same count and per-draw count", {}, 64, 64},
+    {"per-draw count lower", {}, 64, 2},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage buffers, per-draw count only", PhongGL::Flag::ShaderStorageBuffers, 0, 2},
+    #endif
 };
 #endif
 
@@ -990,132 +1024,160 @@ constexpr struct {
     UnsignedInt expectedId[3];
     PhongGL::Flags flags;
     UnsignedInt lightCount, perDrawLightCount, materialCount, drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset, colored",
         "multidraw.tga", {},
         {},
-        2, 2, 1, 1, 16,
+        2, 2, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, colored + object ID",
         "multidraw.tga", {1211, 5627, 36363},
         PhongGL::Flag::ObjectId,
-        2, 2, 1, 1, 16,
+        2, 2, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, colored + textured object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture,
-        2, 2, 1, 1, 16,
+        2, 2, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, colored + textured array object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays,
-        2, 2, 1, 1, 16,
+        2, 2, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, textured",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        2, 2, 1, 1, 16,
+        2, 2, 1, 1, true, 16,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"bind with offset, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
-        2, 2, 1, 1, 16,
+        2, 2, 1, 1, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, texture array, shader storage",
+        "multidraw-textured.tga", {},
+        PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
+        0, 2, 0, 0, true, 16,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        50.34f, 0.131f},
+    #endif
     {"draw offset, colored",
         "multidraw.tga", {},
         {},
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, colore, less per-draw lights",
         "multidraw.tga", {},
         {},
-        4, 2, 2, 3, 1,
+        4, 2, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, colored + object ID",
         "multidraw.tga", {1211, 5627, 36363},
         PhongGL::Flag::ObjectId,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, colored + textured object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, colored + textured array object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, textured",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"draw offset, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, texture array, shader storage",
+        "multidraw-textured.tga", {},
+        PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
+        0, 2, 0, 0, false, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        50.34f, 0.131f},
+    #endif
     {"multidraw, colored",
         "multidraw.tga", {},
         PhongGL::Flag::MultiDraw,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, colored, less per-draw lights",
         "multidraw.tga", {},
         PhongGL::Flag::MultiDraw,
-        4, 2, 2, 3, 1,
+        4, 2, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, colored + object ID",
         "multidraw.tga", {1211, 5627, 36363},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::ObjectId,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, colored + textured object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, colored + textured array object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, textured",
         "multidraw-textured.tga", {},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"multidraw, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
-        4, 4, 2, 3, 1,
+        4, 4, 2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, texture array, shader storage",
+        "multidraw-textured.tga", {},
+        PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
+        0, 4, 0, 0, false, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        50.34f, 0.131f},
+    #endif
     /** @todo test normal and per-draw scaling when there's usable texture */
 };
 
@@ -1124,14 +1186,33 @@ const struct {
     const char* name;
     PhongGL::Flags flags;
     UnsignedInt materialCount, drawCount, jointCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
 } RenderMultiSkinningData[]{
     {"bind with offset",
-        {}, 1, 1, 4, 16},
+        {},
+        1, 1, 4, true, 16},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, shader storage",
+        PhongGL::Flag::ShaderStorageBuffers,
+        0, 0, 0, true, 16},
+    #endif
     {"draw offset",
-        {}, 2, 3, 9, 1},
+        {},
+        2, 3, 9, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, shader storage",
+        PhongGL::Flag::ShaderStorageBuffers,
+        0, 0, 0, false, 1},
+    #endif
     {"multidraw",
-        PhongGL::Flag::MultiDraw, 2, 3, 9, 1}
+        PhongGL::Flag::MultiDraw,
+        2, 3, 9, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, shader storage",
+        PhongGL::Flag::ShaderStorageBuffers|PhongGL::Flag::MultiDraw,
+        0, 0, 0, false, 1},
+    #endif
 };
 #endif
 
@@ -1210,7 +1291,10 @@ PhongGLTest::PhongGLTest() {
     addTests<PhongGLTest>({
         &PhongGLTest::renderDefaults,
         #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderDefaults<PhongGL::Flag::UniformBuffers>
+        &PhongGLTest::renderDefaults<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderDefaults<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         &PhongGLTest::renderSetup,
@@ -1220,7 +1304,10 @@ PhongGLTest::PhongGLTest() {
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderColored,
         #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderColored<PhongGL::Flag::UniformBuffers>
+        &PhongGLTest::renderColored<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderColored<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderColoredData),
@@ -1231,7 +1318,10 @@ PhongGLTest::PhongGLTest() {
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderSinglePixelTextured,
         #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderSinglePixelTextured<PhongGL::Flag::UniformBuffers>
+        &PhongGLTest::renderSinglePixelTextured<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderSinglePixelTextured<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderSinglePixelTexturedData),
@@ -1242,7 +1332,10 @@ PhongGLTest::PhongGLTest() {
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderTextured,
         #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderTextured<PhongGL::Flag::UniformBuffers>
+        &PhongGLTest::renderTextured<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderTextured<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderTexturedData),
@@ -1253,7 +1346,10 @@ PhongGLTest::PhongGLTest() {
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderTexturedNormal,
         #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderTexturedNormal<PhongGL::Flag::UniformBuffers>
+        &PhongGLTest::renderTexturedNormal<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderTexturedNormal<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderTexturedNormalData),
@@ -1265,10 +1361,16 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderVertexColor<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderVertexColor<Color3, PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderVertexColor<Color3, PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &PhongGLTest::renderVertexColor<Color4>,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderVertexColor<Color4, PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderVertexColor<Color4, PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         &PhongGLTest::renderSetup,
@@ -1279,6 +1381,9 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderShininess,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderShininess<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderShininess<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderShininessData),
@@ -1289,7 +1394,10 @@ PhongGLTest::PhongGLTest() {
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderAlpha,
         #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderAlpha<PhongGL::Flag::UniformBuffers>
+        &PhongGLTest::renderAlpha<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderAlpha<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderAlphaData),
@@ -1300,7 +1408,11 @@ PhongGLTest::PhongGLTest() {
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderObjectId,
-        &PhongGLTest::renderObjectId<PhongGL::Flag::UniformBuffers>},
+        &PhongGLTest::renderObjectId<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderObjectId<PhongGL::Flag::ShaderStorageBuffers>
+        #endif
+        },
         Containers::arraySize(RenderObjectIdData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
@@ -1311,6 +1423,9 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderLights,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderLights<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderLights<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderLightsData),
@@ -1333,7 +1448,10 @@ PhongGLTest::PhongGLTest() {
     addTests<PhongGLTest>({
         &PhongGLTest::renderZeroLights,
         #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderZeroLights<PhongGL::Flag::UniformBuffers>
+        &PhongGLTest::renderZeroLights<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderZeroLights<PhongGL::Flag::ShaderStorageBuffers>
+        #endif
         #endif
         },
         &PhongGLTest::renderSetup,
@@ -1343,7 +1461,11 @@ PhongGLTest::PhongGLTest() {
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<PhongGLTest>({
         &PhongGLTest::renderSkinning,
-        &PhongGLTest::renderSkinning<PhongGL::Flag::UniformBuffers>},
+        &PhongGLTest::renderSkinning<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderSkinning<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderSkinningData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
@@ -1354,6 +1476,9 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderInstanced,
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderInstanced<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderInstanced<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderInstancedData),
@@ -1364,7 +1489,11 @@ PhongGLTest::PhongGLTest() {
     /* MSVC needs explicit type due to default template args */
     addTests<PhongGLTest>({
         &PhongGLTest::renderInstancedSkinning,
-        &PhongGLTest::renderInstancedSkinning<PhongGL::Flag::UniformBuffers>},
+        &PhongGLTest::renderInstancedSkinning<PhongGL::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &PhongGLTest::renderInstancedSkinning<PhongGL::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
     #endif
@@ -1505,6 +1634,18 @@ void PhongGLTest::constructUniformBuffers() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if((data.flags & PhongGL::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= PhongGL::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= PhongGL::Flag::MultiDraw) {
@@ -1679,6 +1820,7 @@ void PhongGLTest::constructInvalid() {
     Error redirectError{&out};
     PhongGL{PhongGL::Configuration{}
         .setFlags(data.flags)
+        .setLightCount(data.lightCount, data.perDrawLightCount)
         #ifndef MAGNUM_TARGET_GLES2
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         #endif
@@ -1703,6 +1845,8 @@ void PhongGLTest::constructUniformBuffersInvalid() {
     Error redirectError{&out};
     PhongGL{PhongGL::Configuration{}
         .setFlags(data.flags)
+        .setLightCount(data.lightCount, data.perDrawLightCount)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -2126,6 +2270,19 @@ void PhongGLTest::renderTeardown() {
 
 template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2150,7 +2307,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -2203,6 +2365,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2254,7 +2429,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
 
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
                 .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
@@ -2336,6 +2516,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2361,7 +2554,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
 
     PhongGL::Flags flags = PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
+    if(flag & PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= PhongGL::Flag::TextureTransformation;
     }
@@ -2410,7 +2603,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
             .bindAmbientTexture(ambientArray)
             .bindDiffuseTexture(diffuseArray)
             .bindSpecularTexture(specularArray);
-        if(flag != PhongGL::Flag::UniformBuffers && data.layer != 0)
+        if(!(flag & PhongGL::Flag::UniformBuffers) && data.layer != 0)
             shader.setTextureLayer(data.layer); /* to verify the default */
     } else
     #endif
@@ -2450,7 +2643,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
                 .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
@@ -2526,6 +2724,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2550,7 +2761,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
 
     PhongGL::Flags flags = data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
+    if(flag & PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= PhongGL::Flag::TextureTransformation;
     }
@@ -2686,7 +2897,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -2762,6 +2978,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2798,7 +3027,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
 
     PhongGL::Flags flags = PhongGL::Flag::NormalTexture|data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
+    if(flag & PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= PhongGL::Flag::TextureTransformation;
     }
@@ -2877,7 +3106,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
             .draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -2958,6 +3192,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
 
 template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -3029,7 +3276,12 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -3089,6 +3341,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3120,7 +3385,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -3243,6 +3513,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3327,7 +3610,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -3396,6 +3684,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3423,7 +3724,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32, sphereFlags));
 
     PhongGL::Flags flags = data.flags|flag;
-    if(flag == PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
+    if(flag & PhongGL::Flag::UniformBuffers && (data.flags & PhongGL::Flag::TextureArrays) && !(data.flags & PhongGL::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= PhongGL::Flag::TextureTransformation;
     }
@@ -3448,7 +3749,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
                 .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
                 .setSubImage(0, {0, 0, data.layer}, image);
             shader.bindObjectIdTexture(textureArray);
-            if(flag != PhongGL::Flag::UniformBuffers && data.layer != 0)
+            if(!(flag & PhongGL::Flag::UniformBuffers) && data.layer != 0)
                 shader.setTextureLayer(data.layer); /* to verify the default */
         } else {
             texture = GL::Texture2D{};
@@ -3485,7 +3786,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
             .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
             .setObjectId(40006)
             .draw(sphere);
-    } else if(flag == PhongGL::Flag::UniformBuffers) {
+    } else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -3572,6 +3878,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3614,7 +3933,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
             .draw(plane);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f)
@@ -3793,6 +4117,18 @@ void PhongGLTest::renderLightCulling() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= PhongGL::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
+    #endif
+
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader)
         CORRADE_SKIP("UBOs with dynamically indexed (light) arrays are a crashy dumpster fire on SwiftShader, can't test.");
@@ -3828,7 +4164,7 @@ void PhongGLTest::renderLightCulling() {
     GL::Buffer lightUniform{lights};
 
     PhongGL shader{PhongGL::Configuration{}
-        .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling)
+        .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling|data.flags)
         .setLightCount(data.count, data.perDrawCount)};
     shader
         .bindProjectionBuffer(projectionUniform)
@@ -3866,8 +4202,24 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == PhongGL::Flag::UniformBuffers) {
-        setTestCaseTemplateName("Flag::UniformBuffers");
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
+    if(flag >= PhongGL::Flag::UniformBuffers) {
+        if(flag == PhongGL::Flag::UniformBuffers)
+            setTestCaseTemplateName("Flag::UniformBuffers");
+        else
+            setTestCaseTemplateName("Flag::ShaderStorageBuffers");
 
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
@@ -3957,7 +4309,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -4051,6 +4408,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSkinning() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4128,7 +4498,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSkinning() {
             .setAmbientColor(0xffffff_rgbf)
             .setTransformationMatrix(Matrix4::scaling(Vector3{0.5f}))
             .draw(mesh);
-    } else if(flag == PhongGL::Flag::UniformBuffers) {
+    } else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -4188,6 +4563,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4504,7 +4892,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == PhongGL::Flag::UniformBuffers) {
+    else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -4612,6 +5005,19 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstancedSkinning() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == PhongGL::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4697,7 +5103,12 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstancedSkinning() {
             .setAmbientColor(0xffffff_rgbf)
             .setTransformationMatrix(Matrix4::scaling(Vector3{0.3f}))
             .draw(mesh);
-    } else if(flag == PhongGL::Flag::UniformBuffers) {
+    } else if(flag == PhongGL::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == PhongGL::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -4756,6 +5167,18 @@ void PhongGLTest::renderMulti() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & PhongGL::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= PhongGL::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= PhongGL::Flag::MultiDraw) {
@@ -4999,18 +5422,18 @@ void PhongGLTest::renderMulti() {
     /* Material / light offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = PhongDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setLightOffsetCount(data.drawCount == 1 ? 0 : 1, 2)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setLightOffsetCount(data.bindWithOffset ? 0 : 1, 2)
         .setNormalMatrix(transformationData[0*data.uniformIncrement].transformationMatrix.normalMatrix())
         .setObjectId(1211);
     drawData[1*data.uniformIncrement] = PhongDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
-        .setLightOffsetCount(data.drawCount == 1 ? 0 : 3, 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
+        .setLightOffsetCount(data.bindWithOffset ? 0 : 3, 1)
         .setNormalMatrix(transformationData[1*data.uniformIncrement].transformationMatrix.normalMatrix())
         .setObjectId(5627);
     drawData[2*data.uniformIncrement] = PhongDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setLightOffsetCount(data.drawCount == 1 ? 0 : 0, 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setLightOffsetCount(data.bindWithOffset ? 0 : 0, 1)
         .setNormalMatrix(transformationData[2*data.uniformIncrement].transformationMatrix.normalMatrix())
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
@@ -5027,8 +5450,8 @@ void PhongGLTest::renderMulti() {
         })
         .clearColor(1, Vector4ui{27});
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(PhongMaterialUniform),
             sizeof(PhongMaterialUniform));
@@ -5154,6 +5577,18 @@ void PhongGLTest::renderMultiSkinning() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= PhongGL::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= PhongGL::Flag::MultiDraw) {
@@ -5292,22 +5727,22 @@ void PhongGLTest::renderMultiSkinning() {
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = PhongDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 0);
     drawData[1*data.uniformIncrement] = PhongDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         /* Overlaps with the first joint set with two matrices, unless the
            padding in the single-draw case prevents that */
-        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+        .setJointOffset(data.bindWithOffset ? 0 : 2);
     drawData[2*data.uniformIncrement] = PhongDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 6);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     shader.bindProjectionBuffer(projectionUniform);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(PhongMaterialUniform),
             sizeof(PhongMaterialUniform));
@@ -5316,7 +5751,7 @@ void PhongGLTest::renderMultiSkinning() {
             sizeof(TransformationUniform3D));
         shader.bindJointBuffer(jointUniform,
             0*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             0*data.uniformIncrement*sizeof(PhongDrawUniform),
             sizeof(PhongDrawUniform));
@@ -5330,7 +5765,7 @@ void PhongGLTest::renderMultiSkinning() {
             sizeof(TransformationUniform3D));
         shader.bindJointBuffer(jointUniform,
             1*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             1*data.uniformIncrement*sizeof(PhongDrawUniform),
             sizeof(PhongDrawUniform));
@@ -5344,7 +5779,7 @@ void PhongGLTest::renderMultiSkinning() {
             sizeof(TransformationUniform3D));
         shader.bindJointBuffer(jointUniform,
             2*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             2*data.uniformIncrement*sizeof(PhongDrawUniform),
             sizeof(PhongDrawUniform));

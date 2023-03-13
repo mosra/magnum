@@ -23,6 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#if defined(SHADER_STORAGE_BUFFERS) && !defined(GL_ES)
+#extension GL_ARB_shader_storage_buffer_object: require
+#endif
+
 #ifdef MULTI_DRAW
 #ifndef GL_ES
 #extension GL_ARB_shader_draw_parameters: require
@@ -73,10 +77,22 @@ uniform mediump mat3 textureMatrix
     ;
 #endif
 
-/* Uniform buffers */
+/* Uniform / shader storage buffers */
 
 #else
-#if DRAW_COUNT > 1
+/* For SSBOs, the per-draw arrays are unbounded */
+#ifdef SHADER_STORAGE_BUFFERS
+#define DRAW_COUNT
+#define BUFFER_OR_UNIFORM buffer
+#define BUFFER_READONLY readonly
+#else
+#define BUFFER_OR_UNIFORM uniform
+#define BUFFER_READONLY
+#endif
+
+/* With SSBOs DRAW_COUNT is defined to be empty, +0 makes the condition not
+   cause a compile error */
+#if defined(SHADER_STORAGE_BUFFERS) || DRAW_COUNT+0 > 1
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -90,11 +106,11 @@ uniform highp uint drawOffset
 #endif
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 1
     #endif
-) uniform TransformationProjection {
-    highp
+) BUFFER_OR_UNIFORM TransformationProjection {
+    BUFFER_READONLY highp
         #ifdef TWO_DIMENSIONS
         /* Can't be a mat3 because of ANGLE, see DrawUniform in Phong.vert for
            details */
@@ -115,11 +131,11 @@ struct TextureTransformationUniform {
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 3
     #endif
-) uniform TextureTransformation {
-    TextureTransformationUniform textureTransformations[DRAW_COUNT];
+) BUFFER_OR_UNIFORM TextureTransformation {
+    BUFFER_READONLY TextureTransformationUniform textureTransformations[DRAW_COUNT];
 };
 #endif
 #endif

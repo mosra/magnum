@@ -108,10 +108,24 @@ void VertexColorGL_Test::debugFlags() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void VertexColorGL_Test::debugFlagsSupersets() {
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
-    std::ostringstream out;
-    Debug{&out} << (VertexColorGL3D::Flag::MultiDraw|VertexColorGL3D::Flag::UniformBuffers);
-    CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag::MultiDraw\n");
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
+    {
+        std::ostringstream out;
+        Debug{&out} << (VertexColorGL3D::Flag::MultiDraw|VertexColorGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag::MultiDraw\n");
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (VertexColorGL2D::Flag::ShaderStorageBuffers|VertexColorGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (VertexColorGL3D::Flag::MultiDraw|VertexColorGL3D::Flag::ShaderStorageBuffers|VertexColorGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::VertexColorGL::Flag::MultiDraw|Shaders::VertexColorGL::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
 }
 #endif
 

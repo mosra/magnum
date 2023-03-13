@@ -74,7 +74,7 @@ check() {
         MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest -C $config --output-on-failure -j9 -R GLTest
         MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" ctest -C $config --output-on-failure -j9 -R GLTest
         MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" ctest -C $config --output-on-failure -j9 -R GLTest
-        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object" ctest -C $config --output-on-failure -j9 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_uniform_buffer_object GL_ARB_shader_storage_buffer_object" ctest -C $config --output-on-failure -j9 -R GLTest
         MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" ctest -C $config --output-on-failure -j9 -R GLTest
 
         # Run all Vulkan tests with llvmpipe as well

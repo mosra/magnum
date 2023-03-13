@@ -318,7 +318,13 @@ constexpr struct {
     {"multidraw with all the things except secondary per-vertex sets", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::DynamicPerVertexJointCount,
         8, 48, 16, 4, 0},
     {"multidraw with all the things except instancing", FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::DynamicPerVertexJointCount,
-        8, 48, 16, 3, 4}
+        8, 48, 16, 3, 4},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with all the things except secondary per-vertex sets", FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::InstancedTextureOffset|FlatGL2D::Flag::InstancedTransformation|FlatGL2D::Flag::InstancedObjectId|FlatGL2D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0, 4, 0},
+    {"shader storage + multidraw with all the things except instancing", FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays|FlatGL2D::Flag::AlphaMask|FlatGL2D::Flag::ObjectId|FlatGL2D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0, 3, 4}
+    #endif
 };
 #endif
 
@@ -360,15 +366,30 @@ constexpr struct {
 constexpr struct {
     const char* name;
     FlatGL2D::Flags flags;
-    UnsignedInt materialCount, drawCount;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount, materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData[]{
-    {"zero draws", FlatGL2D::Flag::UniformBuffers, 1, 0,
+    /* These two fail for UBOs but not SSBOs */
+    {"zero draws",
+        FlatGL2D::Flag::UniformBuffers,
+        0, 0, 0, 1, 0,
         "draw count can't be zero"},
-    {"zero materials", FlatGL2D::Flag::UniformBuffers, 0, 1,
+    {"zero materials",
+        FlatGL2D::Flag::UniformBuffers,
+        0, 0, 0, 0, 1,
         "material count can't be zero"},
-    {"texture arrays but no transformation", FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays, 1, 1,
-        "texture arrays require texture transformation enabled as well if uniform buffers are used"}
+    {"texture arrays but no transformation",
+        FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        0, 0, 0, 1, 1,
+        "texture arrays require texture transformation enabled as well if uniform buffers are used"},
+    /* These two fail for UBOs but not SSBOs */
+    {"per-vertex joint count but no joint count",
+        FlatGL2D::Flag::UniformBuffers,
+        0, 2, 0, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
+    {"secondary per-vertex joint count but no joint count", FlatGL2D::Flag::UniformBuffers,
+        0, 0, 3, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
 };
 #endif
 
@@ -663,94 +684,123 @@ constexpr struct {
     UnsignedInt expectedId[3];
     FlatGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset, colored",
         "multidraw2D.tga", "multidraw3D.tga", {},
-        {}, 1, 1, 16, 0.0f, 0.0f},
+        {}, 1, 1, true, 16, 0.0f, 0.0f},
     {"bind with offset, colored + object ID",
         "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
         FlatGL2D::Flag::ObjectId,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, true, 16, 0.0f, 0.0f},
     {"bind with offset, colored + textured object ID",
         "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, true, 16, 0.0f, 0.0f},
     {"bind with offset, colored + textured array object ID",
         "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, true, 16, 0.0f, 0.0f},
     {"bind with offset, textured",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
-        1, 1, 16,
+        1, 1, true, 16,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
     {"bind with offset, texture array",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
-        1, 1, 16,
+        1, 1, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         65.0f, 0.15f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, texture array, shader storage",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
+        FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        0, 0, true, 16,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        65.0f, 0.15f},
+    #endif
     {"draw offset, colored",
         "multidraw2D.tga", "multidraw3D.tga", {},
         {},
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1, 0.0f, 0.0f},
     {"draw offset, colored + object ID",
         "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
         FlatGL2D::Flag::ObjectId,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1, 0.0f, 0.0f},
     {"draw offset, colored + textured object ID",
         "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1, 0.0f, 0.0f},
     {"draw offset, colored + textured array object ID",
         "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1, 0.0f, 0.0f},
     {"draw offset, textured",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
     {"draw offset, texture array",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         65.0f, 0.15f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, texture array, shader storage",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
+        FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        0, 0, false, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        65.0f, 0.15f},
+    #endif
     {"multidraw, colored",
         "multidraw2D.tga", "multidraw3D.tga", {},
-        FlatGL2D::Flag::MultiDraw, 2, 3, 1, 0.0f, 0.0f},
+        FlatGL2D::Flag::MultiDraw,
+        2, 3, false, 1, 0.0f, 0.0f},
     {"multidraw, colored + object ID",
         "multidraw2D.tga", "multidraw3D.tga", {1211, 5627, 36363},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::ObjectId,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1, 0.0f, 0.0f},
     {"multidraw, colored + textured object ID",
         "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1, 0.0f, 0.0f},
     {"multidraw, colored + textured array object ID",
         "multidraw2D.tga", "multidraw3D.tga", {3211, 8627, 40363},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::ObjectIdTexture|FlatGL2D::Flag::TextureArrays,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1, 0.0f, 0.0f},
     {"multidraw, textured",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         2.34f, 0.01f},
     {"multidraw, texture array",
         "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
         FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
-        2, 3, 1,
+        2, 3, false, 1,
+        /* Some difference at the UV edge (texture is wrapping in the 2D case
+           while the 2D array has a black area around) */
+        65.0f, 0.15f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, texture array, shader storage",
+        "multidraw-textured2D.tga", "multidraw-textured3D.tga", {},
+        FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::MultiDraw|FlatGL2D::Flag::TextureTransformation|FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureArrays,
+        0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         65.0f, 0.15f}
+    #endif
 };
 
 /* Same as in PhongGL and MeshVisualizerGL tests */
@@ -758,14 +808,33 @@ const struct {
     const char* name;
     FlatGL2D::Flags flags;
     UnsignedInt materialCount, drawCount, jointCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
 } RenderMultiSkinningData[]{
     {"bind with offset",
-        {}, 1, 1, 4, 16},
+        {},
+        1, 1, 4, true, 16},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, shader storage",
+        FlatGL2D::Flag::ShaderStorageBuffers,
+        0, 0, 0, true, 16},
+    #endif
     {"draw offset",
-        {}, 2, 3, 9, 1},
+        {},
+        2, 3, 9, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, shader storage",
+        FlatGL2D::Flag::ShaderStorageBuffers,
+        0, 0, 0, false, 1},
+    #endif
     {"multidraw",
-        FlatGL2D::Flag::MultiDraw, 2, 3, 9, 1}
+        FlatGL2D::Flag::MultiDraw,
+        2, 3, 9, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, shader storage",
+        FlatGL2D::Flag::ShaderStorageBuffers|FlatGL2D::Flag::MultiDraw,
+        0, 0, 0, false, 1}
+    #endif
 };
 #endif
 
@@ -872,18 +941,30 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderDefaults2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderDefaults2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderDefaults2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderDefaults3D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderDefaults3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderDefaults3D<FlatGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderColored2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderColored2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderColored2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderColored3D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderColored3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderColored3D<FlatGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         &FlatGLTest::renderSetup,
@@ -894,10 +975,16 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderSinglePixelTextured2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderSinglePixelTextured2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderSinglePixelTextured2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderSinglePixelTextured3D,
         #ifndef MAGNUM_TARGET_GLES2
-        &FlatGLTest::renderSinglePixelTextured3D<FlatGL2D::Flag::UniformBuffers>
+        &FlatGLTest::renderSinglePixelTextured3D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderSinglePixelTextured3D<FlatGL2D::Flag::ShaderStorageBuffers>
+        #endif
         #endif
         },
         Containers::arraySize(RenderSinglePixelTexturedData),
@@ -909,10 +996,16 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderTextured2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderTextured2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderTextured2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderTextured3D,
         #ifndef MAGNUM_TARGET_GLES2
-        &FlatGLTest::renderTextured3D<FlatGL3D::Flag::UniformBuffers>
+        &FlatGLTest::renderTextured3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderTextured3D<FlatGL3D::Flag::ShaderStorageBuffers>
+        #endif
         #endif
         },
         Containers::arraySize(RenderTexturedData),
@@ -924,18 +1017,30 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderVertexColor2D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderVertexColor2D<Color3, FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderVertexColor2D<Color3, FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderVertexColor2D<Color4>,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderVertexColor2D<Color4, FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderVertexColor2D<Color4, FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderVertexColor3D<Color3>,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderVertexColor3D<Color3, FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderVertexColor3D<Color3, FlatGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderVertexColor3D<Color4>,
         #ifndef MAGNUM_TARGET_GLES2
-        &FlatGLTest::renderVertexColor3D<Color4, FlatGL3D::Flag::UniformBuffers>
+        &FlatGLTest::renderVertexColor3D<Color4, FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderVertexColor3D<Color4, FlatGL3D::Flag::ShaderStorageBuffers>
+        #endif
         #endif
         },
         &FlatGLTest::renderSetup,
@@ -946,10 +1051,16 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderAlpha2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderAlpha2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderAlpha2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderAlpha3D,
         #ifndef MAGNUM_TARGET_GLES2
-        &FlatGLTest::renderAlpha3D<FlatGL3D::Flag::UniformBuffers>
+        &FlatGLTest::renderAlpha3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderAlpha3D<FlatGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderAlphaData),
@@ -961,8 +1072,15 @@ FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderObjectId2D,
         &FlatGLTest::renderObjectId2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderObjectId2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &FlatGLTest::renderObjectId3D,
-        &FlatGLTest::renderObjectId3D<FlatGL3D::Flag::UniformBuffers>},
+        &FlatGLTest::renderObjectId3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderObjectId3D<FlatGL3D::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderObjectIdData),
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
@@ -973,8 +1091,15 @@ FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
         &FlatGLTest::renderSkinning2D,
         &FlatGLTest::renderSkinning2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderSkinning2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &FlatGLTest::renderSkinning3D,
-        &FlatGLTest::renderSkinning3D<FlatGL3D::Flag::UniformBuffers>},
+        &FlatGLTest::renderSkinning3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderSkinning3D<FlatGL3D::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderSkinningData),
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
@@ -985,10 +1110,16 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderInstanced2D,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::renderInstanced2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderInstanced2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         &FlatGLTest::renderInstanced3D,
         #ifndef MAGNUM_TARGET_GLES2
-        &FlatGLTest::renderInstanced3D<FlatGL3D::Flag::UniformBuffers>
+        &FlatGLTest::renderInstanced3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderInstanced3D<FlatGL3D::Flag::ShaderStorageBuffers>
+        #endif
         #endif
         },
         Containers::arraySize(RenderInstancedData),
@@ -1000,8 +1131,15 @@ FlatGLTest::FlatGLTest() {
     addTests<FlatGLTest>({
         &FlatGLTest::renderInstancedSkinning2D,
         &FlatGLTest::renderInstancedSkinning2D<FlatGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderInstancedSkinning2D<FlatGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &FlatGLTest::renderInstancedSkinning3D,
-        &FlatGLTest::renderInstancedSkinning3D<FlatGL3D::Flag::UniformBuffers>},
+        &FlatGLTest::renderInstancedSkinning3D<FlatGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &FlatGLTest::renderInstancedSkinning3D<FlatGL3D::Flag::ShaderStorageBuffers>
+        #endif
+        },
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
     #endif
@@ -1141,6 +1279,18 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffers() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if((data.flags & FlatGL2D::Flag::TextureArrays) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_array>())
         CORRADE_SKIP(GL::Extensions::EXT::texture_array::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= FlatGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= FlatGL2D::Flag::MultiDraw) {
@@ -1328,6 +1478,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersInvalid
     Error redirectError{&out};
     FlatGL<dimensions>{typename FlatGL<dimensions>::Configuration{}
         .setFlags(data.flags)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
@@ -1675,6 +1826,19 @@ void FlatGLTest::renderTeardown() {
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderDefaults2D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1694,7 +1858,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderDefaults2D() {
         shader.draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -1729,6 +1898,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderDefaults2D() {
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderDefaults3D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1748,7 +1930,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderDefaults3D() {
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
         }};
@@ -1783,6 +1970,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderDefaults3D() {
 
 template<FlatGL2D::Flag flag> void FlatGLTest::renderColored2D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1805,7 +2005,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderColored2D() {
             .draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -1847,6 +2052,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderColored2D() {
 
 template<FlatGL3D::Flag flag> void FlatGLTest::renderColored3D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1873,7 +2091,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderColored3D() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -1939,6 +2162,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -1959,7 +2195,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
 
     FlatGL2D::Flags flags = FlatGL2D::Flag::Textured|data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
+    if(flag & FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL2D::Flag::TextureTransformation;
     }
@@ -1981,7 +2217,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
             .setStorage(1, TextureFormatRGBA, Vector3i{1, 1, data.layer + 1})
             .setSubImage(0, {0, 0, data.layer}, image);
         shader.bindTexture(textureArray);
-        if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+        if(!(flag & FlatGL2D::Flag::UniformBuffers) && data.layer != 0)
             shader.setTextureLayer(data.layer); /* to verify the default */
     } else
     #endif
@@ -2000,7 +2236,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSinglePixelTextured2D() {
             .draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -2052,6 +2293,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2072,7 +2326,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
 
     FlatGL3D::Flags flags = FlatGL2D::Flag::Textured|data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == FlatGL3D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
+    if(flag & FlatGL3D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL3D::Flag::TextureTransformation;
     }
@@ -2094,7 +2348,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
             .setStorage(1, TextureFormatRGBA, Vector3i{1, 1, data.layer + 1})
             .setSubImage(0, {0, 0, data.layer}, image);
         shader.bindTexture(textureArray);
-        if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+        if(!(flag & FlatGL2D::Flag::UniformBuffers) && data.layer != 0)
             shader.setTextureLayer(data.layer); /* to verify the default */
     } else
     #endif
@@ -2118,7 +2372,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderSinglePixelTextured3D() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -2175,6 +2434,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2205,7 +2477,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
 
     FlatGL2D::Flags flags = data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
+    if(flag & FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL2D::Flag::TextureTransformation;
     }
@@ -2224,7 +2496,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
             .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
             .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
         shader.bindTexture(textureArray);
-        if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+        if(!(flag & FlatGL2D::Flag::UniformBuffers) && data.layer != 0)
             shader.setTextureLayer(data.layer); /* to verify the default */
     } else
     #endif
@@ -2248,7 +2520,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderTextured2D() {
             .draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -2302,6 +2579,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2332,7 +2622,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
 
     FlatGL3D::Flags flags = data.flags|flag;
     #ifndef MAGNUM_TARGET_GLES2
-    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
+    if(flag & FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL3D::Flag::TextureTransformation;
     }
@@ -2351,7 +2641,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
             .setStorage(1, TextureFormatRGB, {image->size(), data.layer + 1})
             .setSubImage(0, {0, 0, data.layer}, ImageView2D{*image});
         shader.bindTexture(textureArray);
-        if(flag != FlatGL3D::Flag::UniformBuffers && data.layer != 0)
+        if(!(flag & FlatGL3D::Flag::UniformBuffers) && data.layer != 0)
             shader.setTextureLayer(data.layer); /* to verify the default */
     } else
     #endif
@@ -2380,7 +2670,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -2436,6 +2731,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderTextured3D() {
 
 template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -2488,7 +2796,12 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
             .draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -2526,6 +2839,19 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor2D() {
 
 template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor3D() {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::ShaderStorageBuffers"});
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName({T::Size == 3 ? "Color3" : "Color4", "Flag::UniformBuffers"});
 
@@ -2582,7 +2908,12 @@ template<class T, FlatGL2D::Flag flag> void FlatGLTest::renderVertexColor3D() {
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -2642,6 +2973,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderAlpha2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2687,7 +3031,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderAlpha2D() {
             .draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -2729,6 +3078,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderAlpha3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2784,7 +3146,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderAlpha3D() {
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -2837,6 +3204,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -2864,7 +3244,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32, circleFlags));
 
     FlatGL2D::Flags flags = data.flags|flag;
-    if(flag == FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
+    if(flag & FlatGL2D::Flag::UniformBuffers && (data.flags & FlatGL2D::Flag::TextureArrays) && !(data.flags & FlatGL2D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL2D::Flag::TextureTransformation;
     }
@@ -2887,7 +3267,7 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
                 .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
                 .setSubImage(0, {0, 0, data.layer}, image);
             shader.bindObjectIdTexture(textureArray);
-            if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+            if(!(flag & FlatGL2D::Flag::UniformBuffers) && data.layer != 0)
                 shader.setTextureLayer(data.layer); /* to verify the default */
         } else {
             texture = GL::Texture2D{};
@@ -2917,7 +3297,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderObjectId2D() {
             .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
             .setObjectId(40006)
             .draw(circle);
-    } else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    } else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -2980,6 +3365,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3007,7 +3405,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32, sphereFlags));
 
     FlatGL3D::Flags flags = data.flags|flag;
-    if(flag == FlatGL3D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
+    if(flag & FlatGL3D::Flag::UniformBuffers && (data.flags & FlatGL3D::Flag::TextureArrays) && !(data.flags & FlatGL3D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= FlatGL3D::Flag::TextureTransformation;
     }
@@ -3030,7 +3428,7 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
                 .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
                 .setSubImage(0, {0, 0, data.layer}, image);
             shader.bindObjectIdTexture(textureArray);
-            if(flag != FlatGL2D::Flag::UniformBuffers && data.layer != 0)
+            if(!(flag & FlatGL2D::Flag::UniformBuffers) && data.layer != 0)
                 shader.setTextureLayer(data.layer); /* to verify the default */
         } else {
             texture = GL::Texture2D{};
@@ -3064,7 +3462,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderObjectId3D() {
                 Matrix4::rotationX(15.0_degf))
             .setObjectId(40006)
             .draw(sphere);
-    } else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    } else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -3149,6 +3552,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning2D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3223,7 +3639,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning2D() {
         shader
             .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
             .draw(mesh);
-    } else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    } else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
@@ -3281,6 +3702,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning3D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3354,7 +3788,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderSkinning3D() {
         shader
             .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.5f}))
             .draw(mesh);
-    } else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    } else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.5f}))
@@ -3409,6 +3848,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3642,7 +4094,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstanced2D() {
         shader.draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(
@@ -3732,6 +4189,19 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3969,7 +4439,12 @@ template<FlatGL3D::Flag flag> void FlatGLTest::renderInstanced3D() {
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(
@@ -4060,6 +4535,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning2D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4143,7 +4631,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning2D() {
             .setPerInstanceJointCount(5)
             .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.3f}))
             .draw(mesh);
-    } else if(flag == FlatGL2D::Flag::UniformBuffers) {
+    } else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.3f}))
@@ -4188,6 +4681,19 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning3D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == FlatGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == FlatGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4271,7 +4777,12 @@ template<FlatGL2D::Flag flag> void FlatGLTest::renderInstancedSkinning3D() {
             .setPerInstanceJointCount(5)
             .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.3f}))
             .draw(mesh);
-    } else if(flag == FlatGL3D::Flag::UniformBuffers) {
+    } else if(flag == FlatGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == FlatGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform3D{}
                 .setTransformationProjectionMatrix(Matrix4::scaling(Vector3{0.3f}))
@@ -4325,6 +4836,18 @@ void FlatGLTest::renderMulti2D() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & FlatGL2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= FlatGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= FlatGL2D::Flag::MultiDraw) {
@@ -4532,13 +5055,13 @@ void FlatGLTest::renderMulti2D() {
     /* Material offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(1211);
     drawData[1*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         .setObjectId(5627);
     drawData[2*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
@@ -4552,8 +5075,8 @@ void FlatGLTest::renderMulti2D() {
         })
         .clearColor(1, Vector4ui{27});
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(FlatMaterialUniform),
             sizeof(FlatMaterialUniform));
@@ -4674,6 +5197,18 @@ void FlatGLTest::renderMulti3D() {
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & FlatGL3D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= FlatGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= FlatGL3D::Flag::MultiDraw) {
@@ -4887,13 +5422,13 @@ void FlatGLTest::renderMulti3D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(1211);
     drawData[1*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         .setObjectId(5627);
     drawData[2*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(36363);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
@@ -4907,8 +5442,8 @@ void FlatGLTest::renderMulti3D() {
         })
         .clearColor(1, Vector4ui{27});
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(FlatMaterialUniform),
             sizeof(FlatMaterialUniform));
@@ -5028,6 +5563,18 @@ void FlatGLTest::renderMultiSkinning2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= FlatGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= FlatGL3D::Flag::MultiDraw) {
@@ -5164,20 +5711,20 @@ void FlatGLTest::renderMultiSkinning2D() {
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 0);
     drawData[1*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         /* Overlaps with the first joint set with two matrices, unless the
            padding in the single-draw case prevents that */
-        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+        .setJointOffset(data.bindWithOffset ? 0 : 2);
     drawData[2*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 6);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(FlatMaterialUniform),
             sizeof(FlatMaterialUniform));
@@ -5186,7 +5733,7 @@ void FlatGLTest::renderMultiSkinning2D() {
             sizeof(TransformationProjectionUniform2D));
         shader.bindJointBuffer(jointUniform,
             0*data.uniformIncrement*sizeof(TransformationUniform2D),
-            data.jointCount*sizeof(TransformationUniform2D));
+            4*sizeof(TransformationUniform2D));
         shader.bindDrawBuffer(drawUniform,
             0*data.uniformIncrement*sizeof(FlatDrawUniform),
             sizeof(FlatDrawUniform));
@@ -5200,7 +5747,7 @@ void FlatGLTest::renderMultiSkinning2D() {
             sizeof(TransformationProjectionUniform2D));
         shader.bindJointBuffer(jointUniform,
             1*data.uniformIncrement*sizeof(TransformationUniform2D),
-            data.jointCount*sizeof(TransformationUniform2D));
+            4*sizeof(TransformationUniform2D));
         shader.bindDrawBuffer(drawUniform,
             1*data.uniformIncrement*sizeof(FlatDrawUniform),
             sizeof(FlatDrawUniform));
@@ -5214,7 +5761,7 @@ void FlatGLTest::renderMultiSkinning2D() {
             sizeof(TransformationProjectionUniform2D));
         shader.bindJointBuffer(jointUniform,
             2*data.uniformIncrement*sizeof(TransformationUniform2D),
-            data.jointCount*sizeof(TransformationUniform2D));
+            4*sizeof(TransformationUniform2D));
         shader.bindDrawBuffer(drawUniform,
             2*data.uniformIncrement*sizeof(FlatDrawUniform),
             sizeof(FlatDrawUniform));
@@ -5264,6 +5811,18 @@ void FlatGLTest::renderMultiSkinning3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= FlatGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= FlatGL3D::Flag::MultiDraw) {
@@ -5400,20 +5959,20 @@ void FlatGLTest::renderMultiSkinning3D() {
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 0);
     drawData[1*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         /* Overlaps with the first joint set with two matrices, unless the
            padding in the single-draw case prevents that */
-        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+        .setJointOffset(data.bindWithOffset ? 0 : 2);
     drawData[2*data.uniformIncrement] = FlatDrawUniform{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 6);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(FlatMaterialUniform),
             sizeof(FlatMaterialUniform));
@@ -5422,7 +5981,7 @@ void FlatGLTest::renderMultiSkinning3D() {
             sizeof(TransformationProjectionUniform3D));
         shader.bindJointBuffer(jointUniform,
             0*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             0*data.uniformIncrement*sizeof(FlatDrawUniform),
             sizeof(FlatDrawUniform));
@@ -5436,7 +5995,7 @@ void FlatGLTest::renderMultiSkinning3D() {
             sizeof(TransformationProjectionUniform3D));
         shader.bindJointBuffer(jointUniform,
             1*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             1*data.uniformIncrement*sizeof(FlatDrawUniform),
             sizeof(FlatDrawUniform));
@@ -5450,7 +6009,7 @@ void FlatGLTest::renderMultiSkinning3D() {
             sizeof(TransformationProjectionUniform3D));
         shader.bindJointBuffer(jointUniform,
             2*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             2*data.uniformIncrement*sizeof(FlatDrawUniform),
             sizeof(FlatDrawUniform));

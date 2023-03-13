@@ -65,15 +65,31 @@ namespace {
 }
 
 template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineGL<dimensions>::compile(const Configuration& configuration) {
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
-        "Shaders::LineGL: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
-        "Shaders::LineGL: draw count can't be zero", CompileState{NoCreate});
+    #ifndef CORRADE_NO_ASSERT
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!(configuration.flags() >= Flag::ShaderStorageBuffers))
+    #endif
+    {
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
+            "Shaders::LineGL: material count can't be zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
+            "Shaders::LineGL: draw count can't be zero", CompileState{NoCreate});
+    }
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::gpu_shader4);
     if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
+    #endif
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_storage_buffer_object);
+        #else
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GLES310);
+        #endif
+    }
     #endif
     if(configuration.flags() >= Flag::MultiDraw) {
         #ifndef MAGNUM_TARGET_GLES
@@ -137,12 +153,23 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
         .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n"_s : ""_s);
     if(configuration.flags() >= Flag::UniformBuffers) {
-        vert.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n"
-            "#define MATERIAL_COUNT {}\n",
-            configuration.drawCount(),
-            configuration.materialCount()));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw arrays so just a plain string can be
+           passed */
+        if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+            vert.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            vert.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n"
+                "#define MATERIAL_COUNT {}\n",
+                configuration.drawCount(),
+                configuration.materialCount()));
+        }
         vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     vert.addSource(rs.getString("generic.glsl"_s))
@@ -156,12 +183,23 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
         .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
         .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s);
     if(configuration.flags() >= Flag::UniformBuffers) {
-        frag.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n"
-            "#define MATERIAL_COUNT {}\n",
-            configuration.drawCount(),
-            configuration.materialCount()));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw arrays so just a plain string can be
+           passed */
+        if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+            frag.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            frag.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n"
+                "#define MATERIAL_COUNT {}\n",
+                configuration.drawCount(),
+                configuration.materialCount()));
+        }
         frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     frag.addSource(rs.getString("generic.glsl"_s))
@@ -225,8 +263,11 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
     {
         _viewportSizeUniform = uniformLocation("viewportSize"_s);
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1)
-                _drawOffsetUniform = uniformLocation("drawOffset"_s);
+            if(_drawCount > 1
+                #ifndef MAGNUM_TARGET_WEBGL
+                || flags() >= Flag::ShaderStorageBuffers
+                #endif
+            ) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else {
             _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix"_s);
             _widthUniform = uniformLocation("width"_s);
@@ -246,7 +287,12 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
     if(state._version < GL::Version::GLES310)
     #endif
     {
-        if(_flags >= Flag::UniformBuffers) {
+        /* SSBOs have bindings defined in the source always */
+        if(_flags >= Flag::UniformBuffers
+            #ifndef MAGNUM_TARGET_WEBGL
+            && !(_flags >= Flag::ShaderStorageBuffers)
+            #endif
+        ) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
@@ -343,51 +389,84 @@ template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::setObje
 template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::setDrawOffset(const UnsignedInt offset) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::LineGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
+        "Shaders::LineGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+    #else
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::LineGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
+    #endif
+    if(_drawCount > 1
+        #ifndef MAGNUM_TARGET_WEBGL
+        || _flags >= Flag::ShaderStorageBuffers
+        #endif
+    ) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::LineGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::LineGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
     return *this;
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::LineGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::LineGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
     return *this;
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::LineGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::LineGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
 
@@ -399,6 +478,14 @@ template class MAGNUM_SHADERS_EXPORT LineGL<3>;
 namespace Implementation {
 
 Debug& operator<<(Debug& debug, const LineGLFlag value) {
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of UniformBuffers, printing just one would result in
+       `Flag::MultiDraw|Flag(0x40)` in the output. */
+    if(value == LineGLFlag(UnsignedShort(LineGLFlag::MultiDraw|LineGLFlag::ShaderStorageBuffers)))
+        return debug << LineGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << LineGLFlag::ShaderStorageBuffers;
+    #endif
+
     debug << "Shaders::LineGL::Flag" << Debug::nospace;
 
     switch(value) {
@@ -409,6 +496,9 @@ Debug& operator<<(Debug& debug, const LineGLFlag value) {
         _c(InstancedObjectId)
         _c(InstancedTransformation)
         _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
         _c(MultiDraw)
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -423,7 +513,16 @@ Debug& operator<<(Debug& debug, const LineGLFlags value) {
         LineGLFlag::InstancedObjectId, /* Superset of ObjectId */
         LineGLFlag::ObjectId,
         LineGLFlag::InstancedTransformation,
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers, meaning printing just one
+           would result in `Flag::MultiDraw|Flag(0x40)` in the output. So we
+           pass both and let the Flag printer deal with that. */
+        LineGLFlag(UnsignedShort(LineGLFlag::MultiDraw|LineGLFlag::ShaderStorageBuffers)),
+        #endif
         LineGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        LineGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
         LineGLFlag::UniformBuffers
     });
 }

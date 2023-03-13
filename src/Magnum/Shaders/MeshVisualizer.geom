@@ -27,6 +27,10 @@
 #define const
 #endif
 
+#if defined(SHADER_STORAGE_BUFFERS) && !defined(GL_ES)
+#extension GL_ARB_shader_storage_buffer_object: require
+#endif
+
 #ifdef GL_ES
 #extension GL_EXT_geometry_shader: require
 #ifdef GL_NV_shader_noperspective_interpolation
@@ -84,9 +88,20 @@ uniform lowp float smoothness
     ;
 #endif
 
-/* Uniform buffers */
+/* Uniform / shader storage buffers */
 
 #else
+/* For SSBOs, the per-draw and material arrays are unbounded */
+#ifdef SHADER_STORAGE_BUFFERS
+#define DRAW_COUNT
+#define MATERIAL_COUNT
+#define BUFFER_OR_UNIFORM buffer
+#define BUFFER_READONLY readonly
+#else
+#define BUFFER_OR_UNIFORM uniform
+#define BUFFER_READONLY
+#endif
+
 #ifndef MULTI_DRAW
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
@@ -115,11 +130,11 @@ struct DrawUniform {
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 2
     #endif
-) uniform Draw {
-    DrawUniform draws[DRAW_COUNT];
+) BUFFER_OR_UNIFORM Draw {
+    BUFFER_READONLY DrawUniform draws[DRAW_COUNT];
 };
 
 /* Keep in sync with MeshVisualizer.vert and MeshVisualizer.frag. Can't
@@ -139,11 +154,11 @@ struct MaterialUniform {
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 4
     #endif
-) uniform Material {
-    MaterialUniform materials[MATERIAL_COUNT];
+) BUFFER_OR_UNIFORM Material {
+    BUFFER_READONLY MaterialUniform materials[MATERIAL_COUNT];
 };
 #endif
 
@@ -292,7 +307,9 @@ void main() {
     #define drawId drawOffset
     #endif
 
-    #if MATERIAL_COUNT > 1
+    /* With SSBOs MATERIAL_COUNT is defined to be empty, +0 makes the condition
+       not cause a compile error */
+    #if defined(SHADER_STORAGE_BUFFERS) || MATERIAL_COUNT+0 > 1
     mediump const uint materialId = draws[drawId].draw_materialIdReserved & 0xffffu;
     #else
     #define materialId 0u

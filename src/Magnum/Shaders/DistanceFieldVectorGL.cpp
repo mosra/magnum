@@ -68,16 +68,30 @@ namespace {
 }
 
 template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::CompileState DistanceFieldVectorGL<dimensions>::compile(const Configuration& configuration) {
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
-        "Shaders::DistanceFieldVectorGL: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
-        "Shaders::DistanceFieldVectorGL: draw count can't be zero", CompileState{NoCreate});
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_NO_ASSERT)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!(configuration.flags() >= Flag::ShaderStorageBuffers))
+    #endif
+    {
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
+            "Shaders::DistanceFieldVectorGL: material count can't be zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
+            "Shaders::DistanceFieldVectorGL: draw count can't be zero", CompileState{NoCreate});
+    }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_storage_buffer_object);
+        #else
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GLES310);
+        #endif
+    }
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::MultiDraw) {
@@ -115,10 +129,21 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        vert.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n",
-            configuration.drawCount()));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw arrays so just a plain string can be
+           passed */
+        if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+            vert.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            vert.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n",
+                configuration.drawCount()));
+        }
         vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
@@ -129,12 +154,23 @@ template<UnsignedInt dimensions> typename DistanceFieldVectorGL<dimensions>::Com
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        frag.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define MATERIAL_COUNT {}\n"
-            "#define DRAW_COUNT {}\n",
-            configuration.materialCount(),
-            configuration.drawCount()));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw and material arrays so just a plain
+           string can be passed */
+        if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+            frag.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            frag.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define MATERIAL_COUNT {}\n"
+                "#define DRAW_COUNT {}\n",
+                configuration.materialCount(),
+                configuration.drawCount()));
+        }
         frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
@@ -204,7 +240,11 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     {
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
+            if(_drawCount > 1
+                #ifndef MAGNUM_TARGET_WEBGL
+                || flags() >= Flag::ShaderStorageBuffers
+                #endif
+            ) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
@@ -226,7 +266,12 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>::DistanceFiel
     {
         setUniform(uniformLocation("vectorTexture"_s), TextureUnit);
         #ifndef MAGNUM_TARGET_GLES2
-        if(_flags >= Flag::UniformBuffers) {
+        /* SSBOs have bindings defined in the source always */
+        if(_flags >= Flag::UniformBuffers
+            #ifndef MAGNUM_TARGET_WEBGL
+            && !(_flags >= Flag::ShaderStorageBuffers)
+            #endif
+        ) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
@@ -331,37 +376,62 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::setDrawOffset(const UnsignedInt offset) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::DistanceFieldVectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
+        "Shaders::DistanceFieldVectorGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+    #else
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::DistanceFieldVectorGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
+    #endif
+    if(_drawCount > 1
+        #ifndef MAGNUM_TARGET_WEBGL
+        || _flags >= Flag::ShaderStorageBuffers
+        #endif
+    ) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::DistanceFieldVectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindTransformationProjectionBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::DistanceFieldVectorGL::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::DistanceFieldVectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindDrawBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::DistanceFieldVectorGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
     return *this;
 }
 
@@ -370,7 +440,11 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
         "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
     return *this;
 }
 
@@ -379,21 +453,33 @@ template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFiel
         "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::DistanceFieldVectorGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::DistanceFieldVectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding);
     return *this;
 }
 
 template<UnsignedInt dimensions> DistanceFieldVectorGL<dimensions>& DistanceFieldVectorGL<dimensions>::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::DistanceFieldVectorGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -409,6 +495,14 @@ template class MAGNUM_SHADERS_EXPORT DistanceFieldVectorGL<3>;
 namespace Implementation {
 
 Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlag value) {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Special case coming from the Flags printer. As both flags are a superset
+       of UniformBuffers, printing just one would result in
+       `Flag::MultiDraw|Flag(0x8)` in the output. */
+    if(value == DistanceFieldVectorGLFlag(UnsignedByte(DistanceFieldVectorGLFlag::MultiDraw|DistanceFieldVectorGLFlag::ShaderStorageBuffers)))
+        return debug << DistanceFieldVectorGLFlag::MultiDraw << Debug::nospace << "|" << Debug::nospace << DistanceFieldVectorGLFlag::ShaderStorageBuffers;
+    #endif
+
     debug << "Shaders::DistanceFieldVectorGL::Flag" << Debug::nospace;
 
     switch(value) {
@@ -417,6 +511,9 @@ Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlag value) {
         _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
         _c(MultiDraw)
         #endif
         #undef _c
@@ -430,7 +527,16 @@ Debug& operator<<(Debug& debug, const DistanceFieldVectorGLFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::DistanceFieldVectorGL::Flags{}", {
         DistanceFieldVectorGLFlag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers, meaning printing just one
+           would result in `Flag::MultiDraw|Flag(0x8)` in the output. So we
+           pass both and let the Flag printer deal with that. */
+        DistanceFieldVectorGLFlag(UnsignedByte(DistanceFieldVectorGLFlag::MultiDraw|DistanceFieldVectorGLFlag::ShaderStorageBuffers)),
+        #endif
         DistanceFieldVectorGLFlag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        DistanceFieldVectorGLFlag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
         DistanceFieldVectorGLFlag::UniformBuffers
         #endif
     });

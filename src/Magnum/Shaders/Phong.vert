@@ -31,6 +31,10 @@
 #extension GL_ARB_shader_bit_encoding: require
 #endif
 
+#if defined(SHADER_STORAGE_BUFFERS) && !defined(GL_ES)
+#extension GL_ARB_shader_storage_buffer_object: require
+#endif
+
 #ifdef MULTI_DRAW
 #ifndef GL_ES
 #extension GL_ARB_shader_draw_parameters: require
@@ -128,10 +132,27 @@ layout(location = PER_INSTANCE_JOINT_COUNT_LOCATION)
 uniform uint perInstanceJointCount; /* defaults to zero */
 #endif
 
-/* Uniform buffers */
+/* Uniform / shader storage buffers */
 
 #else
-#if DRAW_COUNT > 1
+/* For SSBOs, the per-draw and joint arrays are unbounded */
+#ifdef SHADER_STORAGE_BUFFERS
+#define DRAW_COUNT
+/* Define JOINT_COUNT only if there are any per-vertex attributes, otherwise
+   the buffer would be useless */
+#if defined(PER_VERTEX_JOINT_COUNT) || defined(SECONDARY_PER_VERTEX_JOINT_COUNT)
+#define JOINT_COUNT
+#endif
+#define BUFFER_OR_UNIFORM buffer
+#define BUFFER_READONLY readonly
+#else
+#define BUFFER_OR_UNIFORM uniform
+#define BUFFER_READONLY
+#endif
+
+/* With SSBOs DRAW_COUNT is defined to be empty, +0 makes the condition not
+   cause a compile error */
+#if defined(SHADER_STORAGE_BUFFERS) || DRAW_COUNT+0 > 1
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
@@ -169,36 +190,36 @@ struct DrawUniform {
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 2
     #endif
-) uniform Draw {
-    DrawUniform draws[DRAW_COUNT];
+) BUFFER_OR_UNIFORM Draw {
+    BUFFER_READONLY DrawUniform draws[DRAW_COUNT];
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 0
     #endif
-) uniform Projection {
-    highp mat4 projectionMatrix;
+) BUFFER_OR_UNIFORM Projection {
+    BUFFER_READONLY highp mat4 projectionMatrix;
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 1
     #endif
-) uniform Transformation {
-    highp mat4 transformationMatrices[DRAW_COUNT];
+) BUFFER_OR_UNIFORM Transformation {
+    BUFFER_READONLY highp mat4 transformationMatrices[DRAW_COUNT];
 };
 
 #ifdef JOINT_COUNT
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 6
     #endif
-) uniform Joint {
-    highp mat4 jointMatrices[JOINT_COUNT];
+) BUFFER_OR_UNIFORM Joint {
+    BUFFER_READONLY highp mat4 jointMatrices[JOINT_COUNT];
 };
 #endif
 
@@ -211,11 +232,11 @@ struct TextureTransformationUniform {
 };
 
 layout(std140
-    #ifdef EXPLICIT_BINDING
+    #if defined(EXPLICIT_BINDING) || defined(SHADER_STORAGE_BUFFERS)
     , binding = 3
     #endif
-) uniform TextureTransformation {
-    TextureTransformationUniform textureTransformations[DRAW_COUNT];
+) BUFFER_OR_UNIFORM TextureTransformation {
+    BUFFER_READONLY TextureTransformationUniform textureTransformations[DRAW_COUNT];
 };
 #endif
 #endif

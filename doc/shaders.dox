@@ -207,6 +207,11 @@ like this, uniform upload and binding is the same as before:
     fit into the limit. For convenience, all uniform structures are guaranteed
     to fit evenly into multiples of 768 bytes, which should be large enough for
     even the strictest @ref GL::Buffer::uniformOffsetAlignment() requirements.
+@par
+    An alternative solution to overcome the size limits is to enable @relativeref{Shaders::PhongGL,Flag::ShaderStorageBuffers} instead
+    (available on OpenGL 4.3+ and OpenGL ES 3.1+), which have no size limits.
+    The cost is narrower platform support and potentially slower access
+    compared to uniform buffers.
 
 @subsection shaders-usage-instancing Instancing
 

@@ -278,9 +278,10 @@ See also:
     [mosra/magnum#601](https://github.com/mosra/magnum/pull/601) and
     [mosra/magnum#610](https://github.com/mosra/magnum/pull/610).
 -   All builtin shaders now have opt-in support for uniform buffers on desktop,
-    OpenGL ES 3.0+ and WebGL 2.0, including multi-draw functionality for
-    massive driver overhead reduction. The @ref shaders overview page was
-    updated with an introduction the new features.
+    OpenGL ES 3.0+ and WebGL 2.0, as well as shader storage buffers on desktop
+    and ES 3.1+. This includes multi-draw functionality for massive driver
+    overhead reduction. The @ref shaders overview page was updated with an
+    introduction to the new features.
 -   All builtin shaders now have opt-in capability of
     @ref shaders-async "async compilation and linking" (see
     [mosra/magnum534](https://github.com/mosra/magnum/issues/534) and

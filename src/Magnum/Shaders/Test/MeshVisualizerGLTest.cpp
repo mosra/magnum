@@ -377,6 +377,12 @@ constexpr struct {
         8, 55, 16, 4, 0},
     {"multidraw with wireframe w/o GS and dynamic primary+secondary skinning per-vertex sets", MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
         8, 55, 16, 3, 4},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with wireframe w/o GS, instancing and dynamic primary skinning per-vertex sets", MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::InstancedTransformation|MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0, 4, 0},
+    {"shader storage + multidraw with wireframe w/o GS and dynamic primary+secondary skinning per-vertex sets", MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader|MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0, 3, 4},
+    #endif
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
@@ -439,6 +445,12 @@ constexpr struct {
         8, 55, 16, 4, 0},
     {"multidraw with wireframe w/o GS and dynamic primary+secondary skinning per-vertex sets", MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader|MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
         8, 55, 16, 3, 4},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"shader storage + multidraw with wireframe, instancing and dynamic primary skinning per-vertex sets", MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::InstancedTransformation|MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0, 4, 0},
+    {"shader storage + multidraw with wireframe and dynamic primary+secondary skinning per-vertex sets", MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,
+        0, 0, 0, 3, 4},
+    #endif
     /* The rest is basically a copy of ConstructData2D with UniformBuffers
        added */
     #ifndef MAGNUM_TARGET_WEBGL
@@ -618,25 +630,53 @@ constexpr struct {
 constexpr struct {
     const char* name;
     MeshVisualizerGL2D::Flags flags;
-    UnsignedInt materialCount, drawCount;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount, materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData2D[] {
-    {"zero draws", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 1, 0,
+    /* These two fail for UBOs but not SSBOs */
+    {"zero draws",
+        MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        0, 0, 0, 1, 0,
         "draw count can't be zero"},
-    {"zero materials", MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader, 0, 1,
-        "material count can't be zero"}
+    {"zero materials",
+        MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        0, 0, 0, 0, 1,
+        "material count can't be zero"},
+    /* These two fail for UBOs but not SSBOs */
+    {"per-vertex joint count but no joint count",
+        MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        0, 2, 0, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
+    {"secondary per-vertex joint count but no joint count",
+        MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
+        0, 0, 3, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
 };
 
 constexpr struct {
     const char* name;
     MeshVisualizerGL3D::Flags flags;
-    UnsignedInt materialCount, drawCount;
+    UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount, materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData3D[] {
-    {"zero draws", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 1, 0,
+    /* These two fail for UBOs but not SSBOs */
+    {"zero draws",
+        MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
+        0, 0, 0, 1, 0,
         "draw count can't be zero"},
-    {"zero materials", MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader, 0, 1,
+    {"zero materials",
+        MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
+        0, 0, 0, 0, 1,
         "material count can't be zero"},
+    /* These two fail for UBOs but not SSBOs */
+    {"per-vertex joint count but no joint count",
+        MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
+        0, 2, 0, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
+    {"secondary per-vertex joint count but no joint count",
+        MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
+        0, 0, 3, 1, 1,
+        "joint count can't be zero if per-vertex joint count is non-zero"},
 };
 #endif
 
@@ -1093,96 +1133,115 @@ constexpr struct {
     const char* expected;
     MeshVisualizerGL2D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData2D[] {
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
-        1, 1, 16,
+        1, 1, true, 16,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     #endif
     {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        1, 1, 16,
+        1, 1, true, 16,
         /* Minor differences on ARM Mali */
         0.67f, 0.02f},
     {"bind with offset, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::VertexId,
-        1, 1, 16,
+        1, 1, true, 16,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     {"bind with offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
-        1, 1, 16,
+        1, 1, true, 16,
         0.0f, 0.0f},
     {"bind with offset, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
-        1, 1, 16,
+        1, 1, true, 16,
         0.0f, 0.0f},
     {"bind with offset, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
-        1, 1, 16,
+        1, 1, true, 16,
         0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        0, 0, true, 16,
+        0.0f, 0.0f},
+    #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     #endif
     {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.02f},
     {"draw offset, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::VertexId,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     {"draw offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"draw offset, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"draw offset, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        0, 0, false, 1,
+        0.0f, 0.0f},
+    #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     #endif
     {"multidraw, wireframe w/o GS", "multidraw-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.02f},
     {"multidraw, vertex ID", "multidraw-vertexid2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::VertexId,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     {"multidraw, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::InstancedObjectId,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"multidraw, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"multidraw, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
+        0, 0, false, 1,
+        0.0f, 0.0f},
+    #endif
 };
 
 constexpr struct {
@@ -1190,99 +1249,124 @@ constexpr struct {
     const char* expected;
     MeshVisualizerGL3D::Flags flags;
     UnsignedInt materialCount, drawCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData3D[] {
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, true, 16,
+        0.0f, 0.0f},
     {"bind with offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        1, 1, 16, 0.0f, 0.0f},
+        1, 1, true, 16,
+        0.0f, 0.0f},
     #endif
     {"bind with offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        1, 1, 16,
+        1, 1, true, 16,
         /* Minor differences on ARM Mali */
         6.0f, 0.04f},
     {"bind with offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
-        1, 1, 16,
+        1, 1, true, 16,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     {"bind with offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId,
-        1, 1, 16,
+        1, 1, true, 16,
         0.0f, 0.0f},
     {"bind with offset, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
-        1, 1, 16,
+        1, 1, true, 16,
         0.0f, 0.0f},
     {"bind with offset, textured array object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
-        1, 1, 16,
+        1, 1, true, 16,
         0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, textured array object ID, shader storage", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        0, 0, true, 16,
+        0.0f, 0.0f},
+    #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1,
+        0.0f, 0.0f},
     {"draw offset, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1,
+        0.0f, 0.0f},
     #endif
     {"draw offset, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         6.0f, 0.04f},
     {"draw offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     {"draw offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"draw offset, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"draw offset, textured array object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, textured array object ID, shader storage", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        0, 0, false, 1,
+        0.0f, 0.0f},
+    #endif
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, wireframe", "multidraw-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1,
+        0.0f, 0.0f},
     {"multidraw, wireframe + TBN", "multidraw-wireframe-tbn3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::TangentDirection|MeshVisualizerGL3D::Flag::BitangentFromTangentDirection|MeshVisualizerGL3D::Flag::NormalDirection,
-        2, 3, 1, 0.0f, 0.0f},
+        2, 3, false, 1,
+        0.0f, 0.0f},
     #endif
     {"multidraw, wireframe w/o GS", "multidraw-wireframe-nogeo3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         6.0f, 0.04f},
     {"multidraw, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::VertexId,
-        2, 3, 1,
+        2, 3, false, 1,
         /* Minor differences on ARM Mali */
         0.67f, 0.01f},
     {"multidraw, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::InstancedObjectId,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"multidraw, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
     {"multidraw, textured array object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
-        2, 3, 1,
+        2, 3, false, 1,
         0.0f, 0.0f},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, textured array object ID, shader storage", "multidraw-objectidtexture3D.tga",
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture|MeshVisualizerGL3D::Flag::TextureArrays,
+        0, 0, false, 1,
+        0.0f, 0.0f},
+    #endif
 };
 
 /* Same as in FlatGL and PhongGL tests */
@@ -1291,15 +1375,39 @@ const struct {
     MeshVisualizerGL2D::Flags flags2D;
     MeshVisualizerGL3D::Flags flags3D;
     UnsignedInt materialCount, drawCount, jointCount;
+    bool bindWithOffset;
     UnsignedInt uniformIncrement;
 } RenderMultiSkinningData[]{
     {"bind with offset",
-        {}, {}, 1, 1, 4, 16},
+        {},
+        {},
+        1, 1, 4, true, 16},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"bind with offset, shader storage",
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers,
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers,
+        0, 0, 0, true, 16},
+    #endif
     {"draw offset",
-        {}, {}, 2, 3, 9, 1},
+        {},
+        {},
+        2, 3, 9, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"draw offset, shader storage",
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers,
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers,
+        0, 0, 0, false, 1},
+    #endif
     {"multidraw",
         MeshVisualizerGL2D::Flag::MultiDraw,
-        MeshVisualizerGL3D::Flag::MultiDraw, 2, 3, 9, 1}
+        MeshVisualizerGL3D::Flag::MultiDraw,
+        2, 3, 9, false, 1},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"multidraw, shader storage",
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::MultiDraw,
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::MultiDraw,
+        0, 0, 0, false, 1}
+    #endif
 };
 #endif
 
@@ -1400,8 +1508,11 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsWireframe2D,
         &MeshVisualizerGLTest::renderDefaultsWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderDefaultsWireframe2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
         &MeshVisualizerGLTest::renderDefaultsWireframe3D,
-        &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
+        &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        },
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1411,8 +1522,15 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsObjectId2D,
         &MeshVisualizerGLTest::renderDefaultsObjectId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsObjectId2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsObjectId3D,
-        &MeshVisualizerGLTest::renderDefaultsObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
+        &MeshVisualizerGLTest::renderDefaultsObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsObjectId3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1422,8 +1540,15 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D,
         &MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D,
-        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        #endif
+        },
         Containers::arraySize(RenderInstancedObjectIdDefaultsData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
@@ -1434,15 +1559,28 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsVertexId2D,
         &MeshVisualizerGLTest::renderDefaultsVertexId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsVertexId2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsVertexId3D,
         &MeshVisualizerGLTest::renderDefaultsVertexId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsVertexId3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D,
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D,
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
         #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal,
         &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
         #endif
         },
         &MeshVisualizerGLTest::renderSetup,
@@ -1454,6 +1592,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderWireframe2D,
         #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderWireframe2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderWireframeData2D),
@@ -1465,6 +1606,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderWireframe3D,
         #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderWireframe3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderWireframeData3D),
@@ -1476,8 +1620,14 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D,
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D,
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         },
         Containers::arraySize(RenderObjectVertexPrimitiveIdData),
         &MeshVisualizerGLTest::renderSetup,
@@ -1493,6 +1643,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderTangentBitangentNormal,
         &MeshVisualizerGLTest::renderTangentBitangentNormal<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        &MeshVisualizerGLTest::renderTangentBitangentNormal<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
         },
         Containers::arraySize(RenderTangentBitangentNormalData),
         &MeshVisualizerGLTest::renderSetup,
@@ -1504,8 +1655,15 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderSkinningWireframe2D,
         &MeshVisualizerGLTest::renderSkinningWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderSkinningWireframe2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderSkinningWireframe3D,
-        &MeshVisualizerGLTest::renderSkinningWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
+        &MeshVisualizerGLTest::renderSkinningWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderSkinningWireframe3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>
+        #endif
+        },
         Containers::arraySize(RenderSkinningData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
@@ -1516,6 +1674,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderInstanced2D,
         #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderInstanced2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderInstanced2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderInstancedData2D),
@@ -1525,6 +1686,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderInstanced3D,
         #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderInstanced3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderInstanced3D<MeshVisualizerGL3D::Flag::ShaderStorageBuffers>,
+        #endif
         #endif
         },
         Containers::arraySize(RenderInstancedData3D),
@@ -1536,8 +1700,15 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderInstancedSkinningWireframe2D,
         &MeshVisualizerGLTest::renderInstancedSkinningWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderInstancedSkinningWireframe2D<MeshVisualizerGL2D::Flag::ShaderStorageBuffers>,
+        #endif
         &MeshVisualizerGLTest::renderInstancedSkinningWireframe3D,
-        &MeshVisualizerGLTest::renderInstancedSkinningWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
+        &MeshVisualizerGLTest::renderInstancedSkinningWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderInstancedSkinningWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>
+        #endif
+        },
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1879,6 +2050,18 @@ void MeshVisualizerGLTest::constructUniformBuffers2D() {
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
+    #endif
+
     if(data.flags >= MeshVisualizerGL2D::Flag::MultiDraw) {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_draw_parameters>())
@@ -1963,6 +2146,18 @@ void MeshVisualizerGLTest::constructUniformBuffers3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(data.flags & MeshVisualizerGL3D::Flag::UniformBuffers && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags >= MeshVisualizerGL3D::Flag::MultiDraw) {
@@ -2259,6 +2454,7 @@ void MeshVisualizerGLTest::constructUniformBuffersInvalid2D() {
     Error redirectError{&out};
     MeshVisualizerGL2D{MeshVisualizerGL2D::Configuration{}
         .setFlags(data.flags)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL2D: {}\n", data.message));
@@ -2279,6 +2475,7 @@ void MeshVisualizerGLTest::constructUniformBuffersInvalid3D() {
     Error redirectError{&out};
     MeshVisualizerGL3D{MeshVisualizerGL3D::Configuration{}
         .setFlags(data.flags)
+        .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizerGL3D: {}\n", data.message));
@@ -2980,7 +3177,17 @@ void MeshVisualizerGLTest::renderTeardown() {
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
-    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
         #ifndef MAGNUM_TARGET_GLES
@@ -3009,7 +3216,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -3046,7 +3258,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -3074,7 +3291,17 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
-    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
         #ifndef MAGNUM_TARGET_GLES
@@ -3103,7 +3330,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(sphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -3144,7 +3376,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(sphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -3178,6 +3415,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
 #ifndef MAGNUM_TARGET_GLES2
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3200,7 +3450,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -3232,6 +3487,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3254,7 +3522,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(icosphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -3294,6 +3567,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
     auto&& data = RenderInstancedObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3336,7 +3622,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -3371,6 +3662,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
     auto&& data = RenderInstancedObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3413,7 +3717,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(icosphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -3449,6 +3758,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3474,7 +3796,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -3501,6 +3828,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3526,7 +3866,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(icosphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -3557,6 +3902,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3611,7 +3969,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL2D::Flag{}) {
         shader.draw(circle);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
         }};
@@ -3639,6 +4002,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderDefault
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3693,7 +4069,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(icosphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -3727,7 +4108,17 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
-    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
         #ifndef MAGNUM_TARGET_GLES
@@ -3754,7 +4145,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderDefault
 
     if(flag == MeshVisualizerGL3D::Flag{}) {
         shader.draw(sphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -3797,6 +4189,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3860,7 +4265,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
             .draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -3930,6 +4340,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -3994,7 +4417,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
             .draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
                 .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
@@ -4079,6 +4507,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     auto&& data = RenderObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4153,7 +4594,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     GL::Mesh circle = MeshTools::compile(circleData);
 
     MeshVisualizerGL2D::Flags flags = data.flags2D|flag;
-    if(flag == MeshVisualizerGL2D::Flag::UniformBuffers && (data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) && !(data.flags2D & MeshVisualizerGL2D::Flag::TextureTransformation)) {
+    if(flag & MeshVisualizerGL2D::Flag::UniformBuffers && (data.flags2D & MeshVisualizerGL2D::Flag::TextureArrays) && !(data.flags2D & MeshVisualizerGL2D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= MeshVisualizerGL2D::Flag::TextureTransformation;
     }
@@ -4179,7 +4620,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
                 .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
                 .setSubImage(0, {0, 0, data.layer}, image);
             shader.bindObjectIdTexture(textureArray);
-            if(flag != MeshVisualizerGL2D::Flag::UniformBuffers && data.layer != 0)
+            if(!(flag & MeshVisualizerGL2D::Flag::UniformBuffers) && data.layer != 0)
                 shader.setTextureLayer(data.layer); /* to verify the default */
         } else {
             texture = GL::Texture2D{};
@@ -4218,7 +4659,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         if(data.textureTransformation != Matrix3{})
             shader.setTextureMatrix(data.textureTransformation);
         shader.draw(circle);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         /* See above for comments */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
@@ -4272,6 +4718,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     auto&& data = RenderObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4341,7 +4800,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
     GL::Mesh sphere = MeshTools::compile(sphereData);
 
     MeshVisualizerGL3D::Flags flags = data.flags3D|flag;
-    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers && (data.flags3D & MeshVisualizerGL3D::Flag::TextureArrays) && !(data.flags3D & MeshVisualizerGL3D::Flag::TextureTransformation)) {
+    if(flag & MeshVisualizerGL3D::Flag::UniformBuffers && (data.flags3D & MeshVisualizerGL3D::Flag::TextureArrays) && !(data.flags3D & MeshVisualizerGL3D::Flag::TextureTransformation)) {
         CORRADE_INFO("Texture arrays currently require texture transformation if UBOs are used, enabling implicitly.");
         flags |= MeshVisualizerGL3D::Flag::TextureTransformation;
     }
@@ -4367,7 +4826,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
                 .setStorage(1, GL::TextureFormat::R16UI, {image.size(), data.layer + 1})
                 .setSubImage(0, {0, 0, data.layer}, image);
             shader.bindObjectIdTexture(textureArray);
-            if(flag != MeshVisualizerGL3D::Flag::UniformBuffers && data.layer != 0)
+            if(!(flag & MeshVisualizerGL3D::Flag::UniformBuffers) && data.layer != 0)
                 shader.setTextureLayer(data.layer); /* to verify the default */
         } else {
             texture = GL::Texture2D{};
@@ -4409,7 +4868,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
         if(data.textureTransformation != Matrix3{})
             shader.setTextureMatrix(data.textureTransformation);
         shader.draw(sphere);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         /* See above for comments */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
@@ -4526,7 +4990,17 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
     auto&& data = RenderTangentBitangentNormalData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
         #ifndef MAGNUM_TARGET_GLES
@@ -4659,7 +5133,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderTangent
         else if(data.flags & MeshVisualizerGL3D::Flag::ObjectId)
             shader.setObjectId(127);
         shader.draw(mesh);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
                 .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
@@ -4729,6 +5204,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4807,7 +5295,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
             .setColor(0xffff99_rgbf)
             .setWireframeColor(0x9999ff_rgbf)
             .draw(mesh);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.5f}))
@@ -4867,6 +5360,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -4945,7 +5451,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
             .setColor(0xffff99_rgbf)
             .setWireframeColor(0x9999ff_rgbf)
             .draw(mesh);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -5006,6 +5517,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -5213,7 +5737,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         shader.draw(circle);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(
@@ -5281,6 +5810,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -5508,7 +6050,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         shader.draw(sphere);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}.setProjectionMatrix(
                 Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)
@@ -5588,6 +6135,19 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -5675,7 +6235,12 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             .setColor(0xffff99_rgbf)
             .setWireframeColor(0x9999ff_rgbf)
             .draw(mesh);
-    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL2D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL2D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer transformationProjectionUniform{GL::Buffer::TargetHint::Uniform, {
             TransformationProjectionUniform2D{}
                 .setTransformationProjectionMatrix(Matrix3::scaling(Vector2{0.3f}))
@@ -5723,6 +6288,19 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        setTestCaseTemplateName("Flag::ShaderStorageBuffers");
+
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    } else
+    #endif
     if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
         setTestCaseTemplateName("Flag::UniformBuffers");
 
@@ -5810,7 +6388,12 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             .setColor(0xffff99_rgbf)
             .setWireframeColor(0x9999ff_rgbf)
             .draw(mesh);
-    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers) {
+    } else if(flag == MeshVisualizerGL3D::Flag::UniformBuffers
+        #ifndef MAGNUM_TARGET_WEBGL
+        || flag == MeshVisualizerGL3D::Flag::ShaderStorageBuffers
+        #endif
+    ) {
+        /* Target hints matter just on WebGL (which doesn't have SSBOs) */
         GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
             ProjectionUniform3D{}
         }};
@@ -5874,6 +6457,18 @@ void MeshVisualizerGLTest::renderMulti2D() {
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
             CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
     }
     #endif
@@ -6077,18 +6672,18 @@ void MeshVisualizerGLTest::renderMulti2D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         .setObjectId(0);
     drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(4);
     drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(8);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             0*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
             sizeof(MeshVisualizerMaterialUniform));
@@ -6197,6 +6792,18 @@ void MeshVisualizerGLTest::renderMulti3D() {
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
             CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags >= MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
     }
     #endif
@@ -6411,18 +7018,18 @@ void MeshVisualizerGLTest::renderMulti3D() {
     /* Material offsets are zero if we have single draw, as those are done with
        UBO offset bindings instead. Also no need to supply a normal matrix. */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         .setObjectId(0);
     drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(10);
     drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
         .setObjectId(20);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             0*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
             sizeof(MeshVisualizerMaterialUniform));
@@ -6526,6 +7133,18 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags2D >= MeshVisualizerGL2D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags2D >= MeshVisualizerGL2D::Flag::MultiDraw) {
@@ -6660,20 +7279,20 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 0);
     drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         /* Overlaps with the first joint set with two matrices, unless the
            padding in the single-draw case prevents that */
-        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+        .setJointOffset(data.bindWithOffset ? 0 : 2);
     drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform2D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 6);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
             sizeof(MeshVisualizerMaterialUniform));
@@ -6682,7 +7301,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
             sizeof(TransformationProjectionUniform2D));
         shader.bindJointBuffer(jointUniform,
             0*data.uniformIncrement*sizeof(TransformationUniform2D),
-            data.jointCount*sizeof(TransformationUniform2D));
+            4*sizeof(TransformationUniform2D));
         shader.bindDrawBuffer(drawUniform,
             0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
             sizeof(MeshVisualizerDrawUniform2D));
@@ -6696,7 +7315,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
             sizeof(TransformationProjectionUniform2D));
         shader.bindJointBuffer(jointUniform,
             1*data.uniformIncrement*sizeof(TransformationUniform2D),
-            data.jointCount*sizeof(TransformationUniform2D));
+            4*sizeof(TransformationUniform2D));
         shader.bindDrawBuffer(drawUniform,
             1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
             sizeof(MeshVisualizerDrawUniform2D));
@@ -6710,7 +7329,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
             sizeof(TransformationProjectionUniform2D));
         shader.bindJointBuffer(jointUniform,
             2*data.uniformIncrement*sizeof(TransformationUniform2D),
-            data.jointCount*sizeof(TransformationUniform2D));
+            4*sizeof(TransformationUniform2D));
         shader.bindDrawBuffer(drawUniform,
             2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform2D),
             sizeof(MeshVisualizerDrawUniform2D));
@@ -6760,6 +7379,18 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags3D >= MeshVisualizerGL3D::Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
+            CORRADE_SKIP(GL::Extensions::ARB::shader_storage_buffer_object::string() << "is not supported.");
+        #else
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
+            CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
+        #endif
+    }
     #endif
 
     if(data.flags3D >= MeshVisualizerGL3D::Flag::MultiDraw) {
@@ -6894,22 +7525,22 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
     /* Material / joint offsets are zero if we have single draw, as those are
        done with UBO offset bindings instead */
     drawData[0*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 0);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 0);
     drawData[1*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 0)
+        .setMaterialId(data.bindWithOffset ? 0 : 0)
         /* Overlaps with the first joint set with two matrices, unless the
            padding in the single-draw case prevents that */
-        .setJointOffset(data.drawCount == 1 ? 0 : 2);
+        .setJointOffset(data.bindWithOffset ? 0 : 2);
     drawData[2*data.uniformIncrement] = MeshVisualizerDrawUniform3D{}
-        .setMaterialId(data.drawCount == 1 ? 0 : 1)
-        .setJointOffset(data.drawCount == 1 ? 0 : 6);
+        .setMaterialId(data.bindWithOffset ? 0 : 1)
+        .setJointOffset(data.bindWithOffset ? 0 : 6);
     GL::Buffer drawUniform{GL::Buffer::TargetHint::Uniform, drawData};
 
     shader.bindProjectionBuffer(projectionUniform);
 
-    /* Just one draw, rebinding UBOs each time */
-    if(data.drawCount == 1) {
+    /* Rebinding UBOs / SSBOs each time */
+    if(data.bindWithOffset) {
         shader.bindMaterialBuffer(materialUniform,
             1*data.uniformIncrement*sizeof(MeshVisualizerMaterialUniform),
             sizeof(MeshVisualizerMaterialUniform));
@@ -6918,7 +7549,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
             sizeof(TransformationUniform3D));
         shader.bindJointBuffer(jointUniform,
             0*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             0*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
             sizeof(MeshVisualizerDrawUniform3D));
@@ -6932,7 +7563,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
             sizeof(TransformationUniform3D));
         shader.bindJointBuffer(jointUniform,
             1*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             1*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
             sizeof(MeshVisualizerDrawUniform3D));
@@ -6946,7 +7577,7 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
             sizeof(TransformationUniform3D));
         shader.bindJointBuffer(jointUniform,
             2*data.uniformIncrement*sizeof(TransformationUniform3D),
-            data.jointCount*sizeof(TransformationUniform3D));
+            4*sizeof(TransformationUniform3D));
         shader.bindDrawBuffer(drawUniform,
             2*data.uniformIncrement*sizeof(MeshVisualizerDrawUniform3D),
             sizeof(MeshVisualizerDrawUniform3D));

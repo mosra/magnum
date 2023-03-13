@@ -68,6 +68,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
             PrimitiveIdFromVertexId = (1 << 5)|PrimitiveId,
             /* bit 6, 7, 8, 9 used by 3D-specific TBN visualization */
             UniformBuffers = 1 << 10,
+            ShaderStorageBuffers = UniformBuffers|(1 << 19),
             MultiDraw = UniformBuffers|(1 << 11),
             TextureArrays = 1 << 17,
             DynamicPerVertexJointCount = 1 << 18
@@ -490,6 +491,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
              * Use uniform buffers. Expects that uniform data are supplied via
              * @ref bindTransformationProjectionBuffer(), @ref bindDrawBuffer()
              * and @ref bindMaterialBuffer() instead of direct uniform setters.
+             * @see @ref Flag::ShaderStorageBuffers
              * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
@@ -498,6 +500,24 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
              * @m_since_latest
              */
             UniformBuffers = 1 << 10,
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Use shader storage buffers. Superset of functionality provided
+             * by @ref Flag::UniformBuffers, compared to it doesn't have any
+             * size limits on @ref Configuration::setJointCount(),
+             * @relativeref{Configuration,setMaterialCount()} and
+             * @relativeref{Configuration,setDrawCount()} in exchange for
+             * potentially more costly access and narrower platform support.
+             * @requires_gl43 Extension @gl_extension{ARB,shader_storage_buffer_object}
+             * @requires_gles31 Shader storage buffers are not available in
+             *      OpenGL ES 3.0 and older.
+             * @requires_gles Shader storage buffers are not available in
+             *      WebGL.
+             * @m_since_latest
+             */
+            ShaderStorageBuffers = UniformBuffers|(1 << 19),
+            #endif
 
             /**
              * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
@@ -675,7 +695,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * matrices accepted by @ref setJointMatrices() / @ref setJointMatrix().
          * If @ref Flag::UniformBuffers is set, this is the statically defined
          * size of the @ref TransformationUniform2D uniform buffer bound with
-         * @ref bindJointBuffer().
+         * @ref bindJointBuffer(). Has no use if @ref Flag::ShaderStorageBuffers
+         * is set.
          * @see @ref Configuration::setJointCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -714,7 +735,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          *
          * Statically defined size of the @ref MeshVisualizerMaterialUniform
          * uniform buffer bound with @ref bindMaterialBuffer(). Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref Flag::UniformBuffers is set and @ref Flag::ShaderStorageBuffers
+         * is not set.
          * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -729,7 +751,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @ref TransformationProjectionUniform2D and
          * @ref MeshVisualizerDrawUniform2D uniform buffers bound with
          * @ref bindTransformationProjectionBuffer() and @ref bindDrawBuffer().
-         * Has use only if @ref Flag::UniformBuffers is set.
+         * Has use only if @ref Flag::UniformBuffers is set and
+         * @ref Flag::ShaderStorageBuffers is not set.
          * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -983,7 +1006,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @{
-         * @name Uniform buffer binding and related uniform setters
+         * @name Uniform / shader storage buffer binding and related uniform setters
          *
          * Used if @ref Flag::UniformBuffers is set.
          */
@@ -1015,7 +1038,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Bind a transformation and projection uniform buffer
+         * @brief Bind a transformation and projection uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1035,7 +1058,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         MeshVisualizerGL2D& bindTransformationProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a draw uniform buffer
+         * @brief Bind a draw uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1065,7 +1088,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Bind a material uniform buffer
+         * @brief Bind a material uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1090,7 +1113,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Bind a joint matrix uniform buffer
+         * @brief Bind a joint matrix uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -1216,9 +1239,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration {
          * @ref TransformationUniform2D buffer bound with
          * @ref bindJointBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(TransformationUniform2D) @ce has to be
-         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(). The
-         * per-vertex joints then index into the array offset by
-         * @ref MeshVisualizerDrawUniform2D::jointOffset.
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-vertex joints index into
+         * the array offset by @ref MeshVisualizerDrawUniform2D::jointOffset.
          *
          * The @p perVertexCount and @p secondaryPerVertexCount parameters
          * describe how many components are taken from @ref JointIds /
@@ -1227,8 +1251,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration {
          * @cpp 4 @ce, setting either of these to @cpp 0 @ce means given
          * attribute is not used at all. If both @p perVertexCount and
          * @p secondaryPerVertexCount are set to @cpp 0 @ce, skinning is not
-         * performed; if either of them is non-zero, @p count is expected to be
-         * non-zero as well.
+         * performed. Unless @ref Flag::ShaderStorageBuffers is set, if either
+         * of them is non-zero, @p count is expected to be non-zero as well.
          *
          * Default value for all three is @cpp 0 @ce.
          * @see @ref MeshVisualizerGL2D::jointCount(),
@@ -1259,11 +1283,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration {
          * @ref MeshVisualizerMaterialUniform buffer bound with
          * @ref bindMaterialBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(MeshVisualizerMaterialUniform) @ce has to
-         * be within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The per-draw materials are then specified via
-         * @ref MeshVisualizerDrawUniform2D::materialId. Default value is
-         * @cpp 1 @ce.
+         * be within @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-draw materials are
+         * specified via @ref MeshVisualizerDrawUniform2D::materialId. Default
+         * value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setDrawCount(),
@@ -1297,10 +1321,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D::Configuration {
          * @cpp count*sizeof(TransformationProjectionUniform2D) @ce,
          * @cpp count*sizeof(MeshVisualizerDrawUniform2D) @ce and
          * @cpp count*sizeof(TextureTransformationUniform) @ce has to be within
-         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The draw offset is then set via @ref setDrawOffset(). Default value
-         * is @cpp 1 @ce.
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffers are
+         * unbounded and @p count is ignored. The draw offset is set via
+         * @ref setDrawOffset(). Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setMaterialCount(),
@@ -2175,6 +2199,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
              * @ref bindProjectionBuffer(), @ref bindTransformationBuffer(),
              * @ref bindDrawBuffer() and @ref bindMaterialBuffer() instead of
              * direct uniform setters.
+             * @see @ref Flag::ShaderStorageBuffers
              * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
@@ -2183,6 +2208,24 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
              * @m_since_latest
              */
             UniformBuffers = 1 << 10,
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Use shader storage buffers. Superset of functionality provided
+             * by @ref Flag::UniformBuffers, compared to it doesn't have any
+             * size limits on @ref Configuration::setJointCount(),
+             * @relativeref{Configuration,setMaterialCount()} and
+             * @relativeref{Configuration,setDrawCount()} in exchange for
+             * potentially more costly access and narrower platform support.
+             * @requires_gl43 Extension @gl_extension{ARB,shader_storage_buffer_object}
+             * @requires_gles31 Shader storage buffers are not available in
+             *      OpenGL ES 3.0 and older.
+             * @requires_gles Shader storage buffers are not available in
+             *      WebGL.
+             * @m_since_latest
+             */
+            ShaderStorageBuffers = UniformBuffers|(1 << 19),
+            #endif
 
             /**
              * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
@@ -2388,7 +2431,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * matrices accepted by @ref setJointMatrices() / @ref setJointMatrix().
          * If @ref Flag::UniformBuffers is set, this is the statically defined
          * size of the @ref TransformationUniform3D uniform buffer bound with
-         * @ref bindJointBuffer().
+         * @ref bindJointBuffer(). Has no use if @ref Flag::ShaderStorageBuffers
+         * is set.
          * @see @ref Configuration::setJointCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -2427,7 +2471,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          *
          * Statically defined size of the @ref MeshVisualizerMaterialUniform
          * uniform buffer bound with @ref bindMaterialBuffer(). Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref Flag::UniformBuffers is set and @ref Flag::ShaderStorageBuffers
+         * is not set.
          * @see @ref Configuration::setMaterialCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -2442,7 +2487,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @ref TransformationUniform3D and
          * @ref MeshVisualizerDrawUniform3D uniform buffers, bound with
          * @ref bindTransformationBuffer() and @ref bindDrawBuffer(). Has use
-         * only if @ref Flag::UniformBuffers is set.
+         * only if @ref Flag::UniformBuffers is set and
+         * @ref Flag::ShaderStorageBuffers is not set.
          * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -2875,7 +2921,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @{
-         * @name Uniform buffer binding and related uniform setters
+         * @name Uniform / shader storage buffer binding and related uniform setters
          *
          * Used if @ref Flag::UniformBuffers is set.
          */
@@ -2906,7 +2952,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Bind a projection uniform buffer
+         * @brief Bind a projection uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2927,7 +2973,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindProjectionBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a transformation uniform buffer
+         * @brief Bind a transformation uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2947,7 +2993,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindTransformationBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a draw uniform buffer
+         * @brief Bind a draw uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2968,7 +3014,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         MeshVisualizerGL3D& bindDrawBuffer(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
         /**
-         * @brief Bind a texture transformation uniform buffer for an object ID texture
+         * @brief Bind a texture transformation uniform / shader storage buffer for an object ID texture
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -2996,7 +3042,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Bind a material uniform buffer
+         * @brief Bind a material uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -3021,7 +3067,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
         }
 
         /**
-         * @brief Bind a joint matrix uniform buffer
+         * @brief Bind a joint matrix uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -3208,9 +3254,10 @@ class MeshVisualizerGL3D::Configuration {
          * @ref TransformationUniform3D buffer bound with
          * @ref bindJointBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(TransformationUniform3D) @ce has to be
-         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(). The
-         * per-vertex joints then index into the array offset by
-         * @ref MeshVisualizerDrawUniform3D::jointOffset.
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-vertex joints index into
+         * the array offset by @ref MeshVisualizerDrawUniform3D::jointOffset.
          *
          * The @p perVertexCount and @p secondaryPerVertexCount parameters
          * describe how many components are taken from @ref JointIds /
@@ -3219,8 +3266,8 @@ class MeshVisualizerGL3D::Configuration {
          * @cpp 4 @ce, setting either of these to @cpp 0 @ce means given
          * attribute is not used at all. If both @p perVertexCount and
          * @p secondaryPerVertexCount are set to @cpp 0 @ce, skinning is not
-         * performed; if either of them is non-zero, @p count is expected to be
-         * non-zero as well.
+         * performed. Unless @ref Flag::ShaderStorageBuffers is set, if either
+         * of them is non-zero, @p count is expected to be non-zero as well.
          *
          * Default value for all three is @cpp 0 @ce.
          * @see @ref MeshVisualizerGL2D::jointCount(),
@@ -3251,11 +3298,11 @@ class MeshVisualizerGL3D::Configuration {
          * @ref MeshVisualizerMaterialUniform buffer bound with
          * @ref bindMaterialBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(MeshVisualizerMaterialUniform) @ce has to
-         * be within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The per-draw materials are then specified via
-         * @ref MeshVisualizerDrawUniform3D::materialId. Default value is
-         * @cpp 1 @ce.
+         * be within @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffer is
+         * unbounded and @p count is ignored. The per-draw materials are
+         * specified via @ref MeshVisualizerDrawUniform3D::materialId. Default
+         * value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setDrawCount(),
@@ -3289,10 +3336,10 @@ class MeshVisualizerGL3D::Configuration {
          * @cpp count*sizeof(TransformationUniform3D) @ce,
          * @cpp count*sizeof(MeshVisualizerDrawUniform3D) @ce and
          * @cpp count*sizeof(TextureTransformationUniform) @ce has to be within
-         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The draw offset is then set via @ref setDrawOffset(). Default value
-         * is @cpp 1 @ce.
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffers are
+         * unbounded and @p count is ignored. The draw offset is set via
+         * @ref setDrawOffset(). Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref setMaterialCount(),

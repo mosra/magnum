@@ -74,13 +74,10 @@ const struct {
         "expected at most 4 secondary per-vertex joints, got 5"},
     {"joint count but no per-vertex joint count",
         10, 0, 0,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
-    {"per-vertex joint count but no joint count",
-        0, 2, 0,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
-    {"secondary per-vertex joint count but no joint count",
-        0, 0, 3,
-        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
+        "count has to be zero if per-vertex joint count is zero"},
+    /* The rest depends on flags being set and is thus verified in constructor,
+       tested in MeshVisualizerGLTest::constructInvalid() and
+       constructUniformBuffersInvalid() */
 };
 #endif
 
@@ -243,12 +240,24 @@ void MeshVisualizerGL_Test::debugFlagsSupersets2D() {
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::InstancedTextureOffset\n");
     }
 
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
         Debug{&out} << (MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::UniformBuffers);
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::MultiDraw\n");
     }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL2D::Flag::MultiDraw|Shaders::MeshVisualizerGL2D::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
 }
 
 void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
@@ -276,12 +285,24 @@ void MeshVisualizerGL_Test::debugFlagsSupersets3D() {
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::InstancedTextureOffset\n");
     }
 
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
     {
         std::ostringstream out;
         Debug{&out} << (MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::UniformBuffers);
         CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::MultiDraw\n");
     }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers|MeshVisualizerGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizerGL3D::Flag::MultiDraw|Shaders::MeshVisualizerGL3D::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
 }
 #endif
 

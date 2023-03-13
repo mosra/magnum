@@ -99,11 +99,22 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         "Shaders::PhongGL: Bitangent attribute binding conflicts with the ObjectId attribute, use a Tangent4 attribute with instanced object ID rendering instead", CompileState{NoCreate});
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
-        "Shaders::PhongGL: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
-        "Shaders::PhongGL: draw count can't be zero", CompileState{NoCreate});
+    #ifndef CORRADE_NO_ASSERT
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(!(configuration.flags() >= Flag::ShaderStorageBuffers))
+    #endif
+    {
+        CORRADE_ASSERT(configuration.perDrawLightCount() <= configuration.lightCount(),
+            "Shaders::PhongGL: per-draw light count expected to not be larger than total count of" << configuration.lightCount() << Debug::nospace << ", got" << configuration.perDrawLightCount(), CompileState{NoCreate});
+        #ifndef MAGNUM_TARGET_GLES2
+        CORRADE_ASSERT(!configuration.jointCount() == (!configuration.perVertexJointCount() && !configuration.secondaryPerVertexJointCount()),
+            "Shaders::PhongGL: joint count can't be zero if per-vertex joint count is non-zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
+            "Shaders::PhongGL: material count can't be zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
+            "Shaders::PhongGL: draw count can't be zero", CompileState{NoCreate});
+        #endif
+    }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -130,6 +141,15 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::gpu_shader4);
     if(configuration.flags() >= Flag::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_storage_buffer_object);
+        #else
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GLES310);
+        #endif
+    }
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::MultiDraw) {
@@ -252,9 +272,15 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         #endif
         {
             vert.addSource(Utility::format(
-                "#define JOINT_COUNT {}\n"
-                "#define PER_VERTEX_JOINT_COUNT {}u\n"
-                "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n",
+                /* SSBOs have an unbounded joints array */
+                #ifndef MAGNUM_TARGET_WEBGL
+                configuration.flags() >= Flag::ShaderStorageBuffers ?
+                    "#define PER_VERTEX_JOINT_COUNT {1}u\n"
+                    "#define SECONDARY_PER_VERTEX_JOINT_COUNT {2}u\n" :
+                #endif
+                    "#define JOINT_COUNT {}\n"
+                    "#define PER_VERTEX_JOINT_COUNT {1}u\n"
+                    "#define SECONDARY_PER_VERTEX_JOINT_COUNT {2}u\n",
                 configuration.jointCount(),
                 configuration.perVertexJointCount(),
                 configuration.secondaryPerVertexJointCount()));
@@ -264,7 +290,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         #ifndef MAGNUM_TARGET_WEBGL
         /* The _LOCATION is needed only if explicit uniform location (desktop /
            ES3.1) is supported, a plain string can be added otherwise. This is
-           an immediate uniform also in the UBO case. */
+           an immediate uniform also in the UBO / SSBO case. */
         #ifndef MAGNUM_TARGET_GLES
         if(context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
         #else
@@ -284,10 +310,21 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
-        vert.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n",
-            configuration.drawCount()));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw arrays so just a plain string can be
+           passed */
+        if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+            vert.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            vert.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n",
+                configuration.drawCount()));
+        }
         vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
@@ -316,15 +353,22 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         frag.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n"
-            "#define MATERIAL_COUNT {}\n"
-            "#define LIGHT_COUNT {}\n"
-            "#define PER_DRAW_LIGHT_COUNT {}\n",
-            configuration.drawCount(),
-            configuration.materialCount(),
-            configuration.lightCount(),
-            configuration.perDrawLightCount()));
+            #ifndef MAGNUM_TARGET_WEBGL
+            /* SSBOs have unbounded per-draw, material and light arrays */
+            configuration.flags() >= Flag::ShaderStorageBuffers ?
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"
+                "#define PER_DRAW_LIGHT_COUNT {3}\n" :
+            #endif
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {0}\n"
+                "#define MATERIAL_COUNT {1}\n"
+                "#define LIGHT_COUNT {2}\n"
+                "#define PER_DRAW_LIGHT_COUNT {3}\n",
+                configuration.drawCount(),
+                configuration.materialCount(),
+                configuration.lightCount(),
+                configuration.perDrawLightCount()));
         frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s)
             .addSource(configuration.flags() >= Flag::LightCulling ? "#define LIGHT_CULLING\n"_s : ""_s);
     } else
@@ -469,7 +513,11 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
         if(_flags >= Flag::DynamicPerVertexJointCount)
             _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(_flags >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
+            if(_drawCount > 1
+                #ifndef MAGNUM_TARGET_WEBGL
+                || flags() >= Flag::ShaderStorageBuffers
+                #endif
+            ) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
@@ -524,7 +572,12 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
         }
         #ifndef MAGNUM_TARGET_GLES2
         if(_flags >= Flag::ObjectIdTexture) setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
-        if(_flags >= Flag::UniformBuffers) {
+        /* SSBOs have bindings defined in the source always */
+        if(_flags >= Flag::UniformBuffers
+            #ifndef MAGNUM_TARGET_WEBGL
+            && !(_flags >= Flag::ShaderStorageBuffers)
+            #endif
+        ) {
             setUniformBlockBinding(uniformBlockIndex("Projection"_s), ProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Transformation"_s), TransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
@@ -940,51 +993,84 @@ PhongGL& PhongGL::setPerInstanceJointCount(const UnsignedInt count) {
 PhongGL& PhongGL::setDrawOffset(const UnsignedInt offset) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
+        "Shaders::PhongGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+    #else
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::PhongGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
+    #endif
+    if(_drawCount > 1
+        #ifndef MAGNUM_TARGET_WEBGL
+        || _flags >= Flag::ShaderStorageBuffers
+        #endif
+    ) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 
 PhongGL& PhongGL::bindProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, ProjectionBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, ProjectionBufferBinding);
     return *this;
 }
 
 PhongGL& PhongGL::bindProjectionBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, ProjectionBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, ProjectionBufferBinding, offset, size);
     return *this;
 }
 
 PhongGL& PhongGL::bindTransformationBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationBufferBinding);
     return *this;
 }
 
 PhongGL& PhongGL::bindTransformationBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationBufferBinding, offset, size);
     return *this;
 }
 
 PhongGL& PhongGL::bindDrawBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding);
     return *this;
 }
 
 PhongGL& PhongGL::bindDrawBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
     return *this;
 }
 
@@ -993,7 +1079,11 @@ PhongGL& PhongGL::bindTextureTransformationBuffer(GL::Buffer& buffer) {
         "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
     return *this;
 }
 
@@ -1002,49 +1092,77 @@ PhongGL& PhongGL::bindTextureTransformationBuffer(GL::Buffer& buffer, const GLin
         "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureTransformation,
         "Shaders::PhongGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
     return *this;
 }
 
 PhongGL& PhongGL::bindMaterialBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding);
     return *this;
 }
 
 PhongGL& PhongGL::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
 
 PhongGL& PhongGL::bindLightBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindLightBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, LightBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, LightBufferBinding);
     return *this;
 }
 
 PhongGL& PhongGL::bindLightBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindLightBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, LightBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, LightBufferBinding, offset, size);
     return *this;
 }
 
 PhongGL& PhongGL::bindJointBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, JointBufferBinding);
     return *this;
 }
 
 PhongGL& PhongGL::bindJointBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= Flag::UniformBuffers,
         "Shaders::PhongGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -1171,10 +1289,8 @@ PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, G
 }
 
 PhongGL::Configuration& PhongGL::Configuration::setLightCount(const UnsignedInt count, const UnsignedInt perDrawCount) {
-    CORRADE_ASSERT(!count == !perDrawCount,
-        "Shaders::PhongGL::Configuration::setLightCount(): count has to be non-zero iff per-draw count is non-zero", *this);
-    CORRADE_ASSERT(perDrawCount <= count,
-        "Shaders::PhongGL::Configuration::setLightCount(): per-draw light count expected to be not larger than total count of" << count << Debug::nospace << ", got" << perDrawCount, *this);
+    CORRADE_ASSERT(perDrawCount || !count,
+        "Shaders::PhongGL::Configuration::setLightCount(): count has to be zero if per-draw count is zero", *this);
     _lightCount = count;
     _perDrawLightCount = perDrawCount;
     return *this;
@@ -1186,8 +1302,8 @@ PhongGL::Configuration& PhongGL::Configuration::setJointCount(UnsignedInt count,
         "Shaders::PhongGL::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::PhongGL::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
-    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::PhongGL::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
+    CORRADE_ASSERT(perVertexCount || secondaryPerVertexCount || !count,
+        "Shaders::PhongGL::Configuration::setJointCount(): count has to be zero if per-vertex joint count is zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;
@@ -1202,6 +1318,11 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
        `Flag::InstancedObjectId|Flag(0x20000)` in the output. */
     if(value == PhongGL::Flag(UnsignedInt(PhongGL::Flag::InstancedObjectId|PhongGL::Flag::ObjectIdTexture)))
         return debug << PhongGL::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << PhongGL::Flag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == PhongGL::Flag(UnsignedInt(PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers)))
+        return debug << PhongGL::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << PhongGL::Flag::ShaderStorageBuffers;
+    #endif
     #endif
 
     debug << "Shaders::PhongGL::Flag" << Debug::nospace;
@@ -1226,6 +1347,9 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
         _c(InstancedTextureOffset)
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
         _c(MultiDraw)
         _c(TextureArrays)
         _c(LightCulling)
@@ -1263,7 +1387,15 @@ Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
         #endif
         PhongGL::Flag::InstancedTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        PhongGL::Flag(UnsignedInt(PhongGL::Flag::MultiDraw|PhongGL::Flag::ShaderStorageBuffers)),
+        #endif
         PhongGL::Flag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        PhongGL::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
         PhongGL::Flag::UniformBuffers,
         PhongGL::Flag::TextureArrays,
         PhongGL::Flag::LightCulling,

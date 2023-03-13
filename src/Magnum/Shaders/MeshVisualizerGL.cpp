@@ -108,6 +108,15 @@ void MeshVisualizerGLBase::assertExtensions(const FlagsBase flags) {
     if(flags >= FlagBase::UniformBuffers)
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::uniform_buffer_object);
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(flags >= FlagBase::ShaderStorageBuffers) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::shader_storage_buffer_object);
+        #else
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GLES310);
+        #endif
+    }
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(flags >= FlagBase::MultiDraw) {
         #ifndef MAGNUM_TARGET_GLES
@@ -228,9 +237,15 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         #endif
         {
             vert.addSource(Utility::format(
-                "#define JOINT_COUNT {}\n"
-                "#define PER_VERTEX_JOINT_COUNT {}u\n"
-                "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n",
+                /* SSBOs have an unbounded joints array */
+                #ifndef MAGNUM_TARGET_WEBGL
+                flags >= FlagBase::ShaderStorageBuffers ?
+                    "#define PER_VERTEX_JOINT_COUNT {1}u\n"
+                    "#define SECONDARY_PER_VERTEX_JOINT_COUNT {2}u\n" :
+                #endif
+                    "#define JOINT_COUNT {}\n"
+                    "#define PER_VERTEX_JOINT_COUNT {}u\n"
+                    "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n",
                 jointCount,
                 perVertexJointCount,
                 secondaryPerVertexJointCount));
@@ -240,7 +255,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         #ifndef MAGNUM_TARGET_WEBGL
         /* The _LOCATION is needed only if explicit uniform location (desktop /
            ES3.1) is supported, a plain string can be added otherwise. This is
-           an immediate uniform also in the UBO case. */
+           an immediate uniform also in the UBO / SSBO case. */
         #ifndef MAGNUM_TARGET_GLES
         if(context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
         #else
@@ -260,12 +275,23 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     if(flags >= FlagBase::UniformBuffers) {
-        vert.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n"
-            "#define MATERIAL_COUNT {}\n",
-            drawCount,
-            materialCount));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw arrays so just a plain string can be
+           passed */
+        if(flags >= FlagBase::ShaderStorageBuffers) {
+            vert.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            vert.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n"
+                "#define MATERIAL_COUNT {}\n",
+                drawCount,
+                materialCount));
+        }
         vert.addSource(flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
@@ -286,12 +312,23 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(flags >= FlagBase::UniformBuffers) {
-        frag.addSource(Utility::format(
-            "#define UNIFORM_BUFFERS\n"
-            "#define DRAW_COUNT {}\n"
-            "#define MATERIAL_COUNT {}\n",
-            drawCount,
-            materialCount));
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* SSBOs have unbounded per-draw arrays so just a plain string can be
+           passed */
+        if(flags >= FlagBase::ShaderStorageBuffers) {
+            frag.addSource(
+                "#define UNIFORM_BUFFERS\n"
+                "#define SHADER_STORAGE_BUFFERS\n"_s);
+        } else
+        #endif
+        {
+            frag.addSource(Utility::format(
+                "#define UNIFORM_BUFFERS\n"
+                "#define DRAW_COUNT {}\n"
+                "#define MATERIAL_COUNT {}\n",
+                drawCount,
+                materialCount));
+        }
         frag.addSource(flags >= FlagBase::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
@@ -403,9 +440,18 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::setPerInstanceJointCount(const Unsig
 MeshVisualizerGLBase& MeshVisualizerGLBase::setDrawOffset(const UnsignedInt offset) {
     CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
         "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_ASSERT(_flags >= FlagBase::ShaderStorageBuffers || offset < _drawCount,
+        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+    #else
     CORRADE_ASSERT(offset < _drawCount,
         "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
-    if(_drawCount > 1) setUniform(_drawOffsetUniform, offset);
+    #endif
+    if(_drawCount > 1
+        #ifndef MAGNUM_TARGET_WEBGL
+        || _flags >= FlagBase::ShaderStorageBuffers
+        #endif
+    ) setUniform(_drawOffsetUniform, offset);
     return *this;
 }
 
@@ -414,7 +460,11 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::bindTextureTransformationBuffer(GL::
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & FlagBase::TextureTransformation,
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= FlagBase::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding);
     return *this;
 }
 
@@ -423,35 +473,55 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::bindTextureTransformationBuffer(GL::
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
     CORRADE_ASSERT(_flags & FlagBase::TextureTransformation,
         "Shaders::MeshVisualizerGL::bindTextureTransformationBuffer(): the shader was not created with texture transformation enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= FlagBase::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TextureTransformationBufferBinding, offset, size);
     return *this;
 }
 
 MeshVisualizerGLBase& MeshVisualizerGLBase::bindMaterialBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= FlagBase::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding);
     return *this;
 }
 
 MeshVisualizerGLBase& MeshVisualizerGLBase::bindMaterialBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
         "Shaders::MeshVisualizerGL::bindMaterialBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= FlagBase::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, MaterialBufferBinding, offset, size);
     return *this;
 }
 
 MeshVisualizerGLBase& MeshVisualizerGLBase::bindJointBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
         "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= FlagBase::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, JointBufferBinding);
     return *this;
 }
 
 MeshVisualizerGLBase& MeshVisualizerGLBase::bindJointBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(_flags >= FlagBase::UniformBuffers,
         "Shaders::MeshVisualizerGL::bindJointBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        _flags >= FlagBase::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, JointBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -502,11 +572,18 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
     /* Has to be here and not in the base class in order to have it exit the
        constructor when testing for asserts -- GLSL compilation would fail
        otherwise */
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
-        "Shaders::MeshVisualizerGL2D: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
-        "Shaders::MeshVisualizerGL2D: draw count can't be zero", CompileState{NoCreate});
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_NO_ASSERT)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!(configuration.flags() >= Flag::ShaderStorageBuffers))
+    #endif
+    {
+        CORRADE_ASSERT(!configuration.jointCount() == (!configuration.perVertexJointCount() && !configuration.secondaryPerVertexJointCount()),
+            "Shaders::MeshVisualizerGL2D: joint count can't be zero if per-vertex joint count is non-zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
+            "Shaders::MeshVisualizerGL2D: material count can't be zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
+            "Shaders::MeshVisualizerGL2D: draw count can't be zero", CompileState{NoCreate});
+    }
     #endif
 
     /* Has to be here and not in the base class in order to have it exit the
@@ -585,13 +662,22 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
                     "#define PRIMITIVE_ID\n"_s) : ""_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::UniformBuffers) {
-            geom->addSource(Utility::format(
-                "#define TWO_DIMENSIONS\n"
-                "#define UNIFORM_BUFFERS\n"
-                "#define DRAW_COUNT {}\n"
-                "#define MATERIAL_COUNT {}\n",
-                configuration.drawCount(),
-                configuration.materialCount()));
+            /* SSBOs have unbounded per-draw arrays so just a plain string can
+               be passed */
+            if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+                vert.addSource(
+                    "#define TWO_DIMENSIONS\n"
+                    "#define UNIFORM_BUFFERS\n"
+                    "#define SHADER_STORAGE_BUFFERS\n"_s);
+            } else {
+                geom->addSource(Utility::format(
+                    "#define TWO_DIMENSIONS\n"
+                    "#define UNIFORM_BUFFERS\n"
+                    "#define DRAW_COUNT {}\n"
+                    "#define MATERIAL_COUNT {}\n",
+                    configuration.drawCount(),
+                    configuration.materialCount()));
+            }
             geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
         }
         #endif
@@ -710,7 +796,11 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
         if(flags() >= Flag::DynamicPerVertexJointCount)
             _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(flags() >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
+            if(_drawCount > 1
+                #ifndef MAGNUM_TARGET_WEBGL
+                || flags() >= Flag::ShaderStorageBuffers
+                #endif
+            ) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
@@ -761,7 +851,12 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
         #ifndef MAGNUM_TARGET_GLES2
         if(flags() >= Flag::ObjectIdTexture)
             setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
-        if(flags() >= Flag::UniformBuffers) {
+        /* SSBOs have bindings defined in the source always */
+        if(flags() >= Flag::UniformBuffers
+            #ifndef MAGNUM_TARGET_WEBGL
+            && !(flags() >= Flag::ShaderStorageBuffers)
+            #endif
+        ) {
             setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Material"_s), MaterialBufferBinding);
@@ -886,28 +981,44 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::setJointMatrix(const UnsignedInt id, con
 MeshVisualizerGL2D& MeshVisualizerGL2D::bindTransformationProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding);
     return *this;
 }
 
 MeshVisualizerGL2D& MeshVisualizerGL2D::bindTransformationProjectionBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL2D::bindTransformationProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationProjectionBufferBinding, offset, size);
     return *this;
 }
 
 MeshVisualizerGL2D& MeshVisualizerGL2D::bindDrawBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding);
     return *this;
 }
 
 MeshVisualizerGL2D& MeshVisualizerGL2D::bindDrawBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL2D::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -918,8 +1029,8 @@ MeshVisualizerGL2D::Configuration& MeshVisualizerGL2D::Configuration::setJointCo
         "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
-    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
+    CORRADE_ASSERT(perVertexCount || secondaryPerVertexCount || !count,
+        "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): count has to be zero if per-vertex joint count is zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;
@@ -954,11 +1065,21 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
     /* Has to be here and not in the base class in order to have it exit the
        constructor when testing for asserts -- GLSL compilation would fail
        otherwise */
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
-        "Shaders::MeshVisualizerGL3D: material count can't be zero", CompileState{NoCreate});
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
-        "Shaders::MeshVisualizerGL3D: draw count can't be zero", CompileState{NoCreate});
+    /* Has to be here and not in the base class in order to have it exit the
+       constructor when testing for asserts -- GLSL compilation would fail
+       otherwise */
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_NO_ASSERT)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!(configuration.flags() >= Flag::ShaderStorageBuffers))
+    #endif
+    {
+        CORRADE_ASSERT(!configuration.jointCount() == (!configuration.perVertexJointCount() && !configuration.secondaryPerVertexJointCount()),
+            "Shaders::MeshVisualizerGL3D: joint count can't be zero if per-vertex joint count is non-zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.materialCount(),
+            "Shaders::MeshVisualizerGL3D: material count can't be zero", CompileState{NoCreate});
+        CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || configuration.drawCount(),
+            "Shaders::MeshVisualizerGL3D: draw count can't be zero", CompileState{NoCreate});
+    }
     #endif
 
     /* Has to be here and not in the base class in order to have it exit the
@@ -1069,13 +1190,22 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
             .addSource(configuration.flags() & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n"_s : ""_s);
         #ifndef MAGNUM_TARGET_GLES2
         if(configuration.flags() >= Flag::UniformBuffers) {
-            geom->addSource(Utility::format(
-                "#define THREE_DIMENSIONS\n"
-                "#define UNIFORM_BUFFERS\n"
-                "#define DRAW_COUNT {}\n"
-                "#define MATERIAL_COUNT {}\n",
-                configuration.drawCount(),
-                configuration.materialCount()));
+            /* SSBOs have unbounded per-draw arrays so just a plain string can
+               be passed */
+            if(configuration.flags() >= Flag::ShaderStorageBuffers) {
+                geom->addSource(
+                    "#define THREE_DIMENSIONS\n"
+                    "#define UNIFORM_BUFFERS\n"
+                    "#define SHADER_STORAGE_BUFFERS\n"_s);
+            } else {
+                geom->addSource(Utility::format(
+                    "#define THREE_DIMENSIONS\n"
+                    "#define UNIFORM_BUFFERS\n"
+                    "#define DRAW_COUNT {}\n"
+                    "#define MATERIAL_COUNT {}\n",
+                    configuration.drawCount(),
+                    configuration.materialCount()));
+            }
             geom->addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
         }
         #endif
@@ -1215,7 +1345,11 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
         if(flags() >= Flag::DynamicPerVertexJointCount)
             _perVertexJointCountUniform = uniformLocation("perVertexJointCount"_s);
         if(flags() >= Flag::UniformBuffers) {
-            if(_drawCount > 1) _drawOffsetUniform = uniformLocation("drawOffset"_s);
+            if(_drawCount > 1
+                #ifndef MAGNUM_TARGET_WEBGL
+                || flags() >= Flag::ShaderStorageBuffers
+                #endif
+            ) _drawOffsetUniform = uniformLocation("drawOffset"_s);
         } else
         #endif
         {
@@ -1280,7 +1414,12 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
         #ifndef MAGNUM_TARGET_GLES2
         if(flags() >= Flag::ObjectIdTexture)
             setUniform(uniformLocation("objectIdTextureData"_s), ObjectIdTextureUnit);
-        if(flags() >= Flag::UniformBuffers) {
+        /* SSBOs have bindings defined in the source always */
+        if(flags() >= Flag::UniformBuffers
+            #ifndef MAGNUM_TARGET_WEBGL
+            && !(flags() >= Flag::ShaderStorageBuffers)
+            #endif
+        ) {
             setUniformBlockBinding(uniformBlockIndex("Projection"_s), ProjectionBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Transformation"_s), TransformationBufferBinding);
             setUniformBlockBinding(uniformBlockIndex("Draw"_s), DrawBufferBinding);
@@ -1473,42 +1612,66 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::setJointMatrix(const UnsignedInt id, con
 MeshVisualizerGL3D& MeshVisualizerGL3D::bindProjectionBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, ProjectionBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, ProjectionBufferBinding);
     return *this;
 }
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::bindProjectionBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL3D::bindProjectionBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, ProjectionBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, ProjectionBufferBinding, offset, size);
     return *this;
 }
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::bindTransformationBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL3D::bindTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationBufferBinding);
     return *this;
 }
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::bindTransformationBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL3D::bindTransformationBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, TransformationBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, TransformationBufferBinding, offset, size);
     return *this;
 }
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::bindDrawBuffer(GL::Buffer& buffer) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL3D::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding);
     return *this;
 }
 
 MeshVisualizerGL3D& MeshVisualizerGL3D::bindDrawBuffer(GL::Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     CORRADE_ASSERT(flags() >= Flag::UniformBuffers,
         "Shaders::MeshVisualizerGL3D::bindDrawBuffer(): the shader was not created with uniform buffers enabled", *this);
-    buffer.bind(GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
+    buffer.bind(
+        #ifndef MAGNUM_TARGET_WEBGL
+        flags() >= Flag::ShaderStorageBuffers ? GL::Buffer::Target::ShaderStorage :
+        #endif
+        GL::Buffer::Target::Uniform, DrawBufferBinding, offset, size);
     return *this;
 }
 #endif
@@ -1519,8 +1682,8 @@ MeshVisualizerGL3D::Configuration& MeshVisualizerGL3D::Configuration::setJointCo
         "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): expected at most 4 per-vertex joints, got" << perVertexCount, *this);
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
-    CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
+    CORRADE_ASSERT(perVertexCount || secondaryPerVertexCount || !count,
+        "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): count has to be zero if per-vertex joint count is zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;
@@ -1535,6 +1698,11 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
        `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
     if(value == MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::InstancedObjectId|MeshVisualizerGL2D::Flag::ObjectIdTexture)))
         return debug << MeshVisualizerGL2D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL2D::Flag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers)))
+        return debug << MeshVisualizerGL2D::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL2D::Flag::ShaderStorageBuffers;
+    #endif
     #endif
 
     debug << "Shaders::MeshVisualizerGL2D::Flag" << Debug::nospace;
@@ -1561,6 +1729,9 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flag value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
         _c(MultiDraw)
         _c(TextureArrays)
         _c(DynamicPerVertexJointCount)
@@ -1579,6 +1750,11 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
        `Flag::InstancedObjectId|Flag(0x4000)` in the output. */
     if(value == MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::InstancedObjectId|MeshVisualizerGL3D::Flag::ObjectIdTexture)))
         return debug << MeshVisualizerGL3D::Flag::InstancedObjectId << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL3D::Flag::ObjectIdTexture;
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Similarly here, both are a superset of UniformBuffers */
+    if(value == MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers)))
+        return debug << MeshVisualizerGL3D::Flag::MultiDraw << Debug::nospace << "|" << Debug::nospace << MeshVisualizerGL3D::Flag::ShaderStorageBuffers;
+    #endif
     #endif
 
     debug << "Shaders::MeshVisualizerGL3D::Flag" << Debug::nospace;
@@ -1611,6 +1787,9 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flag value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(UniformBuffers)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(ShaderStorageBuffers)
+        #endif
         _c(MultiDraw)
         _c(TextureArrays)
         _c(DynamicPerVertexJointCount)
@@ -1647,7 +1826,15 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL2D::Flags value) {
         MeshVisualizerGL2D::Flag::PrimitiveId,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        MeshVisualizerGL2D::Flag(UnsignedInt(MeshVisualizerGL2D::Flag::MultiDraw|MeshVisualizerGL2D::Flag::ShaderStorageBuffers)),
+        #endif
         MeshVisualizerGL2D::Flag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizerGL2D::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
         MeshVisualizerGL2D::Flag::UniformBuffers,
         MeshVisualizerGL2D::Flag::TextureArrays,
         MeshVisualizerGL2D::Flag::DynamicPerVertexJointCount,
@@ -1687,7 +1874,15 @@ Debug& operator<<(Debug& debug, const MeshVisualizerGL3D::Flags value) {
         MeshVisualizerGL3D::Flag::PrimitiveId,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* Both are a superset of UniformBuffers; similarly to ObjectId above
+           letting the Flag printer deal with that */
+        MeshVisualizerGL3D::Flag(UnsignedInt(MeshVisualizerGL3D::Flag::MultiDraw|MeshVisualizerGL3D::Flag::ShaderStorageBuffers)),
+        #endif
         MeshVisualizerGL3D::Flag::MultiDraw, /* Superset of UniformBuffers */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizerGL3D::Flag::ShaderStorageBuffers, /* Superset of UniformBuffers */
+        #endif
         MeshVisualizerGL3D::Flag::UniformBuffers,
         MeshVisualizerGL3D::Flag::TextureArrays,
         MeshVisualizerGL3D::Flag::DynamicPerVertexJointCount,

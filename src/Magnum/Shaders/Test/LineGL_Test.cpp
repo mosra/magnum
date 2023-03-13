@@ -143,13 +143,26 @@ void LineGL_Test::debugFlagsSupersets() {
         std::ostringstream out;
         Debug{&out} << (LineGL3D::Flag::ObjectId|LineGL3D::Flag::InstancedObjectId);
         CORRADE_COMPARE(out.str(), "Shaders::LineGL::Flag::InstancedObjectId\n");
+    }
 
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
-    } {
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
+    {
         std::ostringstream out;
         Debug{&out} << (LineGL3D::Flag::MultiDraw|LineGL3D::Flag::UniformBuffers);
         CORRADE_COMPARE(out.str(), "Shaders::LineGL::Flag::MultiDraw\n");
     }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::LineGL::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (LineGL2D::Flag::MultiDraw|LineGL2D::Flag::ShaderStorageBuffers|LineGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::LineGL::Flag::MultiDraw|Shaders::LineGL::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
 }
 
 }}}}

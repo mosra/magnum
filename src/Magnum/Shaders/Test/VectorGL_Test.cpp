@@ -99,10 +99,24 @@ void VectorGL_Test::debugFlags() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void VectorGL_Test::debugFlagsSupersets() {
-    /* MultiDraw is a superset of UniformBuffers so only one should be printed */
-    std::ostringstream out;
-    Debug{&out} << (VectorGL3D::Flag::MultiDraw|VectorGL3D::Flag::UniformBuffers);
-    CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::MultiDraw\n");
+    /* MultiDraw and ShaderStorageBuffers are a superset of UniformBuffers so
+       only one should be printed, but if there are both then both should be */
+    {
+        std::ostringstream out;
+        Debug{&out} << (VectorGL3D::Flag::MultiDraw|VectorGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::MultiDraw\n");
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    {
+        std::ostringstream out;
+        Debug{&out} << (VectorGL2D::Flag::ShaderStorageBuffers|VectorGL2D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::ShaderStorageBuffers\n");
+    } {
+        std::ostringstream out;
+        Debug{&out} << (VectorGL3D::Flag::MultiDraw|VectorGL3D::Flag::ShaderStorageBuffers|VectorGL3D::Flag::UniformBuffers);
+        CORRADE_COMPARE(out.str(), "Shaders::VectorGL::Flag::MultiDraw|Shaders::VectorGL::Flag::ShaderStorageBuffers\n");
+    }
+    #endif
 }
 #endif
 

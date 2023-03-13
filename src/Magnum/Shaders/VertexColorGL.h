@@ -45,6 +45,9 @@ namespace Implementation {
     enum class VertexColorGLFlag: UnsignedByte {
         #ifndef MAGNUM_TARGET_GLES2
         UniformBuffers = 1 << 0,
+        #ifndef MAGNUM_TARGET_WEBGL
+        ShaderStorageBuffers = UniformBuffers|(1 << 2),
+        #endif
         MultiDraw = UniformBuffers|(1 << 1)
         #endif
     };
@@ -165,6 +168,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
              * Use uniform buffers. Expects that uniform data are supplied via
              * @ref bindTransformationProjectionBuffer() instead of direct
              * uniform setters.
+             * @see @ref Flag::ShaderStorageBuffers
              * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
@@ -173,6 +177,23 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
              * @m_since_latest
              */
             UniformBuffers = 1 << 0,
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Use shader storage buffers. Superset of functionality provided
+             * by @ref Flag::UniformBuffers, compared to it doesn't have any
+             * size limits on @relativeref{Configuration,setDrawCount()} in
+             * exchange for potentially more costly access and narrower
+             * platform support.
+             * @requires_gl43 Extension @gl_extension{ARB,shader_storage_buffer_object}
+             * @requires_gles31 Shader storage buffers are not available in
+             *      OpenGL ES 3.0 and older.
+             * @requires_gles Shader storage buffers are not available in
+             *      WebGL.
+             * @m_since_latest
+             */
+            ShaderStorageBuffers = UniformBuffers|(1 << 2),
+            #endif
 
             /**
              * Enable multidraw functionality. Implies @ref Flag::UniformBuffers
@@ -331,7 +352,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
          * @ref TransformationProjectionUniform2D /
          * @ref TransformationProjectionUniform3D uniform buffers bound with
          * @ref bindTransformationProjectionBuffer(). Has use only if
-         * @ref Flag::UniformBuffers is set.
+         * @ref Flag::UniformBuffers is set and @ref Flag::ShaderStorageBuffers
+         * is not set.
          * @see @ref Configuration::setDrawCount()
          * @requires_gles30 Not defined on OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined on WebGL 1.0 builds.
@@ -364,7 +386,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @{
-         * @name Uniform buffer binding and related uniform setters
+         * @name Uniform / shader storage buffer binding and related uniform setters
          *
          * Used if @ref Flag::UniformBuffers is set.
          */
@@ -393,7 +415,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColorGL: publ
         VertexColorGL<dimensions>& setDrawOffset(UnsignedInt offset);
 
         /**
-         * @brief Bind a transformation and projection uniform buffer
+         * @brief Bind a transformation and projection uniform / shader storage buffer
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -480,10 +502,10 @@ template<UnsignedInt dimensions> class VertexColorGL<dimensions>::Configuration 
          * statically defined size and
          * @cpp count*sizeof(TransformationProjectionUniform2D) @ce /,
          * @cpp count*sizeof(TransformationProjectionUniform3D) @ce has to be
-         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The draw offset is then set via @ref setDrawOffset(). Default value
-         * is @cpp 1 @ce.
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(), if
+         * @ref Flag::ShaderStorageBuffers is set as well, the buffers are
+         * unbounded and @p count is ignored. The draw offset is set via
+         * @ref setDrawOffset(). Default value is @cpp 1 @ce.
          *
          * If @ref Flag::UniformBuffers isn't set, this value is ignored.
          * @see @ref setFlags(), @ref VertexColorGL::drawCount()
