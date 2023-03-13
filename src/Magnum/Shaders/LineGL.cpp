@@ -92,12 +92,13 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     #endif
     Utility::Resource rs{"MagnumShadersGL"_s};
 
-    const GL::Context& context = GL::Context::current();
-
     #ifndef MAGNUM_TARGET_GLES
+    const GL::Context& context = GL::Context::current();
     const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES310, GL::Version::GLES300});
     #else
-    const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300});
+    constexpr GL::Version version = GL::Version::GLES300;
     #endif
 
     /* Cap and join style is needed by both the vertex and fragment shader,

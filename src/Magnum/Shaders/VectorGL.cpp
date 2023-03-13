@@ -103,7 +103,11 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({
+        #ifndef MAGNUM_TARGET_WEBGL
+        GL::Version::GLES310,
+        #endif
+        GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);

@@ -84,7 +84,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGLBase: public GL::AbstractShaderProgr
         static MAGNUM_SHADERS_LOCAL void assertExtensions(const FlagsBase flags);
         static MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs, const FlagsBase flags
             #ifndef MAGNUM_TARGET_GLES2
-            , UnsignedInt dimensions, UnsignedInt jointCount, UnsignedInt perVertexJointCount, UnsignedInt secondaryPerVertexJointCount, UnsignedInt materialCount, UnsignedInt drawCount, UnsignedInt perInstanceJointCountUniform, UnsignedInt perVertexJointCountUniform
+            , UnsignedInt dimensions, UnsignedInt jointCount, UnsignedInt perVertexJointCount, UnsignedInt secondaryPerVertexJointCount, UnsignedInt materialCount, UnsignedInt drawCount
+            #ifndef MAGNUM_TARGET_WEBGL
+            , UnsignedInt perInstanceJointCountUniform, UnsignedInt perVertexJointCountUniform
+            #endif
             #endif
         );
 

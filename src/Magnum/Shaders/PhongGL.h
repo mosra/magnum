@@ -2333,10 +2333,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
 
     private:
         Flags _flags;
-        UnsignedInt _lightCount = 1;
+        UnsignedInt _lightCount = 1,
+            _perDrawLightCount = 1;
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt
-            _perDrawLightCount = 1,
             _jointCount = 0,
             _perVertexJointCount = 0,
             _secondaryPerVertexJointCount = 0,

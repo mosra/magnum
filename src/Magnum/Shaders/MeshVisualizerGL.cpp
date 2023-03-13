@@ -157,7 +157,10 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         #ifndef MAGNUM_TARGET_GLES
         dimensions /* used for a uniform initializer, which isn't on GLSL ES */
         #endif
-    , const UnsignedInt jointCount, const UnsignedInt perVertexJointCount, const UnsignedInt secondaryPerVertexJointCount, const UnsignedInt materialCount, const UnsignedInt drawCount, const UnsignedInt perInstanceJointCountUniform, const UnsignedInt perVertexJointCountUniform
+    , const UnsignedInt jointCount, const UnsignedInt perVertexJointCount, const UnsignedInt secondaryPerVertexJointCount, const UnsignedInt materialCount, const UnsignedInt drawCount
+        #ifndef MAGNUM_TARGET_WEBGL
+        , const UnsignedInt perInstanceJointCountUniform, const UnsignedInt perVertexJointCountUniform
+        #endif
     #endif
 ) {
     GL::Context& context = GL::Context::current();
@@ -198,6 +201,13 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(perVertexJointCount || secondaryPerVertexJointCount) {
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* The _LOCATION are needed only in the non-UBO case if explicit
+           uniform location (desktop / ES3.1) is supported, and _INITIALIZER is
+           desktop-only, so don't even have this branch on WebGL. OTOH,
+           branching on explicit uniform location support and adding just the
+           _INITIALIZER if not wouldn't really save much (have to format()
+           anyway), so passing them always. */
         if(!(flags >= FlagBase::UniformBuffers)) {
             vert.addSource(Utility::format(
                 "#define JOINT_COUNT {}\n"
@@ -214,7 +224,9 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
                 ((dimensions == 2 ? "mat3(1.0), "_s : "mat4(1.0), "_s)*jointCount).exceptSuffix(2),
                 #endif
                 perInstanceJointCountUniform));
-        } else {
+        } else
+        #endif
+        {
             vert.addSource(Utility::format(
                 "#define JOINT_COUNT {}\n"
                 "#define PER_VERTEX_JOINT_COUNT {}u\n"
@@ -225,12 +237,23 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         }
     }
     if(flags >= FlagBase::DynamicPerVertexJointCount) {
-        if(!(flags >= FlagBase::UniformBuffers)) {
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* The _LOCATION is needed only if explicit uniform location (desktop /
+           ES3.1) is supported, a plain string can be added otherwise. This is
+           an immediate uniform also in the UBO case. */
+        #ifndef MAGNUM_TARGET_GLES
+        if(context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+        #else
+        if(version >= GL::Version::GLES310)
+        #endif
+        {
             vert.addSource(Utility::format(
                 "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
                 "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
                 perVertexJointCountUniform));
-        } else {
+        } else
+        #endif
+        {
             vert.addSource("#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"_s);
         }
     }
@@ -514,7 +537,10 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
         #ifndef MAGNUM_TARGET_GLES2
-        , 2, configuration.jointCount(), configuration.perVertexJointCount(), configuration.secondaryPerVertexJointCount(), configuration.materialCount(), configuration.drawCount(), out._perInstanceJointCountUniform, out._perVertexJointCountUniform
+        , 2, configuration.jointCount(), configuration.perVertexJointCount(), configuration.secondaryPerVertexJointCount(), configuration.materialCount(), configuration.drawCount()
+        #ifndef MAGNUM_TARGET_WEBGL
+        , out._perInstanceJointCountUniform, out._perVertexJointCountUniform
+        #endif
         #endif
     );
     Containers::Optional<GL::Shader> geom;
@@ -963,7 +989,10 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs, baseFlags
         #ifndef MAGNUM_TARGET_GLES2
-        , 3, configuration.jointCount(), configuration.perVertexJointCount(), configuration.secondaryPerVertexJointCount(), configuration.materialCount(), configuration.drawCount(), out._perInstanceJointCountUniform, out._perVertexJointCountUniform
+        , 3, configuration.jointCount(), configuration.perVertexJointCount(), configuration.secondaryPerVertexJointCount(), configuration.materialCount(), configuration.drawCount()
+        #ifndef MAGNUM_TARGET_WEBGL
+        , out._perInstanceJointCountUniform, out._perVertexJointCountUniform
+        #endif
         #endif
     );
     Containers::Optional<GL::Shader> geom;

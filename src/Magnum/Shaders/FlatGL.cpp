@@ -144,7 +144,11 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({
+        #ifndef MAGNUM_TARGET_WEBGL
+        GL::Version::GLES310,
+        #endif
+        GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     FlatGL<dimensions> out{NoInit};
@@ -179,6 +183,13 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n"_s : ""_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()) {
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* The _LOCATION are needed only in the non-UBO case if explicit
+           uniform location (desktop / ES3.1) is supported, and _INITIALIZER is
+           desktop only, so don't even have this branch on WebGL. OTOH,
+           branching on explicit uniform location support and adding just the
+           _INITIALIZER if not wouldn't really save much (have to format()
+           anyway), so passing them always. */
         if(!(configuration.flags() >= Flag::UniformBuffers)) {
             vert.addSource(Utility::format(
                 "#define JOINT_COUNT {}\n"
@@ -195,7 +206,9 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
                 ((dimensions == 2 ? "mat3(1.0), "_s : "mat4(1.0), "_s)*configuration.jointCount()).exceptSuffix(2),
                 #endif
                 out._perInstanceJointCountUniform));
-        } else {
+        } else
+        #endif
+        {
             vert.addSource(Utility::format(
                 "#define JOINT_COUNT {}\n"
                 "#define PER_VERTEX_JOINT_COUNT {}u\n"
@@ -206,12 +219,23 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         }
     }
     if(configuration.flags() >= Flag::DynamicPerVertexJointCount) {
-        if(!(configuration.flags() >= Flag::UniformBuffers)) {
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* The _LOCATION is needed only if explicit uniform location (desktop /
+           ES3.1) is supported, a plain string can be added otherwise. This is
+           an immediate uniform also in the UBO case. */
+        #ifndef MAGNUM_TARGET_GLES
+        if(context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+        #else
+        if(version >= GL::Version::GLES310)
+        #endif
+        {
             vert.addSource(Utility::format(
                 "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
                 "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
                 out._perVertexJointCountUniform));
-        } else {
+        } else
+        #endif
+        {
             vert.addSource("#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"_s);
         }
     }
