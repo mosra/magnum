@@ -224,29 +224,43 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n"_s : ""_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()) {
-        vert.addSource(Utility::format(
-            "#define JOINT_COUNT {}\n"
-            "#define PER_VERTEX_JOINT_COUNT {}u\n"
-            "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
-            "#define JOINT_MATRICES_LOCATION {}\n"
-            #ifndef MAGNUM_TARGET_GLES
-            "#define JOINT_MATRIX_INITIALIZER {}\n"
-            #endif
-            "#define PER_INSTANCE_JOINT_COUNT_LOCATION {}\n",
-            configuration.jointCount(),
-            configuration.perVertexJointCount(),
-            configuration.secondaryPerVertexJointCount(),
-            out._jointMatricesUniform,
-            #ifndef MAGNUM_TARGET_GLES
-            ("mat4(1.0), "_s*configuration.jointCount()).exceptSuffix(2),
-            #endif
-            out._perInstanceJointCountUniform));
+        if(!(configuration.flags() >= Flag::UniformBuffers)) {
+            vert.addSource(Utility::format(
+                "#define JOINT_COUNT {}\n"
+                "#define PER_VERTEX_JOINT_COUNT {}u\n"
+                "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
+                "#define JOINT_MATRICES_LOCATION {}\n"
+                #ifndef MAGNUM_TARGET_GLES
+                "#define JOINT_MATRIX_INITIALIZER {}\n"
+                #endif
+                "#define PER_INSTANCE_JOINT_COUNT_LOCATION {}\n",
+                configuration.jointCount(),
+                configuration.perVertexJointCount(),
+                configuration.secondaryPerVertexJointCount(),
+                out._jointMatricesUniform,
+                #ifndef MAGNUM_TARGET_GLES
+                ("mat4(1.0), "_s*configuration.jointCount()).exceptSuffix(2),
+                #endif
+                out._perInstanceJointCountUniform));
+        } else {
+            vert.addSource(Utility::format(
+                "#define JOINT_COUNT {}\n"
+                "#define PER_VERTEX_JOINT_COUNT {}u\n"
+                "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n",
+                configuration.jointCount(),
+                configuration.perVertexJointCount(),
+                configuration.secondaryPerVertexJointCount()));
+        }
     }
     if(configuration.flags() >= Flag::DynamicPerVertexJointCount) {
-        vert.addSource(Utility::format(
-            "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
-            "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
-            out._perVertexJointCountUniform));
+        if(!(configuration.flags() >= Flag::UniformBuffers)) {
+            vert.addSource(Utility::format(
+                "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
+                "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
+                out._perVertexJointCountUniform));
+        } else {
+            vert.addSource("#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"_s);
+        }
     }
     #endif
     #ifndef MAGNUM_TARGET_GLES2

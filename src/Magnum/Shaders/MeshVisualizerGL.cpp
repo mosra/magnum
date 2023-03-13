@@ -198,27 +198,41 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         ;
     #ifndef MAGNUM_TARGET_GLES2
     if(perVertexJointCount || secondaryPerVertexJointCount) {
-        vert.addSource(Utility::format(
-            "#define JOINT_COUNT {}\n"
-            "#define PER_VERTEX_JOINT_COUNT {}u\n"
-            "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
-            #ifndef MAGNUM_TARGET_GLES
-            "#define JOINT_MATRIX_INITIALIZER {}\n"
-            #endif
-            "#define PER_INSTANCE_JOINT_COUNT_LOCATION {}\n",
-            jointCount,
-            perVertexJointCount,
-            secondaryPerVertexJointCount,
-            #ifndef MAGNUM_TARGET_GLES
-            ((dimensions == 2 ? "mat3(1.0), "_s : "mat4(1.0), "_s)*jointCount).exceptSuffix(2),
-            #endif
-            perInstanceJointCountUniform));
+        if(!(flags >= FlagBase::UniformBuffers)) {
+            vert.addSource(Utility::format(
+                "#define JOINT_COUNT {}\n"
+                "#define PER_VERTEX_JOINT_COUNT {}u\n"
+                "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n"
+                #ifndef MAGNUM_TARGET_GLES
+                "#define JOINT_MATRIX_INITIALIZER {}\n"
+                #endif
+                "#define PER_INSTANCE_JOINT_COUNT_LOCATION {}\n",
+                jointCount,
+                perVertexJointCount,
+                secondaryPerVertexJointCount,
+                #ifndef MAGNUM_TARGET_GLES
+                ((dimensions == 2 ? "mat3(1.0), "_s : "mat4(1.0), "_s)*jointCount).exceptSuffix(2),
+                #endif
+                perInstanceJointCountUniform));
+        } else {
+            vert.addSource(Utility::format(
+                "#define JOINT_COUNT {}\n"
+                "#define PER_VERTEX_JOINT_COUNT {}u\n"
+                "#define SECONDARY_PER_VERTEX_JOINT_COUNT {}u\n",
+                jointCount,
+                perVertexJointCount,
+                secondaryPerVertexJointCount));
+        }
     }
     if(flags >= FlagBase::DynamicPerVertexJointCount) {
-        vert.addSource(Utility::format(
-            "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
-            "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
-            perVertexJointCountUniform));
+        if(!(flags >= FlagBase::UniformBuffers)) {
+            vert.addSource(Utility::format(
+                "#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"
+                "#define PER_VERTEX_JOINT_COUNT_LOCATION {}\n",
+                perVertexJointCountUniform));
+        } else {
+            vert.addSource("#define DYNAMIC_PER_VERTEX_JOINT_COUNT\n"_s);
+        }
     }
     #endif
     #ifndef MAGNUM_TARGET_GLES2
