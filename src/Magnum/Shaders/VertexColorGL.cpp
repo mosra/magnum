@@ -94,7 +94,7 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
@@ -139,7 +139,7 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
     out.submitLink();
 
     return CompileState{std::move(out), std::move(vert), std::move(frag)
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , version
         #endif
     };
@@ -172,6 +172,8 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     #ifndef MAGNUM_TARGET_GLES
     const GL::Context& context = GL::Context::current();
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(state._version < GL::Version::GLES310)
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES2
@@ -188,6 +190,8 @@ template<UnsignedInt dimensions> VertexColorGL<dimensions>::VertexColorGL(Compil
     if(_flags >= Flag::UniformBuffers
         #ifndef MAGNUM_TARGET_GLES
         && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version)
+        #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        && state._version < GL::Version::GLES310
         #endif
     ) {
         setUniformBlockBinding(uniformBlockIndex("TransformationProjection"_s), TransformationProjectionBufferBinding);

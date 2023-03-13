@@ -1104,17 +1104,17 @@ template<UnsignedInt dimensions> class LineGL<dimensions>::CompileState: public 
     explicit CompileState(NoCreateT): LineGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
     explicit CompileState(LineGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , GL::Version version
         #endif
     ): LineGL<dimensions>{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , _version{version}
         #endif
         {}
 
     Implementation::GLShaderWrapper _vert, _frag;
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
     GL::Version _version;
     #endif
 };

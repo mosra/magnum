@@ -1339,11 +1339,11 @@ class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         , GL::Shader* geom
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , GL::Version version
         #endif
     ): MeshVisualizerGL2D{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , _version{version}
         #endif
     {
@@ -1356,7 +1356,7 @@ class MeshVisualizerGL2D::CompileState: public MeshVisualizerGL2D {
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     Implementation::GLShaderWrapper _geom{NoCreate};
     #endif
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
     GL::Version _version;
     #endif
 };
@@ -3331,11 +3331,11 @@ class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         , GL::Shader* geom
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , GL::Version version
         #endif
     ): MeshVisualizerGL3D{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , _version{version}
         #endif
     {
@@ -3348,7 +3348,7 @@ class MeshVisualizerGL3D::CompileState: public MeshVisualizerGL3D {
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     Implementation::GLShaderWrapper _geom{NoCreate};
     #endif
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
     GL::Version _version;
     #endif
 };

@@ -92,12 +92,12 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     #endif
     Utility::Resource rs{"MagnumShadersGL"_s};
 
+    const GL::Context& context = GL::Context::current();
 
     #ifndef MAGNUM_TARGET_GLES
-    const GL::Context& context = GL::Context::current();
     const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    constexpr GL::Version version = GL::Version::GLES300;
+    const GL::Version version = context.supportedVersion({GL::Version::GLES310, GL::Version::GLES300});
     #endif
 
     /* Cap and join style is needed by both the vertex and fragment shader,
@@ -200,7 +200,7 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     out.submitLink();
 
     return CompileState{std::move(out), std::move(vert), std::move(frag)
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , version
         #endif
     };
@@ -218,6 +218,8 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
     #ifndef MAGNUM_TARGET_GLES
     const GL::Context& context = GL::Context::current();
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(state._version < GL::Version::GLES310)
     #endif
     {
         _viewportSizeUniform = uniformLocation("viewportSize"_s);
@@ -239,6 +241,8 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(state._version < GL::Version::GLES310)
     #endif
     {
         if(_flags >= Flag::UniformBuffers) {

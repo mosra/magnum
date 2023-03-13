@@ -704,17 +704,17 @@ template<UnsignedInt dimensions> class VectorGL<dimensions>::CompileState: publi
     explicit CompileState(NoCreateT): VectorGL{NoCreate}, _vert{NoCreate}, _frag{NoCreate} {}
 
     explicit CompileState(VectorGL<dimensions>&& shader, GL::Shader&& vert, GL::Shader&& frag
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , GL::Version version
         #endif
     ): VectorGL<dimensions>{Utility::move(shader)}, _vert{Utility::move(vert)}, _frag{Utility::move(frag)}
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , _version{version}
         #endif
         {}
 
     Implementation::GLShaderWrapper _vert, _frag;
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
     GL::Version _version;
     #endif
 };

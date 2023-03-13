@@ -630,7 +630,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         , geom ? &*geom : nullptr
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , version
         #endif
     };
@@ -671,6 +671,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     #ifndef MAGNUM_TARGET_GLES
     const GL::Context& context = GL::Context::current();
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(state._version < GL::Version::GLES310)
     #endif
     {
         /* This one is used also in the UBO case as it's usually a global
@@ -723,6 +725,8 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(flags() && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(state._version < GL::Version::GLES310)
     #endif
     {
         if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
@@ -1124,7 +1128,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         , geom ? &*geom : nullptr
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , version
         #endif
     };
@@ -1165,6 +1169,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     #ifndef MAGNUM_TARGET_GLES
     const GL::Context& context = GL::Context::current();
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(state._version < GL::Version::GLES310)
     #endif
     {
         /* This one is used also in the UBO case as it's usually a global
@@ -1235,6 +1241,8 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(flags() && !context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(state._version < GL::Version::GLES310)
     #endif
     {
         if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {

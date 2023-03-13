@@ -43,10 +43,15 @@
     #define EXPLICIT_UNIFORM_LOCATION
 #endif
 
-#if defined(GL_ES) && __VERSION__ >= 300
-    #define EXPLICIT_ATTRIB_LOCATION
-    /* EXPLICIT_BINDING, EXPLICIT_UNIFORM_LOCATION and RUNTIME_CONST is not
-       available in OpenGL ES */
+#ifdef GL_ES
+    #if __VERSION__ >= 300
+        #define EXPLICIT_ATTRIB_LOCATION
+    #endif
+    #if __VERSION__ >= 310
+        #define EXPLICIT_BINDING
+        #define EXPLICIT_UNIFORM_LOCATION
+    #endif
+    /* RUNTIME_CONST is not available in OpenGL ES */
 #endif
 
 /* Precision qualifiers are not supported in GLSL 1.20 */

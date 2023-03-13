@@ -96,7 +96,7 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version v = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL300, GL::Version::GL210});
     #else
-    const GL::Version v = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
+    const GL::Version v = GL::Context::current().supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
     GL::Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Vertex);
@@ -122,6 +122,8 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>())
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(v < GL::Version::GLES310)
     #endif
     {
         scalingUniform = uniformLocation("scaling"_s);
@@ -138,6 +140,8 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>())
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(v < GL::Version::GLES310)
     #endif
     {
         setUniform(uniformLocation("textureData"_s), TextureUnit);
