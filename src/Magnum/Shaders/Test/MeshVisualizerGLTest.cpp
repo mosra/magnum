@@ -1010,7 +1010,7 @@ const struct {
     MeshVisualizerGL2D::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData2D[]{
-    #ifndef MAGNUM_TARGET_WEBGL
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", "instanced-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
         0.0f, 0.0f},
@@ -1049,7 +1049,7 @@ const struct {
     MeshVisualizerGL3D::Flags flags;
     Float maxThreshold, meanThreshold;
 } RenderInstancedData3D[]{
-    #ifndef MAGNUM_TARGET_WEBGL
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", "instanced-wireframe3D.tga",
         MeshVisualizerGL3D::Flag::Wireframe,
         0.0f, 0.0f},
@@ -5092,11 +5092,28 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     #endif
 
     Trade::MeshData circleData = Primitives::circle2DSolid(8, Primitives::Circle2DFlag::TextureCoordinates);
-    /* For a GS-less wireframe we have to deindex the mesh (but first turn the
-       triangle fan into an indexed mesh) */
-    if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
-        circleData = MeshTools::duplicate(MeshTools::generateIndices(circleData));
-    GL::Mesh circle = MeshTools::compile(circleData);
+
+    GL::Mesh circle{NoCreate};
+    if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader) {
+        /* Duplicate the vertices. The circle primitive is a triangle fan, so
+           we first need to turn it into indexed triangles. */
+        const Trade::MeshData circleDataIndexed =
+            MeshTools::generateIndices(circleData);
+        circle = MeshTools::compile(MeshTools::duplicate(circleDataIndexed));
+
+        /* Supply also the vertex ID, if needed */
+        #ifndef MAGNUM_TARGET_GLES2
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        #endif
+        {
+            Containers::Array<Float> vertexIndex{circleDataIndexed.indexCount()};
+            std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
+
+            GL::Buffer vertexId;
+            vertexId.setData(vertexIndex);
+            circle.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
+        }
+    } else circle = MeshTools::compile(circleData);
 
     /* Three circles, each in a different location */
     struct {
@@ -5124,7 +5141,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             MeshVisualizerGL2D::TextureOffsetLayer{},
             MeshVisualizerGL2D::ObjectId{}
             #else
-            4
+            4*4
             #endif
         )
         .setInstanceCount(3);
@@ -5350,10 +5367,25 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
     #endif
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(2, 4, Primitives::UVSphereFlag::TextureCoordinates|Primitives::UVSphereFlag::Tangents);
-    /* For a GS-less wireframe we have to deindex the mesh */
-    if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
-        sphereData = MeshTools::duplicate(sphereData);
-    GL::Mesh sphere = MeshTools::compile(sphereData);
+
+    GL::Mesh sphere{NoCreate};
+    if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader) {
+        /* Duplicate the vertices */
+        sphere = MeshTools::compile(MeshTools::duplicate(sphereData));
+
+        /* Supply also the vertex ID, if needed */
+        #ifndef MAGNUM_TARGET_GLES2
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        #endif
+        {
+            Containers::Array<Float> vertexIndex{sphereData.indexCount()};
+            std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
+
+            GL::Buffer vertexId;
+            vertexId.setData(vertexIndex);
+            sphere.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
+        }
+    } else sphere = MeshTools::compile(sphereData);
 
     /* Three spheres, each in a different location. To test normal matrix
        concatenation, everything is rotated 90° on Y, thus X is now -Z and Z is
@@ -5394,7 +5426,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             MeshVisualizerGL3D::TextureOffsetLayer{},
             MeshVisualizerGL3D::ObjectId{}
             #else
-            4
+            4*4
             #endif
         )
         .setInstanceCount(3);
