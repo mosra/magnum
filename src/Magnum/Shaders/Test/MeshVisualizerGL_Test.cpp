@@ -74,13 +74,13 @@ const struct {
         "expected at most 4 secondary per-vertex joints, got 5"},
     {"joint count but no per-vertex joint count",
         10, 0, 0,
-        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
     {"per-vertex joint count but no joint count",
         0, 2, 0,
-        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
     {"secondary per-vertex joint count but no joint count",
         0, 0, 3,
-        "either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero"},
+        "count has to be non-zero iff (secondary) per-vertex joint count is non-zero"},
 };
 #endif
 

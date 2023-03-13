@@ -119,7 +119,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         "Shaders::PhongGL: specular texture requires the shader to not have specular disabled", CompileState{NoCreate});
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || (configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()),
         "Shaders::PhongGL: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
     CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
         "Shaders::PhongGL: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
@@ -222,7 +222,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n"_s : ""_s)
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n"_s : ""_s);
     #ifndef MAGNUM_TARGET_GLES2
-    if(configuration.jointCount()) {
+    if(configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()) {
         vert.addSource(Utility::format(
             "#define JOINT_COUNT {}\n"
             "#define PER_VERTEX_JOINT_COUNT {}u\n"
@@ -1124,7 +1124,7 @@ PhongGL::Configuration& PhongGL::Configuration::setJointCount(UnsignedInt count,
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::PhongGL::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
     CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::PhongGL::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+        "Shaders::PhongGL::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;

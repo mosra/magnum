@@ -197,7 +197,7 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
         #endif
         ;
     #ifndef MAGNUM_TARGET_GLES2
-    if(jointCount) {
+    if(perVertexJointCount || secondaryPerVertexJointCount) {
         vert.addSource(Utility::format(
             "#define JOINT_COUNT {}\n"
             "#define PER_VERTEX_JOINT_COUNT {}u\n"
@@ -476,7 +476,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
        constructor when testing for asserts -- GLSL compilation would fail
        otherwise */
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || (configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()),
         "Shaders::MeshVisualizerGL2D: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
     CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
         "Shaders::MeshVisualizerGL2D: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
@@ -875,7 +875,7 @@ MeshVisualizerGL2D::Configuration& MeshVisualizerGL2D::Configuration::setJointCo
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
     CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+        "Shaders::MeshVisualizerGL2D::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;
@@ -921,7 +921,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
        constructor when testing for asserts -- GLSL compilation would fail
        otherwise */
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || (configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()),
         "Shaders::MeshVisualizerGL3D: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
     CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
         "Shaders::MeshVisualizerGL3D: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
@@ -1469,7 +1469,7 @@ MeshVisualizerGL3D::Configuration& MeshVisualizerGL3D::Configuration::setJointCo
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
     CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+        "Shaders::MeshVisualizerGL3D::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;

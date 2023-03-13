@@ -2195,26 +2195,25 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
          *
          * If @ref Flag::UniformBuffers isn't set, @p count describes an upper
          * bound on how many joint matrices get supplied to each draw with
-         * @ref setJointMatrices() / @ref setJointMatrix(). If
-         * @ref Flag::UniformBuffers is set, @p count describes size of a
+         * @ref setJointMatrices() / @ref setJointMatrix().
+         *
+         * If @ref Flag::UniformBuffers is set, @p count describes size of a
          * @ref TransformationUniform3D buffer bound with
          * @ref bindJointBuffer(). Uniform buffers have a statically defined
          * size and @cpp count*sizeof(TransformationUniform3D) @ce has to be
-         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize().
+         * within @ref GL::AbstractShaderProgram::maxUniformBlockSize(). The
+         * per-vertex joints then index into the array offset by
+         * @ref PhongDrawUniform::jointOffset.
          *
-         * The per-vertex joints then index into the array offset by
-         * @ref PhongDrawUniform::jointOffset. If @p count is @cpp 0 @ce,
-         * skinning is not performed.
-         *
-         * The @p perVertexCount and @p secondaryPerVertexCount then describe
-         * how many components are taken from @ref JointIds / @ref Weights and
-         * @ref SecondaryJointIds / @ref SecondaryWeights attributes. Both
-         * values are expected to not be larger than @cpp 4 @ce, setting either
-         * of these to @cpp 0 @ce means given attribute is not used at all. If
-         * @p count is @cpp 0 @ce, both @p perVertexCount and
-         * @p secondaryPerVertexCount is expected to be @cpp 0 @ce as well; if
-         * @p count is non-zero at least one of @p perVertexCount and
-         * @p secondaryPerVertexCount is expected to be non-zero as well.
+         * The @p perVertexCount and @p secondaryPerVertexCount parameters
+         * describe how many components are taken from @ref JointIds /
+         * @ref Weights and @ref SecondaryJointIds / @ref SecondaryWeights
+         * attributes. Both values are expected to not be larger than
+         * @cpp 4 @ce, setting either of these to @cpp 0 @ce means given
+         * attribute is not used at all. If both @p perVertexCount and
+         * @p secondaryPerVertexCount are set to @cpp 0 @ce, skinning is not
+         * performed; if either of them is non-zero, @p count is expected to be
+         * non-zero as well.
          *
          * Default value for all three is @cpp 0 @ce.
          * @see @ref PhongGL::jointCount(), @ref PhongGL::perVertexJointCount(),

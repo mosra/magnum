@@ -104,7 +104,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || configuration.jointCount(),
+    CORRADE_ASSERT(!(configuration.flags() & Flag::DynamicPerVertexJointCount) || (configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()),
         "Shaders::FlatGL: dynamic per-vertex joint count enabled for zero joints", CompileState{NoCreate});
     CORRADE_ASSERT(!(configuration.flags() & Flag::InstancedTransformation) || !configuration.secondaryPerVertexJointCount(),
         "Shaders::FlatGL: TransformationMatrix attribute binding conflicts with the SecondaryJointIds / SecondaryWeights attributes, use a non-instanced rendering with secondary weights instead", CompileState{NoCreate});
@@ -178,7 +178,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         .addSource(configuration.flags() & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n"_s : ""_s)
         .addSource(configuration.flags() >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n"_s : ""_s);
     #ifndef MAGNUM_TARGET_GLES2
-    if(configuration.jointCount()) {
+    if(configuration.perVertexJointCount() || configuration.secondaryPerVertexJointCount()) {
         vert.addSource(Utility::format(
             "#define JOINT_COUNT {}\n"
             "#define PER_VERTEX_JOINT_COUNT {}u\n"
@@ -661,7 +661,7 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::Configuration& Fla
     CORRADE_ASSERT(secondaryPerVertexCount <= 4,
         "Shaders::FlatGL::Configuration::setJointCount(): expected at most 4 secondary per-vertex joints, got" << secondaryPerVertexCount, *this);
     CORRADE_ASSERT(!count == (!perVertexCount && !secondaryPerVertexCount),
-        "Shaders::FlatGL::Configuration::setJointCount(): either both joint count and (secondary) per-vertex joint count has to be non-zero, or all zero", *this);
+        "Shaders::FlatGL::Configuration::setJointCount(): count has to be non-zero iff (secondary) per-vertex joint count is non-zero", *this);
     _jointCount = count;
     _perVertexJointCount = perVertexCount;
     _secondaryPerVertexJointCount = secondaryPerVertexCount;
