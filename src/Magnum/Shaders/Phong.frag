@@ -53,7 +53,7 @@ uniform lowp vec4 ambientColor
     #endif
     ;
 
-#if LIGHT_COUNT
+#if PER_DRAW_LIGHT_COUNT
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 6)
 #endif
@@ -252,7 +252,7 @@ uniform lowp
     ambientTexture;
 #endif
 
-#if LIGHT_COUNT
+#if PER_DRAW_LIGHT_COUNT
 #ifdef DIFFUSE_TEXTURE
 #ifdef EXPLICIT_BINDING
 layout(binding = 1)
@@ -308,7 +308,7 @@ uniform lowp
 
 /* Inputs */
 
-#if LIGHT_COUNT
+#if PER_DRAW_LIGHT_COUNT
 in mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
 #ifndef BITANGENT
@@ -370,7 +370,7 @@ void main() {
     #define materialId 0u
     #endif
     lowp const vec4 ambientColor = materials[materialId].ambientColor;
-    #if LIGHT_COUNT
+    #if PER_DRAW_LIGHT_COUNT
     lowp const vec4 diffuseColor = materials[materialId].diffuseColor;
     lowp const vec4 specularColor = materials[materialId].specularColor;
     mediump const float shininess = materials[materialId].material_shininess;
@@ -381,7 +381,7 @@ void main() {
     #ifdef ALPHA_MASK
     lowp const float alphaMask = materials[materialId].material_alphaMask;
     #endif
-    #if LIGHT_COUNT
+    #if PER_DRAW_LIGHT_COUNT
     mediump const uint lightOffset = draws[drawId].draw_lightOffsetLightCount & 0xffffu;
     #ifdef LIGHT_CULLING
     mediump const uint lightCount = draws[drawId].draw_lightOffsetLightCount >> 16 & 0xffffu;
@@ -397,7 +397,7 @@ void main() {
         interpolatedVertexColor*
         #endif
         ambientColor;
-    #if LIGHT_COUNT
+    #if PER_DRAW_LIGHT_COUNT
     lowp const vec4 finalDiffuseColor =
         #ifdef DIFFUSE_TEXTURE
         texture(diffuseTexture, interpolatedTextureCoordinates)*
@@ -418,7 +418,7 @@ void main() {
     /* Ambient color */
     fragmentColor = finalAmbientColor;
 
-    #if LIGHT_COUNT
+    #if PER_DRAW_LIGHT_COUNT
     /* Normal */
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
     #ifdef NORMAL_TEXTURE
@@ -445,9 +445,9 @@ void main() {
 
     /* Add diffuse color for each light */
     #ifndef LIGHT_CULLING
-    for(int i = 0; i < LIGHT_COUNT; ++i)
+    for(int i = 0; i < PER_DRAW_LIGHT_COUNT; ++i)
     #else
-    for(uint i = 0u, actualLightCount = min(uint(LIGHT_COUNT), lightCount); i < actualLightCount; ++i)
+    for(uint i = 0u, actualLightCount = min(uint(PER_DRAW_LIGHT_COUNT), lightCount); i < actualLightCount; ++i)
     #endif
     {
         lowp const vec3 lightColor =

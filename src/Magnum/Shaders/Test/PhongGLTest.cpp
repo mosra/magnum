@@ -230,54 +230,55 @@ struct PhongGLTest: GL::OpenGLTester {
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
-    UnsignedInt lightCount;
+    UnsignedInt lightCount, perDrawLightCount;
 } ConstructData[]{
-    {"", {}, 1},
-    {"ambient texture", PhongGL::Flag::AmbientTexture, 1},
-    {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1},
-    {"diffuse texture + texture transform", PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureTransformation, 1},
-    {"specular texture", PhongGL::Flag::SpecularTexture, 1},
-    {"normal texture", PhongGL::Flag::NormalTexture, 1},
-    {"normal texture + separate bitangents", PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1},
-    {"separate bitangents alone", PhongGL::Flag::Bitangent, 1},
-    {"ambient + diffuse texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture, 1},
-    {"ambient + specular texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture, 1},
-    {"diffuse + specular texture", PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1},
-    {"ambient + diffuse + specular texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1},
-    {"ambient + diffuse + specular + normal texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture, 1},
+    {"", {}, 1, 1},
+    {"ambient texture", PhongGL::Flag::AmbientTexture, 1, 1},
+    {"diffuse texture", PhongGL::Flag::DiffuseTexture, 1, 1},
+    {"diffuse texture + texture transform", PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureTransformation, 1, 1},
+    {"specular texture", PhongGL::Flag::SpecularTexture, 1, 1},
+    {"normal texture", PhongGL::Flag::NormalTexture, 1, 1},
+    {"normal texture + separate bitangents", PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent, 1, 1},
+    {"separate bitangents alone", PhongGL::Flag::Bitangent, 1, 1},
+    {"ambient + diffuse texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture, 1, 1},
+    {"ambient + specular texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture, 1, 1},
+    {"diffuse + specular texture", PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1},
+    {"ambient + diffuse + specular texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture, 1, 1},
+    {"ambient + diffuse + specular + normal texture", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"ambient + diffuse + specular + normal texture arrays", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays, 1},
-    {"ambient + diffuse + specular + normal texture arrays + texture transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1},
+    {"ambient + diffuse + specular + normal texture arrays", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays, 1, 1},
+    {"ambient + diffuse + specular + normal texture arrays + texture transformation", PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1},
     #endif
-    {"alpha mask", PhongGL::Flag::AlphaMask, 1},
-    {"alpha mask + diffuse texture", PhongGL::Flag::AlphaMask|PhongGL::Flag::DiffuseTexture, 1},
-    {"vertex colors", PhongGL::Flag::VertexColor, 1},
-    {"vertex colors + diffuse texture", PhongGL::Flag::VertexColor|PhongGL::Flag::DiffuseTexture, 1},
+    {"alpha mask", PhongGL::Flag::AlphaMask, 1, 1},
+    {"alpha mask + diffuse texture", PhongGL::Flag::AlphaMask|PhongGL::Flag::DiffuseTexture, 1, 1},
+    {"vertex colors", PhongGL::Flag::VertexColor, 1, 1},
+    {"vertex colors + diffuse texture", PhongGL::Flag::VertexColor|PhongGL::Flag::DiffuseTexture, 1, 1},
     #ifndef MAGNUM_TARGET_GLES2
-    {"object ID", PhongGL::Flag::ObjectId, 1},
+    {"object ID", PhongGL::Flag::ObjectId, 1, 1},
     /* This is fine, InstancedObjectId isn't (check in ConstructInvalidData) */
-    {"object ID + separate bitangent", PhongGL::Flag::ObjectId|PhongGL::Flag::Bitangent, 1},
-    {"instanced object ID", PhongGL::Flag::InstancedObjectId, 1},
-    {"object ID + alpha mask + specular texture", PhongGL::Flag::ObjectId|PhongGL::Flag::AlphaMask|PhongGL::Flag::SpecularTexture, 1},
-    {"object ID texture", PhongGL::Flag::ObjectIdTexture, 1},
-    {"object ID texture array", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays, 1},
-    {"object ID texture + instanced texture transformation", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedTextureOffset, 1},
-    {"object ID texture array + instanced texture transformation", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::InstancedTextureOffset, 1},
-    {"instanced object ID texture array + texture transformation", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1},
-    {"object ID texture + diffuse texture", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::DiffuseTexture, 1},
-    {"object ID texture, zero lights", PhongGL::Flag::ObjectIdTexture, 0},
+    {"object ID + separate bitangent", PhongGL::Flag::ObjectId|PhongGL::Flag::Bitangent, 1, 1},
+    {"instanced object ID", PhongGL::Flag::InstancedObjectId, 1, 1},
+    {"object ID + alpha mask + specular texture", PhongGL::Flag::ObjectId|PhongGL::Flag::AlphaMask|PhongGL::Flag::SpecularTexture, 1, 1},
+    {"object ID texture", PhongGL::Flag::ObjectIdTexture, 1, 1},
+    {"object ID texture array", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays, 1, 1},
+    {"object ID texture + instanced texture transformation", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedTextureOffset, 1, 1},
+    {"object ID texture array + instanced texture transformation", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::InstancedTextureOffset, 1, 1},
+    {"instanced object ID texture array + texture transformation", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation, 1, 1},
+    {"object ID texture + diffuse texture", PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::DiffuseTexture, 1, 1},
+    {"object ID texture, zero lights", PhongGL::Flag::ObjectIdTexture, 0, 0},
     #endif
-    {"no specular", PhongGL::Flag::NoSpecular, 1},
-    {"five lights", {}, 5},
-    {"zero lights", {}, 0},
-    {"instanced transformation", PhongGL::Flag::InstancedTransformation, 3},
-    {"instanced transformation, zero lights", PhongGL::Flag::InstancedTransformation, 0},
-    {"instanced specular texture offset", PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3},
-    {"instanced normal texture offset", PhongGL::Flag::NormalTexture|PhongGL::Flag::InstancedTextureOffset, 3},
+    {"no specular", PhongGL::Flag::NoSpecular, 1, 1},
+    {"five lights", {}, 5, 5},
+    {"fifteen lights, five used", {}, 15, 5},
+    {"zero lights", {}, 0, 0},
+    {"instanced transformation", PhongGL::Flag::InstancedTransformation, 3, 3},
+    {"instanced transformation, zero lights", PhongGL::Flag::InstancedTransformation, 0, 0},
+    {"instanced specular texture offset", PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset, 3, 3},
+    {"instanced normal texture offset", PhongGL::Flag::NormalTexture|PhongGL::Flag::InstancedTextureOffset, 3, 3},
     #ifndef MAGNUM_TARGET_GLES2
     /* InstancedObjectId|Bitangent is disallowed (checked in
        ConstructInvalidData), but this should work */
-    {"object ID + normal texture with bitangent from tangent", PhongGL::Flag::InstancedObjectId|PhongGL::Flag::NormalTexture, 1}
+    {"object ID + normal texture with bitangent from tangent", PhongGL::Flag::InstancedObjectId|PhongGL::Flag::NormalTexture, 1, 1}
     #endif
 };
 
@@ -311,57 +312,57 @@ const struct {
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
-    UnsignedInt lightCount, materialCount, drawCount;
+    UnsignedInt lightCount, perDrawLightCount, materialCount, drawCount;
     UnsignedInt jointCount, perVertexJointCount, secondaryPerVertexJointCount;
 } ConstructUniformBuffersData[]{
     {"classic fallback", {},
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"", PhongGL::Flag::UniformBuffers,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
        per-material 4, per-light 4 plus 4 for projection */
     {"multiple lights, materials, draws", PhongGL::Flag::UniformBuffers,
-        8, 8, 24, 0, 0, 0},
+        8, 8, 8, 24, 0, 0, 0},
     {"multiple lights, materials, draws + light culling", PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling,
-        8, 8, 24, 0, 0, 0},
+        8, 4, 8, 24, 0, 0, 0},
     {"zero lights", PhongGL::Flag::UniformBuffers,
-        0, 16, 24, 0, 0, 0},
+        0, 0, 16, 24, 0, 0, 0},
     {"ambient + diffuse + specular texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"ambient + diffuse + specular texture + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureTransformation,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"ambient + diffuse + specular texture array + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AmbientTexture|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"normal texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"normal texture + separate bitangents", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NormalTexture|PhongGL::Flag::Bitangent,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"alpha mask", PhongGL::Flag::UniformBuffers|PhongGL::Flag::AlphaMask,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"object ID", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectId,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"object ID texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"object ID texture array", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"object ID texture + instanced texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedTextureOffset,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"object ID texture array + instanced texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::InstancedTextureOffset,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"instanced object ID texture array + texture transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::TextureArrays|PhongGL::Flag::TextureTransformation,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"object ID texture + diffuse texture", PhongGL::Flag::UniformBuffers|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::DiffuseTexture,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"no specular", PhongGL::Flag::UniformBuffers|PhongGL::Flag::NoSpecular,
-        1, 1, 1, 0, 0, 0},
+        1, 1, 1, 1, 0, 0, 0},
     {"skinning", PhongGL::Flag::UniformBuffers,
-        1, 1, 1, 32, 3, 2},
+        1, 1, 1, 1, 32, 3, 2},
     {"skinning, dynamic per-vertex sets", PhongGL::Flag::UniformBuffers|PhongGL::Flag::DynamicPerVertexJointCount,
-        1, 1, 1, 32, 3, 4},
+        1, 1, 1, 1, 32, 3, 4},
     {"multidraw with all the things except secondary per-vertex sets", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::InstancedTextureOffset|PhongGL::Flag::InstancedTransformation|PhongGL::Flag::InstancedObjectId|PhongGL::Flag::LightCulling|PhongGL::Flag::DynamicPerVertexJointCount,
-        8, 16, 24, 16, 4, 0},
+        8, 4, 16, 24, 16, 4, 0},
     {"multidraw with all the things except instancing", PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::AmbientTexture|PhongGL::Flag::SpecularTexture|PhongGL::Flag::NormalTexture|PhongGL::Flag::TextureArrays|PhongGL::Flag::AlphaMask|PhongGL::Flag::ObjectId|PhongGL::Flag::LightCulling|PhongGL::Flag::DynamicPerVertexJointCount,
-        8, 16, 24, 16, 3, 4},
+        8, 4, 16, 24, 16, 3, 4},
 };
 #endif
 
@@ -489,13 +490,15 @@ using namespace Math::Literals;
 
 const struct {
     const char* name;
+    UnsignedInt lightCount, perDrawLightCount;
     Deg rotation;
     Color3 lightColor1, lightColor2;
     Float lightPosition1, lightPosition2;
 } RenderColoredData[]{
-    {"", {}, 0x993366_rgbf, 0x669933_rgbf, -3.0f, 3.0f},
-    {"flip lights", {}, 0x669933_rgbf, 0x993366_rgbf, 3.0f, -3.0f},
-    {"rotated", 45.0_degf, 0x993366_rgbf, 0x669933_rgbf, -3.0f, 3.0f}
+    {"", 2, 2, {}, 0x993366_rgbf, 0x669933_rgbf, -3.0f, 3.0f},
+    {"per-draw light count less than total", 4, 2, {}, 0x993366_rgbf, 0x669933_rgbf, -3.0f, 3.0f},
+    {"flip lights", 2, 2, {}, 0x669933_rgbf, 0x993366_rgbf, 3.0f, -3.0f},
+    {"rotated", 2, 2, 45.0_degf, 0x993366_rgbf, 0x669933_rgbf, -3.0f, 3.0f}
 };
 
 constexpr struct {
@@ -798,6 +801,16 @@ const struct {
 #ifndef MAGNUM_TARGET_GLES2
 const struct {
     const char* name;
+    UnsignedInt count, perDrawCount;
+} RenderLightCullingData[]{
+    {"same count and per-draw count", 64, 64},
+    {"per-draw count lower", 64, 2}
+};
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+const struct {
+    const char* name;
     UnsignedInt expected[4];
     PhongGL::Flags flags;
     Matrix3 textureTransformation;
@@ -976,118 +989,130 @@ constexpr struct {
     const char* expected;
     UnsignedInt expectedId[3];
     PhongGL::Flags flags;
-    UnsignedInt lightCount, materialCount, drawCount;
+    UnsignedInt lightCount, perDrawLightCount, materialCount, drawCount;
     UnsignedInt uniformIncrement;
     Float maxThreshold, meanThreshold;
 } RenderMultiData[] {
     {"bind with offset, colored",
         "multidraw.tga", {},
         {},
-        2, 1, 1, 16,
+        2, 2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, colored + object ID",
         "multidraw.tga", {1211, 5627, 36363},
         PhongGL::Flag::ObjectId,
-        2, 1, 1, 16,
+        2, 2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, colored + textured object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture,
-        2, 1, 1, 16,
+        2, 2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, colored + textured array object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays,
-        2, 1, 1, 16,
+        2, 2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"bind with offset, textured",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        2, 1, 1, 16,
+        2, 2, 1, 1, 16,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"bind with offset, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
-        2, 1, 1, 16,
+        2, 2, 1, 1, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
     {"draw offset, colored",
         "multidraw.tga", {},
         {},
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
+    {"draw offset, colore, less per-draw lights",
+        "multidraw.tga", {},
+        {},
+        4, 2, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, colored + object ID",
         "multidraw.tga", {1211, 5627, 36363},
         PhongGL::Flag::ObjectId,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, colored + textured object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, colored + textured array object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"draw offset, textured",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"draw offset, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
     {"multidraw, colored",
         "multidraw.tga", {},
         PhongGL::Flag::MultiDraw,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
+        /* Minor differences on ARM Mali */
+        3.34f, 0.01f},
+    {"multidraw, colored, less per-draw lights",
+        "multidraw.tga", {},
+        PhongGL::Flag::MultiDraw,
+        4, 2, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, colored + object ID",
         "multidraw.tga", {1211, 5627, 36363},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::ObjectId,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, colored + textured object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, colored + textured array object ID",
         "multidraw.tga", {3211, 8627, 40363},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::ObjectIdTexture|PhongGL::Flag::TextureArrays,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         3.34f, 0.01f},
     {"multidraw, textured",
         "multidraw-textured.tga", {},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Minor differences on ARM Mali */
         4.67f, 0.02f},
     {"multidraw, texture array",
         "multidraw-textured.tga", {},
         PhongGL::Flag::MultiDraw|PhongGL::Flag::TextureTransformation|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays,
-        4, 2, 3, 1,
+        4, 4, 2, 3, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
         50.34f, 0.131f},
@@ -1292,15 +1317,17 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({
-        &PhongGLTest::renderLightsSetOneByOne,
-        &PhongGLTest::renderLowLightAngle,
-        #ifndef MAGNUM_TARGET_GLES2
-        &PhongGLTest::renderLightCulling
-        #endif
-        },
+    addTests({&PhongGLTest::renderLightsSetOneByOne,
+              &PhongGLTest::renderLowLightAngle},
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&PhongGLTest::renderLightCulling},
+        Containers::arraySize(RenderLightCullingData),
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
+    #endif
 
     /* MSVC needs explicit type due to default template args */
     addTests<PhongGLTest>({
@@ -1391,9 +1418,10 @@ void PhongGLTest::construct() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(data.flags)
-        .setLightCount(data.lightCount)};
+        .setLightCount(data.lightCount, data.perDrawLightCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
+    CORRADE_COMPARE(shader.perDrawLightCount(), data.perDrawLightCount);
     CORRADE_VERIFY(shader.id());
     {
         #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -1438,12 +1466,13 @@ void PhongGLTest::constructSkinning() {
 void PhongGLTest::constructAsync() {
     PhongGL::CompileState state = PhongGL::compile(PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset)
-        .setLightCount(3)
+        .setLightCount(3, 2)
         /* Skinning properties tested in constructUniformBuffersAsync(), as
            there we don't need to bother with ES2 */
     );
     CORRADE_COMPARE(state.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
     CORRADE_COMPARE(state.lightCount(), 3);
+    CORRADE_COMPARE(state.perDrawLightCount(), 2);
 
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
@@ -1451,6 +1480,7 @@ void PhongGLTest::constructAsync() {
     PhongGL shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
     CORRADE_COMPARE(shader.lightCount(), 3);
+    CORRADE_COMPARE(shader.perDrawLightCount(), 2);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
@@ -1492,12 +1522,13 @@ void PhongGLTest::constructUniformBuffers() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(data.flags)
-        .setLightCount(data.lightCount)
+        .setLightCount(data.lightCount, data.perDrawLightCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)
         .setJointCount(data.jointCount, data.perVertexJointCount, data.secondaryPerVertexJointCount)};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
+    CORRADE_COMPARE(shader.perDrawLightCount(), data.perDrawLightCount);
     CORRADE_COMPARE(shader.materialCount(), data.materialCount);
     CORRADE_COMPARE(shader.drawCount(), data.drawCount);
     CORRADE_COMPARE(shader.jointCount(), data.jointCount);
@@ -1526,12 +1557,13 @@ void PhongGLTest::constructUniformBuffersAsync() {
         .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling)
         /* SwiftShader has 256 uniform vectors at most, per-3D-draw is 4+4,
            per-material 4, per-light 4, per joint 4 plus 4 for projection */
-        .setLightCount(2)
+        .setLightCount(2, 1)
         .setMaterialCount(5)
         .setDrawCount(24)
         .setJointCount(7, 3, 4));
     CORRADE_COMPARE(state.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
     CORRADE_COMPARE(state.lightCount(), 2);
+    CORRADE_COMPARE(state.perDrawLightCount(), 1);
     CORRADE_COMPARE(state.materialCount(), 5);
     CORRADE_COMPARE(state.drawCount(), 24);
     CORRADE_COMPARE(state.jointCount(), 7);
@@ -1544,6 +1576,7 @@ void PhongGLTest::constructUniformBuffersAsync() {
     PhongGL shader{std::move(state)};
     CORRADE_COMPARE(shader.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
     CORRADE_COMPARE(shader.lightCount(), 2);
+    CORRADE_COMPARE(shader.perDrawLightCount(), 1);
     CORRADE_COMPARE(shader.materialCount(), 5);
     CORRADE_COMPARE(shader.drawCount(), 24);
     CORRADE_COMPARE(shader.jointCount(), 7);
@@ -1564,7 +1597,7 @@ void PhongGLTest::constructUniformBuffersAsync() {
 void PhongGLTest::constructMove() {
     PhongGL a{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::AlphaMask)
-        .setLightCount(3)
+        .setLightCount(3, 2)
         /* Skinning properties tested in constructMoveUniformBuffers(), as
            there we don't need to bother with ES2 */
     };
@@ -1577,6 +1610,7 @@ void PhongGLTest::constructMove() {
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), PhongGL::Flag::AlphaMask);
     CORRADE_COMPARE(b.lightCount(), 3);
+    CORRADE_COMPARE(b.perDrawLightCount(), 2);
     CORRADE_VERIFY(!a.id());
 
     PhongGL c{NoCreate};
@@ -1584,6 +1618,7 @@ void PhongGLTest::constructMove() {
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), PhongGL::Flag::AlphaMask);
     CORRADE_COMPARE(c.lightCount(), 3);
+    CORRADE_COMPARE(c.perDrawLightCount(), 2);
     CORRADE_VERIFY(!b.id());
 }
 
@@ -1598,7 +1633,7 @@ void PhongGLTest::constructMoveUniformBuffers() {
 
     PhongGL a{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers)
-        .setLightCount(3)
+        .setLightCount(5, 3)
         .setMaterialCount(2)
         .setDrawCount(5)
         .setJointCount(16, 4, 3)};
@@ -1610,7 +1645,8 @@ void PhongGLTest::constructMoveUniformBuffers() {
     PhongGL b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), PhongGL::Flag::UniformBuffers);
-    CORRADE_COMPARE(b.lightCount(), 3);
+    CORRADE_COMPARE(b.lightCount(), 5);
+    CORRADE_COMPARE(b.perDrawLightCount(), 3);
     CORRADE_COMPARE(b.materialCount(), 2);
     CORRADE_COMPARE(b.drawCount(), 5);
     CORRADE_COMPARE(b.jointCount(), 16);
@@ -1622,7 +1658,8 @@ void PhongGLTest::constructMoveUniformBuffers() {
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), PhongGL::Flag::UniformBuffers);
-    CORRADE_COMPARE(c.lightCount(), 3);
+    CORRADE_COMPARE(c.lightCount(), 5);
+    CORRADE_COMPARE(c.perDrawLightCount(), 3);
     CORRADE_COMPARE(c.materialCount(), 2);
     CORRADE_COMPARE(c.drawCount(), 5);
     CORRADE_COMPARE(c.jointCount(), 16);
@@ -2185,13 +2222,27 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(flag)
-        .setLightCount(2)};
+        .setLightCount(data.lightCount, data.perDrawLightCount)};
 
     if(flag == PhongGL::Flag{}) {
+        Color3 lightColors[]{
+            data.lightColor1,
+            data.lightColor2,
+            {},
+            {}
+        };
+        Vector4 lightPositions[]{
+            {data.lightPosition1, -3.0f, 2.0f, 0.0f},
+            {data.lightPosition2, -3.0f, 2.0f, 0.0f},
+            {},
+            {}
+        };
+
         shader
-            .setLightColors({data.lightColor1, data.lightColor2})
-            .setLightPositions({{data.lightPosition1, -3.0f, 2.0f, 0.0f},
-                                {data.lightPosition2, -3.0f, 2.0f, 0.0f}})
+            .setLightColors(Containers::arrayView(lightColors)
+                .prefix(data.lightCount))
+            .setLightPositions(Containers::arrayView(lightPositions)
+                .prefix(data.lightCount))
             .setAmbientColor(0x330033_rgbf)
             .setDiffuseColor(0xccffcc_rgbf)
             .setSpecularColor(0x6666ff_rgbf)
@@ -2229,7 +2280,9 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
                 .setColor(data.lightColor1),
             PhongLightUniform{}
                 .setPosition({data.lightPosition2, -3.0f, 2.0f, 0.0f})
-                .setColor(data.lightColor2)
+                .setColor(data.lightColor2),
+            PhongLightUniform{},
+            PhongLightUniform{}
         }};
         shader
             .bindProjectionBuffer(projectionUniform)
@@ -2315,6 +2368,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
     #endif
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(flags)
+        /* Different count and per-draw count tested in renderColored() */
         .setLightCount(2)};
 
     const Color4ub ambientData[]{ 0x330033_rgb };
@@ -2503,6 +2557,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
     #endif
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(flags)
+        /* Different count and per-draw count tested in renderColored() */
         .setLightCount(2)};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -2750,6 +2805,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     #endif
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(flags)
+        /* Different count and per-draw count tested in renderColored() */
         .setLightCount(2)};
 
     GL::Texture2D normal{NoCreate};
@@ -2953,6 +3009,7 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::DiffuseTexture|PhongGL::Flag::VertexColor|flag)
+        /* Different count and per-draw count tested in renderColored() */
         .setLightCount(2)};
     shader.bindDiffuseTexture(diffuse);
 
@@ -3240,6 +3297,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(data.flags|flag)
+        /* Different count and per-draw count tested in renderColored() */
         .setLightCount(2)};
     shader.bindTextures(&ambient, &diffuse, nullptr, nullptr);
 
@@ -3371,6 +3429,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
     }
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::ObjectId|flags)
+        /* Different count and per-draw count tested in renderColored() */
         .setLightCount(2)};
 
     GL::Texture2D texture{NoCreate};
@@ -3535,6 +3594,8 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(flag)
+        /* Different count and per-draw count tested in renderColored(), here
+           it's testing mainly the calculation */
         .setLightCount(1)};
     if(flag == PhongGL::Flag{}) {
         shader
@@ -3724,6 +3785,9 @@ void PhongGLTest::renderLowLightAngle() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::renderLightCulling() {
+    auto&& data = RenderLightCullingData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
         CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
@@ -3765,7 +3829,7 @@ void PhongGLTest::renderLightCulling() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling)
-        .setLightCount(64)};
+        .setLightCount(data.count, data.perDrawCount)};
     shader
         .bindProjectionBuffer(projectionUniform)
         .bindTransformationBuffer(transformationUniform)
@@ -4714,7 +4778,7 @@ void PhongGLTest::renderMulti() {
 
     PhongGL shader{PhongGL::Configuration{}
         .setFlags(PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling|data.flags)
-        .setLightCount(data.lightCount)
+        .setLightCount(data.lightCount, data.perDrawLightCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
 

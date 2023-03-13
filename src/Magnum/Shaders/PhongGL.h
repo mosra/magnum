@@ -365,8 +365,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @brief Normal direction
          *
          * @ref shaders-generic "Generic attribute",
-         * @relativeref{Magnum,Vector3}. Used only if @ref lightCount() isn't
-         * @cpp 0 @ce.
+         * @relativeref{Magnum,Vector3}. Used only if @ref perDrawLightCount()
+         * isn't @cpp 0 @ce.
          */
         typedef GenericGL3D::Normal Normal;
 
@@ -380,7 +380,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref Flag::Bitangent is not enabled, it's the same as if
          * @ref Tangent4 was specified with the fourth component always being
          * @cpp 1.0f @ce. Used only if @ref Flag::NormalTexture is set and
-         * @ref lightCount() isn't @cpp 0 @ce.
+         * @ref perDrawLightCount() isn't @cpp 0 @ce.
          * @see @ref Shaders-PhongGL-normal-mapping
          */
         typedef GenericGL3D::Tangent Tangent;
@@ -394,7 +394,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * attribute. If @ref Flag::Bitangent is set, the fourth component is
          * ignored and bitangents are taken from the @ref Bitangent attribute
          * instead. Used only if @ref Flag::NormalTexture is set and
-         * @ref lightCount() isn't @cpp 0 @ce.
+         * @ref perDrawLightCount() isn't @cpp 0 @ce.
          * @see @ref Shaders-PhongGL-normal-mapping
          */
         typedef GenericGL3D::Tangent4 Tangent4;
@@ -406,7 +406,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref shaders-generic "Generic attribute",
          * @relativeref{Magnum,Vector3}. Use either this or the @ref Tangent4
          * attribute. Used only if both @ref Flag::NormalTexture and
-         * @ref Flag::Bitangent are set and @ref lightCount() isn't @cpp 0 @ce.
+         * @ref Flag::Bitangent are set and @ref perDrawLightCount() isn't
+         * @cpp 0 @ce.
          * @see @ref Shaders-PhongGL-normal-mapping
          */
         typedef GenericGL3D::Bitangent Bitangent;
@@ -851,8 +852,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
              * Enable light culling in uniform buffer workflows using the
              * @ref PhongDrawUniform::lightOffset and
              * @ref PhongDrawUniform::lightCount fields. If not enabled, all
-             * @ref lightCount() lights are used for every draw. Expects that
-             * @ref Flag::UniformBuffers is enabled as well.
+             * @ref perDrawLightCount() lights are used for every draw. Expects
+             * that @ref Flag::UniformBuffers is enabled as well.
              * @requires_gl31 Extension @gl_extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
@@ -1032,9 +1033,23 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * If @ref Flag::UniformBuffers is set, this is the statically defined
          * size of the @ref PhongLightUniform uniform buffer bound with
          * @ref bindLightBuffer().
-         * @see @ref Configuration::setLightCount()
+         * @see @ref perDrawLightCount(), @ref Configuration::setLightCount()
          */
         UnsignedInt lightCount() const { return _lightCount; }
+
+        /**
+         * @brief Per-draw light count
+         * @m_since_latest
+         *
+         * Number of lights out of @ref lightCount() applied per draw. If
+         * @ref Flag::LightCulling is enabled, this is only an upper bound on
+         * the light count applied per draw, with the actual count supplied via
+         * @ref PhongDrawUniform::lightCount. If @cpp 0 @ce, no lighting
+         * calculations are performed and only the ambient contribution to the
+         * color is used.
+         * @see @ref Configuration::setLightCount()
+         */
+        UnsignedInt perDrawLightCount() const { return _perDrawLightCount; }
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -1164,10 +1179,10 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Initial value is @cpp 0xffffffff_rgbaf @ce. If
          * @ref Flag::DiffuseTexture is set, the color will be multiplied with
-         * the texture. If @ref lightCount() is zero, this function is a no-op,
-         * as diffuse color doesn't contribute to the output in that case.
-         * If @ref Flag::VertexColor is set, the color is multiplied with a
-         * color coming from the @ref Color3 / @ref Color4 attribute.
+         * the texture. If @ref perDrawLightCount() is zero, this function is a
+         * no-op, as diffuse color doesn't contribute to the output in that
+         * case. If @ref Flag::VertexColor is set, the color is multiplied with
+         * a color coming from the @ref Color3 / @ref Color4 attribute.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref PhongMaterialUniform::diffuseColor and call
@@ -1187,8 +1202,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * altogether.
          *
          * Expects that the shader was created with @ref Flag::NormalTexture
-         * enabled. If @ref lightCount() is zero, this function is a no-op, as
-         * normals don't contribute to the output in that case.
+         * enabled. If @ref perDrawLightCount() is zero, this function is a
+         * no-op, as normals don't contribute to the output in that case.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref PhongMaterialUniform::normalTextureScale and call
@@ -1209,8 +1224,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * recommended to disable the specular contribution altogether with
          * @ref Flag::NoSpecular. If having a dedicated shader variant is not
          * possible, set the specular color to @cpp 0x00000000_rgbaf @ce. If
-         * @ref lightCount() is zero, this function is a no-op, as specular
-         * color doesn't contribute to the output in that case.
+         * @ref perDrawLightCount() is zero, this function is a no-op, as
+         * specular color doesn't contribute to the output in that case.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref PhongMaterialUniform::specularColor and call
@@ -1224,9 +1239,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * The larger value, the harder surface (smaller specular highlight).
-         * Initial value is @cpp 80.0f @ce. If @ref lightCount() is zero, this
-         * function is a no-op, as specular color doesn't contribute to the
-         * output in that case.
+         * Initial value is @cpp 80.0f @ce. If @ref perDrawLightCount() is
+         * zero, this function is a no-op, as specular color doesn't contribute
+         * to the output in that case.
          *
          * Expects that @ref Flag::UniformBuffers is not set, in that case fill
          * @ref PhongMaterialUniform::shininess and call
@@ -1301,9 +1316,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * The matrix doesn't need to be normalized, as renormalization is done
          * per-fragment anyway. You need to set also
          * @ref setTransformationMatrix() with a corresponding value. Initial
-         * value is an identity matrix. If @ref lightCount() is zero, this
-         * function is a no-op, as normals don't contribute to the output in
-         * that case. If @ref Flag::InstancedTransformation is set, the
+         * value is an identity matrix. If @ref perDrawLightCount() is zero,
+         * this function is a no-op, as normals don't contribute to the output
+         * in that case. If @ref Flag::InstancedTransformation is set, the
          * per-instance normal matrix coming from the @ref NormalMatrix
          * attribute is applied first, before this one.
          *
@@ -1895,8 +1910,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * Expects that the shader was created with @ref Flag::DiffuseTexture
          * enabled. If @ref Flag::TextureArrays is enabled as well, use
          * @ref bindDiffuseTexture(GL::Texture2DArray&) instead. If
-         * @ref lightCount() is zero, this function is a no-op, as diffuse
-         * color doesn't contribute to the output in that case.
+         * @ref perDrawLightCount() is zero, this function is a no-op, as
+         * diffuse color doesn't contribute to the output in that case.
          * @see @ref bindTextures(), @ref setDiffuseColor()
          */
         PhongGL& bindDiffuseTexture(GL::Texture2D& texture);
@@ -1913,8 +1928,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * set via @ref setTextureLayer(); if @ref Flag::UniformBuffers is
          * enabled, @ref Flag::TextureTransformation has to be enabled as well
          * and the layer is set via @ref TextureTransformationUniform::layer.
-         * If @ref lightCount() is zero, this function is a no-op, as diffuse
-         * color doesn't contribute to the output in that case.
+         * If @ref perDrawLightCount() is zero, this function is a no-op, as
+         * diffuse color doesn't contribute to the output in that case.
          * @see @ref setDiffuseColor()
          * @requires_gl30 Extension @gl_extension{EXT,texture_array}
          * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
@@ -1931,8 +1946,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * enabled and that @ref Flag::NoSpecular is not set. If
          * @ref Flag::TextureArrays is enabled as well, use
          * @ref bindSpecularTexture(GL::Texture2DArray&) instead. If
-         * @ref lightCount() is zero, this function is a no-op, as specular
-         * color doesn't contribute to the output in that case.
+         * @ref perDrawLightCount() is zero, this function is a no-op, as
+         * specular color doesn't contribute to the output in that case.
          * @see @ref bindTextures(), @ref setSpecularColor()
          */
         PhongGL& bindSpecularTexture(GL::Texture2D& texture);
@@ -1950,8 +1965,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @ref Flag::UniformBuffers is enabled,
          * @ref Flag::TextureTransformation has to be enabled as well and the
          * layer is set via @ref TextureTransformationUniform::layer. If
-         * @ref lightCount() is zero, this function is a no-op, as specular
-         * color doesn't contribute to the output in that case.
+         * @ref perDrawLightCount() is zero, this function is a no-op, as
+         * specular color doesn't contribute to the output in that case.
          * @see @ref setSpecularColor()
          * @requires_gl30 Extension @gl_extension{EXT,texture_array}
          * @requires_gles30 Texture arrays are not available in OpenGL ES 2.0.
@@ -1969,8 +1984,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * enabled and the @ref Tangent attribute was supplied. If
          * @ref Flag::TextureArrays is enabled as well, use
          * @ref bindNormalTexture(GL::Texture2DArray&) instead. If
-         * @ref lightCount() is zero, this function is a no-op, as normals
-         * don't contribute to the output in that case.
+         * @ref perDrawLightCount() is zero, this function is a no-op, as
+         * normals don't contribute to the output in that case.
          * @see @ref Shaders-PhongGL-normal-mapping,
          *      @ref bindTextures(), @ref setNormalTextureScale()
          */
@@ -1984,9 +1999,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          *
          * Expects that the shader was created with both
          * @ref Flag::NormalTexture and @ref Flag::TextureArrays enabled and
-         * the @ref Tangent attribute was supplied. If @ref lightCount() is
-         * zero, this function is a no-op, as normals don't contribute to the
-         * output in that case.
+         * the @ref Tangent attribute was supplied. If @ref perDrawLightCount()
+         * is zero, this function is a no-op, as normals don't contribute to
+         * the output in that case.
          * @see @ref Shaders-PhongGL-normal-mapping,
          *      @ref setNormalTextureScale()
          */
@@ -2070,7 +2085,8 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
         explicit PhongGL(NoInitT) {}
 
         Flags _flags;
-        UnsignedInt _lightCount{};
+        UnsignedInt _lightCount{},
+            _perDrawLightCount{};
         #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _jointCount{},
             _perVertexJointCount{},
@@ -2136,33 +2152,50 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
         /** @brief Light count */
         UnsignedInt lightCount() const { return _lightCount; }
 
+        /** @brief Per-draw light count */
+        UnsignedInt perDrawLightCount() const { return _perDrawLightCount; }
+
         /**
          * @brief Set light count
          *
-         * If @ref Flag::UniformBuffers isn't set, describes how many lights
-         * get applied to each draw, and corresponds to the range / array size
-         * accepted by @ref setLightPosition() / @ref setLightPositions(),
-         * @ref setLightColor() / @ref setLightColors(),
-         * @ref setLightSpecularColor() / @ref setLightSpecularColors() and
-         * @ref setLightRange() / @ref setLightRanges(). If
-         * @ref Flag::UniformBuffers is set, describes size of a
+         * If @ref Flag::UniformBuffers isn't set, @p count corresponds to the
+         * range / array size accepted by @ref setLightPosition() /
+         * @ref setLightPositions(), @ref setLightColor() /
+         * @ref setLightColors(), @ref setLightSpecularColor() /
+         * @ref setLightSpecularColors() and @ref setLightRange() /
+         * @ref setLightRanges().
+         *
+         * If @ref Flag::UniformBuffers is set, @p count describes size of a
          * @ref PhongLightUniform buffer bound with @ref bindLightBuffer().
          * Uniform buffers have a statically defined size and
          * @cpp count*sizeof(PhongLightUniform) @ce has to be within
-         * @ref GL::AbstractShaderProgram::maxUniformBlockSize().
-         *
-         * The per-draw lights are then specified via
-         * @ref PhongDrawUniform::lightOffset and
+         * @ref GL::AbstractShaderProgram::maxUniformBlockSize(). The per-draw
+         * lights are then specified via @ref PhongDrawUniform::lightOffset and
          * @ref PhongDrawUniform::lightCount.
          *
-         * Can be set to @cpp 0 @ce, in which case only the ambient
-         * contribution to the color is used. Default value is @cpp 1 @ce.
+         * The @p perDrawCount parameter describes how many lights out of
+         * @p count get applied to each draw. Useful mainly in combination with
+         * @ref Flag::LightCulling, without it can be used for conveniently
+         * reducing the light count without having to reduce sizes of the light
+         * arrays as well. It's expected to not be larger than @p count. If set
+         * to @cpp 0 @ce, no lighting calculations are performed and only the
+         * ambient contribution to the color is used. If @p perDrawCount is
+         * @cpp 0 @ce, @p count is expected to be zero as well.
+         *
+         * Default value is @cpp 1 @ce for both.
          * @see @ref setFlags(), @ref setMaterialCount(), @ref setDrawCount(),
-         *      @ref PhongGL::lightCount()
+         *      @ref PhongGL::lightCount(), @ref PhongGL::perDrawLightCount()
+         */
+        Configuration& setLightCount(UnsignedInt count, UnsignedInt perDrawCount);
+
+        /**
+         * @brief Set light count
+         *
+         * Same as calling @ref setLightCount(UnsignedInt, UnsignedInt) with
+         * both parameters set to @p count.
          */
         Configuration& setLightCount(UnsignedInt count) {
-            _lightCount = count;
-            return *this;
+            return setLightCount(count, count);
         }
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -2302,7 +2335,9 @@ class MAGNUM_SHADERS_EXPORT PhongGL::Configuration {
         Flags _flags;
         UnsignedInt _lightCount = 1;
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _jointCount = 0,
+        UnsignedInt
+            _perDrawLightCount = 1,
+            _jointCount = 0,
             _perVertexJointCount = 0,
             _secondaryPerVertexJointCount = 0,
             _materialCount = 1,

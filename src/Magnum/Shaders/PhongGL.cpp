@@ -170,6 +170,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     PhongGL out{NoInit};
     out._flags = configuration.flags();
     out._lightCount = configuration.lightCount();
+    out._perDrawLightCount = configuration.perDrawLightCount();
     #ifndef MAGNUM_TARGET_GLES2
     out._jointCount = configuration.jointCount();
     out._perVertexJointCount = configuration.perVertexJointCount();
@@ -215,7 +216,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
         #endif
-        .addSource(configuration.lightCount() ? "#define HAS_LIGHTS\n"_s : ""_s)
+        .addSource(configuration.perDrawLightCount() ? "#define HAS_LIGHTS\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(configuration.flags() >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n"_s : ""_s)
         #endif
@@ -286,10 +287,12 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n"
             "#define MATERIAL_COUNT {}\n"
-            "#define LIGHT_COUNT {}\n",
+            "#define LIGHT_COUNT {}\n"
+            "#define PER_DRAW_LIGHT_COUNT {}\n",
             configuration.drawCount(),
             configuration.materialCount(),
-            configuration.lightCount()));
+            configuration.lightCount(),
+            configuration.perDrawLightCount()));
         frag.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s)
             .addSource(configuration.flags() >= Flag::LightCulling ? "#define LIGHT_CULLING\n"_s : ""_s);
     } else
@@ -297,10 +300,12 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     {
         frag.addSource(Utility::format(
             "#define LIGHT_COUNT {}\n"
+            "#define PER_DRAW_LIGHT_COUNT {}\n"
             "#define LIGHT_COLORS_LOCATION {}\n"
             "#define LIGHT_SPECULAR_COLORS_LOCATION {}\n"
             "#define LIGHT_RANGES_LOCATION {}\n",
             configuration.lightCount(),
+            configuration.perDrawLightCount(),
             out._lightColorsUniform,
             out._lightSpecularColorsUniform,
             out._lightRangesUniform));
@@ -323,9 +328,9 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     #endif
     {
         out.bindAttributeLocation(Position::Location, "position"_s);
-        if(configuration.lightCount())
+        if(configuration.perDrawLightCount())
             out.bindAttributeLocation(Normal::Location, "normal"_s);
-        if((configuration.flags() & Flag::NormalTexture) && configuration.lightCount()) {
+        if((configuration.flags() & Flag::NormalTexture) && configuration.perDrawLightCount()) {
             out.bindAttributeLocation(Tangent::Location, "tangent"_s);
             if(configuration.flags() & Flag::Bitangent)
                 out.bindAttributeLocation(Bitangent::Location, "bitangent"_s);
@@ -348,7 +353,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         #endif
         if(configuration.flags() & Flag::InstancedTransformation) {
             out.bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix"_s);
-            if(configuration.lightCount())
+            if(configuration.perDrawLightCount())
                 out.bindAttributeLocation(NormalMatrix::Location, "instancedNormalMatrix"_s);
         }
         if(configuration.flags() >= Flag::InstancedTextureOffset)
@@ -431,7 +436,7 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
             #endif
             _projectionMatrixUniform = uniformLocation("projectionMatrix"_s);
             _ambientColorUniform = uniformLocation("ambientColor"_s);
-            if(_lightCount) {
+            if(_perDrawLightCount) {
                 _normalMatrixUniform = uniformLocation("normalMatrix"_s);
                 _diffuseColorUniform = uniformLocation("diffuseColor"_s);
                 if(!(_flags & Flag::NoSpecular)) {
@@ -464,7 +469,7 @@ PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move
     #endif
     {
         if(_flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"_s), AmbientTextureUnit);
-        if(_lightCount) {
+        if(_perDrawLightCount) {
             if(_flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"_s), DiffuseTextureUnit);
             if(_flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"_s), SpecularTextureUnit);
             if(_flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"_s), NormalTextureUnit);
@@ -580,7 +585,7 @@ PhongGL& PhongGL::setDiffuseColor(const Magnum::Color4& color) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setDiffuseColor(): the shader was created with uniform buffers enabled", *this);
     #endif
-    if(_lightCount) setUniform(_diffuseColorUniform, color);
+    if(_perDrawLightCount) setUniform(_diffuseColorUniform, color);
     return *this;
 }
 
@@ -591,7 +596,7 @@ PhongGL& PhongGL::setSpecularColor(const Magnum::Color4& color) {
     #endif
     CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
         "Shaders::PhongGL::setSpecularColor(): the shader was created with specular disabled", *this);
-    if(_lightCount) setUniform(_specularColorUniform, color);
+    if(_perDrawLightCount) setUniform(_specularColorUniform, color);
     return *this;
 }
 
@@ -602,7 +607,7 @@ PhongGL& PhongGL::setShininess(Float shininess) {
     #endif
     CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
         "Shaders::PhongGL::setShininess(): the shader was created with specular disabled", *this);
-    if(_lightCount) setUniform(_shininessUniform, shininess);
+    if(_perDrawLightCount) setUniform(_shininessUniform, shininess);
     return *this;
 }
 
@@ -613,7 +618,7 @@ PhongGL& PhongGL::setNormalTextureScale(const Float scale) {
     #endif
     CORRADE_ASSERT(_flags & Flag::NormalTexture,
         "Shaders::PhongGL::setNormalTextureScale(): the shader was not created with normal texture enabled", *this);
-    if(_lightCount) setUniform(_normalTextureScaleUniform, scale);
+    if(_perDrawLightCount) setUniform(_normalTextureScaleUniform, scale);
     return *this;
 }
 
@@ -653,7 +658,7 @@ PhongGL& PhongGL::setNormalMatrix(const Matrix3x3& matrix) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setNormalMatrix(): the shader was created with uniform buffers enabled", *this);
     #endif
-    if(_lightCount) setUniform(_normalMatrixUniform, matrix);
+    if(_perDrawLightCount) setUniform(_normalMatrixUniform, matrix);
     return *this;
 }
 
@@ -1025,7 +1030,7 @@ PhongGL& PhongGL::bindDiffuseTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
         "Shaders::PhongGL::bindDiffuseTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
     #endif
-    if(_lightCount) texture.bind(DiffuseTextureUnit);
+    if(_perDrawLightCount) texture.bind(DiffuseTextureUnit);
     return *this;
 }
 
@@ -1035,7 +1040,7 @@ PhongGL& PhongGL::bindDiffuseTexture(GL::Texture2DArray& texture) {
         "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureArrays,
         "Shaders::PhongGL::bindDiffuseTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
-    if(_lightCount) texture.bind(DiffuseTextureUnit);
+    if(_perDrawLightCount) texture.bind(DiffuseTextureUnit);
     return *this;
 }
 #endif
@@ -1047,7 +1052,7 @@ PhongGL& PhongGL::bindSpecularTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
         "Shaders::PhongGL::bindSpecularTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
     #endif
-    if(_lightCount) texture.bind(SpecularTextureUnit);
+    if(_perDrawLightCount) texture.bind(SpecularTextureUnit);
     return *this;
 }
 
@@ -1057,7 +1062,7 @@ PhongGL& PhongGL::bindSpecularTexture(GL::Texture2DArray& texture) {
         "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureArrays,
         "Shaders::PhongGL::bindSpecularTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
-    if(_lightCount) texture.bind(SpecularTextureUnit);
+    if(_perDrawLightCount) texture.bind(SpecularTextureUnit);
     return *this;
 }
 #endif
@@ -1069,7 +1074,7 @@ PhongGL& PhongGL::bindNormalTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(!(_flags & Flag::TextureArrays),
         "Shaders::PhongGL::bindNormalTexture(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
     #endif
-    if(_lightCount) texture.bind(NormalTextureUnit);
+    if(_perDrawLightCount) texture.bind(NormalTextureUnit);
     return *this;
 }
 
@@ -1079,7 +1084,7 @@ PhongGL& PhongGL::bindNormalTexture(GL::Texture2DArray& texture) {
         "Shaders::PhongGL::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
     CORRADE_ASSERT(_flags & Flag::TextureArrays,
         "Shaders::PhongGL::bindNormalTexture(): the shader was not created with texture arrays enabled, use a Texture2D instead", *this);
-    if(_lightCount) texture.bind(NormalTextureUnit);
+    if(_perDrawLightCount) texture.bind(NormalTextureUnit);
     return *this;
 }
 #endif
@@ -1114,6 +1119,16 @@ PhongGL& PhongGL::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, G
         "Shaders::PhongGL::bindTextures(): the shader was created with texture arrays enabled, use a Texture2DArray instead", *this);
     #endif
     GL::AbstractTexture::bind(AmbientTextureUnit, {ambient, diffuse, specular, normal});
+    return *this;
+}
+
+PhongGL::Configuration& PhongGL::Configuration::setLightCount(const UnsignedInt count, const UnsignedInt perDrawCount) {
+    CORRADE_ASSERT(!count == !perDrawCount,
+        "Shaders::PhongGL::Configuration::setLightCount(): count has to be non-zero iff per-draw count is non-zero", *this);
+    CORRADE_ASSERT(perDrawCount <= count,
+        "Shaders::PhongGL::Configuration::setLightCount(): per-draw light count expected to be not larger than total count of" << count << Debug::nospace << ", got" << perDrawCount, *this);
+    _lightCount = count;
+    _perDrawLightCount = perDrawCount;
     return *this;
 }
 

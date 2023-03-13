@@ -37,6 +37,7 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct PhongGL_Test: TestSuite::Tester {
     explicit PhongGL_Test();
 
+    void configurationSetLightCountInvalid();
     #ifndef MAGNUM_TARGET_GLES2
     void configurationSetJointCountInvalid();
     #endif
@@ -47,6 +48,22 @@ struct PhongGL_Test: TestSuite::Tester {
     void debugFlag();
     void debugFlags();
     void debugFlagsSupersets();
+};
+
+const struct {
+    const char* name;
+    UnsignedInt count, perDrawCount;
+    const char* message;
+} ConfigurationSetLightCountInvalidData[] {
+    {"per-draw count larger than count",
+        10, 11,
+        "per-draw light count expected to be not larger than total count of 10, got 11"},
+    {"count but no per-draw count",
+        10, 0,
+        "count has to be non-zero iff per-draw count is non-zero"},
+    {"per-draw count but no count",
+        0, 2,
+        "count has to be non-zero iff per-draw count is non-zero"},
 };
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -74,6 +91,9 @@ const struct {
 #endif
 
 PhongGL_Test::PhongGL_Test() {
+    addInstancedTests({&PhongGL_Test::configurationSetLightCountInvalid},
+        Containers::arraySize(ConfigurationSetLightCountInvalidData));
+
     #ifndef MAGNUM_TARGET_GLES2
     addInstancedTests({&PhongGL_Test::configurationSetJointCountInvalid},
         Containers::arraySize(ConfigurationSetJointCountInvalidData));
@@ -85,6 +105,20 @@ PhongGL_Test::PhongGL_Test() {
               &PhongGL_Test::debugFlag,
               &PhongGL_Test::debugFlags,
               &PhongGL_Test::debugFlagsSupersets});
+}
+
+void PhongGL_Test::configurationSetLightCountInvalid() {
+    auto&& data = ConfigurationSetLightCountInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    PhongGL::Configuration configuration;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    configuration.setLightCount(data.count, data.perDrawCount);
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::PhongGL::Configuration::setLightCount(): {}\n", data.message));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
