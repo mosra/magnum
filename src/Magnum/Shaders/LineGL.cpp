@@ -215,11 +215,9 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(checkLink({GL::Shader(state._vert), GL::Shader(state._frag)}));
 
-    const GL::Context& context = GL::Context::current();
-
     #ifndef MAGNUM_TARGET_GLES
-    const GL::Version version = state._version;
-    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
+    const GL::Context& context = GL::Context::current();
+    if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
     #endif
     {
         _viewportSizeUniform = uniformLocation("viewportSize"_s);
@@ -240,7 +238,7 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
+    if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
     #endif
     {
         if(_flags >= Flag::UniformBuffers) {
@@ -264,8 +262,6 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
         /* Object ID is zero by default */
     }
     #endif
-
-    static_cast<void>(context);
 }
 
 template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(const Configuration& configuration): LineGL{compile(configuration)} {}
