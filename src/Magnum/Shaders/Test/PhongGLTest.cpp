@@ -413,16 +413,16 @@ constexpr struct {
 constexpr struct {
     const char* name;
     PhongGL::Flags flags;
-    UnsignedInt lightCount, materialCount, drawCount;
+    UnsignedInt materialCount, drawCount;
     const char* message;
 } ConstructUniformBuffersInvalidData[]{
-    {"zero draws", PhongGL::Flag::UniformBuffers, 1, 1, 0,
+    {"zero draws", PhongGL::Flag::UniformBuffers, 1, 0,
         "draw count can't be zero"},
-    {"zero materials", PhongGL::Flag::UniformBuffers, 1, 0, 1,
+    {"zero materials", PhongGL::Flag::UniformBuffers, 0, 1,
         "material count can't be zero"},
-    {"texture arrays but no transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays, 1, 1, 1,
+    {"texture arrays but no transformation", PhongGL::Flag::UniformBuffers|PhongGL::Flag::DiffuseTexture|PhongGL::Flag::TextureArrays, 1, 1,
         "texture arrays require texture transformation enabled as well if uniform buffers are used"},
-    {"light culling but no UBOs", PhongGL::Flag::LightCulling, 1, 1, 1,
+    {"light culling but no UBOs", PhongGL::Flag::LightCulling, 1, 1,
         "light culling requires uniform buffers to be enabled"}
 };
 #endif
@@ -1666,7 +1666,6 @@ void PhongGLTest::constructUniformBuffersInvalid() {
     Error redirectError{&out};
     PhongGL{PhongGL::Configuration{}
         .setFlags(data.flags)
-        .setLightCount(data.lightCount)
         .setMaterialCount(data.materialCount)
         .setDrawCount(data.drawCount)};
     CORRADE_COMPARE(out.str(), Utility::formatString(
