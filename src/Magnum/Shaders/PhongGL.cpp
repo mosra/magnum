@@ -292,8 +292,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         vert.addSource(Utility::format(
             "#define UNIFORM_BUFFERS\n"
             "#define DRAW_COUNT {}\n",
-            configuration.drawCount(),
-            configuration.lightCount()));
+            configuration.drawCount()));
         vert.addSource(configuration.flags() >= Flag::MultiDraw ? "#define MULTI_DRAW\n"_s : ""_s);
     }
     #endif
