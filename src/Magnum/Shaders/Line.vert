@@ -27,10 +27,6 @@
 #extension GL_EXT_gpu_shader4: require
 #endif
 
-#if defined(UNIFORM_BUFFERS) && defined(TEXTURE_ARRAYS) && !defined(GL_ES)
-#extension GL_ARB_shader_bit_encoding: require
-#endif
-
 /* Use the noperspective keyword to avoid artifacts in screen-space
    interpolation if perspective projection is used in 3D. If not available,
    it's worked around by dividing gl_Position with gl_Position.w (which is
