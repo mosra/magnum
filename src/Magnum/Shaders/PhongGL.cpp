@@ -157,11 +157,6 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     const GL::Context& context = GL::Context::current();
 
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(!(configuration.flags() >= Flag::UniformBuffers) || context.isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>(),
-        "Shaders::PhongGL: uniform buffers require" << GL::Extensions::ARB::uniform_buffer_object::string(), CompileState{NoCreate});
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = context.supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
     const GL::Version version = context.supportedVersion({
