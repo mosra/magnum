@@ -411,6 +411,8 @@ void MultisampleTextureGLTest::storage2DArray() {
 
 void MultisampleTextureGLTest::view2D() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
@@ -433,6 +435,8 @@ void MultisampleTextureGLTest::view2D() {
 
 void MultisampleTextureGLTest::view2DOnArray() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
@@ -457,6 +461,8 @@ void MultisampleTextureGLTest::view2DOnArray() {
 
 void MultisampleTextureGLTest::view2DArray() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
@@ -481,6 +487,8 @@ void MultisampleTextureGLTest::view2DArray() {
 
 void MultisampleTextureGLTest::view2DArrayOnNonArray() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::ARB::texture_multisample::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())

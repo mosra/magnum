@@ -754,6 +754,8 @@ void CubeMapTextureGLTest::storageImageSize() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void CubeMapTextureGLTest::view() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
     #else
@@ -776,6 +778,8 @@ void CubeMapTextureGLTest::viewOnArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
     #else

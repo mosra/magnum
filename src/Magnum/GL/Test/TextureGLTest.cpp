@@ -1443,6 +1443,8 @@ void TextureGLTest::storage3D() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::view1D() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
 
@@ -1459,6 +1461,8 @@ void TextureGLTest::view1D() {
 
 void TextureGLTest::view2D() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
     #else
@@ -1479,6 +1483,8 @@ void TextureGLTest::view2D() {
 
 void TextureGLTest::view2DOnArray() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
     #else
@@ -1499,6 +1505,8 @@ void TextureGLTest::view2DOnArray() {
 
 void TextureGLTest::view2DOnCubeMap() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
     #else
@@ -1521,6 +1529,8 @@ void TextureGLTest::view2DOnCubeMapArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() << "is not supported.");
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
     #else
@@ -1543,6 +1553,8 @@ void TextureGLTest::view2DOnCubeMapArray() {
 
 void TextureGLTest::view3D() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
     #else

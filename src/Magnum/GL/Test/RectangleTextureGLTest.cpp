@@ -359,6 +359,8 @@ void RectangleTextureGLTest::storage() {
 }
 
 void RectangleTextureGLTest::view() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::ARB::texture_storage::string() << "is not supported.");
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_view>())
         CORRADE_SKIP(Extensions::ARB::texture_view::string() << "is not supported.");
 
