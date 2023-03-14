@@ -1399,14 +1399,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     /* MSVC needs explicit type due to default template args */
     addTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsWireframe2D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsWireframe2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
-        #endif
         &MeshVisualizerGLTest::renderDefaultsWireframe3D,
-        #ifndef MAGNUM_TARGET_GLES2
-        &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
-        },
+        &MeshVisualizerGLTest::renderDefaultsWireframe3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1415,14 +1410,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     /* MSVC needs explicit type due to default template args */
     addTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsObjectId2D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsObjectId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
-        #endif
         &MeshVisualizerGLTest::renderDefaultsObjectId3D,
-        #ifndef MAGNUM_TARGET_GLES2
-        &MeshVisualizerGLTest::renderDefaultsObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
-        },
+        &MeshVisualizerGLTest::renderDefaultsObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -1431,14 +1421,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsInstancedObjectId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
-        #endif
         &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D,
-        #ifndef MAGNUM_TARGET_GLES2
-        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
-        },
+        &MeshVisualizerGLTest::renderDefaultsInstancedObjectId3D<MeshVisualizerGL3D::Flag::UniformBuffers>},
         Containers::arraySize(RenderInstancedObjectIdDefaultsData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
@@ -1448,26 +1433,16 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     /* MSVC needs explicit type due to default template args */
     addTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderDefaultsVertexId2D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsVertexId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
-        #endif
         &MeshVisualizerGLTest::renderDefaultsVertexId3D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsVertexId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
-        #endif
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
         #ifndef MAGNUM_TARGET_WEBGL
         &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
         #endif
         },
         &MeshVisualizerGLTest::renderSetup,
@@ -1500,13 +1475,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D<MeshVisualizerGL2D::Flag::UniformBuffers>,
-        #endif
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
         },
         Containers::arraySize(RenderObjectVertexPrimitiveIdData),
         &MeshVisualizerGLTest::renderSetup,
@@ -1521,9 +1492,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     /* MSVC needs explicit type due to default template args */
     addInstancedTests<MeshVisualizerGLTest>({
         &MeshVisualizerGLTest::renderTangentBitangentNormal,
-        #ifndef MAGNUM_TARGET_GLES2
         &MeshVisualizerGLTest::renderTangentBitangentNormal<MeshVisualizerGL3D::Flag::UniformBuffers>,
-        #endif
         },
         Containers::arraySize(RenderTangentBitangentNormalData),
         &MeshVisualizerGLTest::renderSetup,

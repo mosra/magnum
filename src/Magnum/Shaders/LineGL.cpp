@@ -201,7 +201,7 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     out.submitLink();
 
     return CompileState{std::move(out), std::move(vert), std::move(frag)
-        #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
+        #if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_WEBGL)
         , version
         #endif
     };
@@ -219,7 +219,7 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
     #ifndef MAGNUM_TARGET_GLES
     const GL::Context& context = GL::Context::current();
     if(!context.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(state._version))
-    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     if(state._version < GL::Version::GLES310)
     #endif
     {
@@ -242,7 +242,7 @@ template<UnsignedInt dimensions> LineGL<dimensions>::LineGL(CompileState&& state
 
     #ifndef MAGNUM_TARGET_GLES
     if(!context.isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(state._version))
-    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     if(state._version < GL::Version::GLES310)
     #endif
     {
