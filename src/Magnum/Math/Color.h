@@ -569,6 +569,14 @@ template<class T> class Color3: public Vector3<T> {
         constexpr /*implicit*/ Color3(T r, T g, T b) noexcept: Vector3<T>(r, g, b) {}
 
         /**
+         * @brief Constructor
+         * @param rg    RG value
+         * @param b     B value
+         * @m_since_latest
+         */
+        constexpr /*implicit*/ Color3(const Vector<2, T>& rg, T b) noexcept: Vector3<T>{rg, b} {}
+
+        /**
          * @copydoc Vector::Vector(const Vector<size, U>&)
          *
          * @attention This function doesn't do any (un)packing, use either

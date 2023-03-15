@@ -156,6 +156,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
     #endif
 };
 
+typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector3<UnsignedByte> Vector3ub;
 typedef Math::Vector3<UnsignedShort> Vector3us;
@@ -387,18 +388,21 @@ void ColorTest::constructOneValue() {
 }
 
 void ColorTest::constructParts() {
-    constexpr Color3 a(1.0f, 0.5f, 0.75f);
+    constexpr Vector2 a{1.0f, 0.5f};
+    constexpr Color3 b = {a, 0.75f};
+    CORRADE_COMPARE(b, (Color3{1.0f, 0.5f, 0.75f}));
 
-    constexpr Color4 b = {a, 0.25f};
-    CORRADE_COMPARE(b, Color4(1.0f, 0.5f, 0.75f, 0.25f));
+    constexpr Color4 c = {b, 0.25f};
+    CORRADE_COMPARE(c, (Color4{1.0f, 0.5f, 0.75f, 0.25f}));
 
     /* Default alpha */
-    constexpr Color3ub c(10, 25, 176);
-    constexpr Color4 d = a;
-    constexpr Color4ub e = c;
-    CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 1.0f));
-    CORRADE_COMPARE(e, Color4ub(10, 25, 176, 255));
+    constexpr Color3ub d(10, 25, 176);
+    constexpr Color4 e = b;
+    constexpr Color4ub f = d;
+    CORRADE_COMPARE(e, (Color4{1.0f, 0.5f, 0.75f, 1.0f}));
+    CORRADE_COMPARE(f, (Color4ub{10, 25, 176, 255}));
 
+    CORRADE_VERIFY(std::is_nothrow_constructible<Color3, Vector2, Float>::value);
     CORRADE_VERIFY(std::is_nothrow_constructible<Color4, Color3, Float>::value);
 }
 
