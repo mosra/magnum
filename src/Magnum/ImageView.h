@@ -482,7 +482,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         void setData(Containers::ArrayView<ErasedType> data);
 
         /**
-         * @brief View on pixel data
+         * @brief Pixel data
          * @m_since{2019,10}
          *
          * Provides direct and easy-to-use access to image pixels. See
@@ -493,7 +493,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         Containers::StridedArrayView<dimensions + 1, Type> pixels() const;
 
         /**
-         * @brief View on pixel data with a concrete pixel type
+         * @brief Pixel data in a concrete type
          * @m_since{2019,10}
          *
          * Compared to non-templated @ref pixels() in addition casts the pixel

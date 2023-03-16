@@ -795,7 +795,7 @@ template<UnsignedInt dimensions> class ImageData {
         #endif
 
         /**
-         * @brief View on pixel data
+         * @brief Pixel data
          * @m_since{2019,10}
          *
          * Provides direct and easy-to-use access to image pixels. Expects that
@@ -809,7 +809,7 @@ template<UnsignedInt dimensions> class ImageData {
         Containers::StridedArrayView<dimensions + 1, const char> pixels() const;
 
         /**
-         * @brief Mutable view on pixel data
+         * @brief Mutable pixel data
          * @m_since{2020,06}
          *
          * Like @ref pixels() const, but returns a non-const view. Expects that
