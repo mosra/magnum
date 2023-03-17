@@ -389,15 +389,24 @@ void ColorTest::constructOneValue() {
 
 void ColorTest::constructParts() {
     constexpr Vector2 a{1.0f, 0.5f};
-    constexpr Color3 b = {a, 0.75f};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea, who cares */
+    #endif
+    Color3 b = {a, 0.75f};
     CORRADE_COMPARE(b, (Color3{1.0f, 0.5f, 0.75f}));
 
-    constexpr Color4 c = {b, 0.25f};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea, who cares */
+    #endif
+    Color4 c = {b, 0.25f};
     CORRADE_COMPARE(c, (Color4{1.0f, 0.5f, 0.75f, 0.25f}));
 
     /* Default alpha */
     constexpr Color3ub d(10, 25, 176);
-    constexpr Color4 e = b;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea, who cares */
+    #endif
+    Color4 e = b;
     constexpr Color4ub f = d;
     CORRADE_COMPARE(e, (Color4{1.0f, 0.5f, 0.75f, 1.0f}));
     CORRADE_COMPARE(f, (Color4ub{10, 25, 176, 255}));
