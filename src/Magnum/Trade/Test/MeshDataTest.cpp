@@ -114,6 +114,11 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexlessNotOwned();
     void constructAttributelessNotOwned();
 
+    #ifndef CORRADE_TARGET_32BIT
+    void constructIndicesOver4GB();
+    void constructAttributeOver4GB();
+    #endif
+
     void constructIndexDataButNotIndexed();
     void constructAttributelessImplicitVertexCount();
     void constructIndicesNotContained();
@@ -298,6 +303,11 @@ MeshDataTest::MeshDataTest() {
                        &MeshDataTest::constructIndexlessNotOwned,
                        &MeshDataTest::constructAttributelessNotOwned},
         Containers::arraySize(SingleNotOwnedData));
+
+    #ifndef CORRADE_TARGET_32BIT
+    addTests({&MeshDataTest::constructIndicesOver4GB,
+              &MeshDataTest::constructAttributeOver4GB});
+    #endif
 
     addTests({&MeshDataTest::constructIndexDataButNotIndexed,
               &MeshDataTest::constructAttributelessImplicitVertexCount,
@@ -2244,6 +2254,29 @@ void MeshDataTest::constructAttributelessNotOwned() {
     CORRADE_COMPARE(data.vertexCount(), 5);
     CORRADE_COMPARE(data.attributeCount(), 0);
 }
+
+#ifndef CORRADE_TARGET_32BIT
+void MeshDataTest::constructIndicesOver4GB() {
+    /* For some reason 2500 doesn't trigger an assertion, 3000 does */
+    Containers::ArrayView<UnsignedInt> indexData{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+
+    MeshIndexData indices{indexData};
+    MeshData data{MeshPrimitive::Triangles, {}, indexData, indices, 5};
+    CORRADE_COMPARE(data.indices().data(), indexData.begin());
+    CORRADE_COMPARE(data.indices<UnsignedInt>().size(), indexData.size());
+}
+
+void MeshDataTest::constructAttributeOver4GB() {
+    /* For some reason 2500 doesn't trigger an assertion, 3000 does */
+    Containers::ArrayView<UnsignedInt> vertexData{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+
+    MeshData data{MeshPrimitive::Triangles, {}, vertexData, {
+        MeshAttributeData{meshAttributeCustom(15), vertexData}
+    }};
+    CORRADE_COMPARE(data.attribute(0).data(), vertexData.begin());
+    CORRADE_COMPARE(data.attribute<UnsignedInt>(0).size(), vertexData.size());
+}
+#endif
 
 void MeshDataTest::constructIndexDataButNotIndexed() {
     CORRADE_SKIP_IF_NO_ASSERT();

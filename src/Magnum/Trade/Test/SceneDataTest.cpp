@@ -139,6 +139,11 @@ struct SceneDataTest: TestSuite::Tester {
     void constructDeprecatedBoth2DAnd3D();
     #endif
 
+    #ifndef CORRADE_TARGET_32BIT
+    void constructMappingOver4GB();
+    void constructFieldOver4GB();
+    #endif
+
     void constructDuplicateField();
     void constructDuplicateCustomField();
     void constructInconsistentMappingType();
@@ -487,6 +492,11 @@ SceneDataTest::SceneDataTest() {
         Containers::arraySize(ChildrenDeprecatedData));
 
     addTests({&SceneDataTest::constructDeprecatedBoth2DAnd3D});
+    #endif
+
+    #ifndef CORRADE_TARGET_32BIT
+    addTests({&SceneDataTest::constructMappingOver4GB,
+              &SceneDataTest::constructFieldOver4GB});
     #endif
 
     addTests({&SceneDataTest::constructDuplicateField,
@@ -3530,6 +3540,30 @@ void SceneDataTest::constructDeprecatedBoth2DAnd3D() {
     SceneData scene{{5, 17}, {36, 22}};
     CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::SceneData: it's no longer possible to have a scene with both 2D and 3D objects\n");
+}
+#endif
+
+#ifndef CORRADE_TARGET_32BIT
+void SceneDataTest::constructMappingOver4GB() {
+    Containers::ArrayView<UnsignedInt> mappingData{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+    Containers::StridedArrayView1D<UnsignedByte> fieldData{mappingData, reinterpret_cast<UnsignedByte*>(mappingData.data()), 3000ull*1000*1000, 0};
+
+    SceneData data{SceneMappingType::UnsignedInt, 1, {}, mappingData, {
+        SceneFieldData{sceneFieldCustom(15), mappingData, fieldData},
+    }};
+    CORRADE_COMPARE(data.mapping(0).data(), mappingData.begin());
+    CORRADE_COMPARE(data.mapping<UnsignedInt>(0).size(), mappingData.size());
+}
+
+void SceneDataTest::constructFieldOver4GB() {
+    Containers::ArrayView<UnsignedInt> fieldData{reinterpret_cast<UnsignedInt*>(0xdeadbeef), 3000ull*1000*1000};
+    Containers::StridedArrayView1D<UnsignedByte> mappingData{fieldData, reinterpret_cast<UnsignedByte*>(fieldData.data()), 3000ull*1000*1000, 0};
+
+    SceneData data{SceneMappingType::UnsignedByte, 1, {}, fieldData, {
+        SceneFieldData{sceneFieldCustom(15), mappingData, fieldData},
+    }};
+    CORRADE_COMPARE(data.field(0).data(), fieldData.begin());
+    CORRADE_COMPARE(data.field<UnsignedInt>(0).size(), fieldData.size());
 }
 #endif
 
