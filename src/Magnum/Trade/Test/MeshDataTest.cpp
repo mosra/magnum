@@ -1673,209 +1673,6 @@ void MeshDataTest::constructAttributeless() {
     CORRADE_COMPARE(data.attributeCount(), 0);
 }
 
-void MeshDataTest::constructNotOwned() {
-    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
-    setTestCaseDescription(instanceData.name);
-
-    UnsignedShort indexData[]{0, 1, 0};
-    Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
-
-    int importerState;
-    MeshIndexData indices{indexData};
-    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
-    MeshData data{MeshPrimitive::Triangles, instanceData.indexDataFlags, Containers::arrayView(indexData), indices, instanceData.vertexDataFlags, Containers::arrayView(vertexData), {positions}, MeshData::ImplicitVertexCount, &importerState};
-
-    CORRADE_COMPARE(data.indexDataFlags(), instanceData.indexDataFlags);
-    CORRADE_COMPARE(data.vertexDataFlags(), instanceData.vertexDataFlags);
-    CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
-    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), +indexData);
-    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), +vertexData);
-    if(instanceData.indexDataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(static_cast<const void*>(data.mutableIndexData()), +indexData);
-    if(instanceData.vertexDataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(static_cast<const void*>(data.mutableVertexData()), +vertexData);
-    CORRADE_COMPARE(data.importerState(), &importerState);
-
-    CORRADE_VERIFY(data.isIndexed());
-    CORRADE_COMPARE(data.indexCount(), 3);
-    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
-    if(instanceData.indexDataFlags & DataFlag::Mutable) {
-        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
-        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
-    }
-
-    CORRADE_COMPARE(data.vertexCount(), 2);
-    CORRADE_COMPARE(data.attributeCount(), 1);
-    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
-    CORRADE_COMPARE(data.attributeOffset(0), 0);
-    CORRADE_COMPARE(data.attributeStride(0), sizeof(Vector2));
-    CORRADE_COMPARE(data.attribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
-    CORRADE_COMPARE(data.attribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
-    if(instanceData.vertexDataFlags & DataFlag::Mutable) {
-        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
-        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
-    }
-}
-
-void MeshDataTest::constructIndicesNotOwned() {
-    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
-    setTestCaseDescription(instanceData.name);
-
-    UnsignedShort indexData[]{0, 1, 0};
-    Containers::Array<char> vertexData{2*sizeof(Vector2)};
-    auto vertexView = Containers::arrayCast<Vector2>(vertexData);
-    vertexView[0] = {0.1f, 0.2f};
-    vertexView[1] = {0.4f, 0.5f};
-
-    int importerState;
-    MeshIndexData indices{indexData};
-    MeshAttributeData positions{MeshAttribute::Position, vertexView};
-    MeshData data{MeshPrimitive::Triangles, instanceData.dataFlags, Containers::arrayView(indexData), indices, std::move(vertexData), {positions}, MeshData::ImplicitVertexCount, &importerState};
-
-    CORRADE_COMPARE(data.indexDataFlags(), instanceData.dataFlags);
-    CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
-    CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
-    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), +indexData);
-    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), vertexView.data());
-    if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(static_cast<const void*>(data.mutableIndexData()), +indexData);
-    CORRADE_COMPARE(static_cast<const void*>(data.mutableVertexData()), vertexView.data());
-    CORRADE_COMPARE(data.importerState(), &importerState);
-
-    CORRADE_VERIFY(data.isIndexed());
-    CORRADE_COMPARE(data.indexCount(), 3);
-    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
-    if(instanceData.dataFlags & DataFlag::Mutable) {
-        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
-        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
-    }
-
-    CORRADE_COMPARE(data.vertexCount(), 2);
-    CORRADE_COMPARE(data.attributeCount(), 1);
-    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
-    CORRADE_COMPARE(data.attributeOffset(0), 0);
-    CORRADE_COMPARE(data.attributeStride(0), sizeof(Vector2));
-    CORRADE_COMPARE(data.attribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
-    CORRADE_COMPARE(data.attribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
-    CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
-    CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
-}
-
-void MeshDataTest::constructVerticesNotOwned() {
-    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
-    setTestCaseDescription(instanceData.name);
-
-    Containers::Array<char> indexData{3*sizeof(UnsignedShort)};
-    auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
-    indexView[0] = 0;
-    indexView[1] = 1;
-    indexView[2] = 0;
-    Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
-
-    int importerState;
-    MeshIndexData indices{indexView};
-    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
-    MeshData data{MeshPrimitive::Triangles, std::move(indexData), indices, instanceData.dataFlags, Containers::arrayView(vertexData), {positions}, MeshData::ImplicitVertexCount, &importerState};
-
-    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
-    CORRADE_COMPARE(data.vertexDataFlags(), instanceData.dataFlags);
-    CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
-    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), indexView.data());
-    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), +vertexData);
-    CORRADE_COMPARE(static_cast<const void*>(data.mutableIndexData()), indexView.data());
-    if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(static_cast<const void*>(data.mutableVertexData()), +vertexData);
-    CORRADE_COMPARE(data.importerState(), &importerState);
-
-    CORRADE_VERIFY(data.isIndexed());
-    CORRADE_COMPARE(data.indexCount(), 3);
-    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
-    CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
-    CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
-
-    CORRADE_COMPARE(data.vertexCount(), 2);
-    CORRADE_COMPARE(data.attributeCount(), 1);
-    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
-    CORRADE_COMPARE(data.attributeOffset(0), 0);
-    CORRADE_COMPARE(data.attributeStride(0), sizeof(Vector2));
-    CORRADE_COMPARE(data.attribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
-    CORRADE_COMPARE(data.attribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
-    if(instanceData.dataFlags & DataFlag::Mutable) {
-        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
-        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
-    }
-}
-
-void MeshDataTest::constructIndexlessNotOwned() {
-    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
-    setTestCaseDescription(instanceData.name);
-
-    Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
-
-    int importerState;
-    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
-    MeshData data{MeshPrimitive::LineLoop, instanceData.dataFlags, vertexData, {positions}, MeshData::ImplicitVertexCount, &importerState};
-
-    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
-    CORRADE_COMPARE(data.vertexDataFlags(), instanceData.dataFlags);
-    CORRADE_COMPARE(data.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
-    if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(data.mutableIndexData(), static_cast<void*>(nullptr));
-    CORRADE_COMPARE(data.importerState(), &importerState);
-
-    CORRADE_VERIFY(!data.isIndexed());
-    CORRADE_COMPARE(data.vertexCount(), 2);
-    CORRADE_COMPARE(data.attributeCount(), 1);
-    CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position), VertexFormat::Vector2);
-    CORRADE_COMPARE(data.attribute<Vector2>(MeshAttribute::Position)[1], (Vector2{0.4f, 0.5f}));
-    if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::Position)[1], (Vector2{0.4f, 0.5f}));
-}
-
-void MeshDataTest::constructAttributelessNotOwned() {
-    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
-    setTestCaseDescription(instanceData.name);
-
-    UnsignedShort indexData[]{0, 1, 0};
-
-    int importerState;
-    MeshIndexData indices{indexData};
-    MeshData data{MeshPrimitive::TriangleStrip, instanceData.dataFlags, indexData, indices, 5, &importerState};
-    CORRADE_COMPARE(data.indexDataFlags(), instanceData.dataFlags);
-    CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
-    CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
-    CORRADE_VERIFY(!data.attributeData());
-    CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
-    if(instanceData.dataFlags & DataFlag::Mutable)
-        CORRADE_COMPARE(data.mutableVertexData(), static_cast<const void*>(nullptr));
-    CORRADE_COMPARE(data.importerState(), &importerState);
-
-    CORRADE_VERIFY(data.isIndexed());
-    CORRADE_COMPARE(data.indexCount(), 3);
-    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[0], 0);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
-    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
-    if(instanceData.dataFlags & DataFlag::Mutable) {
-        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[0], 0);
-        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
-        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
-    }
-
-    CORRADE_COMPARE(data.vertexCount(), 5);
-    CORRADE_COMPARE(data.attributeCount(), 0);
-}
-
 void MeshDataTest::constructIndexlessAttributeless() {
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     MeshData data{MeshPrimitive::TriangleStrip, 37, &state};
@@ -2243,6 +2040,209 @@ void MeshDataTest::constructSpecialAttributeStridesImplementationSpecificVertexF
 
     /* Typed access and convenience accessors won't work here due to the
        implementation-specific format */
+}
+
+void MeshDataTest::constructNotOwned() {
+    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    UnsignedShort indexData[]{0, 1, 0};
+    Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
+
+    int importerState;
+    MeshIndexData indices{indexData};
+    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
+    MeshData data{MeshPrimitive::Triangles, instanceData.indexDataFlags, Containers::arrayView(indexData), indices, instanceData.vertexDataFlags, Containers::arrayView(vertexData), {positions}, MeshData::ImplicitVertexCount, &importerState};
+
+    CORRADE_COMPARE(data.indexDataFlags(), instanceData.indexDataFlags);
+    CORRADE_COMPARE(data.vertexDataFlags(), instanceData.vertexDataFlags);
+    CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), +indexData);
+    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), +vertexData);
+    if(instanceData.indexDataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(static_cast<const void*>(data.mutableIndexData()), +indexData);
+    if(instanceData.vertexDataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(static_cast<const void*>(data.mutableVertexData()), +vertexData);
+    CORRADE_COMPARE(data.importerState(), &importerState);
+
+    CORRADE_VERIFY(data.isIndexed());
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
+    if(instanceData.indexDataFlags & DataFlag::Mutable) {
+        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
+        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
+    }
+
+    CORRADE_COMPARE(data.vertexCount(), 2);
+    CORRADE_COMPARE(data.attributeCount(), 1);
+    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
+    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attributeOffset(0), 0);
+    CORRADE_COMPARE(data.attributeStride(0), sizeof(Vector2));
+    CORRADE_COMPARE(data.attribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
+    CORRADE_COMPARE(data.attribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
+    if(instanceData.vertexDataFlags & DataFlag::Mutable) {
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
+    }
+}
+
+void MeshDataTest::constructIndicesNotOwned() {
+    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    UnsignedShort indexData[]{0, 1, 0};
+    Containers::Array<char> vertexData{2*sizeof(Vector2)};
+    auto vertexView = Containers::arrayCast<Vector2>(vertexData);
+    vertexView[0] = {0.1f, 0.2f};
+    vertexView[1] = {0.4f, 0.5f};
+
+    int importerState;
+    MeshIndexData indices{indexData};
+    MeshAttributeData positions{MeshAttribute::Position, vertexView};
+    MeshData data{MeshPrimitive::Triangles, instanceData.dataFlags, Containers::arrayView(indexData), indices, std::move(vertexData), {positions}, MeshData::ImplicitVertexCount, &importerState};
+
+    CORRADE_COMPARE(data.indexDataFlags(), instanceData.dataFlags);
+    CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), +indexData);
+    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), vertexView.data());
+    if(instanceData.dataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(static_cast<const void*>(data.mutableIndexData()), +indexData);
+    CORRADE_COMPARE(static_cast<const void*>(data.mutableVertexData()), vertexView.data());
+    CORRADE_COMPARE(data.importerState(), &importerState);
+
+    CORRADE_VERIFY(data.isIndexed());
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
+    if(instanceData.dataFlags & DataFlag::Mutable) {
+        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
+        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
+    }
+
+    CORRADE_COMPARE(data.vertexCount(), 2);
+    CORRADE_COMPARE(data.attributeCount(), 1);
+    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
+    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attributeOffset(0), 0);
+    CORRADE_COMPARE(data.attributeStride(0), sizeof(Vector2));
+    CORRADE_COMPARE(data.attribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
+    CORRADE_COMPARE(data.attribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
+    CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
+    CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
+}
+
+void MeshDataTest::constructVerticesNotOwned() {
+    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    Containers::Array<char> indexData{3*sizeof(UnsignedShort)};
+    auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
+    indexView[0] = 0;
+    indexView[1] = 1;
+    indexView[2] = 0;
+    Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
+
+    int importerState;
+    MeshIndexData indices{indexView};
+    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
+    MeshData data{MeshPrimitive::Triangles, std::move(indexData), indices, instanceData.dataFlags, Containers::arrayView(vertexData), {positions}, MeshData::ImplicitVertexCount, &importerState};
+
+    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.vertexDataFlags(), instanceData.dataFlags);
+    CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), indexView.data());
+    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), +vertexData);
+    CORRADE_COMPARE(static_cast<const void*>(data.mutableIndexData()), indexView.data());
+    if(instanceData.dataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(static_cast<const void*>(data.mutableVertexData()), +vertexData);
+    CORRADE_COMPARE(data.importerState(), &importerState);
+
+    CORRADE_VERIFY(data.isIndexed());
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
+    CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
+    CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
+
+    CORRADE_COMPARE(data.vertexCount(), 2);
+    CORRADE_COMPARE(data.attributeCount(), 1);
+    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
+    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attributeOffset(0), 0);
+    CORRADE_COMPARE(data.attributeStride(0), sizeof(Vector2));
+    CORRADE_COMPARE(data.attribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
+    CORRADE_COMPARE(data.attribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
+    if(instanceData.dataFlags & DataFlag::Mutable) {
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[0], (Vector2{0.1f, 0.2f}));
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(0)[1], (Vector2{0.4f, 0.5f}));
+    }
+}
+
+void MeshDataTest::constructIndexlessNotOwned() {
+    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
+
+    int importerState;
+    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
+    MeshData data{MeshPrimitive::LineLoop, instanceData.dataFlags, vertexData, {positions}, MeshData::ImplicitVertexCount, &importerState};
+
+    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.vertexDataFlags(), instanceData.dataFlags);
+    CORRADE_COMPARE(data.primitive(), MeshPrimitive::LineLoop);
+    CORRADE_COMPARE(data.indexData(), static_cast<const void*>(nullptr));
+    if(instanceData.dataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(data.mutableIndexData(), static_cast<void*>(nullptr));
+    CORRADE_COMPARE(data.importerState(), &importerState);
+
+    CORRADE_VERIFY(!data.isIndexed());
+    CORRADE_COMPARE(data.vertexCount(), 2);
+    CORRADE_COMPARE(data.attributeCount(), 1);
+    CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attribute<Vector2>(MeshAttribute::Position)[1], (Vector2{0.4f, 0.5f}));
+    if(instanceData.dataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::Position)[1], (Vector2{0.4f, 0.5f}));
+}
+
+void MeshDataTest::constructAttributelessNotOwned() {
+    auto&& instanceData = SingleNotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    UnsignedShort indexData[]{0, 1, 0};
+
+    int importerState;
+    MeshIndexData indices{indexData};
+    MeshData data{MeshPrimitive::TriangleStrip, instanceData.dataFlags, indexData, indices, 5, &importerState};
+    CORRADE_COMPARE(data.indexDataFlags(), instanceData.dataFlags);
+    CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_VERIFY(!data.attributeData());
+    CORRADE_COMPARE(data.vertexData(), static_cast<const void*>(nullptr));
+    if(instanceData.dataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(data.mutableVertexData(), static_cast<const void*>(nullptr));
+    CORRADE_COMPARE(data.importerState(), &importerState);
+
+    CORRADE_VERIFY(data.isIndexed());
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[0], 0);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[1], 1);
+    CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 0);
+    if(instanceData.dataFlags & DataFlag::Mutable) {
+        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[0], 0);
+        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[1], 1);
+        CORRADE_COMPARE(data.mutableIndices<UnsignedShort>()[2], 0);
+    }
+
+    CORRADE_COMPARE(data.vertexCount(), 5);
+    CORRADE_COMPARE(data.attributeCount(), 0);
 }
 
 void MeshDataTest::constructIndexDataButNotIndexed() {
