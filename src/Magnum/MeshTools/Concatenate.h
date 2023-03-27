@@ -133,7 +133,9 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
            there, otherwise attributes that are not present in `meshes` would
            be garbage */
         Containers::arrayResize<Allocator>(vertexData, 0);
-        Containers::arrayResize<Allocator>(vertexData, ValueInit, attributeStride*indexVertexCount.second);
+        /* A cast to std::size_t is needed in order to allow sizes over 4 GB on
+           64-bit */
+        Containers::arrayResize<Allocator>(vertexData, ValueInit, attributeStride*std::size_t(indexVertexCount.second));
     }
 
     destination = Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenateInto():");
