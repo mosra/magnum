@@ -249,12 +249,12 @@ void AnimationDataTest::constructImplicitDuration() {
 
     const int state = 5;
     AnimationData data{std::move(buffer), {
-        AnimationTrackData{AnimationTrackTargetType(129), 0,
+        AnimationTrackData{AnimationTrackTargetType(32769), 0,
             Animation::TrackView<const Float, const bool>{
                 {view, &view[0].time, 2, sizeof(Data)},
                 {view, &view[0].value, 2, sizeof(Data)},
                 Animation::Interpolation::Constant}},
-        AnimationTrackData{AnimationTrackTargetType(130), 1,
+        AnimationTrackData{AnimationTrackTargetType(32770), 1,
             Animation::TrackView<const Float, const bool>{
                 {view, &view[2].time, 2, sizeof(Data)},
                 {view, &view[2].value, 2, sizeof(Data)},
@@ -268,7 +268,7 @@ void AnimationDataTest::constructImplicitDuration() {
     {
         CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType(129));
+        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType(32769));
         CORRADE_COMPARE(data.trackTarget(0), 0);
 
         Animation::TrackView<const Float, const bool> track = data.track<bool>(0);
@@ -287,7 +287,7 @@ void AnimationDataTest::constructImplicitDuration() {
     } {
         CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTargetType(1), AnimationTrackTargetType(130));
+        CORRADE_COMPARE(data.trackTargetType(1), AnimationTrackTargetType(32770));
         CORRADE_COMPARE(data.trackTarget(1), 1);
 
         Animation::TrackView<const Float, const bool> track = data.track<bool>(1);
@@ -365,7 +365,7 @@ void AnimationDataTest::constructImplicitDurationNotOwned() {
 
     const int state = 5;
     AnimationData data{instanceData.dataFlags, keyframes, {
-        AnimationTrackData{AnimationTrackTargetType(129), 0,
+        AnimationTrackData{AnimationTrackTargetType(32769), 0,
             Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }, &state};
 
@@ -380,7 +380,7 @@ void AnimationDataTest::constructImplicitDurationNotOwned() {
     {
         CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType(129));
+        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType(32769));
         CORRADE_COMPARE(data.trackTarget(0), 0);
 
         Animation::TrackView<const Float, const bool> track = data.track<bool>(0);
@@ -532,7 +532,7 @@ void AnimationDataTest::mutableAccessNotAllowed() {
     };
 
     AnimationData data{{}, keyframes, {
-        AnimationTrackData{AnimationTrackTargetType(129), 0,
+        AnimationTrackData{AnimationTrackTargetType(32769), 0,
             Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }};
     CORRADE_COMPARE(data.dataFlags(), DataFlags{});
@@ -640,7 +640,7 @@ void AnimationDataTest::release() {
     };
 
     AnimationData data{{}, keyframes, {
-        AnimationTrackData{AnimationTrackTargetType(129), 0,
+        AnimationTrackData{AnimationTrackTargetType(32769), 0,
             Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }};
     CORRADE_COMPARE(data.trackCount(), 1);
@@ -668,15 +668,15 @@ void AnimationDataTest::debugAnimationTrackTypePacked() {
 void AnimationDataTest::debugAnimationTrackTargetType() {
     std::ostringstream out;
 
-    Debug{&out} << AnimationTrackTargetType::Rotation3D << AnimationTrackTargetType(135) << AnimationTrackTargetType(0x42);
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTargetType::Rotation3D Trade::AnimationTrackTargetType::Custom(135) Trade::AnimationTrackTargetType(0x42)\n");
+    Debug{&out} << AnimationTrackTargetType::Rotation3D << AnimationTrackTargetType(32777) << AnimationTrackTargetType(0x4242);
+    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTargetType::Rotation3D Trade::AnimationTrackTargetType::Custom(32777) Trade::AnimationTrackTargetType(0x4242)\n");
 }
 
 void AnimationDataTest::debugAnimationTrackTargetTypePacked() {
     std::ostringstream out;
     /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << AnimationTrackTargetType::Rotation3D << Debug::packed << AnimationTrackTargetType(135) << Debug::packed << AnimationTrackTargetType(0x42) << AnimationTrackType::Float;
-    CORRADE_COMPARE(out.str(), "Rotation3D Custom(135) 0x42 Trade::AnimationTrackType::Float\n");
+    Debug{&out} << Debug::packed << AnimationTrackTargetType::Rotation3D << Debug::packed << AnimationTrackTargetType(32888) << Debug::packed << AnimationTrackTargetType(0x4242) << AnimationTrackType::Float;
+    CORRADE_COMPARE(out.str(), "Rotation3D Custom(32888) 0x4242 Trade::AnimationTrackType::Float\n");
 }
 
 }}}}

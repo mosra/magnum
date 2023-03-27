@@ -1338,6 +1338,9 @@ See also:
     and @ref Shaders::DistanceFieldVectorGL is removed, as its benefits were
     rather questionable --- on the contrary, it made subclass implementation
     more verbose and less clear
+-   The @ref Trade::AnimationTrackTargetType enum was extended from 8 to 16
+    bits to provide more room for custom targets, consistently with
+    @ref Trade::MeshAttribute.
 -   Mutable access to @ref Trade::PhongMaterialData color and texture
     information, deprecated in 2020.06, is now removed, as it's impossible to
     implement through the redesigned @ref Trade::MaterialData APIs. However

@@ -169,7 +169,9 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AnimationTrackType value);
 @see @ref AnimationData
 @experimental
 */
-enum class AnimationTrackTargetType: UnsignedByte {
+enum class AnimationTrackTargetType: UnsignedShort {
+    /* Zero used for an invalid value */
+
     /**
      * Modifies 2D object translation. Type is usually
      * @ref Magnum::Vector2 "Vector2" or
@@ -180,7 +182,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      *      @ref AnimationTrackType::CubicHermite2D,
      *      @ref SceneField::Translation, @ref SceneData::is2D()
      */
-    Translation2D,
+    Translation2D = 1,
 
     /**
      * Modifies 3D object translation. Type is usually
@@ -248,7 +250,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
      * an existing object. See documentation of a particular importer for
      * details.
      */
-    Custom = 128
+    Custom = 32768
 };
 
 /** @debugoperatorenum{AnimationTrackTargetType} */
@@ -309,6 +311,7 @@ class AnimationTrackData {
 
         AnimationTrackType _type, _resultType;
         AnimationTrackTargetType _targetType;
+        /* 4-byte padding */
         UnsignedLong _target;
         Animation::TrackViewStorage<const Float> _view;
 };

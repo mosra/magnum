@@ -61,7 +61,7 @@ class MaterialData;
 typedef CORRADE_DEPRECATED("use MaterialData instead") MaterialData AbstractMaterialData;
 #endif
 
-enum class AnimationTrackTargetType: UnsignedByte;
+enum class AnimationTrackTargetType: UnsignedShort;
 enum class AnimationTrackType: UnsignedByte;
 class AnimationTrackData;
 class AnimationData;

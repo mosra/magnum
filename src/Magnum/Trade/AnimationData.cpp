@@ -198,8 +198,8 @@ Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
     if(!packed)
         debug << "Trade::AnimationTrackTargetType" << Debug::nospace;
 
-    if(UnsignedByte(value) >= UnsignedByte(AnimationTrackTargetType::Custom))
-        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << UnsignedByte(value) << Debug::nospace << ")";
+    if(UnsignedShort(value) >= UnsignedShort(AnimationTrackTargetType::Custom))
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << UnsignedShort(value) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
@@ -217,7 +217,7 @@ Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
         case AnimationTrackTargetType::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
 }
 #endif
 
