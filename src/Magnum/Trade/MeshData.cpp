@@ -139,9 +139,10 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
             isMeshIndexTypeImplementationSpecific(_indexType) ? 0 :
                 meshIndexTypeSize(_indexType);
         /* For negative strides the size is negative. C integer promotion rules
-           are weird, without the Int the result is an unsigned 32-bit value
-           that messes things up on 64bit. */
-        const std::ptrdiff_t signedSize = Int(_indexCount - 1)*_indexStride;
+           are weird, without the cast the result is an unsigned 32-bit value
+           that messes things up on 64bit; and with just Int instead of
+           std::ptrdiff_t it fails for index data over 4 GB. */
+        const std::ptrdiff_t signedSize = std::ptrdiff_t(_indexCount - 1)*_indexStride;
 
         /* Calculate begin and end offset. Both pointer and offset-only rely on
            basically same calculation, do it with offsets in a single place and
@@ -185,9 +186,10 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
                 (vertexFormatSize(attribute._format)*
                 (attribute._arraySize ? attribute._arraySize : 1));
             /* For negative strides the size is negative. C integer promotion
-               rules are weird, without the Int the result is an unsigned
-               32-bit value that messes things up on 64bit. */
-            const std::ptrdiff_t signedSize = Int(_vertexCount - 1)*attribute._stride;
+               rules are weird, without the cast the result is an unsigned
+               32-bit value that messes things up on 64bit; and with just Int
+               instead of std::ptrdiff_t it fails for index data over 4 GB. */
+            const std::ptrdiff_t signedSize = std::ptrdiff_t(_vertexCount - 1)*attribute._stride;
 
             /* Calculate begin and end offset. Both pointer and offset-only
                rely on basically same calculation, do it with offsets in a
