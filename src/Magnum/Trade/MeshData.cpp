@@ -153,6 +153,9 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
             begin += signedSize;
         else
             end += signedSize;
+        /* This would blow up if some of the above calculations are not ready
+           for 64-bit sizes */
+        CORRADE_INTERNAL_ASSERT(end >= begin);
         /* Add the base data offset to both begin and end. Yes, yes, this may
            read the `pointer` union member through `offset`. */
         begin += reinterpret_cast<std::size_t>(_indices);
@@ -197,6 +200,9 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
                 begin += signedSize;
             else
                 end += signedSize;
+            /* This would blow up if some of the above calculations are not
+               ready for 64-bit sizes */
+            CORRADE_INTERNAL_ASSERT(end >= begin);
             /* Add the base data offset to both begin and end. Yes, yes, this
                may read the `pointer` union member through `offset`. */
             begin += attribute._data.offset;

@@ -867,6 +867,10 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
                 fieldBegin += signedFieldSize;
             else
                 fieldEnd += signedFieldSize;
+            /* This would blow up if some of the above calculations are not
+               ready for 64-bit sizes */
+            CORRADE_INTERNAL_ASSERT(mappingEnd >= mappingBegin);
+            CORRADE_INTERNAL_ASSERT(fieldEnd >= fieldBegin);
             /* For bit fields round the offset to whole bytes -- begin down,
                end up */
             if(isBitField) {
