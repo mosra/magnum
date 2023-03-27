@@ -138,18 +138,28 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
         const UnsignedInt typeSize =
             isMeshIndexTypeImplementationSpecific(_indexType) ? 0 :
                 meshIndexTypeSize(_indexType);
+        /* For negative strides the size is negative. C integer promotion rules
+           are weird, without the Int the result is an unsigned 32-bit value
+           that messes things up on 64bit. */
+        const std::ptrdiff_t signedSize = Int(_indexCount - 1)*_indexStride;
 
-        const void* begin = _indices;
-        /* C integer promotion rules are weird, without the Int the result is
-           an unsigned 32-bit value that messes things up on 64bit */
-        const void* end = _indices + Int(_indexCount - 1)*_indexStride;
-        /* Flip for negative stride */
-        if(begin > end) std::swap(begin, end);
-        /* Add the last element size to the higher address */
-        end = static_cast<const char*>(end) + typeSize;
+        /* Calculate begin and end offset. Both pointer and offset-only rely on
+           basically same calculation, do it with offsets in a single place and
+           only interpret as pointers in the non-offset-only check. */
+        std::ptrdiff_t begin = 0;
+        std::ptrdiff_t end = typeSize;
+        /* For negative strides the begin pointer is moved backwards */
+        if(_indexStride < 0)
+            begin += signedSize;
+        else
+            end += signedSize;
+        /* Add the base data offset to both begin and end. Yes, yes, this may
+           read the `pointer` union member through `offset`. */
+        begin += reinterpret_cast<std::size_t>(_indices);
+        end += reinterpret_cast<std::size_t>(_indices);
 
-        CORRADE_ASSERT(begin >= _indexData.begin() && end <= _indexData.end(),
-            "Trade::MeshData: indices [" << Debug::nospace << begin << Debug::nospace << ":" << Debug::nospace << end << Debug::nospace << "] are not contained in passed indexData array [" << Debug::nospace << static_cast<const void*>(_indexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indexData.end()) << Debug::nospace << "]", );
+        CORRADE_ASSERT(reinterpret_cast<const void*>(begin) >= _indexData.begin() && reinterpret_cast<const void*>(end) <= _indexData.end(),
+            "Trade::MeshData: indices [" << Debug::nospace << reinterpret_cast<const void*>(begin) << Debug::nospace << ":" << Debug::nospace << reinterpret_cast<const void*>(end) << Debug::nospace << "] are not contained in passed indexData array [" << Debug::nospace << static_cast<const void*>(_indexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indexData.end()) << Debug::nospace << "]", );
     }
 
     /* Not checking what's already checked in MeshIndexData / MeshAttributeData
@@ -171,22 +181,29 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
                 isVertexFormatImplementationSpecific(attribute._format) ? 0 :
                 (vertexFormatSize(attribute._format)*
                 (attribute._arraySize ? attribute._arraySize : 1));
+            /* For negative strides the size is negative. C integer promotion
+               rules are weird, without the Int the result is an unsigned
+               32-bit value that messes things up on 64bit. */
+            const std::ptrdiff_t signedSize = Int(_vertexCount - 1)*attribute._stride;
 
-            /* Both pointer and offset-only rely on basically same calculation,
-               do it with offsets in a single place and only interpret as
-               pointers in the non-offset-only check. Yes, yes, this may read
-               the `pointer` union member through `offset`. */
-            std::size_t begin = attribute._data.offset;
-            /* C integer promotion rules are weird, without the Int the result
-               is an unsigned 32-bit value that messes things up on 64bit */
-            std::size_t end = begin + Int(_vertexCount - 1)*attribute._stride;
-            /* Flip for negative stride */
-            if(begin > end) std::swap(begin, end);
-            /* Add the last element size to the higher address */
-            end += typeSize;
+            /* Calculate begin and end offset. Both pointer and offset-only
+               rely on basically same calculation, do it with offsets in a
+               single place and only interpret as pointers in the
+               non-offset-only check. */
+            std::ptrdiff_t begin = 0;
+            std::ptrdiff_t end = typeSize;
+            /* For negative strides the begin pointer is moved backwards */
+            if(attribute._stride < 0)
+                begin += signedSize;
+            else
+                end += signedSize;
+            /* Add the base data offset to both begin and end. Yes, yes, this
+               may read the `pointer` union member through `offset`. */
+            begin += attribute._data.offset;
+            end += attribute._data.offset;
 
             if(attribute._isOffsetOnly) {
-                CORRADE_ASSERT(end <= _vertexData.size(),
+                CORRADE_ASSERT(std::size_t(end) <= _vertexData.size(),
                     "Trade::MeshData: offset-only attribute" << i << "spans" << end << "bytes but passed vertexData array has only" << _vertexData.size(), );
             } else {
                 CORRADE_ASSERT(reinterpret_cast<const void*>(begin) >= _vertexData.begin() && reinterpret_cast<const void*>(end) <= _vertexData.end(),
