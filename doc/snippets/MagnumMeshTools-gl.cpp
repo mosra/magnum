@@ -26,6 +26,7 @@
 #include <tuple> /* for std::tie() :( */
 #include <Corrade/Containers/StridedArrayView.h>
 
+#include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Vector3.h"
@@ -56,6 +57,11 @@ GL::Mesh mesh = MeshTools::compile(meshData, indices, vertices);
 {
 Trade::MeshData meshData{MeshPrimitive::Lines, 5};
 /* [compile-external-attributes] */
+struct MyShader: GL::AbstractShaderProgram {
+    typedef GL::Attribute<DOXYGEN_ELLIPSIS(7, Vector2)> MyCustomAttribute;
+
+    DOXYGEN_ELLIPSIS()
+};
 Trade::MeshAttribute myCustomAttribute = DOXYGEN_ELLIPSIS({});
 
 GL::Buffer indices{meshData.indexData()};
@@ -66,8 +72,10 @@ GL::Mesh mesh = MeshTools::compile(meshData, std::move(indices), vertices);
 mesh.addVertexBuffer(std::move(vertices),
     meshData.attributeOffset(myCustomAttribute),
     meshData.attributeStride(myCustomAttribute),
-    GL::DynamicAttribute{GL::DynamicAttribute::Kind::Generic, 7,
-        meshData.attributeFormat(myCustomAttribute)});
+    GL::DynamicAttribute{
+        MyShader::MyCustomAttribute{},
+        meshData.attributeFormat(myCustomAttribute)
+    });
 /* [compile-external-attributes] */
 }
 
