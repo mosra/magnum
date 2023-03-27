@@ -219,12 +219,18 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
-<th rowspan="3">PNG<br/>(`*.png`)</th>
-<td rowspan="3">`PngImporter`</td>
+<th rowspan="4">PNG<br/>(`*.png`)</th>
+<td rowspan="4">`PngImporter`</td>
 <td>@ref Trade::PngImporter "PngImporter"</td>
 <td class="m-text-center m-success">@ref Trade-PngImporter-behavior "minor"</td>
 <td class="m-text-center m-warning">external, tiny</td>
 <td class="m-text-center m-success">libPNG</td>
+</tr>
+<tr>
+<td>@relativeref{Trade,SpngImporter}</td>
+<td class="m-text-center m-warning">@ref Trade-SpngImporter-behavior "some"</td>
+<td class="m-text-center m-warning">external, tiny</td>
+<td class="m-text-center m-success">BSD 2-clause</td>
 </tr>
 <tr>
 <td>@ref Trade::StbImageImporter "StbImageImporter"</td>
