@@ -47,10 +47,8 @@ int main() {
 {
 Trade::MeshData meshData{MeshPrimitive::Lines, 5};
 /* [compile-external] */
-GL::Buffer indices, vertices;
-indices.setData(meshData.indexData());
-vertices.setData(meshData.vertexData());
-
+GL::Buffer indices{meshData.indexData()};
+GL::Buffer vertices{meshData.vertexData()};
 GL::Mesh mesh = MeshTools::compile(meshData, indices, vertices);
 /* [compile-external] */
 }
@@ -60,9 +58,8 @@ Trade::MeshData meshData{MeshPrimitive::Lines, 5};
 /* [compile-external-attributes] */
 Trade::MeshAttribute myCustomAttribute = DOXYGEN_ELLIPSIS({});
 
-GL::Buffer indices, vertices;
-indices.setData(meshData.indexData());
-vertices.setData(meshData.vertexData());
+GL::Buffer indices{meshData.indexData()};
+GL::Buffer vertices{meshData.vertexData()};
 
 /* Let compile() handle the usual attributes and configure custom ones after */
 GL::Mesh mesh = MeshTools::compile(meshData, std::move(indices), vertices);
