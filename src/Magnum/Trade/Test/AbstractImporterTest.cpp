@@ -3843,7 +3843,7 @@ void AbstractImporterTest::animation() {
                the default deleter and not something disallowed */
             if(id == 7) return AnimationData{nullptr, {
                 AnimationTrackData{AnimationTrackType::Vector3,
-                    AnimationTrackTargetType::Scaling3D, 0, {}}
+                    AnimationTrackTarget::Scaling3D, 0, {}}
                 }, &state};
             return AnimationData{{}, {}};
         }

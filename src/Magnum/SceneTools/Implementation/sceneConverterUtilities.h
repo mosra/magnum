@@ -680,7 +680,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         for(UnsignedInt i = 0; i != info.data.trackCount(); ++i) {
             d << Debug::newline << "  Track" << i << Debug::nospace << ":"
                 << Debug::packed << Debug::boldColor(Debug::Color::Default)
-                << info.data.trackTargetType(i)
+                << info.data.trackTargetName(i)
                 << Debug::color(Debug::Color::Blue) << "@"
                 << Debug::packed << Debug::color(Debug::Color::Cyan)
                 << info.data.trackType(i) << Debug::resetColor;

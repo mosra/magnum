@@ -323,8 +323,8 @@ void SceneConverterImplementationTest::infoAnimations() {
                 return Trade::AnimationData{std::move(data), {
                     /** @todo cleanup once AnimationTrackData has sane
                         constructors */
-                    Trade::AnimationTrackData{Trade::AnimationTrackTargetType::Translation2D, 17, Animation::TrackView<const Float, const Vector2>{time, translation, Animation::Interpolation::Linear, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant}},
-                    Trade::AnimationTrackData{Trade::AnimationTrackTargetType::Rotation2D, 17, Animation::TrackView<const Float, const CubicHermite2D>{time, rotation, Animation::Interpolation::Constant, Animation::Extrapolation::Extrapolated}},
+                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Translation2D, 17, Animation::TrackView<const Float, const Vector2>{time, translation, Animation::Interpolation::Linear, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant}},
+                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Rotation2D, 17, Animation::TrackView<const Float, const CubicHermite2D>{time, rotation, Animation::Interpolation::Constant, Animation::Extrapolation::Extrapolated}},
                 }};
             }
 
@@ -334,7 +334,7 @@ void SceneConverterImplementationTest::infoAnimations() {
                 return Trade::AnimationData{Trade::DataFlag::ExternallyOwned, animation2Data, {
                     /** @todo cleanup once AnimationTrackData has sane
                         constructors */
-                    Trade::AnimationTrackData{Trade::AnimationTrackTargetType::Scaling3D, 666, Animation::TrackView<const Float, const Vector3>{animation2Data->time, animation2Data->scaling, Math::lerp, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant}},
+                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Scaling3D, 666, Animation::TrackView<const Float, const Vector3>{animation2Data->time, animation2Data->scaling, Math::lerp, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant}},
                 }, {0.1f, 1.3f}};
             }
 

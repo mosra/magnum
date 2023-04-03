@@ -61,7 +61,10 @@ class MaterialData;
 typedef CORRADE_DEPRECATED("use MaterialData instead") MaterialData AbstractMaterialData;
 #endif
 
-enum class AnimationTrackTargetType: UnsignedShort;
+enum class AnimationTrackTarget: UnsignedShort;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use AnimationTrackTarget instead") AnimationTrackTarget AnimationTrackTargetType;
+#endif
 enum class AnimationTrackType: UnsignedByte;
 class AnimationTrackData;
 class AnimationData;

@@ -89,10 +89,10 @@ AnimationTrackType AnimationData::trackResultType(UnsignedInt id) const {
     return _tracks[id]._resultType;
 }
 
-AnimationTrackTargetType AnimationData::trackTargetType(UnsignedInt id) const {
+AnimationTrackTarget AnimationData::trackTargetName(UnsignedInt id) const {
     CORRADE_ASSERT(id < _tracks.size(),
-        "Trade::AnimationData::trackTargetType(): index" << id << "out of range for" << _tracks.size() << "tracks", {});
-    return _tracks[id]._targetType;
+        "Trade::AnimationData::trackTargetName(): index" << id << "out of range for" << _tracks.size() << "tracks", {});
+    return _tracks[id]._targetName;
 }
 
 UnsignedLong AnimationData::trackTarget(UnsignedInt id) const {
@@ -192,18 +192,18 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
     return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
-Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
+Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 
     if(!packed)
-        debug << "Trade::AnimationTrackTargetType" << Debug::nospace;
+        debug << "Trade::AnimationTrackTarget" << Debug::nospace;
 
-    if(UnsignedShort(value) >= UnsignedShort(AnimationTrackTargetType::Custom))
+    if(UnsignedShort(value) >= UnsignedShort(AnimationTrackTarget::Custom))
         return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << UnsignedShort(value) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case AnimationTrackTargetType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        #define _c(value) case AnimationTrackTarget::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
         _c(Translation2D)
         _c(Translation3D)
         _c(Rotation2D)
@@ -213,8 +213,8 @@ Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
         #undef _c
         /* LCOV_EXCL_STOP */
 
-        /* To silence compiler warning about unhandled values */
-        case AnimationTrackTargetType::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        /* To silence compiler warnings about unhandled values */
+        case AnimationTrackTarget::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
     return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");

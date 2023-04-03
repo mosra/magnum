@@ -343,7 +343,7 @@ Containers::Optional<Trade::AnimationData> data = importer->animation(id);
 Animation::Player<Float> player;
 Containers::Array<Vector3> positions; /* Translations for all objects */
 for(UnsignedInt i = 0; i != data->trackCount(); ++i) {
-    if(data->trackTargetType(i) == Trade::AnimationTrackTargetType::Translation3D) {
+    if(data->trackTargetName(i) == Trade::AnimationTrackTarget::Translation3D) {
         CORRADE_INTERNAL_ASSERT(data->trackType(i) ==
             Trade::AnimationTrackType::Vector3);
         player.add(data->track<Vector3>(i), positions[data->trackTarget(i)]);
@@ -360,7 +360,7 @@ Containers::Array<char> animationData = data->release(); /* Take ownership */
 Trade::AnimationData data{nullptr, {}};
 /* [AnimationData-usage-mutable] */
 for(UnsignedInt i = 0; i != data.trackCount(); ++i) {
-    if(data.trackTargetType(i) != Trade::AnimationTrackTargetType::Translation3D)
+    if(data.trackTargetName(i) != Trade::AnimationTrackTarget::Translation3D)
         continue;
     /* Check prerequisites */
     if(!(data.dataFlags() & Trade::DataFlag::Mutable) ||

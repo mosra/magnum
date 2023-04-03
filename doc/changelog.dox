@@ -1143,6 +1143,10 @@ See also:
     changed to have input first and output second, for consistency with other
     interfaces, together with a switch to @ref Containers::StringView. The
     original signature is marked as deprecated.
+-   The @cpp Trade::AnimationTrackTargetType @ce enum and
+    @cpp Trade::AnimationData::trackTargetType() @ce is deprecated in favor of
+    a shorter and less confusing @ref Trade::AnimationTrackTarget and
+    @ref Trade::AnimationData::trackTargetName()
 -   Due to introduction of @ref ImageFlags, @ref Trade::ImageData constructors
     that were taking @cpp const void* importerState @ce as the last parameter
     are now deprecated in favor of constructors that take @ref ImageFlags *and*
@@ -1338,8 +1342,8 @@ See also:
     and @ref Shaders::DistanceFieldVectorGL is removed, as its benefits were
     rather questionable --- on the contrary, it made subclass implementation
     more verbose and less clear
--   The @ref Trade::AnimationTrackTargetType enum was extended from 8 to 16
-    bits to provide more room for custom targets, consistently with
+-   The @ref Trade::AnimationTrackTarget enum was extended from 8 to 16 bits to
+    provide more room for custom targets, consistently with
     @ref Trade::MeshAttribute.
 -   Mutable access to @ref Trade::PhongMaterialData color and texture
     information, deprecated in 2020.06, is now removed, as it's impossible to
