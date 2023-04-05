@@ -371,6 +371,13 @@ See also:
     also exposed via a `--map` option in the
     @ref magnum-sceneconverter "magnum-sceneconverter" and
     @ref magnum-imageconverter "magnum-imageconverter" utilities
+-   Added @ref Trade::isAnimationTrackTargetCustom() and
+    @ref Trade::animationTrackTargetCustom() helpers as well as
+    @ref Trade::AbstractImporter::animationTrackTargetName() and
+    @ref Trade::AbstractImporter::animationTrackTargetForName() queries for
+    associating custom @ref Trade::AnimationTrackTarget values with string
+    names consistently with what's already done for @ref Trade::MeshAttribute
+    and @ref Trade::SceneField
 -   Ability to convert also 1D and 3D images with the
     @ref magnum-imageconverter "magnum-imageconverter" utility, as well as
     combining layers into images of one dimension more (or vice versa),
