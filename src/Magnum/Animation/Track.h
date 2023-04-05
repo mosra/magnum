@@ -483,6 +483,18 @@ template<class K> class TrackViewStorage {
         }
 
         /**
+         * @brief Type-erased interpolation function
+         * @m_since_latest
+         *
+         * Has to be cast to a type corresponding to the value type before use.
+         * Use @ref TrackView and @ref TrackView::interpolator() to get the
+         * interpolator function in a concrete type.
+         */
+        void(*interpolator() const)() {
+            return _interpolator;
+        }
+
+        /**
          * @brief Key data
          *
          * @see @ref values(), @ref TrackView::operator[]()

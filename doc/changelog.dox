@@ -438,6 +438,9 @@ See also:
     @ref Animation::BasicEasing "easing functions" implemented with
     double precision, in addition to single-precision @ref Animation::Easing,
     and similar in spirit to the @ref Constants and @ref Constantsd typedefs.
+-   Added @ref Animation::TrackViewStorage::interpolator() for getting a
+    type-erased interpolator pointer without having to cast to a concrete
+    @ref Animation::TrackView type
 
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
