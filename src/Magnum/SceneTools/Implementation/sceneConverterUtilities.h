@@ -67,9 +67,21 @@ template<class T> Containers::String calculateBounds(Containers::Array<T>&& attr
 }
 
 bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility::Arguments& args, Trade::AbstractImporter& importer, std::chrono::high_resolution_clock::duration& importTime) {
+    struct AnimationTrackInfo {
+        Trade::AnimationTrackTarget targetName;
+        Trade::AnimationTrackType type, resultType;
+        Animation::Interpolation interpolation;
+        Animation::Extrapolation before, after;
+        Range1D duration;
+        std::size_t size;
+    };
+
     struct AnimationInfo {
         UnsignedInt animation;
-        Trade::AnimationData data{{}, {}};
+        Range1D duration;
+        Containers::Array<AnimationTrackInfo> tracks;
+        std::size_t dataSize;
+        Trade::DataFlags dataFlags;
         Containers::String name;
     };
 
@@ -286,7 +298,21 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         AnimationInfo info{};
         info.animation = i;
         info.name = importer.animationName(i);
-        info.data = *std::move(animation);
+        info.dataSize = animation->data().size();
+        info.dataFlags = animation->dataFlags();
+        info.duration = animation->duration();
+
+        for(UnsignedInt j = 0; j != animation->trackCount(); ++j) {
+            arrayAppend(info.tracks, InPlaceInit,
+                animation->trackTargetName(j),
+                animation->trackType(j),
+                animation->trackResultType(j),
+                animation->track(j).interpolation(),
+                animation->track(j).before(),
+                animation->track(j).after(),
+                animation->track(j).duration(),
+                animation->track(j).size());
+        }
 
         arrayAppend(animationInfos, std::move(info));
     }
@@ -668,49 +694,46 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
 
         d << Debug::newline << "  Duration: {" << Debug::nospace
             /** @todo have a nice packed printing for Range instead */
-            << info.data.duration().min() << Debug::nospace << ","
-            << info.data.duration().max() << Debug::nospace << "} ("
-            << Debug::nospace << Utility::format("{:.1f}", info.data.data().size()/1024.0f) << "kB";
-        if(info.data.dataFlags() != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
+            << info.duration.min() << Debug::nospace << ","
+            << info.duration.max() << Debug::nospace << "} ("
+            << Debug::nospace << Utility::format("{:.1f}", info.dataSize/1024.0f) << "kB";
+        if(info.dataFlags != (Trade::DataFlag::Owned|Trade::DataFlag::Mutable))
             d << Debug::nospace << "," << Debug::packed
                 << Debug::color(Debug::Color::Green)
-                << info.data.dataFlags() << Debug::resetColor;
+                << info.dataFlags << Debug::resetColor;
         d << Debug::nospace << ")";
 
-        for(UnsignedInt i = 0; i != info.data.trackCount(); ++i) {
+        for(UnsignedInt i = 0; i != info.tracks.size(); ++i) {
+            const AnimationTrackInfo& track = info.tracks[i];
+
             d << Debug::newline << "  Track" << i << Debug::nospace << ":"
                 << Debug::packed << Debug::boldColor(Debug::Color::Default)
-                << info.data.trackTargetName(i)
-                << Debug::color(Debug::Color::Blue) << "@"
+                << track.targetName << Debug::color(Debug::Color::Blue) << "@"
                 << Debug::packed << Debug::color(Debug::Color::Cyan)
-                << info.data.trackType(i) << Debug::resetColor;
-            if(info.data.trackType(i) != info.data.trackResultType(i))
+                << track.type << Debug::resetColor;
+            if(track.type != track.resultType)
                 d << Debug::color(Debug::Color::Blue) << "->"
                     << Debug::packed << Debug::color(Debug::Color::Cyan)
-                    << info.data.trackResultType(i) << Debug::resetColor;
-            d << Debug::nospace << "," << info.data.track(i).size()
-                << "keyframes";
-            if(info.data.track(i).duration() != info.data.duration())
+                    << track.resultType << Debug::resetColor;
+            d << Debug::nospace << "," << track.size << "keyframes";
+            if(track.duration != info.duration)
                 d << Debug::newline << "    Duration: {" << Debug::nospace
                     /** @todo have a nice packed printing for Range instead */
-                    << info.data.track(i).duration().min() << Debug::nospace
-                    << "," << info.data.track(i).duration().max()
-                    << Debug::nospace << "}";
+                    << track.duration.min() << Debug::nospace << ","
+                    << track.duration.max() << Debug::nospace << "}";
             d << Debug::newline
                 << "    Interpolation:"
-                << Debug::packed << Debug::color(info.data.track(i).interpolation() == Animation::Interpolation::Custom ? Debug::Color::Yellow : Debug::Color::Cyan)
-                << info.data.track(i).interpolation() << Debug::resetColor
-                << Debug::nospace << "," << Debug::packed
-                << Debug::color(Debug::Color::Cyan)
-                << info.data.track(i).before() << Debug::resetColor
-                << Debug::nospace << "," << Debug::packed
-                << Debug::color(Debug::Color::Cyan)
-                << info.data.track(i).after() << Debug::resetColor;
+                << Debug::packed << Debug::color(track.interpolation == Animation::Interpolation::Custom ? Debug::Color::Yellow : Debug::Color::Cyan)
+                << track.interpolation << Debug::resetColor << Debug::nospace
+                << "," << Debug::packed << Debug::color(Debug::Color::Cyan)
+                << track.before << Debug::resetColor << Debug::nospace
+                << "," << Debug::packed << Debug::color(Debug::Color::Cyan)
+                << track.after << Debug::resetColor;
             /** @todo might be useful to show bounds here as well, though not
                 so much for things like complex numbers or quats */
         }
 
-        totalAnimationDataSize += info.data.data().size();
+        totalAnimationDataSize += info.dataSize;
     }
     if(!animationInfos.isEmpty())
         Debug{} << "Total animation data size:" << Utility::format("{:.1f}", totalAnimationDataSize/1024.0f) << "kB";
