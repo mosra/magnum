@@ -165,10 +165,23 @@ enum class AnimationTrackType: UnsignedByte {
 /** @debugoperatorenum{AnimationTrackType} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AnimationTrackType value);
 
+namespace Implementation {
+    enum: UnsignedShort { AnimationTrackTargetCustom = 32768 };
+}
+
 /**
 @brief Target of an animation track
 
-@see @ref AnimationData
+See @ref AnimationData for more information.
+
+Apart from builtin target types it's possible to have custom ones, which use
+the upper half of the enum range. Those are detected via
+@ref isAnimationTrackTargetCustom() and can be converted to and from a
+numeric identifier using @ref animationTrackTargetCustom(AnimationTrackTarget)
+and @ref animationTrackTargetCustom(UnsignedShort). Unlike the builtin ones,
+these can be of any type and @ref AnimationData::trackTarget() might or might
+not point to an existing object.
+@see @ref AnimationTrackData
 @experimental
 */
 enum class AnimationTrackTarget: UnsignedShort {
@@ -246,13 +259,15 @@ enum class AnimationTrackTarget: UnsignedShort {
      */
     Scaling3D,
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
     /**
-     * This and all higher values are for importer-specific targets. Can be of
-     * any type, @ref AnimationData::trackTarget() might or might not point to
-     * an existing object. See documentation of a particular importer for
-     * details.
+     * This and all higher values are for importer-specific targets.
+     *
+     * @m_deprecated_since_latest Use @ref animationTrackTargetCustom() and
+     *      @ref isAnimationTrackTargetCustom() instead.
      */
-    Custom = 32768
+    Custom CORRADE_DEPRECATED_ENUM("use animationTrackTargetCustom() instead") = Implementation::AnimationTrackTargetCustom
+    #endif
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -265,6 +280,50 @@ typedef CORRADE_DEPRECATED("use AnimationTrackTarget instead") AnimationTrackTar
 
 /** @debugoperatorenum{AnimationTrackTarget} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AnimationTrackTarget value);
+
+/**
+@brief Whether a target for an animation track is custom
+@m_since_latest
+
+Returns @cpp true @ce if @p name has a value in the upper 15 bits of the enum
+range, @cpp false @ce otherwise.
+@see @ref animationTrackTargetCustom(UnsignedShort),
+    @ref animationTrackTargetCustom(AnimationTrackTarget)
+*/
+constexpr bool isAnimationTrackTargetCustom(AnimationTrackTarget name) {
+    return UnsignedShort(name) >= Implementation::AnimationTrackTargetCustom;
+}
+
+/**
+@brief Create a custom target for an animation track
+@m_since_latest
+
+Returns a custom animation track target with index @p id. The index is expected
+to fit into 15 bits. Use
+@ref animationTrackTargetCustom(AnimationTrackTarget) to get the index
+back.
+*/
+/* Constexpr so it's usable for creating compile-time AnimationData
+   instances */
+constexpr AnimationTrackTarget animationTrackTargetCustom(UnsignedShort id) {
+    return CORRADE_CONSTEXPR_ASSERT(id < Implementation::AnimationTrackTargetCustom,
+        "Trade::animationTrackTargetCustom(): index" << id << "too large"),
+        AnimationTrackTarget(Implementation::AnimationTrackTargetCustom + id);
+}
+
+/**
+@brief Get index of a custom target for an animation track
+@m_since_latest
+
+Inverse to @ref animationTrackTargetCustom(UnsignedShort). Expects that the
+type is custom.
+@see @ref isAnimationTrackTargetCustom()
+*/
+constexpr UnsignedShort animationTrackTargetCustom(AnimationTrackTarget name) {
+    return CORRADE_CONSTEXPR_ASSERT(isAnimationTrackTargetCustom(name),
+        "Trade::animationTrackTargetCustom():" << name << "is not custom"),
+        UnsignedShort(name) - Implementation::AnimationTrackTargetCustom;
+}
 
 /**
 @brief Animation track data

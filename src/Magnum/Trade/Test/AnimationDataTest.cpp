@@ -38,6 +38,10 @@ struct AnimationDataTest: TestSuite::Tester {
 
     void debugTrackType();
     void debugTrackTypePacked();
+
+    void customTrackTarget();
+    void customTrackTargetTooLarge();
+    void customTrackTargetNotCustom();
     void debugTrackTarget();
     void debugTrackTargetPacked();
 
@@ -78,6 +82,10 @@ struct {
 AnimationDataTest::AnimationDataTest() {
     addTests({&AnimationDataTest::debugTrackType,
               &AnimationDataTest::debugTrackTypePacked,
+
+              &AnimationDataTest::customTrackTarget,
+              &AnimationDataTest::customTrackTargetTooLarge,
+              &AnimationDataTest::customTrackTargetNotCustom,
               &AnimationDataTest::debugTrackTarget,
               &AnimationDataTest::debugTrackTargetPacked,
 
@@ -126,18 +134,58 @@ void AnimationDataTest::debugTrackTypePacked() {
     CORRADE_COMPARE(out.str(), "DualQuaternion 0xde Trade::AnimationTrackType::Float\n");
 }
 
+void AnimationDataTest::customTrackTarget() {
+    CORRADE_VERIFY(!isAnimationTrackTargetCustom(AnimationTrackTarget::Rotation3D));
+    CORRADE_VERIFY(!isAnimationTrackTargetCustom(AnimationTrackTarget(32767)));
+    CORRADE_VERIFY(isAnimationTrackTargetCustom(AnimationTrackTarget(Implementation::AnimationTrackTargetCustom)));
+    CORRADE_VERIFY(isAnimationTrackTargetCustom(AnimationTrackTarget(65535)));
+
+    CORRADE_COMPARE(UnsignedShort(animationTrackTargetCustom(0)), 32768);
+    CORRADE_COMPARE(UnsignedShort(animationTrackTargetCustom(8290)), 41058);
+    CORRADE_COMPARE(UnsignedShort(animationTrackTargetCustom(32767)), 65535);
+
+    CORRADE_COMPARE(animationTrackTargetCustom(AnimationTrackTarget(Implementation::AnimationTrackTargetCustom)), 0);
+    CORRADE_COMPARE(animationTrackTargetCustom(AnimationTrackTarget(41058)), 8290);
+    CORRADE_COMPARE(animationTrackTargetCustom(AnimationTrackTarget(65535)), 32767);
+
+    constexpr bool is = isAnimationTrackTargetCustom(AnimationTrackTarget(41058));
+    CORRADE_VERIFY(is);
+    constexpr AnimationTrackTarget a = animationTrackTargetCustom(8290);
+    CORRADE_COMPARE(UnsignedShort(a), 41058);
+    constexpr UnsignedShort b = animationTrackTargetCustom(a);
+    CORRADE_COMPARE(b, 8290);
+}
+
+void AnimationDataTest::customTrackTargetTooLarge() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    animationTrackTargetCustom(32768);
+    CORRADE_COMPARE(out.str(), "Trade::animationTrackTargetCustom(): index 32768 too large\n");
+}
+
+void AnimationDataTest::customTrackTargetNotCustom() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    animationTrackTargetCustom(AnimationTrackTarget::Translation2D);
+    CORRADE_COMPARE(out.str(), "Trade::animationTrackTargetCustom(): Trade::AnimationTrackTarget::Translation2D is not custom\n");
+}
+
 void AnimationDataTest::debugTrackTarget() {
     std::ostringstream out;
 
-    Debug{&out} << AnimationTrackTarget::Rotation3D << AnimationTrackTarget(32777) << AnimationTrackTarget(0x4242);
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTarget::Rotation3D Trade::AnimationTrackTarget::Custom(32777) Trade::AnimationTrackTarget(0x4242)\n");
+    Debug{&out} << AnimationTrackTarget::Rotation3D << animationTrackTargetCustom(9) << AnimationTrackTarget(0x4242);
+    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTarget::Rotation3D Trade::AnimationTrackTarget::Custom(9) Trade::AnimationTrackTarget(0x4242)\n");
 }
 
 void AnimationDataTest::debugTrackTargetPacked() {
     std::ostringstream out;
     /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << AnimationTrackTarget::Rotation3D << Debug::packed << AnimationTrackTarget(32888) << Debug::packed << AnimationTrackTarget(0x4242) << AnimationTrackType::Float;
-    CORRADE_COMPARE(out.str(), "Rotation3D Custom(32888) 0x4242 Trade::AnimationTrackType::Float\n");
+    Debug{&out} << Debug::packed << AnimationTrackTarget::Rotation3D << Debug::packed << animationTrackTargetCustom(120) << Debug::packed << AnimationTrackTarget(0x4242) << AnimationTrackType::Float;
+    CORRADE_COMPARE(out.str(), "Rotation3D Custom(120) 0x4242 Trade::AnimationTrackType::Float\n");
 }
 
 void AnimationDataTest::constructTrack() {
@@ -277,12 +325,12 @@ void AnimationDataTest::constructImplicitDuration() {
 
     const int state = 5;
     AnimationData data{std::move(buffer), {
-        AnimationTrackData{AnimationTrackTarget(32769), 0,
+        AnimationTrackData{animationTrackTargetCustom(1), 0,
             Animation::TrackView<const Float, const bool>{
                 {view, &view[0].time, 2, sizeof(Data)},
                 {view, &view[0].value, 2, sizeof(Data)},
                 Animation::Interpolation::Constant}},
-        AnimationTrackData{AnimationTrackTarget(32770), 1,
+        AnimationTrackData{animationTrackTargetCustom(2), 1,
             Animation::TrackView<const Float, const bool>{
                 {view, &view[2].time, 2, sizeof(Data)},
                 {view, &view[2].value, 2, sizeof(Data)},
@@ -296,7 +344,7 @@ void AnimationDataTest::constructImplicitDuration() {
     {
         CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTargetName(0), AnimationTrackTarget(32769));
+        CORRADE_COMPARE(data.trackTargetName(0), animationTrackTargetCustom(1));
         CORRADE_COMPARE(data.trackTarget(0), 0);
 
         Animation::TrackView<const Float, const bool> track = data.track<bool>(0);
@@ -315,7 +363,7 @@ void AnimationDataTest::constructImplicitDuration() {
     } {
         CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTargetName(1), AnimationTrackTarget(32770));
+        CORRADE_COMPARE(data.trackTargetName(1), animationTrackTargetCustom(2));
         CORRADE_COMPARE(data.trackTarget(1), 1);
 
         Animation::TrackView<const Float, const bool> track = data.track<bool>(1);
@@ -393,7 +441,7 @@ void AnimationDataTest::constructImplicitDurationNotOwned() {
 
     const int state = 5;
     AnimationData data{instanceData.dataFlags, keyframes, {
-        AnimationTrackData{AnimationTrackTarget(32769), 0,
+        AnimationTrackData{animationTrackTargetCustom(1), 0,
             Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }, &state};
 
@@ -408,7 +456,7 @@ void AnimationDataTest::constructImplicitDurationNotOwned() {
     {
         CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTargetName(0), AnimationTrackTarget(32769));
+        CORRADE_COMPARE(data.trackTargetName(0), animationTrackTargetCustom(1));
         CORRADE_COMPARE(data.trackTarget(0), 0);
 
         Animation::TrackView<const Float, const bool> track = data.track<bool>(0);
@@ -560,7 +608,7 @@ void AnimationDataTest::mutableAccessNotAllowed() {
     };
 
     AnimationData data{{}, keyframes, {
-        AnimationTrackData{AnimationTrackTarget(32769), 0,
+        AnimationTrackData{animationTrackTargetCustom(1), 0,
             Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }};
     CORRADE_COMPARE(data.dataFlags(), DataFlags{});
@@ -668,7 +716,7 @@ void AnimationDataTest::release() {
     };
 
     AnimationData data{{}, keyframes, {
-        AnimationTrackData{AnimationTrackTarget(32769), 0,
+        AnimationTrackData{animationTrackTargetCustom(1), 0,
             Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }};
     CORRADE_COMPARE(data.trackCount(), 1);

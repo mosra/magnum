@@ -198,8 +198,8 @@ Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
     if(!packed)
         debug << "Trade::AnimationTrackTarget" << Debug::nospace;
 
-    if(UnsignedShort(value) >= UnsignedShort(AnimationTrackTarget::Custom))
-        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << UnsignedShort(value) << Debug::nospace << ")";
+    if(isAnimationTrackTargetCustom(value))
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << animationTrackTargetCustom(value) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
@@ -213,8 +213,12 @@ Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
         #undef _c
         /* LCOV_EXCL_STOP */
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_IGNORE_DEPRECATED_PUSH
         /* To silence compiler warnings about unhandled values */
         case AnimationTrackTarget::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
     }
 
     return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
