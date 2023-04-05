@@ -172,6 +172,11 @@ struct AbstractImporterTest: TestSuite::Tester {
     void animationCustomDataDeleter();
     void animationCustomTrackDeleter();
 
+    void animationTrackTargetName();
+    void animationTrackTargetNameNotImplemented();
+    void animationTrackTargetNameNotCustom();
+    void animationTrackTargetNameCustomDeleter();
+
     void light();
     void lightFailed();
     void lightNameNotImplemented();
@@ -493,6 +498,11 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::animationGrowableDeleters,
               &AbstractImporterTest::animationCustomDataDeleter,
               &AbstractImporterTest::animationCustomTrackDeleter,
+
+              &AbstractImporterTest::animationTrackTargetName,
+              &AbstractImporterTest::animationTrackTargetNameNotImplemented,
+              &AbstractImporterTest::animationTrackTargetNameNotCustom,
+              &AbstractImporterTest::animationTrackTargetNameCustomDeleter,
 
               &AbstractImporterTest::light,
               &AbstractImporterTest::lightFailed,
@@ -4076,6 +4086,79 @@ void AbstractImporterTest::animationCustomTrackDeleter() {
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n"
         "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::animationTrackTargetName() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        AnimationTrackTarget doAnimationTrackTargetForName(Containers::StringView name) override {
+            if(name == "visibility") return animationTrackTargetCustom(37);
+            return AnimationTrackTarget{};
+        }
+
+        Containers::String doAnimationTrackTargetName(UnsignedShort id) override {
+            if(id == 37) return "visibility";
+            return "";
+        }
+    } importer;
+
+    CORRADE_COMPARE(importer.animationTrackTargetForName("visibility"), animationTrackTargetCustom(37));
+    CORRADE_COMPARE(importer.animationTrackTargetName(animationTrackTargetCustom(37)), "visibility");
+}
+
+void AbstractImporterTest::animationTrackTargetNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.animationTrackTargetForName(""), AnimationTrackTarget{});
+    CORRADE_COMPARE(importer.animationTrackTargetName(animationTrackTargetCustom(37)), "");
+}
+
+void AbstractImporterTest::animationTrackTargetNameNotCustom() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        AnimationTrackTarget doAnimationTrackTargetForName(Containers::StringView) override {
+            return AnimationTrackTarget::Rotation2D;
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.animationTrackTargetForName("visibility");
+    importer.animationTrackTargetName(AnimationTrackTarget::Rotation2D);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::animationTrackTargetForName(): implementation-returned Trade::AnimationTrackTarget::Rotation2D is neither custom nor invalid\n"
+        "Trade::AbstractImporter::animationTrackTargetName(): Trade::AnimationTrackTarget::Rotation2D is not custom\n");
+}
+
+void AbstractImporterTest::animationTrackTargetNameCustomDeleter() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        Containers::String doAnimationTrackTargetName(UnsignedShort) override {
+            return Containers::String{"a", 1, [](char*, std::size_t) {}};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.animationTrackTargetName(animationTrackTargetCustom(0));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationTrackTargetName(): implementation is not allowed to use a custom String deleter\n");
 }
 
 void AbstractImporterTest::light() {

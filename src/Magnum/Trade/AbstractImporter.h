@@ -290,7 +290,9 @@ name doesn't exist.
 
 -   Animation names can be retrieved using @ref animationName() and mapped to
     an ID using @ref animationForName(), imported with
-    @ref animation(Containers::StringView)
+    @ref animation(Containers::StringView). Animations can have custom
+    animation track targets, for which the name mapping can be retrieved using
+    @ref animationTrackTargetName() and @ref animationTrackTargetForName().
 -   Camera names using @ref cameraName() & @ref cameraForName(), imported with
     @ref camera(Containers::StringView)
 -   Image names using @ref image1DName() / @ref image2DName() /
@@ -874,7 +876,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * On failure prints a message to @relativeref{Magnum,Error} and
          * returns @ref Containers::NullOpt. Expects that a file is opened.
-         * @see @ref animation(Containers::StringView), @ref animationName()
+         * @see @ref animation(Containers::StringView), @ref animationName(),
+         *      @ref animationTrackTargetName()
          */
         Containers::Optional<AnimationData> animation(UnsignedInt id);
 
@@ -889,6 +892,37 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * from @ref animation(UnsignedInt). Expects that a file is opened.
          */
         Containers::Optional<AnimationData> animation(Containers::StringView name);
+
+        /**
+         * @brief Animation track target for given name
+         * @m_since_latest
+         *
+         * If the @p name is not recognized, returns a zero (invalid)
+         * @ref AnimationTrackTarget, otherwise returns a custom animation
+         * track target. Note that the value returned by this function may
+         * depend on whether a file is opened or not and also be different for
+         * different files --- see documentation of a particular importer for
+         * more information.
+         * @see @ref animationTrackTargetName(),
+         *      @ref isAnimationTrackTargetCustom()
+         */
+        AnimationTrackTarget animationTrackTargetForName(Containers::StringView name);
+
+        /**
+         * @brief String name for given custom animation track target
+         * @m_since_latest
+         *
+         * Given a custom @p name returned by @ref animation() in an
+         * @ref AnimationData, returns a string identifier. If a string
+         * representation is not available or @p name is not recognized,
+         * returns an empty string. Expects that @p name is custom. Note that
+         * the value returned by this function may depend on whether a file is
+         * opened or not and also be different for different files --- see
+         * documentation of a particular importer for more information.
+         * @see @ref animationTrackTargetForName(),
+         *      @ref isAnimationTrackTargetCustom()
+         */
+        Containers::String animationTrackTargetName(AnimationTrackTarget name);
 
         /**
          * @brief Light count
@@ -1947,6 +1981,24 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /** @brief Implementation for @ref animation() */
         virtual Containers::Optional<AnimationData> doAnimation(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref animationTrackTargetForName()
+         * @m_since_latest
+         *
+         * Default implementation returns an invalid (zero) value.
+         */
+        virtual AnimationTrackTarget doAnimationTrackTargetForName(Containers::StringView name);
+
+        /**
+         * @brief Implementation for @ref animationTrackTargetName()
+         * @m_since_latest
+         *
+         * Receives the custom ID extracted via
+         * @ref animationTrackTargetCustom(AnimationTrackTarget). Default
+         * implementation returns an empty string.
+         */
+        virtual Containers::String doAnimationTrackTargetName(UnsignedShort name);
 
         /**
          * @brief Implementation for @ref lightCount()

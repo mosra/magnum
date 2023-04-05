@@ -83,7 +83,7 @@ using namespace Containers::Literals;
 Containers::StringView AbstractImporter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImporter/0.5"_s
+"cz.mosra.magnum.Trade.AbstractImporter/0.5.1"_s
 /* [interface] */
     ;
 }
@@ -451,6 +451,28 @@ Containers::Optional<AnimationData> AbstractImporter::animation(const Containers
     }
     return animation(id); /* not doAnimation(), so we get the checks also */
 }
+
+AnimationTrackTarget AbstractImporter::animationTrackTargetForName(const Containers::StringView name) {
+    const AnimationTrackTarget out = doAnimationTrackTargetForName(name);
+    CORRADE_ASSERT(out == AnimationTrackTarget{} || isAnimationTrackTargetCustom(out),
+        "Trade::AbstractImporter::animationTrackTargetForName(): implementation-returned" << out << "is neither custom nor invalid", {});
+    return out;
+}
+
+AnimationTrackTarget AbstractImporter::doAnimationTrackTargetForName(Containers::StringView) {
+    return {};
+}
+
+Containers::String AbstractImporter::animationTrackTargetName(const AnimationTrackTarget name) {
+    CORRADE_ASSERT(isAnimationTrackTargetCustom(name),
+        "Trade::AbstractImporter::animationTrackTargetName():" << name << "is not custom", {});
+    Containers::String out = doAnimationTrackTargetName(animationTrackTargetCustom(name));
+    CORRADE_ASSERT(out.isSmall() || !out.deleter(),
+        "Trade::AbstractImporter::animationTrackTargetName(): implementation is not allowed to use a custom String deleter", {});
+    return out;
+}
+
+Containers::String AbstractImporter::doAnimationTrackTargetName(UnsignedShort) { return {}; }
 
 UnsignedInt AbstractImporter::lightCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightCount(): no file opened", {});

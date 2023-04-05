@@ -180,7 +180,11 @@ the upper half of the enum range. Those are detected via
 numeric identifier using @ref animationTrackTargetCustom(AnimationTrackTarget)
 and @ref animationTrackTargetCustom(UnsignedShort). Unlike the builtin ones,
 these can be of any type and @ref AnimationData::trackTarget() might or might
-not point to an existing object.
+not point to an existing object. An importer that exposes custom types then may
+also provide a string mapping using
+@ref AbstractImporter::animationTrackTargetForName() and
+@ref AbstractImporter::animationTrackTargetName(). See documentation of a
+particular importer for details.
 @see @ref AnimationTrackData
 @experimental
 */
@@ -288,7 +292,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AnimationTrackTarget value);
 Returns @cpp true @ce if @p name has a value in the upper 15 bits of the enum
 range, @cpp false @ce otherwise.
 @see @ref animationTrackTargetCustom(UnsignedShort),
-    @ref animationTrackTargetCustom(AnimationTrackTarget)
+    @ref animationTrackTargetCustom(AnimationTrackTarget),
+    @ref AbstractImporter::animationTrackTargetName()
 */
 constexpr bool isAnimationTrackTargetCustom(AnimationTrackTarget name) {
     return UnsignedShort(name) >= Implementation::AnimationTrackTargetCustom;
@@ -317,7 +322,8 @@ constexpr AnimationTrackTarget animationTrackTargetCustom(UnsignedShort id) {
 
 Inverse to @ref animationTrackTargetCustom(UnsignedShort). Expects that the
 type is custom.
-@see @ref isAnimationTrackTargetCustom()
+@see @ref isAnimationTrackTargetCustom(),
+    @ref AbstractImporter::animationTrackTargetName()
 */
 constexpr UnsignedShort animationTrackTargetCustom(AnimationTrackTarget name) {
     return CORRADE_CONSTEXPR_ASSERT(isAnimationTrackTargetCustom(name),
