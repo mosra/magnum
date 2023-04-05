@@ -36,10 +36,15 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnimationDataTest: TestSuite::Tester {
     explicit AnimationDataTest();
 
-    void constructTrackData();
-    void constructTrackDataResultType();
-    void constructTrackDataTemplate();
-    void constructTrackDataDefault();
+    void debugTrackType();
+    void debugTrackTypePacked();
+    void debugTrackTarget();
+    void debugTrackTargetPacked();
+
+    void constructTrack();
+    void constructTrackResultType();
+    void constructTrackTemplate();
+    void constructTrackDefault();
 
     void construct();
     void constructNotOwned();
@@ -60,11 +65,6 @@ struct AnimationDataTest: TestSuite::Tester {
     void trackWrongResultType();
 
     void release();
-
-    void debugAnimationTrackType();
-    void debugAnimationTrackTypePacked();
-    void debugAnimationTrackTarget();
-    void debugAnimationTrackTargetPacked();
 };
 
 struct {
@@ -76,10 +76,15 @@ struct {
 };
 
 AnimationDataTest::AnimationDataTest() {
-    addTests({&AnimationDataTest::constructTrackData,
-              &AnimationDataTest::constructTrackDataResultType,
-              &AnimationDataTest::constructTrackDataTemplate,
-              &AnimationDataTest::constructTrackDataDefault,
+    addTests({&AnimationDataTest::debugTrackType,
+              &AnimationDataTest::debugTrackTypePacked,
+              &AnimationDataTest::debugTrackTarget,
+              &AnimationDataTest::debugTrackTargetPacked,
+
+              &AnimationDataTest::constructTrack,
+              &AnimationDataTest::constructTrackResultType,
+              &AnimationDataTest::constructTrackTemplate,
+              &AnimationDataTest::constructTrackDefault,
 
               &AnimationDataTest::construct,
               &AnimationDataTest::constructImplicitDuration,
@@ -102,17 +107,40 @@ AnimationDataTest::AnimationDataTest() {
               &AnimationDataTest::trackWrongType,
               &AnimationDataTest::trackWrongResultType,
 
-              &AnimationDataTest::release,
-
-              &AnimationDataTest::debugAnimationTrackType,
-              &AnimationDataTest::debugAnimationTrackTypePacked,
-              &AnimationDataTest::debugAnimationTrackTarget,
-              &AnimationDataTest::debugAnimationTrackTargetPacked});
+              &AnimationDataTest::release});
 }
 
 using namespace Math::Literals;
 
-void AnimationDataTest::constructTrackData() {
+void AnimationDataTest::debugTrackType() {
+    std::ostringstream out;
+
+    Debug{&out} << AnimationTrackType::DualQuaternion << AnimationTrackType(0xde);
+    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackType::DualQuaternion Trade::AnimationTrackType(0xde)\n");
+}
+
+void AnimationDataTest::debugTrackTypePacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << AnimationTrackType::DualQuaternion << Debug::packed << AnimationTrackType(0xde) << AnimationTrackType::Float;
+    CORRADE_COMPARE(out.str(), "DualQuaternion 0xde Trade::AnimationTrackType::Float\n");
+}
+
+void AnimationDataTest::debugTrackTarget() {
+    std::ostringstream out;
+
+    Debug{&out} << AnimationTrackTarget::Rotation3D << AnimationTrackTarget(32777) << AnimationTrackTarget(0x4242);
+    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTarget::Rotation3D Trade::AnimationTrackTarget::Custom(32777) Trade::AnimationTrackTarget(0x4242)\n");
+}
+
+void AnimationDataTest::debugTrackTargetPacked() {
+    std::ostringstream out;
+    /* Last is not packed, ones before should not make any flags persistent */
+    Debug{&out} << Debug::packed << AnimationTrackTarget::Rotation3D << Debug::packed << AnimationTrackTarget(32888) << Debug::packed << AnimationTrackTarget(0x4242) << AnimationTrackType::Float;
+    CORRADE_COMPARE(out.str(), "Rotation3D Custom(32888) 0x4242 Trade::AnimationTrackType::Float\n");
+}
+
+void AnimationDataTest::constructTrack() {
     AnimationTrackData trackData{
          AnimationTrackType::Vector3,
          AnimationTrackTarget::Translation3D, 42,
@@ -128,7 +156,7 @@ void AnimationDataTest::constructTrackData() {
     CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
 }
 
-void AnimationDataTest::constructTrackDataResultType() {
+void AnimationDataTest::constructTrackResultType() {
     AnimationTrackData trackData{
          AnimationTrackType::CubicHermite3D,
          AnimationTrackType::Vector3,
@@ -145,7 +173,7 @@ void AnimationDataTest::constructTrackDataResultType() {
     CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
 }
 
-void AnimationDataTest::constructTrackDataTemplate() {
+void AnimationDataTest::constructTrackTemplate() {
     AnimationTrackData trackData{
          AnimationTrackTarget::Translation3D, 42,
          Animation::TrackView<const Float, const CubicHermite3D>{
@@ -160,7 +188,7 @@ void AnimationDataTest::constructTrackDataTemplate() {
     CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
 }
 
-void AnimationDataTest::constructTrackDataDefault() {
+void AnimationDataTest::constructTrackDefault() {
     AnimationTrackData data;
     /* no public accessors here, so nothing to check -- and such a track
        shouldn't get added to AnimationData anyway */
@@ -649,34 +677,6 @@ void AnimationDataTest::release() {
     CORRADE_COMPARE(data.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(data.trackCount(), 0);
     CORRADE_COMPARE(static_cast<const void*>(released.data()), keyframes);
-}
-
-void AnimationDataTest::debugAnimationTrackType() {
-    std::ostringstream out;
-
-    Debug{&out} << AnimationTrackType::DualQuaternion << AnimationTrackType(0xde);
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackType::DualQuaternion Trade::AnimationTrackType(0xde)\n");
-}
-
-void AnimationDataTest::debugAnimationTrackTypePacked() {
-    std::ostringstream out;
-    /* Second is not packed, the first should not make any flags persistent */
-    Debug{&out} << Debug::packed << AnimationTrackType::DualQuaternion << Debug::packed << AnimationTrackType(0xde) << AnimationTrackType::Float;
-    CORRADE_COMPARE(out.str(), "DualQuaternion 0xde Trade::AnimationTrackType::Float\n");
-}
-
-void AnimationDataTest::debugAnimationTrackTarget() {
-    std::ostringstream out;
-
-    Debug{&out} << AnimationTrackTarget::Rotation3D << AnimationTrackTarget(32777) << AnimationTrackTarget(0x4242);
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTarget::Rotation3D Trade::AnimationTrackTarget::Custom(32777) Trade::AnimationTrackTarget(0x4242)\n");
-}
-
-void AnimationDataTest::debugAnimationTrackTargetPacked() {
-    std::ostringstream out;
-    /* Last is not packed, ones before should not make any flags persistent */
-    Debug{&out} << Debug::packed << AnimationTrackTarget::Rotation3D << Debug::packed << AnimationTrackTarget(32888) << Debug::packed << AnimationTrackTarget(0x4242) << AnimationTrackType::Float;
-    CORRADE_COMPARE(out.str(), "Rotation3D Custom(32888) 0x4242 Trade::AnimationTrackType::Float\n");
 }
 
 }}}}
