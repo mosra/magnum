@@ -69,6 +69,7 @@ template<class T> Containers::String calculateBounds(Containers::Array<T>&& attr
 bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility::Arguments& args, Trade::AbstractImporter& importer, std::chrono::high_resolution_clock::duration& importTime) {
     struct AnimationTrackInfo {
         Trade::AnimationTrackTarget targetName;
+        Containers::String customTargetName;
         Trade::AnimationTrackType type, resultType;
         Animation::Interpolation interpolation;
         Animation::Extrapolation before, after;
@@ -303,8 +304,11 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         info.duration = animation->duration();
 
         for(UnsignedInt j = 0; j != animation->trackCount(); ++j) {
+            const Trade::AnimationTrackTarget name = animation->trackTargetName(j);
             arrayAppend(info.tracks, InPlaceInit,
-                animation->trackTargetName(j),
+                name,
+                Trade::isAnimationTrackTargetCustom(name) ?
+                    importer.animationTrackTargetName(name) : "",
                 animation->trackType(j),
                 animation->trackResultType(j),
                 animation->track(j).interpolation(),
@@ -707,10 +711,19 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             const AnimationTrackInfo& track = info.tracks[i];
 
             d << Debug::newline << "  Track" << i << Debug::nospace << ":"
-                << Debug::packed << Debug::boldColor(Debug::Color::Default)
-                << track.targetName << Debug::color(Debug::Color::Blue) << "@"
-                << Debug::packed << Debug::color(Debug::Color::Cyan)
-                << track.type << Debug::resetColor;
+                << Debug::boldColor(Debug::Color::Default);
+            if(Trade::isAnimationTrackTargetCustom(track.targetName)) {
+                d << "Custom(" << Debug::nospace
+                    << Trade::animationTrackTargetCustom(track.targetName)
+                    << Debug::nospace << ":" << Debug::nospace
+                    << Debug::color(Debug::Color::Yellow)
+                    << track.customTargetName << Debug::nospace
+                    << Debug::boldColor(Debug::Color::Default) << ")";
+            } else d << Debug::packed << track.targetName;
+
+            d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed
+                << Debug::color(Debug::Color::Cyan) << track.type
+                << Debug::resetColor;
             if(track.type != track.resultType)
                 d << Debug::color(Debug::Color::Blue) << "->"
                     << Debug::packed << Debug::color(Debug::Color::Cyan)

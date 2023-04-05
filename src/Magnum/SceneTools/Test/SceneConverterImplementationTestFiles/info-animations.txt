@@ -4,6 +4,8 @@ Animation 0:
     Interpolation: Linear, DefaultConstructed, Constant
   Track 1: Rotation2D @ CubicHermite2D -> Vector2, 3 keyframes
     Interpolation: Constant, Extrapolated, Extrapolated
+  Track 2: Custom(333:visibility) @ Bool, 3 keyframes
+    Interpolation: Constant, Constant, Constant
 Animation 1: Custom track duration and interpolator function
   Duration: {0.1, 1.3} (0.1 kB, ExternallyOwned)
   Track 0: Scaling3D @ Vector3, 5 keyframes

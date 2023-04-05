@@ -309,15 +309,17 @@ void SceneConverterImplementationTest::infoAnimations() {
         }
         Containers::Optional<Trade::AnimationData> doAnimation(UnsignedInt id) override {
             /* First has two tracks with a shared time and implicit duration,
-               one with a different result type. */
+               one with a different result type, one with a custom target. */
             if(id == 0) {
                 Containers::ArrayView<Float> time;
                 Containers::ArrayView<Vector2> translation;
                 Containers::ArrayView<CubicHermite2D> rotation;
+                Containers::ArrayView<bool> visibility;
                 Containers::ArrayTuple data{
                     {ValueInit, 3, time},
                     {ValueInit, 3, translation},
-                    {ValueInit, 3, rotation}
+                    {ValueInit, 3, rotation},
+                    {ValueInit, 3, visibility},
                 };
                 Utility::copy({0.5f, 1.0f, 1.25f}, time);
                 return Trade::AnimationData{std::move(data), {
@@ -325,6 +327,7 @@ void SceneConverterImplementationTest::infoAnimations() {
                         constructors */
                     Trade::AnimationTrackData{Trade::AnimationTrackTarget::Translation2D, 17, Animation::TrackView<const Float, const Vector2>{time, translation, Animation::Interpolation::Linear, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant}},
                     Trade::AnimationTrackData{Trade::AnimationTrackTarget::Rotation2D, 17, Animation::TrackView<const Float, const CubicHermite2D>{time, rotation, Animation::Interpolation::Constant, Animation::Extrapolation::Extrapolated}},
+                    Trade::AnimationTrackData{Trade::animationTrackTargetCustom(333), 666, Animation::TrackView<const Float, const bool>{time, visibility, Animation::Interpolation::Constant, Animation::Extrapolation::Constant}},
                 }};
             }
 
@@ -339,6 +342,12 @@ void SceneConverterImplementationTest::infoAnimations() {
             }
 
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        }
+
+        Containers::String doAnimationTrackTargetName(UnsignedShort name) override {
+            if(name == 333)
+                return "visibility";
+            return {};
         }
 
         struct {
