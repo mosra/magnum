@@ -75,6 +75,9 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributeOffsetOnly();
     void constructAttributeImplementationSpecificFormat();
     void constructAttributeWrongFormat();
+    #ifndef CORRADE_TARGET_32BIT
+    void constructAttributeWrongSize();
+    #endif
     void constructAttributeWrongStride();
     void constructAttributeWrongDataAccess();
     void constructAttributeOnlyArrayAllowed();
@@ -262,6 +265,9 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttributeOffsetOnly,
               &MeshDataTest::constructAttributeImplementationSpecificFormat,
               &MeshDataTest::constructAttributeWrongFormat,
+              #ifndef CORRADE_TARGET_32BIT
+              &MeshDataTest::constructAttributeWrongSize,
+              #endif
               &MeshDataTest::constructAttributeWrongStride,
               &MeshDataTest::constructAttributeWrongDataAccess,
               &MeshDataTest::constructAttributeOnlyArrayAllowed,
@@ -991,6 +997,23 @@ void MeshDataTest::constructAttributeWrongFormat() {
         "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n"
         "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n");
 }
+
+#ifndef CORRADE_TARGET_32BIT
+void MeshDataTest::constructAttributeWrongSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This should be fine */
+    MeshAttributeData{MeshAttribute::Position, Containers::ArrayView<Vector2>{nullptr, 0xffffffffu}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshAttributeData{MeshAttribute::Position, Containers::ArrayView<Vector2>{nullptr, 0x100000000ull}};
+    /* The offset-only constructors takes the count as an UnsignedInt already,
+       nothing to check there */
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshAttributeData: expected vertex count to fit into 32 bits but got 4294967296\n");
+}
+#endif
 
 void MeshDataTest::constructAttributeWrongStride() {
     CORRADE_SKIP_IF_NO_ASSERT();

@@ -448,11 +448,12 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * @param arraySize Array size. Use @cpp 0 @ce for non-array
          *      attributes.
          *
-         * Expects that @p data stride fits into a signed 16-bit value, and for
-         * builtin attributes that @p format corresponds to @p name,
-         * @p arraySize is either zero for non-array attributes or non-zero for
-         * array attributes. The stride can be zero or negative, but note that
-         * such data layouts are not commonly supported by GPU APIs.
+         * Expects that @p data stride fits into a signed 16-bit value, that
+         * vertex count fits into 32 bits, and for builtin attributes that
+         * @p format corresponds to @p name, @p arraySize is either zero for
+         * non-array attributes or non-zero for array attributes. The stride
+         * can be zero or negative, but note that such data layouts are not
+         * commonly supported by GPU APIs.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize = 0) noexcept;
 
@@ -2429,7 +2430,12 @@ constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribu
     _format{format},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
-    _isOffsetOnly{false}, _vertexCount{UnsignedInt(data.size())},
+    _isOffsetOnly{false},
+    _vertexCount{(
+        #ifndef CORRADE_TARGET_32BIT
+        CORRADE_CONSTEXPR_ASSERT(data.size() <= 0xffffffffu, "Trade::MeshAttributeData: expected vertex count to fit into 32 bits but got" << data.size()),
+        #endif
+        UnsignedInt(data.size()))},
     _stride{(CORRADE_CONSTEXPR_ASSERT(data.stride() >= -32768 && data.stride() <= 32767,
         "Trade::MeshAttributeData: expected stride to fit into 16 bits but got" << data.stride()),
         Short(data.stride()))},
