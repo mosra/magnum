@@ -367,7 +367,7 @@ class AnimationTrackData {
          * Equivalent to the above with @p type used as both value type and
          * result type.
          */
-        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackTarget targetName, UnsignedLong target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{type}, _targetName{targetName}, _target{target}, _view{view} {}
+        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackTarget targetName, UnsignedLong target, Animation::TrackViewStorage<const Float> view) noexcept: AnimationTrackData{type, type, targetName, target, view} {}
 
         /**
          * @brief Constructor
