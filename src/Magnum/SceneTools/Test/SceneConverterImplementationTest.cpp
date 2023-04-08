@@ -312,9 +312,9 @@ void SceneConverterImplementationTest::infoAnimations() {
                one with a different result type, one with a custom target. */
             if(id == 0) {
                 Containers::ArrayView<Float> time;
-                Containers::ArrayView<Vector2> translation;
-                Containers::ArrayView<CubicHermite2D> rotation;
-                Containers::ArrayView<bool> visibility;
+                Containers::StridedArrayView1D<Vector2> translation;
+                Containers::StridedArrayView1D<CubicHermite2D> rotation;
+                Containers::StridedArrayView1D<bool> visibility;
                 Containers::ArrayTuple data{
                     {ValueInit, 3, time},
                     {ValueInit, 3, translation},
@@ -323,11 +323,9 @@ void SceneConverterImplementationTest::infoAnimations() {
                 };
                 Utility::copy({0.5f, 1.0f, 1.25f}, time);
                 return Trade::AnimationData{std::move(data), {
-                    /** @todo cleanup once AnimationTrackData has sane
-                        constructors */
-                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Translation2D, 17, Animation::TrackView<const Float, const Vector2>{time, translation, Animation::Interpolation::Linear, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant}},
-                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Rotation2D, 17, Animation::TrackView<const Float, const CubicHermite2D>{time, rotation, Animation::Interpolation::Constant, Animation::Extrapolation::Extrapolated}},
-                    Trade::AnimationTrackData{Trade::animationTrackTargetCustom(333), 666, Animation::TrackView<const Float, const bool>{time, visibility, Animation::Interpolation::Constant, Animation::Extrapolation::Constant}},
+                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Translation2D, 17, time, translation, Animation::Interpolation::Linear, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant},
+                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Rotation2D, 17, time, rotation, Animation::Interpolation::Constant, Animation::Extrapolation::Extrapolated},
+                    Trade::AnimationTrackData{Trade::animationTrackTargetCustom(333), 666, time, visibility, Animation::Interpolation::Constant, Animation::Extrapolation::Constant},
                 }};
             }
 
@@ -335,9 +333,7 @@ void SceneConverterImplementationTest::infoAnimations() {
                a custom interpolator. Stored as an external memory. */
             if(id == 1) {
                 return Trade::AnimationData{Trade::DataFlag::ExternallyOwned, animation2Data, {
-                    /** @todo cleanup once AnimationTrackData has sane
-                        constructors */
-                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Scaling3D, 666, Animation::TrackView<const Float, const Vector3>{animation2Data->time, animation2Data->scaling, Math::lerp, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant}},
+                    Trade::AnimationTrackData{Trade::AnimationTrackTarget::Scaling3D, 666, animation2Data->time, Containers::stridedArrayView(animation2Data->scaling), Math::lerp, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant},
                 }, {0.1f, 1.3f}};
             }
 
