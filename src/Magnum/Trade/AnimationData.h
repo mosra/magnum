@@ -381,6 +381,36 @@ class AnimationTrackData {
          */
         template<class V, class R> explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, Animation::TrackView<const Float, const V, R> view) noexcept;
 
+        /**
+         * @brief Value type
+         * @m_since_latest
+         */
+        AnimationTrackType type() const { return _type; }
+
+        /**
+         * @brief Result type
+         * @m_since_latest
+         */
+        AnimationTrackType resultType() const { return _resultType; }
+
+        /**
+         * @brief Track target name
+         * @m_since_latest
+         */
+        AnimationTrackTarget targetName() const { return _targetName; }
+
+        /**
+         * @brief Track target ID
+         * @m_since_latest
+         */
+        UnsignedLong target() const { return _target; }
+
+        /**
+         * @brief Type-erased @ref Animation::TrackView instance
+         * @m_since_latest
+         */
+        Animation::TrackViewStorage<const Float> track() const { return _view; }
+
     private:
         friend AnimationData;
 

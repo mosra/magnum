@@ -189,23 +189,22 @@ void AnimationDataTest::debugTrackTargetPacked() {
 }
 
 void AnimationDataTest::constructTrack() {
-    AnimationTrackData trackData{
+    AnimationTrackData data{
          AnimationTrackType::Vector3,
          AnimationTrackTarget::Translation3D, 42,
          Animation::TrackView<const Float, const Vector3>{
             nullptr,
             Animation::Interpolation::Linear,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Linear)}};
-    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{InPlaceInit, {trackData}}};
-    CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.trackTargetName(0), AnimationTrackTarget::Translation3D);
-    CORRADE_COMPARE(data.trackTarget(0), 42);
-    CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
 }
 
 void AnimationDataTest::constructTrackResultType() {
-    AnimationTrackData trackData{
+    AnimationTrackData data{
          AnimationTrackType::CubicHermite3D,
          AnimationTrackType::Vector3,
          AnimationTrackTarget::Translation3D, 42,
@@ -213,34 +212,41 @@ void AnimationDataTest::constructTrackResultType() {
             nullptr,
             Animation::Interpolation::Linear,
             animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
-    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{InPlaceInit, {trackData}}};
-    CORRADE_COMPARE(data.trackType(0), AnimationTrackType::CubicHermite3D);
-    CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.trackTargetName(0), AnimationTrackTarget::Translation3D);
-    CORRADE_COMPARE(data.trackTarget(0), 42);
-    CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite3D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
 }
 
 void AnimationDataTest::constructTrackTemplate() {
-    AnimationTrackData trackData{
+    AnimationTrackData data{
          AnimationTrackTarget::Translation3D, 42,
          Animation::TrackView<const Float, const CubicHermite3D>{
             nullptr,
             Animation::Interpolation::Linear,
             animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
-    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{InPlaceInit, {trackData}}};
-    CORRADE_COMPARE(data.trackType(0), AnimationTrackType::CubicHermite3D);
-    CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.trackTargetName(0), AnimationTrackTarget::Translation3D);
-    CORRADE_COMPARE(data.trackTarget(0), 42);
-    CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite3D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
 }
 
 void AnimationDataTest::constructTrackDefault() {
     AnimationTrackData data;
-    /* no public accessors here, so nothing to check -- and such a track
-       shouldn't get added to AnimationData anyway */
-    CORRADE_VERIFY(true);
+    CORRADE_COMPARE(data.type(), AnimationTrackType{});
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType{});
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget{});
+    CORRADE_COMPARE(data.target(), 0);
+
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Constant);
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::Extrapolated);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::Extrapolated);
+    CORRADE_COMPARE(data.track().size(), 0);
+    CORRADE_COMPARE(data.track().interpolator(), nullptr);
+    CORRADE_COMPARE(data.track().keys().data(), nullptr);
+    CORRADE_COMPARE(data.track().values().data(), nullptr);
 }
 
 void AnimationDataTest::construct() {
