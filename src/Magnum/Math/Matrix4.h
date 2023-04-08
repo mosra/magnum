@@ -612,7 +612,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * @see @ref from(const Matrix3x3<T>&, const Vector3<T>&),
          *      @ref rotation(Rad, const Vector3<T>&),
-         *      @ref Matrix3::rotationScaling() const
+         *      @ref Matrix3::rotationScaling() const,
+         *      @ref normalMatrix()
          */
         constexpr Matrix3x3<T> rotationScaling() const {
             return {(*this)[0].xyz(),
@@ -655,7 +656,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * @see @ref from(const Matrix3x3<T>&, const Vector3<T>&),
          *      @ref rotation(Rad, const Vector3<T>&),
-         *      @ref Matrix3::rotationShear() const
+         *      @ref Matrix3::rotationShear() const,
+         *      @ref normalMatrix()
          */
         Matrix3x3<T> rotationShear() const {
             return {(*this)[0].xyz().normalized(),
@@ -721,7 +723,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * @see @ref rotationNormalized(), @ref scaling() const,
          *      @ref rotation(Rad, const Vector3<T>&),
-         *      @ref Matrix3::rotation() const
+         *      @ref Matrix3::rotation() const,
+         *      @ref normalMatrix()
          */
         Matrix3x3<T> rotation() const;
 
@@ -926,24 +929,35 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief Normal matrix
          * @m_since{2019,10}
          *
-         * Returns @ref comatrix() of the upper-left 3x3 part of the matrix.
-         * Compared to the classic transformation @f$ (\boldsymbol{M}^{-1})^T @f$,
-         * which is done in order to preserve correct normal orientation for
-         * non-uniform scale and skew, this preserves it also when reflection
-         * is involved. Moreover it's also faster to calculate since we need
-         * just the @m_class{m-success} @f$ \boldsymbol{C} @f$ part of the
-         * inverse transpose: @f[
-         *  (\boldsymbol{M}^{-1})^T = \frac{1}{\det \boldsymbol{A}} \color{m-success} \boldsymbol{C}
+         * Shorthand for taking an inverse transpose of the upper-left 3x3 part
+         * of the matrix. Assuming the following matrix, with the upper-left
+         * 3x3 part represented by column vectors @f$ \boldsymbol{a} @f$,
+         * @f$ \boldsymbol{b} @f$ and @f$ \boldsymbol{c} @f$: @f[
+         *      \begin{pmatrix}
+         *          \color{m-warning} a_x & \color{m-warning} b_x & \color{m-warning} c_x & t_x \\
+         *          \color{m-warning} a_y & \color{m-warning} b_y & \color{m-warning} c_y & t_y \\
+         *          \color{m-warning} a_z & \color{m-warning} b_z & \color{m-warning} c_z & t_z \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
          * @f]
          *
-         * Based on the [Normals Revisited](https://github.com/graphitemaster/normals_revisited)
-         * article by Dale Weiler.
-         * @see @ref inverted()
+         * @m_class{m-noindent}
+         *
+         * the normal matrix is extracted as: @f[
+         *      \boldsymbol{N} = \left(\begin{pmatrix}
+         *          \boldsymbol{a} &
+         *          \boldsymbol{b} &
+         *          \boldsymbol{c}
+         *      \end{pmatrix}^{-1}\right)^T
+         * @f]
+         *
+         * The inverse transpose guarantees that the normals stay perpendicular
+         * to the surface and point in the original direction even in presence
+         * of shear, non-uniform scaling and reflection.
+         * @see @ref rotationScaling(), @ref inverted(), @ref transposed()
          */
         Matrix3x3<T> normalMatrix() const {
-            return Matrix3x3<T>{(*this)[0].xyz(),
-                                (*this)[1].xyz(),
-                                (*this)[2].xyz()}.comatrix();
+            return rotationScaling().inverted().transposed();
         }
 
         /**

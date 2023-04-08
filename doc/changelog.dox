@@ -853,15 +853,28 @@ See also:
 -   Fixed @relativeref{Corrade,Utility::Tweakable} parsers to compile with
     negative @ref Math::Deg / @ref Math::Rad literals such as
     @cpp _(-15.0_degf) @ce
--   Fixed an assertion when using @ref MeshTools::removeDuplicates() on an
-    interleaved @ref Trade::MeshData that included padding at the beginning or
-    end of each vertex
 -   Fixed a silly mistake where there was no @cpp extern template @ce for a
     @ref Frustumd debug printer but two declarations for the float version
     instead (see [mosra/magnum#545](https://github.com/mosra/magnum/issues/545))
 -   Fixed the @ref QuadraticBezier2Dd, @ref QuadraticBezier3Dd,
     @ref CubicBezier2Dd and @ref CubicBezier3Dd typedefs to be actually
     double-precision
+-   The @ref Math::Matrix4::normalMatrix() utility was introduced in version
+    2019.10 based on an article claiming that it's "[a faster calculation of the normal matrix that behaves correctly also in presence of reflections](https://github.com/graphitemaster/normals_revisited)".
+    Such claim was true only in case the normals were calculated on-the-fly
+    from vertices in a winding order wrongly flipped due to the reflection,
+    effectively undoing the original calculation error. As practical uses in
+    Magnum always involve normals precalculated on an untransformed mesh and
+    passed to the shader via a vertex attribute, this method gave an incorrect
+    result while the classic inverse transpose did the right thing. The
+    function is kept since there's a value in having a convenience API instead
+    of typing out (and having to read / teach / explain / decipher)
+    @cpp transformation.rotationScaling().inverted().transposed() @ce every
+    time, it's just corrected to return an inverse transpose instead of a
+    @ref Math::Matrix::cofactor() of the upper 3x3 matrix.
+-   Fixed an assertion when using @ref MeshTools::removeDuplicates() on an
+    interleaved @ref Trade::MeshData that included padding at the beginning or
+    end of each vertex
 -   Fixed @ref MeshTools::compile() to properly take into account index buffer
     offsets
 -   Fixed @ref MeshTools::removeDuplicates() to not take into account random

@@ -216,7 +216,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          *  \end{pmatrix}
          * @f]
          *
-         * @see @ref Matrix4::normalMatrix(), @ref ij(), @ref adjugate()
+         * @see @ref inverted(), @ref ij(), @ref adjugate()
          */
         Matrix<size, T> comatrix() const;
 
@@ -257,8 +257,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * See @ref invertedOrthogonal(), @ref Matrix3::invertedRigid() and
          * @ref Matrix4::invertedRigid() which are faster alternatives for
          * particular matrix types.
-         * @see @ref Algorithms::gaussJordanInverted(),
-         *      @ref Matrix4::normalMatrix()
+         * @see @ref Algorithms::gaussJordanInverted()
          * @m_keyword{inverse(),GLSL inverse(),}
          */
         Matrix<size, T> inverted() const;

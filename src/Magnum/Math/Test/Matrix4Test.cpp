@@ -878,7 +878,44 @@ namespace {
 #undef minor
 #endif
 
-/* From https://github.com/graphitemaster/normals_revisited#sample-code */
+/* Code from https://github.com/graphitemaster/normals_revisited for historical
+   records. This is how normalMatrix() was implemented originally as the
+   article says transpose inverse "is such an accepted practice that nearly
+   every single graphics programming resource mentions and encourages it. The
+   problem is it's wrong."
+
+   The problem is that what the article says is right is actually *wrong* for
+   majority of use cases here. The proof there works with normals calculated
+   via a cross product from three vertices in a CCW winding. That's alright,
+   but then it flips the vertices along X, and calculates a cross product the
+   same way again, however this time it's a CW winding and so the cross product
+   is oriented *the wrong way*. Which the proposed cofactor method then fixes
+   by applying the determinant sign once again with
+
+    m.determinant()*m.inverted().transposed()
+
+   which expands to
+
+    m.determinant()*m.cofactor().transposed().transposed()/m.determinant
+
+   and thus, after everything cancels out, just `m.cofactor()`. Luckily, as the
+   normals have to be normalized per-pixel in the shader, it doesn't matter
+   that the proposed matrix arbitrarily scales them, and this means one less
+   determinant calculation.
+
+   However, *in practice*, the normals are always calculated from an
+   untransformed mesh and the shader gets them from a vertex attribute, it
+   doesn't calculate anything from vertex positions where it would depend on
+   winding. Which means, when the positions get reflected and triangle winding
+   changes, it doesn't affect the normals in any way. And thus the
+   `m.inverted().transposed()` is correct, while the cofactor-based method
+   flips the normal to a wrong direction.
+
+   Even though it's useless at this point, the test verifies against this code
+   to ensure the same issue isn't introduced again at some point in the
+   future. The cofactor() is also kept in the codebase as Matrix::comatrix()
+   in case it'd be useful in other cases. */
+
 float minor(const float* m, int r0, int r1, int r2, int c0, int c1, int c2) {
   return m[4*r0+c0] * (m[4*r1+c1] * m[4*r2+c2] - m[4*r2+c1] * m[4*r1+c2]) -
          m[4*r0+c1] * (m[4*r1+c0] * m[4*r2+c2] - m[4*r2+c0] * m[4*r1+c2]) +
@@ -921,35 +958,36 @@ void Matrix4Test::normalMatrixPart() {
                          a[2].normalized()};
     };
 
-    /* For just a rotation, normalMatrix is the same as the upper-left part
-       (and the same as the "classic" calculation) */
+    /* For just a rotation, normalMatrix is the same as the upper-left part */
     auto a = Matrix4::rotationY(35.0_degf);
     CORRADE_COMPARE(a.normalMatrix(), a.rotationScaling());
     CORRADE_COMPARE(a.normalMatrix(), a.rotationScaling().inverted().transposed());
-    /* It should be also the same result as the original code */
+    /* And same as the cofactor-based method */
     CORRADE_COMPARE(a.normalMatrix(), cofactorGroundTruth(a).rotationScaling());
+    CORRADE_COMPARE(a.normalMatrix(), a.rotationScaling().comatrix());
 
     /* For rotation + uniform scaling, normalMatrix is the same as the
-       normalized upper-left part (and the same as the "classic" calculation) */
+       normalized upper-left part */
     auto b = Matrix4::rotationZ(35.0_degf)*Matrix4::scaling(Vector3{3.5f});
     CORRADE_COMPARE(unit(b.normalMatrix()), unit(b.rotation()));
-    CORRADE_COMPARE(unit(b.normalMatrix()), unit(b.rotationScaling().inverted().transposed()));
-    /* It should be also the same result as the original code */
-    CORRADE_COMPARE(b.normalMatrix(), cofactorGroundTruth(b).rotationScaling());
+    /* And same as the cofactor-based method, except scale */
+    CORRADE_COMPARE(unit(b.normalMatrix()), unit(cofactorGroundTruth(b).rotationScaling()));
+    CORRADE_COMPARE(unit(b.normalMatrix()), unit(b.rotationScaling().comatrix()));
 
-    /* Rotation and non-uniform scaling (= shear) is the same as the
-       "classic" calculation */
+    /* Rotation and non-uniform scaling (= shear) needs inverse transpose to
+       be correct */
     auto c = Matrix4::rotationX(35.0_degf)*Matrix4::scaling({0.3f, 1.1f, 3.5f});
     CORRADE_COMPARE(unit(c.normalMatrix()), unit(c.rotationScaling().inverted().transposed()));
-    /* It should be also the same result as the original code */
-    CORRADE_COMPARE(c.normalMatrix(), cofactorGroundTruth(c).rotationScaling());
+    /* And again same as the cofactor-based method except scale */
+    CORRADE_COMPARE(unit(c.normalMatrix()), unit(cofactorGroundTruth(c).rotationScaling()));
+    CORRADE_COMPARE(unit(c.normalMatrix()), unit(c.rotationScaling().comatrix()));
 
-    /* Reflection (or scaling by -1) is not -- the "classic" way has the sign
-       flipped */
+    /* Reflection (or scaling by -1) needs inverse transpose as well */
     auto d = Matrix4::rotationZ(35.0_degf)*Matrix4::reflection(Vector3{1.0f/Constants::sqrt3()});
-    CORRADE_COMPARE(-unit(d.normalMatrix()), unit(d.rotationScaling().inverted().transposed()));
-    /* It should be also the same result as the original code */
-    CORRADE_COMPARE(d.normalMatrix(), cofactorGroundTruth(d).rotationScaling());
+    CORRADE_COMPARE(unit(d.normalMatrix()), unit(d.rotationScaling().inverted().transposed()));
+    /* The cofactor-based method gives back a different (wrong) sign */
+    CORRADE_COMPARE(unit(d.normalMatrix()), -unit(cofactorGroundTruth(d).rotationScaling()));
+    CORRADE_COMPARE(unit(d.normalMatrix()), -unit(d.rotationScaling().comatrix()));
 }
 
 void Matrix4Test::vectorParts() {
