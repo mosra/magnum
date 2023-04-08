@@ -512,17 +512,17 @@ template<class K> class TrackViewStorage {
          * @ref Corrade::Containers::arrayCast().
          * @see @ref keys(), @ref TrackView::operator[]()
          */
-        Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const char, char>::type> values() const {
+        Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const void, void>::type> values() const {
             return _values;
         }
 
     private:
         template<class, class, class> friend class TrackView;
 
-        template<class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView1D<K>& keys, const Containers::StridedArrayView1D<V>& values, Interpolation interpolation, R(*interpolator)(const typename std::remove_const<V>::type&, const typename std::remove_const<V>::type&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{reinterpret_cast<const Containers::StridedArrayView1D<char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
+        template<class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView1D<K>& keys, const Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const void, void>::type>& values, Interpolation interpolation, R(*interpolator)(const V&, const V&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{values}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
         Containers::StridedArrayView1D<K> _keys;
-        Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const char, char>::type> _values;
+        Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const void, void>::type> _values;
         void(*_interpolator)();
         Interpolation _interpolation;
         Extrapolation _before, _after;
@@ -716,7 +716,7 @@ template<class K, class V, class R
         /** @brief Convert a mutable view to a const one */
         /* This is the only variant that works on MSVC 2015, std::remove_const
            in the signature didn't work there */
-        template<class K2, class V2, class = typename std::enable_if<std::is_same<const K2, K>::value && std::is_same<const V2, V>::value>::type> /*implicit*/ TrackView(const TrackView<K2, V2, R>& other) noexcept: TrackViewStorage<K>{other._keys, reinterpret_cast<const Containers::StridedArrayView1D<V>&>(other._values), other._interpolation, reinterpret_cast<Interpolator>(other._interpolator), other._before, other._after} {}
+        template<class K2, class V2, class = typename std::enable_if<std::is_same<const K2, K>::value && std::is_same<const V2, V>::value>::type> /*implicit*/ TrackView(const TrackView<K2, V2, R>& other) noexcept: TrackViewStorage<K>{other._keys, other._values, other._interpolation, reinterpret_cast<Interpolator>(other._interpolator), other._before, other._after} {}
 
         /**
          * @brief Interpolation function
