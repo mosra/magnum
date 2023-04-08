@@ -242,7 +242,7 @@ void AnimationDataTest::constructTrack() {
     struct Keyframe {
         Float time;
         CubicHermite2D value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     AnimationTrackData data{
          AnimationTrackTarget::Scaling2D, 42,
@@ -266,7 +266,7 @@ void AnimationDataTest::constructTrackTypeErased() {
     struct Keyframe {
         Float time;
         CubicHermite3D value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     AnimationTrackData data{
          AnimationTrackTarget::Translation3D, 42,
@@ -292,7 +292,7 @@ void AnimationDataTest::constructTrackTypeErasedImplicitResultType() {
     struct Keyframe {
         Float time;
         Quaternion value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     AnimationTrackData data{
          AnimationTrackTarget::Rotation3D, 42,
@@ -317,7 +317,7 @@ void AnimationDataTest::constructTrackExplicitInterpolator() {
     struct Keyframe {
         Float time;
         CubicHermite2D value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     AnimationTrackData data{
          AnimationTrackTarget::Scaling2D, 42,
@@ -342,7 +342,7 @@ void AnimationDataTest::constructTrackExplicitInterpolatorTypeErased() {
     struct Keyframe {
         Float time;
         CubicHermite2D value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector2(*)(const CubicHermite2D&, const CubicHermite2D&, Float)>(Math::splerp));
 
@@ -371,7 +371,7 @@ void AnimationDataTest::constructTrackExplicitInterpolatorTypeErasedImplicitResu
     struct Keyframe {
         Float time;
         Vector3 value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector3(*)(const Vector3&, const Vector3&, Float)>(Math::lerp));
 
@@ -399,7 +399,7 @@ void AnimationDataTest::constructTrackCustomInterpolator() {
     struct Keyframe {
         Float time;
         CubicHermite2D value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     AnimationTrackData data{
          AnimationTrackTarget::Scaling2D, 42,
@@ -423,7 +423,7 @@ void AnimationDataTest::constructTrackCustomInterpolatorTypeErased() {
     struct Keyframe {
         Float time;
         CubicHermite2D value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector2(*)(const CubicHermite2D&, const CubicHermite2D&, Float)>(Math::splerp));
 
@@ -451,7 +451,7 @@ void AnimationDataTest::constructTrackCustomInterpolatorTypeErasedImplicitResult
     struct Keyframe {
         Float time;
         Vector3 value;
-    } keyframes[3]{};
+    } keyframes[3]; /* {} makes GCC 4.8 crash */
 
     auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector3(*)(const Vector3&, const Vector3&, Float)>(Math::lerp));
 
