@@ -37,4 +37,5 @@ corrade_add_test(AnimationTrackViewTest TrackViewTest.cpp LIBRARIES Magnum)
 
 set_property(TARGET
     AnimationInterpolationTest
+    AnimationTrackViewTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")

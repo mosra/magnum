@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Animation/Track.h"
 #include "Magnum/Math/Half.h"
@@ -47,6 +49,7 @@ struct TrackViewTest: TestSuite::Tester {
     void constructSingleArrayInterpolationDefaults();
     void constructSingleArrayInterpolationInterpolator();
     void constructSingleArrayInterpolationInterpolatorDefaults();
+    void constructInconsistentViewSize();
 
     void constructCopyStorage();
     void convertToConstView();
@@ -106,6 +109,7 @@ TrackViewTest::TrackViewTest() {
               &TrackViewTest::constructSingleArrayInterpolationDefaults,
               &TrackViewTest::constructSingleArrayInterpolationInterpolator,
               &TrackViewTest::constructSingleArrayInterpolationInterpolatorDefaults,
+              &TrackViewTest::constructInconsistentViewSize,
 
               &TrackViewTest::constructCopyStorage,
               &TrackViewTest::convertToConstView});
@@ -558,6 +562,18 @@ void TrackViewTest::constructSingleArrayInterpolationInterpolatorDefaults() {
     CORRADE_COMPARE(ca.keys().size(), 2);
     CORRADE_COMPARE(ca.values().size(), 2);
     CORRADE_COMPARE(ca[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+}
+
+void TrackViewTest::constructInconsistentViewSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Float keys[2]{};
+    Vector3 values[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    TrackView<Float, Vector3>{keys, values, Math::select};
+    CORRADE_COMPARE(out.str(), "Animation::TrackView: expected key and value view to have the same size but got 2 and 3\n");
 }
 
 void TrackViewTest::constructCopyStorage() {

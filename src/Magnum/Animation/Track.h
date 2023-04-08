@@ -519,7 +519,9 @@ template<class K> class TrackViewStorage {
     private:
         template<class, class, class> friend class TrackView;
 
-        explicit TrackViewStorage(const Containers::StridedArrayView1D<K>& keys, const Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const void, void>::type>& values, Interpolation interpolation, void(*interpolator)(), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{values}, _interpolator{interpolator}, _interpolation{interpolation}, _before{before}, _after{after} {}
+        explicit TrackViewStorage(const Containers::StridedArrayView1D<K>& keys, const Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const void, void>::type>& values, Interpolation interpolation, void(*interpolator)(), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{values}, _interpolator{interpolator}, _interpolation{interpolation}, _before{before}, _after{after} {
+            CORRADE_ASSERT(keys.size() == values.size(), "Animation::TrackView: expected key and value view to have the same size but got" << keys.size() << "and" << values.size(), );
+        }
 
         Containers::StridedArrayView1D<K> _keys;
         Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const void, void>::type> _values;
