@@ -81,8 +81,9 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     #ifdef MAGNUM_TARGET_GL
     _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
-    /** @todo this is duplicated here and in Sdl2Application, figure out a nice
-        non-duplicated way to handle this */
+    /** @todo this is duplicated here, in Sdl2Application and in
+        EmscriptenApplication, figure out a nice non-duplicated way to handle
+        this */
     args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
         .setFromEnvironment("log")
         .parse(arguments.argc, arguments.argv);
