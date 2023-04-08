@@ -45,7 +45,9 @@ namespace Magnum { namespace Trade {
 @experimental
 */
 enum class AnimationTrackType: UnsignedByte {
-    Bool,               /**< @cpp bool @ce <b></b> */
+    /* Zero used for an invalid value */
+
+    Bool = 1,           /**< @cpp bool @ce <b></b> */
     Float,              /**< @ref Magnum::Float "Float" */
     UnsignedInt,        /**< @ref Magnum::UnsignedInt "UnsignedInt" */
     Int,                /**< @ref Magnum::Int "Int" */
