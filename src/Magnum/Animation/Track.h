@@ -525,7 +525,7 @@ template<class K> class TrackViewStorage {
 
         Containers::StridedArrayView1D<K> _keys;
         Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const char, char>::type> _values;
-        void(*_interpolator)(void);
+        void(*_interpolator)();
         Interpolation _interpolation;
         Extrapolation _before, _after;
 };
