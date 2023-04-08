@@ -3852,9 +3852,8 @@ void AbstractImporterTest::animation() {
             /* Verify that initializer list is converted to an array with
                the default deleter and not something disallowed */
             if(id == 7) return AnimationData{nullptr, {
-                AnimationTrackData{AnimationTrackType::Vector3,
-                    AnimationTrackTarget::Scaling3D, 0, {}}
-                }, &state};
+                AnimationTrackData{AnimationTrackTarget::Scaling3D, 0, AnimationTrackType::Vector3, nullptr, nullptr, Animation::Interpolation::Constant}
+            }, &state};
             return AnimationData{{}, {}};
         }
     } importer;

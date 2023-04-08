@@ -350,6 +350,150 @@ class MAGNUM_TRADE_EXPORT AnimationTrackData {
         explicit AnimationTrackData() noexcept: _type{}, _resultType{}, _targetName{}, _interpolation{}, _before{}, _after{}, _target{}, _size{}, _keysStride{}, _valuesStride{}, _keysData{}, _valuesData{}, _interpolator{} {}
 
         /**
+         * @brief Type-erased constructor with generic interpolation behavior
+         * @param targetName    Track target name
+         * @param target        Track target ID
+         * @param type          Value type
+         * @param resultType    Result type
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolation Interpolation behavior
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         * @m_since_latest
+         *
+         * The keyframe data are assumed to be stored in sorted order. It's not
+         * an error to have two successive keyframes with the same frame value.
+         * Expects that @p keys and @p values strides both fit into signed
+         * 16-bit values, that they both have the same size and that keyframe
+         * count fits into 32 bits.
+         *
+         * The interpolator function is picked implicitly for given
+         * @p interpolation, @p type and @p resultType and the combination is
+         * expected to make sense. Use
+         * @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, void(*)(), Animation::Extrapolation, Animation::Extrapolation)
+         * to supply it explicitly.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, Animation::Extrapolation before, Animation::Extrapolation after) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p type and @p resultType set to @p type.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, Animation::Extrapolation before, Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, type, type, keys, values, interpolation, before, after} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, type, resultType, keys, values, interpolation, extrapolation, extrapolation} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p type and @p resultType set to @p type, and both
+         * @p before and @p after set to @p extrapolation.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, type, keys, values, interpolation, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Type-erased constructor with both generic and custom interpolator
+         * @param targetName    Track target name
+         * @param target        Track target ID
+         * @param type          Value type
+         * @param resultType    Result type
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolation Interpolation behavior
+         * @param interpolator  Interpolator function
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         * @m_since_latest
+         *
+         * Compared to @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation)
+         * which picks an interpolator function based on the value of
+         * @p interpolation, @p type and @p resultType, here it's taken
+         * explicitly. Even though it accepts the function cast to a
+         * @cpp void(*)() @ce, it's expected to be of a right type for @p type
+         * and @p resultType.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, void(*interpolator)(), Animation::Extrapolation before, Animation::Extrapolation after) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, void(*)(), Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p type and @p resultType set to @p type.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, void(*interpolator)(), Animation::Extrapolation before, Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, type, type, keys, values, interpolation, interpolator, before, after} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, void(*)(), Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, void(*interpolator)(), Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, type, resultType, keys, values, interpolation, interpolator, extrapolation, extrapolation} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, void(*)(), Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p type and @p resultType set to @p type, and both
+         * @p before and @p after set to @p extrapolation.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, Animation::Interpolation interpolation, void(*interpolator)(), Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, type, keys, values, interpolation, interpolator, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Type-erased constructor with custom interpolator
+         * @param targetName    Track target name
+         * @param target        Track target ID
+         * @param type          Value type
+         * @param resultType    Result type
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolator  Interpolator function
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         * @m_since_latest
+         *
+         * Calls @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, void(*)(), Animation::Extrapolation, Animation::Extrapolation)
+         * with @p interpolation set to @ref Animation::Interpolation::Custom.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, void(*interpolator)(), Animation::Extrapolation before, Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, type, resultType, keys, values, Animation::Interpolation::Custom, interpolator, before, after} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, void(*)(), Extrapolation, Extrapolation)
+         * with both @p type and @p resultType set to @p type.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, void(*interpolator)(), Animation::Extrapolation before, Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, type, type, keys, values, interpolator, before, after} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, void(*)(), Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, void(*interpolator)(), Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, type, resultType, keys, values, interpolator, extrapolation, extrapolation} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, void(*)(), Extrapolation, Extrapolation)
+         * with both @p type and @p resultType set to @p type, and both
+         * @p before and @p after set to @p extrapolation.
+         */
+        explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, AnimationTrackType type, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, void(*interpolator)(), Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, type, keys, values, interpolator, extrapolation, extrapolation} {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Type-erased constructor
          * @param type          Value type
          * @param resultType    Result type
@@ -359,30 +503,112 @@ class MAGNUM_TRADE_EXPORT AnimationTrackData {
          *
          * Expects that @p view key and value strides both fit into signed
          * 16-bit values and that keyframe count fits into 32 bits.
+         *
+         * @m_deprecated_since_latest Use either the typed
+         *      @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, const Animation::TrackView<const Float, const V, R>&)
+         *      constructor or the type-erased
+         *      @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation)
+         *      etc. constructors instead.
          */
-        /** @todo stop taking TrackViewStorage and instead directly take the
-            key/value views, interpolator/interpolation and extrapolation --
-            it's just 6 overloads and makes usage much better */
-        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept;
+        explicit CORRADE_DEPRECATED("use either the typed TrackView constructor or the type-erased constructors taking key/value views directly") AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept: AnimationTrackData{targetName, target, type, resultType, view.keys(), view.values(), view.interpolation(), view.interpolator(), view.before(), view.after()} {}
 
         /** @overload
          *
          * Equivalent to the above with @p type used as both value type and
          * result type.
+         *
+         * @m_deprecated_since_latest Use either the typed
+         *      @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, const Animation::TrackView<const Float, const V, R>&)
+         *      constructor or the type-erased
+         *      @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation)
+         *      etc. constructors instead.
          */
-        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept: AnimationTrackData{type, type, targetName, target, view} {}
+        explicit CORRADE_DEPRECATED("use either the typed TrackView constructor or the type-erased constructors taking key/value views directly") AnimationTrackData(AnimationTrackType type, AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept: AnimationTrackData{targetName, target, type, view.keys(), view.values(), view.interpolation(), view.interpolator(), view.before(), view.after()} {}
+        #endif
 
         /**
-         * @brief Constructor
+         * @brief Construct with generic interpolation behavior
          * @param targetName    Track target name
          * @param target        Track target ID
-         * @param view          @ref Animation::TrackView instance
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolation Interpolation behavior
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         * @m_since_latest
+         *
+         * Detects @ref AnimationTrackType from @p values and delegates to
+         * @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation).
+         */
+        template<class V, class R = Animation::ResultOf<V>> AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, Animation::Interpolation interpolation, Animation::Extrapolation before, Animation::Extrapolation after) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<V>&, Animation::Interpolation, Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        template<class V, class R = Animation::ResultOf<V>> AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, Animation::Interpolation interpolation, Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, keys, values, interpolation, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct with both generic and custom interpolator
+         * @param targetName    Track target name
+         * @param target        Track target ID
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolation Interpolation behavior
+         * @param interpolator  Interpolator function
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         * @m_since_latest
+         *
+         * Detects @ref AnimationTrackType from @p values and delegates to
+         * @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const void>&, Animation::Interpolation, void(*)(), Animation::Extrapolation, Animation::Extrapolation).
+         */
+        template<class V, class R = Animation::ResultOf<V>> AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, Animation::Interpolation interpolation, R(*interpolator)(const typename std::remove_const<V>::type&, const typename std::remove_const<V>::type&, Float), Animation::Extrapolation before, Animation::Extrapolation after) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const V>&, Animation::Interpolation, R(*)(const V&, const V&, Float), Animation::Extrapolation, Animation::Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        template<class V, class R = Animation::ResultOf<V>> AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, Animation::Interpolation interpolation, R(*interpolator)(const typename std::remove_const<V>::type&, const typename std::remove_const<V>::type&, Float), Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, keys, values, interpolation, interpolator, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct with custom interpolator
+         * @param targetName    Track target name
+         * @param target        Track target ID
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolator  Interpolator function
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         * @m_since_latest
+         *
+         * Calls @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const V>&, Interpolation, R(*)(const V&, const V&, Float), Extrapolation, Extrapolation)
+         * with @p interpolation set to @ref Animation::Interpolation::Custom.
+         */
+        template<class V, class R = Animation::ResultOf<V>> AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, R(*interpolator)(const typename std::remove_const<V>::type&, const typename std::remove_const<V>::type&, Float), Animation::Extrapolation before, Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, keys, values, Animation::Interpolation::Custom, interpolator, before, after} {}
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const V>&, R(*)(const V&, const V&, Float), Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        template<class V, class R = Animation::ResultOf<V>> AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, R(*interpolator)(const typename std::remove_const<V>::type&, const typename std::remove_const<V>::type&, Float), Animation::Extrapolation extrapolation = Animation::Extrapolation::Constant) noexcept: AnimationTrackData{targetName, target, keys, values, interpolator, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct from a track view
+         * @param targetName    Track target name
+         * @param target        Track target ID
+         * @param view          Track view
          * @m_since{2020,06}
          *
-         * Detects @ref AnimationTrackType from @p view type and delegates to
-         * @ref AnimationTrackData(AnimationTrackType, AnimationTrackType, AnimationTrackTarget, UnsignedLong, Animation::TrackViewStorage<const Float>).
+         * Delegates to @ref AnimationTrackData(AnimationTrackTarget, UnsignedLong, AnimationTrackType, AnimationTrackType, const Containers::StridedArrayView1D<const Float>&, const Containers::StridedArrayView1D<const V>&, Animation::Interpolation, R(*)(const V&, const V&, Float), Animation::Extrapolation, Animation::Extrapolation).
          */
-        template<class V, class R> explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackView<const Float, const V, R>& view) noexcept;
+        template<class V, class R = Animation::ResultOf<V>> explicit AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackView<const Float, const V, R>& view) noexcept: AnimationTrackData{targetName, target, view.keys(), view.values(), view.interpolation(), view.interpolator(), view.before(), view.after()} {}
 
         /**
          * @brief Value type
@@ -820,7 +1046,9 @@ namespace Implementation {
     /* LCOV_EXCL_STOP */
 }
 
-template<class V, class R> inline AnimationTrackData::AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackView<const Float, const V, R>& view) noexcept: AnimationTrackData{Implementation::animationTypeFor<V>(), Implementation::animationTypeFor<R>(), targetName, target, view} {}
+template<class V, class R> inline AnimationTrackData::AnimationTrackData(const AnimationTrackTarget targetName, const UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, const Animation::Interpolation interpolation, const Animation::Extrapolation before, const Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, Implementation::animationTypeFor<typename std::remove_const<V>::type>(), Implementation::animationTypeFor<R>(), keys, values, interpolation, before, after} {}
+
+template<class V, class R> inline AnimationTrackData::AnimationTrackData(const AnimationTrackTarget targetName, const UnsignedLong target, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<V>& values, const Animation::Interpolation interpolation, R(*interpolator)(const typename std::remove_const<V>::type&, const typename std::remove_const<V>::type&, Float), const Animation::Extrapolation before, const Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, Implementation::animationTypeFor<typename std::remove_const<V>::type>(), Implementation::animationTypeFor<R>(), keys, values, interpolation, reinterpret_cast<void(*)()>(interpolator), before, after} {}
 
 template<class V, class R> Animation::TrackView<const Float, const V, R> AnimationData::track(UnsignedInt id) const {
     const Animation::TrackViewStorage<const Float> storage = track(id);

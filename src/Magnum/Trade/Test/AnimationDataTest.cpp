@@ -45,10 +45,23 @@ struct AnimationDataTest: TestSuite::Tester {
     void debugTrackTarget();
     void debugTrackTargetPacked();
 
-    void constructTrack();
-    void constructTrackResultType();
-    void constructTrackTemplate();
     void constructTrackDefault();
+    void constructTrack();
+    void constructTrackTypeErased();
+    void constructTrackTypeErasedImplicitResultType();
+    void constructTrackExplicitInterpolator();
+    void constructTrackExplicitInterpolatorTypeErased();
+    void constructTrackExplicitInterpolatorTypeErasedImplicitResultType();
+    void constructTrackCustomInterpolator();
+    void constructTrackCustomInterpolatorTypeErased();
+    void constructTrackCustomInterpolatorTypeErasedImplicitResultType();
+    void constructTrackFromView();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructTrackDeprecated();
+    void constructTrackDeprecatedImplicitResultType();
+    #endif
+    void constructTrackInconsitentViewSize();
+    void constructTrackUnknownInterpolator();
     #ifndef CORRADE_TARGET_32BIT
     void constructTrackWrongSize();
     #endif
@@ -93,10 +106,23 @@ AnimationDataTest::AnimationDataTest() {
               &AnimationDataTest::debugTrackTarget,
               &AnimationDataTest::debugTrackTargetPacked,
 
-              &AnimationDataTest::constructTrack,
-              &AnimationDataTest::constructTrackResultType,
-              &AnimationDataTest::constructTrackTemplate,
               &AnimationDataTest::constructTrackDefault,
+              &AnimationDataTest::constructTrack,
+              &AnimationDataTest::constructTrackTypeErased,
+              &AnimationDataTest::constructTrackTypeErasedImplicitResultType,
+              &AnimationDataTest::constructTrackExplicitInterpolator,
+              &AnimationDataTest::constructTrackExplicitInterpolatorTypeErased,
+              &AnimationDataTest::constructTrackExplicitInterpolatorTypeErasedImplicitResultType,
+              &AnimationDataTest::constructTrackCustomInterpolator,
+              &AnimationDataTest::constructTrackCustomInterpolatorTypeErased,
+              &AnimationDataTest::constructTrackCustomInterpolatorTypeErasedImplicitResultType,
+              &AnimationDataTest::constructTrackFromView,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AnimationDataTest::constructTrackDeprecated,
+              &AnimationDataTest::constructTrackDeprecatedImplicitResultType,
+              #endif
+              &AnimationDataTest::constructTrackInconsitentViewSize,
+              &AnimationDataTest::constructTrackUnknownInterpolator,
               #ifndef CORRADE_TARGET_32BIT
               &AnimationDataTest::constructTrackWrongSize,
               #endif
@@ -196,51 +222,6 @@ void AnimationDataTest::debugTrackTargetPacked() {
     CORRADE_COMPARE(out.str(), "Rotation3D Custom(120) 0x4242 Trade::AnimationTrackType::Float\n");
 }
 
-void AnimationDataTest::constructTrack() {
-    AnimationTrackData data{
-         AnimationTrackType::Vector3,
-         AnimationTrackTarget::Translation3D, 42,
-         Animation::TrackView<const Float, const Vector3>{
-            nullptr,
-            Animation::Interpolation::Linear,
-            animationInterpolatorFor<Vector3>(Animation::Interpolation::Linear)}};
-    CORRADE_COMPARE(data.type(), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
-    CORRADE_COMPARE(data.target(), 42);
-    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
-}
-
-void AnimationDataTest::constructTrackResultType() {
-    AnimationTrackData data{
-         AnimationTrackType::CubicHermite3D,
-         AnimationTrackType::Vector3,
-         AnimationTrackTarget::Translation3D, 42,
-         Animation::TrackView<const Float, const CubicHermite3D>{
-            nullptr,
-            Animation::Interpolation::Linear,
-            animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
-    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite3D);
-    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
-    CORRADE_COMPARE(data.target(), 42);
-    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
-}
-
-void AnimationDataTest::constructTrackTemplate() {
-    AnimationTrackData data{
-         AnimationTrackTarget::Translation3D, 42,
-         Animation::TrackView<const Float, const CubicHermite3D>{
-            nullptr,
-            Animation::Interpolation::Linear,
-            animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
-    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite3D);
-    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
-    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
-    CORRADE_COMPARE(data.target(), 42);
-    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
-}
-
 void AnimationDataTest::constructTrackDefault() {
     AnimationTrackData data;
     CORRADE_COMPARE(data.type(), AnimationTrackType{});
@@ -255,6 +236,333 @@ void AnimationDataTest::constructTrackDefault() {
     CORRADE_COMPARE(data.track().interpolator(), nullptr);
     CORRADE_COMPARE(data.track().keys().data(), nullptr);
     CORRADE_COMPARE(data.track().values().data(), nullptr);
+}
+
+void AnimationDataTest::constructTrack() {
+    struct Keyframe {
+        Float time;
+        CubicHermite2D value;
+    } keyframes[3]{};
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Scaling2D, 42,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         Animation::Interpolation::Linear,
+         Animation::Extrapolation::Constant};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Scaling2D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite2D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector2);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
+    CORRADE_COMPARE(data.track().interpolator(), reinterpret_cast<void(*)()>(animationInterpolatorFor<CubicHermite2D>(Animation::Interpolation::Linear)));
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::Constant);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::Constant);
+}
+
+void AnimationDataTest::constructTrackTypeErased() {
+    struct Keyframe {
+        Float time;
+        CubicHermite3D value;
+    } keyframes[3]{};
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Translation3D, 42,
+         AnimationTrackType::CubicHermite3D,
+         AnimationTrackType::Vector3,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         Animation::Interpolation::Spline,
+         Animation::Extrapolation::DefaultConstructed};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite3D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Spline);
+    CORRADE_COMPARE(data.track().interpolator(), reinterpret_cast<void(*)()>(animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Spline)));
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::DefaultConstructed);
+}
+
+void AnimationDataTest::constructTrackTypeErasedImplicitResultType() {
+    struct Keyframe {
+        Float time;
+        Quaternion value;
+    } keyframes[3]{};
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Rotation3D, 42,
+         AnimationTrackType::Quaternion,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         Animation::Interpolation::Linear,
+         Animation::Extrapolation::DefaultConstructed};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Rotation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::Quaternion);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Quaternion);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
+    CORRADE_COMPARE(data.track().interpolator(), reinterpret_cast<void(*)()>(animationInterpolatorFor<Quaternion>(Animation::Interpolation::Linear)));
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::DefaultConstructed);
+}
+
+void AnimationDataTest::constructTrackExplicitInterpolator() {
+    struct Keyframe {
+        Float time;
+        CubicHermite2D value;
+    } keyframes[3]{};
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Scaling2D, 42,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         Animation::Interpolation::Spline,
+         Math::splerp,
+         Animation::Extrapolation::Constant};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Scaling2D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite2D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector2);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Spline);
+    CORRADE_COMPARE(data.track().interpolator(), reinterpret_cast<void(*)()>(static_cast<Vector2(*)(const CubicHermite2D&, const CubicHermite2D&, Float)>(Math::splerp)));
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::Constant);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::Constant);
+}
+
+void AnimationDataTest::constructTrackExplicitInterpolatorTypeErased() {
+    struct Keyframe {
+        Float time;
+        CubicHermite2D value;
+    } keyframes[3]{};
+
+    auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector2(*)(const CubicHermite2D&, const CubicHermite2D&, Float)>(Math::splerp));
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Scaling2D, 42,
+         AnimationTrackType::CubicHermite2D,
+         AnimationTrackType::Vector2,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         Animation::Interpolation::Spline,
+         interpolator,
+         Animation::Extrapolation::Constant};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Scaling2D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite2D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector2);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Spline);
+    CORRADE_COMPARE(data.track().interpolator(), interpolator);
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::Constant);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::Constant);
+}
+
+void AnimationDataTest::constructTrackExplicitInterpolatorTypeErasedImplicitResultType() {
+    struct Keyframe {
+        Float time;
+        Vector3 value;
+    } keyframes[3]{};
+
+    auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector3(*)(const Vector3&, const Vector3&, Float)>(Math::lerp));
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Translation3D, 42,
+         AnimationTrackType::Vector3,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         Animation::Interpolation::Linear,
+         interpolator,
+         Animation::Extrapolation::DefaultConstructed};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
+    CORRADE_COMPARE(data.track().interpolator(), interpolator);
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::DefaultConstructed);
+}
+
+void AnimationDataTest::constructTrackCustomInterpolator() {
+    struct Keyframe {
+        Float time;
+        CubicHermite2D value;
+    } keyframes[3]{};
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Scaling2D, 42,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         Math::splerp,
+         Animation::Extrapolation::Constant};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Scaling2D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite2D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector2);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Custom);
+    CORRADE_COMPARE(data.track().interpolator(), reinterpret_cast<void(*)()>(static_cast<Vector2(*)(const CubicHermite2D&, const CubicHermite2D&, Float)>(Math::splerp)));
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::Constant);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::Constant);
+}
+
+void AnimationDataTest::constructTrackCustomInterpolatorTypeErased() {
+    struct Keyframe {
+        Float time;
+        CubicHermite2D value;
+    } keyframes[3]{};
+
+    auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector2(*)(const CubicHermite2D&, const CubicHermite2D&, Float)>(Math::splerp));
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Scaling2D, 42,
+         AnimationTrackType::CubicHermite2D,
+         AnimationTrackType::Vector2,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         interpolator,
+         Animation::Extrapolation::Constant};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Scaling2D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite2D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector2);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Custom);
+    CORRADE_COMPARE(data.track().interpolator(), interpolator);
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::Constant);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::Constant);
+}
+
+void AnimationDataTest::constructTrackCustomInterpolatorTypeErasedImplicitResultType() {
+    struct Keyframe {
+        Float time;
+        Vector3 value;
+    } keyframes[3]{};
+
+    auto interpolator = reinterpret_cast<void(*)()>(static_cast<Vector3(*)(const Vector3&, const Vector3&, Float)>(Math::lerp));
+
+    AnimationTrackData data{
+         AnimationTrackTarget::Translation3D, 42,
+         AnimationTrackType::Vector3,
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::time),
+         Containers::stridedArrayView(keyframes).slice(&Keyframe::value),
+         interpolator,
+         Animation::Extrapolation::DefaultConstructed};
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.type(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.track().keys().data(), &keyframes[0].time);
+    CORRADE_COMPARE(data.track().values().data(), &keyframes[0].value);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Custom);
+    CORRADE_COMPARE(data.track().interpolator(), interpolator);
+    CORRADE_COMPARE(data.track().before(), Animation::Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(data.track().after(), Animation::Extrapolation::DefaultConstructed);
+}
+
+void AnimationDataTest::constructTrackFromView() {
+    AnimationTrackData data{
+         AnimationTrackTarget::Translation3D, 42,
+         Animation::TrackView<const Float, const CubicHermite3D>{
+            nullptr,
+            Animation::Interpolation::Linear,
+            animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite3D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AnimationDataTest::constructTrackDeprecated() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    AnimationTrackData data{
+         AnimationTrackType::CubicHermite3D,
+         AnimationTrackType::Vector3,
+         AnimationTrackTarget::Translation3D, 42,
+         Animation::TrackView<const Float, const CubicHermite3D>{
+            nullptr,
+            Animation::Interpolation::Linear,
+            animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(data.type(), AnimationTrackType::CubicHermite3D);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
+}
+
+void AnimationDataTest::constructTrackDeprecatedImplicitResultType() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    AnimationTrackData data{
+         AnimationTrackType::Vector3,
+         AnimationTrackTarget::Translation3D, 42,
+         Animation::TrackView<const Float, const Vector3>{
+            nullptr,
+            Animation::Interpolation::Linear,
+            animationInterpolatorFor<Vector3>(Animation::Interpolation::Linear)}};
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(data.type(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.resultType(), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.targetName(), AnimationTrackTarget::Translation3D);
+    CORRADE_COMPARE(data.target(), 42);
+    CORRADE_COMPARE(data.track().interpolation(), Animation::Interpolation::Linear);
+}
+#endif
+
+void AnimationDataTest::constructTrackInconsitentViewSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Float time[2];
+    Vector2 value[3];
+    std::ostringstream out;
+    Error redirectError{&out};
+    AnimationTrackData{
+         AnimationTrackTarget::Rotation3D, 42,
+         Containers::stridedArrayView(time),
+         Containers::stridedArrayView(value),
+         Animation::Interpolation::Linear};
+    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackData: expected key and value view to have the same size but got 2 and 3\n");
+}
+
+void AnimationDataTest::constructTrackUnknownInterpolator() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    AnimationTrackData{
+         AnimationTrackTarget::Rotation3D, 42,
+         AnimationTrackType::CubicHermite1D,
+         AnimationTrackType::Vector2,
+         nullptr,
+         nullptr,
+         Animation::Interpolation::Linear};
+    AnimationTrackData{
+         AnimationTrackTarget::Rotation3D, 42,
+         AnimationTrackType::Vector3,
+         nullptr,
+         nullptr,
+         Animation::Interpolation::Spline};
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnimationTrackData: can't deduce interpolator function for Trade::AnimationTrackType::CubicHermite1D, Trade::AnimationTrackType::Vector2 and Animation::Interpolation::Linear\n"
+        /* This assertion is from the delegated-to interpolationFor(), which
+           unfortunately doesn't print the types */
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Spline\n");
 }
 
 #ifndef CORRADE_TARGET_32BIT
@@ -739,9 +1047,8 @@ void AnimationDataTest::trackWrongIndex() {
     Error redirectError{&out};
 
     AnimationData data{nullptr, {
-        AnimationTrackData{AnimationTrackType::Vector3,
-            AnimationTrackTarget::Scaling3D, 0, {}}
-        }};
+        AnimationTrackData{AnimationTrackTarget::Scaling3D, 0, AnimationTrackType::Vector3, nullptr, nullptr, Animation::Interpolation::Constant}
+    }};
     data.trackType(1);
     data.trackResultType(1);
     data.trackTargetName(1);
@@ -765,10 +1072,8 @@ void AnimationDataTest::trackWrongType() {
     Error redirectError{&out};
 
     AnimationData data{nullptr, {
-        AnimationTrackData{AnimationTrackType::Vector3i,
-            AnimationTrackType::Vector3,
-            AnimationTrackTarget::Scaling3D, 0, {}}
-        }};
+        AnimationTrackData{AnimationTrackTarget::Scaling3D, 0, AnimationTrackType::Vector3i, AnimationTrackType::Vector3, nullptr, nullptr, Animation::Interpolation::Constant, nullptr}
+    }};
 
     data.track<Vector3>(0);
 
@@ -782,10 +1087,8 @@ void AnimationDataTest::trackWrongResultType() {
     Error redirectError{&out};
 
     AnimationData data{nullptr, {
-        AnimationTrackData{AnimationTrackType::Vector3i,
-            AnimationTrackType::Vector3,
-            AnimationTrackTarget::Scaling3D, 0, {}}
-        }};
+        AnimationTrackData{AnimationTrackTarget::Scaling3D, 0, AnimationTrackType::Vector3i, AnimationTrackType::Vector3, nullptr, nullptr, Animation::Interpolation::Constant, nullptr}
+    }};
 
     data.track<Vector3i, Vector2>(0);
 

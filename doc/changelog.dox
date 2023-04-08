@@ -1053,6 +1053,14 @@ See also:
 -   @cpp Trade::AbstractMaterialData @ce as well as its containing header
     `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
     and more flexible @ref Trade::MaterialData.
+-   @ref Trade::AnimationTrackData constructors taking
+    @ref Animation::TrackViewStorage are deprecated in favor of significantly
+    less verbose variants that take key/value views and other track parameters
+    directly, allowing them to either directly deduce the value type or be
+    truly type-erased, no longer requiring user code to manually handle all
+    possible cases. The variant taking an @ref Animation::TrackView is kept
+    however as it may be convenient when exporting already-populated animation
+    instances.
 -   @cpp Trade::LightData::Type::Infinite @ce, originally adapted from the
     OpenGEX specification, is deprecated in favor of
     @ref Trade::LightData::Type::Directional as that's the more commonly used

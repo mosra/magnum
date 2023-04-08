@@ -33,16 +33,77 @@
 
 namespace Magnum { namespace Trade {
 
-AnimationTrackData::AnimationTrackData(const AnimationTrackType type, const AnimationTrackType resultType, const AnimationTrackTarget targetName, const UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept: _type{type}, _resultType{resultType}, _targetName{targetName}, _interpolation{view.interpolation()}, _before{view.before()}, _after{view.after()}, _target{target}, _size{UnsignedInt(view.size())}, _keysStride{Short(view.keys().stride())}, _valuesStride{Short(view.values().stride())}, _keysData{view.keys().data()}, _valuesData{view.values().data()}, _interpolator{view.interpolator()} {
-    #ifndef CORRADE_TARGET_32BIT
-    CORRADE_ASSERT(view.size() <= 0xffffffffu,
-        "Trade::AnimationTrackData: expected keyframe count to fit into 32 bits but got" << view.size(), );
-    #endif
-    CORRADE_ASSERT(view.keys().stride() >= -32768 && view.keys().stride() <= 32767,
-        "Trade::AnimationTrackData: expected key stride to fit into 16 bits but got" << view.keys().stride(), );
-    CORRADE_ASSERT(view.values().stride() >= -32768 && view.values().stride() <= 32767,
-        "Trade::AnimationTrackData: expected value stride to fit into 16 bits but got" << view.values().stride(), );
+namespace {
+
+auto animationInterpolatorFor(const Animation::Interpolation interpolation, const AnimationTrackType type, const AnimationTrackType resultType) -> void(*)() {
+    switch(type) {
+        /* LCOV_EXCL_START */
+        #define _ct(value, type_)                                           \
+            case AnimationTrackType::value:                                 \
+                if(type == resultType)                                      \
+                    return reinterpret_cast<void(*)()>(Trade::animationInterpolatorFor<type_, type_>(interpolation)); \
+                break;
+        #define _c(type_) _ct(type_, type_)
+        _ct(Bool, bool)
+        _c(Float)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(BitVector2)
+        _c(BitVector3)
+        _c(BitVector4)
+        _c(Vector2)
+        _c(Vector2ui)
+        _c(Vector2i)
+        _c(Vector3)
+        _c(Vector3ui)
+        _c(Vector3i)
+        _c(Vector4)
+        _c(Vector4ui)
+        _c(Vector4i)
+        _c(Complex)
+        _c(Quaternion)
+        _c(DualQuaternion)
+        #undef _c
+        #undef _ct
+        /* LCOV_EXCL_STOP */
+
+        /* LCOV_EXCL_START */
+        #define _cr(type_, resultType_)                                     \
+            case AnimationTrackType::type_:                                 \
+                if(resultType == AnimationTrackType::resultType_)           \
+                    return reinterpret_cast<void(*)()>(Trade::animationInterpolatorFor<type_, resultType_>(interpolation)); \
+                break;
+        _cr(CubicHermite1D, Float)
+        _cr(CubicHermite2D, Vector2)
+        _cr(CubicHermite3D, Vector3)
+        _cr(CubicHermiteComplex, Complex)
+        _cr(CubicHermiteQuaternion, Quaternion)
+        #undef _cr
+        /* LCOV_EXCL_STOP */
+    }
+
+    /** @todo this doesn't print the types when e.g. a spline interpolation is
+        requested for bool, how to fix? */
+    CORRADE_ASSERT_UNREACHABLE("Trade::AnimationTrackData: can't deduce interpolator function for" << type << Debug::nospace << "," << resultType << "and" << interpolation, {});
 }
+
+}
+
+AnimationTrackData::AnimationTrackData(const AnimationTrackTarget targetName, const UnsignedLong target, const AnimationTrackType type, const AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, const Animation::Interpolation interpolation, void(*const interpolator)(), const Animation::Extrapolation before, const Animation::Extrapolation after) noexcept: _type{type}, _resultType{resultType}, _targetName{targetName}, _interpolation{interpolation}, _before{before}, _after{after}, _target{target}, _size{UnsignedInt(keys.size())}, _keysStride{Short(keys.stride())}, _valuesStride{Short(values.stride())}, _keysData{keys.data()}, _valuesData{values.data()}, _interpolator{interpolator} {
+    CORRADE_ASSERT(keys.size() == values.size(),
+        "Trade::AnimationTrackData: expected key and value view to have the same size but got" << keys.size() << "and" << values.size(), );
+    #ifndef CORRADE_TARGET_32BIT
+    CORRADE_ASSERT(keys.size() <= 0xffffffffu,
+        "Trade::AnimationTrackData: expected keyframe count to fit into 32 bits but got" << keys.size(), );
+    #endif
+    CORRADE_ASSERT(keys.stride() >= -32768 && keys.stride() <= 32767,
+        "Trade::AnimationTrackData: expected key stride to fit into 16 bits but got" << keys.stride(), );
+    CORRADE_ASSERT(values.stride() >= -32768 && values.stride() <= 32767,
+        "Trade::AnimationTrackData: expected value stride to fit into 16 bits but got" << values.stride(), );
+}
+
+
+AnimationTrackData::AnimationTrackData(const AnimationTrackTarget targetName, const UnsignedLong target, const AnimationTrackType type, const AnimationTrackType resultType, const Containers::StridedArrayView1D<const Float>& keys, const Containers::StridedArrayView1D<const void>& values, const Animation::Interpolation interpolation, const Animation::Extrapolation before, const Animation::Extrapolation after) noexcept: AnimationTrackData{targetName, target, type, resultType, keys, values, interpolation, animationInterpolatorFor(interpolation, type, resultType), before, after} {}
 
 Animation::TrackViewStorage<const Float> AnimationTrackData::track() const {
     return Animation::TrackViewStorage<const Float>{
