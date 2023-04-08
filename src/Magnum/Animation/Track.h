@@ -519,9 +519,7 @@ template<class K> class TrackViewStorage {
     private:
         template<class, class, class> friend class TrackView;
 
-        template<class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView1D<K>& keys, const Containers::StridedArrayView1D<V>& values, Interpolation interpolation, R(*interpolator)(const V&, const V&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{reinterpret_cast<const Containers::StridedArrayView1D<char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
-
-        template<class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolation interpolation, R(*interpolator)(const V&, const V&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{reinterpret_cast<const Containers::StridedArrayView1D<const char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
+        template<class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView1D<K>& keys, const Containers::StridedArrayView1D<V>& values, Interpolation interpolation, R(*interpolator)(const typename std::remove_const<V>::type&, const typename std::remove_const<V>::type&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{reinterpret_cast<const Containers::StridedArrayView1D<char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
         Containers::StridedArrayView1D<K> _keys;
         Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const char, char>::type> _values;
