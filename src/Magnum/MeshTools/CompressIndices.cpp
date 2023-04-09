@@ -27,12 +27,16 @@
 
 #include <cstring>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/Reference.h"
 #include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
+#include <Corrade/Containers/ArrayViewStl.h>
+#endif
 
 namespace Magnum { namespace MeshTools {
 

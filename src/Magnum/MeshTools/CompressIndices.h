@@ -37,9 +37,9 @@
 #include "Magnum/Trade/Trade.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple>
 #include <Corrade/Utility/Macros.h>
 #include <Corrade/Utility/StlForwardVector.h>
+#include <Corrade/Utility/StlForwardTuple.h>
 #endif
 
 namespace Magnum { namespace MeshTools {
