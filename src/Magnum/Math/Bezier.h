@@ -181,7 +181,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
          * @see @ref subdivide()
          */
-        Vector<dimensions, T> value(Float t) const {
+        Vector<dimensions, T> value(T t) const {
             Bezier<order, dimensions, T> iPoints[order + 1];
             calculateIntermediatePoints(iPoints, t);
             return iPoints[0][order];
@@ -194,7 +194,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * given interpolation factor. Uses the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
          * @see @ref value()
          */
-        std::pair<Bezier<order, dimensions, T>, Bezier<order, dimensions, T>> subdivide(Float t) const {
+        std::pair<Bezier<order, dimensions, T>, Bezier<order, dimensions, T>> subdivide(T t) const {
             Bezier<order, dimensions, T> iPoints[order + 1];
             calculateIntermediatePoints(iPoints, t);
             Bezier<order, dimensions, T> left, right;
@@ -214,7 +214,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         template<class U, std::size_t ...sequence> constexpr explicit Bezier(Corrade::Containers::Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
-        void calculateIntermediatePoints(Bezier<order, dimensions, T>(&iPoints)[order + 1], Float t) const {
+        void calculateIntermediatePoints(Bezier<order, dimensions, T>(&iPoints)[order + 1], T t) const {
             for(std::size_t i = 0; i <= order; ++i) {
                 iPoints[i][0] = _data[i];
             }
