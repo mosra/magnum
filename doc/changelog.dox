@@ -523,6 +523,8 @@ See also:
 
 @subsubsection changelog-latest-changes-math Math library
 
+-   Added @ref Math::BitVector::set(std::size_t) and
+    @ref Math::BitVector::reset(std::size_t) for branchless bit setting
 -   Added @ref Math::castInto() overloads for casting between @ref UnsignedByte
     and @ref UnsignedShort or @ref Byte and @ref Short, from and to
     @ref UnsignedLong / @ref Long, between integral types and @ref Double and

@@ -220,23 +220,30 @@ void BitVectorTest::data() {
     constexpr bool b = ca[9];
     CORRADE_COMPARE(b, true);
 
-    BitVector19 a(0x08, 0x03, 0x04);
-    a.set(15, true);
-    CORRADE_VERIFY(a[15]);
-    CORRADE_COMPARE(a, BitVector19(0x08, 0x83, 0x04));
-    a.set(15, false);
-    CORRADE_VERIFY(!a[15]);
-    CORRADE_COMPARE(a, BitVector19(0x08, 0x03, 0x04));
+    BitVector19 a1(0x08, 0x03, 0x04);
+    BitVector19 a2(0x08, 0x03, 0x04);
+    a1.set(15);
+    a2.set(15, true);
+    CORRADE_VERIFY(a1[15]);
+    CORRADE_VERIFY(a2[15]);
+    CORRADE_COMPARE(a1, BitVector19(0x08, 0x83, 0x04));
+    CORRADE_COMPARE(a2, BitVector19(0x08, 0x83, 0x04));
+    a1.reset(15);
+    a2.set(15, false);
+    CORRADE_VERIFY(!a1[15]);
+    CORRADE_VERIFY(!a2[15]);
+    CORRADE_COMPARE(a1, BitVector19(0x08, 0x03, 0x04));
+    CORRADE_COMPARE(a2, BitVector19(0x08, 0x03, 0x04));
 
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
     constexpr
     #endif
     UnsignedByte c = *ca.data();
-    CORRADE_COMPARE(a.data()[1], 0x03);
+    CORRADE_COMPARE(a1.data()[1], 0x03);
     CORRADE_COMPARE(c, 0x08);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Corrade::Containers::arraySize(a1.data()), 3);
     CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
 }
 
@@ -336,12 +343,12 @@ void BitVectorTest::booleanOperationEquivalents() {
 void BitVectorTest::strictWeakOrdering() {
     BitVector<11> a, b, c;
 
-    a.set(0, true);
-    a.set(1, true);
+    a.set(0);
+    a.set(1);
 
-    c.set(7, true);
+    c.set(7);
 
-    b.set(8, true);
+    b.set(8);
 
     StrictWeakOrdering o;
     CORRADE_VERIFY( o(b, a));
@@ -353,8 +360,8 @@ void BitVectorTest::strictWeakOrdering() {
     CORRADE_VERIFY(!o(a, a));
 
     /* Check uninitialized padding reads */
-    a.set(8, true);
-    a.set(10, true);
+    a.set(8);
+    a.set(10);
     b = a;
     a.data()[1] |= 0x08;
     b.data()[1] |= 0x20;

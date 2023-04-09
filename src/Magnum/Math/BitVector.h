@@ -153,7 +153,30 @@ template<std::size_t size> class BitVector {
             return (_data[i/8] >> i%8) & 0x01;
         }
 
-        /** @brief Set a bit at given position */
+        /**
+         * @brief Set a bit at given position
+         * @m_since_latest
+         */
+        BitVector<size>& set(std::size_t i) {
+            _data[i/8] |= 1 << i%8;
+            return *this;
+        }
+
+        /**
+         * @brief Reset a bit at given position
+         * @m_since_latest
+         */
+        BitVector<size>& reset(std::size_t i) {
+            _data[i/8] &= ~(1 << i%8);
+            return *this;
+        }
+
+        /**
+         * @brief Set or reset a bit at given position
+         *
+         * Prefer to use @ref set(std::size_t) and @ref reset(std::size_t)
+         * where possible as that's a simpler operation.
+         */
         BitVector<size>& set(std::size_t i, bool value) {
             value ? _data[i/8] |=  (1 << i%8) :
                     _data[i/8] &= ~(1 << i%8);
