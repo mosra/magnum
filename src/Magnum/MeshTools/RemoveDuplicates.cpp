@@ -482,30 +482,19 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
        this will be just a passthrough. */
     Trade::MeshData owned = MeshTools::owned(std::move(data));
 
-    /* Allocate an interleaved index array for all attribs. If the mesh is
-       already indexed, use the existing index count and copy the original
-       index array there so the algorithm can operate directly on it. */
-    Containers::Array<UnsignedInt> combinedIndexStorage;
-    Containers::StridedArrayView2D<UnsignedInt> combinedIndices;
-
-    /* If the mesh is not indexed, allocate for vertex count and keep it
-       uninitialized */
-    combinedIndexStorage = Containers::Array<UnsignedInt>{NoInit,
-        owned.vertexCount()*owned.attributeCount()};
-    combinedIndices = Containers::StridedArrayView2D<UnsignedInt>{
-        combinedIndexStorage,
-        {owned.vertexCount(), owned.attributeCount()}};
+    /* Allocate an interleaved index array for all vertices times all
+       attributes */
+    Containers::Array<UnsignedInt> combinedIndexStorage = Containers::Array<UnsignedInt>{NoInit, owned.vertexCount()*owned.attributeCount()};
+    const Containers::StridedArrayView2D<UnsignedInt> combinedIndices = Containers::StridedArrayView2D<UnsignedInt>{combinedIndexStorage, {owned.vertexCount(), owned.attributeCount()}};
 
     /* For each attribute decide if it needs to be fuzzy-deduplicated or not,
        calculate the epsilon size and call the appropriate API */
-    Containers::StridedArrayView2D<UnsignedInt> perAttributeIndices = combinedIndices.transposed<0, 1>();
+    const Containers::StridedArrayView2D<UnsignedInt> perAttributeIndices = combinedIndices.transposed<0, 1>();
     for(UnsignedInt i = 0; i != owned.attributeCount(); ++i) {
         const VertexFormat format = owned.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
             "MeshTools::removeDuplicatesFuzzy(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
-
-        const Containers::StridedArrayView1D<UnsignedInt> outputIndices = perAttributeIndices[i];
 
         /* Floats, with special attribute-dependent handling */
         const VertexFormat componentFormat = vertexFormatComponentFormat(format);
@@ -554,7 +543,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
                 attributeEpsilon = floatEpsilon*range;
             }
 
-            removeDuplicatesFuzzyInPlaceIntoImplementation(attribute, outputIndices, attributeEpsilon);
+            removeDuplicatesFuzzyInPlaceIntoImplementation(attribute, perAttributeIndices[i], attributeEpsilon);
 
         /* Doubles. No builtin attributes support those at the moment, so
            there's just the epsilon scaling based on attribute value range */
@@ -565,14 +554,14 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
             for(Containers::StridedArrayView1D<const Double> component: attribute.transposed<0, 1>())
                 range = Math::max(Range1Dd{Math::minmax(component)}.size(), range);
 
-            removeDuplicatesFuzzyInPlaceIntoImplementation(attribute, outputIndices, doubleEpsilon*range);
+            removeDuplicatesFuzzyInPlaceIntoImplementation(attribute, perAttributeIndices[i], doubleEpsilon*range);
 
         /* Other attributes (integer, packed, half floats). No fuzzy
            comparison */
         } else {
             const Containers::StridedArrayView2D<char> attribute = owned.mutableAttribute(i);
 
-            removeDuplicatesInPlaceInto(attribute, outputIndices);
+            removeDuplicatesInPlaceInto(attribute, perAttributeIndices[i]);
         }
     }
 
@@ -582,7 +571,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
     MeshIndexType indexType;
 
     if(!owned.isIndexed()) {
-        indexData = Containers::Array<char>{combinedIndices.size()[0]*sizeof(UnsignedInt)};
+        indexData = Containers::Array<char>{NoInit, combinedIndices.size()[0]*sizeof(UnsignedInt)};
         vertexCount = removeDuplicatesInPlaceInto(
             Containers::arrayCast<2, char>(combinedIndices),
             Containers::arrayCast<UnsignedInt>(indexData));
@@ -606,10 +595,9 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
 
     /* Trim the views to only the unique combinations, duplicate the attributes
        according to the combined index buffer */
-    combinedIndices = combinedIndices.prefix(vertexCount);
-    perAttributeIndices = combinedIndices.transposed<0, 1>();
+    const Containers::StridedArrayView2D<UnsignedInt> uniquePerAttributeIndices = combinedIndices.prefix(vertexCount).transposed<0, 1>();
     for(UnsignedInt i = 0; i != owned.attributeCount(); ++i)
-        duplicateInto(perAttributeIndices[i].prefix(vertexCount), owned.attribute(i), out.mutableAttribute(i));
+        duplicateInto(uniquePerAttributeIndices[i].prefix(vertexCount), owned.attribute(i), out.mutableAttribute(i));
 
     return out;
 }
