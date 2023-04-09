@@ -23,9 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <tuple> /* for std::tie() :( */
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringView.h>
@@ -1146,13 +1146,12 @@ mesh.addVertexBuffer(vertices, 0,
 GL::Mesh mesh;
 const UnsignedInt indexData[1]{};
 /* [Mesh-indices-tool] */
-Containers::Array<char> compressed;
-MeshIndexType type;
-std::tie(compressed, type) = MeshTools::compressIndices(indexData);
-GL::Buffer indices{compressed};
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressed =
+    MeshTools::compressIndices(indexData);
+GL::Buffer indices{compressed.first()};
 
 DOXYGEN_ELLIPSIS()
-mesh.setIndexBuffer(indices, 0, type);
+mesh.setIndexBuffer(indices, 0, compressed.second());
 /* [Mesh-indices-tool] */
 }
 

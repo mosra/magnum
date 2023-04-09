@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <tuple> /* for std::tie() :( */
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -36,6 +36,7 @@
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
 #include <vector>
 #endif
 
@@ -83,16 +84,15 @@ mesh.addVertexBuffer(std::move(vertices),
 /* [compressIndices] */
 Containers::Array<UnsignedInt> indices;
 
-Containers::Array<char> indexData;
-MeshIndexType indexType;
-std::tie(indexData, indexType) = MeshTools::compressIndices(indices);
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressed =
+    MeshTools::compressIndices(indices);
 
 GL::Buffer indexBuffer;
-indexBuffer.setData(indexData);
+indexBuffer.setData(compressed.first());
 
 GL::Mesh mesh;
 mesh.setCount(indices.size())
-    .setIndexBuffer(indexBuffer, 0, indexType);
+    .setIndexBuffer(indexBuffer, 0, compressed.second());
 /* [compressIndices] */
 }
 

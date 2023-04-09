@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -105,19 +106,19 @@ template<class T> void CompressIndicesTest::compressUnsignedByte() {
 
     const T indices[]{1, 2, 3, 0, 4};
     /* By default it has 16-byte type as minimum, override */
-    std::pair<Containers::Array<char>, MeshIndexType> out =
+    Containers::Pair<Containers::Array<char>, MeshIndexType> out =
         compressIndices(indices, MeshIndexType::UnsignedByte);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedByte);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedByte);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(out.first()),
         Containers::arrayView<UnsignedByte>({1, 2, 3, 0, 4}),
         TestSuite::Compare::Container);
 
     /* Test the type-erased variant as well */
     out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)), MeshIndexType::UnsignedByte);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedByte);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedByte);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(out.first()),
         Containers::arrayView<UnsignedByte>({1, 2, 3, 0, 4}),
         TestSuite::Compare::Container);
 }
@@ -126,18 +127,18 @@ template<class T> void CompressIndicesTest::compressUnsignedShort() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     const T indices[]{1, 256, 0, 5};
-    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
+    Containers::Pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first()),
         Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
         TestSuite::Compare::Container);
 
     /* Test the type-erased variant as well */
     out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)));
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first()),
         Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
         TestSuite::Compare::Container);
 }
@@ -146,18 +147,18 @@ template<class T> void CompressIndicesTest::compressUnsignedInt() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     const T indices[]{65536, 3, 2};
-    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
+    Containers::Pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first()),
         Containers::arrayView<UnsignedInt>({65536, 3, 2}),
         TestSuite::Compare::Container);
 
     /* Test the type-erased variant as well */
     out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)));
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first()),
         Containers::arrayView<UnsignedInt>({65536, 3, 2}),
         TestSuite::Compare::Container);
 }
@@ -165,28 +166,28 @@ template<class T> void CompressIndicesTest::compressUnsignedInt() {
 void CompressIndicesTest::compressUnsignedByteInflateToShort() {
     const UnsignedByte indices[]{1, 2, 3, 0, 4};
     /* That's the default */
-    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
+    Containers::Pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first()),
         Containers::arrayView<UnsignedShort>({1, 2, 3, 0, 4}),
         TestSuite::Compare::Container);
 }
 
 void CompressIndicesTest::compressOffset() {
     const UnsignedInt indices[]{75000 + 1, 75000 + 256, 75000 + 0, 75000 + 5};
-    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices, 75000);
+    Containers::Pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices, 75000);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first()),
         Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
         TestSuite::Compare::Container);
 
     /* Test the type-erased variant as well */
     out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)), 75000);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first()),
         Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
         TestSuite::Compare::Container);
 }
@@ -195,18 +196,18 @@ template<class T> void CompressIndicesTest::compressOffsetNegative() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     const T indices[]{1, 255, 0, 5};
-    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices, -75000);
+    Containers::Pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices, -75000);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first()),
         Containers::arrayView<UnsignedInt>({75000 + 1, 75000 + 255, 75000 + 0, 75000 + 5}),
         TestSuite::Compare::Container);
 
     /* Test the type-erased variant as well */
     out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)), -75000);
 
-    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first),
+    CORRADE_COMPARE(out.second(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first()),
         Containers::arrayView<UnsignedInt>({75000 + 1, 75000 + 255, 75000 + 0, 75000 + 5}),
         TestSuite::Compare::Container);
 }

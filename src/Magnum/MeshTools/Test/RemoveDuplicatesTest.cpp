@@ -27,6 +27,7 @@
 #include <random> /* random device for std::shuffle() */
 #include <sstream>
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -266,18 +267,19 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
 void RemoveDuplicatesTest::removeDuplicates() {
     Int data[]{-15, 32, 24, -15, 15, 7541, 24, 32};
 
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> result =
+    Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> result =
         MeshTools::removeDuplicates(Containers::arrayCast<2, char>(Containers::arrayView(data)));
-    CORRADE_COMPARE_AS(Containers::arrayView(result.first),
+    CORRADE_COMPARE_AS(Containers::arrayView(result.first()),
         Containers::arrayView<UnsignedInt>({0, 1, 2, 0, 4, 5, 2, 1}),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE(result.second(), 5);
 
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> resultInPlace =
+    Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> resultInPlace =
         MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(Containers::arrayView(data)));
-    CORRADE_COMPARE_AS(Containers::arrayView(resultInPlace.first),
+    CORRADE_COMPARE_AS(Containers::arrayView(resultInPlace.first()),
         Containers::arrayView<UnsignedInt>({0, 1, 2, 0, 3, 4, 2, 1}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(resultInPlace.second),
+    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(resultInPlace.second()),
         Containers::arrayView<Int>({-15, 32, 24, 15, 7541}),
         TestSuite::Compare::Container);
 }
@@ -421,14 +423,14 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDime
         T(3.4)  /* bucket 3 in 1st iteration, bucket 3 in 2nd */
     };
 
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> result =
+    Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> result =
         MeshTools::removeDuplicatesFuzzyInPlace(
             Containers::arrayCast<2, T>(Containers::stridedArrayView(data)),
             T(1.00001));
-    CORRADE_COMPARE_AS(Containers::arrayView(result.first),
+    CORRADE_COMPARE_AS(Containers::arrayView(result.first()),
         Containers::arrayView<UnsignedInt>({0, 1, 0, 1}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second),
+    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second()),
         (Containers::arrayView<T>({T(1.0), T(2.9)})),
         TestSuite::Compare::Container);
 }
@@ -446,14 +448,14 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDim
         {T(1.0), T(5.0)}
     };
 
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> result =
+    Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> result =
         MeshTools::removeDuplicatesFuzzyInPlace(
             Containers::arrayCast<2, T>(Containers::stridedArrayView(data)),
             T(2.0));
-    CORRADE_COMPARE_AS(Containers::arrayView(result.first),
+    CORRADE_COMPARE_AS(Containers::arrayView(result.first()),
         Containers::arrayView<UnsignedInt>({0, 0, 1, 1}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second),
+    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second()),
         Containers::arrayView<Math::Vector2<T>>({{T(1.0), T(0.0)}, {T(0.0), T(4.0)}}),
         TestSuite::Compare::Container);
 }
@@ -1215,7 +1217,7 @@ void RemoveDuplicatesTest::soakTest() {
     CORRADE_COMPARE(MeshTools::removeDuplicatesInPlace(
         Containers::StridedArrayView2D<char>{
             Containers::arrayCast<char>(Containers::arrayView(data)), {1000, 4}}
-        ).second, 100);
+        ).second(), 100);
 }
 
 void RemoveDuplicatesTest::soakTestFuzzy() {
@@ -1226,7 +1228,7 @@ void RemoveDuplicatesTest::soakTestFuzzy() {
     std::shuffle(std::begin(data), std::end(data), std::minstd_rand{std::random_device{}()});
 
     CORRADE_COMPARE(MeshTools::removeDuplicatesFuzzyInPlace(
-        Containers::arrayCast<2, Float>(Containers::arrayView(data))).second,
+        Containers::arrayCast<2, Float>(Containers::arrayView(data))).second(),
         100);
 }
 

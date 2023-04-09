@@ -1304,6 +1304,9 @@ See also:
         @ref GL::Buffer::setLabel() "setLabel()" APIs now work with a
         @relativeref{Corrade,Containers::StringView} /
         @relativeref{Corrade,Containers::String} instead of a @ref std::string
+    -   @ref MeshTools::compressIndices(), @ref MeshTools::removeDuplicates()
+        and related APIs now return a @relativeref{Corrade,Containers::Pair}
+        instead of a @ref std::pair
     -   @ref Vk::DescriptorPoolCreateInfo and @ref Vk::AttachmentDescription
         APIs now take a @relativeref{Corrade,Containers::Pair} instead of a
         @ref std::pair

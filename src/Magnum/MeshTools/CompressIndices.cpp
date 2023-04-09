@@ -27,6 +27,7 @@
 
 #include <cstring>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
@@ -54,10 +55,10 @@ template<class T, class U> inline Containers::Array<char> compress(const Contain
     return buffer;
 }
 
-template<class T> std::pair<Containers::Array<char>, MeshIndexType> compressIndicesImplementation(const Containers::StridedArrayView1D<const T>& indices, const MeshIndexType atLeast, const Long offset) {
+template<class T> Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndicesImplementation(const Containers::StridedArrayView1D<const T>& indices, const MeshIndexType atLeast, const Long offset) {
     CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(atLeast),
         "MeshTools::compressIndices(): can't compress to an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(atLeast)),
-        (std::pair<Containers::Array<char>, MeshIndexType>{nullptr, MeshIndexType::UnsignedInt}));
+        (Containers::Pair<Containers::Array<char>, MeshIndexType>{nullptr, MeshIndexType::UnsignedInt}));
 
     const UnsignedInt max = Math::max(indices) - offset;
     Containers::Array<char> out;
@@ -86,31 +87,31 @@ template<class T> std::pair<Containers::Array<char>, MeshIndexType> compressIndi
 
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const MeshIndexType atLeast, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const MeshIndexType atLeast, const Long offset) {
     return compressIndicesImplementation(indices, atLeast, offset);
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const MeshIndexType atLeast, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const MeshIndexType atLeast, const Long offset) {
     return compressIndicesImplementation(indices, atLeast, offset);
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const MeshIndexType atLeast, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const MeshIndexType atLeast, const Long offset) {
     return compressIndicesImplementation(indices, atLeast, offset);
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Long offset) {
     return compressIndicesImplementation(indices, MeshIndexType::UnsignedShort, offset);
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Long offset) {
     return compressIndicesImplementation(indices, MeshIndexType::UnsignedShort, offset);
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Long offset) {
     return compressIndicesImplementation(indices, MeshIndexType::UnsignedShort, offset);
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, const MeshIndexType atLeast, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, const MeshIndexType atLeast, const Long offset) {
     CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::compressIndices(): second view dimension is not contiguous", {});
     if(indices.size()[1] == 4)
         return compressIndicesImplementation(Containers::arrayCast<1, const UnsignedInt>(indices), atLeast, offset);
@@ -122,7 +123,7 @@ std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containe
     }
 }
 
-std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, const Long offset) {
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, const Long offset) {
     return compressIndices(indices, MeshIndexType::UnsignedShort, offset);
 }
 
@@ -142,7 +143,7 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
 
     /* Compress the indices */
     UnsignedInt offset;
-    std::pair<Containers::Array<char>, MeshIndexType> result;
+    Containers::Pair<Containers::Array<char>, MeshIndexType> result;
     if(data.indexType() == MeshIndexType::UnsignedInt) {
         auto indices = data.indices<UnsignedInt>();
         offset = Math::min(indices);
@@ -172,8 +173,8 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
             data.attributeArraySize(i)};
     }
 
-    Trade::MeshIndexData indices{result.second, result.first};
-    return Trade::MeshData{data.primitive(), std::move(result.first), indices,
+    Trade::MeshIndexData indices{result.second(), result.first()};
+    return Trade::MeshData{data.primitive(), std::move(result.first()), indices,
         std::move(vertexData), std::move(attributeData), newVertexCount};
 }
 
@@ -186,10 +187,8 @@ Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLea
 #ifdef MAGNUM_BUILD_DEPRECATED
 std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
     const auto minmax = Math::minmax(indices);
-    Containers::Array<char> data;
-    MeshIndexType type;
-    std::tie(data, type) = compressIndices(indices, MeshIndexType::UnsignedByte);
-    return std::make_tuple(std::move(data), type, minmax.first, minmax.second);
+    Containers::Pair<Containers::Array<char>, MeshIndexType> dataType = compressIndices(indices, MeshIndexType::UnsignedByte);
+    return std::make_tuple(std::move(dataType.first()), dataType.second(), minmax.first, minmax.second);
 }
 
 template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {

@@ -29,8 +29,6 @@
  * @brief Function @ref Magnum::MeshTools::removeDuplicatesInPlace(), @ref Magnum::MeshTools::removeDuplicatesIndexedInPlace()
  */
 
-#include <utility>
-
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/MeshTools/visibility.h"
@@ -40,6 +38,9 @@
 #include <vector>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
+
+/* The function used to return a std::pair */
+#include <Corrade/Containers/PairStl.h>
 #endif
 
 namespace Magnum { namespace MeshTools {
@@ -68,7 +69,7 @@ an index array pointing to original data locations.
 @see @ref Corrade::Containers::StridedArrayView::isContiguous(),
     @ref removeDuplicatesInPlaceInto()
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
+MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
 
 /**
 @brief Remove duplicate data from given array in-place into given output index array
@@ -95,7 +96,7 @@ Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<ch
 this function doesn't modify the input data array in any way but instead
 returns an index array pointing to original data locations.
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data);
+MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data);
 
 /**
 @brief Remove duplicate data from given array into given output index array
@@ -173,13 +174,13 @@ If you want to remove duplicates in multiple incidental arrays, first remove
 duplicates in each array separately and then combine the resulting index arrays
 back into a single one using @ref combineIndexedAttributes().
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
+MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
+MAGNUM_MESHTOOLS_EXPORT Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
 @brief Remove duplicate data from given array using fuzzy comparison in-place into given output index array

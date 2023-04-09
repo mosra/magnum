@@ -30,6 +30,7 @@
 #include <numeric>
 #include <unordered_map>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/MurmurHash2.h>
@@ -97,7 +98,7 @@ std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char
     return table.size();
 }
 
-std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data) {
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data) {
     Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesInto(data, indices);
     return {std::move(indices), size};
@@ -155,7 +156,7 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
     return table.size();
 }
 
-std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data) {
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data) {
     Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesInPlaceInto(data, indices);
     return {std::move(indices), size};
@@ -174,9 +175,9 @@ template<class IndexType> std::size_t removeDuplicatesIndexedInPlaceImplementati
        original order, which is an useful property. The float version has this
        inverted (having the *Indexed() variant as the main implementation)
        because the remapping there has to be done once for every dimension. */
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> result = removeDuplicatesInPlace(data);
-    for(auto& i: indices) i = result.first[i];
-    return result.second;
+    const Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> result = removeDuplicatesInPlace(data);
+    for(auto& i: indices) i = result.first()[i];
+    return result.second();
 }
 
 }
@@ -348,7 +349,7 @@ template<class T> std::size_t removeDuplicatesFuzzyInPlaceIntoImplementation(con
     return size;
 }
 
-template<class T> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlaceImplementation(const Containers::StridedArrayView2D<T>& data, const T epsilon) {
+template<class T> Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlaceImplementation(const Containers::StridedArrayView2D<T>& data, const T epsilon) {
     Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesFuzzyInPlaceIntoImplementation(data, indices, epsilon);
     return {std::move(indices), size};
@@ -356,11 +357,11 @@ template<class T> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeD
 
 }
 
-std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>& data, const Float epsilon) {
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>& data, const Float epsilon) {
     return removeDuplicatesFuzzyInPlaceImplementation(data, epsilon);
 }
 
-std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Double>& data, const Double epsilon) {
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Double>& data, const Double epsilon) {
     return removeDuplicatesFuzzyInPlaceImplementation(data, epsilon);
 }
 

@@ -23,8 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <tuple>
 #include <vector>
+#include <Corrade/Containers/Pair.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
@@ -73,7 +73,7 @@ CORRADE_IGNORE_DEPRECATED_POP
 /* [compressIndices-offset] */
 Containers::ArrayView<const UnsignedInt> indices;
 UnsignedInt offset = Math::min(indices);
-std::pair<Containers::Array<char>, MeshIndexType> result =
+Containers::Pair<Containers::Array<char>, MeshIndexType> compressed =
     MeshTools::compressIndices(indices, offset);
 
 // use `offset` to adjust vertex attribute offset …
@@ -153,11 +153,9 @@ Trade::MeshData indexed{data.primitive(),
 /* [removeDuplicates] */
 Containers::ArrayView<Vector3i> data;
 
-std::size_t size;
-Containers::Array<UnsignedInt> indices;
-std::tie(indices, size) = MeshTools::removeDuplicatesInPlace(
-    Containers::arrayCast<2, char>(data));
-data = data.prefix(size);
+Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> unique =
+    MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(data));
+data = data.prefix(unique.second());
 /* [removeDuplicates] */
 }
 
