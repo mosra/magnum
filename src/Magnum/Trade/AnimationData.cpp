@@ -33,6 +33,25 @@
 
 namespace Magnum { namespace Trade {
 
+AnimationTrackData::AnimationTrackData(const AnimationTrackType type, const AnimationTrackType resultType, const AnimationTrackTarget targetName, const UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept: _type{type}, _resultType{resultType}, _targetName{targetName}, _interpolation{view.interpolation()}, _before{view.before()}, _after{view.after()}, _target{target}, _size{UnsignedInt(view.size())}, _keysStride{Short(view.keys().stride())}, _valuesStride{Short(view.values().stride())}, _keysData{view.keys().data()}, _valuesData{view.values().data()}, _interpolator{view.interpolator()} {
+    #ifndef CORRADE_TARGET_32BIT
+    CORRADE_ASSERT(view.size() <= 0xffffffffu,
+        "Trade::AnimationTrackData: expected keyframe count to fit into 32 bits but got" << view.size(), );
+    #endif
+    CORRADE_ASSERT(view.keys().stride() >= -32768 && view.keys().stride() <= 32767,
+        "Trade::AnimationTrackData: expected key stride to fit into 16 bits but got" << view.keys().stride(), );
+    CORRADE_ASSERT(view.values().stride() >= -32768 && view.values().stride() <= 32767,
+        "Trade::AnimationTrackData: expected value stride to fit into 16 bits but got" << view.values().stride(), );
+}
+
+Animation::TrackViewStorage<const Float> AnimationTrackData::track() const {
+    return Animation::TrackViewStorage<const Float>{
+        /* We're sure the views are correct, circumventing the asserts */
+        Containers::StridedArrayView1D<const Float>{{nullptr, ~std::size_t{}}, static_cast<const Float*>(_keysData), _size, _keysStride},
+        Containers::StridedArrayView1D<const char>{{nullptr, ~std::size_t{}}, static_cast<const char*>(_valuesData), _size, _valuesStride},
+        _interpolation, _interpolator, _before, _after};
+}
+
 AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _duration{duration}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {}
 
 AnimationData::AnimationData(Containers::Array<char>&& data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState): AnimationData{std::move(data), Implementation::initializerListToArrayWithDefaultDeleter(tracks), duration, importerState} {}
@@ -47,11 +66,19 @@ AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayV
 
 AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {
     if(!_tracks.isEmpty()) {
+        const auto duration = [](const AnimationTrackData& track) {
+            if(!track._size) return Range1D{};
+
+            /* We're sure the view is correct, circumventing the assert */
+            Containers::StridedArrayView1D<const Float> keys{{nullptr, ~std::size_t{}}, static_cast<const Float*>(track._keysData), track._size, track._keysStride};
+            return Range1D{keys.front(), keys.back()};
+        };
+
         /* Reset duration to duration of the first track so it properly support
            cases where tracks don't start at 0 */
-        _duration = _tracks.front()._view.duration();
+        _duration = duration(_tracks.front());
         for(std::size_t i = 1; i != _tracks.size(); ++i)
-            _duration = Math::join(_duration, _tracks[i]._view.duration());
+            _duration = Math::join(_duration, duration(_tracks[i]));
     }
 }
 
@@ -101,20 +128,21 @@ UnsignedLong AnimationData::trackTarget(UnsignedInt id) const {
     return _tracks[id]._target;
 }
 
-const Animation::TrackViewStorage<const Float>& AnimationData::track(UnsignedInt id) const {
+Animation::TrackViewStorage<const Float> AnimationData::track(UnsignedInt id) const {
     CORRADE_ASSERT(id < _tracks.size(),
-        "Trade::AnimationData::track(): index" << id << "out of range for" << _tracks.size() << "tracks", _tracks[0]._view);
-    return _tracks[id]._view;
+        "Trade::AnimationData::track(): index" << id << "out of range for" << _tracks.size() << "tracks", _tracks[0].track());
+    return _tracks[id].track();
 }
 
-const Animation::TrackViewStorage<Float>& AnimationData::mutableTrack(UnsignedInt id) {
+Animation::TrackViewStorage<Float> AnimationData::mutableTrack(UnsignedInt id) {
+    /* EW those casts! */
     CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
         "Trade::AnimationData::mutableTrack(): the animation is not mutable",
-        reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view));
+        reinterpret_cast<const Animation::TrackViewStorage<Float>&>(static_cast<const Animation::TrackViewStorage<const Float>&>(_tracks[0].track())));
     CORRADE_ASSERT(id < _tracks.size(),
         "Trade::AnimationData::mutableTrack(): index" << id << "out of range for" << _tracks.size() << "tracks",
-        reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[0]._view));
-    return reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view);
+        reinterpret_cast<const Animation::TrackViewStorage<Float>&>(static_cast<const Animation::TrackViewStorage<const Float>&>(_tracks[0].track())));
+    return reinterpret_cast<const Animation::TrackViewStorage<Float>&>(static_cast<const Animation::TrackViewStorage<const Float>&>(_tracks[id].track()));
 }
 
 Containers::Array<char> AnimationData::release() {

@@ -49,6 +49,10 @@ struct AnimationDataTest: TestSuite::Tester {
     void constructTrackResultType();
     void constructTrackTemplate();
     void constructTrackDefault();
+    #ifndef CORRADE_TARGET_32BIT
+    void constructTrackWrongSize();
+    #endif
+    void constructTrackWrongStride();
 
     void construct();
     void constructNotOwned();
@@ -93,6 +97,10 @@ AnimationDataTest::AnimationDataTest() {
               &AnimationDataTest::constructTrackResultType,
               &AnimationDataTest::constructTrackTemplate,
               &AnimationDataTest::constructTrackDefault,
+              #ifndef CORRADE_TARGET_32BIT
+              &AnimationDataTest::constructTrackWrongSize,
+              #endif
+              &AnimationDataTest::constructTrackWrongStride,
 
               &AnimationDataTest::construct,
               &AnimationDataTest::constructImplicitDuration,
@@ -247,6 +255,75 @@ void AnimationDataTest::constructTrackDefault() {
     CORRADE_COMPARE(data.track().interpolator(), nullptr);
     CORRADE_COMPARE(data.track().keys().data(), nullptr);
     CORRADE_COMPARE(data.track().values().data(), nullptr);
+}
+
+#ifndef CORRADE_TARGET_32BIT
+void AnimationDataTest::constructTrackWrongSize() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* This should be fine */
+    AnimationTrackData{AnimationTrackTarget::Rotation3D, 16, Animation::TrackView<const Float, const Quaternion>{
+        {nullptr, 0xffffffffu},
+        {nullptr, 0xffffffffu},
+        Animation::Interpolation::Constant
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    AnimationTrackData{AnimationTrackTarget::Rotation3D, 16, Animation::TrackView<const Float, const Quaternion>{
+        {nullptr, 0x100000000ull},
+        {nullptr, 0x100000000ull},
+        Animation::Interpolation::Constant
+    }};
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnimationTrackData: expected keyframe count to fit into 32 bits but got 4294967296\n");
+}
+#endif
+
+void AnimationDataTest::constructTrackWrongStride() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    char toomuch[2*(32768 + sizeof(Vector2))];
+
+    /* These should be fine */
+    AnimationTrackData{AnimationTrackTarget::Scaling2D, 1, Animation::TrackView<const Float, const Vector2>{
+        Containers::StridedArrayView1D<Float>{Containers::arrayCast<Float>(toomuch), 2, 32767},
+        Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32768}.flipped<0>(),
+        Animation::Interpolation::Constant
+    }};
+    AnimationTrackData{AnimationTrackTarget::Scaling2D, 1, Animation::TrackView<const Float, const Vector2>{
+        Containers::StridedArrayView1D<Float>{Containers::arrayCast<Float>(toomuch), 2, 32768}.flipped<0>(),
+        Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32767},
+        Animation::Interpolation::Constant
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    AnimationTrackData{AnimationTrackTarget::Scaling2D, 1, Animation::TrackView<const Float, const Vector2>{
+        Containers::StridedArrayView1D<Float>{Containers::arrayCast<Float>(toomuch), 2, 32768},
+        Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32767},
+        Animation::Interpolation::Constant
+    }};
+    AnimationTrackData{AnimationTrackTarget::Scaling2D, 1, Animation::TrackView<const Float, const Vector2>{
+        Containers::StridedArrayView1D<Float>{Containers::arrayCast<Float>(toomuch), 2, 32769}.flipped<0>(),
+        Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32767},
+        Animation::Interpolation::Constant
+    }};
+    AnimationTrackData{AnimationTrackTarget::Scaling2D, 1, Animation::TrackView<const Float, const Vector2>{
+        Containers::StridedArrayView1D<Float>{Containers::arrayCast<Float>(toomuch), 2, 32767},
+        Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32768},
+        Animation::Interpolation::Constant
+    }};
+    AnimationTrackData{AnimationTrackTarget::Scaling2D, 1, Animation::TrackView<const Float, const Vector2>{
+        Containers::StridedArrayView1D<Float>{Containers::arrayCast<Float>(toomuch), 2, 32767},
+        Containers::StridedArrayView1D<Vector2>{Containers::arrayCast<Vector2>(toomuch), 2, 32769}.flipped<0>(),
+        Animation::Interpolation::Constant
+    }};
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnimationTrackData: expected key stride to fit into 16 bits but got 32768\n"
+        "Trade::AnimationTrackData: expected key stride to fit into 16 bits but got -32769\n"
+        "Trade::AnimationTrackData: expected value stride to fit into 16 bits but got 32768\n"
+        "Trade::AnimationTrackData: expected value stride to fit into 16 bits but got -32769\n");
 }
 
 void AnimationDataTest::construct() {

@@ -338,7 +338,7 @@ Convenience type for populating @ref AnimationData. Has no accessors, as the
 data are then accessible through @ref AnimationData APIs.
 @experimental
 */
-class AnimationTrackData {
+class MAGNUM_TRADE_EXPORT AnimationTrackData {
     public:
         /**
          * @brief Default constructor
@@ -347,7 +347,7 @@ class AnimationTrackData {
          * initialization of the track array for @ref AnimationData, expected
          * to be replaced with concrete values later.
          */
-        explicit AnimationTrackData() noexcept: _type{}, _resultType{}, _targetName{}, _target{}, _view{} {}
+        explicit AnimationTrackData() noexcept: _type{}, _resultType{}, _targetName{}, _interpolation{}, _before{}, _after{}, _target{}, _size{}, _keysStride{}, _valuesStride{}, _keysData{}, _valuesData{}, _interpolator{} {}
 
         /**
          * @brief Type-erased constructor
@@ -356,11 +356,14 @@ class AnimationTrackData {
          * @param targetName    Track target name
          * @param target        Track target ID
          * @param view          Type-erased @ref Animation::TrackView instance
+         *
+         * Expects that @p view key and value strides both fit into signed
+         * 16-bit values and that keyframe count fits into 32 bits.
          */
         /** @todo stop taking TrackViewStorage and instead directly take the
             key/value views, interpolator/interpolation and extrapolation --
             it's just 6 overloads and makes usage much better */
-        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept: _type{type}, _resultType{resultType}, _targetName{targetName}, _target{target}, _view{view} {}
+        explicit AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackViewStorage<const Float>& view) noexcept;
 
         /** @overload
          *
@@ -409,16 +412,23 @@ class AnimationTrackData {
          * @brief Type-erased @ref Animation::TrackView instance
          * @m_since_latest
          */
-        Animation::TrackViewStorage<const Float> track() const { return _view; }
+        Animation::TrackViewStorage<const Float> track() const;
 
     private:
         friend AnimationData;
 
         AnimationTrackType _type, _resultType;
         AnimationTrackTarget _targetName;
-        /* 4-byte padding */
+        Animation::Interpolation _interpolation;
+        Animation::Extrapolation _before, _after;
+        /* 1 byte padding */
         UnsignedLong _target;
-        Animation::TrackViewStorage<const Float> _view;
+        UnsignedInt _size;
+        Short _keysStride;
+        Short _valuesStride;
+        const void* _keysData;
+        const void* _valuesData;
+        void(*_interpolator)();
 };
 
 /**
@@ -683,7 +693,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * checked version below to access a concrete @ref Animation::TrackView
          * type.
          */
-        const Animation::TrackViewStorage<const Float>& track(UnsignedInt id) const;
+        Animation::TrackViewStorage<const Float> track(UnsignedInt id) const;
 
         /**
          * @brief Mutable track data storage
@@ -693,7 +703,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * animation is mutable.
          * @see @ref dataFlags()
          */
-        const Animation::TrackViewStorage<Float>& mutableTrack(UnsignedInt id);
+        Animation::TrackViewStorage<Float> mutableTrack(UnsignedInt id);
 
         /**
          * @brief Track data
@@ -707,7 +717,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * use the view or you need to release the data array using
          * @ref release() and manage its lifetime yourself.
          */
-        template<class V, class R = Animation::ResultOf<V>> const Animation::TrackView<const Float, const V, R>& track(UnsignedInt id) const;
+        template<class V, class R = Animation::ResultOf<V>> Animation::TrackView<const Float, const V, R> track(UnsignedInt id) const;
 
         /**
          * @brief Mutable track data
@@ -717,7 +727,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * animation is mutable.
          * @see @ref dataFlags()
          */
-        template<class V, class R = Animation::ResultOf<V>> const Animation::TrackView<Float, V, R>& mutableTrack(UnsignedInt id);
+        template<class V, class R = Animation::ResultOf<V>> Animation::TrackView<Float, V, R> mutableTrack(UnsignedInt id);
 
         /**
          * @brief Release data storage
@@ -812,15 +822,15 @@ namespace Implementation {
 
 template<class V, class R> inline AnimationTrackData::AnimationTrackData(AnimationTrackTarget targetName, UnsignedLong target, const Animation::TrackView<const Float, const V, R>& view) noexcept: AnimationTrackData{Implementation::animationTypeFor<V>(), Implementation::animationTypeFor<R>(), targetName, target, view} {}
 
-template<class V, class R> const Animation::TrackView<const Float, const V, R>& AnimationData::track(UnsignedInt id) const {
-    const Animation::TrackViewStorage<const Float>& storage = track(id);
+template<class V, class R> Animation::TrackView<const Float, const V, R> AnimationData::track(UnsignedInt id) const {
+    const Animation::TrackViewStorage<const Float> storage = track(id);
     CORRADE_ASSERT(Implementation::animationTypeFor<V>() == _tracks[id]._type, "Trade::AnimationData::track(): improper type requested for" << _tracks[id]._type, (static_cast<const Animation::TrackView<const Float, const V, R>&>(storage)));
     CORRADE_ASSERT(Implementation::animationTypeFor<R>() == _tracks[id]._resultType, "Trade::AnimationData::track(): improper result type requested for" << _tracks[id]._resultType, (static_cast<const Animation::TrackView<const Float, const V, R>&>(storage)));
     return static_cast<const Animation::TrackView<const Float, const V, R>&>(storage);
 }
 
-template<class V, class R> const Animation::TrackView<Float, V, R>& AnimationData::mutableTrack(UnsignedInt id) {
-    const Animation::TrackViewStorage<Float>& storage = mutableTrack(id);
+template<class V, class R> Animation::TrackView<Float, V, R> AnimationData::mutableTrack(UnsignedInt id) {
+    const Animation::TrackViewStorage<Float> storage = mutableTrack(id);
     CORRADE_ASSERT(Implementation::animationTypeFor<V>() == _tracks[id]._type, "Trade::AnimationData::mutableTrack(): improper type requested for" << _tracks[id]._type, (static_cast<const Animation::TrackView<Float, V, R>&>(storage)));
     CORRADE_ASSERT(Implementation::animationTypeFor<R>() == _tracks[id]._resultType, "Trade::AnimationData::mutableTrack(): improper result type requested for" << _tracks[id]._resultType, (static_cast<const Animation::TrackView<Float, V, R>&>(storage)));
     return static_cast<const Animation::TrackView<Float, V, R>&>(storage);

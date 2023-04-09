@@ -427,6 +427,15 @@ template<class K, class V, class R
         Extrapolation _before, _after;
 };
 
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* For a friend declaration in TrackViewStorage */
+namespace Trade { class AnimationTrackData; }
+#endif
+
+namespace Animation {
+
 /**
 @brief Type-erased track view storage
 
@@ -518,6 +527,11 @@ template<class K> class TrackViewStorage {
 
     private:
         template<class, class, class> friend class TrackView;
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* This one creates TrackViewStorage instances on the fly using the
+           below constructor */
+        friend Trade::AnimationTrackData;
+        #endif
 
         explicit TrackViewStorage(const Containers::StridedArrayView1D<K>& keys, const Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const void, void>::type>& values, Interpolation interpolation, void(*interpolator)(), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{values}, _interpolator{interpolator}, _interpolation{interpolation}, _before{before}, _after{after} {
             CORRADE_ASSERT(keys.size() == values.size(), "Animation::TrackView: expected key and value view to have the same size but got" << keys.size() << "and" << values.size(), );
