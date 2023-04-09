@@ -32,7 +32,7 @@
  */
 #endif
 
-#include <utility>
+#include <utility> /* std::swap() */
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"

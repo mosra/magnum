@@ -32,7 +32,7 @@
  */
 
 #include <cstddef>
-#include <utility>
+#include <utility> /* std::swap() */
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
