@@ -24,8 +24,7 @@
 */
 
 #include <tuple>
-#include <Corrade/Containers/ArrayViewStl.h>
-#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Path.h>
@@ -93,47 +92,47 @@ struct PrimitiveVisualizer: Platform::WindowlessApplication {
 
     int exec() override;
 
-    std::pair<Trade::MeshData, Containers::StringView> axis2D();
-    std::pair<Trade::MeshData, Containers::StringView> axis3D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> axis2D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> axis3D();
 
-    std::pair<Trade::MeshData, Containers::StringView> capsule2DWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> circle2DWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> crosshair2D();
-    std::pair<Trade::MeshData, Containers::StringView> line2D();
-    std::pair<Trade::MeshData, Containers::StringView> squareWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> capsule2DWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> circle2DWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> crosshair2D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> line2D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> squareWireframe();
 
-    std::pair<Trade::MeshData, Containers::StringView> capsule3DWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> circle3DWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> crosshair3D();
-    std::pair<Trade::MeshData, Containers::StringView> coneWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> cubeWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> cylinderWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> grid3DWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> icosphereWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> line3D();
-    std::pair<Trade::MeshData, Containers::StringView> planeWireframe();
-    std::pair<Trade::MeshData, Containers::StringView> uvSphereWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> capsule3DWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> circle3DWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> crosshair3D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> coneWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> cubeWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> cylinderWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> grid3DWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> icosphereWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> line3D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> planeWireframe();
+    Containers::Pair<Trade::MeshData, Containers::StringView> uvSphereWireframe();
 
-    std::pair<Trade::MeshData, Containers::StringView> circle2DSolid();
-    std::pair<Trade::MeshData, Containers::StringView> squareSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> circle2DSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> squareSolid();
 
-    std::pair<Trade::MeshData, Containers::StringView> capsule3DSolid();
-    std::pair<Trade::MeshData, Containers::StringView> circle3DSolid();
-    std::pair<Trade::MeshData, Containers::StringView> coneSolid();
-    std::pair<Trade::MeshData, Containers::StringView> cubeSolid();
-    std::pair<Trade::MeshData, Containers::StringView> cylinderSolid();
-    std::pair<Trade::MeshData, Containers::StringView> grid3DSolid();
-    std::pair<Trade::MeshData, Containers::StringView> icosphereSolid();
-    std::pair<Trade::MeshData, Containers::StringView> planeSolid();
-    std::pair<Trade::MeshData, Containers::StringView> uvSphereSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> capsule3DSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> circle3DSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> coneSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> cubeSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> cylinderSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> grid3DSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> icosphereSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> planeSolid();
+    Containers::Pair<Trade::MeshData, Containers::StringView> uvSphereSolid();
 
-    std::pair<Trade::MeshData, Containers::StringView> gradient2D();
-    std::pair<Trade::MeshData, Containers::StringView> gradient2DHorizontal();
-    std::pair<Trade::MeshData, Containers::StringView> gradient2DVertical();
+    Containers::Pair<Trade::MeshData, Containers::StringView> gradient2D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> gradient2DHorizontal();
+    Containers::Pair<Trade::MeshData, Containers::StringView> gradient2DVertical();
 
-    std::pair<Trade::MeshData, Containers::StringView> gradient3D();
-    std::pair<Trade::MeshData, Containers::StringView> gradient3DHorizontal();
-    std::pair<Trade::MeshData, Containers::StringView> gradient3DVertical();
+    Containers::Pair<Trade::MeshData, Containers::StringView> gradient3D();
+    Containers::Pair<Trade::MeshData, Containers::StringView> gradient3DHorizontal();
+    Containers::Pair<Trade::MeshData, Containers::StringView> gradient3DVertical();
 };
 
 namespace {
@@ -191,15 +190,13 @@ int PrimitiveVisualizer::exec() {
         for(auto fun: {&PrimitiveVisualizer::axis2D}) {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            shader.draw(MeshTools::compile(*data));
+            shader.draw(MeshTools::compile(dataFilename.first()));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
@@ -210,15 +207,13 @@ int PrimitiveVisualizer::exec() {
         for(auto fun: {&PrimitiveVisualizer::axis3D}) {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            shader.draw(MeshTools::compile(*data));
+            shader.draw(MeshTools::compile(dataFilename.first()));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
@@ -235,15 +230,13 @@ int PrimitiveVisualizer::exec() {
         {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            shader.draw(MeshTools::compile(*data));
+            shader.draw(MeshTools::compile(dataFilename.first()));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
@@ -266,15 +259,13 @@ int PrimitiveVisualizer::exec() {
         {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            shader.draw(MeshTools::compile(*data));
+            shader.draw(MeshTools::compile(dataFilename.first()));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
@@ -296,17 +287,15 @@ int PrimitiveVisualizer::exec() {
         {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            GL::Mesh mesh = MeshTools::compile(*data);
+            GL::Mesh mesh = MeshTools::compile(dataFilename.first());
             flat.draw(mesh);
             wireframe2D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
@@ -341,17 +330,15 @@ int PrimitiveVisualizer::exec() {
         {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            GL::Mesh mesh = MeshTools::compile(*data);
+            GL::Mesh mesh = MeshTools::compile(dataFilename.first());
             phong.draw(mesh);
             wireframe3D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
@@ -364,17 +351,15 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::gradient2DVertical}) {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            GL::Mesh mesh = MeshTools::compile(*data);
+            GL::Mesh mesh = MeshTools::compile(dataFilename.first());
             shader.draw(mesh);
             wireframe2D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
@@ -387,28 +372,26 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::gradient3DVertical}) {
             multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
-            Containers::StringView filename;
-            Containers::Optional<Trade::MeshData> data;
-            std::tie(data, filename) = (this->*fun)();
+            Containers::Pair<Trade::MeshData, Containers::StringView> dataFilename = (this->*fun)();
 
-            GL::Mesh mesh = MeshTools::compile(*data);
+            GL::Mesh mesh = MeshTools::compile(dataFilename.first());
             shader.draw(mesh);
             wireframe3D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
-            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + filename));
+            converter->convertToFile(result, Utility::Path::join("../", "primitives-" + dataFilename.second()));
         }
     }
 
     return 0;
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::axis2D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::axis2D() {
     return {Primitives::axis2D(), "axis2d.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient2D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient2D() {
     return {Primitives::gradient2D({1.0f, -2.0f}, 0x2f83cc_srgbf, {-1.0f, 2.0f}, 0x3bd267_srgbf), "gradient2d.png"};
 }
 
@@ -419,151 +402,151 @@ namespace {
     const Color3 Gradient80Percent = Math::lerp(0x2f83cc_srgbf, 0x3bd267_srgbf, 0.8f);
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient2DHorizontal() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient2DHorizontal() {
     return {Primitives::gradient2DHorizontal(Gradient20Percent, Gradient80Percent), "gradient2dhorizontal.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient2DVertical() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient2DVertical() {
     /* End colors are 20%/80% blends of the above to match the range */
     return {Primitives::gradient2DVertical(Gradient20Percent, Gradient80Percent), "gradient2dvertical.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::axis3D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::axis3D() {
     return {Primitives::axis3D(), "axis3d.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient3D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient3D() {
     return {Primitives::gradient3D({1.0f, -2.0f, -1.5f}, 0x2f83cc_srgbf, {-1.0f, 2.0f, -1.5f}, 0x3bd267_srgbf), "gradient3d.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient3DHorizontal() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient3DHorizontal() {
     return {Primitives::gradient3DHorizontal(Gradient20Percent, Gradient80Percent), "gradient3dhorizontal.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient3DVertical() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::gradient3DVertical() {
     return {Primitives::gradient3DVertical(Gradient20Percent, Gradient80Percent), "gradient3dvertical.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule2DWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule2DWireframe() {
     Trade::MeshData capsule = Primitives::capsule2DWireframe(8, 1, 0.75f);
     MeshTools::transformPointsInPlace(Matrix3::scaling(Vector2{0.75f}),
         capsule.mutableAttribute<Vector2>(Trade::MeshAttribute::Position));
     return {std::move(capsule), "capsule2dwireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle2DWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle2DWireframe() {
     return {Primitives::circle2DWireframe(32), "circle2dwireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::crosshair2D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::crosshair2D() {
     return {Primitives::crosshair2D(), "crosshair2d.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::line2D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::line2D() {
     Trade::MeshData line = Primitives::line2D();
     MeshTools::transformPointsInPlace(Matrix3::translation(Vector2::xAxis(-1.0f))*Matrix3::scaling(Vector2::xScale(2.0f)),
         line.mutableAttribute<Vector2>(Trade::MeshAttribute::Position));
     return {std::move(line), "line2d.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::squareWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::squareWireframe() {
     return {Primitives::squareWireframe(), "squarewireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule3DWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule3DWireframe() {
     Trade::MeshData capsule = Primitives::capsule3DWireframe(8, 1, 16, 1.0f);
     MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{0.75f}),
         capsule.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
     return {std::move(capsule), "capsule3dwireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle3DWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle3DWireframe() {
     return {Primitives::circle3DWireframe(32), "circle3dwireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::crosshair3D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::crosshair3D() {
     return {Primitives::crosshair3D(), "crosshair3d.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::coneWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::coneWireframe() {
     return {Primitives::coneWireframe(32, 1.25f), "conewireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cubeWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cubeWireframe() {
     return {Primitives::cubeWireframe(), "cubewireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cylinderWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cylinderWireframe() {
     return {Primitives::cylinderWireframe(1, 32, 1.0f), "cylinderwireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::grid3DWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::grid3DWireframe() {
     return {Primitives::grid3DWireframe({5, 3}), "grid3dwireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::icosphereWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::icosphereWireframe() {
     return {Primitives::icosphereWireframe(), "icospherewireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::line3D() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::line3D() {
     Trade::MeshData line = Primitives::line3D();
     MeshTools::transformPointsInPlace(Matrix4::translation(Vector3::xAxis(-1.0f))*Matrix4::scaling(Vector3::xScale(2.0f)),
         line.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
     return {std::move(line), "line3d.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::planeWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::planeWireframe() {
     return {Primitives::planeWireframe(), "planewireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::uvSphereWireframe() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::uvSphereWireframe() {
     return {Primitives::uvSphereWireframe(16, 32), "uvspherewireframe.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle2DSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle2DSolid() {
     return {Primitives::circle2DSolid(16), "circle2dsolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::squareSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::squareSolid() {
     return {Primitives::squareSolid(), "squaresolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule3DSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::capsule3DSolid() {
     Trade::MeshData capsule = Primitives::capsule3DSolid(4, 1, 12, 0.75f);
     MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{0.75f}),
         capsule.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
     return {std::move(capsule), "capsule3dsolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle3DSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle3DSolid() {
     return {Primitives::circle3DSolid(16), "circle3dsolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::coneSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::coneSolid() {
     return {Primitives::coneSolid(1, 12, 1.25f, Primitives::ConeFlag::CapEnd), "conesolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cubeSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cubeSolid() {
     return {Primitives::cubeSolid(), "cubesolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cylinderSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::cylinderSolid() {
     return {Primitives::cylinderSolid(1, 12, 1.0f, Primitives::CylinderFlag::CapEnds), "cylindersolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::grid3DSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::grid3DSolid() {
     return {Primitives::grid3DSolid({5, 3}), "grid3dsolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::icosphereSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::icosphereSolid() {
     return {Primitives::icosphereSolid(1), "icospheresolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::planeSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::planeSolid() {
     return {Primitives::planeSolid(), "planesolid.png"};
 }
 
-std::pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::uvSphereSolid() {
+Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::uvSphereSolid() {
     return {Primitives::uvSphereSolid(8, 16), "uvspheresolid.png"};
 }
 
