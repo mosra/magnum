@@ -38,7 +38,7 @@
 #include "Magnum/MeshTools/Reference.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
-#include "Magnum/SceneTools/FlattenMeshHierarchy.h"
+#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
@@ -301,9 +301,9 @@ on meshes and materials before passing them to any converter.
 If `--concatenate-meshes` is given, all meshes of the input file are
 first concatenated into a single mesh using @ref MeshTools::concatenate(), with
 the scene hierarchy transformation baked in using
-@ref SceneTools::flattenMeshHierarchy3D(), and then passed through the
-remaining operations. Only attributes that are present in the first mesh are
-taken, if `--only-mesh-attributes` is specified as well, the IDs reference
+@ref SceneTools::flattenTransformationHierarchy3D(), and then passed through
+the remaining operations. Only attributes that are present in the first mesh
+are taken, if `--only-mesh-attributes` is specified as well, the IDs reference
 attributes of the first mesh.
 */
 
@@ -709,12 +709,18 @@ well, the IDs reference attributes of the first mesh.)")
                     }
                 }
 
+                Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>
+                    meshesMaterials = scene->meshesMaterialsAsArray();
+                Containers::Array<Matrix4> transformations =
+                    SceneTools::flattenTransformationHierarchy3D(*scene, Trade::SceneField::Mesh);
                 Containers::Array<Trade::MeshData> flattenedMeshes;
                 {
                     Trade::Implementation::Duration d{conversionTime};
                     /** @todo once there are 2D scenes, check the scene is 3D */
-                    for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation: SceneTools::flattenMeshHierarchy3D(*scene))
-                        arrayAppend(flattenedMeshes, MeshTools::transform3D(meshes[meshTransformation.first()], meshTransformation.third()));
+                    for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
+                        arrayAppend(flattenedMeshes, MeshTools::transform3D(
+                            meshes[meshesMaterials[i].second().first()], transformations[i]));
+                    }
                 }
                 meshes = std::move(flattenedMeshes);
             }
