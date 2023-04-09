@@ -55,7 +55,7 @@ struct SceneConverterTest: TestSuite::Tester {
 using namespace Containers::Literals;
 
 const struct {
-    const char* name;
+    TestSuite::TestCaseDescriptionSourceLocation name;
     Containers::Array<Containers::String> args;
     const char* requiresImporter;
     const char* requiresConverter;

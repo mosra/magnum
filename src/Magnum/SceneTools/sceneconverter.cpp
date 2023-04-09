@@ -564,18 +564,19 @@ well, the IDs reference attributes of the first mesh.)")
         Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractSceneConverter::pluginSearchPaths().back()).second())};
     converterManager.registerExternalManager(imageConverterManager);
 
-    Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
-    if(!importer) {
-        Debug{} << "Available importer plugins:" << ", "_s.join(importerManager.aliasList());
-        return 1;
-    }
-
-    /* Set options, if passed */
-    if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
-    Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
-
     /* Print plugin info, if requested */
+    /** @todo these all duplicate plugin loading & option setting, move to
+        some helpers (shared among all command-line tools)? */
     if(args.isSet("info-importer")) {
+        Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
+        if(!importer) {
+            Debug{} << "Available importer plugins:" << ", "_s.join(importerManager.aliasList());
+            return 1;
+        }
+
+        /* Set options, if passed */
+        if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
+        Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
         Trade::Implementation::printImporterInfo(useColor, *importer);
         return 0;
     }
@@ -607,6 +608,16 @@ well, the IDs reference attributes of the first mesh.)")
         Trade::Implementation::printImageConverterInfo(useColor, *converter);
         return 0;
     }
+
+    Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
+    if(!importer) {
+        Debug{} << "Available importer plugins:" << ", "_s.join(importerManager.aliasList());
+        return 1;
+    }
+
+    /* Set options, if passed */
+    if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
+    Implementation::setOptions(*importer, "AnySceneImporter", args.value("importer-options"));
 
     /* Wow, C++, you suck. This implicitly initializes to random shit?!
 
