@@ -33,7 +33,7 @@ namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
 
-std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Containers::Iterable<const Trade::MeshData>& meshes) {
+Containers::Pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Containers::Iterable<const Trade::MeshData>& meshes) {
     UnsignedInt indexCount = 0;
     UnsignedInt vertexCount = 0;
     for(const Trade::MeshData& mesh: meshes) {
@@ -101,10 +101,10 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
     /* Create an attribute map. Yes, this is an inevitable fugly thing that
        allocates like mad, while everything else is zero-alloc.
        Containers::HashMap can't be here soon enough. */
-    std::unordered_multimap<Trade::MeshAttribute, std::pair<UnsignedInt, bool>, MeshAttributeHash> attributeMap;
+    std::unordered_multimap<Trade::MeshAttribute, Containers::Pair<UnsignedInt, bool>, MeshAttributeHash> attributeMap;
     attributeMap.reserve(out.attributeCount());
     for(UnsignedInt i = 0; i != out.attributeCount(); ++i)
-        attributeMap.emplace(out.attributeName(i), std::make_pair(i, false));
+        attributeMap.emplace(out.attributeName(i), Containers::pair(i, false));
 
     /* Go through all meshes and put all attributes and index arrays together. */
     std::size_t indexOffset = 0;
@@ -140,7 +140,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
         /* Reset markers saying which attribute has already been copied */
         for(auto it = attributeMap.begin(); it != attributeMap.end(); ++it)
-            it->second.second = false;
+            it->second.second() = false;
 
         /* Copy attributes to their destination, skipping ones that don't have
            any equivalent in the destination mesh */
@@ -151,12 +151,12 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
             UnsignedInt dst = ~UnsignedInt{};
             auto found = attributeMap.end();
             for(auto it = range.first; it != range.second; ++it) {
-                if(it->second.second) continue;
+                if(it->second.second()) continue;
 
                 /* The range is unordered so we need to go through everything
                    and pick one with smallest ID */
-                if(it->second.first < dst) {
-                    dst = it->second.first;
+                if(it->second.first() < dst) {
+                    dst = it->second.first();
                     found = it;
                 }
             }
@@ -188,7 +188,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
             Utility::copy(srcAttribute, dstAttribute.sliceSize(
                 {vertexOffset, 0},
                 {mesh.vertexCount(), srcAttribute.size()[1]}));
-            found->second.second = true;
+            found->second.second() = true;
         }
 
         /* Update vertex offset for the next mesh */
@@ -230,12 +230,12 @@ Trade::MeshData concatenate(const Containers::Iterable<const Trade::MeshData>& m
     /* Calculate total index/vertex count and allocate the target memory.
        Index data are allocated with NoInit as the whole array will be written,
        however vertex data might have holes and thus it's zero-initialized. */
-    const std::pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(meshes);
+    const Containers::Pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(meshes);
     Containers::Array<char> indexData{NoInit,
-        indexVertexCount.first*sizeof(UnsignedInt)};
+        indexVertexCount.first()*sizeof(UnsignedInt)};
     Containers::Array<char> vertexData{ValueInit,
-        attributeData.isEmpty() ? 0 : (attributeData[0].stride()*indexVertexCount.second)};
-    return Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
+        attributeData.isEmpty() ? 0 : (attributeData[0].stride()*indexVertexCount.second())};
+    return Implementation::concatenate(std::move(indexData), indexVertexCount.second(), std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
 }
 
 }}

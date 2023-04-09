@@ -32,6 +32,7 @@
 
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/Pair.h>
 
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
@@ -39,7 +40,7 @@
 namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
-    MAGNUM_MESHTOOLS_EXPORT std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Containers::Iterable<const Trade::MeshData>& meshes);
+    MAGNUM_MESHTOOLS_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Containers::Iterable<const Trade::MeshData>& meshes);
     MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::Array<char>&& indexData, UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::Iterable<const Trade::MeshData>& meshes, const char* assertPrefix);
 }
 
@@ -114,19 +115,19 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
     }
     #endif
 
-    std::pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(meshes);
+    const Containers::Pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(meshes);
 
     Containers::Array<char> indexData;
-    if(indexVertexCount.first) {
+    if(indexVertexCount.first()) {
         indexData = destination.releaseIndexData();
         /* Everything is overwritten here so we don't need to zero-out the
            memory */
-        Containers::arrayResize<Allocator>(indexData, NoInit, indexVertexCount.first*sizeof(UnsignedInt));
+        Containers::arrayResize<Allocator>(indexData, NoInit, indexVertexCount.first()*sizeof(UnsignedInt));
     }
 
     Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(destination), {}, flags);
     Containers::Array<char> vertexData;
-    if(!attributeData.isEmpty() && indexVertexCount.second) {
+    if(!attributeData.isEmpty() && indexVertexCount.second()) {
         const UnsignedInt attributeStride = attributeData[0].stride();
         vertexData = destination.releaseVertexData();
         /* Resize to 0 and then to the desired size to zero-out whatever was
@@ -135,10 +136,10 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
         Containers::arrayResize<Allocator>(vertexData, 0);
         /* A cast to std::size_t is needed in order to allow sizes over 4 GB on
            64-bit */
-        Containers::arrayResize<Allocator>(vertexData, ValueInit, attributeStride*std::size_t(indexVertexCount.second));
+        Containers::arrayResize<Allocator>(vertexData, ValueInit, attributeStride*std::size_t(indexVertexCount.second()));
     }
 
-    destination = Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenateInto():");
+    destination = Implementation::concatenate(std::move(indexData), indexVertexCount.second(), std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenateInto():");
 }
 
 }}

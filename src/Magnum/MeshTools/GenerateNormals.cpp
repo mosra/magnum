@@ -26,6 +26,7 @@
 #include "GenerateNormals.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Functions.h"
@@ -147,25 +148,28 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* Precalculate cross product and interior angles of each face --- the loop
        below would otherwise calculate it for every vertex, which is at least
        3x as much work */
-    Containers::Array<std::pair<Vector3, Math::Vector3<Rad>>> crossAngles{NoInit, indices.size()/3};
+    Containers::Array<Containers::Pair<Vector3, Math::Vector3<Rad>>> crossAngles{NoInit, indices.size()/3};
     for(std::size_t i = 0; i != crossAngles.size(); ++i) {
         const Vector3 v0 = positions[indices[i*3 + 0]];
         const Vector3 v1 = positions[indices[i*3 + 1]];
         const Vector3 v2 = positions[indices[i*3 + 2]];
 
         /* Cross product */
-        crossAngles[i].first = Math::cross(v2 - v1, v0 - v1);
+        crossAngles[i].first() = Math::cross(v2 - v1, v0 - v1);
 
         /* If any of the vectors is zero, the normalization would result in a
            NaN and the angle calculation will assert. This happens also when
            any of the original positions is NaN. If that's the case, skip the
            rest. Given triangle will then contribute with a zero total angle,
-           effectively getting ignored for normal calculation. */
+           effectively getting ignored for normal calculation.
+
+           If, however, an angle
+           */
         const Vector3 v10n = (v1 - v0).normalized();
         const Vector3 v20n = (v2 - v0).normalized();
         const Vector3 v21n = (v2 - v1).normalized();
         if(Math::isNan(v10n) || Math::isNan(v20n) || Math::isNan(v21n)) {
-            crossAngles[i].second = Math::Vector3<Rad>{Math::ZeroInit};
+            crossAngles[i].second() = Math::Vector3<Rad>{Math::ZeroInit};
             continue;
         }
 
@@ -174,10 +178,10 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
         /* This using namespace doesn't work with MSVC2019 with /permissive-
            (it gets lost when instantiating?!), so it's duplicated above */
         using namespace Math::Literals;
-        crossAngles[i].second[0] = Math::angle(v10n, v20n);
-        crossAngles[i].second[1] = Math::angle(-v10n, v21n);
-        crossAngles[i].second[2] = Rad(180.0_degf)
-            - crossAngles[i].second[0] - crossAngles[i].second[1];
+        crossAngles[i].second()[0] = Math::angle(v10n, v20n);
+        crossAngles[i].second()[1] = Math::angle(-v10n, v21n);
+        crossAngles[i].second()[2] = Rad(180.0_degf)
+            - crossAngles[i].second()[0] - crossAngles[i].second()[1];
     }
 
     /* For every vertex v, calculate normals from all faces it belongs to and
@@ -195,14 +199,14 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
 
             /* Cross product is a vector in direction of the normal with length
                equal to size of the parallelogram */
-            const std::pair<Vector3, Math::Vector3<Rad>>& crossAngle = crossAngles[triangleIds[t]];
+            const Containers::Pair<Vector3, Math::Vector3<Rad>>& crossAngle = crossAngles[triangleIds[t]];
 
             /* Angle between two sides of the triangle that share vertex `v`.
                The shared vertex can be one of the three. */
             Rad angle;
-            if(v == v0i) angle = crossAngle.second[0];
-            else if(v == v1i) angle = crossAngle.second[1];
-            else if(v == v2i) angle = crossAngle.second[2];
+            if(v == v0i) angle = crossAngle.second()[0];
+            else if(v == v1i) angle = crossAngle.second()[1];
+            else if(v == v2i) angle = crossAngle.second()[2];
             else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             /* The normal is cross.normalized(), we need to multiply it it by
@@ -213,7 +217,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
                that as well. Finally we need to weight by the angle, and in
                that case only the ratio is important as well, so it doesn't
                matter if degrees or radians. */
-            normals[v] += crossAngle.first*Float(angle);
+            normals[v] += crossAngle.first()*Float(angle);
         }
 
         /* Normalize the accumulated direction */
