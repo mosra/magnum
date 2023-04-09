@@ -30,7 +30,6 @@
  * @m_since_latest
  */
 
-#include <utility>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>
 
@@ -39,6 +38,11 @@
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 #include "Magnum/Vk/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* AttachmentDescription constructors used to take a std::pair */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace Vk {
 
@@ -201,7 +205,7 @@ class MAGNUM_VK_EXPORT AttachmentDescription {
          * -    `initialLayout`
          * -    `finalLayout`
          *
-         * See also @ref AttachmentDescription(PixelFormat, std::pair<AttachmentLoadOperation, AttachmentLoadOperation>, std::pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
+         * See also @ref AttachmentDescription(PixelFormat, Containers::Pair<AttachmentLoadOperation, AttachmentLoadOperation>, Containers::Pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
          * for a constructing a combined depth/stencil attachment description.
          */
         /* These were implicit at first, but I realized code gets way too
@@ -250,11 +254,11 @@ class MAGNUM_VK_EXPORT AttachmentDescription {
          */
         /* These were implicit at first, but I realized code gets way too
            confusing with all the {{}} so it's not anymore */
-        explicit AttachmentDescription(PixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        explicit AttachmentDescription(PixelFormat format, Containers::Pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, Containers::Pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
         /** @overload */
-        explicit AttachmentDescription(Magnum::PixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        explicit AttachmentDescription(Magnum::PixelFormat format, Containers::Pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, Containers::Pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
         /** @overload */
-        explicit AttachmentDescription(Magnum::CompressedPixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        explicit AttachmentDescription(Magnum::CompressedPixelFormat format, Containers::Pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, Containers::Pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
 
         /**
          * @brief Construct without initializing the contents

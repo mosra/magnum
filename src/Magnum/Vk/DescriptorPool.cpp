@@ -38,7 +38,7 @@
 
 namespace Magnum { namespace Vk {
 
-DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, const Containers::ArrayView<const std::pair<DescriptorType, UnsignedInt>> poolSizes, const Flags flags): _info{} {
+DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, const Containers::ArrayView<const Containers::Pair<DescriptorType, UnsignedInt>> poolSizes, const Flags flags): _info{} {
     CORRADE_ASSERT(maxSets,
         "Vk::DescriptorPoolCreateInfo: there has to be at least one set", );
     /* On certain compilers, {} (empty initializer list) gets converted to an
@@ -52,10 +52,10 @@ DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, co
         {NoInit, poolSizes.size(), poolSizesCopy}
     };
     for(std::size_t i = 0; i != poolSizes.size(); ++i) {
-        CORRADE_ASSERT(poolSizes[i].second,
-            "Vk::DescriptorPoolCreateInfo: pool" << i << "of" << poolSizes[i].first << "has no descriptors", );
-        poolSizesCopy[i].type = VkDescriptorType(poolSizes[i].first);
-        poolSizesCopy[i].descriptorCount = poolSizes[i].second;
+        CORRADE_ASSERT(poolSizes[i].second(),
+            "Vk::DescriptorPoolCreateInfo: pool" << i << "of" << poolSizes[i].first() << "has no descriptors", );
+        poolSizesCopy[i].type = VkDescriptorType(poolSizes[i].first());
+        poolSizesCopy[i].descriptorCount = poolSizes[i].second();
     }
 
     _info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -65,7 +65,7 @@ DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, co
     _info.pPoolSizes = poolSizesCopy;
 }
 
-DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, const std::initializer_list<std::pair<DescriptorType, UnsignedInt>> poolSizes, const Flags flags): DescriptorPoolCreateInfo{maxSets, Containers::arrayView(poolSizes), flags} {}
+DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, const std::initializer_list<Containers::Pair<DescriptorType, UnsignedInt>> poolSizes, const Flags flags): DescriptorPoolCreateInfo{maxSets, Containers::arrayView(poolSizes), flags} {}
 
 DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(NoInitT) noexcept {}
 

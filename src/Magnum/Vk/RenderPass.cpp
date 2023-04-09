@@ -59,22 +59,22 @@ AttachmentDescription::AttachmentDescription(const Magnum::PixelFormat format, c
 
 AttachmentDescription::AttachmentDescription(const Magnum::CompressedPixelFormat format, const AttachmentLoadOperation loadOperation, const AttachmentStoreOperation storeOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), loadOperation, storeOperation, initialLayout, finalLayout, samples, flags} {}
 
-AttachmentDescription::AttachmentDescription(const PixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): _description{} {
+AttachmentDescription::AttachmentDescription(const PixelFormat format, const Containers::Pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const Containers::Pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): _description{} {
     _description.sType = VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2;
     _description.flags = VkAttachmentDescriptionFlags(flags);
     _description.format = VkFormat(format);
     _description.samples = VkSampleCountFlagBits(samples);
-    _description.loadOp = VkAttachmentLoadOp(depthStencilLoadOperation.first);
-    _description.storeOp = VkAttachmentStoreOp(depthStencilStoreOperation.first);
-    _description.stencilLoadOp = VkAttachmentLoadOp(depthStencilLoadOperation.second);
-    _description.stencilStoreOp = VkAttachmentStoreOp(depthStencilStoreOperation.second);
+    _description.loadOp = VkAttachmentLoadOp(depthStencilLoadOperation.first());
+    _description.storeOp = VkAttachmentStoreOp(depthStencilStoreOperation.first());
+    _description.stencilLoadOp = VkAttachmentLoadOp(depthStencilLoadOperation.second());
+    _description.stencilStoreOp = VkAttachmentStoreOp(depthStencilStoreOperation.second());
     _description.initialLayout = VkImageLayout(initialLayout);
     _description.finalLayout = VkImageLayout(finalLayout);
 }
 
-AttachmentDescription::AttachmentDescription(const Magnum::PixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, initialLayout, finalLayout, samples, flags} {}
+AttachmentDescription::AttachmentDescription(const Magnum::PixelFormat format, const Containers::Pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const Containers::Pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, initialLayout, finalLayout, samples, flags} {}
 
-AttachmentDescription::AttachmentDescription(const Magnum::CompressedPixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, initialLayout, finalLayout, samples, flags} {}
+AttachmentDescription::AttachmentDescription(const Magnum::CompressedPixelFormat format, const Containers::Pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const Containers::Pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, initialLayout, finalLayout, samples, flags} {}
 
 AttachmentDescription::AttachmentDescription(NoInitT) noexcept {}
 

@@ -30,7 +30,6 @@
  * @m_since_latest
  */
 
-#include <utility>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/EnumSet.h>
 
@@ -39,6 +38,11 @@
 #include "Magnum/Vk/visibility.h"
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* DescriptorPoolCreateInfo constructors used to take a std::pair */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace Vk {
 
@@ -126,9 +130,9 @@ class MAGNUM_VK_EXPORT DescriptorPoolCreateInfo {
          * -    `poolSizeCount` and `pPoolSizes` to @p poolSizes converted to
          *      a list of @type_vk{DescriptorPoolSize} structures
          */
-        explicit DescriptorPoolCreateInfo(UnsignedInt maxSets, Containers::ArrayView<const std::pair<DescriptorType, UnsignedInt>> poolSizes, Flags flags = {});
+        explicit DescriptorPoolCreateInfo(UnsignedInt maxSets, Containers::ArrayView<const Containers::Pair<DescriptorType, UnsignedInt>> poolSizes, Flags flags = {});
         /** @overload */
-        explicit DescriptorPoolCreateInfo(UnsignedInt maxSets, std::initializer_list<std::pair<DescriptorType, UnsignedInt>> poolSizes, Flags flags = {});
+        explicit DescriptorPoolCreateInfo(UnsignedInt maxSets, std::initializer_list<Containers::Pair<DescriptorType, UnsignedInt>> poolSizes, Flags flags = {});
 
         /**
          * @brief Construct without initializing the contents

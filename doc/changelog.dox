@@ -1304,10 +1304,14 @@ See also:
         @ref GL::Buffer::setLabel() "setLabel()" APIs now work with a
         @relativeref{Corrade,Containers::StringView} /
         @relativeref{Corrade,Containers::String} instead of a @ref std::string
+    -   @ref Vk::DescriptorPoolCreateInfo and @ref Vk::AttachmentDescription
+        APIs now take a @relativeref{Corrade,Containers::Pair} instead of a
+        @ref std::pair
     To handle most backwards compatibility, @ref Corrade/Containers/StringStl.h
-    is included in affected headers for implicit conversions from/to a
-    @ref std::string, but in some cases you may be forced to change the code
-    that uses those APIs.
+    and/or @ref Corrade/Containers/PairStl.h is included in affected headers
+    for implicit conversions from/to a @ref std::string and/or @ref std::pair,
+    but in some cases you may be forced to change the code that uses those
+    APIs.
 -   @ref Image, @ref ImageView and @ref Trade::ImageData now look for a
     @cpp pixelFormatSize() @ce API via ADL instead of @cpp pixelSize() @ce. In
     case you were passing a custom pixel format enum to the image classes, you
