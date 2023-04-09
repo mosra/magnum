@@ -86,7 +86,29 @@ template<UnsignedInt dimensions> TextureArray<dimensions> TextureArray<dimension
     return out;
 }
 
-/* Other view() overloads at the end */
+/* On Windows (MSVC, clang-cl and MinGw) these need an explicit export
+   otherwise the symbol doesn't get exported. */
+template<> template<> MAGNUM_GL_EXPORT Texture2DArray Texture2DArray::view(CubeMapTexture& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture2DArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
+    return out;
+}
+
+template<> template<> MAGNUM_GL_EXPORT Texture2DArray Texture2DArray::view(CubeMapTextureArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
+    /* glTextureView() doesn't work with glCreateTextures() as it needs an
+       object without a name bound, so have to construct manually. The object
+       is marked as Created as glTextureView() binds the name. */
+    GLuint id;
+    glGenTextures(1, &id);
+    Texture2DArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
+    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
+    return out;
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -138,39 +160,22 @@ template<UnsignedInt dimensions> TextureArray<dimensions>& TextureArray<dimensio
 }
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
-template class MAGNUM_GL_EXPORT TextureArray<1>;
+template class
+    /* GCC needs the export macro on the class definition (and here it warns
+       that the type is already defined so the export is ignored), while Clang
+       and MSVC need it here (and ignore it on the declaration) */
+    #if defined(CORRADE_TARGET_CLANG) || defined(CORRADE_TARGET_MSVC)
+    MAGNUM_GL_EXPORT
+    #endif
+    TextureArray<1>;
 #endif
-template class MAGNUM_GL_EXPORT TextureArray<2>;
-
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-/* Because these refer to concrete types different than the class itself, they
-   have to be after the explicit type instantiations. Additionally, on Windows
-   (MSVC, clang-cl and MinGw) these need an explicit export otherwise the
-   symbol doesn't get exported.
-
-   Other view() overloads at the top. */
-template<> template<> MAGNUM_GL_EXPORT Texture2DArray Texture2DArray::view(CubeMapTexture& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
-    /* glTextureView() doesn't work with glCreateTextures() as it needs an
-       object without a name bound, so have to construct manually. The object
-       is marked as Created as glTextureView() binds the name. */
-    GLuint id;
-    glGenTextures(1, &id);
-    Texture2DArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
-    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
-    return out;
-}
-
-template<> template<> MAGNUM_GL_EXPORT Texture2DArray Texture2DArray::view(CubeMapTextureArray& original, const TextureFormat internalFormat, const Int levelOffset, const Int levelCount, const Int layerOffset, const Int layerCount) {
-    /* glTextureView() doesn't work with glCreateTextures() as it needs an
-       object without a name bound, so have to construct manually. The object
-       is marked as Created as glTextureView() binds the name. */
-    GLuint id;
-    glGenTextures(1, &id);
-    Texture2DArray out{id, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction};
-    out.viewInternal(original, internalFormat, levelOffset, levelCount, layerOffset, layerCount);
-    return out;
-}
+template class
+    #if defined(CORRADE_TARGET_CLANG) || defined(CORRADE_TARGET_MSVC)
+    MAGNUM_GL_EXPORT
+    #endif
+    TextureArray<2>;
 #endif
 
 }}

@@ -91,7 +91,15 @@ in shaders.
     2D ones.
 @todo Fix this when @gl_extension{NV,texture_array} is in ES2 extension headers
  */
-template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
+template<UnsignedInt dimensions> class
+#ifndef CORRADE_TARGET_MSVC
+/* If it's here, MSVC complains that out-of-class inline functions have a
+   definition while being dllimport'd. If I remove it, GCC then may complain
+   that the export in TextureArray.cpp is ignored as the type is already
+   defined. */
+MAGNUM_GL_EXPORT
+#endif
+TextureArray: public AbstractTexture {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Texture dimension count */

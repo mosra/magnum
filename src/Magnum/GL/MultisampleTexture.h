@@ -101,7 +101,15 @@ Note that multisample textures don't support compressed formats.
     array textures.
 @requires_gles Multisample textures are not available in WebGL.
  */
-template<UnsignedInt dimensions> class MAGNUM_GL_EXPORT MultisampleTexture: public AbstractTexture {
+template<UnsignedInt dimensions> class
+#ifndef CORRADE_TARGET_MSVC
+/* If it's here, MSVC complains that out-of-class inline functions have a
+   definition while being dllimport'd. If I remove it, GCC then complains that
+   the export in MultisampleTexture.cpp is ignored as the type is already
+   defined. */
+MAGNUM_GL_EXPORT
+#endif
+MultisampleTexture: public AbstractTexture {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Texture dimension count */

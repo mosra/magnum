@@ -75,21 +75,8 @@ template<UnsignedInt dimensions> MultisampleTexture<dimensions> MultisampleTextu
     return out;
 }
 
-/* Other view() overloads at the end */
-
-template<UnsignedInt dimensions> MultisampleTexture<dimensions>& MultisampleTexture<dimensions>::setLabel(Containers::StringView label) {
-    AbstractTexture::setLabel(label);
-    return *this;
-}
-
-template class MAGNUM_GL_EXPORT MultisampleTexture<2>;
-template class MAGNUM_GL_EXPORT MultisampleTexture<3>;
-
-/* Because these refer to concrete types different than the class itself, they
-   have to be after the explicit type instantiations. Additionally, on Windows (MSVC, clang-cl and MinGw) these need an explicit export otherwise the
-   symbol doesn't get exported.
-
-   Other view() overloads above. */
+/* On Windows (MSVC, clang-cl and MinGw) these need an explicit export
+   otherwise the symbol doesn't get exported. */
 template<> template<> MAGNUM_GL_EXPORT MultisampleTexture2D MultisampleTexture2D::view(MultisampleTexture2DArray& original, const TextureFormat internalFormat, const Int layer) {
     /* glTextureView() doesn't work with glCreateTextures() as it needs an
        object without a name bound, so have to construct manually. The object
@@ -111,6 +98,27 @@ template<> template<> MAGNUM_GL_EXPORT MultisampleTexture2DArray MultisampleText
     out.viewInternal(original, internalFormat, 0, 1, layerOffset, layerCount);
     return out;
 }
+
+template<UnsignedInt dimensions> MultisampleTexture<dimensions>& MultisampleTexture<dimensions>::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class
+    /* GCC needs the export macro on the class definition (and here it warns
+       that the type is already defined so the export is ignored), while Clang
+       and MSVC need it here (and ignore it on the declaration) */
+    #if defined(CORRADE_TARGET_CLANG) || defined(CORRADE_TARGET_MSVC)
+    MAGNUM_GL_EXPORT
+    #endif
+    MultisampleTexture<2>;
+template class
+    #if defined(CORRADE_TARGET_CLANG) || defined(CORRADE_TARGET_MSVC)
+    MAGNUM_GL_EXPORT
+    #endif
+    MultisampleTexture<3>;
+#endif
 
 }}
 #endif
