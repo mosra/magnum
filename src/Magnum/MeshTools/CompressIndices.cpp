@@ -39,8 +39,8 @@ namespace Magnum { namespace MeshTools {
 namespace {
 
 template<class T, class U> inline Containers::Array<char> compress(const Containers::StridedArrayView1D<const U>& indices, Long offset) {
-    /* Can't use Utility::copy() here because we're copying from a larger type
-       to a smaller one (and subtracting an offset in addition) */
+    /* Can't use Math::castInto() here because we're subtracting an offset in
+       addition */
     Containers::Array<char> buffer(indices.size()*sizeof(T));
     for(std::size_t i = 0; i != indices.size(); ++i) {
         T index = static_cast<T>(indices[i] - offset);

@@ -118,8 +118,10 @@ to and from a numeric identifier using @ref sceneFieldCustom(SceneField) and
 @ref sceneFieldCustom(UnsignedInt). Unlike the builtin ones, these can be of
 any type. An importer that exposes custom fields then may also provide a string
 mapping using @ref AbstractImporter::sceneFieldForName() and
-@ref AbstractImporter::sceneFieldName(). See documentation of a particular
-importer for details.
+@ref AbstractImporter::sceneFieldName(); conversely a scene converter
+supporting custom scene fields can have the string mapping specified via
+@ref AbstractSceneConverter::setSceneFieldName(). See documentation of a
+particular importer and scene converter for details.
 @see @ref SceneFieldData, @ref SceneFieldType
 */
 enum class SceneField: UnsignedInt {

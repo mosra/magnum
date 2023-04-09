@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::SceneTools::flattenMeshHierarchy2D(), @ref Magnum::SceneTools::flattenMeshHierarchy3D()
+ * @brief Function @ref Magnum::SceneTools::flattenMeshHierarchy2D(), @ref Magnum::SceneTools::flattenMeshHierarchy2DInto(), @ref Magnum::SceneTools::flattenMeshHierarchy3D(), @ref Magnum::SceneTools::flattenMeshHierarchy3DInto()
  * @m_since_latest
  */
 

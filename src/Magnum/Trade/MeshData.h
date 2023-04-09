@@ -58,8 +58,10 @@ identifier using @ref meshAttributeCustom(MeshAttribute) and
 @ref meshAttributeCustom(UnsignedShort). Unlike the builtin ones, these can
 be of any type. An importer that exposes custom attributes then may also
 provide a string mapping using @ref AbstractImporter::meshAttributeForName()
-and @ref AbstractImporter::meshAttributeName(). See documentation of a
-particular importer for details.
+and @ref AbstractImporter::meshAttributeName(); conversely a scene converter
+supporting custom mesh attributes can have the string mapping specified via
+@ref AbstractSceneConverter::setMeshAttributeName(). See documentation of a
+particular importer and scene converter for details.
 @see @ref MeshAttributeData, @ref VertexFormat
 */
 /* 16 bits because 8 bits is not enough to cover all potential per-edge,

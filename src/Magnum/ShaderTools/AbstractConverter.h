@@ -349,6 +349,8 @@ produce the usual assertions.
     that exposes functionality of all shader converter plugins through a
     command line interface.
 
+<b></b>
+
 @m_class{m-block m-warning}
 
 @par Multiple shader sources

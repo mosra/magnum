@@ -375,10 +375,11 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
         /**
          * @brief Print an overview of all measurements to a console at given rate
          *
-         * Expected to be called every frame. On every `frequency`th frame
-         * prints the same information as @ref statistics(), but in addition,
-         * if the output is a TTY, it's colored and overwrites itself instead
-         * of filling up the terminal history.
+         * Expected to be called every frame. If profiling is enabled, on every
+         * `frequency`th frame prints the same information as @ref statistics(),
+         * but in addition, if the output is a TTY, it's colored and overwrites
+         * itself instead of filling up the terminal history. If profiling is
+         * disabled, does nothing.
          * @see @ref isMeasurementAvailable(), @ref isEnabled()
          *      @ref Corrade::Utility::Debug::isTty()
          */
