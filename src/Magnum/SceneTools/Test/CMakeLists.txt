@@ -52,7 +52,7 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(SceneToolsConvertToSingleFunc___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumTrade)
-corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
+corrade_add_test(SceneToolsFlattenTra___HierarchyTest FlattenTransformationHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsOrderClusterParentsTest OrderClusterParentsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 
 corrade_add_test(SceneToolsSceneConverterImple___Test SceneConverterImplementationTest.cpp
@@ -80,6 +80,10 @@ if(MAGNUM_WITH_ANYSCENECONVERTER)
         # So the plugins get properly built when building the test
         add_dependencies(SceneToolsSceneConverterImple___Test AnySceneConverter)
     endif()
+endif()
+
+if(MAGNUM_BUILD_DEPRECATED)
+    corrade_add_test(SceneToolsFlattenMeshHierarchyTest FlattenMeshHierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 endif()
 
 # Executable testing is implemented on Unix platforms only at the moment

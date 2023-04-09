@@ -43,11 +43,11 @@ set(MagnumSceneTools_SRCS )
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumSceneTools_GracefulAssert_SRCS
-    FlattenMeshHierarchy.cpp
+    FlattenTransformationHierarchy.cpp
     OrderClusterParents.cpp)
 
 set(MagnumSceneTools_HEADERS
-    FlattenMeshHierarchy.h
+    FlattenTransformationHierarchy.h
     OrderClusterParents.h
 
     visibility.h)
@@ -56,6 +56,11 @@ set(MagnumSceneTools_PRIVATE_HEADERS
     Implementation/combine.h
     Implementation/convertToSingleFunctionObjects.h
     Implementation/sceneConverterUtilities.h)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND MagnumSceneTools_GracefulAssert_SRCS FlattenMeshHierarchy.cpp)
+    list(APPEND MagnumSceneTools_HEADERS FlattenMeshHierarchy.h)
+endif()
 
 ## Objects shared between main and test library
 #add_library(MagnumSceneToolsObjects OBJECT

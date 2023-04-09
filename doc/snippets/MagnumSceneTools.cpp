@@ -30,8 +30,9 @@
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Transform.h"
-#include "Magnum/SceneTools/FlattenMeshHierarchy.h"
+#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
 #include "Magnum/SceneTools/OrderClusterParents.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -42,73 +43,44 @@ using namespace Magnum;
 
 int main() {
 {
-/* [flattenMeshHierarchy2D-transformations] */
+/* [flattenTransformationHierarchy2D-mesh-concatenate] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 Containers::Array<Trade::MeshData> meshes = DOXYGEN_ELLIPSIS({});
 
+Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>
+    meshesMaterials = scene.meshesMaterialsAsArray();
+Containers::Array<Matrix3> transformations =
+    SceneTools::flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh);
+
 /* Since a mesh can be referenced multiple times, we can't operate in-place */
 Containers::Array<Trade::MeshData> flattenedMeshes;
-for(const Containers::Triple<UnsignedInt, Int, Matrix3>& meshTransformation:
-    SceneTools::flattenMeshHierarchy2D(scene))
-{
+for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
     arrayAppend(flattenedMeshes, MeshTools::transform2D(
-        meshes[meshTransformation.first()], meshTransformation.third()));
+        meshes[meshesMaterials[i].second().first()], transformations[i]));
 }
-/* [flattenMeshHierarchy2D-transformations] */
+
+Trade::MeshData concatenated = MeshTools::concatenate(flattenedMeshes);
+/* [flattenTransformationHierarchy2D-mesh-concatenate] */
 } {
-/* [flattenMeshHierarchy3D-transformations] */
+/* [flattenTransformationHierarchy3D-mesh-concatenate] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 Containers::Array<Trade::MeshData> meshes = DOXYGEN_ELLIPSIS({});
 
+Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>
+    meshesMaterials = scene.meshesMaterialsAsArray();
+Containers::Array<Matrix4> transformations =
+    SceneTools::flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh);
+
 /* Since a mesh can be referenced multiple times, we can't operate in-place */
 Containers::Array<Trade::MeshData> flattenedMeshes;
-for(const Containers::Triple<UnsignedInt, Int, Matrix4>& meshTransformation:
-    SceneTools::flattenMeshHierarchy3D(scene))
-{
+for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
     arrayAppend(flattenedMeshes, MeshTools::transform3D(
-        meshes[meshTransformation.first()], meshTransformation.third()));
-}
-/* [flattenMeshHierarchy3D-transformations] */
+        meshes[meshesMaterials[i].second().first()], transformations[i]));
 }
 
-{
-/* [flattenMeshHierarchy2DInto] */
-Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
-
-struct Data {
-    Matrix3 transformation;
-    UnsignedInt object;
-    UnsignedInt mesh;
-};
-Containers::Array<Data> data{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
-
-SceneTools::flattenMeshHierarchy2DInto(scene,
-    stridedArrayView(data).slice(&Data::transformation));
-scene.meshesMaterialsInto(
-    stridedArrayView(data).slice(&Data::object),
-    stridedArrayView(data).slice(&Data::mesh),
-    nullptr);
-/* [flattenMeshHierarchy2DInto] */
-} {
-/* [flattenMeshHierarchy3DInto] */
-Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
-
-struct Data {
-    Matrix4 transformation;
-    UnsignedInt object;
-    UnsignedInt mesh;
-};
-Containers::Array<Data> data{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
-
-SceneTools::flattenMeshHierarchy3DInto(scene,
-    stridedArrayView(data).slice(&Data::transformation));
-scene.meshesMaterialsInto(
-    stridedArrayView(data).slice(&Data::object),
-    stridedArrayView(data).slice(&Data::mesh),
-    nullptr);
-/* [flattenMeshHierarchy3DInto] */
+Trade::MeshData concatenated = MeshTools::concatenate(flattenedMeshes);
+/* [flattenTransformationHierarchy3D-mesh-concatenate] */
 }
-
 
 {
 /* [orderClusterParents-transformations] */

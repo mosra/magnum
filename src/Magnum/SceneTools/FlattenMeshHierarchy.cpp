@@ -23,120 +23,68 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_FLATTENMESHHIERARCHY /* So it doesn't yell here */
+
 #include "FlattenMeshHierarchy.h"
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/ArrayTuple.h>
-#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
 #include "Magnum/Trade/SceneData.h"
-#include "Magnum/SceneTools/OrderClusterParents.h"
 
 namespace Magnum { namespace SceneTools {
 
 namespace {
 
-template<UnsignedInt> struct SceneDataDimensionTraits;
-template<> struct SceneDataDimensionTraits<2> {
-    static bool isDimensions(const Trade::SceneData& scene) {
-        return scene.is2D();
+template<UnsignedInt> struct DimensionTraits;
+template<> struct DimensionTraits<2> {
+    static Containers::Array<Matrix3> flatten(const Trade::SceneData& scene, const UnsignedInt fieldId, const Matrix3& globalTransformation) {
+        return flattenTransformationHierarchy2D(scene, fieldId, globalTransformation);
     }
-    static void transformationsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix3>& transformationDestination) {
-        return scene.transformations2DInto(mappingDestination, transformationDestination);
+    static void flattenInto(const Trade::SceneData& scene, const UnsignedInt fieldId, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation) {
+        return flattenTransformationHierarchy2DInto(scene, fieldId, transformations, globalTransformation);
     }
 };
-template<> struct SceneDataDimensionTraits<3> {
-    static bool isDimensions(const Trade::SceneData& scene) {
-        return scene.is3D();
+template<> struct DimensionTraits<3> {
+    static Containers::Array<Matrix4> flatten(const Trade::SceneData& scene, const UnsignedInt fieldId, const Matrix4& globalTransformation) {
+        return flattenTransformationHierarchy3D(scene, fieldId, globalTransformation);
     }
-    static void transformationsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Matrix4>& transformationDestination) {
-        return scene.transformations3DInto(mappingDestination, transformationDestination);
+    static void flattenInto(const Trade::SceneData& scene, const UnsignedInt fieldId, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation) {
+        return flattenTransformationHierarchy3DInto(scene, fieldId, transformations, globalTransformation);
     }
 };
 
 template<UnsignedInt dimensions> void flattenMeshHierarchyIntoImplementation(const Trade::SceneData& scene, const Containers::StridedArrayView1D<MatrixTypeFor<dimensions, Float>>& outputTransformations, const MatrixTypeFor<dimensions, Float>& globalTransformation) {
-    CORRADE_ASSERT(SceneDataDimensionTraits<dimensions>::isDimensions(scene),
-        "SceneTools::flattenMeshHierarchy(): the scene is not" << dimensions << Debug::nospace << "D", );
-    const Containers::Optional<UnsignedInt> parentFieldId = scene.findFieldId(Trade::SceneField::Parent);
-    CORRADE_ASSERT(parentFieldId,
-        "SceneTools::flattenMeshHierarchy(): the scene has no hierarchy", );
-    Containers::Optional<UnsignedInt> meshFieldId = scene.findFieldId(Trade::SceneField::Mesh);
-    CORRADE_ASSERT(outputTransformations.size() == (meshFieldId ? scene.fieldSize(*meshFieldId) : 0),
-        "SceneTools::flattenMeshHierarchyInto(): bad output size, expected" << scene.fieldSize(*meshFieldId) << "but got" << outputTransformations.size(), );
-
-    /* If there's no mesh field in the file, nothing to do. Another case is
-       that there is a mesh field but it's empty, then for simplicity we still
-       go through everything. */
+    const Containers::Optional<UnsignedInt> meshFieldId = scene.findFieldId(Trade::SceneField::Mesh);
+    /* If there's no mesh field in the file, nothing to do. This is how the
+       original API behaved, it's an assertion in the new one. */
     if(!meshFieldId) return;
 
-    /* Allocate a single storage for all temporary data */
-    Containers::ArrayView<Containers::Pair<UnsignedInt, Int>> orderedClusteredParents;
-    Containers::ArrayView<Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>> transformations;
-    Containers::ArrayView<MatrixTypeFor<dimensions, Float>> absoluteTransformations;
-    Containers::ArrayTuple storage{
-        /* Output of orderClusterParentsInto() */
-        {NoInit, scene.fieldSize(*parentFieldId), orderedClusteredParents},
-        /* Output of scene.transformationsXDInto() */
-        {NoInit, scene.transformationFieldSize(), transformations},
-        /* Above transformations but indexed by object ID */
-        {ValueInit, std::size_t(scene.mappingBound() + 1), absoluteTransformations}
-    };
-    orderClusterParentsInto(scene,
-        stridedArrayView(orderedClusteredParents).slice(&decltype(orderedClusteredParents)::Type::first),
-        stridedArrayView(orderedClusteredParents).slice(&decltype(orderedClusteredParents)::Type::second));
-    SceneDataDimensionTraits<dimensions>::transformationsInto(scene,
-        stridedArrayView(transformations).slice(&decltype(transformations)::Type::first),
-        stridedArrayView(transformations).slice(&decltype(transformations)::Type::second));
-
-    /* Retrieve transformations of all objects, indexed by object ID. Since not
-       all nodes in the hierarchy may have a transformation assigned, the whole
-       array got initialized to identity first. */
-    /** @todo switch to a hashmap eventually? */
-    absoluteTransformations[0] = globalTransformation;
-    for(const Containers::Pair<UnsignedInt, MatrixTypeFor<dimensions, Float>>& transformation: transformations) {
-        CORRADE_INTERNAL_ASSERT(transformation.first() < scene.mappingBound());
-        absoluteTransformations[transformation.first() + 1] = transformation.second();
-    }
-
-    /* Turn the transformations into absolute */
-    for(const Containers::Pair<UnsignedInt, Int>& parentOffset: orderedClusteredParents) {
-        absoluteTransformations[parentOffset.first() + 1] =
-            absoluteTransformations[parentOffset.second() + 1]*
-            absoluteTransformations[parentOffset.first() + 1];
-    }
-
-    /* Allocate the output array, retrieve mesh & material IDs and assign
-       absolute transformations to each. The matrix location is abused for
-       object mapping, which is subsequently replaced by the absolute object
-       transformation for given mesh. */
-    const auto mapping = Containers::arrayCast<UnsignedInt>(outputTransformations);
-    scene.mappingInto(*meshFieldId, mapping);
-    for(std::size_t i = 0; i != mapping.size(); ++i) {
-        CORRADE_INTERNAL_ASSERT(mapping[i] < scene.mappingBound());
-        outputTransformations[i] = absoluteTransformations[mapping[i] + 1];
-    }
+    DimensionTraits<dimensions>::flattenInto(scene, *meshFieldId, outputTransformations, globalTransformation);
 }
 
 template<UnsignedInt dimensions> Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> flattenMeshHierarchyImplementation(const Trade::SceneData& scene, const MatrixTypeFor<dimensions, Float>& globalTransformation) {
     const Containers::Optional<UnsignedInt> meshFieldId = scene.findFieldId(Trade::SceneField::Mesh);
+    /* If there's no mesh field in the file, nothing to do. This is how the
+       original API behaved, it's an assertion in the new one. */
+    if(!meshFieldId) return {};
 
     /* Get the transformations. This will be a no-op if the mesh field isn't
        present, but will go through other assertions that may still be rather
        valuable */
-    Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> out{NoInit, meshFieldId ? scene.fieldSize(*meshFieldId) : 0};
-    flattenMeshHierarchyIntoImplementation<dimensions>(scene,
+    Containers::Array<Containers::Triple<UnsignedInt, Int, MatrixTypeFor<dimensions, Float>>> out{NoInit, scene.fieldSize(*meshFieldId)};
+    DimensionTraits<dimensions>::flattenInto(scene, *meshFieldId,
         stridedArrayView(out).slice(&decltype(out)::Type::third),
         globalTransformation);
 
     /* Fetch the additional mesh and material ID as well, which are in the
        same order */
-    if(meshFieldId) scene.meshesMaterialsInto(nullptr,
+    scene.meshesMaterialsInto(nullptr,
         stridedArrayView(out).slice(&decltype(out)::Type::first),
         stridedArrayView(out).slice(&decltype(out)::Type::second));
 

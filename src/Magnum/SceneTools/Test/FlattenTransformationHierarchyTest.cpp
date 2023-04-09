@@ -29,24 +29,22 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 
-/* There's no better way to disable file deprecation warnings */
-#define _MAGNUM_NO_DEPRECATED_FLATTENMESHHIERARCHY
-
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
-#include "Magnum/SceneTools/FlattenMeshHierarchy.h"
+#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
 #include "Magnum/Trade/SceneData.h"
 
 namespace Magnum { namespace SceneTools { namespace Test { namespace {
 
-struct FlattenMeshHierarchyTest: TestSuite::Tester {
-    explicit FlattenMeshHierarchyTest();
+struct FlattenTransformationHierarchyTest: TestSuite::Tester {
+    explicit FlattenTransformationHierarchyTest();
 
     void test2D();
     void test3D();
+
+    void fieldNotFound();
     void not2DNot3D();
     void noParentField();
-    void noMeshField();
 
     void into2D();
     void into3D();
@@ -59,20 +57,28 @@ const struct {
     const char* name;
     Matrix3 globalTransformation2D;
     Matrix4 globalTransformation3D;
+    bool fieldIdInsteadOfName;
     std::size_t transformationsToExclude, meshesToExclude;
     std::size_t expectedOutputSize;
 } TestData[]{
-    {"", {}, {},
+    {"", {}, {}, false,
+        2, 0,
+        5},
+    {"field ID", {}, {}, true,
         2, 0,
         5},
     {"global transformation",
-        Matrix3::scaling(Vector2{0.5f}), Matrix4::scaling(Vector3{0.5f}),
+        Matrix3::scaling(Vector2{0.5f}), Matrix4::scaling(Vector3{0.5f}), false,
         2, 0,
         5},
-    {"transformations not part of the hierarchy", {}, {},
+    {"global transformation, field ID",
+        Matrix3::scaling(Vector2{0.5f}), Matrix4::scaling(Vector3{0.5f}), true,
+        2, 0,
+        5},
+    {"transformations not part of the hierarchy", {}, {}, false,
         0, 0,
         5},
-    {"no meshes", {}, {},
+    {"empty field", {}, {}, false,
         2, 5,
         0},
 };
@@ -81,29 +87,35 @@ const struct {
     const char* name;
     Matrix3 globalTransformation2D;
     Matrix4 globalTransformation3D;
+    bool fieldIdInsteadOfName;
     std::size_t expectedOutputSize;
 } IntoData[]{
-    {"", {}, {},
+    {"", {}, {}, false,
+        5},
+    {"field ID", {}, {}, true,
         5},
     {"global transformation",
-        Matrix3::scaling(Vector2{0.5f}), Matrix4::scaling(Vector3{0.5f}),
+        Matrix3::scaling(Vector2{0.5f}), Matrix4::scaling(Vector3{0.5f}), false,
+        5},
+    {"global transformation, field ID",
+        Matrix3::scaling(Vector2{0.5f}), Matrix4::scaling(Vector3{0.5f}), true,
         5},
 };
 
-FlattenMeshHierarchyTest::FlattenMeshHierarchyTest() {
-    addInstancedTests({&FlattenMeshHierarchyTest::test2D,
-                       &FlattenMeshHierarchyTest::test3D},
+FlattenTransformationHierarchyTest::FlattenTransformationHierarchyTest() {
+    addInstancedTests({&FlattenTransformationHierarchyTest::test2D,
+                       &FlattenTransformationHierarchyTest::test3D},
         Containers::arraySize(TestData));
 
-    addTests({&FlattenMeshHierarchyTest::not2DNot3D,
-              &FlattenMeshHierarchyTest::noParentField,
-              &FlattenMeshHierarchyTest::noMeshField});
+    addTests({&FlattenTransformationHierarchyTest::fieldNotFound,
+              &FlattenTransformationHierarchyTest::not2DNot3D,
+              &FlattenTransformationHierarchyTest::noParentField});
 
-    addInstancedTests({&FlattenMeshHierarchyTest::into2D,
-                       &FlattenMeshHierarchyTest::into3D},
+    addInstancedTests({&FlattenTransformationHierarchyTest::into2D,
+                       &FlattenTransformationHierarchyTest::into3D},
         Containers::arraySize(IntoData));
 
-    addTests({&FlattenMeshHierarchyTest::intoInvalidSize});
+    addTests({&FlattenTransformationHierarchyTest::intoInvalidSize});
 }
 
 const struct Scene {
@@ -123,7 +135,6 @@ const struct Scene {
     struct Mesh {
         UnsignedShort object;
         UnsignedShort mesh;
-        Short meshMaterial;
     } meshes[5];
 } Data[]{{
     /*
@@ -178,14 +189,16 @@ const struct Scene {
      {17, Matrix3::translation({2.0f, 1.0f}),
           Matrix4::translation({2.0f, 1.0f, 4.0f})},
     },
-    {{2, 113, 96},
-     {3, 266, 74},
-     {4, 525, 33},
-     {3, 422, -1},
-     {16, 113, 96}}
+    /* The mesh IDs aren't used for anything, just setting them to something
+       random (and high) to avoid their misuses as some offsets / IDs */
+    {{2, 113},
+     {3, 266},
+     {4, 525},
+     {3, 422},
+     {16, 113}}
 }};
 
-void FlattenMeshHierarchyTest::test2D() {
+void FlattenTransformationHierarchyTest::test2D() {
     auto&& data = TestData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -197,6 +210,13 @@ void FlattenMeshHierarchyTest::test2D() {
                 .slice(&Scene::Parent::object),
             Containers::stridedArrayView(Data->parents)
                 .slice(&Scene::Parent::parent)},
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::object)
+                .exceptSuffix(data.meshesToExclude),
+            Containers::stridedArrayView(Data->meshes)
+                .slice(&Scene::Mesh::mesh)
+                .exceptSuffix(data.meshesToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
             Containers::stridedArrayView(Data->transforms)
                 .slice(&Scene::Transformation::object)
@@ -204,49 +224,40 @@ void FlattenMeshHierarchyTest::test2D() {
             Containers::stridedArrayView(Data->transforms)
                 .slice(&Scene::Transformation::transformation2D)
                 .exceptSuffix(data.transformationsToExclude)},
-        Trade::SceneFieldData{Trade::SceneField::Mesh,
-            Containers::stridedArrayView(Data->meshes)
-                .slice(&Scene::Mesh::object)
-                .exceptSuffix(data.meshesToExclude),
-            Containers::stridedArrayView(Data->meshes)
-                .slice(&Scene::Mesh::mesh)
-                .exceptSuffix(data.meshesToExclude)},
-        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
-            Containers::stridedArrayView(Data->meshes)
-                .slice(&Scene::Mesh::object)
-                .exceptSuffix(data.meshesToExclude),
-            Containers::stridedArrayView(Data->meshes)
-                .slice(&Scene::Mesh::meshMaterial)
-                .exceptSuffix(data.meshesToExclude)},
     }};
 
-    Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> out;
-    /* To test the parameter-less overload also */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    if(data.globalTransformation2D != Matrix3{})
-        out = flattenMeshHierarchy2D(scene, data.globalTransformation2D);
-    else
-        out = flattenMeshHierarchy2D(scene);
-    CORRADE_IGNORE_DEPRECATED_POP
+    Containers::Array<Matrix3> out;
+    /* To test all overloads */
+    if(data.globalTransformation2D != Matrix3{}) {
+        if(data.fieldIdInsteadOfName)
+            out = flattenTransformationHierarchy2D(scene, 2, data.globalTransformation2D);
+        else
+            out = flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh, data.globalTransformation2D);
+    } else {
+        if(data.fieldIdInsteadOfName)
+            out = flattenTransformationHierarchy2D(scene, 2);
+        else
+            out = flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh);
+    }
 
-    CORRADE_COMPARE_AS(out, (Containers::arrayView<Containers::Triple<UnsignedInt, Int, Matrix3>>({
-        {113, 96, data.globalTransformation2D*
-                  Matrix3::translation({1.0f, -1.5f})*
-                  Matrix3::scaling({3.0f, 5.0f})},
-        {266, 74, data.globalTransformation2D*
-                  Matrix3::translation({1.0f, -1.5f})*
-                  Matrix3::rotation(35.0_degf)},
-        {525, 33, data.globalTransformation2D},
-        {422, -1, data.globalTransformation2D*
-                  Matrix3::translation({1.0f, -1.5f})*
-                  Matrix3::rotation(35.0_degf)},
-        {113, 96, data.globalTransformation2D*
-                  Matrix3::translation({1.0f, -1.5f})*
-                  Matrix3::scaling({3.0f, 5.0f})}
-    })).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out, Containers::arrayView({
+        data.globalTransformation2D*
+            Matrix3::translation({1.0f, -1.5f})*
+            Matrix3::scaling({3.0f, 5.0f}),
+        data.globalTransformation2D*
+            Matrix3::translation({1.0f, -1.5f})*
+            Matrix3::rotation(35.0_degf),
+        data.globalTransformation2D,
+        data.globalTransformation2D*
+            Matrix3::translation({1.0f, -1.5f})*
+            Matrix3::rotation(35.0_degf),
+        data.globalTransformation2D*
+            Matrix3::translation({1.0f, -1.5f})*
+            Matrix3::scaling({3.0f, 5.0f})
+    }).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
 }
 
-void FlattenMeshHierarchyTest::test3D() {
+void FlattenTransformationHierarchyTest::test3D() {
     auto&& data = TestData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -258,13 +269,6 @@ void FlattenMeshHierarchyTest::test3D() {
                 .slice(&Scene::Parent::object),
             Containers::stridedArrayView(Data->parents)
                 .slice(&Scene::Parent::parent)},
-        Trade::SceneFieldData{Trade::SceneField::Transformation,
-            Containers::stridedArrayView(Data->transforms)
-                .slice(&Scene::Transformation::object)
-                .exceptSuffix(data.transformationsToExclude),
-            Containers::stridedArrayView(Data->transforms)
-                .slice(&Scene::Transformation::transformation3D)
-                .exceptSuffix(data.transformationsToExclude)},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::stridedArrayView(Data->meshes)
                 .slice(&Scene::Mesh::object)
@@ -272,97 +276,104 @@ void FlattenMeshHierarchyTest::test3D() {
             Containers::stridedArrayView(Data->meshes)
                 .slice(&Scene::Mesh::mesh)
                 .exceptSuffix(data.meshesToExclude)},
-        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
-            Containers::stridedArrayView(Data->meshes)
-                .slice(&Scene::Mesh::object)
-                .exceptSuffix(data.meshesToExclude),
-            Containers::stridedArrayView(Data->meshes)
-                .slice(&Scene::Mesh::meshMaterial)
-                .exceptSuffix(data.meshesToExclude)},
+        Trade::SceneFieldData{Trade::SceneField::Transformation,
+            Containers::stridedArrayView(Data->transforms)
+                .slice(&Scene::Transformation::object)
+                .exceptSuffix(data.transformationsToExclude),
+            Containers::stridedArrayView(Data->transforms)
+                .slice(&Scene::Transformation::transformation3D)
+                .exceptSuffix(data.transformationsToExclude)},
     }};
 
-    Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> out;
-    /* To test the parameter-less overload also */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    if(data.globalTransformation3D != Matrix4{})
-        out = flattenMeshHierarchy3D(scene, data.globalTransformation3D);
-    else
-        out = flattenMeshHierarchy3D(scene);
-    CORRADE_IGNORE_DEPRECATED_POP
+    Containers::Array<Matrix4> out;
+    /* To test all overloads */
+    if(data.globalTransformation3D != Matrix4{}) {
+        if(data.fieldIdInsteadOfName)
+            out = flattenTransformationHierarchy3D(scene, 2, data.globalTransformation3D);
+        else
+            out = flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh, data.globalTransformation3D);
+    } else {
+        if(data.fieldIdInsteadOfName)
+            out = flattenTransformationHierarchy3D(scene, 2);
+        else
+            out = flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh);
+    }
 
-    CORRADE_COMPARE_AS(out, (Containers::arrayView<Containers::Triple<UnsignedInt, Int, Matrix4>>({
-        {113, 96, data.globalTransformation3D*
-                  Matrix4::translation({1.0f, -1.5f, 0.5f})*
-                  Matrix4::scaling({3.0f, 5.0f, 2.0f})},
-        {266, 74, data.globalTransformation3D*
-                  Matrix4::translation({1.0f, -1.5f, 0.5f})*
-                  Matrix4::rotationZ(35.0_degf)},
-        {525, 33, data.globalTransformation3D},
-        {422, -1, data.globalTransformation3D*
-                  Matrix4::translation({1.0f, -1.5f, 0.5f})*
-                  Matrix4::rotationZ(35.0_degf)},
-        {113, 96, data.globalTransformation3D*
-                  Matrix4::translation({1.0f, -1.5f, 0.5f})*
-                  Matrix4::scaling({3.0f, 5.0f, 2.0f})}
-    })).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out, Containers::arrayView({
+        data.globalTransformation3D*
+            Matrix4::translation({1.0f, -1.5f, 0.5f})*
+            Matrix4::scaling({3.0f, 5.0f, 2.0f}),
+        data.globalTransformation3D*
+            Matrix4::translation({1.0f, -1.5f, 0.5f})*
+            Matrix4::rotationZ(35.0_degf),
+        data.globalTransformation3D,
+        data.globalTransformation3D*
+            Matrix4::translation({1.0f, -1.5f, 0.5f})*
+            Matrix4::rotationZ(35.0_degf),
+        data.globalTransformation3D*
+            Matrix4::translation({1.0f, -1.5f, 0.5f})*
+            Matrix4::scaling({3.0f, 5.0f, 2.0f})
+    }).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
 }
 
-void FlattenMeshHierarchyTest::not2DNot3D() {
+void FlattenTransformationHierarchyTest::fieldNotFound() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    /* Used to assert even on an empty scene, now it does an early-out if the
-       mesh field doesn't exist because flattenTransformationHierarchy() would
-       assert instead. That behavioral change is fine for a deprecated API. */
-    Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    flattenMeshHierarchy2D(scene);
-    flattenMeshHierarchy3D(scene);
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 2D\n"
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 3D\n");
-}
-
-void FlattenMeshHierarchyTest::noParentField() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    /* Used to assert even on an empty scene, now it does an early-out if the
-       mesh field doesn't exist because flattenTransformationHierarchy() would
-       assert instead. That behavioral change is fine for a deprecated API. */
-    Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
-        Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}
-    }};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    flattenMeshHierarchy2D(scene);
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchy(): the scene has no hierarchy\n");
-}
-
-void FlattenMeshHierarchyTest::noMeshField() {
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
         Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}
     }};
 
-    /* This should not blow up, just return nothing */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    CORRADE_COMPARE_AS(flattenMeshHierarchy2D(scene),
-        (Containers::ArrayView<const Containers::Triple<UnsignedInt, Int, Matrix3>>{}),
-        TestSuite::Compare::Container);
-    CORRADE_IGNORE_DEPRECATED_POP
+    std::ostringstream out;
+    Error redirectError{&out};
+    flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh);
+    flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh);
+    flattenTransformationHierarchy2D(scene, 2);
+    flattenTransformationHierarchy3D(scene, 2);
+    CORRADE_COMPARE(out.str(),
+        "SceneTools::flattenTransformationHierarchy(): field Trade::SceneField::Mesh not found\n"
+        "SceneTools::flattenTransformationHierarchy(): field Trade::SceneField::Mesh not found\n"
+        "SceneTools::flattenTransformationHierarchy(): index 2 out of range for 2 fields\n"
+        "SceneTools::flattenTransformationHierarchy(): index 2 out of range for 2 fields\n");
 }
 
-void FlattenMeshHierarchyTest::into2D() {
+void FlattenTransformationHierarchyTest::not2DNot3D() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
+        Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    flattenTransformationHierarchy2D(scene, Trade::SceneField::Parent);
+    flattenTransformationHierarchy2D(scene, 0);
+    flattenTransformationHierarchy3D(scene, Trade::SceneField::Parent);
+    flattenTransformationHierarchy3D(scene, 0);
+    CORRADE_COMPARE(out.str(),
+        "SceneTools::flattenTransformationHierarchy(): the scene is not 2D\n"
+        "SceneTools::flattenTransformationHierarchy(): the scene is not 2D\n"
+        "SceneTools::flattenTransformationHierarchy(): the scene is not 3D\n"
+        "SceneTools::flattenTransformationHierarchy(): the scene is not 3D\n");
+}
+
+void FlattenTransformationHierarchyTest::noParentField() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
+        Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    flattenTransformationHierarchy2D(scene, Trade::SceneField::Transformation);
+    flattenTransformationHierarchy2D(scene, 0);
+    CORRADE_COMPARE(out.str(),
+        "SceneTools::flattenTransformationHierarchy(): the scene has no hierarchy\n"
+        "SceneTools::flattenTransformationHierarchy(): the scene has no hierarchy\n");
+}
+
+void FlattenTransformationHierarchyTest::into2D() {
     auto&& data = IntoData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -389,13 +400,18 @@ void FlattenMeshHierarchyTest::into2D() {
     }};
 
     Containers::Array<Matrix3> out{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
-    /* To test the parameter-less overload also */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    if(data.globalTransformation2D != Matrix3{})
-        flattenMeshHierarchy2DInto(scene, out, data.globalTransformation2D);
-    else
-        flattenMeshHierarchy2DInto(scene, out);
-    CORRADE_IGNORE_DEPRECATED_POP
+    /* To test all overloads */
+    if(data.globalTransformation2D != Matrix3{}) {
+        if(data.fieldIdInsteadOfName)
+            flattenTransformationHierarchy2DInto(scene, 2, out, data.globalTransformation2D);
+        else
+            flattenTransformationHierarchy2DInto(scene, Trade::SceneField::Mesh, out, data.globalTransformation2D);
+    } else {
+        if(data.fieldIdInsteadOfName)
+            flattenTransformationHierarchy2DInto(scene, 2, out);
+        else
+            flattenTransformationHierarchy2DInto(scene, Trade::SceneField::Mesh, out);
+    }
 
     CORRADE_COMPARE_AS(out, Containers::arrayView<Matrix3>({
         data.globalTransformation2D*
@@ -414,7 +430,7 @@ void FlattenMeshHierarchyTest::into2D() {
     }), TestSuite::Compare::Container);
 }
 
-void FlattenMeshHierarchyTest::into3D() {
+void FlattenTransformationHierarchyTest::into3D() {
     auto&& data = IntoData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -441,13 +457,18 @@ void FlattenMeshHierarchyTest::into3D() {
     }};
 
     Containers::Array<Matrix4> out{NoInit, scene.fieldSize(Trade::SceneField::Mesh)};
-    /* To test the parameter-less overload also */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    if(data.globalTransformation3D != Matrix4{})
-        flattenMeshHierarchy3DInto(scene, out, data.globalTransformation3D);
-    else
-        flattenMeshHierarchy3DInto(scene, out);
-    CORRADE_IGNORE_DEPRECATED_POP
+    /* To test all overloads */
+    if(data.globalTransformation3D != Matrix4{}) {
+        if(data.fieldIdInsteadOfName)
+            flattenTransformationHierarchy3DInto(scene, 2, out, data.globalTransformation3D);
+        else
+            flattenTransformationHierarchy3DInto(scene, Trade::SceneField::Mesh, out, data.globalTransformation3D);
+    } else {
+        if(data.fieldIdInsteadOfName)
+            flattenTransformationHierarchy3DInto(scene, 2, out);
+        else
+            flattenTransformationHierarchy3DInto(scene, Trade::SceneField::Mesh, out);
+    }
 
     CORRADE_COMPARE_AS(out, Containers::arrayView<Matrix4>({
         data.globalTransformation3D*
@@ -466,7 +487,7 @@ void FlattenMeshHierarchyTest::into3D() {
     }), TestSuite::Compare::Container);
 }
 
-void FlattenMeshHierarchyTest::intoInvalidSize() {
+void FlattenTransformationHierarchyTest::intoInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Data {
@@ -475,17 +496,17 @@ void FlattenMeshHierarchyTest::intoInvalidSize() {
     } data[5]{};
 
     Trade::SceneData scene2D{Trade::SceneMappingType::UnsignedInt, 1, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::stridedArrayView(data).slice(&Data::mapping),
             Containers::stridedArrayView(data).slice(&Data::mesh)},
-        Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix3x3, nullptr}
     }};
     Trade::SceneData scene3D{Trade::SceneMappingType::UnsignedInt, 1, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::stridedArrayView(data).slice(&Data::mapping),
             Containers::stridedArrayView(data).slice(&Data::mesh)},
-        Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr},
         Trade::SceneFieldData{Trade::SceneField::Transformation, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Matrix4x4, nullptr}
     }};
 
@@ -494,15 +515,17 @@ void FlattenMeshHierarchyTest::intoInvalidSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    flattenMeshHierarchy2DInto(scene2D, transformations2D);
-    flattenMeshHierarchy3DInto(scene3D, transformations3D);
-    CORRADE_IGNORE_DEPRECATED_POP
+    flattenTransformationHierarchy2DInto(scene2D, Trade::SceneField::Mesh, transformations2D);
+    flattenTransformationHierarchy2DInto(scene2D, 1, transformations2D);
+    flattenTransformationHierarchy3DInto(scene3D, Trade::SceneField::Mesh, transformations3D);
+    flattenTransformationHierarchy3DInto(scene3D, 1, transformations3D);
     CORRADE_COMPARE(out.str(),
         "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 6\n"
+        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 6\n"
+        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 4\n"
         "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 4\n");
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::SceneTools::Test::FlattenMeshHierarchyTest)
+CORRADE_TEST_MAIN(Magnum::SceneTools::Test::FlattenTransformationHierarchyTest)
