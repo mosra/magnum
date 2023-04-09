@@ -40,7 +40,7 @@ namespace Magnum { namespace Vk { namespace Implementation {
 
 using namespace Containers::Literals;
 
-DeviceState::DeviceState(Device& device, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds) {
+DeviceState::DeviceState(Device& device, Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds) {
     if(device.isVersionSupported(Version::Vk11)) {
         if(device.properties().name().hasPrefix("SwiftShader"_s) && !Implementation::isDriverWorkaroundDisabled(encounteredWorkarounds, "swiftshader-crashy-getdevicequeue2"_s))
             getDeviceQueueImplementation = &Device::getQueueImplementationDefault;

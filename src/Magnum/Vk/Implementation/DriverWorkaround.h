@@ -29,14 +29,14 @@
 
 namespace Magnum { namespace Vk { namespace Implementation {
 
-void disableWorkaround(Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, Containers::StringView workaround);
+void disableWorkaround(Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds, Containers::StringView workaround);
 
-bool isDriverWorkaroundDisabled(Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, Containers::StringView workaround);
+bool isDriverWorkaroundDisabled(Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds, Containers::StringView workaround);
 
 /* Used by Device::wrap() -- because device extension setup is outside of our
    control and the function doesn't print anything on the output, it's better
    to just do nothing at all than silently enabling some subset */
-Containers::Array<std::pair<Containers::StringView, bool>> disableAllWorkarounds();
+Containers::Array<Containers::Pair<Containers::StringView, bool>> disableAllWorkarounds();
 
 }}}
 

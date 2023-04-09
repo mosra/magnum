@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -90,7 +91,7 @@ Containers::StringView findWorkaround(const Containers::StringView workaround) {
 
 }
 
-void disableWorkaround(Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const Containers::StringView workaround) {
+void disableWorkaround(Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds, const Containers::StringView workaround) {
     /* Find the workaround. Note that we'll add the found view to the array
        and not the passed view, as the found view is guaranteed to stay in
        scope */
@@ -107,14 +108,14 @@ void disableWorkaround(Containers::Array<std::pair<Containers::StringView, bool>
     arrayAppend(encounteredWorkarounds, InPlaceInit, found, true);
 }
 
-Containers::Array<std::pair<Containers::StringView, bool>> disableAllWorkarounds() {
-    Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds;
+Containers::Array<Containers::Pair<Containers::StringView, bool>> disableAllWorkarounds() {
+    Containers::Array<Containers::Pair<Containers::StringView, bool>> encounteredWorkarounds;
     for(const Containers::StringView i: KnownWorkarounds)
         arrayAppend(encounteredWorkarounds, InPlaceInit, i, true);
     return encounteredWorkarounds;
 }
 
-bool isDriverWorkaroundDisabled(Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const Containers::StringView workaround) {
+bool isDriverWorkaroundDisabled(Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds, const Containers::StringView workaround) {
     /* Find the workaround. Note that we'll add the found view to the array
        and not the passed view, as the found view is guaranteed to stay in
        scope */
@@ -126,7 +127,7 @@ bool isDriverWorkaroundDisabled(Containers::Array<std::pair<Containers::StringVi
        compare just data pointers instead of the whole string as we store only
        the views in the KnownWorkarounds list. */
     for(const auto& i: encounteredWorkarounds)
-        if(i.first.data() == found.data()) return i.second;
+        if(i.first().data() == found.data()) return i.second();
     arrayAppend(encounteredWorkarounds, InPlaceInit, found, false);
     return false;
 }

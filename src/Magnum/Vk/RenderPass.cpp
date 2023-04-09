@@ -396,7 +396,7 @@ std::size_t vkSubpassDescriptionExtrasSize(const VkSubpassDescription2& descript
         (description.pDepthStencilAttachment ? 1 : 0));
 }
 
-std::pair<VkSubpassDescription, std::size_t> vkSubpassDescriptionExtrasInto(const VkSubpassDescription2& description, char* const out) {
+Containers::Pair<VkSubpassDescription, std::size_t> vkSubpassDescriptionExtrasInto(const VkSubpassDescription2& description, char* const out) {
     /* Not using an array view nor arrayCast() because the output is not
        guaranteed to be divisible by the structure size and we have nothing
        else to do with the size either */
@@ -455,9 +455,9 @@ Containers::Array<VkSubpassDescription> SubpassDescription::vkSubpassDescription
 
     /* Fill it with data and return, faking a size of 1 and with a custom
        deleter that correctly deletes as a char array again */
-    std::pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_description, storage.exceptPrefix(sizeof(VkSubpassDescription)));
-    CORRADE_INTERNAL_ASSERT(out.second == extrasSize);
-    *reinterpret_cast<VkSubpassDescription*>(storage.data()) = out.first;
+    Containers::Pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_description, storage.exceptPrefix(sizeof(VkSubpassDescription)));
+    CORRADE_INTERNAL_ASSERT(out.second() == extrasSize);
+    *reinterpret_cast<VkSubpassDescription*>(storage.data()) = out.first();
     return Containers::Array<VkSubpassDescription>{
         reinterpret_cast<VkSubpassDescription*>(storage.release()), 1,
         [](VkSubpassDescription* data, std::size_t) {
@@ -726,10 +726,10 @@ Containers::Array<VkRenderPassCreateInfo> RenderPassCreateInfo::vkRenderPassCrea
     std::size_t extrasOffset = sizeof(VkRenderPassCreateInfo) + structuresSize;
     info1.pSubpasses = reinterpret_cast<VkSubpassDescription*>(storage + offset);
     for(std::size_t i = 0; i != _info.subpassCount; ++i) {
-        std::pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_info.pSubpasses[i], storage + extrasOffset);
-        *reinterpret_cast<VkSubpassDescription*>(storage + offset) = out.first;
+        Containers::Pair<VkSubpassDescription, std::size_t> out = vkSubpassDescriptionExtrasInto(_info.pSubpasses[i], storage + extrasOffset);
+        *reinterpret_cast<VkSubpassDescription*>(storage + offset) = out.first();
         offset += sizeof(VkSubpassDescription);
-        extrasOffset += out.second;
+        extrasOffset += out.second();
     }
     CORRADE_INTERNAL_ASSERT(extrasOffset == storage.size());
 

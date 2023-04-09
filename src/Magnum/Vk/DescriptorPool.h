@@ -30,8 +30,6 @@
  * @m_since_latest
  */
 
-#include <utility>
-
 #include "Magnum/Tags.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/visibility.h"
@@ -248,8 +246,8 @@ class MAGNUM_VK_EXPORT DescriptorPool {
         VkDescriptorPool release();
 
     private:
-        MAGNUM_VK_LOCAL std::pair<Result, DescriptorSet> allocateInternal(VkDescriptorSetLayout layout);
-        MAGNUM_VK_LOCAL std::pair<Result, DescriptorSet> allocateInternal(VkDescriptorSetLayout layout, UnsignedInt variableDescriptorCount);
+        MAGNUM_VK_LOCAL Containers::Pair<Result, DescriptorSet> allocateInternal(VkDescriptorSetLayout layout);
+        MAGNUM_VK_LOCAL Containers::Pair<Result, DescriptorSet> allocateInternal(VkDescriptorSetLayout layout, UnsignedInt variableDescriptorCount);
 
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;

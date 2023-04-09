@@ -25,8 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <utility>
-
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 
@@ -39,7 +37,7 @@ class RenderPassCreateInfo;
 namespace Implementation {
 
 struct DeviceState {
-    explicit DeviceState(Device& device, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds);
+    explicit DeviceState(Device& device, Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds);
 
     void(*getDeviceQueueImplementation)(Device&, const VkDeviceQueueInfo2&, VkQueue&);
 

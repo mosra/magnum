@@ -28,6 +28,7 @@
 
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/DescriptorSet.h"
@@ -128,7 +129,7 @@ DescriptorPool& DescriptorPool::operator=(DescriptorPool&& other) noexcept {
     return *this;
 }
 
-std::pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const VkDescriptorSetLayout layout) {
+Containers::Pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const VkDescriptorSetLayout layout) {
     DescriptorSet set{NoCreate};
     set._device = _device;
     set._pool = _handle;
@@ -161,19 +162,19 @@ std::pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const VkDescri
 }
 
 DescriptorSet DescriptorPool::allocate(const VkDescriptorSetLayout layout) {
-    std::pair<Result, DescriptorSet> out = allocateInternal(layout);
-    CORRADE_ASSERT(out.first == Result::Success,
-        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first, std::move(out.second));
-    return std::move(out.second);
+    Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout);
+    CORRADE_ASSERT(out.first() == Result::Success,
+        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first(), std::move(out.second()));
+    return std::move(out.second());
 }
 
 Containers::Optional<DescriptorSet> DescriptorPool::tryAllocate(const VkDescriptorSetLayout layout) {
-    std::pair<Result, DescriptorSet> out = allocateInternal(layout);
-    if(out.first != Result::Success) return {};
-    return std::move(out.second);
+    Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout);
+    if(out.first() != Result::Success) return {};
+    return std::move(out.second());
 }
 
-std::pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
+Containers::Pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
     DescriptorSet set{NoCreate};
     set._device = _device;
     set._pool = _handle;
@@ -197,16 +198,16 @@ std::pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const VkDescri
 }
 
 DescriptorSet DescriptorPool::allocate(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
-    std::pair<Result, DescriptorSet> out = allocateInternal(layout, variableDescriptorCount);
-    CORRADE_ASSERT(out.first == Result::Success,
-        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first, std::move(out.second));
-    return std::move(out.second);
+    Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout, variableDescriptorCount);
+    CORRADE_ASSERT(out.first() == Result::Success,
+        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first(), std::move(out.second()));
+    return std::move(out.second());
 }
 
 Containers::Optional<DescriptorSet> DescriptorPool::tryAllocate(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
-    std::pair<Result, DescriptorSet> out = allocateInternal(layout, variableDescriptorCount);
-    if(out.first != Result::Success) return {};
-    return std::move(out.second);
+    Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout, variableDescriptorCount);
+    if(out.first() != Result::Success) return {};
+    return std::move(out.second());
 }
 
 void DescriptorPool::reset() {

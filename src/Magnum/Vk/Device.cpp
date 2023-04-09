@@ -105,9 +105,9 @@ struct DeviceCreateInfo::State {
 
     Containers::String disabledExtensionsStorage;
     Containers::Array<Containers::StringView> disabledExtensions;
-    /* .second = true means the workaround is disabled; the views always point
-       to the internal KnownWorkarounds array */
-    Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds;
+    /* .second() = true means the workaround is disabled; the views always
+       point to the internal KnownWorkarounds array */
+    Containers::Array<Containers::Pair<Containers::StringView, bool>> encounteredWorkarounds;
     Containers::Array<VkDeviceQueueCreateInfo> queues;
     Containers::StaticArray<32, Float> queuePriorities;
     Containers::StaticArray<32, Queue*> queueOutput;
@@ -665,7 +665,7 @@ void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, con
 
     /* Because we have no control over extensions / features, no workarounds
        are used here -- better to just do nothing than just a partial attempt */
-    Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds = Implementation::disableAllWorkarounds();
+    Containers::Array<Containers::Pair<Containers::StringView, bool>> encounteredWorkarounds = Implementation::disableAllWorkarounds();
     initialize(instance, version, enabledExtensions, encounteredWorkarounds, enabledFeatures);
 }
 
@@ -762,11 +762,8 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
 
     /* Make a copy of the workarounds list coming from DeviceCreateInfo as
        initialize() may modify it */
-    /** @todo switch to Containers::Pair once it exists and use Utility::copy()
-        (std::pair isn't trivially copyable, ffs) */
-    Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds{info._state->encounteredWorkarounds.size()};
-    for(std::size_t i = 0; i != encounteredWorkarounds.size(); ++i)
-        encounteredWorkarounds[i] = info._state->encounteredWorkarounds[i];
+    Containers::Array<Containers::Pair<Containers::StringView, bool>> encounteredWorkarounds{NoInit, info._state->encounteredWorkarounds.size()};
+    Utility::copy(info._state->encounteredWorkarounds, encounteredWorkarounds);
 
     /* Initialize the enabled extension list and feature-, extension-,
        workaround-dependent function pointers */
@@ -777,14 +774,14 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
         bool workaroundHeaderPrinted = false;
         for(const auto& workaround: encounteredWorkarounds) {
             /* Skip disabled workarounds */
-            if(workaround.second) continue;
+            if(workaround.second()) continue;
 
             if(!workaroundHeaderPrinted) {
                 workaroundHeaderPrinted = true;
                 Debug{} << "Using device driver workarounds:";
             }
 
-            Debug{} << "   " << workaround.first;
+            Debug{} << "   " << workaround.first();
         }
     }
 
@@ -839,7 +836,7 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
     return Result::Success;
 }
 
-void Device::initialize(Instance& instance, const Version version, const Containers::StringIterable& enabledExtensions, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures) {
+void Device::initialize(Instance& instance, const Version version, const Containers::StringIterable& enabledExtensions, Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures) {
     /* Mark all known extensions as enabled */
     for(const Containers::StringView extension: enabledExtensions) {
         for(const Version extensionVersion: KnownVersionsForExtensions) {

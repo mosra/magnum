@@ -499,7 +499,7 @@ class MAGNUM_VK_EXPORT Device {
            tryCreate(Instance&, DeviceCreateInfo&&) */
         Result tryCreateInternal(Instance& isntance, const DeviceCreateInfo&, DeviceProperties&&);
 
-        MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version, const Containers::StringIterable& enabledExtensions, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures);
+        MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version, const Containers::StringIterable& enabledExtensions, Containers::Array<Containers::Pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures);
 
         MAGNUM_VK_LOCAL static void getQueueImplementationDefault(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);
         MAGNUM_VK_LOCAL static void getQueueImplementation11(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);
