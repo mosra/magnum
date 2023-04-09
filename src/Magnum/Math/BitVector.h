@@ -88,7 +88,7 @@ template<std::size_t size> class BitVector {
     public:
         enum: std::size_t {
             Size = size,                /**< Vector size */
-            DataSize = (size-1)/8+1     /**< Vector storage size */
+            DataSize = (size + 7)/8     /**< Vector storage size */
         };
 
         /**
@@ -303,7 +303,7 @@ template<std::size_t size> class BitVector {
         /* Implementation for Vector<size, T>::Vector(U) */
         template<std::size_t ...sequence> constexpr explicit BitVector(Corrade::Containers::Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
 
-        UnsignedByte _data[(size-1)/8+1];
+        UnsignedByte _data[DataSize];
 };
 
 #ifndef CORRADE_NO_DEBUG
