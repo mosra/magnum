@@ -489,8 +489,8 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
     Containers::StridedArrayView2D<UnsignedInt> combinedIndices;
 
     /* If the mesh is not indexed, allocate for vertex count and keep it
-       unitialized */
-    combinedIndexStorage = Containers::Array<UnsignedInt>{/*Containers::NoInit,*/
+       uninitialized */
+    combinedIndexStorage = Containers::Array<UnsignedInt>{NoInit,
         owned.vertexCount()*owned.attributeCount()};
     combinedIndices = Containers::StridedArrayView2D<UnsignedInt>{
         combinedIndexStorage,
