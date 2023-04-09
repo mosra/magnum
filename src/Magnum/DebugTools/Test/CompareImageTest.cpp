@@ -60,6 +60,7 @@ struct CompareImageTest: TestSuite::Tester {
     void formatImplementationSpecific();
 
     void calculateDelta();
+    void calculateDeltaInteger();
     void calculateDeltaStorage();
     void calculateDeltaSpecials();
     void calculateDeltaSpecials3();
@@ -132,6 +133,7 @@ CompareImageTest::CompareImageTest() {
               &CompareImageTest::formatImplementationSpecific,
 
               &CompareImageTest::calculateDelta,
+              &CompareImageTest::calculateDeltaInteger,
               &CompareImageTest::calculateDeltaStorage,
               &CompareImageTest::calculateDeltaSpecials,
               &CompareImageTest::calculateDeltaSpecials3,
@@ -287,6 +289,38 @@ void CompareImageTest::calculateDelta() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(deltaMaxMean.second(), 1.0f);
     CORRADE_COMPARE(deltaMaxMean.third(), 0.208889f);
+}
+
+void CompareImageTest::calculateDeltaInteger() {
+    /* Like ActualRedData, ExpectedRedData and DeltaRed, just multiplied 100
+       times and saved into a Short */
+    const Short actualRedData[]{
+        30, 100, 90,
+        90, 60, 20,
+        -10, 100, 0
+    };
+
+    const Short expectedRedData[]{
+        65, 100, 60,
+        91, 60, 10,
+        2, 0, 0
+    };
+
+    const Float deltaRed[]{
+        35.0f, 0.0f, 30.0f,
+        1.0f, 0.0f, 10.0f,
+        12.0f, 100.0f, 0.0f
+    };
+
+    const ImageView2D actualRed{PixelStorage{}.setAlignment(2), PixelFormat::R16I, {3, 3}, actualRedData};
+    const ImageView2D expectedRed{PixelStorage{}.setAlignment(2), PixelFormat::R16I, {3, 3}, expectedRedData};
+
+    Containers::Triple<Containers::Array<Float>, Float, Float> deltaMaxMean = Implementation::calculateImageDelta(actualRed.format(), actualRed.pixels(), expectedRed);
+    CORRADE_COMPARE_AS(deltaMaxMean.first(),
+        Containers::arrayView(deltaRed),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(deltaMaxMean.second(), 100.0f);
+    CORRADE_COMPARE(deltaMaxMean.third(), 20.8889f);
 }
 
 /* Different storage for each */

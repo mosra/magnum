@@ -52,7 +52,11 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 namespace {
 
-template<std::size_t size, class T> Float calculateImageDelta(const Containers::StridedArrayView2D<const Math::Vector<size, T>>& actual, const Containers::StridedArrayView2D<const Math::Vector<size, T>>& expected, const Containers::StridedArrayView2D<Float>& output) {
+/* There's a separate implementation for integral types, as those don't need
+   any additional logic for handling NaN and infinity values, allowing the
+   comparison to be much simpler & faster. */
+
+template<std::size_t size, class T, typename std::enable_if<Math::IsFloatingPoint<T>::value, int>::type = 0> Float calculateImageDelta(const Containers::StridedArrayView2D<const Math::Vector<size, T>>& actual, const Containers::StridedArrayView2D<const Math::Vector<size, T>>& expected, const Containers::StridedArrayView2D<Float>& output) {
     CORRADE_INTERNAL_ASSERT(actual.size() == output.size());
     CORRADE_INTERNAL_ASSERT(output.size() == expected.size());
 
@@ -87,6 +91,31 @@ template<std::size_t size, class T> Float calculateImageDelta(const Containers::
                max delta -- because all other differences would be zero
                compared to them */
             max = Math::max(max, Math::lerp(diff, {}, Math::isNan(diff)|Math::isInf(diff)).sum()/size);
+        }
+    }
+
+    return max;
+}
+
+template<std::size_t size, class T, typename std::enable_if<Math::IsIntegral<T>::value, int>::type = 0> Float calculateImageDelta(const Containers::StridedArrayView2D<const Math::Vector<size, T>>& actual, const Containers::StridedArrayView2D<const Math::Vector<size, T>>& expected, const Containers::StridedArrayView2D<Float>& output) {
+    CORRADE_INTERNAL_ASSERT(actual.size() == output.size());
+    CORRADE_INTERNAL_ASSERT(output.size() == expected.size());
+
+    /* Calculate deltas and maximal value of them */
+    Float max{};
+    for(std::size_t i = 0, iMax = expected.size()[0]; i != iMax; ++i) {
+        Containers::StridedArrayView1D<const Math::Vector<size, T>> actualRow = actual[i];
+        Containers::StridedArrayView1D<const Math::Vector<size, T>> expectedRow = expected[i];
+        Containers::StridedArrayView1D<Float> outputRow = output[i];
+
+        for(std::size_t j = 0, jMax = expectedRow.size(); j != jMax; ++j) {
+            /* Explicitly convert from T to Float */
+            auto actualPixel = Math::Vector<size, Float>(actualRow[j]);
+            auto expectedPixel = Math::Vector<size, Float>(expectedRow[j]);
+
+            Math::Vector<size, Float> diff = Math::abs(actualPixel - expectedPixel);
+            outputRow[j] = diff.sum()/size;
+            max = Math::max(max, outputRow[j]);
         }
     }
 
