@@ -107,8 +107,7 @@ endif()
 
 if(MAGNUM_WITH_MESHTOOLS)
     add_library(snippets-MagnumMeshTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
-        MagnumMeshTools.cpp
-        MagnumMeshTools-gl.cpp)
+        MagnumMeshTools.cpp)
     target_link_libraries(snippets-MagnumMeshTools PRIVATE MagnumMeshTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
         add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumMeshTools)
