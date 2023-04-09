@@ -25,7 +25,6 @@
 
 #include "CompressIndices.h"
 
-#include <cstring>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Algorithms.h>
@@ -46,11 +45,10 @@ namespace {
 template<class T, class U> inline Containers::Array<char> compress(const Containers::StridedArrayView1D<const U>& indices, Long offset) {
     /* Can't use Math::castInto() here because we're subtracting an offset in
        addition */
-    Containers::Array<char> buffer(indices.size()*sizeof(T));
-    for(std::size_t i = 0; i != indices.size(); ++i) {
-        T index = static_cast<T>(indices[i] - offset);
-        std::memcpy(buffer.begin()+i*sizeof(T), &index, sizeof(T));
-    }
+    Containers::Array<char> buffer{NoInit, indices.size()*sizeof(T)};
+    const Containers::ArrayView<T> view = Containers::arrayCast<T>(buffer);
+    for(std::size_t i = 0; i != indices.size(); ++i)
+        view[i] = indices[i] - offset;
 
     return buffer;
 }
