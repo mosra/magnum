@@ -101,6 +101,9 @@ Expands to `__builtin_popcount` / `__builtin_popcountll` on GCC and Clang, uses
 the [Counting bits set, in parallel](https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel)
 implementation from Sean Eron Anderson Bit Twiddling Hacks page on MSVC and
 elsewhere.
+
+See also @relativeref{Corrade,Containers::BitArrayView::count()} for a variant
+optimized for running on large sequences of bits.
 */
 /* Explicitly checking for Clang in addition to GCC to catch also clang-cl */
 #if defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG)
@@ -164,7 +167,7 @@ template<class T> inline T cos(Unit<Deg, T> angle) { return cos(Rad<T>(angle)); 
 #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG)
 namespace Implementation {
     /* GCC builtin since 3.4 (https://stackoverflow.com/a/2742861),
-       unfortunately either Clang nor MSVC have any alternative which wouldn't
+       unfortunately neither Clang nor MSVC have any alternative which wouldn't
        involve inline assembly. */
     inline void sincos(Float rad, Float& sin, Float& cos) {
         __builtin_sincosf(rad, &sin, &cos);
