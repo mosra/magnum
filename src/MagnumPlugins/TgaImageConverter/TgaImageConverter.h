@@ -60,6 +60,13 @@ Creates Truevision TGA (`*.tga`) files from images with format
 
 @section Trade-TgaImageConverter-usage Usage
 
+@m_class{m-note m-success}
+
+@par
+    This class is a plugin that's meant to be dynamically loaded and used
+    via the base @ref AbstractImageConverter interface. See its documentation
+    for introduction and usage examples.
+
 This plugin depends on the @ref Trade library and is built if
 `MAGNUM_WITH_TGAIMAGECONVERTER` is enabled when building Magnum. To use as a
 dynamic plugin, load @cpp "TgaImageConverter" @ce via

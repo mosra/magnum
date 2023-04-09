@@ -111,6 +111,13 @@ formats that are marked as such in the list above.
 
 @section Trade-AnyImageImporter-usage Usage
 
+@m_class{m-note m-success}
+
+@par
+    This class is a plugin that's meant to be dynamically loaded and used
+    through the base @ref AbstractImporter interface. See its documentation for
+    introduction and usage examples.
+
 This plugin depends on the @ref Trade library and is built if
 `MAGNUM_WITH_ANYIMAGEIMPORTER` is enabled when building Magnum. To use as a
 dynamic plugin, load @cpp "AnyImageImporter" @ce via

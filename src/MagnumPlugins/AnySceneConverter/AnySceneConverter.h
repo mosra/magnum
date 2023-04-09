@@ -69,6 +69,13 @@ Only converting to files is supported.
 
 @section Trade-AnySceneConverter-usage Usage
 
+@m_class{m-note m-success}
+
+@par
+    This class is a plugin that's meant to be dynamically loaded and used
+    through the base @ref AbstractSceneConverter interface. See its
+    documentation for introduction and usage examples.
+
 This plugin depends on the @ref Trade library and is built if
 `MAGNUM_WITH_ANYSCENECONVERTER` is enabled when building Magnum. To use as a
 dynamic plugin, load @cpp "AnySceneConverter" @ce via

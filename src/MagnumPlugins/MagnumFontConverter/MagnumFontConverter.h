@@ -60,6 +60,13 @@ passed @ref AbstractGlyphCache to support @ref GlyphCacheFeature::ImageDownload.
 
 @section Text-MagnumFontConverter-usage Usage
 
+@m_class{m-note m-success}
+
+@par
+    This class is a plugin that's meant to be dynamically loaded and used
+    through the base @ref AbstractFontConverter interface. See its
+    documentation for introduction and usage examples.
+
 This plugin depends on the @ref Text library and the
 @ref Trade::TgaImageConverter "TgaImageConverter" plugin. It is built if
 `MAGNUM_WITH_MAGNUMFONTCONVERTER` is enabled when building Magnum. To use as a

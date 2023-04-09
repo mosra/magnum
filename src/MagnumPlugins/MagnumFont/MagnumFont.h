@@ -118,6 +118,13 @@ rectangle=45 0 44 25
 
 @section Text-MagnumFont-usage Usage
 
+@m_class{m-note m-success}
+
+@par
+    This class is a plugin that's meant to be dynamically loaded and used
+    through the base @ref AbstractFont interface. See its documentation for
+    introduction and usage examples.
+
 This plugin depends on the @ref Text library and the
 @ref Trade::TgaImporter "TgaImporter" plugin. It is built if
 `MAGNUM_WITH_MAGNUMFONT` is enabled when building Magnum. To use as a dynamic

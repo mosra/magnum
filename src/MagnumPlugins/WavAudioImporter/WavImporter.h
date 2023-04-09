@@ -78,6 +78,13 @@ a `RIFX` header) are supported, data is converted to machine endian on import.
 
 @section Audio-WavImporter-usage Usage
 
+@m_class{m-note m-success}
+
+@par
+    This class is a plugin that's meant to be dynamically loaded and used
+    through the base @ref AbstractImporter interface. See its documentation for
+    introduction and usage examples.
+
 This plugin is built if `MAGNUM_WITH_WAVAUDIOIMPORTER` is enabled when building
 Magnum. To use dynamic plugin, load @cpp "WavAudioImporter" @ce
 via @ref Corrade::PluginManager::Manager.

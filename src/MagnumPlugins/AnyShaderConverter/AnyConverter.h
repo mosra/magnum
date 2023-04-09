@@ -94,6 +94,13 @@ explicitly set.
 
 @section ShaderTools-AnyConverter-usage Usage
 
+@m_class{m-note m-success}
+
+@par
+    This class is a plugin that's meant to be dynamically loaded and used
+    through the base @ref AbstractConverter interface. See its documentation
+    for introduction and usage examples.
+
 This plugin depends on the @ref ShaderTools library and is built if
 `MAGNUM_WITH_ANYSHADERCONVERTER` is enabled when building Magnum. To use as a
 dynamic plugin, load @cpp "AnyShaderConverter" @ce via
