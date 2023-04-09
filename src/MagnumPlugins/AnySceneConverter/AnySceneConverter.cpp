@@ -285,4 +285,4 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Contain
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneConverter, Magnum::Trade::AnySceneConverter,
-    "cz.mosra.magnum.Trade.AbstractSceneConverter/0.2.1")
+    MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE)

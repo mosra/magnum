@@ -489,4 +489,4 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 }}
 
 CORRADE_PLUGIN_REGISTER(ObjImporter, Magnum::Trade::ObjImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.5.1")
+    MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE)

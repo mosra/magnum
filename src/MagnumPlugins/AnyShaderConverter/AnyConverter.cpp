@@ -547,4 +547,4 @@ Containers::Optional<Containers::Array<char>> AnyConverter::doConvertDataToData(
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyShaderConverter, Magnum::ShaderTools::AnyConverter,
-    "cz.mosra.magnum.ShaderTools.AbstractConverter/0.1.1")
+    MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE)

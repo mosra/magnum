@@ -211,4 +211,4 @@ std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const Un
 }}
 
 CORRADE_PLUGIN_REGISTER(MagnumFont, Magnum::Text::MagnumFont,
-    "cz.mosra.magnum.Text.AbstractFont/0.3")
+    MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE)

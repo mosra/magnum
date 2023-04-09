@@ -107,4 +107,4 @@ Containers::Array<char> AnyImporter::doData() { return _in->data(); }
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyAudioImporter, Magnum::Audio::AnyImporter,
-    "cz.mosra.magnum.Audio.AbstractImporter/0.1")
+    MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE)
