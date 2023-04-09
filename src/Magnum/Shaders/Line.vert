@@ -37,7 +37,7 @@
    extra instructions, so the noperspective keyword is preferred). */
 #ifndef GL_ES
 #define CAN_USE_NOPERSPECTIVE
-#elif defined(GL_ES) && defined(GL_NV_shader_noperspective_interpolation)
+#elif defined(GL_NV_shader_noperspective_interpolation)
 #extension GL_NV_shader_noperspective_interpolation: require
 #define CAN_USE_NOPERSPECTIVE
 #endif
