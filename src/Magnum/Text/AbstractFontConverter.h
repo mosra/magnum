@@ -176,7 +176,9 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Plugin interface
          *
-         * @snippet Magnum/Text/AbstractFontConverter.cpp interface
+         * @snippet Magnum/Text/AbstractFontConverter.h interface
+         *
+         * @see @ref MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE
          */
         static Containers::StringView pluginInterface();
 
@@ -417,6 +419,27 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          */
         virtual Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromFile(const std::string& filename) const;
 };
+
+/**
+@brief Font converter plugin interface
+@m_since_latest
+
+Same string as returned by
+@relativeref{Magnum::Text,AbstractFontConverter::pluginInterface()}, meant to
+be used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
+interface string by hand every time the version gets bumped:
+
+@snippet MagnumText.cpp MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE
+
+The interface string version gets increased on every ABI break to prevent
+silent crashes and memory corruption. Plugins built against the previous
+version will then fail to load, a subsequent rebuild will make them pick up the
+updated interface string.
+*/
+/* Silly indentation to make the string appear in pluginInterface() docs */
+#define MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE /* [interface] */ \
+"cz.mosra.magnum.Text.AbstractFontConverter/0.2"
+/* [interface] */
 
 }}
 

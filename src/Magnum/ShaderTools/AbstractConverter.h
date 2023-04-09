@@ -490,7 +490,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         /**
          * @brief Plugin interface
          *
-         * @snippet Magnum/ShaderTools/AbstractConverter.cpp interface
+         * @snippet Magnum/ShaderTools/AbstractConverter.h interface
+         *
+         * @see @ref MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE
          */
         static Containers::StringView pluginInterface();
 
@@ -1185,6 +1187,27 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         /* GCC 4.8 complains loudly about missing initializers otherwise */
         } _inputFileCallbackTemplate{nullptr, nullptr};
 };
+
+/**
+@brief Shader converter plugin interface
+@m_since_latest
+
+Same string as returned by
+@relativeref{Magnum::ShaderTools,AbstractConverter::pluginInterface()}, meant
+to be used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
+interface string by hand every time the version gets bumped:
+
+@snippet MagnumShaderTools.cpp MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE
+
+The interface string version gets increased on every ABI break to prevent
+silent crashes and memory corruption. Plugins built against the previous
+version will then fail to load, a subsequent rebuild will make them pick up the
+updated interface string.
+*/
+/* Silly indentation to make the string appear in pluginInterface() docs */
+#define MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE /* [interface] */ \
+"cz.mosra.magnum.ShaderTools.AbstractConverter/0.1.1"
+/* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class Callback, class T> void AbstractConverter::setInputFileCallback(Callback callback, T& userData) {

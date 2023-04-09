@@ -207,11 +207,7 @@ struct AbstractSceneConverter::State {
 };
 
 Containers::StringView AbstractSceneConverter::pluginInterface() {
-    return
-/* [interface] */
-"cz.mosra.magnum.Trade.AbstractSceneConverter/0.2.1"_s
-/* [interface] */
-    ;
+    return MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE ""_s;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

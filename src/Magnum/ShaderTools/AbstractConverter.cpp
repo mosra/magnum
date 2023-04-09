@@ -52,11 +52,7 @@ namespace Magnum { namespace ShaderTools {
 using namespace Containers::Literals;
 
 Containers::StringView AbstractConverter::pluginInterface() {
-    return
-/* [interface] */
-"cz.mosra.magnum.ShaderTools.AbstractConverter/0.1.1"_s
-/* [interface] */
-    ;
+    return MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE ""_s;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

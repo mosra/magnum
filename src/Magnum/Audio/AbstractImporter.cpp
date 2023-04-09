@@ -51,11 +51,7 @@ namespace Magnum { namespace Audio {
 using namespace Containers::Literals;
 
 Containers::StringView AbstractImporter::pluginInterface() {
-    return
-/* [interface] */
-"cz.mosra.magnum.Audio.AbstractImporter/0.1"_s
-/* [interface] */
-    ;
+    return MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE ""_s;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

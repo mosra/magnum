@@ -624,7 +624,9 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         /**
          * @brief Plugin interface
          *
-         * @snippet Magnum/Trade/AbstractImageConverter.cpp interface
+         * @snippet Magnum/Trade/AbstractImageConverter.h interface
+         *
+         * @see @ref MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE
          */
         static Containers::StringView pluginInterface();
 
@@ -1927,6 +1929,27 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
 
         ImageConverterFlags _flags;
 };
+
+/**
+@brief Image converter plugin interface
+@m_since_latest
+
+Same string as returned by
+@relativeref{Magnum::Trade,AbstractImageConverter::pluginInterface()}, meant to
+be used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
+interface string by hand every time the version gets bumped:
+
+@snippet MagnumTrade.cpp MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE
+
+The interface string version gets increased on every ABI break to prevent
+silent crashes and memory corruption. Plugins built against the previous
+version will then fail to load, a subsequent rebuild will make them pick up the
+updated interface string.
+*/
+/* Silly indentation to make the string appear in pluginInterface() docs */
+#define MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE /* [interface] */ \
+"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.3"
+/* [interface] */
 
 }}
 

@@ -54,11 +54,7 @@ namespace Magnum { namespace Trade {
 using namespace Containers::Literals;
 
 Containers::StringView AbstractImageConverter::pluginInterface() {
-    return
-/* [interface] */
-"cz.mosra.magnum.Trade.AbstractImageConverter/0.3.3"_s
-/* [interface] */
-    ;
+    return MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE ""_s;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

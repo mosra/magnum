@@ -23,6 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* In order to have the CORRADE_PLUGIN_REGISTER() macro not a no-op. Doesn't
+   affect anything else. */
+#define CORRADE_STATIC_PLUGIN
+
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
@@ -36,6 +40,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Shaders/VectorGL.h"
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/DistanceFieldGlyphCache.h"
 #include "Magnum/Text/Renderer.h"
 
@@ -43,6 +48,36 @@
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
+
+namespace MyNamespace {
+
+struct MyFont: Text::AbstractFont {
+    explicit MyFont(PluginManager::AbstractManager& manager, Containers::StringView plugin): Text::AbstractFont{manager, plugin} {}
+
+    Text::FontFeatures doFeatures() const override { return {}; }
+    bool doIsOpened() const override { return false; }
+    void doClose() override {}
+    UnsignedInt doGlyphId(char32_t) override { return {}; }
+    Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+    Containers::Pointer<Text::AbstractLayouter> doLayout(const Text::AbstractGlyphCache&, Float, const std::string&) override { return {}; }
+};
+struct MyFontConverter: Text::AbstractFontConverter {
+    explicit MyFontConverter(PluginManager::AbstractManager& manager, Containers::StringView plugin): Text::AbstractFontConverter{manager, plugin} {}
+
+    Text::FontConverterFeatures doFeatures() const override { return {}; }
+};
+
+}
+
+/* [MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE] */
+CORRADE_PLUGIN_REGISTER(MyFont, MyNamespace::MyFont,
+    MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE)
+/* [MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE] */
+
+/* [MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE] */
+CORRADE_PLUGIN_REGISTER(MyFontConverter, MyNamespace::MyFontConverter,
+    MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE)
+/* [MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE] */
 
 int main() {
 

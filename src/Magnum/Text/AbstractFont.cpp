@@ -54,11 +54,7 @@ namespace Magnum { namespace Text {
 using namespace Containers::Literals;
 
 Containers::StringView AbstractFont::pluginInterface() {
-    return
-/* [interface] */
-"cz.mosra.magnum.Text.AbstractFont/0.3"_s
-/* [interface] */
-    ;
+    return MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE ""_s;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

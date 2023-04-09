@@ -124,7 +124,9 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Plugin interface
          *
-         * @snippet Magnum/Audio/AbstractImporter.cpp interface
+         * @snippet Magnum/Audio/AbstractImporter.h interface
+         *
+         * @see @ref MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE
          */
         static Containers::StringView pluginInterface();
 
@@ -235,6 +237,27 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /** @brief Implementation for @ref data() */
         virtual Containers::Array<char> doData() = 0;
 };
+
+/**
+@brief Audio importer plugin interface
+@m_since_latest
+
+Same string as returned by
+@relativeref{Magnum::Audio,AbstractImporter::pluginInterface()}, meant to be
+used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
+interface string by hand every time the version gets bumped:
+
+@snippet MagnumAudio.cpp MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE
+
+The interface string version gets increased on every ABI break to prevent
+silent crashes and memory corruption. Plugins built against the previous
+version will then fail to load, a subsequent rebuild will make them pick up the
+updated interface string.
+*/
+/* Silly indentation to make the string appear in pluginInterface() docs */
+#define MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE /* [interface] */ \
+"cz.mosra.magnum.Audio.AbstractImporter/0.1"
+/* [interface] */
 
 }}
 

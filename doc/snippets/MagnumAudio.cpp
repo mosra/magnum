@@ -23,10 +23,37 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* In order to have the CORRADE_PLUGIN_REGISTER() macro not a no-op. Doesn't
+   affect anything else. */
+#define CORRADE_STATIC_PLUGIN
+
+#include <Corrade/Containers/Array.h>
+
+#include "Magnum/Audio/AbstractImporter.h"
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Extensions.h"
 
 using namespace Magnum;
+
+namespace MyNamespace {
+
+struct MyAudioImporter: Audio::AbstractImporter {
+    explicit MyAudioImporter(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): Audio::AbstractImporter{manager, plugin} {}
+
+    Audio::ImporterFeatures doFeatures() const override { return {}; }
+    bool doIsOpened() const override { return false; }
+    void doClose() override {}
+    Audio::BufferFormat doFormat() const override { return {}; }
+    UnsignedInt doFrequency() const override { return {}; }
+    Containers::Array<char> doData() override { return {}; }
+};
+
+}
+
+/* [MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE] */
+CORRADE_PLUGIN_REGISTER(MyAudioImporter, MyNamespace::MyAudioImporter,
+    MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE)
+/* [MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE] */
 
 int main() {
 

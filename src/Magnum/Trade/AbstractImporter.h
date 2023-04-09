@@ -453,7 +453,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Plugin interface
          *
-         * @snippet Magnum/Trade/AbstractImporter.cpp interface
+         * @snippet Magnum/Trade/AbstractImporter.h interface
+         *
+         * @see @ref MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE
          */
         static Containers::StringView pluginInterface();
 
@@ -2604,6 +2606,27 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         void populateCachedScenes();
         #endif
 };
+
+/**
+@brief Importer plugin interface
+@m_since_latest
+
+Same string as returned by
+@relativeref{Magnum::Trade,AbstractImporter::pluginInterface()}, meant to be
+used inside @ref CORRADE_PLUGIN_REGISTER() to avoid having to update the
+interface string by hand every time the version gets bumped:
+
+@snippet MagnumTrade.cpp MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE
+
+The interface string version gets increased on every ABI break to prevent
+silent crashes and memory corruption. Plugins built against the previous
+version will then fail to load, a subsequent rebuild will make them pick up the
+updated interface string.
+*/
+/* Silly indentation to make the string appear in pluginInterface() docs */
+#define MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE /* [interface] */ \
+"cz.mosra.magnum.Trade.AbstractImporter/0.5.1"
+/* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class Callback, class T> void AbstractImporter::setFileCallback(Callback callback, T& userData) {

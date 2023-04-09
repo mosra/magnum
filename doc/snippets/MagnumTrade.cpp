@@ -23,6 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* In order to have the CORRADE_PLUGIN_REGISTER() macro not a no-op. Doesn't
+   affect anything else. */
+#define CORRADE_STATIC_PLUGIN
+
 #include <unordered_map>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/Optional.h>
@@ -88,6 +92,43 @@
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
+
+namespace MyNamespace {
+
+struct MyImporter: Trade::AbstractImporter {
+    explicit MyImporter(PluginManager::AbstractManager& manager, Containers::StringView plugin): Trade::AbstractImporter{manager, plugin} {}
+
+    Trade::ImporterFeatures doFeatures() const override { return {}; }
+    bool doIsOpened() const override { return false; }
+    void doClose() override {}
+};
+struct MyImageConverter: Trade::AbstractImageConverter {
+    explicit MyImageConverter(PluginManager::AbstractManager& manager, Containers::StringView plugin): Trade::AbstractImageConverter{manager, plugin} {}
+
+    Trade::ImageConverterFeatures doFeatures() const override { return {}; }
+};
+struct MySceneConverter: Trade::AbstractSceneConverter {
+    explicit MySceneConverter(PluginManager::AbstractManager& manager, Containers::StringView plugin): Trade::AbstractSceneConverter{manager, plugin} {}
+
+    Trade::SceneConverterFeatures doFeatures() const override { return {}; }
+};
+
+}
+
+/* [MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE] */
+CORRADE_PLUGIN_REGISTER(MyImporter, MyNamespace::MyImporter,
+    MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE)
+/* [MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE] */
+
+/* [MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE] */
+CORRADE_PLUGIN_REGISTER(MyImageConverter, MyNamespace::MyImageConverter,
+    MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE)
+/* [MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE] */
+
+/* [MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE] */
+CORRADE_PLUGIN_REGISTER(MySceneConverter, MyNamespace::MySceneConverter,
+    MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE)
+/* [MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE] */
 
 int main() {
 

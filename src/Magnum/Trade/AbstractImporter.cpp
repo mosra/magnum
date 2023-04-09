@@ -81,11 +81,7 @@ namespace Magnum { namespace Trade {
 using namespace Containers::Literals;
 
 Containers::StringView AbstractImporter::pluginInterface() {
-    return
-/* [interface] */
-"cz.mosra.magnum.Trade.AbstractImporter/0.5.1"_s
-/* [interface] */
-    ;
+    return MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE ""_s;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

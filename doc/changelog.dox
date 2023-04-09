@@ -431,6 +431,15 @@ See also:
     @relativeref{Timeline,previousFrameTime()} and
     @relativeref{Timeline,previousFrameDuration()} (see
     [mosra/magnum#604](https://github.com/mosra/magnum/pull/604))
+-   Added @ref MAGNUM_AUDIO_ABSTRACTIMPORTER_PLUGIN_INTERFACE,
+    @ref MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE,
+    @ref MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE,
+    @ref MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE,
+    @ref MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE,
+    @ref MAGNUM_TRADE_ABSTRACTIMAGECONVERTER_PLUGIN_INTERFACE and
+    @ref MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE defines with
+    plugin interface strings to avoid having to update them by hand in every
+    plugin every time the interface version is bumped after an ABI break
 
 @subsubsection changelog-latest-changes-animation Animation library
 

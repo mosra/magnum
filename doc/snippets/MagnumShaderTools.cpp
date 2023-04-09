@@ -23,6 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* In order to have the CORRADE_PLUGIN_REGISTER() macro not a no-op. Doesn't
+   affect anything else. */
+#define CORRADE_STATIC_PLUGIN
+
 #include <string> /** @todo drop when file callbacks are <string>-free */
 #include <unordered_map>
 #include <Corrade/Containers/Array.h>
@@ -40,6 +44,23 @@
 #define DOXYGEN_ELLIPSIS(...) __VA_ARGS__
 
 using namespace Magnum;
+
+namespace MyNamespace {
+
+struct MyShaderConverter: ShaderTools::AbstractConverter {
+    explicit MyShaderConverter(PluginManager::AbstractManager& manager, Containers::StringView plugin): ShaderTools::AbstractConverter{manager, plugin} {}
+
+    ShaderTools::ConverterFeatures doFeatures() const override { return {}; }
+    void doSetInputFormat(ShaderTools::Format, Containers::StringView) override {}
+    void doSetOutputFormat(ShaderTools::Format, Containers::StringView) override {}
+};
+
+}
+
+/* [MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE] */
+CORRADE_PLUGIN_REGISTER(MyShaderConverter, MyNamespace::MyShaderConverter,
+    MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE)
+/* [MAGNUM_SHADERTOOLS_ABSTRACTCONVERTER_PLUGIN_INTERFACE] */
 
 int main() {
 {
