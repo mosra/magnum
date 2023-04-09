@@ -256,7 +256,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type
 template<std::size_t size, class T> inline BitVector<size> isInf(const Vector<size, T>& value) {
     BitVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
-        out.set(i, Math::isInf(value[i]));
+        if(Math::isInf(value[i])) out.set(i);
     return out;
 }
 
@@ -278,7 +278,7 @@ template<class T> typename std::enable_if<IsScalar<T>::value, bool>::type isNan(
 template<std::size_t size, class T> inline BitVector<size> isNan(const Vector<size, T>& value) {
     BitVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
-        out.set(i, Math::isNan(value[i]));
+        if(Math::isNan(value[i])) out.set(i);
     return out;
 }
 
