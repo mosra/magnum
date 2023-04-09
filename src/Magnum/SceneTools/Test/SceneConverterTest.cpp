@@ -751,7 +751,7 @@ const struct {
 };
 
 const struct {
-    const char* name;
+    TestSuite::TestCaseDescriptionSourceLocation name;
     Containers::Array<Containers::String> args;
     const char* requiresImporter;
     const char* requiresImageImporter;
@@ -1009,7 +1009,7 @@ const struct {
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-2d.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
         }},
-        "ObjImporter", "PngImporter", "GltfSceneConverter", "StbResizeImageConverter",
+        "GltfImporter", "PngImporter", "GltfSceneConverter", "StbResizeImageConverter",
         "\n" /* Just a suffix */
         "Trade::GltfSceneConverter::add(): can't load NonexistentImageConverter for image conversion\n"
         "Cannot add 2D image 0\n"},
@@ -1021,7 +1021,7 @@ const struct {
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-3d.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
         }},
-        "ObjImporter", "PngImporter", "GltfSceneConverter", "StbResizeImageConverter",
+        "GltfImporter", "PngImporter", "GltfSceneConverter", "StbResizeImageConverter",
         "\n" /* Just a suffix */
         "Trade::GltfSceneConverter::add(): can't load NonexistentImageConverter for image conversion\n"
         "Cannot add 3D image 0\n"},
