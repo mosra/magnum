@@ -432,7 +432,7 @@ QueueFlags DeviceProperties::queueFamilyFlags(const UnsignedInt id) {
     const Containers::ArrayView<const VkQueueFamilyProperties2> properties = queueFamilyProperties();
     CORRADE_ASSERT(id < properties.size(),
         "Vk::DeviceProperties::queueFamilyFlags(): index" << id << "out of range for" << properties.size() << "entries", {});
-    return QueueFlag(properties[id].queueFamilyProperties.queueFlags);
+    return QueueFlags(properties[id].queueFamilyProperties.queueFlags);
 }
 
 UnsignedInt DeviceProperties::pickQueueFamily(const QueueFlags flags) {
@@ -488,7 +488,7 @@ MemoryHeapFlags DeviceProperties::memoryHeapFlags(const UnsignedInt heap) {
     const VkPhysicalDeviceMemoryProperties& properties = memoryProperties().memoryProperties;
     CORRADE_ASSERT(heap < properties.memoryHeapCount,
         "Vk::DeviceProperties::memoryHeapFlags(): index" << heap << "out of range for" << properties.memoryHeapCount << "memory heaps", {});
-    return MemoryHeapFlag(properties.memoryHeaps[heap].flags);
+    return MemoryHeapFlags(properties.memoryHeaps[heap].flags);
 }
 
 UnsignedInt DeviceProperties::memoryCount() {
@@ -499,7 +499,7 @@ MemoryFlags DeviceProperties::memoryFlags(const UnsignedInt memory) {
     const VkPhysicalDeviceMemoryProperties& properties = memoryProperties().memoryProperties;
     CORRADE_ASSERT(memory < properties.memoryTypeCount,
         "Vk::DeviceProperties::memoryFlags(): index" << memory << "out of range for" << properties.memoryTypeCount << "memory types", {});
-    return MemoryFlag(properties.memoryTypes[memory].propertyFlags);
+    return MemoryFlags(properties.memoryTypes[memory].propertyFlags);
 }
 
 UnsignedInt DeviceProperties::memoryHeapIndex(const UnsignedInt memory) {

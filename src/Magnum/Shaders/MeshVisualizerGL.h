@@ -683,7 +683,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @see @ref Configuration::setFlags()
          */
         Flags flags() const {
-            return Flag(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
+            return Flags(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
         }
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -2419,7 +2419,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL3D: public Implementation::MeshVisua
          * @see @ref Configuration::setFlags()
          */
         Flags flags() const {
-            return Flag(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
+            return Flags(UnsignedInt(Implementation::MeshVisualizerGLBase::_flags));
         }
 
         #ifndef MAGNUM_TARGET_GLES2
