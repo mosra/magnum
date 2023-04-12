@@ -48,8 +48,8 @@ namespace Magnum { namespace MeshTools {
 @brief Combine differently indexed attributes into a single mesh
 @m_since{2020,06}
 
-Assuming each @p data contains only unique vertex data, creates an indexed mesh
-that contains all attributes from @p data combined, with duplicate vertices
+Assuming all @p meshes contain only unique vertex data, creates an indexed mesh
+that contains all attributes from @p meshes combined, with duplicate vertices
 removed. For example, when you have a position and a normal array, each indexed
 with separate indices like this:
 
@@ -85,7 +85,7 @@ Vertex data unreferenced by the index buffers are discarded. This means the
 function can be also called with just a single argument to compact a mesh with
 a sparse index buffer.
 
-Expects that @p data is non-empty and all data have the same primitive and
+Expects that @p meshes is non-empty and all data have the same primitive and
 index count. All inputs have to be indexed. For non-indexed attributes
 combining can be done much more efficiently using @ref duplicate(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>),
 alternatively you can turn a non-indexed attribute to an indexed one first
@@ -95,7 +95,7 @@ implementation-specific format.
 @see @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData>& data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade::MeshData>& meshes);
 
 /**
 @brief Combine per-face attributes into an existing mesh

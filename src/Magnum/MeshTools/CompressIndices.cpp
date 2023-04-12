@@ -125,61 +125,61 @@ Containers::Pair<Containers::Array<char>, MeshIndexType> compressIndices(const C
     return compressIndices(indices, MeshIndexType::UnsignedShort, offset);
 }
 
-Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
-    CORRADE_ASSERT(data.isIndexed(), "MeshTools::compressIndices(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+Trade::MeshData compressIndices(Trade::MeshData&& mesh, MeshIndexType atLeast) {
+    CORRADE_ASSERT(mesh.isIndexed(), "MeshTools::compressIndices(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     /* Transfer vertex data as-is, as those don't need any changes. Release if
        possible. */
     Containers::Array<char> vertexData;
-    const UnsignedInt vertexCount = data.vertexCount();
-    if(data.vertexDataFlags() & Trade::DataFlag::Owned)
-        vertexData = data.releaseVertexData();
+    const UnsignedInt vertexCount = mesh.vertexCount();
+    if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)
+        vertexData = mesh.releaseVertexData();
     else {
-        vertexData = Containers::Array<char>{NoInit, data.vertexData().size()};
-        Utility::copy(data.vertexData(), vertexData);
+        vertexData = Containers::Array<char>{NoInit, mesh.vertexData().size()};
+        Utility::copy(mesh.vertexData(), vertexData);
     }
 
     /* Compress the indices */
     UnsignedInt offset;
     Containers::Pair<Containers::Array<char>, MeshIndexType> result;
-    if(data.indexType() == MeshIndexType::UnsignedInt) {
-        auto indices = data.indices<UnsignedInt>();
+    if(mesh.indexType() == MeshIndexType::UnsignedInt) {
+        auto indices = mesh.indices<UnsignedInt>();
         offset = Math::min(indices);
         result = compressIndicesImplementation<UnsignedInt>(indices, atLeast, offset);
-    } else if(data.indexType() == MeshIndexType::UnsignedShort) {
-        auto indices = data.indices<UnsignedShort>();
+    } else if(mesh.indexType() == MeshIndexType::UnsignedShort) {
+        auto indices = mesh.indices<UnsignedShort>();
         offset = Math::min(indices);
         result = compressIndicesImplementation<UnsignedShort>(indices, atLeast, offset);
     } else {
-        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(data.indexType()),
-            "MeshTools::compressIndices(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+        CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(mesh.indexType()),
+            "MeshTools::compressIndices(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
             (Trade::MeshData{MeshPrimitive{}, 0}));
-        CORRADE_INTERNAL_ASSERT(data.indexType() == MeshIndexType::UnsignedByte);
-        auto indices = data.indices<UnsignedByte>();
+        CORRADE_INTERNAL_ASSERT(mesh.indexType() == MeshIndexType::UnsignedByte);
+        auto indices = mesh.indices<UnsignedByte>();
         offset = Math::min(indices);
         result = compressIndicesImplementation<UnsignedByte>(indices, atLeast, offset);
     }
 
     /* Recreate the attribute array */
     const UnsignedInt newVertexCount = vertexCount - offset;
-    Containers::Array<Trade::MeshAttributeData> attributeData{data.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributeData{mesh.attributeCount()};
     for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
-        const UnsignedInt stride = data.attributeStride(i);
-        attributeData[i] = Trade::MeshAttributeData{data.attributeName(i),
-            data.attributeFormat(i),
-            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + data.attributeOffset(i) + offset*stride, newVertexCount, stride},
-            data.attributeArraySize(i)};
+        const UnsignedInt stride = mesh.attributeStride(i);
+        attributeData[i] = Trade::MeshAttributeData{mesh.attributeName(i),
+            mesh.attributeFormat(i),
+            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + mesh.attributeOffset(i) + offset*stride, newVertexCount, stride},
+            mesh.attributeArraySize(i)};
     }
 
     Trade::MeshIndexData indices{result.second(), result.first()};
-    return Trade::MeshData{data.primitive(), std::move(result.first()), indices,
+    return Trade::MeshData{mesh.primitive(), std::move(result.first()), indices,
         std::move(vertexData), std::move(attributeData), newVertexCount};
 }
 
-Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLeast) {
+Trade::MeshData compressIndices(const Trade::MeshData& mesh, MeshIndexType atLeast) {
     /* Pass through to the && overload, which then decides whether to reuse
        anything based on the DataFlags */
-    return compressIndices(reference(data), atLeast);
+    return compressIndices(reference(mesh), atLeast);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

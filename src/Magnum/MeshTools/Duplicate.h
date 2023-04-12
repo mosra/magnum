@@ -135,8 +135,8 @@ MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView2D<
 @brief Duplicate indexed mesh data
 @m_since{2020,06}
 
-Returns a copy of @p data that's not indexed and has all attributes interleaved
-and duplicated according to @p data's index buffer. The @p extra attributes, if
+Returns a copy of @p mesh that's not indexed and has all attributes interleaved
+and duplicated according to @p mesh's index buffer. The @p extra attributes, if
 any, are duplicated and interleaved together with existing attributes (or, in
 case the attribute view is empty, only the corresponding space for given
 attribute type is reserved, with memory left uninitialized). The data layouting
@@ -144,21 +144,21 @@ is done by @ref interleavedLayout(), see its documentation for detailed
 behavior description. Note that offset-only @ref Trade::MeshAttributeData
 instances are not supported in the @p extra array.
 
-Expects that @p data is indexed with a non-implementation-specific index type
+Expects that @p mesh is indexed with a non-implementation-specific index type
 and each attribute in @p extra has either the same amount of elements as
-@p data vertex count (*not* index count) or has none. All attributes are
+@p mesh vertex count (*not* index count) or has none. All attributes are
 expected to not have an implementation-specific format.
 @see @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific(),
     @ref Trade::MeshData::attributeData()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttributeData> extra);
 
 template<class IndexType, class T> inline void duplicateInto(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data, const Containers::StridedArrayView1D<T>& out) {
     duplicateInto(indices, Containers::arrayCast<2, const char>(data), Containers::arrayCast<2, char>(out));

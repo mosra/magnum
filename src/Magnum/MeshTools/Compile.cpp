@@ -252,61 +252,61 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, const CompileFlags fla
 
 }
 
-GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer&& vertices) {
-    return compileInternal(meshData, std::move(indices), std::move(vertices), {});
+GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer&& indices, GL::Buffer&& vertices) {
+    return compileInternal(mesh, std::move(indices), std::move(vertices), {});
 }
 
-GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer& vertices) {
-    return compileInternal(meshData, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
+GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer& vertices) {
+    return compileInternal(mesh, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
 }
 
-GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer&& vertices) {
-    return compileInternal(meshData, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), std::move(vertices), CompileFlag::NoWarnOnCustomAttributes);
+GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer&& vertices) {
+    return compileInternal(mesh, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), std::move(vertices), CompileFlag::NoWarnOnCustomAttributes);
 }
 
-GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer& vertices) {
-    return compileInternal(meshData, std::move(indices), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
+GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer&& indices, GL::Buffer& vertices) {
+    return compileInternal(mesh, std::move(indices), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
 }
 
-GL::Mesh compile(const Trade::MeshData& meshData) {
-    return compileInternal(meshData, {});
+GL::Mesh compile(const Trade::MeshData& mesh) {
+    return compileInternal(mesh, {});
 }
 
-GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags) {
+GL::Mesh compile(const Trade::MeshData& mesh, CompileFlags flags) {
     /* If we want to generate normals, prepare a new mesh data and recurse,
        with the flags unset */
-    if(meshData.primitive() == MeshPrimitive::Triangles && (flags & (CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals))) {
-        CORRADE_ASSERT(meshData.attributeCount(Trade::MeshAttribute::Position),
+    if(mesh.primitive() == MeshPrimitive::Triangles && (flags & (CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals))) {
+        CORRADE_ASSERT(mesh.attributeCount(Trade::MeshAttribute::Position),
             "MeshTools::compile(): the mesh has no positions, can't generate normals", GL::Mesh{});
         /* This could fire if we have 2D positions or for packed formats */
-        CORRADE_ASSERT(meshData.attributeFormat(Trade::MeshAttribute::Position) == VertexFormat::Vector3,
-            "MeshTools::compile(): can't generate normals for" << meshData.attributeFormat(Trade::MeshAttribute::Position) << "positions", GL::Mesh{});
+        CORRADE_ASSERT(mesh.attributeFormat(Trade::MeshAttribute::Position) == VertexFormat::Vector3,
+            "MeshTools::compile(): can't generate normals for" << mesh.attributeFormat(Trade::MeshAttribute::Position) << "positions", GL::Mesh{});
 
         /* If the data already have a normal array, reuse its location,
            otherwise mix in an extra one */
         Trade::MeshAttributeData normalAttribute;
         Containers::ArrayView<const Trade::MeshAttributeData> extra;
-        if(!meshData.hasAttribute(Trade::MeshAttribute::Normal)) {
+        if(!mesh.hasAttribute(Trade::MeshAttribute::Normal)) {
             normalAttribute = Trade::MeshAttributeData{
                 Trade::MeshAttribute::Normal, VertexFormat::Vector3,
                 nullptr};
             extra = {&normalAttribute, 1};
         /* If we reuse a normal location, expect correct type */
-        } else CORRADE_ASSERT(meshData.attributeFormat(Trade::MeshAttribute::Normal) == VertexFormat::Vector3,
-            "MeshTools::compile(): can't generate normals into" << meshData.attributeFormat(Trade::MeshAttribute::Normal), GL::Mesh{});
+        } else CORRADE_ASSERT(mesh.attributeFormat(Trade::MeshAttribute::Normal) == VertexFormat::Vector3,
+            "MeshTools::compile(): can't generate normals into" << mesh.attributeFormat(Trade::MeshAttribute::Normal), GL::Mesh{});
 
         /* If we want flat normals, we need to first duplicate everything using
            the index buffer. Otherwise just interleave the potential extra
            normal attribute in. */
         Trade::MeshData generated{MeshPrimitive::Points, 0};
-        if(flags & CompileFlag::GenerateFlatNormals && meshData.isIndexed())
-            generated = duplicate(meshData, extra);
+        if(flags & CompileFlag::GenerateFlatNormals && mesh.isIndexed())
+            generated = duplicate(mesh, extra);
         else
-            generated = interleave(meshData, extra);
+            generated = interleave(mesh, extra);
 
         /* Generate the normals. If we don't have the index buffer, we can only
            generate flat ones. */
-        if(flags & CompileFlag::GenerateFlatNormals || !meshData.isIndexed())
+        if(flags & CompileFlag::GenerateFlatNormals || !mesh.isIndexed())
             generateFlatNormalsInto(
                 generated.attribute<Vector3>(Trade::MeshAttribute::Position),
                 generated.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
@@ -320,7 +320,7 @@ GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags) {
 
     flags &= ~(CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals);
     CORRADE_INTERNAL_ASSERT(!(flags & ~CompileFlag::NoWarnOnCustomAttributes));
-    return compileInternal(meshData, flags);
+    return compileInternal(mesh, flags);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -555,16 +555,16 @@ CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Trade::MeshData& meshData) {
+Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Trade::MeshData& mesh) {
     UnsignedInt primaryCount = 0, secondaryCount = 0;
-    for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
         /* The mesh is expected to have the same count and array size of
            JointIds and Weights, so it's enough to do it just for one of
            them */
-        if(meshData.attributeName(i) != Trade::MeshAttribute::JointIds)
+        if(mesh.attributeName(i) != Trade::MeshAttribute::JointIds)
             continue;
 
-        const UnsignedInt componentCount = meshData.attributeArraySize(i);
+        const UnsignedInt componentCount = mesh.attributeArraySize(i);
         for(UnsignedInt j = 0; j < componentCount; j += 4) {
             if(!primaryCount)
                 primaryCount = Math::min(componentCount - j, 4u);

@@ -80,14 +80,14 @@ void duplicateInto(const Containers::StridedArrayView2D<const char>& indices, co
     }
 }
 
-Trade::MeshData duplicate(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
-    CORRADE_ASSERT(data.isIndexed(), "MeshTools::duplicate(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(data.indexType()),
-        "MeshTools::duplicate(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+Trade::MeshData duplicate(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+    CORRADE_ASSERT(mesh.isIndexed(), "MeshTools::duplicate(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    CORRADE_ASSERT(!isMeshIndexTypeImplementationSpecific(mesh.indexType()),
+        "MeshTools::duplicate(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
         (Trade::MeshData{MeshPrimitive{}, 0}));
     #ifndef CORRADE_NO_ASSERT
-    for(std::size_t i = 0; i != data.attributeCount(); ++i) {
-        const VertexFormat format = data.attributeFormat(i);
+    for(std::size_t i = 0; i != mesh.attributeCount(); ++i) {
+        const VertexFormat format = mesh.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
             "MeshTools::duplicate(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -101,14 +101,14 @@ Trade::MeshData duplicate(const Trade::MeshData& data, const Containers::ArrayVi
     #endif
 
     /* Calculate the layout */
-    Trade::MeshData layout = interleavedLayout(data, data.indexCount(), extra);
+    Trade::MeshData layout = interleavedLayout(mesh, mesh.indexCount(), extra);
 
     /* Copy existing attributes to new locations */
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
-        duplicateInto(data.indices(), data.attribute(i), layout.mutableAttribute(i));
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+        duplicateInto(mesh.indices(), mesh.attribute(i), layout.mutableAttribute(i));
 
     /* Mix in the extra attributes */
-    UnsignedInt attributeIndex = data.attributeCount();
+    UnsignedInt attributeIndex = mesh.attributeCount();
     for(UnsignedInt i = 0; i != extra.size(); ++i) {
         /* Padding, ignore */
         if(extra[i].format() == VertexFormat{}) continue;
@@ -122,13 +122,13 @@ Trade::MeshData duplicate(const Trade::MeshData& data, const Containers::ArrayVi
         /* Copy the attribute in, if it is non-empty, otherwise keep the
            memory uninitialized */
         if(extra[i].data()) {
-            CORRADE_ASSERT(extra[i].data().size() == data.vertexCount(),
-                "MeshTools::duplicate(): extra attribute" << i << "expected to have" << data.vertexCount() << "items but got" << extra[i].data().size(),
+            CORRADE_ASSERT(extra[i].data().size() == mesh.vertexCount(),
+                "MeshTools::duplicate(): extra attribute" << i << "expected to have" << mesh.vertexCount() << "items but got" << extra[i].data().size(),
                 (Trade::MeshData{MeshPrimitive::Triangles, 0}));
             const Containers::StridedArrayView2D<const char> attributeData =
                 Containers::arrayCast<2, const char>(extra[i].data(),
                 vertexFormatSize(extra[i].format())*Math::max(extra[i].arraySize(), UnsignedShort{1}));
-            duplicateInto(data.indices(), attributeData, layout.mutableAttribute(attributeIndex));
+            duplicateInto(mesh.indices(), attributeData, layout.mutableAttribute(attributeIndex));
         }
 
         ++attributeIndex;
@@ -137,8 +137,8 @@ Trade::MeshData duplicate(const Trade::MeshData& data, const Containers::ArrayVi
     return layout;
 }
 
-Trade::MeshData duplicate(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra) {
-    return duplicate(data, Containers::arrayView(extra));
+Trade::MeshData duplicate(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttributeData> extra) {
+    return duplicate(mesh, Containers::arrayView(extra));
 }
 
 }}

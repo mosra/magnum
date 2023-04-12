@@ -508,12 +508,12 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(const Trade::MeshData& m
 @m_since{2020,06}
 
 Compared to @ref generateIndices(const Trade::MeshData&) this function can
-transfer ownership of @p data vertex buffer (in case it is owned) to the
+transfer ownership of @p mesh vertex buffer (in case it is owned) to the
 returned instance instead of making a copy of it. Attribute data is copied
 always.
 @see @ref Trade::MeshData::vertexDataFlags()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(Trade::MeshData&& data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(Trade::MeshData&& mesh);
 
 }}
 

@@ -576,77 +576,77 @@ void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>
     return generateQuadIndicesIntoImplementation(positions, quads, output);
 }
 
-Trade::MeshData generateIndices(Trade::MeshData&& data) {
-    CORRADE_ASSERT(!data.isIndexed() || !isMeshIndexTypeImplementationSpecific(data.indexType()),
-        "MeshTools::generateIndices(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
+    CORRADE_ASSERT(!mesh.isIndexed() || !isMeshIndexTypeImplementationSpecific(mesh.indexType()),
+        "MeshTools::generateIndices(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
-    const UnsignedInt vertexCount = data.vertexCount();
+    const UnsignedInt vertexCount = mesh.vertexCount();
     #ifndef CORRADE_NO_ASSERT
     UnsignedInt minVertexCount;
-    if(data.primitive() == MeshPrimitive::LineStrip ||
-       data.primitive() == MeshPrimitive::LineLoop) {
+    if(mesh.primitive() == MeshPrimitive::LineStrip ||
+       mesh.primitive() == MeshPrimitive::LineLoop) {
         minVertexCount = 2;
-    } else if(data.primitive() == MeshPrimitive::TriangleStrip ||
-              data.primitive() == MeshPrimitive::TriangleFan) {
+    } else if(mesh.primitive() == MeshPrimitive::TriangleStrip ||
+              mesh.primitive() == MeshPrimitive::TriangleFan) {
         minVertexCount = 3;
-    } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << data.primitive(),
+    } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << mesh.primitive(),
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
     CORRADE_ASSERT(vertexCount == 0 || vertexCount >= minVertexCount,
-        "MeshTools::generateIndices(): expected either zero or at least" << minVertexCount << "vertices for" << data.primitive() << Debug::nospace << ", got" << vertexCount,
+        "MeshTools::generateIndices(): expected either zero or at least" << minVertexCount << "vertices for" << mesh.primitive() << Debug::nospace << ", got" << vertexCount,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
     #endif
 
     /* Transfer vertex / attribute data as-is, as those don't need any changes.
        Release if possible. */
     Containers::Array<char> vertexData;
-    if(data.vertexDataFlags() & Trade::DataFlag::Owned)
-        vertexData = data.releaseVertexData();
+    if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)
+        vertexData = mesh.releaseVertexData();
     else {
-        vertexData = Containers::Array<char>{NoInit, data.vertexData().size()};
-        Utility::copy(data.vertexData(), vertexData);
+        vertexData = Containers::Array<char>{NoInit, mesh.vertexData().size()};
+        Utility::copy(mesh.vertexData(), vertexData);
     }
 
     /* Recreate the attribute array with views on the new vertexData */
     /** @todo if the vertex data were moved and this array is owned, it
         wouldn't need to be recreated, but the logic is a bit complex */
-    Containers::Array<Trade::MeshAttributeData> attributeData{data.attributeCount()};
+    Containers::Array<Trade::MeshAttributeData> attributeData{mesh.attributeCount()};
     for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
-        attributeData[i] = Trade::MeshAttributeData{data.attributeName(i),
-            data.attributeFormat(i),
-            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + data.attributeOffset(i), vertexCount, data.attributeStride(i)},
-            data.attributeArraySize(i)};
+        attributeData[i] = Trade::MeshAttributeData{mesh.attributeName(i),
+            mesh.attributeFormat(i),
+            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + mesh.attributeOffset(i), vertexCount, mesh.attributeStride(i)},
+            mesh.attributeArraySize(i)};
     }
 
     /* Generate the index array */
     MeshPrimitive primitive;
     Containers::Array<char> indexData;
-    if(data.primitive() == MeshPrimitive::LineStrip) {
+    if(mesh.primitive() == MeshPrimitive::LineStrip) {
         primitive = MeshPrimitive::Lines;
         indexData = Containers::Array<char>{NoInit, 2*(Math::max(vertexCount, 1u) - 1)*sizeof(UnsignedInt)};
-        if(data.isIndexed())
-            generateLineStripIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        if(mesh.isIndexed())
+            generateLineStripIndicesInto(mesh.indices(), Containers::arrayCast<UnsignedInt>(indexData));
         else
             generateLineStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
-    } else if(data.primitive() == MeshPrimitive::LineLoop) {
+    } else if(mesh.primitive() == MeshPrimitive::LineLoop) {
         primitive = MeshPrimitive::Lines;
         indexData = Containers::Array<char>{NoInit, 2*vertexCount*sizeof(UnsignedInt)};
-        if(data.isIndexed())
-            generateLineLoopIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        if(mesh.isIndexed())
+            generateLineLoopIndicesInto(mesh.indices(), Containers::arrayCast<UnsignedInt>(indexData));
         else
             generateLineLoopIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
-    } else if(data.primitive() == MeshPrimitive::TriangleStrip) {
+    } else if(mesh.primitive() == MeshPrimitive::TriangleStrip) {
         primitive = MeshPrimitive::Triangles;
         indexData = Containers::Array<char>{NoInit, 3*(Math::max(vertexCount, 2u) - 2)*sizeof(UnsignedInt)};
-        if(data.isIndexed())
-            generateTriangleStripIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        if(mesh.isIndexed())
+            generateTriangleStripIndicesInto(mesh.indices(), Containers::arrayCast<UnsignedInt>(indexData));
         else
             generateTriangleStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
-    } else if(data.primitive() == MeshPrimitive::TriangleFan) {
+    } else if(mesh.primitive() == MeshPrimitive::TriangleFan) {
         primitive = MeshPrimitive::Triangles;
         indexData = Containers::Array<char>{NoInit, 3*(Math::max(vertexCount, 2u) - 2)*sizeof(UnsignedInt)};
-        if(data.isIndexed())
-            generateTriangleFanIndicesInto(data.indices(), Containers::arrayCast<UnsignedInt>(indexData));
+        if(mesh.isIndexed())
+            generateTriangleFanIndicesInto(mesh.indices(), Containers::arrayCast<UnsignedInt>(indexData));
         else
             generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
@@ -656,10 +656,10 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
         std::move(vertexData), std::move(attributeData), vertexCount};
 }
 
-Trade::MeshData generateIndices(const Trade::MeshData& data) {
+Trade::MeshData generateIndices(const Trade::MeshData& mesh) {
     /* Pass through to the && overload, which then decides whether to reuse
        anything based on the DataFlags */
-    return generateIndices(reference(data));
+    return generateIndices(reference(mesh));
 }
 
 }}

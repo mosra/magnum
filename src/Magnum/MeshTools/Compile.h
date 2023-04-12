@@ -167,7 +167,7 @@ to access them afterwards. For alternative solutions see the
 
 @see @ref shaders-generic
 */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh, CompileFlags flags);
 
 /**
  * @overload
@@ -176,7 +176,7 @@ MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, Compil
 /* Separately because this one doesn't rely on duplicate() / interleave() /
    generate*Normals() and thus the exe can be smaller when using this function
    directly */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh);
 
 /**
 @brief Compile mesh data using external buffers
@@ -196,8 +196,8 @@ by the mesh or not:
 
 @snippet MagnumMeshTools-gl.cpp compile-external-attributes
 
-If @p meshData is not indexed, the @p indices parameter is ignored --- in that
-case you can pass a @ref NoCreate "NoCreate"-d instance to avoid allocating an
+If @p mesh is not indexed, the @p indices parameter is ignored --- in that case
+you can pass a @ref NoCreate "NoCreate"-d instance to avoid allocating an
 unnecessary OpenGL buffer object.
 
 Compared to @ref compile(const Trade::MeshData&, CompileFlags), this function
@@ -205,25 +205,25 @@ implicitly enables the @ref CompileFlag::NoWarnOnCustomAttributes flag,
 assuming that custom attributes and attributes with implementation-specific
 formats are explicitly handled on the application side.
 */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer& vertices);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer& vertices);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer&& vertices);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer&& vertices);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer& vertices);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer&& indices, GL::Buffer& vertices);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer&& vertices);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer&& indices, GL::Buffer&& vertices);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
@@ -333,7 +333,7 @@ similarly with other builtin shaders.
     support which is not available in WebGL 1.0, thus neither this function is
     defined in WebGL 1.0 builds.
 */
-MAGNUM_MESHTOOLS_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Trade::MeshData& meshData);
+MAGNUM_MESHTOOLS_EXPORT Containers::Pair<UnsignedInt, UnsignedInt> compiledPerVertexJointCount(const Trade::MeshData& mesh);
 #endif
 
 }}

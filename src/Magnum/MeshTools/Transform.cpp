@@ -33,12 +33,12 @@
 
 namespace Magnum { namespace MeshTools {
 
-Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
-    const Containers::Optional<UnsignedInt> positionAttributeId = data.findAttributeId(Trade::MeshAttribute::Position, id);
+Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
+    const Containers::Optional<UnsignedInt> positionAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Position, id);
     CORRADE_ASSERT(positionAttributeId,
         "MeshTools::transform2D(): the mesh has no positions with index" << id,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-    const VertexFormat positionAttributeFormat = data.attributeFormat(*positionAttributeId);
+    const VertexFormat positionAttributeFormat = mesh.attributeFormat(*positionAttributeId);
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(positionAttributeFormat),
         "MeshTools::transform2D(): positions have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(positionAttributeFormat)),
         (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -50,9 +50,9 @@ Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transfor
        position attribute format, if needed. Not using Utility::copy() here as
        the view returned by attributeData() might have offset-only attributes
        which interleave() doesn't want. */
-    Containers::Array<Trade::MeshAttributeData> attributes{data.attributeCount()};
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
-        attributes[i] = data.attributeData(i);
+    Containers::Array<Trade::MeshAttributeData> attributes{mesh.attributeCount()};
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+        attributes[i] = mesh.attributeData(i);
 
     /* If the position attribute isn't in a desired format, replace it with an
        empty placeholder that we'll unpack the data into */
@@ -61,73 +61,73 @@ Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transfor
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(filterOnlyAttributes(data, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
+    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
 
     /* If the position attribute wasn't in a desired format, unpack it */
     if(positionAttributeFormat != VertexFormat::Vector2)
-        data.positions2DInto(out.mutableAttribute<Vector2>(*positionAttributeId), id);
+        mesh.positions2DInto(out.mutableAttribute<Vector2>(*positionAttributeId), id);
 
     /* Delegate to the in-place implementation and return */
     transform2DInPlace(out, transformation, id);
     return out;
 }
 
-Trade::MeshData transform2D(Trade::MeshData&& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
+Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     /* Perform the operation in-place, if we can transfer the ownership and
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
        assert here again. */
-    if((data.indexDataFlags() & Trade::DataFlag::Owned) &&
-       (data.vertexDataFlags() & Trade::DataFlag::Owned) &&
-       data.attributeCount(Trade::MeshAttribute::Position) > id &&
-       data.attributeFormat(Trade::MeshAttribute::Position, id) == VertexFormat::Vector2)
+    if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
+       (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
+        mesh.attributeCount(Trade::MeshAttribute::Position) > id &&
+        mesh.attributeFormat(Trade::MeshAttribute::Position, id) == VertexFormat::Vector2)
     {
-        transform2DInPlace(data, transformation, id);
-        return std::move(data);
+        transform2DInPlace(mesh, transformation, id);
+        return std::move(mesh);
     }
 
     /* Otherwise delegate to the function that does all the copying and format
        expansion */
-    return transform2D(data, transformation, id, flags);
+    return transform2D(mesh, transformation, id, flags);
 }
 
-void transform2DInPlace(Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id) {
-    CORRADE_ASSERT(data.vertexDataFlags() & Trade::DataFlag::Mutable,
+void transform2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, const UnsignedInt id) {
+    CORRADE_ASSERT(mesh.vertexDataFlags() & Trade::DataFlag::Mutable,
         "MeshTools::transform2DInPlace(): vertex data not mutable", );
-    const Containers::Optional<UnsignedInt> positionAttributeId = data.findAttributeId(Trade::MeshAttribute::Position, id);
+    const Containers::Optional<UnsignedInt> positionAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Position, id);
     CORRADE_ASSERT(positionAttributeId,
         "MeshTools::transform2DInPlace(): the mesh has no positions with index" << id, );
-    CORRADE_ASSERT(data.attributeFormat(*positionAttributeId) == VertexFormat::Vector2,
-        "MeshTools::transform2DInPlace(): expected" << VertexFormat::Vector2 << "positions but got" << data.attributeFormat(*positionAttributeId), );
+    CORRADE_ASSERT(mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector2,
+        "MeshTools::transform2DInPlace(): expected" << VertexFormat::Vector2 << "positions but got" << mesh.attributeFormat(*positionAttributeId), );
 
     /** @todo this needs a proper batch implementation */
-    for(Vector2& position: data.mutableAttribute<Vector2>(*positionAttributeId))
+    for(Vector2& position: mesh.mutableAttribute<Vector2>(*positionAttributeId))
         position = transformation.transformPoint(position);
 }
 
-Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transformation, const UnsignedInt id, const InterleaveFlags flags) {
-    const Containers::Optional<UnsignedInt> positionAttributeId = data.findAttributeId(Trade::MeshAttribute::Position, id);
+Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transformation, const UnsignedInt id, const InterleaveFlags flags) {
+    const Containers::Optional<UnsignedInt> positionAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Position, id);
     CORRADE_ASSERT(positionAttributeId,
         "MeshTools::transform3D(): the mesh has no positions with index" << id,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-    const VertexFormat positionAttributeFormat = data.attributeFormat(*positionAttributeId);
+    const VertexFormat positionAttributeFormat = mesh.attributeFormat(*positionAttributeId);
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(positionAttributeFormat),
         "MeshTools::transform3D(): positions have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(positionAttributeFormat)),
         (Trade::MeshData{MeshPrimitive::Points, 0}));
     CORRADE_ASSERT(vertexFormatComponentCount(positionAttributeFormat) == 3,
         "MeshTools::transform3D(): expected 3D positions but got" << positionAttributeFormat,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-    const Containers::Optional<UnsignedInt> tangentAttributeId = data.findAttributeId(Trade::MeshAttribute::Tangent, id);
-    const Containers::Optional<UnsignedInt> bitangentAttributeId = data.findAttributeId(Trade::MeshAttribute::Bitangent, id);
-    const Containers::Optional<UnsignedInt> normalAttributeId = data.findAttributeId(Trade::MeshAttribute::Normal, id);
+    const Containers::Optional<UnsignedInt> tangentAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Tangent, id);
+    const Containers::Optional<UnsignedInt> bitangentAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Bitangent, id);
+    const Containers::Optional<UnsignedInt> normalAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Normal, id);
 
     /* Copy original attributes to a mutable array so we can update the
        position attribute format, if needed. Not using Utility::copy() here as
        the view returned by attributeData() might have offset-only attributes
        which interleave() doesn't want. */
-    Containers::Array<Trade::MeshAttributeData> attributes{data.attributeCount()};
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
-        attributes[i] = data.attributeData(i);
+    Containers::Array<Trade::MeshAttributeData> attributes{mesh.attributeCount()};
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+        attributes[i] = mesh.attributeData(i);
 
     /* If the position/TBN attributes aren't in a desired format, replace them
        with an empty placeholder that we'll unpack the data into */
@@ -136,18 +136,18 @@ Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transfor
     VertexFormat tangentAttributeFormat{};
     VertexFormat desiredTangentVertexFormat{};
     if(tangentAttributeId) {
-        tangentAttributeFormat = data.attributeFormat(*tangentAttributeId);
+        tangentAttributeFormat = mesh.attributeFormat(*tangentAttributeId);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(tangentAttributeFormat),
         "MeshTools::transform3D(): tangents have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(tangentAttributeFormat)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
-        desiredTangentVertexFormat = vertexFormatComponentCount(data.attributeFormat(*tangentAttributeId)) == 4 ?
+        desiredTangentVertexFormat = vertexFormatComponentCount(mesh.attributeFormat(*tangentAttributeId)) == 4 ?
         VertexFormat::Vector4 : VertexFormat::Vector3;
         if(tangentAttributeFormat != desiredTangentVertexFormat)
             attributes[*tangentAttributeId] = Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, desiredTangentVertexFormat, nullptr};
     }
     VertexFormat bitangentAttributeFormat{};
     if(bitangentAttributeId) {
-        bitangentAttributeFormat = data.attributeFormat(*bitangentAttributeId);
+        bitangentAttributeFormat = mesh.attributeFormat(*bitangentAttributeId);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(bitangentAttributeFormat),
         "MeshTools::transform3D(): bitangents have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(bitangentAttributeFormat)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -156,7 +156,7 @@ Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transfor
     }
     VertexFormat normalAttributeFormat{};
     if(normalAttributeId) {
-        normalAttributeFormat = data.attributeFormat(*normalAttributeId);
+        normalAttributeFormat = mesh.attributeFormat(*normalAttributeId);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(normalAttributeFormat),
         "MeshTools::transform3D(): normals have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(normalAttributeFormat)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -166,76 +166,76 @@ Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transfor
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(filterOnlyAttributes(data, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
+    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
 
     /* If the position/TBN attributes weren't in a desired format, unpack them */
     if(positionAttributeFormat != VertexFormat::Vector3)
-        data.positions3DInto(out.mutableAttribute<Vector3>(*positionAttributeId), id);
+        mesh.positions3DInto(out.mutableAttribute<Vector3>(*positionAttributeId), id);
     if(tangentAttributeId && tangentAttributeFormat != desiredTangentVertexFormat) {
         if(desiredTangentVertexFormat == VertexFormat::Vector4) {
-            data.tangentsInto(out.mutableAttribute<Vector4>(*tangentAttributeId).slice(&Vector4::xyz), id);
-            data.bitangentSignsInto(out.mutableAttribute<Vector4>(*tangentAttributeId).slice(&Vector4::w), id);
+            mesh.tangentsInto(out.mutableAttribute<Vector4>(*tangentAttributeId).slice(&Vector4::xyz), id);
+            mesh.bitangentSignsInto(out.mutableAttribute<Vector4>(*tangentAttributeId).slice(&Vector4::w), id);
         } else {
-            data.tangentsInto(out.mutableAttribute<Vector3>(*tangentAttributeId), id);
+            mesh.tangentsInto(out.mutableAttribute<Vector3>(*tangentAttributeId), id);
         }
     }
     if(bitangentAttributeId && bitangentAttributeFormat != VertexFormat::Vector3)
-        data.bitangentsInto(out.mutableAttribute<Vector3>(*bitangentAttributeId), id);
+        mesh.bitangentsInto(out.mutableAttribute<Vector3>(*bitangentAttributeId), id);
     if(normalAttributeId && normalAttributeFormat != VertexFormat::Vector3)
-        data.normalsInto(out.mutableAttribute<Vector3>(*normalAttributeId), id);
+        mesh.normalsInto(out.mutableAttribute<Vector3>(*normalAttributeId), id);
 
     /* Delegate to the in-place implementation and return */
     transform3DInPlace(out, transformation, id);
     return out;
 }
 
-Trade::MeshData transform3D(Trade::MeshData&& data, const Matrix4& transformation, const UnsignedInt id, const InterleaveFlags flags) {
+Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     /* Perform the operation in-place, if we can transfer the ownership and
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
        assert here again. */
-    const Containers::Optional<UnsignedInt> positionAttributeId = data.findAttributeId(Trade::MeshAttribute::Position, id);
-    const Containers::Optional<UnsignedInt> tangentAttributeId = data.findAttributeId(Trade::MeshAttribute::Tangent, id);
-    const Containers::Optional<UnsignedInt> bitangentAttributeId = data.findAttributeId(Trade::MeshAttribute::Bitangent, id);
-    const Containers::Optional<UnsignedInt> normalAttributeId = data.findAttributeId(Trade::MeshAttribute::Normal, id);
-    if((data.indexDataFlags() & Trade::DataFlag::Owned) &&
-       (data.vertexDataFlags() & Trade::DataFlag::Owned) &&
+    const Containers::Optional<UnsignedInt> positionAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Position, id);
+    const Containers::Optional<UnsignedInt> tangentAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Tangent, id);
+    const Containers::Optional<UnsignedInt> bitangentAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Bitangent, id);
+    const Containers::Optional<UnsignedInt> normalAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Normal, id);
+    if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
+       (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
        positionAttributeId &&
-       data.attributeFormat(*positionAttributeId) == VertexFormat::Vector3 &&
-       (!tangentAttributeId || data.attributeFormat(*tangentAttributeId) == VertexFormat::Vector3 || data.attributeFormat(*tangentAttributeId) == VertexFormat::Vector4) &&
-       (!bitangentAttributeId || data.attributeFormat(*bitangentAttributeId) == VertexFormat::Vector3) &&
-       (!normalAttributeId || data.attributeFormat(*normalAttributeId) == VertexFormat::Vector3))
+        mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector3 &&
+       (!tangentAttributeId || mesh.attributeFormat(*tangentAttributeId) == VertexFormat::Vector3 || mesh.attributeFormat(*tangentAttributeId) == VertexFormat::Vector4) &&
+       (!bitangentAttributeId || mesh.attributeFormat(*bitangentAttributeId) == VertexFormat::Vector3) &&
+       (!normalAttributeId || mesh.attributeFormat(*normalAttributeId) == VertexFormat::Vector3))
     {
-        transform3DInPlace(data, transformation, id);
-        return std::move(data);
+        transform3DInPlace(mesh, transformation, id);
+        return std::move(mesh);
     }
 
     /* Otherwise delegate to the function that does all the copying and format
        expansion */
-    return transform3D(data, transformation, id, flags);
+    return transform3D(mesh, transformation, id, flags);
 }
 
-void transform3DInPlace(Trade::MeshData& data, const Matrix4& transformation, const UnsignedInt id) {
-    CORRADE_ASSERT(data.vertexDataFlags() & Trade::DataFlag::Mutable,
+void transform3DInPlace(Trade::MeshData& mesh, const Matrix4& transformation, const UnsignedInt id) {
+    CORRADE_ASSERT(mesh.vertexDataFlags() & Trade::DataFlag::Mutable,
         "MeshTools::transform3DInPlace(): vertex data not mutable", );
-    const Containers::Optional<UnsignedInt> positionAttributeId = data.findAttributeId(Trade::MeshAttribute::Position, id);
+    const Containers::Optional<UnsignedInt> positionAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Position, id);
     CORRADE_ASSERT(positionAttributeId,
         "MeshTools::transform3DInPlace(): the mesh has no positions with index" << id, );
-    CORRADE_ASSERT(data.attributeFormat(*positionAttributeId) == VertexFormat::Vector3,
-        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "positions but got" << data.attributeFormat(*positionAttributeId), );
-    const Containers::Optional<UnsignedInt> tangentAttributeId = data.findAttributeId(Trade::MeshAttribute::Tangent, id);
-    const VertexFormat tangentAttributeFormat = tangentAttributeId ? data.attributeFormat(*tangentAttributeId) : VertexFormat{};
+    CORRADE_ASSERT(mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector3,
+        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "positions but got" << mesh.attributeFormat(*positionAttributeId), );
+    const Containers::Optional<UnsignedInt> tangentAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Tangent, id);
+    const VertexFormat tangentAttributeFormat = tangentAttributeId ? mesh.attributeFormat(*tangentAttributeId) : VertexFormat{};
     CORRADE_ASSERT(!tangentAttributeId || tangentAttributeFormat == VertexFormat::Vector3 || tangentAttributeFormat == VertexFormat::Vector4,
-        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "or" << VertexFormat::Vector4 << "tangents but got" << data.attributeFormat(*tangentAttributeId), );
-    const Containers::Optional<UnsignedInt> bitangentAttributeId = data.findAttributeId(Trade::MeshAttribute::Bitangent, id);
-    CORRADE_ASSERT(!bitangentAttributeId || data.attributeFormat(*bitangentAttributeId) == VertexFormat::Vector3,
-        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "bitangents but got" << data.attributeFormat(*bitangentAttributeId), );
-    const Containers::Optional<UnsignedInt> normalAttributeId = data.findAttributeId(Trade::MeshAttribute::Normal, id);
-    CORRADE_ASSERT(!normalAttributeId || data.attributeFormat(*normalAttributeId) == VertexFormat::Vector3,
-        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "normals but got" << data.attributeFormat(*normalAttributeId), );
+        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "or" << VertexFormat::Vector4 << "tangents but got" << mesh.attributeFormat(*tangentAttributeId), );
+    const Containers::Optional<UnsignedInt> bitangentAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Bitangent, id);
+    CORRADE_ASSERT(!bitangentAttributeId || mesh.attributeFormat(*bitangentAttributeId) == VertexFormat::Vector3,
+        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "bitangents but got" << mesh.attributeFormat(*bitangentAttributeId), );
+    const Containers::Optional<UnsignedInt> normalAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Normal, id);
+    CORRADE_ASSERT(!normalAttributeId || mesh.attributeFormat(*normalAttributeId) == VertexFormat::Vector3,
+        "MeshTools::transform3DInPlace(): expected" << VertexFormat::Vector3 << "normals but got" << mesh.attributeFormat(*normalAttributeId), );
 
     /** @todo this needs a proper batch implementation */
-    for(Vector3& position: data.mutableAttribute<Vector3>(*positionAttributeId))
+    for(Vector3& position: mesh.mutableAttribute<Vector3>(*positionAttributeId))
         position = transformation.transformPoint(position);
 
     /* If no other attributes are present, nothing to do */
@@ -246,28 +246,28 @@ void transform3DInPlace(Trade::MeshData& data, const Matrix4& transformation, co
     if(tangentAttributeId) {
     /** @todo this needs a proper batch implementation */
         if(tangentAttributeFormat == VertexFormat::Vector3)
-            for(Vector3& tangent: data.mutableAttribute<Vector3>(*tangentAttributeId))
+            for(Vector3& tangent: mesh.mutableAttribute<Vector3>(*tangentAttributeId))
                 tangent = normalMatrix*tangent;
-        else for(Vector4& tangent: data.mutableAttribute<Vector4>(*tangentAttributeId)) {
+        else for(Vector4& tangent: mesh.mutableAttribute<Vector4>(*tangentAttributeId)) {
             tangent.xyz() = normalMatrix*tangent.xyz();
             /** @todo figure out the fourth component, probably has to get
                 flipped when the scale changes handedness? */
         }
     }
     /** @todo this needs a proper batch implementation */
-    if(bitangentAttributeId) for(Vector3& bitangent: data.mutableAttribute<Vector3>(*bitangentAttributeId))
+    if(bitangentAttributeId) for(Vector3& bitangent: mesh.mutableAttribute<Vector3>(*bitangentAttributeId))
         bitangent = normalMatrix*bitangent;
     /** @todo this needs a proper batch implementation */
-    if(normalAttributeId) for(Vector3& normal: data.mutableAttribute<Vector3>(*normalAttributeId))
+    if(normalAttributeId) for(Vector3& normal: mesh.mutableAttribute<Vector3>(*normalAttributeId))
         normal = normalMatrix*normal;
 }
 
-Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
-    const Containers::Optional<UnsignedInt> textureCoordinateAttributeId = data.findAttributeId(Trade::MeshAttribute::TextureCoordinates, id);
+Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
+    const Containers::Optional<UnsignedInt> textureCoordinateAttributeId = mesh.findAttributeId(Trade::MeshAttribute::TextureCoordinates, id);
     CORRADE_ASSERT(textureCoordinateAttributeId,
         "MeshTools::transformTextureCoordinates2D(): the mesh has no texture coordinates with index" << id,
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-    const VertexFormat textureCoordinateAttributeFormat = data.attributeFormat(*textureCoordinateAttributeId);
+    const VertexFormat textureCoordinateAttributeFormat = mesh.attributeFormat(*textureCoordinateAttributeId);
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(textureCoordinateAttributeFormat),
         "MeshTools::transformTextureCoordinates2D(): texture coordinates have an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(textureCoordinateAttributeFormat)),
         (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -276,9 +276,9 @@ Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const
        position attribute format, if needed. Not using Utility::copy() here as
        the view returned by attributeData() might have offset-only attributes
        which interleave() doesn't want. */
-    Containers::Array<Trade::MeshAttributeData> attributes{data.attributeCount()};
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
-        attributes[i] = data.attributeData(i);
+    Containers::Array<Trade::MeshAttributeData> attributes{mesh.attributeCount()};
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+        attributes[i] = mesh.attributeData(i);
 
     /* If the position attribute isn't in a desired format, replace it with an
        empty placeholder that we'll unpack the data into */
@@ -287,47 +287,47 @@ Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(filterOnlyAttributes(data, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
+    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
 
     /* If the position attribute wasn't in a desired format, unpack it */
-    if(data.attributeFormat(*textureCoordinateAttributeId) != VertexFormat::Vector2)
-        data.textureCoordinates2DInto(out.mutableAttribute<Vector2>(*textureCoordinateAttributeId), id);
+    if(mesh.attributeFormat(*textureCoordinateAttributeId) != VertexFormat::Vector2)
+        mesh.textureCoordinates2DInto(out.mutableAttribute<Vector2>(*textureCoordinateAttributeId), id);
 
     /* Delegate to the in-place implementation and return */
     transformTextureCoordinates2DInPlace(out, transformation, id);
     return out;
 }
 
-Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& data, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
+Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
     /* Perform the operation in-place, if we can transfer the ownership and
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
        assert here again. */
-    if((data.indexDataFlags() & Trade::DataFlag::Owned) &&
-       (data.vertexDataFlags() & Trade::DataFlag::Owned) &&
-       data.attributeCount(Trade::MeshAttribute::TextureCoordinates) > id &&
-       data.attributeFormat(Trade::MeshAttribute::TextureCoordinates, id) == VertexFormat::Vector2)
+    if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
+       (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
+        mesh.attributeCount(Trade::MeshAttribute::TextureCoordinates) > id &&
+        mesh.attributeFormat(Trade::MeshAttribute::TextureCoordinates, id) == VertexFormat::Vector2)
     {
-        transformTextureCoordinates2DInPlace(data, transformation, id);
-        return std::move(data);
+        transformTextureCoordinates2DInPlace(mesh, transformation, id);
+        return std::move(mesh);
     }
 
     /* Otherwise delegate to the function that does all the copying and format
        expansion */
-    return transformTextureCoordinates2D(data, transformation, id, flags);
+    return transformTextureCoordinates2D(mesh, transformation, id, flags);
 }
 
-void transformTextureCoordinates2DInPlace(Trade::MeshData& data, const Matrix3& transformation, const UnsignedInt id) {
-    CORRADE_ASSERT(data.vertexDataFlags() & Trade::DataFlag::Mutable,
+void transformTextureCoordinates2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, const UnsignedInt id) {
+    CORRADE_ASSERT(mesh.vertexDataFlags() & Trade::DataFlag::Mutable,
         "MeshTools::transformTextureCoordinates2DInPlace(): vertex data not mutable", );
-    const Containers::Optional<UnsignedInt> textureCoordinateAttributeId = data.findAttributeId(Trade::MeshAttribute::TextureCoordinates, id);
+    const Containers::Optional<UnsignedInt> textureCoordinateAttributeId = mesh.findAttributeId(Trade::MeshAttribute::TextureCoordinates, id);
     CORRADE_ASSERT(textureCoordinateAttributeId,
         "MeshTools::transformTextureCoordinates2DInPlace(): the mesh has no texture coordinates with index" << id, );
-    CORRADE_ASSERT(data.attributeFormat(*textureCoordinateAttributeId) == VertexFormat::Vector2,
-        "MeshTools::transformTextureCoordinates2DInPlace(): expected" << VertexFormat::Vector2 << "texture coordinates but got" << data.attributeFormat(*textureCoordinateAttributeId), );
+    CORRADE_ASSERT(mesh.attributeFormat(*textureCoordinateAttributeId) == VertexFormat::Vector2,
+        "MeshTools::transformTextureCoordinates2DInPlace(): expected" << VertexFormat::Vector2 << "texture coordinates but got" << mesh.attributeFormat(*textureCoordinateAttributeId), );
 
     /** @todo this needs a proper batch implementation */
-    for(Vector2& position: data.mutableAttribute<Vector2>(*textureCoordinateAttributeId))
+    for(Vector2& position: mesh.mutableAttribute<Vector2>(*textureCoordinateAttributeId))
         position = transformation.transformPoint(position);
 }
 

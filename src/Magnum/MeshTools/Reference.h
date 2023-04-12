@@ -41,11 +41,11 @@ namespace Magnum { namespace MeshTools {
 
 The returned instance has empty @ref Trade::MeshData::indexDataFlags() and
 @ref Trade::MeshData::vertexDataFlags() and references attribute data from the
-@p data as well. The function performs no allocation or data copy. Use
+@p mesh as well. The function performs no allocation or data copy. Use
 @ref owned() for an inverse operation.
 @see @ref mutableReference()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData reference(const Trade::MeshData& data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData reference(const Trade::MeshData& mesh);
 
 /**
 @brief Create a mutable reference on a @ref Trade::MeshData
@@ -54,10 +54,10 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData reference(const Trade::MeshData& data);
 The returned instance has @ref Trade::MeshData::indexDataFlags() and
 @ref Trade::MeshData::vertexDataFlags() set to @ref Trade::DataFlag::Mutable.
 The function performs no allocation or data copy. Use @ref owned() for an
-inverse operation. Expects that @p data is mutable.
+inverse operation. Expects that @p mesh is mutable.
 @see @ref reference()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData mutableReference(Trade::MeshData& data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData mutableReference(Trade::MeshData& mesh);
 
 /**
 @brief Create an owned @ref Trade::MeshData
@@ -67,12 +67,12 @@ The returned instance owns its index, vertex and attribute data --- both
 @ref Trade::MeshData::indexDataFlags() and
 @ref Trade::MeshData::vertexDataFlags() have @ref Trade::DataFlag::Mutable and
 @ref Trade::DataFlag::Owned set. This function unconditionally does an
-allocation and a copy even if the @p data is already owned, use
+allocation and a copy even if the @p mesh is already owned, use
 @ref owned(Trade::MeshData&&) to make an owned copy only if the instance isn't
 already owned.
 @see @ref reference(), @ref mutableReference()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(const Trade::MeshData& data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(const Trade::MeshData& mesh);
 
 /**
 @brief Create an owned @ref Trade::MeshData, if not already
@@ -86,7 +86,7 @@ already owned are simply moved to the output, otherwise the data get copied
 into newly allocated arrays.
 @see @ref reference(), @ref mutableReference()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(Trade::MeshData&& data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(Trade::MeshData&& mesh);
 
 }}
 

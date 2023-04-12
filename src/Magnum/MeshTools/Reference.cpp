@@ -31,28 +31,28 @@
 
 namespace Magnum { namespace MeshTools {
 
-Trade::MeshData reference(const Trade::MeshData& data) {
+Trade::MeshData reference(const Trade::MeshData& mesh) {
     /* Can't do just Trade::MeshIndexData{data.indices()} as that would discard
        implementation-specific types. And can't do
         Trade::meshIndexData{data.indexType(), view}
        because asking for index type would assert on non-indexed meshes. */
     Trade::MeshIndexData indices;
-    if(data.isIndexed()) indices = Trade::MeshIndexData{
-        data.indexType(),
+    if(mesh.isIndexed()) indices = Trade::MeshIndexData{
+        mesh.indexType(),
         Containers::StridedArrayView1D<const void>{
-            data.indexData(),
-            data.indexData().data() + data.indexOffset(),
-            data.indexCount(),
-            data.indexStride()}};
+            mesh.indexData(),
+            mesh.indexData().data() + mesh.indexOffset(),
+            mesh.indexCount(),
+            mesh.indexStride()}};
 
-    return Trade::MeshData{data.primitive(),
-        {}, data.indexData(), indices,
-        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
-        data.vertexCount()};
+    return Trade::MeshData{mesh.primitive(),
+        {}, mesh.indexData(), indices,
+        {}, mesh.vertexData(), Trade::meshAttributeDataNonOwningArray(mesh.attributeData()),
+        mesh.vertexCount()};
 }
 
-Trade::MeshData mutableReference(Trade::MeshData& data) {
-    CORRADE_ASSERT((data.indexDataFlags() & Trade::DataFlag::Mutable) && (data.vertexDataFlags() & Trade::DataFlag::Mutable),
+Trade::MeshData mutableReference(Trade::MeshData& mesh) {
+    CORRADE_ASSERT((mesh.indexDataFlags() & Trade::DataFlag::Mutable) && (mesh.vertexDataFlags() & Trade::DataFlag::Mutable),
         "MeshTools::mutableReference(): data not mutable",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
 
@@ -61,57 +61,57 @@ Trade::MeshData mutableReference(Trade::MeshData& data) {
         Trade::meshIndexData{data.indexType(), view}
        because asking for index type would assert on non-indexed meshes. */
     Trade::MeshIndexData indices;
-    if(data.isIndexed()) indices = Trade::MeshIndexData{
-        data.indexType(),
+    if(mesh.isIndexed()) indices = Trade::MeshIndexData{
+        mesh.indexType(),
         Containers::StridedArrayView1D<const void>{
-            data.indexData(),
-            data.indexData().data() + data.indexOffset(),
-            data.indexCount(),
-            data.indexStride()}};
+            mesh.indexData(),
+            mesh.indexData().data() + mesh.indexOffset(),
+            mesh.indexCount(),
+            mesh.indexStride()}};
 
-    return Trade::MeshData{data.primitive(),
-        Trade::DataFlag::Mutable, data.mutableIndexData(), indices,
-        Trade::DataFlag::Mutable, data.mutableVertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
-        data.vertexCount()};
+    return Trade::MeshData{mesh.primitive(),
+        Trade::DataFlag::Mutable, mesh.mutableIndexData(), indices,
+        Trade::DataFlag::Mutable, mesh.mutableVertexData(), Trade::meshAttributeDataNonOwningArray(mesh.attributeData()),
+        mesh.vertexCount()};
 }
 
-Trade::MeshData owned(const Trade::MeshData& data) {
-    return owned(reference(data));
+Trade::MeshData owned(const Trade::MeshData& mesh) {
+    return owned(reference(mesh));
 }
 
-Trade::MeshData owned(Trade::MeshData&& data) {
+Trade::MeshData owned(Trade::MeshData&& mesh) {
     /** @todo copy only the actually used range instead of the whole thing? */
 
     /* If index data are already owned, move them to the output. This works
        without any extra effort also for non-indexed meshes. */
     Containers::Array<char> indexData;
     Trade::MeshIndexData indices;
-    if(data.indexDataFlags() & Trade::DataFlag::Owned) {
-        indices = Trade::MeshIndexData{data.indices()};
-        indexData = data.releaseIndexData();
+    if(mesh.indexDataFlags() & Trade::DataFlag::Owned) {
+        indices = Trade::MeshIndexData{mesh.indices()};
+        indexData = mesh.releaseIndexData();
 
     /* Otherwise copy them, if the mesh is indexed. If not, the
        default-constructed instances are fine. */
-    } else if(data.isIndexed()) {
-        indexData = Containers::Array<char>{NoInit, data.indexData().size()};
+    } else if(mesh.isIndexed()) {
+        indexData = Containers::Array<char>{NoInit, mesh.indexData().size()};
         indices = Trade::MeshIndexData{
-            data.indexType(),
+            mesh.indexType(),
             Containers::StridedArrayView1D<const void>{
                 indexData,
-                indexData.data() + data.indexOffset(),
-                data.indexCount(),
-                data.indexStride()}};
-        Utility::copy(data.indexData(), indexData);
+                indexData.data() + mesh.indexOffset(),
+                mesh.indexCount(),
+                mesh.indexStride()}};
+        Utility::copy(mesh.indexData(), indexData);
     }
 
     /* If vertex data are already owned, move them to the output. Because
        releasing them will clear vertex count, save that in advance, save also
        original vertex data view for attribute offset calculation */
-    const UnsignedInt vertexCount = data.vertexCount();
-    const Containers::ArrayView<const char> originalVertexData = data.vertexData();
+    const UnsignedInt vertexCount = mesh.vertexCount();
+    const Containers::ArrayView<const char> originalVertexData = mesh.vertexData();
     Containers::Array<char> vertexData;
-    if(data.vertexDataFlags() & Trade::DataFlag::Owned) {
-        vertexData = data.releaseVertexData();
+    if(mesh.vertexDataFlags() & Trade::DataFlag::Owned) {
+        vertexData = mesh.releaseVertexData();
 
     /* Otherwise copy them */
     } else {
@@ -122,12 +122,12 @@ Trade::MeshData owned(Trade::MeshData&& data) {
     /* There's no way to know if attribute data are owned until we release
        them and check the deleter, but releasing them makes it impossible to
        use the convenience MeshData APIs, so we have to do the hard way. */
-    Containers::Array<Trade::MeshAttributeData> originalAttributeData = data.releaseAttributeData();
+    Containers::Array<Trade::MeshAttributeData> originalAttributeData = mesh.releaseAttributeData();
 
     /* If the attribute data are owned *and* the vertex data weren't copied,
        we can reuse the original array in its entirety */
     Containers::Array<Trade::MeshAttributeData> attributeData;
-    if(!originalAttributeData.deleter() && (data.vertexDataFlags() & Trade::DataFlag::Owned)) {
+    if(!originalAttributeData.deleter() && (mesh.vertexDataFlags() & Trade::DataFlag::Owned)) {
         attributeData = std::move(originalAttributeData);
 
     /* Otherwise we have to allocate a new one and re-route the attributes to
@@ -147,7 +147,7 @@ Trade::MeshData owned(Trade::MeshData&& data) {
         }
     }
 
-    return Trade::MeshData{data.primitive(),
+    return Trade::MeshData{mesh.primitive(),
         std::move(indexData), indices,
         std::move(vertexData), std::move(attributeData),
         vertexCount};

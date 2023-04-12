@@ -49,7 +49,7 @@ bool hasAttribute(const Containers::ArrayView<const UnsignedInt> attributes, con
 
 }
 
-Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
     /* Not asserting here for existence of attributes since that'd be another
        O(n^2) operation */
     /** @todo but that's not consistent with the ID-based variant, or maybe do
@@ -58,10 +58,10 @@ Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, const Containe
 
     /* Pick just attributes from the list */
     Containers::Array<Trade::MeshAttributeData> filtered;
-    arrayReserve(filtered, data.attributeCount());
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
-        if(hasAttribute(attributes, data.attributeName(i)))
-            arrayAppend(filtered, data.attributeData(i));
+    arrayReserve(filtered, mesh.attributeCount());
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
+        if(hasAttribute(attributes, mesh.attributeName(i)))
+            arrayAppend(filtered, mesh.attributeData(i));
     }
 
     /* Convert back to a default deleter to make this usable in plugins */
@@ -72,37 +72,37 @@ Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, const Containe
         Trade::meshIndexData{data.indexType(), view}
        because asking for index type would assert on non-indexed meshes. */
     Trade::MeshIndexData indices;
-    if(data.isIndexed()) indices = Trade::MeshIndexData{
-        data.indexType(),
+    if(mesh.isIndexed()) indices = Trade::MeshIndexData{
+        mesh.indexType(),
         Containers::StridedArrayView1D<const void>{
-            data.indexData(),
-            data.indexData().data() + data.indexOffset(),
-            data.indexCount(),
-            data.indexStride()}};
+            mesh.indexData(),
+            mesh.indexData().data() + mesh.indexOffset(),
+            mesh.indexCount(),
+            mesh.indexStride()}};
 
-    return Trade::MeshData{data.primitive(),
-        {}, data.indexData(), indices,
-        {}, data.vertexData(), std::move(filtered),
-        data.vertexCount()};
+    return Trade::MeshData{mesh.primitive(),
+        {}, mesh.indexData(), indices,
+        {}, mesh.vertexData(), std::move(filtered),
+        mesh.vertexCount()};
 }
 
-Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttribute> attributes) {
-    return filterOnlyAttributes(data, Containers::arrayView(attributes));
+Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes) {
+    return filterOnlyAttributes(mesh, Containers::arrayView(attributes));
 }
 
-Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, const Containers::ArrayView<const UnsignedInt> attributes) {
+Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const UnsignedInt> attributes) {
     #ifndef CORRADE_NO_ASSERT
-    for(const UnsignedInt i: attributes) CORRADE_ASSERT(i < data.attributeCount(),
-        "MeshTools::filterOnlyAttributes(): index" << i << "out of range for" << data.attributeCount() << "attributes",
+    for(const UnsignedInt i: attributes) CORRADE_ASSERT(i < mesh.attributeCount(),
+        "MeshTools::filterOnlyAttributes(): index" << i << "out of range for" << mesh.attributeCount() << "attributes",
         (Trade::MeshData{MeshPrimitive{}, 0}));
     #endif
 
     /* Pick just attributes from the list */
     Containers::Array<Trade::MeshAttributeData> filtered;
-    arrayReserve(filtered, data.attributeCount());
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
+    arrayReserve(filtered, mesh.attributeCount());
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
         if(hasAttribute(attributes, i))
-            arrayAppend(filtered, data.attributeData(i));
+            arrayAppend(filtered, mesh.attributeData(i));
     }
 
     /* Convert back to a default deleter to make this usable in plugins */
@@ -113,25 +113,25 @@ Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, const Containe
         Trade::meshIndexData{data.indexType(), view}
        because asking for index type would assert on non-indexed meshes. */
     Trade::MeshIndexData indices;
-    if(data.isIndexed()) indices = Trade::MeshIndexData{
-        data.indexType(),
+    if(mesh.isIndexed()) indices = Trade::MeshIndexData{
+        mesh.indexType(),
         Containers::StridedArrayView1D<const void>{
-            data.indexData(),
-            data.indexData().data() + data.indexOffset(),
-            data.indexCount(),
-            data.indexStride()}};
+            mesh.indexData(),
+            mesh.indexData().data() + mesh.indexOffset(),
+            mesh.indexCount(),
+            mesh.indexStride()}};
 
-    return Trade::MeshData{data.primitive(),
-        {}, data.indexData(), indices,
-        {}, data.vertexData(), std::move(filtered),
-        data.vertexCount()};
+    return Trade::MeshData{mesh.primitive(),
+        {}, mesh.indexData(), indices,
+        {}, mesh.vertexData(), std::move(filtered),
+        mesh.vertexCount()};
 }
 
-Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, std::initializer_list<UnsignedInt> attributes) {
-    return filterOnlyAttributes(data, Containers::arrayView(attributes));
+Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes) {
+    return filterOnlyAttributes(mesh, Containers::arrayView(attributes));
 }
 
-Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
+Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttribute> attributes) {
     /* Not asserting here for existence of attributes since that'd be another
        O(n^2) operation */
     /** @todo but that's not consistent with the ID-based variant, or maybe do
@@ -140,10 +140,10 @@ Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, const Contai
 
     /* Pick just attributes from the list */
     Containers::Array<Trade::MeshAttributeData> filtered;
-    arrayReserve(filtered, data.attributeCount());
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
-        if(!hasAttribute(attributes, data.attributeName(i)))
-            arrayAppend(filtered, data.attributeData(i));
+    arrayReserve(filtered, mesh.attributeCount());
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
+        if(!hasAttribute(attributes, mesh.attributeName(i)))
+            arrayAppend(filtered, mesh.attributeData(i));
     }
 
     /* Convert back to a default deleter to make this usable in plugins */
@@ -154,37 +154,37 @@ Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, const Contai
         Trade::meshIndexData{data.indexType(), view}
        because asking for index type would assert on non-indexed meshes. */
     Trade::MeshIndexData indices;
-    if(data.isIndexed()) indices = Trade::MeshIndexData{
-        data.indexType(),
+    if(mesh.isIndexed()) indices = Trade::MeshIndexData{
+        mesh.indexType(),
         Containers::StridedArrayView1D<const void>{
-            data.indexData(),
-            data.indexData().data() + data.indexOffset(),
-            data.indexCount(),
-            data.indexStride()}};
+            mesh.indexData(),
+            mesh.indexData().data() + mesh.indexOffset(),
+            mesh.indexCount(),
+            mesh.indexStride()}};
 
-    return Trade::MeshData{data.primitive(),
-        {}, data.indexData(), indices,
-        {}, data.vertexData(), std::move(filtered),
-        data.vertexCount()};
+    return Trade::MeshData{mesh.primitive(),
+        {}, mesh.indexData(), indices,
+        {}, mesh.vertexData(), std::move(filtered),
+        mesh.vertexCount()};
 }
 
-Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttribute> attributes) {
-    return filterExceptAttributes(data, Containers::arrayView(attributes));
+Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes) {
+    return filterExceptAttributes(mesh, Containers::arrayView(attributes));
 }
 
-Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, const Containers::ArrayView<const UnsignedInt> attributes) {
+Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, const Containers::ArrayView<const UnsignedInt> attributes) {
     #ifndef CORRADE_NO_ASSERT
-    for(const UnsignedInt i: attributes) CORRADE_ASSERT(i < data.attributeCount(),
-        "MeshTools::filterExceptAttributes(): index" << i << "out of range for" << data.attributeCount() << "attributes",
+    for(const UnsignedInt i: attributes) CORRADE_ASSERT(i < mesh.attributeCount(),
+        "MeshTools::filterExceptAttributes(): index" << i << "out of range for" << mesh.attributeCount() << "attributes",
         (Trade::MeshData{MeshPrimitive{}, 0}));
     #endif
 
     /* Pick just attributes from the list */
     Containers::Array<Trade::MeshAttributeData> filtered;
-    arrayReserve(filtered, data.attributeCount());
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
+    arrayReserve(filtered, mesh.attributeCount());
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
         if(!hasAttribute(attributes, i))
-            arrayAppend(filtered, data.attributeData(i));
+            arrayAppend(filtered, mesh.attributeData(i));
     }
 
     /* Convert back to a default deleter to make this usable in plugins */
@@ -195,22 +195,22 @@ Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, const Contai
         Trade::meshIndexData{data.indexType(), view}
        because asking for index type would assert on non-indexed meshes. */
     Trade::MeshIndexData indices;
-    if(data.isIndexed()) indices = Trade::MeshIndexData{
-        data.indexType(),
+    if(mesh.isIndexed()) indices = Trade::MeshIndexData{
+        mesh.indexType(),
         Containers::StridedArrayView1D<const void>{
-            data.indexData(),
-            data.indexData().data() + data.indexOffset(),
-            data.indexCount(),
-            data.indexStride()}};
+            mesh.indexData(),
+            mesh.indexData().data() + mesh.indexOffset(),
+            mesh.indexCount(),
+            mesh.indexStride()}};
 
-    return Trade::MeshData{data.primitive(),
-        {}, data.indexData(), indices,
-        {}, data.vertexData(), std::move(filtered),
-        data.vertexCount()};
+    return Trade::MeshData{mesh.primitive(),
+        {}, mesh.indexData(), indices,
+        {}, mesh.vertexData(), std::move(filtered),
+        mesh.vertexCount()};
 }
 
-Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, std::initializer_list<UnsignedInt> attributes) {
-    return filterExceptAttributes(data, Containers::arrayView(attributes));
+Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes) {
+    return filterExceptAttributes(mesh, Containers::arrayView(attributes));
 }
 
 }}

@@ -397,13 +397,13 @@ std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayVi
     return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
 }
 
-Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
-    CORRADE_ASSERT(data.attributeCount(),
+Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
+    CORRADE_ASSERT(mesh.attributeCount(),
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
     #ifndef CORRADE_NO_ASSERT
-    for(std::size_t i = 0; i != data.attributeCount(); ++i) {
-        const VertexFormat format = data.attributeFormat(i);
+    for(std::size_t i = 0; i != mesh.attributeCount(); ++i) {
+        const VertexFormat format = mesh.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
             "MeshTools::removeDuplicates(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
@@ -412,8 +412,8 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
 
     /* This has to be checked before passing the data to interleave() as there
        it would die also, but with a confusing function name in the message */
-    CORRADE_ASSERT(!data.isIndexed() || !isMeshIndexTypeImplementationSpecific(data.indexType()),
-        "MeshTools::removeDuplicates(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(data.indexType())),
+    CORRADE_ASSERT(!mesh.isIndexed() || !isMeshIndexTypeImplementationSpecific(mesh.indexType()),
+        "MeshTools::removeDuplicates(): mesh has an implementation-specific index type" << reinterpret_cast<void*>(meshIndexTypeUnwrap(mesh.indexType())),
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     /* Turn the passed data into an interleaved owned mutable instance we can
@@ -424,7 +424,7 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
        which is set by default, otherwise random padding bytes or filtered-out
        attributes may contribute to the non-uniqueness of particular
        elements. */
-    Trade::MeshData ownedInterleaved = owned(interleave(data, {}, InterleaveFlags{}));
+    Trade::MeshData ownedInterleaved = owned(interleave(mesh, {}, InterleaveFlags{}));
 
     /* Because the interleaved mesh was forced to be repacked, the vertex data
        should span the whole stride -- this is relied on in the attribute
@@ -472,15 +472,15 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
         uniqueVertexCount};
 }
 
-Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float floatEpsilon, const Double doubleEpsilon) {
-    CORRADE_ASSERT(data.attributeCount(),
+Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, const Float floatEpsilon, const Double doubleEpsilon) {
+    CORRADE_ASSERT(mesh.attributeCount(),
         "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an attributeless mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
 
     /* Turn the passed data into an owned mutable instance we can operate on.
        There's a chance the original data are already like this, in which case
        this will be just a passthrough. */
-    Trade::MeshData owned = MeshTools::owned(std::move(data));
+    Trade::MeshData owned = MeshTools::owned(std::move(mesh));
 
     /* Allocate an interleaved index array for all vertices times all
        attributes */

@@ -159,7 +159,7 @@ The mesh is expected to be indexed and the index type and the @p atLeast
 parameter is expected to not be implementation-specific type.
 @see @ref isMeshIndexTypeImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(const Trade::MeshData& mesh, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
 
 /**
 @brief Compress mesh data indices
@@ -171,7 +171,7 @@ owned) to the returned instance instead of making a copy of it. Index and
 attribute data are copied always.
 @see @ref Trade::MeshData::vertexDataFlags()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(Trade::MeshData&& mesh, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**

@@ -310,7 +310,7 @@ copies and interleaves the input vertex and index data.
 @see @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(const Trade::MeshData& data);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(const Trade::MeshData& mesh);
 
 /**
 @brief Remove mesh data duplicates with fuzzy comparison for floating-point attributes
@@ -323,7 +323,7 @@ on floating-point attributes. For attributes with a known range (such as
 direction) the @p floatEpsilon / @p doubleEpsilon is scaled appropriately,
 otherwise it's scaled to calculated value range.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, Float floatEpsilon = Math::TypeTraits<Float>::epsilon(), Double doubleEpsilon = Math::TypeTraits<Double>::epsilon());
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, Float floatEpsilon = Math::TypeTraits<Float>::epsilon(), Double doubleEpsilon = Math::TypeTraits<Double>::epsilon());
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon) {

@@ -41,10 +41,10 @@ namespace Magnum { namespace MeshTools {
 @brief Filter a mesh to contain only the selected subset of named attributes
 @m_since_latest
 
-Returns a non-owning reference to the vertex and index buffer from @p data with
+Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attributes that are listed in @p attributes. The index buffer, if
 present, is left untouched. Attributes from the list that are not present in
-@p data are skipped. All duplicates of a listed attribute are kept --- if you
+@p mesh are skipped. All duplicates of a listed attribute are kept --- if you
 want a different behavior, use the @ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
 overload and pick attributes by their IDs instead.
 
@@ -54,19 +54,19 @@ the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<cons
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
 @see @ref reference()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttribute> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttribute> attributes);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttribute> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes);
 
 /**
 @brief Filter a mesh to contain only the selected subset of attributes
 @m_since_latest
 
-Returns a non-owning reference to the vertex and index buffer from @p data with
+Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attribute IDs listed in @p attributes. IDs specified more than once
 don't result in given attribute being added multiple times. The index buffer,
 if present, is left untouched. All attribute IDs are expected to be smaller
@@ -78,44 +78,44 @@ the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<cons
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
 @see @ref reference()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, Containers::ArrayView<const UnsignedInt> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const UnsignedInt> attributes);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& data, std::initializer_list<UnsignedInt> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes);
 
 /**
 @brief Filter a mesh to contain everything except the selected subset of named attributes
 @m_since_latest
 
-Returns a non-owning reference to the vertex and index buffer from @p data with
+Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attributes that are not listed in @p attributes. The index buffer, if
 present, is left untouched. Attributes from the list that are not present in
-@p data are skipped. All duplicates of a listed attribute are removed --- if
+@p mesh are skipped. All duplicates of a listed attribute are removed --- if
 you want a different behavior, use the @ref filterExceptAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
 overload and pick attributes by their IDs instead. If @p attributes is empty,
 the behavior is equivalent to @ref reference().
 
 This function only operates on the attribute metadata --- if you'd like to have
-the vertex data repacked to contain just the remaining attributes as well, pass
+the vertex mesh repacked to contain just the remaining attributes as well, pass
 the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttribute> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttribute> attributes);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttribute> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes);
 
 /**
 @brief Filter a mesh to contain everything except the selected subset of attributes
 @m_since_latest
 
-Returns a non-owning reference to the vertex and index buffer from @p data with
+Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attribute IDs that are not listed in @p attributes. IDs specified
 multiple times behave like if specified just once. The index buffer, if
 present, is left untouched. All attribute IDs are expected to be smaller than
@@ -127,13 +127,13 @@ the vertex data repacked to contain just the remaining attributes as well, pass
 the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, Containers::ArrayView<const UnsignedInt> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const UnsignedInt> attributes);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& data, std::initializer_list<UnsignedInt> attributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes);
 
 }}
 

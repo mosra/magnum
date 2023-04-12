@@ -165,7 +165,7 @@ copy, you can also do an in-place transformation using @ref transform2DInPlace()
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const,
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Transform 2D positions in a mesh data
@@ -177,7 +177,7 @@ data ownership to the returned instance, if both vertex and index data is
 owned, vertex data is mutable and the positions with index @p id are
 @ref VertexFormat::Vector2.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(Trade::MeshData&& data, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Transform 2D positions in a mesh data in-place
@@ -194,7 +194,7 @@ packed types, the in-place operation requires the position type to be
     @ref Trade::MeshData::attributeCount(MeshAttribute) const,
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
 */
-MAGNUM_MESHTOOLS_EXPORT void transform2DInPlace(Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
+MAGNUM_MESHTOOLS_EXPORT void transform2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0);
 
 /**
 @brief Transform 3D positions, normals, tangents and bitangents in a mesh data
@@ -223,7 +223,7 @@ copy, you can also do an in-place transformation using @ref transform3DInPlace()
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const,
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& data, const Matrix4& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Transform 3D positions, normals, tangenta and bitangents in a mesh data
@@ -236,7 +236,7 @@ owned, vertex data is mutable, positions, normals and bitangents (if present)
 are @ref VertexFormat::Vector3 and tangents (if present) either
 @ref VertexFormat::Vector3 or @ref VertexFormat::Vector4.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(Trade::MeshData&& data, const Matrix4& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Transform 3D positions, normals, tangents and bitangents in a mesh data in-place
@@ -258,7 +258,7 @@ than @p id, and indices (if any) are left untouched.
     @ref Trade::MeshData::attributeCount(MeshAttribute) const,
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
 */
-MAGNUM_MESHTOOLS_EXPORT void transform3DInPlace(Trade::MeshData& data, const Matrix4& transformation, UnsignedInt id = 0);
+MAGNUM_MESHTOOLS_EXPORT void transform3DInPlace(Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0);
 
 /**
 @brief Transform 2D texture coordinates in a mesh data
@@ -280,7 +280,7 @@ copy, you can also do an in-place transformation using
     @ref Trade::MeshData::attributeCount(MeshAttribute) const,
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Transform 2D texture coordinates in a mesh data
@@ -292,7 +292,7 @@ data ownership to the returned instance, if both vertex and index data is
 owned, vertex data is mutable and the coordinates with index @p id are
 @ref VertexFormat::Vector2.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& data, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Transform 2D texture coordinates in a mesh data in-place
@@ -311,7 +311,7 @@ untouched.
     @ref Trade::MeshData::attributeCount(MeshAttribute) const,
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
 */
-MAGNUM_MESHTOOLS_EXPORT void transformTextureCoordinates2DInPlace(Trade::MeshData& data, const Matrix3& transformation, UnsignedInt id = 0);
+MAGNUM_MESHTOOLS_EXPORT void transformTextureCoordinates2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0);
 
 }}
 

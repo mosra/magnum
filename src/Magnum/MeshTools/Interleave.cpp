@@ -36,41 +36,41 @@ namespace Magnum { namespace MeshTools {
 
 namespace {
 
-inline std::size_t attributeSize(const Trade::MeshData& data, UnsignedInt i) {
-    return vertexFormatSize(data.attributeFormat(i))*Math::max(data.attributeArraySize(i), UnsignedShort{1});
+inline std::size_t attributeSize(const Trade::MeshData& mesh, UnsignedInt i) {
+    return vertexFormatSize(mesh.attributeFormat(i))*Math::max(mesh.attributeArraySize(i), UnsignedShort{1});
 }
 
-inline std::size_t attributeSize(const Trade::MeshAttributeData& data) {
-    return vertexFormatSize(data.format())*Math::max(data.arraySize(), UnsignedShort{1});
+inline std::size_t attributeSize(const Trade::MeshAttributeData& mesh) {
+    return vertexFormatSize(mesh.format())*Math::max(mesh.arraySize(), UnsignedShort{1});
 }
-Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedDataInternal(const Trade::MeshData& data) {
+Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedDataInternal(const Trade::MeshData& mesh) {
     /* There is no attributes, return a zero-sized view to indicate a success */
-    if(!data.attributeCount())
-        return Containers::StridedArrayView2D<const char>{data.vertexData(), {data.vertexCount(), 0}};
+    if(!mesh.attributeCount())
+        return Containers::StridedArrayView2D<const char>{mesh.vertexData(), {mesh.vertexCount(), 0}};
 
     /* Technically zero and negative strides *may* also be categorized as
        interleaved if they are all the same, but it causes way too many
        problems especially when used within interleavedLayout() etc. May
        tackle properly later. */
-    const Int stride = data.attributeStride(0);
+    const Int stride = mesh.attributeStride(0);
     if(stride <= 0) return Containers::NullOpt;
 
     std::size_t minOffset = ~std::size_t{};
     std::size_t maxOffset = 0;
     bool hasImplementationSpecificVertexFormat = false;
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
-        if(data.attributeStride(i) != stride) return Containers::NullOpt;
+    for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
+        if(mesh.attributeStride(i) != stride) return Containers::NullOpt;
 
-        const std::size_t offset = data.attributeOffset(i);
+        const std::size_t offset = mesh.attributeOffset(i);
         minOffset = Math::min(minOffset, offset);
 
         /* If the attribute has implementation-specific format, remember that
            for later and optimistically use size of 1 byte for calculations */
         std::size_t size;
-        if(isVertexFormatImplementationSpecific(data.attributeFormat(i))) {
+        if(isVertexFormatImplementationSpecific(mesh.attributeFormat(i))) {
             hasImplementationSpecificVertexFormat = true;
             size = 1;
-        } else size = attributeSize(data, i);
+        } else size = attributeSize(mesh, i);
 
         maxOffset = Math::max(maxOffset, offset + size);
     }
@@ -87,26 +87,26 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
     if(maxOffset - minOffset > UnsignedInt(stride)) return Containers::NullOpt;
 
     return Containers::StridedArrayView2D<const char>{
-        data.vertexData(), data.vertexData().data() + minOffset,
-        {data.vertexCount(), maxOffset - minOffset},
+        mesh.vertexData(), mesh.vertexData().data() + minOffset,
+        {mesh.vertexCount(), maxOffset - minOffset},
         {std::ptrdiff_t(stride), 1}};
 }
 
 }
 
-bool isInterleaved(const Trade::MeshData& data) {
-    return !!interleavedDataInternal(data);
+bool isInterleaved(const Trade::MeshData& mesh) {
+    return !!interleavedDataInternal(mesh);
 }
 
-Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& data) {
-    auto out = interleavedDataInternal(data);
+Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& mesh) {
+    auto out = interleavedDataInternal(mesh);
     CORRADE_ASSERT(out, "MeshTools::interleavedData(): the mesh is not interleaved", {});
     return *out;
 }
 
-Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& data) {
-    Containers::StridedArrayView2D<const char> out = interleavedData(data);
-    CORRADE_ASSERT(data.vertexDataFlags() & Trade::DataFlag::Mutable,
+Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& mesh) {
+    Containers::StridedArrayView2D<const char> out = interleavedData(mesh);
+    CORRADE_ASSERT(mesh.vertexDataFlags() & Trade::DataFlag::Mutable,
         "MeshTools::interleavedMutableData(): vertex data is not mutable", {});
     return Containers::StridedArrayView2D<char>{
         {nullptr, ~std::size_t{}}, /* to sidestep the range assertions */
@@ -116,32 +116,32 @@ Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& dat
 
 namespace Implementation {
 
-Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& mesh, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Nothing to do here, bye! */
-    if(!data.attributeCount() && extra.isEmpty()) return {};
+    if(!mesh.attributeCount() && extra.isEmpty()) return {};
 
     /* If we're not told to preserve the layout, treat the mesh as
        noninterleaved always, forcing a repack. Otherwise check if it's already
        interleaved. */
-    const bool interleaved = flags >= InterleaveFlag::PreserveInterleavedAttributes && isInterleaved(data);
+    const bool interleaved = flags >= InterleaveFlag::PreserveInterleavedAttributes && isInterleaved(mesh);
 
     /* If the mesh is already interleaved, use the original stride to
        preserve all padding, but remove the initial offset. Otherwise calculate
        a tightly-packed stride. */
     std::size_t stride;
     std::size_t minOffset;
-    if(interleaved && data.attributeCount()) {
-        stride = data.attributeStride(0);
+    if(interleaved && mesh.attributeCount()) {
+        stride = mesh.attributeStride(0);
         minOffset = ~std::size_t{};
-        for(UnsignedInt i = 0, max = data.attributeCount(); i != max; ++i)
-            minOffset = Math::min(minOffset, data.attributeOffset(i));
+        for(UnsignedInt i = 0, max = mesh.attributeCount(); i != max; ++i)
+            minOffset = Math::min(minOffset, mesh.attributeOffset(i));
     } else {
         stride = 0;
         minOffset = 0;
-        for(UnsignedInt i = 0, max = data.attributeCount(); i != max; ++i) {
-            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(data.attributeFormat(i)),
-                "MeshTools::interleavedLayout(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(data.attributeFormat(i))), {});
-            stride += attributeSize(data, i);
+        for(UnsignedInt i = 0, max = mesh.attributeCount(); i != max; ++i) {
+            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(mesh.attributeFormat(i)),
+                "MeshTools::interleavedLayout(): attribute" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(mesh.attributeFormat(i))), {});
+            stride += attributeSize(mesh, i);
         }
     }
 
@@ -166,11 +166,11 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
        can take over the ownership and avoid an allocation. Otherwise we
        allocate a new array and copy the prefix over so we can just patch the
        data array later. */
-    const UnsignedInt originalAttributeCount = data.attributeCount();
+    const UnsignedInt originalAttributeCount = mesh.attributeCount();
     const UnsignedInt originalAttributeStride = originalAttributeCount ?
-        data.attributeStride(0) : 0;
+        mesh.attributeStride(0) : 0;
     Containers::Array<Trade::MeshAttributeData> originalAttributeData =
-        data.releaseAttributeData();
+        mesh.releaseAttributeData();
     Containers::Array<Trade::MeshAttributeData> attributeData;
     if(!extraAttributeCount && !originalAttributeData.deleter())
         attributeData = std::move(originalAttributeData);
@@ -183,7 +183,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
        preserve relative attribute offsets, otherwise pack tightly. */
     std::size_t offset = 0;
     for(UnsignedInt i = 0; i != originalAttributeCount; ++i) {
-        if(interleaved) offset = attributeData[i].offset(data.vertexData()) - minOffset;
+        if(interleaved) offset = attributeData[i].offset(mesh.vertexData()) - minOffset;
 
         attributeData[i] = Trade::MeshAttributeData{
             attributeData[i].name(), attributeData[i].format(),
@@ -219,13 +219,13 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
 
 }
 
-Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(data), extra, flags);
+Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(mesh), extra, flags);
 
     /* If there are no attributes, bail -- return an empty mesh with desired
        vertex count but nothing else */
     if(!attributeData)
-        return Trade::MeshData{data.primitive(), vertexCount};
+        return Trade::MeshData{mesh.primitive(), vertexCount};
 
     /* Allocate new data array */
     Containers::Array<char> vertexData{NoInit, attributeData[0].stride()*vertexCount};
@@ -241,53 +241,53 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vert
             attribute.arraySize()};
     }
 
-    return Trade::MeshData{data.primitive(), std::move(vertexData), std::move(attributeData)};
+    return Trade::MeshData{mesh.primitive(), std::move(vertexData), std::move(attributeData)};
 }
 
-Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleavedLayout(std::move(data), vertexCount, Containers::arrayView(extra), flags);
+Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleavedLayout(std::move(mesh), vertexCount, Containers::arrayView(extra), flags);
 }
 
-Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+Trade::MeshData interleavedLayout(const Trade::MeshData& mesh, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Pass through to the && overload, which then decides whether to reuse
        anything based on the DataFlags */
-    return interleavedLayout(reference(data), vertexCount, extra, flags);
+    return interleavedLayout(reference(mesh), vertexCount, extra, flags);
 }
 
-Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleavedLayout(data, vertexCount, Containers::arrayView(extra), flags);
+Trade::MeshData interleavedLayout(const Trade::MeshData& mesh, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleavedLayout(mesh, vertexCount, Containers::arrayView(extra), flags);
 }
 
-Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+Trade::MeshData interleave(Trade::MeshData&& mesh, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Transfer the indices unchanged, in case the mesh is indexed */
     Containers::Array<char> indexData;
     Trade::MeshIndexData indices;
-    if(data.isIndexed()) {
-        const MeshIndexType indexType = data.indexType();
+    if(mesh.isIndexed()) {
+        const MeshIndexType indexType = mesh.indexType();
 
         /* If we can steal the data and we're allowed to preserve a strided
            layout or it's tightly packed, do the steal */
-        if((data.indexDataFlags() & Trade::DataFlag::Owned) && ((flags & InterleaveFlag::PreserveStridedIndices) || (!isMeshIndexTypeImplementationSpecific(indexType) && data.indexStride() == Int(meshIndexTypeSize(indexType))))) {
+        if((mesh.indexDataFlags() & Trade::DataFlag::Owned) && ((flags & InterleaveFlag::PreserveStridedIndices) || (!isMeshIndexTypeImplementationSpecific(indexType) && mesh.indexStride() == Int(meshIndexTypeSize(indexType))))) {
             indices = Trade::MeshIndexData{indexType,
                 Containers::StridedArrayView1D<const void>{
-                    data.indexData(),
-                    data.indexData().data() + data.indexOffset(),
-                    data.indexCount(),
-                    data.indexStride()}};
-            indexData = data.releaseIndexData();
+                    mesh.indexData(),
+                    mesh.indexData().data() + mesh.indexOffset(),
+                    mesh.indexCount(),
+                    mesh.indexStride()}};
+            indexData = mesh.releaseIndexData();
 
         /* Otherwise, if we can't steal the data but we're told to preserve
            strided indices, make a full copy including any extra offsets and
            paddings */
         } else if(flags & InterleaveFlag::PreserveStridedIndices) {
-            indexData = Containers::Array<char>{NoInit, data.indexData().size()};
+            indexData = Containers::Array<char>{NoInit, mesh.indexData().size()};
             indices = Trade::MeshIndexData{indexType,
                 Containers::StridedArrayView1D<const void>{
                     indexData,
-                    indexData.data() + data.indexOffset(),
-                    data.indexCount(),
-                    data.indexStride()}};
-            Utility::copy(data.indexData(), indexData);
+                    indexData.data() + mesh.indexOffset(),
+                    mesh.indexCount(),
+                    mesh.indexStride()}};
+            Utility::copy(mesh.indexData(), indexData);
 
         /* Otherwise, make a tightly packed copy, in which case we can't have
            an implementation-specific index type */
@@ -297,48 +297,48 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
                 (Trade::MeshData{MeshPrimitive{}, 0}));
 
             const std::size_t indexTypeSize = meshIndexTypeSize(indexType);
-            indexData = Containers::Array<char>{NoInit, data.indexCount()*indexTypeSize};
+            indexData = Containers::Array<char>{NoInit, mesh.indexCount()*indexTypeSize};
             Containers::StridedArrayView2D<char> out{indexData,
-                {data.indexCount(), indexTypeSize},
+                {mesh.indexCount(), indexTypeSize},
                 {std::ptrdiff_t(indexTypeSize), 1}};
             indices = Trade::MeshIndexData{out};
-            Utility::copy(data.indices(), out);
+            Utility::copy(mesh.indices(), out);
         }
     }
 
     /* If we're not told to preserve the layout, treat the mesh as
        noninterleaved always, forcing a repack. Otherwise check if it's already
        interleaved. */
-    const bool interleaved = flags >= InterleaveFlag::PreserveInterleavedAttributes && isInterleaved(data);
-    const UnsignedInt vertexCount = data.vertexCount();
+    const bool interleaved = flags >= InterleaveFlag::PreserveInterleavedAttributes && isInterleaved(mesh);
+    const UnsignedInt vertexCount = mesh.vertexCount();
 
     /* If the mesh is already interleaved and we don't have anything extra,
        steal that data as well */
     Containers::Array<char> vertexData;
     Containers::Array<Trade::MeshAttributeData> attributeData;
-    if(interleaved && extra.isEmpty() && (data.vertexDataFlags() & Trade::DataFlag::Owned)) {
-        attributeData = data.releaseAttributeData();
-        vertexData = data.releaseVertexData();
+    if(interleaved && extra.isEmpty() && (mesh.vertexDataFlags() & Trade::DataFlag::Owned)) {
+        attributeData = mesh.releaseAttributeData();
+        vertexData = mesh.releaseVertexData();
 
     /* Otherwise do it the hard way */
     } else {
         /* Calculate the layout. Can't std::move() the data in to avoid copying
            the attribute array as we need the original attributes below. */
-        Trade::MeshData layout = interleavedLayout(data, vertexCount, extra, flags);
+        Trade::MeshData layout = interleavedLayout(mesh, vertexCount, extra, flags);
         #ifdef CORRADE_GRACEFUL_ASSERT
         /* If interleavedLayout() gracefully asserted and returned no
            attributes (but the original had some), exit right away to not blow
            up on something else later. Sorry, yes, this is shitty. */
-        if(!layout.attributeCount() && (data.attributeCount() || extra.size()))
+        if(!layout.attributeCount() && (mesh.attributeCount() || extra.size()))
             return Trade::MeshData{MeshPrimitive::Points, 0};
         #endif
 
         /* Copy existing attributes to new locations */
-        for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
-            Utility::copy(data.attribute(i), layout.mutableAttribute(i));
+        for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+            Utility::copy(mesh.attribute(i), layout.mutableAttribute(i));
 
         /* Mix in the extra attributes */
-        UnsignedInt attributeIndex = data.attributeCount();
+        UnsignedInt attributeIndex = mesh.attributeCount();
         for(UnsignedInt i = 0; i != extra.size(); ++i) {
             /* Padding, ignore */
             if(extra[i].format() == VertexFormat{}) continue;
@@ -368,22 +368,22 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
         attributeData = layout.releaseAttributeData();
     }
 
-    return Trade::MeshData{data.primitive(), std::move(indexData), indices,
+    return Trade::MeshData{mesh.primitive(), std::move(indexData), indices,
         std::move(vertexData), std::move(attributeData), vertexCount};
 }
 
-Trade::MeshData interleave(Trade::MeshData&& data, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleave(std::move(data), Containers::arrayView(extra), flags);
+Trade::MeshData interleave(Trade::MeshData&& mesh, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleave(std::move(mesh), Containers::arrayView(extra), flags);
 }
 
-Trade::MeshData interleave(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+Trade::MeshData interleave(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
     /* Pass through to the && overload, which then decides whether to reuse
        anything based on the DataFlags */
-    return interleave(reference(data), extra, flags);
+    return interleave(reference(mesh), extra, flags);
 }
 
-Trade::MeshData interleave(const Trade::MeshData& data, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleave(std::move(data), Containers::arrayView(extra), flags);
+Trade::MeshData interleave(const Trade::MeshData& mesh, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
+    return interleave(std::move(mesh), Containers::arrayView(extra), flags);
 }
 
 }}

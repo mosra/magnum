@@ -204,7 +204,7 @@ non-interleaved.
 @see @ref Trade::MeshData::attributeStride(),
     @ref Trade::MeshData::attributeOffset(), @ref interleavedData()
 */
-MAGNUM_MESHTOOLS_EXPORT bool isInterleaved(const Trade::MeshData& data);
+MAGNUM_MESHTOOLS_EXPORT bool isInterleaved(const Trade::MeshData& mesh);
 
 /**
 @brief Type-erased view on interleaved mesh data
@@ -219,7 +219,7 @@ count to cover all interleaved attributes, including any padding between them
 but not before or after.
 @see @ref isInterleaved()
 */
-MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& data);
+MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& mesh);
 
 /**
 @brief Mutable type-erased view on interleaved mesh data
@@ -229,16 +229,16 @@ Same as @ref interleavedData(), but returns a mutable view. Expects that the
 mesh is interleaved and vertex data is mutable.
 @see @ref isInterleaved(), @ref Trade::MeshData::vertexDataFlags()
 */
-MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& data);
+MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& mesh);
 
 /**
 @brief Create an interleaved mesh layout
 @m_since{2020,06}
 
 Returns a @ref Trade::MeshData instance with its vertex data allocated for
-@p vertexCount vertices containing attributes from both @p data and @p extra
+@p vertexCount vertices containing attributes from both @p mesh and @p extra
 interleaved together. No data is actually copied, only an interleaved layout is
-created. If @p data is already interleaved according to @ref isInterleaved()
+created. If @p mesh is already interleaved according to @ref isInterleaved()
 and @ref InterleaveFlag::PreserveInterleavedAttributes is set in @p flags,
 keeps the attributes in the same layout, potentially extending them with
 @p extra. The @p extra attributes, if any, are interleaved together with
@@ -265,42 +265,42 @@ This function will unconditionally allocate a new array to store all
 @ref Trade::MeshAttributeData, use @ref interleavedLayout(Trade::MeshData&&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)
 to avoid that allocation.
 
-All attributes in both @p data and @p extra are expected to not have an
-implementation-specific format, except for @p data attributes in case @p data
+All attributes in both @p mesh and @p extra are expected to not have an
+implementation-specific format, except for @p mesh attributes in case @p mesh
 is already interleaved, then the layout is untouched.
 @see @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& mesh, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& mesh, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Create an interleaved mesh layout
 @m_since{2020,06}
 
 Compared to @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)
-this function can reuse the @ref Trade::MeshAttributeData array from @p data
+this function can reuse the @ref Trade::MeshAttributeData array from @p mesh
 instead of allocating a new one if there are no attributes passed in @p extra,
 the attribute array is owned by the mesh and
 @ref InterleaveFlag::PreserveInterleavedAttributes is set in @p flags.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& data, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Interleave mesh data
 @m_since{2020,06}
 
-Returns a copy of @p data with all attributes interleaved. The @p extra
+Returns a copy of @p mesh with all attributes interleaved. The @p extra
 attributes, if any, are interleaved together with existing attributes (or, in
 case the attribute view is empty, only the corresponding space for given
 attribute type is reserved, with memory left uninitialized). The data layouting
@@ -314,32 +314,32 @@ implementation-specific type. Otherwise the behavior depends on presence of
 @ref InterleaveFlag::PreserveStridedIndices.
 
 Expects that each attribute in @p extra has either the same amount of elements
-as @p data vertex count or has none. This function will unconditionally make a
-copy of all data even if @p data is already interleaved and needs no change,
+as @p mesh vertex count or has none. This function will unconditionally make a
+copy of all data even if @p mesh is already interleaved and needs no change,
 use @ref interleave(Trade::MeshData&&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)
 to avoid that copy.
 
-All attributes in both @p data and @p extra are expected to not have an
-implementation-specific format, except for @p data attributes in case @p data
+All attributes in both @p mesh and @p extra are expected to not have an
+implementation-specific format, except for @p mesh attributes in case @p data
 is already interleaved, then the layout is untouched.
 @see @ref isInterleaved(), @ref isMeshIndexTypeImplementationSpecific(),
     @ref isVertexFormatImplementationSpecific(),
     @ref Trade::MeshData::attributeData()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
 @brief Interleave mesh data
 @m_since{2020,06}
 
 Compared to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags)
-this function can transfer ownership of @p data index buffer (in case it is
+this function can transfer ownership of @p mesh index buffer (in case it is
 owned) and vertex buffer (in case it is owned, already interleaved, there's no
 @p extra attributes and @ref InterleaveFlag::PreserveInterleavedAttributes is
 set in @p flags) to the returned instance instead of making copies of them.
@@ -347,18 +347,18 @@ set in @p flags) to the returned instance instead of making copies of them.
     @ref Trade::MeshData::vertexDataFlags(),
     @ref Trade::MeshData::attributeData()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& mesh, Containers::ArrayView<const Trade::MeshAttributeData> extra = {}, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& data, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& mesh, std::initializer_list<Trade::MeshAttributeData> extra, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
 
 namespace Implementation {
 
 /* Used internally by interleavedLayout() and concatenate() */
-MAGNUM_MESHTOOLS_EXPORT Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& data, Containers::ArrayView<const Trade::MeshAttributeData> extra, InterleaveFlags flags);
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& mesh, Containers::ArrayView<const Trade::MeshAttributeData> extra, InterleaveFlags flags);
 
 }
 
