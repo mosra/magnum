@@ -38,15 +38,6 @@
 
 namespace Magnum { namespace SceneTools { namespace Implementation {
 
-/* These two are needed because there (obviously) isn't any overload of
-   castInto with the same input and output type */
-template<class T, class U> void copyOrCastInto(const Containers::StridedArrayView1D<const T>& src, const Containers::StridedArrayView1D<U>& dst) {
-    Math::castInto(Containers::arrayCast<2, const T>(src), Containers::arrayCast<2, U>(dst));
-}
-template<class T> void copyOrCastInto(const Containers::StridedArrayView1D<const T>& src, const Containers::StridedArrayView1D<T>& dst) {
-    Utility::copy(src, dst);
-}
-
 template<class T> void combineCopyMappings(const Containers::ArrayView<const Trade::SceneFieldData> fields, const Containers::ArrayView<const Containers::StridedArrayView2D<char>> itemViews, const Containers::ArrayView<const Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings) {
     std::size_t latestMapping = 0;
     for(std::size_t i = 0; i != fields.size(); ++i) {
@@ -61,16 +52,19 @@ template<class T> void combineCopyMappings(const Containers::ArrayView<const Tra
            covers reserved fields but also fields of zero size. */
         if(!fields[i].mappingData()) continue;
 
+        /* The additional cast to 2D has to be there in order to ensure the
+           second dimension is contiguous which Math::castInto() requires */
+        /** @todo this is an error-prone mess, fix better */
         const Containers::StridedArrayView1D<const void> src = fields[i].mappingData();
-        const Containers::StridedArrayView1D<T> dst = Containers::arrayCast<1, T>(itemViews[mapping]);
+        const Containers::StridedArrayView2D<T> dst = Containers::arrayCast<2, T>(Containers::arrayCast<1, T>(itemViews[mapping]));
         if(fields[i].mappingType() == Trade::SceneMappingType::UnsignedByte)
-            copyOrCastInto(Containers::arrayCast<const UnsignedByte>(src), dst);
+            Math::castInto(Containers::arrayCast<2, const UnsignedByte>(Containers::arrayCast<const UnsignedByte>(src)), dst);
         else if(fields[i].mappingType() == Trade::SceneMappingType::UnsignedShort)
-            copyOrCastInto(Containers::arrayCast<const UnsignedShort>(src), dst);
+            Math::castInto(Containers::arrayCast<2, const UnsignedShort>(Containers::arrayCast<const UnsignedShort>(src)), dst);
         else if(fields[i].mappingType() == Trade::SceneMappingType::UnsignedInt)
-            copyOrCastInto(Containers::arrayCast<const UnsignedInt>(src), dst);
+            Math::castInto(Containers::arrayCast<2, const UnsignedInt>(Containers::arrayCast<const UnsignedInt>(src)), dst);
         else if(fields[i].mappingType() == Trade::SceneMappingType::UnsignedLong)
-            copyOrCastInto(Containers::arrayCast<const UnsignedLong>(src), dst);
+            Math::castInto(Containers::arrayCast<2, const UnsignedLong>(Containers::arrayCast<const UnsignedLong>(src)), dst);
         else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
