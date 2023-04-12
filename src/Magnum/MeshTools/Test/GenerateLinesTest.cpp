@@ -640,7 +640,7 @@ void GenerateLinesTest::notLines() {
     generateLines(Trade::MeshData{MeshPrimitive::TriangleFan, {}, positions, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positions)}
     }});
-    CORRADE_COMPARE(out.str(), "Trade::MeshTools::generateLines(): expected a line primitive, got MeshPrimitive::TriangleFan\n");
+    CORRADE_COMPARE(out.str(), "MeshTools::generateLines(): expected a line primitive, got MeshPrimitive::TriangleFan\n");
 }
 
 void GenerateLinesTest::noAttributes() {
@@ -649,7 +649,7 @@ void GenerateLinesTest::noAttributes() {
     std::ostringstream out;
     Error redirectError{&out};
     generateLines(Trade::MeshData{MeshPrimitive::Lines, 12});
-    CORRADE_COMPARE(out.str(), "Trade::MeshTools::generateLines(): the mesh has no positions\n");
+    CORRADE_COMPARE(out.str(), "MeshTools::generateLines(): the mesh has no positions\n");
 }
 
 void GenerateLinesTest::noPositionAttribute() {
@@ -662,7 +662,7 @@ void GenerateLinesTest::noPositionAttribute() {
     generateLines(Trade::MeshData{MeshPrimitive::Lines, {}, colors, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Color, Containers::stridedArrayView(colors)}
     }});
-    CORRADE_COMPARE(out.str(), "Trade::MeshTools::generateLines(): the mesh has no positions\n");
+    CORRADE_COMPARE(out.str(), "MeshTools::generateLines(): the mesh has no positions\n");
 }
 
 }}}}

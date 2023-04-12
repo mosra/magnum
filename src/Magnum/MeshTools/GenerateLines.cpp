@@ -44,7 +44,7 @@ Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
     CORRADE_ASSERT(lineMesh.primitive() == MeshPrimitive::Lines ||
                    lineMesh.primitive() == MeshPrimitive::LineStrip ||
                    lineMesh.primitive() == MeshPrimitive::LineLoop,
-        "Trade::MeshTools::generateLines(): expected a line primitive, got" << lineMesh.primitive(), (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+        "MeshTools::generateLines(): expected a line primitive, got" << lineMesh.primitive(), (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     /** @todo this will assert if the count in MeshData is wrong, check here
         already */
@@ -86,7 +86,7 @@ Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
     /* Position is required, everything else is optional */
     const Containers::Optional<UnsignedInt> positionAttributeId = lineMesh.findAttributeId(Trade::MeshAttribute::Position);
     CORRADE_ASSERT(positionAttributeId,
-        "Trade::MeshTools::generateLines(): the mesh has no positions", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+        "MeshTools::generateLines(): the mesh has no positions", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     /* Duplicate the input mesh to have each input line segment turned into
        four vertices for a quad. Allocate space for the additional attributes
