@@ -45,31 +45,10 @@ namespace Magnum { namespace MeshTools {
 @brief Compile a line mesh for use with @ref Shaders::LineGL
 @m_since_latest
 
-Returns a @ref MeshPrimitive::Triangles mesh with
-@ref MeshIndexType::UnsignedInt indices, all input attributes preserved in
-their original format, and additionally with
-@ref Shaders::LineGL::PreviousPosition and @ref Shaders::LineGL::NextPosition
-attributes added in the same format as the input
-@ref Trade::MeshAttribute::Position, and the @ref Shaders::LineGL::Annotation
-attribute as @ref VertexFormat::UnsignedInt, according to the
-@ref Shaders-LineGL-mesh-representation documentation of the shader.
+Expects that the @p mesh is returned from @ref generateLines(), see its
+documentation for more information.
 
-Each line segment in the input vertices is converted to a quad, with first two
-vertices inheriting vertex data from the first point of the segment and second
-two vertices inheriting data from the second point of the segment. If the input
-mesh is indexed, it's deindexed first. Neighbor information from a
-@ref MeshPrimitive::LineStrip or @ref MeshPrimitive::LineLoop mesh is used to
-form a single contiguous strip or a loop, @ref MeshPrimitive::Lines is treated
-as loose segments.
-
-For compatibility with shaders other than @ref Shaders::LineGL, the output mesh
-can be also interpreted as indexed @ref MeshPrimitive::Lines --- out of every
-six indices forming a quad, two will form a line segment between the two
-original points, and the remaining four collapse into two degenerate line
-segments.
-
-Expects that the mesh contains at least a @ref Trade::MeshAttribute::Position
-and is a line @relativeref{Magnum,MeshPrimitive}.
+@experimental
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
@@ -82,7 +61,7 @@ and is a line @relativeref{Magnum,MeshPrimitive}.
     is not available in WebGL 1.0, thus neither this function is defined in
     WebGL 1.0 builds.
 */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compileLines(const Trade::MeshData& lineMesh);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compileLines(const Trade::MeshData& mesh);
 
 }}
 #else

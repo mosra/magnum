@@ -45,6 +45,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/CompileLines.h"
+#include "Magnum/MeshTools/GenerateLines.h"
 #include "Magnum/Shaders/FlatGL.h"
 #include "Magnum/Shaders/Line.h"
 #include "Magnum/Shaders/LineGL.h"
@@ -68,7 +69,7 @@ struct CompileLinesGLTest: GL::OpenGLTester {
 
     void emptyMesh();
 
-    void notLines();
+    void notGeneratedLineMesh();
     void noAttributes();
     void noPositionAttribute();
 
@@ -128,9 +129,7 @@ CompileLinesGLTest::CompileLinesGLTest() {
 
     addTests({&CompileLinesGLTest::emptyMesh,
 
-              &CompileLinesGLTest::notLines,
-              &CompileLinesGLTest::noAttributes,
-              &CompileLinesGLTest::noPositionAttribute});
+              &CompileLinesGLTest::notGeneratedLineMesh});
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -174,7 +173,7 @@ void CompileLinesGLTest::twoDimensions() {
     if(data.colors)
         arrayAppend(attributes, InPlaceInit, Trade::MeshAttribute::Color, vertices.slice(&Vertex::color));
 
-    GL::Mesh mesh = compileLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, vertexData, std::move(attributes)});
+    GL::Mesh mesh = compileLines(generateLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, vertexData, std::move(attributes)}));
 
     Shaders::LineGL2D shader{Shaders::LineGL2D::Configuration{}
         .setFlags(data.colors ? Shaders::LineGL2D::Flag::VertexColor : Shaders::LineGL2D::Flags{})
@@ -206,9 +205,9 @@ void CompileLinesGLTest::threeDimensions() {
         {-1.0f, +1.0f, -0.5f},
     };
 
-    GL::Mesh mesh = compileLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, positions, {
+    GL::Mesh mesh = compileLines(generateLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, positions, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positions)}
-    }});
+    }}));
 
     Shaders::LineGL3D{}
         .setViewportSize({32, 32})
@@ -268,7 +267,7 @@ void CompileLinesGLTest::linePrimitiveCompatibility() {
     /* Render the line mesh with the primitive set back to lines. The index
        buffer layout should be compatible with it, and produce the same
        result. */
-    shader.draw(compileLines(lineMeshData).setPrimitive(MeshPrimitive::Lines));
+    shader.draw(compileLines(generateLines(lineMeshData)).setPrimitive(MeshPrimitive::Lines));
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
@@ -298,10 +297,10 @@ void CompileLinesGLTest::conflictingAttributes() {
     };
     auto vertices = Containers::stridedArrayView(vertexData);
 
-    Trade::MeshData lineMesh{MeshPrimitive::LineLoop, {}, vertexData, {
+    Trade::MeshData lineMesh = generateLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, vertexData, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
         Trade::MeshAttributeData{data.attribute, data.format, vertices.slice(&Vertex::extra)},
-    }};
+    }});
 
     std::ostringstream out;
     GL::Mesh mesh{NoCreate};
@@ -325,48 +324,31 @@ void CompileLinesGLTest::conflictingAttributes() {
 }
 
 void CompileLinesGLTest::emptyMesh() {
-    GL::Mesh mesh = compileLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, nullptr, {
+    GL::Mesh mesh = compileLines(generateLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector2, nullptr}
-    }});
+    }}));
 
     CORRADE_COMPARE(mesh.primitive(), GL::MeshPrimitive::Triangles);
     CORRADE_VERIFY(mesh.isIndexed());
     CORRADE_COMPARE(mesh.count(), 0);
 }
 
-void CompileLinesGLTest::notLines() {
+void CompileLinesGLTest::notGeneratedLineMesh() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Vector3 positions[3]{};
 
     std::ostringstream out;
     Error redirectError{&out};
-    compileLines(Trade::MeshData{MeshPrimitive::TriangleFan, {}, positions, {
+    compileLines(Trade::MeshData{MeshPrimitive::Lines, {}, positions, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positions)}
     }});
-    CORRADE_COMPARE(out.str(), "Trade::MeshTools::compileLines(): expected a line primitive, got MeshPrimitive::TriangleFan\n");
-}
-
-void CompileLinesGLTest::noAttributes() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    compileLines(Trade::MeshData{MeshPrimitive::Lines, 12});
-    CORRADE_COMPARE(out.str(), "Trade::MeshTools::compileLines(): the mesh has no positions\n");
-}
-
-void CompileLinesGLTest::noPositionAttribute() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    Vector3 colors[2]{};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    compileLines(Trade::MeshData{MeshPrimitive::Lines, {}, colors, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Color, Containers::stridedArrayView(colors)}
+    compileLines(Trade::MeshData{MeshPrimitive::Triangles, {}, positions, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positions)}
     }});
-    CORRADE_COMPARE(out.str(), "Trade::MeshTools::compileLines(): the mesh has no positions\n");
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compileLines(): the mesh wasn't produced with generateLines()\n"
+        "MeshTools::compileLines(): the mesh wasn't produced with generateLines()\n");
 }
 
 }}}}

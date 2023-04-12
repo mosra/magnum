@@ -56,6 +56,7 @@
 #include <Magnum/Math/Matrix4.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/CompileLines.h>
+#include <Magnum/MeshTools/GenerateLines.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Primitives/Square.h>
 #include <Magnum/Primitives/Circle.h>
@@ -211,7 +212,7 @@ Containers::StringView ShaderVisualizer::line() {
         .setViewportSize(Vector2{ImageSize})
         .setWidth(5.0f)
         .setSmoothness(1.0f)
-        .draw(MeshTools::compileLines(mesh));
+        .draw(MeshTools::compileLines(MeshTools::generateLines(mesh)));
 
     return "line.png";
 }

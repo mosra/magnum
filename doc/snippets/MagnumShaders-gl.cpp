@@ -52,6 +52,7 @@
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Duplicate.h"
+#include "Magnum/MeshTools/GenerateLines.h"
 #include "Magnum/Shaders/DistanceFieldVectorGL.h"
 #include "Magnum/Shaders/FlatGL.h"
 #include "Magnum/Shaders/MeshVisualizerGL.h"
@@ -703,7 +704,7 @@ vert.addSource(Utility::format(
 {
 /* [LineGL-usage] */
 Trade::MeshData circle = Primitives::circle2DWireframe(16);
-GL::Mesh mesh = MeshTools::compileLines(circle);
+GL::Mesh mesh = MeshTools::compileLines(MeshTools::generateLines(circle));
 /* [LineGL-usage] */
 }
 

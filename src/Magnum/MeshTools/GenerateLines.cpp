@@ -1,5 +1,3 @@
-#ifndef Magnum_MeshTools_Implementation_GenerateLines_h
-#define Magnum_MeshTools_Implementation_GenerateLines_h
 /*
     This file is part of Magnum.
 
@@ -25,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "GenerateLines.h"
+
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -32,30 +32,19 @@
 
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
-#include "Magnum/Trade/MeshData.h"
 
 /* This header is included only privately and doesn't introduce any linker
    dependency (taking just the LineVertexAnnotations enum), thus it's
    completely safe to not link to the Shaders library */
 #include "Magnum/Shaders/Line.h"
 
-namespace Magnum { namespace MeshTools { namespace Implementation { namespace {
-
-/* This code is used internally by compileLines() and returns a MeshData
-   instance in order to be testable. The intention is to eventually make this
-   API public and the custom attributes builtin in order to make it possible to
-   (for example) produce glTF files that are already directly renderable as
-   wide line meshes. */
-
-constexpr Trade::MeshAttribute MeshAttributePreviousPosition = Trade::meshAttributeCustom(32765);
-constexpr Trade::MeshAttribute MeshAttributeNextPosition = Trade::meshAttributeCustom(32766);
-constexpr Trade::MeshAttribute MeshAttributeAnnotation = Trade::meshAttributeCustom(32767);
+namespace Magnum { namespace MeshTools {
 
 Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
     CORRADE_ASSERT(lineMesh.primitive() == MeshPrimitive::Lines ||
                    lineMesh.primitive() == MeshPrimitive::LineStrip ||
                    lineMesh.primitive() == MeshPrimitive::LineLoop,
-        "Trade::MeshTools::compileLines(): expected a line primitive, got" << lineMesh.primitive(), (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+        "Trade::MeshTools::generateLines(): expected a line primitive, got" << lineMesh.primitive(), (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     /** @todo this will assert if the count in MeshData is wrong, check here
         already */
@@ -97,19 +86,19 @@ Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
     /* Position is required, everything else is optional */
     const Containers::Optional<UnsignedInt> positionAttributeId = lineMesh.findAttributeId(Trade::MeshAttribute::Position);
     CORRADE_ASSERT(positionAttributeId,
-        "Trade::MeshTools::compileLines(): the mesh has no positions", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+        "Trade::MeshTools::generateLines(): the mesh has no positions", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     /* Duplicate the input mesh to have each input line segment turned into
        four vertices for a quad. Allocate space for the additional attributes
        as well. */
     Trade::MeshData mesh = duplicate(Trade::MeshData{MeshPrimitive::Triangles, {}, pointDuplicationIndices, Trade::MeshIndexData{pointDuplicationIndices}, {}, lineMesh.vertexData(), Trade::meshAttributeDataNonOwningArray(lineMesh.attributeData()), lineMesh.vertexCount()}, {
-        Trade::MeshAttributeData{MeshAttributePreviousPosition,
+        Trade::MeshAttributeData{Implementation::LineMeshAttributePreviousPosition,
             lineMesh.attributeFormat(*positionAttributeId), nullptr},
-        Trade::MeshAttributeData{MeshAttributeNextPosition,
+        Trade::MeshAttributeData{Implementation::LineMeshAttributeNextPosition,
             lineMesh.attributeFormat(*positionAttributeId), nullptr},
         /** @todo use a 8-bit type and make the attribute non-interleaved to
             save space? */
-        Trade::MeshAttributeData{MeshAttributeAnnotation,
+        Trade::MeshAttributeData{Implementation::LineMeshAttributeAnnotation,
             VertexFormat::UnsignedInt, nullptr},
     });
 
@@ -123,12 +112,12 @@ Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
             {positions.size()[0]/2, 2, positions.size()[1]},
             {positions.stride()[0]*2, positions.stride()[0], positions.stride()[1]}};
 
-        const Containers::StridedArrayView2D<char> previousPositions = mesh.mutableAttribute(MeshAttributePreviousPosition);
+        const Containers::StridedArrayView2D<char> previousPositions = mesh.mutableAttribute(Implementation::LineMeshAttributePreviousPosition);
         const Containers::StridedArrayView3D<char> previousPositions3{mesh.mutableVertexData(), static_cast<char*>(previousPositions.data()),
             {previousPositions.size()[0]/2, 2, previousPositions.size()[1]},
             {previousPositions.stride()[0]*2, previousPositions.stride()[0], previousPositions.stride()[1]}};
 
-        const Containers::StridedArrayView2D<char> nextPositions = mesh.mutableAttribute(MeshAttributeNextPosition);
+        const Containers::StridedArrayView2D<char> nextPositions = mesh.mutableAttribute(Implementation::LineMeshAttributeNextPosition);
         const Containers::StridedArrayView3D<char> nextPositions3{mesh.mutableVertexData(), static_cast<char*>(nextPositions.data()),
             {nextPositions.size()[0]/2, 2, nextPositions.size()[1]},
             {nextPositions.stride()[0]*2, nextPositions.stride()[0], nextPositions.stride()[1]}};
@@ -180,7 +169,7 @@ Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
     }
 
     /* Fill in point annotation */
-    const Containers::StridedArrayView1D<Shaders::LineVertexAnnotations> annotations = Containers::arrayCast<Shaders::LineVertexAnnotations>(mesh.mutableAttribute<UnsignedInt>(MeshAttributeAnnotation));
+    const Containers::StridedArrayView1D<Shaders::LineVertexAnnotations> annotations = Containers::arrayCast<Shaders::LineVertexAnnotations>(mesh.mutableAttribute<UnsignedInt>(Implementation::LineMeshAttributeAnnotation));
     for(UnsignedInt i = 0; i != quadCount; ++i) {
         annotations[i*4 + 0] = Shaders::LineVertexAnnotation::Up|Shaders::LineVertexAnnotation::Begin;
         annotations[i*4 + 1] = Shaders::LineVertexAnnotation::Begin;
@@ -282,6 +271,4 @@ Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
         mesh.releaseVertexData(), mesh.releaseAttributeData()};
 }
 
-}}}}
-
-#endif
+}}

@@ -26,14 +26,17 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/PackingBatch.h"
-#include "Magnum/MeshTools/Implementation/GenerateLines.h"
+#include "Magnum/MeshTools/GenerateLines.h"
+#include "Magnum/Shaders/Line.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
-struct CompileLinesTest: TestSuite::Tester {
-    explicit CompileLinesTest();
+struct GenerateLinesTest: TestSuite::Tester {
+    explicit GenerateLinesTest();
 
     template<class T> void oneLoop();
 
@@ -41,9 +44,10 @@ struct CompileLinesTest: TestSuite::Tester {
     void zeroVertices();
     void twoVerticesStrip();
     void twoVerticesLoop();
-    /* Non-line primitives and absence of position attribute tested in
-       CompileLinesGLTest, to verify it's not accessed earlier than the
-       assertion */
+
+    void notLines();
+    void noAttributes();
+    void noPositionAttribute();
 };
 
 using namespace Math::Literals;
@@ -103,20 +107,24 @@ const struct {
     /** @todo closed (indexed) strip, once arbitrary index buffer looping is supported */
 };
 
-CompileLinesTest::CompileLinesTest() {
-    addInstancedTests<CompileLinesTest>({
-        &CompileLinesTest::oneLoop<UnsignedInt>,
-        &CompileLinesTest::oneLoop<UnsignedShort>,
-        &CompileLinesTest::oneLoop<UnsignedByte>},
+GenerateLinesTest::GenerateLinesTest() {
+    addInstancedTests<GenerateLinesTest>({
+        &GenerateLinesTest::oneLoop<UnsignedInt>,
+        &GenerateLinesTest::oneLoop<UnsignedShort>,
+        &GenerateLinesTest::oneLoop<UnsignedByte>},
         Containers::arraySize(OneLoopData));
 
-    addTests({&CompileLinesTest::extraAttributes,
-              &CompileLinesTest::zeroVertices,
-              &CompileLinesTest::twoVerticesStrip,
-              &CompileLinesTest::twoVerticesLoop});
+    addTests({&GenerateLinesTest::extraAttributes,
+              &GenerateLinesTest::zeroVertices,
+              &GenerateLinesTest::twoVerticesStrip,
+              &GenerateLinesTest::twoVerticesLoop,
+
+              &GenerateLinesTest::notLines,
+              &GenerateLinesTest::noAttributes,
+              &GenerateLinesTest::noPositionAttribute});
 }
 
-template<class T> void CompileLinesTest::oneLoop() {
+template<class T> void GenerateLinesTest::oneLoop() {
     auto&& data = OneLoopData[testCaseInstanceId()];
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
     setTestCaseDescription(data.name);
@@ -130,7 +138,7 @@ template<class T> void CompileLinesTest::oneLoop() {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, stridedArrayView(data.positions)}
         }};
 
-    Trade::MeshData mesh = Implementation::generateLines(lineMesh);
+    Trade::MeshData mesh = generateLines(lineMesh);
     CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(mesh.attributeCount(), 4);
 
@@ -179,14 +187,14 @@ template<class T> void CompileLinesTest::oneLoop() {
             {-1.0f, -1.0f}, {-1.0f, -1.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributeNextPosition));
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributeAnnotation));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributePreviousPosition), VertexFormat::Vector2);
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeNextPosition), VertexFormat::Vector2);
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeAnnotation), VertexFormat::UnsignedInt);
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributeNextPosition));
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributeAnnotation));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributePreviousPosition), VertexFormat::Vector2);
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeNextPosition), VertexFormat::Vector2);
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeAnnotation), VertexFormat::UnsignedInt);
     if(data.expectedJoins && data.expectedJoinsFirstLast) {
-        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributePreviousPosition), Containers::arrayView<Vector2>({
+        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributePreviousPosition), Containers::arrayView<Vector2>({
             positions[12], positions[12],
                 positions[0], positions[0],
             positions[0], positions[0],
@@ -196,7 +204,7 @@ template<class T> void CompileLinesTest::oneLoop() {
             positions[8], positions[8],
                 positions[12], positions[12],
         }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributeNextPosition), Containers::arrayView<Vector2>({
+        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributeNextPosition), Containers::arrayView<Vector2>({
             positions[2], positions[2],
                 positions[6], positions[6],
             positions[6], positions[6],
@@ -206,7 +214,7 @@ template<class T> void CompileLinesTest::oneLoop() {
             positions[14], positions[14],
                 positions[2], positions[2],
         }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::MeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::LineMeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
             Shaders::LineVertexAnnotation::Up|
             Shaders::LineVertexAnnotation::Begin|
             Shaders::LineVertexAnnotation::Join,
@@ -241,7 +249,7 @@ template<class T> void CompileLinesTest::oneLoop() {
                         Shaders::LineVertexAnnotation::Join,
         }), TestSuite::Compare::Container);
     } else if(data.expectedJoins) {
-        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributePreviousPosition), Containers::arrayView<Vector2>({
+        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributePreviousPosition), Containers::arrayView<Vector2>({
             {}, {},
                 positions[0], positions[0],
             positions[0], positions[0],
@@ -251,7 +259,7 @@ template<class T> void CompileLinesTest::oneLoop() {
             positions[8], positions[8],
                 positions[12], positions[12],
         }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributeNextPosition), Containers::arrayView<Vector2>({
+        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributeNextPosition), Containers::arrayView<Vector2>({
             positions[2], positions[2],
                 positions[6], positions[6],
             positions[6], positions[6],
@@ -261,7 +269,7 @@ template<class T> void CompileLinesTest::oneLoop() {
             positions[14], positions[14],
                 {}, {}
         }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::MeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::LineMeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
             Shaders::LineVertexAnnotation::Up|
             Shaders::LineVertexAnnotation::Begin,
                 Shaders::LineVertexAnnotation::Begin,
@@ -293,7 +301,7 @@ template<class T> void CompileLinesTest::oneLoop() {
                         {},
         }), TestSuite::Compare::Container);
     } else {
-        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributePreviousPosition), Containers::arrayView<Vector2>({
+        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributePreviousPosition), Containers::arrayView<Vector2>({
             {}, {},
                 positions[0], positions[0],
             {}, {},
@@ -303,7 +311,7 @@ template<class T> void CompileLinesTest::oneLoop() {
             {}, {},
                 positions[12], positions[12],
         }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributeNextPosition), Containers::arrayView<Vector2>({
+        CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributeNextPosition), Containers::arrayView<Vector2>({
             positions[2], positions[2],
                 {}, {},
             positions[6], positions[6],
@@ -313,7 +321,7 @@ template<class T> void CompileLinesTest::oneLoop() {
             positions[14], positions[14],
                 {}, {},
         }), TestSuite::Compare::Container);
-        CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::MeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::LineMeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
             Shaders::LineVertexAnnotation::Up|
             Shaders::LineVertexAnnotation::Begin,
                 Shaders::LineVertexAnnotation::Begin,
@@ -338,7 +346,7 @@ template<class T> void CompileLinesTest::oneLoop() {
     }
 }
 
-void CompileLinesTest::extraAttributes() {
+void GenerateLinesTest::extraAttributes() {
     const struct Vertex {
         Color3ub color;
         Vector3b position;
@@ -360,7 +368,7 @@ void CompileLinesTest::extraAttributes() {
             Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId, vertices.slice(&Vertex::objectId)},
         }};
 
-    Trade::MeshData mesh = Implementation::generateLines(lineMesh);
+    Trade::MeshData mesh = generateLines(lineMesh);
     CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(mesh.attributeCount(), 6);
 
@@ -417,14 +425,14 @@ void CompileLinesTest::extraAttributes() {
             156, 156,
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributeNextPosition));
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributeAnnotation));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributePreviousPosition), VertexFormat::Vector3b);
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeNextPosition), VertexFormat::Vector3b);
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeAnnotation), VertexFormat::UnsignedInt);
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributeNextPosition));
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributeAnnotation));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributePreviousPosition), VertexFormat::Vector3b);
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeNextPosition), VertexFormat::Vector3b);
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeAnnotation), VertexFormat::UnsignedInt);
 
-    CORRADE_COMPARE_AS(mesh.attribute<Vector3b>(Implementation::MeshAttributePreviousPosition), Containers::arrayView<Vector3b>({
+    CORRADE_COMPARE_AS(mesh.attribute<Vector3b>(Implementation::LineMeshAttributePreviousPosition), Containers::arrayView<Vector3b>({
         positions[12], positions[12],
             positions[0], positions[0],
         positions[0], positions[0],
@@ -434,7 +442,7 @@ void CompileLinesTest::extraAttributes() {
         positions[8], positions[8],
             positions[12], positions[12],
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(mesh.attribute<Vector3b>(Implementation::MeshAttributeNextPosition), Containers::arrayView<Vector3b>({
+    CORRADE_COMPARE_AS(mesh.attribute<Vector3b>(Implementation::LineMeshAttributeNextPosition), Containers::arrayView<Vector3b>({
         positions[2], positions[2],
             positions[6], positions[6],
         positions[6], positions[6],
@@ -444,7 +452,7 @@ void CompileLinesTest::extraAttributes() {
         positions[14], positions[14],
             positions[2], positions[2],
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::MeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::LineMeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
         Shaders::LineVertexAnnotation::Up|
         Shaders::LineVertexAnnotation::Begin|
         Shaders::LineVertexAnnotation::Join,
@@ -480,23 +488,23 @@ void CompileLinesTest::extraAttributes() {
     }), TestSuite::Compare::Container);
 }
 
-void CompileLinesTest::zeroVertices() {
+void GenerateLinesTest::zeroVertices() {
     Trade::MeshData lineMesh{MeshPrimitive::LineLoop, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3usNormalized, nullptr}
     }};
 
-    Trade::MeshData mesh = Implementation::generateLines(lineMesh);
+    Trade::MeshData mesh = generateLines(lineMesh);
     CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(mesh.attributeCount(), 4);
     CORRADE_COMPARE(mesh.vertexCount(), 0);
 
     CORRADE_VERIFY(mesh.hasAttribute(Trade::MeshAttribute::Position));
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributeAnnotation));
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributeAnnotation));
 }
 
-void CompileLinesTest::twoVerticesStrip() {
+void GenerateLinesTest::twoVerticesStrip() {
     Vector2 positionData[]{
         {-1.0f, 0.0f},
         {+1.0f, 0.0f}
@@ -506,7 +514,7 @@ void CompileLinesTest::twoVerticesStrip() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positionData)}
     }};
 
-    Trade::MeshData mesh = Implementation::generateLines(lineMesh);
+    Trade::MeshData mesh = generateLines(lineMesh);
     CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(mesh.attributeCount(), 4);
 
@@ -524,23 +532,23 @@ void CompileLinesTest::twoVerticesStrip() {
             {+1.0f, 0.0f}, {+1.0f, 0.0f},
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributePreviousPosition), VertexFormat::Vector2);
-    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributePreviousPosition), Containers::arrayView<Vector2>({
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributePreviousPosition), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributePreviousPosition), Containers::arrayView<Vector2>({
         {}, {},
             positions[0], positions[0],
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeNextPosition), VertexFormat::Vector2);
-    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributeNextPosition), Containers::arrayView<Vector2>({
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeNextPosition), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributeNextPosition), Containers::arrayView<Vector2>({
         positions[2], positions[2],
             {}, {},
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributeAnnotation));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeAnnotation), VertexFormat::UnsignedInt);
-    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::MeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributeAnnotation));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeAnnotation), VertexFormat::UnsignedInt);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::LineMeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
         Shaders::LineVertexAnnotation::Up|
         Shaders::LineVertexAnnotation::Begin,
             Shaders::LineVertexAnnotation::Begin,
@@ -549,7 +557,7 @@ void CompileLinesTest::twoVerticesStrip() {
     }), TestSuite::Compare::Container);
 }
 
-void CompileLinesTest::twoVerticesLoop() {
+void GenerateLinesTest::twoVerticesLoop() {
     Vector2 positionData[]{
         {-1.0f, 0.0f},
         {+1.0f, 0.0f}
@@ -559,7 +567,7 @@ void CompileLinesTest::twoVerticesLoop() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positionData)}
     }};
 
-    Trade::MeshData mesh = Implementation::generateLines(lineMesh);
+    Trade::MeshData mesh = generateLines(lineMesh);
     CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(mesh.attributeCount(), 4);
 
@@ -582,27 +590,27 @@ void CompileLinesTest::twoVerticesLoop() {
             {-1.0f, 0.0f}, {-1.0f, 0.0f},
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributePreviousPosition), VertexFormat::Vector2);
-    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributePreviousPosition), Containers::arrayView<Vector2>({
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributePreviousPosition), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributePreviousPosition), Containers::arrayView<Vector2>({
         positions[4], positions[4],
             positions[0], positions[0],
         positions[0], positions[0],
             positions[4], positions[4],
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributePreviousPosition));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeNextPosition), VertexFormat::Vector2);
-    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::MeshAttributeNextPosition), Containers::arrayView<Vector2>({
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeNextPosition), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(mesh.attribute<Vector2>(Implementation::LineMeshAttributeNextPosition), Containers::arrayView<Vector2>({
         positions[2], positions[2],
             positions[6], positions[6],
         positions[6], positions[6],
             positions[2], positions[2],
     }), TestSuite::Compare::Container);
 
-    CORRADE_VERIFY(mesh.hasAttribute(Implementation::MeshAttributeAnnotation));
-    CORRADE_COMPARE(mesh.attributeFormat(Implementation::MeshAttributeAnnotation), VertexFormat::UnsignedInt);
-    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::MeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
+    CORRADE_VERIFY(mesh.hasAttribute(Implementation::LineMeshAttributeAnnotation));
+    CORRADE_COMPARE(mesh.attributeFormat(Implementation::LineMeshAttributeAnnotation), VertexFormat::UnsignedInt);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Shaders::LineVertexAnnotations>(mesh.attribute(Implementation::LineMeshAttributeAnnotation))), Containers::arrayView<Shaders::LineVertexAnnotations>({
         Shaders::LineVertexAnnotation::Up|
         Shaders::LineVertexAnnotation::Begin|
         Shaders::LineVertexAnnotation::Join,
@@ -622,6 +630,41 @@ void CompileLinesTest::twoVerticesLoop() {
     }), TestSuite::Compare::Container);
 }
 
+void GenerateLinesTest::notLines() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Vector3 positions[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    generateLines(Trade::MeshData{MeshPrimitive::TriangleFan, {}, positions, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(positions)}
+    }});
+    CORRADE_COMPARE(out.str(), "Trade::MeshTools::generateLines(): expected a line primitive, got MeshPrimitive::TriangleFan\n");
+}
+
+void GenerateLinesTest::noAttributes() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    generateLines(Trade::MeshData{MeshPrimitive::Lines, 12});
+    CORRADE_COMPARE(out.str(), "Trade::MeshTools::generateLines(): the mesh has no positions\n");
+}
+
+void GenerateLinesTest::noPositionAttribute() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Vector3 colors[2]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    generateLines(Trade::MeshData{MeshPrimitive::Lines, {}, colors, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color, Containers::stridedArrayView(colors)}
+    }});
+    CORRADE_COMPARE(out.str(), "Trade::MeshTools::generateLines(): the mesh has no positions\n");
+}
+
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CompileLinesTest)
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateLinesTest)

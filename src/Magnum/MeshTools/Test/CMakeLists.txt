@@ -35,6 +35,9 @@ corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp LIBRARIES MagnumMeshTo
 corrade_add_test(MeshToolsFilterAttributesTest FilterAttributesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsGenerateIndicesTest GenerateIndicesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
+corrade_add_test(MeshToolsGenerateLinesTest GenerateLinesTest.cpp
+    # Needs to link to Shaders for debug output for LineVertexAnnotations
+    LIBRARIES MagnumMeshToolsTestLib MagnumShaders)
 corrade_add_test(MeshToolsGenerateNormalsTest GenerateNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib MagnumPrimitives)
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsReferenceTest ReferenceTest.cpp LIBRARIES MagnumMeshToolsTestLib MagnumPrimitives)
@@ -42,12 +45,6 @@ corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIE
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum MagnumPrimitives)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshToolsTestLib)
-
-if(NOT MAGNUM_TARGET_GLES2)
-    corrade_add_test(MeshToolsCompileLinesTest CompileLinesTest.cpp
-        # Needs to link to Shaders for debug output for LineVertexAnnotations
-        LIBRARIES MagnumMeshToolsTestLib MagnumShaders)
-endif()
 
 # Graceful assert for testing
 set_property(TARGET

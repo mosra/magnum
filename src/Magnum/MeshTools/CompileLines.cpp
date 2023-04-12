@@ -25,10 +25,12 @@
 
 #include "CompileLines.h"
 
+#include <Corrade/Containers/Optional.h>
+
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/MeshTools/Compile.h"
-#include "Magnum/MeshTools/Implementation/GenerateLines.h"
+#include "Magnum/MeshTools/GenerateLines.h"
 
 /* This header is included only privately and doesn't introduce any linker
    dependency (taking just the PreviousPosition, NextPosition and Annotation
@@ -38,13 +40,16 @@
 
 namespace Magnum { namespace MeshTools {
 
-GL::Mesh compileLines(const Trade::MeshData& lineMesh) {
-    Trade::MeshData mesh = Implementation::generateLines(lineMesh);
-
-    #ifdef CORRADE_GRACEFUL_ASSERT
-    /* If it asserted inside, bail */
-    if(!mesh.attributeCount()) return GL::Mesh{};
-    #endif
+GL::Mesh compileLines(const Trade::MeshData& mesh) {
+    /* The assertion checks might be a bit excessive but the custom attributes
+       *may* conflict with some other user-defined ones so better rule that out
+       as much as possible */
+    CORRADE_ASSERT(
+        mesh.primitive() == MeshPrimitive::Triangles &&
+        mesh.hasAttribute(Implementation::LineMeshAttributePreviousPosition) &&
+        mesh.hasAttribute(Implementation::LineMeshAttributeNextPosition) &&
+        mesh.hasAttribute(Implementation::LineMeshAttributeAnnotation),
+        "MeshTools::compileLines(): the mesh wasn't produced with generateLines()", GL::Mesh{});
 
     /* Upload the buffers, bind the line-specific attributes manually */
     GL::Buffer indices{GL::Buffer::TargetHint::ElementArray, mesh.indexData()};
@@ -56,28 +61,28 @@ GL::Mesh compileLines(const Trade::MeshData& lineMesh) {
     static_assert(Shaders::GenericGL3D::TextureCoordinates::Location == UnsignedInt(Shaders::LineGL3D::Annotation::Location), "");
     static_assert(Shaders::GenericGL3D::Tangent::Location == UnsignedInt(Shaders::LineGL3D::PreviousPosition::Location), "");
     static_assert(Shaders::GenericGL3D::Normal::Location == UnsignedInt(Shaders::LineGL3D::NextPosition::Location), "");
-    if(const Containers::Optional<UnsignedInt> id = lineMesh.findAttributeId(Trade::MeshAttribute::TextureCoordinates))
-        Warning{} << "MeshTools::compileLines():" << lineMesh.attributeName(*id) << "conflicts with line annotation attribute, ignoring";
-    if(const Containers::Optional<UnsignedInt> id = lineMesh.findAttributeId(Trade::MeshAttribute::Tangent))
-        Warning{} << "MeshTools::compileLines():" << lineMesh.attributeName(*id) << "conflicts with line previous position attribute, ignoring";
-    if(const Containers::Optional<UnsignedInt> id = lineMesh.findAttributeId(Trade::MeshAttribute::Normal))
-        Warning{} << "MeshTools::compileLines():" << lineMesh.attributeName(*id) << "conflicts with line next position attribute, ignoring";
+    if(const Containers::Optional<UnsignedInt> id = mesh.findAttributeId(Trade::MeshAttribute::TextureCoordinates))
+        Warning{} << "MeshTools::compileLines():" << mesh.attributeName(*id) << "conflicts with line annotation attribute, ignoring";
+    if(const Containers::Optional<UnsignedInt> id = mesh.findAttributeId(Trade::MeshAttribute::Tangent))
+        Warning{} << "MeshTools::compileLines():" << mesh.attributeName(*id) << "conflicts with line previous position attribute, ignoring";
+    if(const Containers::Optional<UnsignedInt> id = mesh.findAttributeId(Trade::MeshAttribute::Normal))
+        Warning{} << "MeshTools::compileLines():" << mesh.attributeName(*id) << "conflicts with line next position attribute, ignoring";
 
     /* PreviousPosition / NextPosition are bound to the same location in both
        2D and 3D, using the 3D variant so it can be trimmed to just two
        components in 2D (which wouldn't be possible the other way around) */
     out.addVertexBuffer(vertices,
-        mesh.attributeOffset(Implementation::MeshAttributePreviousPosition),
-        mesh.attributeStride(Implementation::MeshAttributePreviousPosition),
-        GL::DynamicAttribute{Shaders::LineGL3D::PreviousPosition{}, mesh.attributeFormat(Implementation::MeshAttributePreviousPosition)});
+        mesh.attributeOffset(Implementation::LineMeshAttributePreviousPosition),
+        mesh.attributeStride(Implementation::LineMeshAttributePreviousPosition),
+        GL::DynamicAttribute{Shaders::LineGL3D::PreviousPosition{}, mesh.attributeFormat(Implementation::LineMeshAttributePreviousPosition)});
     out.addVertexBuffer(vertices,
-        mesh.attributeOffset(Implementation::MeshAttributeNextPosition),
-        mesh.attributeStride(Implementation::MeshAttributeNextPosition),
-        GL::DynamicAttribute{Shaders::LineGL3D::NextPosition{}, mesh.attributeFormat(Implementation::MeshAttributeNextPosition)});
+        mesh.attributeOffset(Implementation::LineMeshAttributeNextPosition),
+        mesh.attributeStride(Implementation::LineMeshAttributeNextPosition),
+        GL::DynamicAttribute{Shaders::LineGL3D::NextPosition{}, mesh.attributeFormat(Implementation::LineMeshAttributeNextPosition)});
     out.addVertexBuffer(std::move(vertices),
-        mesh.attributeOffset(Implementation::MeshAttributeAnnotation),
-        mesh.attributeStride(Implementation::MeshAttributeAnnotation),
-        GL::DynamicAttribute{Shaders::LineGL3D::Annotation{}, mesh.attributeFormat(Implementation::MeshAttributeAnnotation)});
+        mesh.attributeOffset(Implementation::LineMeshAttributeAnnotation),
+        mesh.attributeStride(Implementation::LineMeshAttributeAnnotation),
+        GL::DynamicAttribute{Shaders::LineGL3D::Annotation{}, mesh.attributeFormat(Implementation::LineMeshAttributeAnnotation)});
     return out;
 }
 
