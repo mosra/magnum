@@ -47,7 +47,7 @@ template<class T> void copyOrCastInto(const Containers::StridedArrayView1D<const
     Utility::copy(src, dst);
 }
 
-template<class T> void combineCopyObjects(const Containers::ArrayView<const Trade::SceneFieldData> fields, const Containers::ArrayView<const Containers::StridedArrayView2D<char>> itemViews, const Containers::ArrayView<const Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings) {
+template<class T> void combineCopyMappings(const Containers::ArrayView<const Trade::SceneFieldData> fields, const Containers::ArrayView<const Containers::StridedArrayView2D<char>> itemViews, const Containers::ArrayView<const Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings) {
     std::size_t latestMapping = 0;
     for(std::size_t i = 0; i != fields.size(); ++i) {
         /* If there are no aliased object mappings, itemViewMappings should be
@@ -96,7 +96,7 @@ inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const
     const std::size_t mappingTypeAlignment = sceneMappingTypeAlignment(mappingType);
 
     /* Go through all fields and collect ArrayTuple allocations for these */
-    std::unordered_map<const void*, UnsignedInt> objectMappings;
+    std::unordered_map<const void*, UnsignedInt> uniqueMappings;
     Containers::Array<Containers::ArrayTuple::Item> items;
     Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings{NoInit, fields.size()};
 
@@ -116,7 +116,7 @@ inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const
            returned from a std::unordered_map. */
         std::pair<std::unordered_map<const void*, UnsignedInt>::iterator, bool> inserted;
         if(field.mappingData().data())
-            inserted = objectMappings.emplace(field.mappingData().data(), itemViewOffset);
+            inserted = uniqueMappings.emplace(field.mappingData().data(), itemViewOffset);
         if(field.mappingData().data() && !inserted.second) {
             itemViewMappings[i].first() = inserted.first->second;
             /* Expect that fields sharing the same object mapping view have the
@@ -151,7 +151,7 @@ inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const
             ++itemViewOffset;
         }
 
-        /* Field data. No aliasing here right now, no sharing between object
+        /* Field data. No aliasing here right now, no sharing between mapping
            and field data either. */
         /** @todo field aliasing might be useful at some point */
         itemViewMappings[i].second() = itemViewOffset;
@@ -163,15 +163,15 @@ inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const
     Containers::Array<char> outData = Containers::ArrayTuple{items};
     CORRADE_INTERNAL_ASSERT(!outData.deleter());
 
-    /* Copy the object data over and cast them as necessary */
+    /* Copy the mapping data over and cast them as necessary */
     if(mappingType == Trade::SceneMappingType::UnsignedByte)
-        combineCopyObjects<UnsignedByte>(fields, itemViews, itemViewMappings);
+        combineCopyMappings<UnsignedByte>(fields, itemViews, itemViewMappings);
     else if(mappingType == Trade::SceneMappingType::UnsignedShort)
-        combineCopyObjects<UnsignedShort>(fields, itemViews, itemViewMappings);
+        combineCopyMappings<UnsignedShort>(fields, itemViews, itemViewMappings);
     else if(mappingType == Trade::SceneMappingType::UnsignedInt)
-        combineCopyObjects<UnsignedInt>(fields, itemViews, itemViewMappings);
+        combineCopyMappings<UnsignedInt>(fields, itemViews, itemViewMappings);
     else if(mappingType == Trade::SceneMappingType::UnsignedLong)
-        combineCopyObjects<UnsignedLong>(fields, itemViews, itemViewMappings);
+        combineCopyMappings<UnsignedLong>(fields, itemViews, itemViewMappings);
 
     /* Copy the field data over. No special handling needed here. */
     for(std::size_t i = 0; i != fields.size(); ++i) {
