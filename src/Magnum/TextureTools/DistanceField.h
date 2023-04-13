@@ -110,13 +110,32 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
         UnsignedInt radius() const;
 
         /**
-         * @brief Calculate the distance field
+         * @brief Calculate the distance field to a framebuffer
+         * @param input        Input texture
+         * @param output       Output framebuffer
+         * @param rectangle    Rectangle in output texture where to render
+         * @param imageSize    Input texture size. Needed only for OpenGL ES,
+         *      on desktop GL the information is gathered automatically using
+         *      @ref GL::Texture2D::imageSize().
+         * @m_since_latest
+         */
+        void operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i& imageSize
+            #ifndef MAGNUM_TARGET_GLES
+            = {}
+            #endif
+        );
+
+        /**
+         * @brief Calculate the distance field to a texture
          * @param input        Input texture
          * @param output       Output texture
          * @param rectangle    Rectangle in output texture where to render
          * @param imageSize    Input texture size. Needed only for OpenGL ES,
          *      on desktop GL the information is gathered automatically using
          *      @ref GL::Texture2D::imageSize().
+         *
+         * Creates a framebuffer with @p output attached and calls
+         * @ref operator()(GL::Texture2D&, GL::Framebuffer&, const Range2Di&, const Vector2i&).
          */
         void operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i& imageSize
             #ifndef MAGNUM_TARGET_GLES

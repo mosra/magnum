@@ -329,6 +329,9 @@ See also:
 
 -   New @ref TextureTools::atlasArrayPowerOfTwo() utility for optimal packing
     of power-of-two textures into a texture atlas array
+-   Added a @ref TextureTools::DistanceField::operator()() overload taking a
+    @ref GL::Framebuffer instead of a @ref GL::Texture as an output for an
+    easier ability to download the resulting image on OpenGL ES platforms
 
 @subsubsection changelog-latest-new-trade Trade library
 

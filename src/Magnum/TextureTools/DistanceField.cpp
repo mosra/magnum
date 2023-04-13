@@ -189,7 +189,7 @@ DistanceField::~DistanceField() = default;
 
 UnsignedInt DistanceField::radius() const { return _state->radius; }
 
-void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
+void DistanceField::operator()(GL::Texture2D& input, GL::Framebuffer& output, const Range2Di& rectangle, const Vector2i&
     #ifdef MAGNUM_TARGET_GLES
     imageSize
     #endif
@@ -200,19 +200,16 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, cons
     Vector2i imageSize = input.imageSize(0);
     #endif
 
-    /* Framebuffer is instantiated here so it gets correctly unbound at the end
-       (and bound framebuffer reset back to the default) */
-    GL::Framebuffer framebuffer{rectangle};
-    framebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), output, 0)
-        .clear(GL::FramebufferClear::Color)
-        .bind();
-
-    const GL::Framebuffer::Status status = framebuffer.checkStatus(GL::FramebufferTarget::Draw);
+    const GL::Framebuffer::Status status = output.checkStatus(GL::FramebufferTarget::Draw);
     if(status != GL::Framebuffer::Status::Complete) {
         Error() << "TextureTools::DistanceField: cannot render to given output texture, unexpected framebuffer status"
                 << status;
         return;
     }
+
+    output
+        .clear(GL::FramebufferClear::Color)
+        .bind();
 
     _state->shader.setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
         .bindTexture(input);
@@ -228,6 +225,21 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, cons
 
     /* Draw the mesh */
     _state->shader.draw(_state->mesh);
+}
+
+void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i&
+    #ifdef MAGNUM_TARGET_GLES
+    imageSize
+    #endif
+) {
+    GL::Framebuffer framebuffer{rectangle};
+    framebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), output, 0);
+
+    operator()(input, framebuffer, rectangle
+        #ifdef MAGNUM_TARGET_GLES
+        , imageSize
+        #endif
+        );
 }
 
 }}

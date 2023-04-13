@@ -23,9 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/Utility/Path.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #ifdef CORRADE_TARGET_APPLE
 #include <Corrade/Containers/Pair.h>
@@ -64,6 +66,8 @@ namespace Magnum { namespace TextureTools { namespace Test { namespace {
 struct DistanceFieldGLTest: GL::OpenGLTester {
     explicit DistanceFieldGLTest();
 
+    /* This tests the GL::Texture overload, which itself calls into the
+       GL::Framebuffer overload so both are covered */
     void test();
     #ifndef MAGNUM_TARGET_WEBGL
     void benchmark();
@@ -170,24 +174,28 @@ void DistanceFieldGLTest::test() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    distanceField(input, output, {{}, Vector2i{64}}
-        #ifdef MAGNUM_TARGET_GLES
-        , inputImage->size()
-        #endif
-        );
+    std::ostringstream out;
+    {
+        Error redirectError{&out};
+        distanceField(input, output, {{}, Vector2i{64}}
+            #ifdef MAGNUM_TARGET_GLES
+            , inputImage->size()
+            #endif
+            );
+    }
 
     #ifdef MAGNUM_TARGET_GLES
-    {
-        /* Probably due to the luminance target pixel format? Works with 4.1,
-           didn't find any commit in between that would clearly affect
-           this. */
-        CORRADE_EXPECT_FAIL_IF(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s),
-            "SwiftShader 4.0.0 has a bug where the framebuffer is considered incomplete.");
-        MAGNUM_VERIFY_NO_GL_ERROR();
-        if(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s))
-            CORRADE_SKIP("Skipping the rest of the test.");
-    }
+    /* Probably due to the luminance target pixel format? Works with 4.1,
+        didn't find any commit in between that would clearly affect
+        this. */
+    if(GL::Context::current().versionString().contains("SwiftShader 4.0.0"_s)) {
+        CORRADE_COMPARE(out.str(), "TextureTools::DistanceField: cannot render to given output texture, unexpected framebuffer status GL::Framebuffer::Status::IncompleteAttachment\n");
+        CORRADE_SKIP("SwiftShader 4.0.0 has a bug where the framebuffer is considered incomplete.");
+    } else
     #endif
+    {
+        CORRADE_COMPARE(out.str(), "");
+    }
 
     Containers::Optional<Image2D> actualOutputImage;
     #ifndef MAGNUM_TARGET_GLES2
