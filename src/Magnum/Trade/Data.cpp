@@ -40,6 +40,7 @@ Debug& operator<<(Debug& debug, const DataFlag value) {
         #define _c(v) case DataFlag::v: return debug << (packed ? "" : "::") << Debug::nospace << #v;
         _c(Owned)
         _c(ExternallyOwned)
+        _c(Global)
         _c(Mutable)
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -52,6 +53,7 @@ Debug& operator<<(Debug& debug, const DataFlags value) {
     return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "Trade::DataFlags{}", {
         DataFlag::Owned,
         DataFlag::ExternallyOwned,
+        DataFlag::Global,
         DataFlag::Mutable});
 }
 

@@ -48,27 +48,39 @@ importer itself.
 @see @ref DataFlags, @ref AnimationData::dataFlags(),
     @ref ImageData::dataFlags(), @ref MaterialData::attributeDataFlags(),
     @ref MaterialData::layerDataFlags(), @ref MeshData::indexDataFlags(),
-    @ref MeshData::vertexDataFlags(), @ref AbstractImporter::doOpenData()
+    @ref MeshData::vertexDataFlags(), @ref SceneData::dataFlags(),
+    @ref AbstractImporter::doOpenData()
 */
 enum class DataFlag: UnsignedByte {
     /**
      * Data is owned by the instance, meaning it stays in scope for as long as
-     * the instance. If neither this flag nor @ref DataFlag::ExternallyOwned is
-     * set, the data is considered to be just a temporary allocation and no
-     * assumptions about its lifetime can be made.
+     * the instance. If neither @ref DataFlag::Owned,
+     * @ref DataFlag::ExternallyOwned nor @ref DataFlag::Global is set, the
+     * data is considered to be just a temporary allocation and no assumptions
+     * about its lifetime can be made.
      */
     Owned = 1 << 0,
 
     /**
      * Data has an owner external to the instance, for example a memory-mapped
      * file or a constant memory. In general the data lifetime exceeds lifetime
-     * of the instance wrapping it. If neither this flag nor
-     * @ref DataFlag::ExternallyOwned is set, the data is considered to be just
-     * a temporary allocation and no assumptions about its lifetime can be
-     * made.
+     * of the instance wrapping it. If neither @ref DataFlag::Owned,
+     * @ref DataFlag::ExternallyOwned nor @ref DataFlag::Global is set, the
+     * data is considered to be just a temporary allocation and no assumptions
+     * about its lifetime can be made.
      * @m_since_latest
      */
     ExternallyOwned = 1 << 3,
+
+    /**
+     * Data is global, for example stored in static memory, so guaranteed to
+     * never go out of scope. Usually such data are not @ref DataFlag::Mutable.
+     * If neither @ref DataFlag::Owned, @ref DataFlag::ExternallyOwned nor
+     * @ref DataFlag::Global is set, the data is considered to be just a
+     * temporary allocation and no assumptions about its lifetime can be made.
+     * @m_since_latest
+     */
+    Global = 1 << 4,
 
     /**
      * Data is mutable. If this flag is not set, the instance might be for
