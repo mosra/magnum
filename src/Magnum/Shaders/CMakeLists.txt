@@ -43,6 +43,7 @@ set(MagnumShaders_SRCS
 set(MagnumShaders_GracefulAssert_SRCS
     DistanceFieldVectorGL.cpp
     FlatGL.cpp
+    Line.cpp
     MeshVisualizerGL.cpp
     PhongGL.cpp
     VectorGL.cpp
@@ -57,6 +58,7 @@ set(MagnumShaders_HEADERS
     FlatGL.h
     Generic.h
     GenericGL.h
+    Line.h
     MeshVisualizer.h
     MeshVisualizerGL.h
     Phong.h
@@ -71,19 +73,15 @@ set(MagnumShaders_HEADERS
 
 # Header files to display in project view of IDEs only
 set(MagnumShaders_PRIVATE_HEADERS
-    Implementation/CreateCompatibilityShader.h)
+    Implementation/CreateCompatibilityShader.h
+    Implementation/lineMiterLimit.h)
 
 if(NOT MAGNUM_TARGET_GLES2)
     list(APPEND MagnumShaders_GracefulAssert_SRCS
-        Line.cpp
         LineGL.cpp)
 
     list(APPEND MagnumShaders_HEADERS
-        Line.h
         LineGL.h)
-
-    list(APPEND MagnumShaders_PRIVATE_HEADERS
-        Implementation/lineMiterLimit.h)
 endif()
 
 if(MAGNUM_BUILD_DEPRECATED)
