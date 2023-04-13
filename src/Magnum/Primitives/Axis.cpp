@@ -112,14 +112,14 @@ constexpr Trade::MeshAttributeData Attributes3D[]{
 
 Trade::MeshData axis2D() {
     return Trade::MeshData{MeshPrimitive::Lines,
-        {}, Indices2D, Trade::MeshIndexData{Indices2D},
-        {}, Vertices2D, Trade::meshAttributeDataNonOwningArray(Attributes2D)};
+        Trade::DataFlag::Global, Indices2D, Trade::MeshIndexData{Indices2D},
+        Trade::DataFlag::Global, Vertices2D, Trade::meshAttributeDataNonOwningArray(Attributes2D)};
 }
 
 Trade::MeshData axis3D() {
     return Trade::MeshData{MeshPrimitive::Lines,
-        {}, Indices3D, Trade::MeshIndexData{Indices3D},
-        {}, Vertices3D, Trade::meshAttributeDataNonOwningArray(Attributes3D)};
+        Trade::DataFlag::Global, Indices3D, Trade::MeshIndexData{Indices3D},
+        Trade::DataFlag::Global, Vertices3D, Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 
 }}

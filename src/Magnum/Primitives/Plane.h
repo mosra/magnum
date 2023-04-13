@@ -88,9 +88,9 @@ enum class CORRADE_DEPRECATED_ENUM("use PlaneFlags instead") PlaneTextureCoords:
 @ref MeshPrimitive::TriangleStrip with @ref VertexFormat::Vector3 positions,
 @ref VertexFormat::Vector3 normals in positive Z direction, optional
 @ref VertexFormat::Vector4 tangents and optional @ref VertexFormat::Vector2
-texture coordinates. The returned instance may reference data stored in
-constant memory --- pass the data through @ref MeshTools::owned() to get a
-mutable copy, if needed.
+texture coordinates. The returned instance may reference
+@ref Trade::DataFlag::Global data --- pass the mesh through
+@ref MeshTools::owned() to get a mutable copy, if needed.
 
 @image html primitives-planesolid.png width=256px
 
@@ -119,8 +119,9 @@ CORRADE_IGNORE_DEPRECATED_POP
 
 2x2 square on the XY plane, centered at origin. Non-indexed
 @ref MeshPrimitive::LineLoop on the XY plane with @ref VertexFormat::Vector3
-positions. The returned instance references data stored in constant memory ---
-pass the data through @ref MeshTools::owned() to get a mutable copy, if needed.
+positions. The returned instance references @ref Trade::DataFlag::Global data
+--- pass the mesh through @ref MeshTools::owned() to get a mutable copy, if
+needed.
 
 @image html primitives-planewireframe.png width=256px
 

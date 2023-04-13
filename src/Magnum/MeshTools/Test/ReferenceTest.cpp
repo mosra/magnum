@@ -215,8 +215,8 @@ void ReferenceTest::mutableReferenceNotMutable() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData cube = Primitives::cubeSolid();
-    CORRADE_COMPARE(cube.indexDataFlags(), Trade::DataFlags{});
-    CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlags{});
+    CORRADE_COMPARE(cube.indexDataFlags(), Trade::DataFlag::Global);
+    CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlag::Global);
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -226,8 +226,8 @@ void ReferenceTest::mutableReferenceNotMutable() {
 
 void ReferenceTest::owned() {
     Trade::MeshData cube = Primitives::cubeSolid();
-    CORRADE_COMPARE(cube.indexDataFlags(), Trade::DataFlags{});
-    CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlags{});
+    CORRADE_COMPARE(cube.indexDataFlags(), Trade::DataFlag::Global);
+    CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlag::Global);
 
     Trade::MeshData owned = MeshTools::owned(cube);
     CORRADE_VERIFY(owned.isIndexed());
@@ -258,7 +258,7 @@ void ReferenceTest::owned() {
 void ReferenceTest::ownedNoIndexData() {
     Trade::MeshData cube = Primitives::cubeSolidStrip();
     CORRADE_VERIFY(!cube.isIndexed());
-    CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlags{});
+    CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlag::Global);
 
     Trade::MeshData owned = MeshTools::owned(cube);
     CORRADE_VERIFY(!owned.isIndexed());

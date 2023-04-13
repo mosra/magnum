@@ -77,11 +77,11 @@ constexpr Trade::MeshAttributeData AttributesSolidTextureCoords[]{
 Trade::MeshData squareSolid(const SquareFlags flags) {
     if(flags & SquareFlag::TextureCoordinates)
         return Trade::MeshData{MeshPrimitive::TriangleStrip,
-            {}, VerticesSolidTextureCoords,
+            Trade::DataFlag::Global, VerticesSolidTextureCoords,
             Trade::meshAttributeDataNonOwningArray(AttributesSolidTextureCoords)};
 
     return Trade::MeshData{MeshPrimitive::TriangleStrip,
-        {}, VerticesSolid,
+        Trade::DataFlag::Global, VerticesSolid,
         Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
 }
 
@@ -116,7 +116,7 @@ constexpr Trade::MeshAttributeData AttributesWireframe[]{
 
 Trade::MeshData squareWireframe() {
     return Trade::MeshData{MeshPrimitive::LineLoop,
-        {}, VerticesWireframe,
+        Trade::DataFlag::Global, VerticesWireframe,
         Trade::meshAttributeDataNonOwningArray(AttributesWireframe)};
 }
 

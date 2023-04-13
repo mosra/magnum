@@ -71,12 +71,14 @@ constexpr Trade::MeshAttributeData Attributes3D[]{
 }
 
 Trade::MeshData crosshair2D() {
-    return Trade::MeshData{MeshPrimitive::Lines, {}, Vertices2D,
+    return Trade::MeshData{MeshPrimitive::Lines,
+        Trade::DataFlag::Global, Vertices2D,
         Trade::meshAttributeDataNonOwningArray(Attributes2D)};
 }
 
 Trade::MeshData crosshair3D() {
-    return Trade::MeshData{MeshPrimitive::Lines, {}, Vertices3D,
+    return Trade::MeshData{MeshPrimitive::Lines,
+        Trade::DataFlag::Global, Vertices3D,
         Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 

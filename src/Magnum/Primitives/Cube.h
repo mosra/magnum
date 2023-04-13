@@ -40,8 +40,8 @@ namespace Magnum { namespace Primitives {
 2x2x2 cube, centered at origin. @ref MeshPrimitive::Triangles with
 @ref MeshIndexType::UnsignedShort indices, interleaved
 @ref VertexFormat::Vector3 positions and flat @ref VertexFormat::Vector3
-normals. The returned instance references data stored in constant memory ---
-pass the data through @ref MeshTools::owned() to get a mutable copy, if needed.
+normals. The returned instance references @ref Trade::DataFlag::Global data ---
+pass the mesh through @ref MeshTools::owned() to get a mutable copy, if needed.
 
 @image html primitives-cubesolid.png width=256px
 
@@ -55,8 +55,8 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeSolid();
 2x2x2 cube, centered at origin. Non-indexed @ref MeshPrimitive::TriangleStrip
 with @ref VertexFormat::Vector3 positions. No normals or anything else, use
 @ref cubeSolid() instead if you need these. The returned instance references
-data stored in constant memory --- pass the data through @ref MeshTools::owned()
-to get a mutable copy, if needed.
+@ref Trade::DataFlag::Global data --- pass the mesh through
+@ref MeshTools::owned() to get a mutable copy, if needed.
 
 Vertex positions of this mesh can be also generated directly in the vertex
 shader using @glsl gl_VertexID @ce ([source](https://twitter.com/turanszkij/status/1141638406956617730),
@@ -73,8 +73,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeSolidStrip();
 
 2x2x2 cube, centered at origin. @ref MeshPrimitive::Lines with
 @ref MeshIndexType::UnsignedShort indices and @ref VertexFormat::Vector3
-positions. The returned instance references data stored in constant memory ---
-pass the data through @ref MeshTools::owned() to get a mutable copy, if needed.
+positions. The returned instance references @ref Trade::DataFlag::Global data
+--- pass the mesh through @ref MeshTools::owned() to get a mutable copy, if
+needed.
 
 @image html primitives-cubewireframe.png width=256px
 

@@ -683,6 +683,8 @@ See also:
     importers to reason about ownership of passed data instead of being forced
     to allocate a local copy, saving as much as half memory in certain
     importer implementations
+-   New @ref Trade::DataFlag::Global flag to annotate data referencing global
+    memory, such as @ref Primitives::cubeSolid()
 -   @ref Trade::AbstractImageConverter::doConvertToFile() and
     @ref Trade::AbstractSceneConverter::doConvertToFile() are now
     @cpp protected @ce instead of @cpp private @ce to allow calling them from

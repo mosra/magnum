@@ -59,7 +59,7 @@ constexpr Trade::MeshAttributeData AttributesSolid[]{
 
 Trade::MeshData planeSolid() {
     return Trade::MeshData{MeshPrimitive::TriangleStrip,
-        {}, VerticesSolid,
+        Trade::DataFlag::Global, VerticesSolid,
         Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
 }
 
@@ -171,7 +171,7 @@ constexpr Trade::MeshAttributeData AttributesWireframe[]{
 
 Trade::MeshData planeWireframe() {
     return Trade::MeshData{MeshPrimitive::LineLoop,
-        {}, VerticesWireframe,
+        Trade::DataFlag::Global, VerticesWireframe,
         Trade::meshAttributeDataNonOwningArray(AttributesWireframe)};
 }
 

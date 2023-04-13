@@ -89,8 +89,8 @@ constexpr Trade::MeshAttributeData AttributesSolid[]{
 
 Trade::MeshData cubeSolid() {
     return Trade::MeshData{MeshPrimitive::Triangles,
-        {}, IndicesSolid, Trade::MeshIndexData{IndicesSolid},
-        {}, VerticesSolid, Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
+        Trade::DataFlag::Global, IndicesSolid, Trade::MeshIndexData{IndicesSolid},
+        Trade::DataFlag::Global, VerticesSolid, Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
 }
 
 namespace {
@@ -148,7 +148,7 @@ constexpr Trade::MeshAttributeData AttributesSolidStrip[]{
 
 Trade::MeshData cubeSolidStrip() {
     return Trade::MeshData{MeshPrimitive::TriangleStrip,
-        {}, VerticesSolidStrip, Trade::meshAttributeDataNonOwningArray(AttributesSolidStrip)};
+        Trade::DataFlag::Global, VerticesSolidStrip, Trade::meshAttributeDataNonOwningArray(AttributesSolidStrip)};
 }
 
 namespace {
@@ -185,8 +185,8 @@ constexpr Trade::MeshAttributeData AttributesWireframe[]{
 
 Trade::MeshData cubeWireframe() {
     return Trade::MeshData{MeshPrimitive::Lines,
-        {}, IndicesWireframe, Trade::MeshIndexData{IndicesWireframe},
-        {}, VerticesWireframe, Trade::meshAttributeDataNonOwningArray(AttributesWireframe)};
+        Trade::DataFlag::Global, IndicesWireframe, Trade::MeshIndexData{IndicesWireframe},
+        Trade::DataFlag::Global, VerticesWireframe, Trade::meshAttributeDataNonOwningArray(AttributesWireframe)};
 }
 
 }}
