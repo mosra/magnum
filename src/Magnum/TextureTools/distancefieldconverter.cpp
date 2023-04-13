@@ -35,6 +35,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Math/Range.h"
+#include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
@@ -176,6 +177,10 @@ int DistanceFieldConverter::exec() {
     }
 
     /* Decide about internal format */
+    /** @todo this doesn't work on ES2, the image pixel format is converted to
+        a LUMINANCE which doesn't match GL_RED / GL_R8; it also doesn't check
+        that EXT_texture_rg exists, and LUMINANCE isn't really renderable, etc
+        etc */
     GL::TextureFormat internalFormat;
     if(image->format() == PixelFormat::R8Unorm)
         internalFormat = GL::TextureFormat::R8;
@@ -200,15 +205,22 @@ int DistanceFieldConverter::exec() {
     GL::Texture2D output;
     output.setStorage(1, GL::TextureFormat::R8, args.value<Vector2i>("output-size"));
 
+    /* Rectangle to process */
+    const Range2Di rectangle{{}, args.value<Vector2i>("output-size")};
+
+    /* Output framebuffer */
+    GL::Framebuffer framebuffer{rectangle};
+    framebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), output, 0);
+
     CORRADE_INTERNAL_ASSERT(GL::Renderer::error() == GL::Renderer::Error::NoError);
 
     /* Do it */
     Debug() << "Converting image of size" << image->size() << "to distance field...";
-    TextureTools::DistanceField{args.value<UnsignedInt>("radius")}(input, output, {{}, args.value<Vector2i>("output-size")}, image->size());
+    TextureTools::DistanceField{args.value<UnsignedInt>("radius")}(input, output, rectangle, image->size());
 
     /* Save image */
     Image2D result{PixelFormat::R8Unorm};
-    output.image(0, result);
+    framebuffer.read(rectangle, result);
     if(!converter->convertToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");
         return 5;

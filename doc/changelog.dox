@@ -331,7 +331,9 @@ See also:
     of power-of-two textures into a texture atlas array
 -   Added a @ref TextureTools::DistanceField::operator()() overload taking a
     @ref GL::Framebuffer instead of a @ref GL::Texture as an output for an
-    easier ability to download the resulting image on OpenGL ES platforms
+    easier ability to download the resulting image on OpenGL ES platforms;
+    the @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
+    utility thus now compiles works and on OpenGL ES 3+ as well
 
 @subsubsection changelog-latest-new-trade Trade library
 

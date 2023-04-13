@@ -122,6 +122,8 @@ install:
 - set PATH=C:/tools/ninja;%PATH%
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" pip install codecov
 
+- IF "%TARGET_GLES2%" == "ON" set TARGET_GLES3=OFF
+- IF "%TARGET_GLES2%" == "OFF" set TARGET_GLES3=ON
 - IF NOT "%BUILD_STATIC%" == "ON" set BUILD_STATIC=OFF
 # For ES builds, otherwise the "%COMPILER:~0,4%" below doesn't work, sigh
 - IF "%COMPILER%" == "" set COMPILER=msvc
