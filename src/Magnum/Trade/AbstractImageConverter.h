@@ -393,7 +393,8 @@ enum class ImageConverterFlag: UnsignedByte {
      * unexpected data modification or loss.
      *
      * Corresponds to the `-v` / `--verbose` option in
-     * @ref magnum-imageconverter "magnum-imageconverter".
+     * @ref magnum-imageconverter "magnum-imageconverter" and
+     * @ref magnum-sceneconverter "magnum-sceneconverter".
      */
     Verbose = 1 << 0
 
