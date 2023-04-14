@@ -192,7 +192,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         /* Image data that are larger are allowed in this case (even if there's
            a TGA 2 footer after), as we get garbage back in the worst case. In
            case of RLE this would be a failure. */
-        if(srcPixels.size() > outputSize) {
+        if(srcPixels.size() > outputSize && !(flags() & ImporterFlag::Quiet)) {
             Warning{} << "Trade::TgaImporter::image2D(): ignoring" << srcPixels.size() - outputSize << "extra bytes at the end of image data";
         }
 

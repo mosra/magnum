@@ -213,7 +213,7 @@ template<class T> void rleEncode(Containers::Array<char>& data, const ImageView2
 
 Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData(const ImageView2D& image) {
     /* Warn about lost metadata */
-    if(image.flags() & ImageFlag2D::Array) {
+    if((image.flags() & ImageFlag2D::Array) && !(flags() & ImageConverterFlag::Quiet)) {
         Warning{} << "Trade::TgaImageConverter::convertToData(): 1D array images are unrepresentable in TGA, saving as a regular 2D image";
     }
 

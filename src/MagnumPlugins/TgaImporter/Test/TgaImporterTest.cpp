@@ -240,15 +240,17 @@ const struct {
 const struct {
     const char* name;
     Containers::Array<char> extra;
+    ImporterFlags flags;
+    bool quiet;
 } FileTooLongData[]{
     {"", {InPlaceInit, {
         'e', 'x', 't', 'r', 'a'
-    }}},
+    }}, {}, false},
     {"TGA 2", {InPlaceInit, {
         'e', 'x', 't', 'r', 'a',
         0, 0, 0, 0, 0, 0, 0, 0,
         'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
-    }}},
+    }}, ImporterFlag::Quiet, true},
 };
 
 /* Shared among all plugins that implement data copying optimizations */
@@ -550,6 +552,7 @@ void TgaImporterTest::fileTooLong() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    importer->setFlags(data.flags);
 
     /* The actual image data is always the same, only the end differs */
     CORRADE_VERIFY(importer->openData(
@@ -572,7 +575,10 @@ void TgaImporterTest::fileTooLong() {
         3, 4,
         5, 6
     }), TestSuite::Compare::Container);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): ignoring 5 extra bytes at the end of image data\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): ignoring 5 extra bytes at the end of image data\n");
 }
 
 void TgaImporterTest::openMemory() {

@@ -279,11 +279,14 @@ const struct {
 
 const struct {
     const char* name;
-    ImageFlags2D flags;
+    ImageFlags2D imageFlags;
+    ImageConverterFlags converterFlags;
     const char* message;
 } UnsupportedMetadataData[]{
-    {"1D array", ImageFlag2D::Array,
-        "1D array images are unrepresentable in TGA, saving as a regular 2D image"}
+    {"1D array", ImageFlag2D::Array, {},
+        "1D array images are unrepresentable in TGA, saving as a regular 2D image"},
+    {"1D array, quiet", ImageFlag2D::Array, ImageConverterFlag::Quiet,
+        nullptr}
 };
 
 TgaImageConverterTest::TgaImageConverterTest() {
@@ -651,14 +654,18 @@ void TgaImageConverterTest::unsupportedMetadata() {
     setTestCaseDescription(data.name);
 
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    converter->setFlags(data.converterFlags);
 
     const char imageData[4]{};
-    ImageView2D image{PixelFormat::RGBA8Unorm, {1, 1}, imageData, data.flags};
+    ImageView2D image{PixelFormat::RGBA8Unorm, {1, 1}, imageData, data.imageFlags};
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToData(image));
-    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImageConverter::convertToData(): {}\n", data.message));
+    if(!data.message)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), Utility::formatString("Trade::TgaImageConverter::convertToData(): {}\n", data.message));
 }
 
 }}}}
