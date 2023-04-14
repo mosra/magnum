@@ -130,6 +130,15 @@ struct AnyConverterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractConverter> _manager{"nonexistent"};
 };
 
+const struct {
+    const char* name;
+    ConverterFlags flags;
+    bool quiet;
+} PropagateConfigurationUnknownData[]{
+    {"", {}, false},
+    {"quiet", ConverterFlag::Quiet, true}
+};
+
 constexpr struct {
     const char* name;
     const char* filename;
@@ -163,10 +172,12 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::validateFilePropagateInputVersion,
               &AnyConverterTest::validateFilePropagateOutputVersion,
               &AnyConverterTest::validateFilePropagatePreprocess,
-              &AnyConverterTest::validateFilePropagateConfiguration,
-              &AnyConverterTest::validateFilePropagateConfigurationUnknown,
+              &AnyConverterTest::validateFilePropagateConfiguration});
 
-              &AnyConverterTest::validateData,
+    addInstancedTests({&AnyConverterTest::validateFilePropagateConfigurationUnknown},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnyConverterTest::validateData,
               &AnyConverterTest::validateDataPluginLoadFailed,
               &AnyConverterTest::validateDataNoFormatSet,
               &AnyConverterTest::validateDataNotSupported,
@@ -175,10 +186,12 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::validateDataPropagateInputVersion,
               &AnyConverterTest::validateDataPropagateOutputVersion,
               &AnyConverterTest::validateDataPropagatePreprocess,
-              &AnyConverterTest::validateDataPropagateConfiguration,
-              &AnyConverterTest::validateDataPropagateConfigurationUnknown,
+              &AnyConverterTest::validateDataPropagateConfiguration});
 
-              &AnyConverterTest::convertFileToFile,
+    addInstancedTests({&AnyConverterTest::validateDataPropagateConfigurationUnknown},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnyConverterTest::convertFileToFile,
               &AnyConverterTest::convertFileToFilePluginLoadFailed,
               &AnyConverterTest::convertFileToFileUnknownInput,
               &AnyConverterTest::convertFileToFileUnknownOutput,
@@ -192,10 +205,12 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convertFileToFilePropagatePreprocess,
               &AnyConverterTest::convertFileToFilePropagateDebugInfo,
               &AnyConverterTest::convertFileToFilePropagateOptimization,
-              &AnyConverterTest::convertFileToFilePropagateConfiguration,
-              &AnyConverterTest::convertFileToFilePropagateConfigurationUnknown,
+              &AnyConverterTest::convertFileToFilePropagateConfiguration});
 
-              &AnyConverterTest::convertFileToData,
+    addInstancedTests({&AnyConverterTest::convertFileToFilePropagateConfigurationUnknown},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnyConverterTest::convertFileToData,
               &AnyConverterTest::convertFileToDataPluginLoadFailed,
               &AnyConverterTest::convertFileToDataUnknown,
               &AnyConverterTest::convertFileToDataNoFormatSet,
@@ -209,10 +224,12 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convertFileToDataPropagatePreprocess,
               &AnyConverterTest::convertFileToDataPropagateDebugInfo,
               &AnyConverterTest::convertFileToDataPropagateOptimization,
-              &AnyConverterTest::convertFileToDataPropagateConfiguration,
-              &AnyConverterTest::convertFileToDataPropagateConfigurationUnknown,
+              &AnyConverterTest::convertFileToDataPropagateConfiguration});
 
-              &AnyConverterTest::convertDataToData,
+    addInstancedTests({&AnyConverterTest::convertFileToDataPropagateConfigurationUnknown},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnyConverterTest::convertDataToData,
               &AnyConverterTest::convertDataToDataPluginLoadFailed,
               &AnyConverterTest::convertDataToDataNoInputFormatSet,
               &AnyConverterTest::convertDataToDataNoOutputFormatSet,
@@ -226,8 +243,10 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convertDataToDataPropagatePreprocess,
               &AnyConverterTest::convertDataToDataPropagateDebugInfo,
               &AnyConverterTest::convertDataToDataPropagateOptimization,
-              &AnyConverterTest::convertDataToDataPropagateConfiguration,
-              &AnyConverterTest::convertDataToDataPropagateConfigurationUnknown});
+              &AnyConverterTest::convertDataToDataPropagateConfiguration});
+
+    addInstancedTests({&AnyConverterTest::convertDataToDataPropagateConfigurationUnknown},
+        Containers::arraySize(PropagateConfigurationUnknownData));
 
     addInstancedTests({&AnyConverterTest::detectValidate},
         Containers::arraySize(DetectValidateData));
@@ -446,6 +465,9 @@ void AnyConverterTest::validateFilePropagateConfiguration() {
 }
 
 void AnyConverterTest::validateFilePropagateConfigurationUnknown() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -458,12 +480,16 @@ void AnyConverterTest::validateFilePropagateConfigurationUnknown() {
     converter->configuration().setValue("noSuchOption", "isHere");
     /* So it doesn't warn about anything */
     converter->setDefinitions({{"reserved__identifier", "sorry"}});
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")),
         Containers::pair(true, Containers::String{}));
-    CORRADE_COMPARE(out.str(),
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateFile(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
@@ -691,6 +717,9 @@ void AnyConverterTest::validateDataPropagateConfiguration() {
 }
 
 void AnyConverterTest::validateDataPropagateConfigurationUnknown() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -704,15 +733,19 @@ void AnyConverterTest::validateDataPropagateConfigurationUnknown() {
     converter->configuration().setValue("noSuchOption", "isHere");
     /* So it doesn't warn about anything */
     converter->setDefinitions({{"reserved__identifier", "sorry"}});
+    converter->setFlags(data.flags);
 
-    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"));
-    CORRADE_VERIFY(data);
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"));
+    CORRADE_VERIFY(shaderData);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_COMPARE(converter->validateData(Stage::Fragment, *data),
+    CORRADE_COMPARE(converter->validateData(Stage::Fragment, *shaderData),
         Containers::pair(true, Containers::String{}));
-    CORRADE_COMPARE(out.str(),
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
@@ -1052,6 +1085,9 @@ void AnyConverterTest::convertFileToFilePropagateConfiguration() {
 }
 
 void AnyConverterTest::convertFileToFilePropagateConfigurationUnknown() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1064,11 +1100,15 @@ void AnyConverterTest::convertFileToFilePropagateConfigurationUnknown() {
     converter->configuration().setValue("noSuchOption", "isHere");
     /* So it doesn't warn about anything */
     converter->setDefinitions({{"reserved__identifier", "sorry"}});
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertFileToFile(Stage::Fragment, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"), Utility::Path::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.glsl")));
-    CORRADE_COMPARE(out.str(),
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::convertFileToFile(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
@@ -1417,6 +1457,9 @@ void AnyConverterTest::convertFileToDataPropagateConfiguration() {
 }
 
 void AnyConverterTest::convertFileToDataPropagateConfigurationUnknown() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1430,11 +1473,15 @@ void AnyConverterTest::convertFileToDataPropagateConfigurationUnknown() {
     converter->configuration().setValue("noSuchOption", "isHere");
     /* So it doesn't warn about anything */
     converter->setDefinitions({{"reserved__identifier", "sorry"}});
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertFileToData(Stage::Fragment, Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")));
-    CORRADE_COMPARE(out.str(),
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::convertFileToData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 
@@ -1822,6 +1869,9 @@ void AnyConverterTest::convertDataToDataPropagateConfiguration() {
 }
 
 void AnyConverterTest::convertDataToDataPropagateConfigurationUnknown() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1836,14 +1886,18 @@ void AnyConverterTest::convertDataToDataPropagateConfigurationUnknown() {
     converter->configuration().setValue("noSuchOption", "isHere");
     /* So it doesn't warn about anything */
     converter->setDefinitions({{"reserved__identifier", "sorry"}});
+    converter->setFlags(data.flags);
 
-    Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"));
-    CORRADE_VERIFY(data);
+    Containers::Optional<Containers::Array<char>> shaderData = Utility::Path::read(Utility::Path::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"));
+    CORRADE_VERIFY(shaderData);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(converter->convertDataToData(Stage::Fragment, *data));
-    CORRADE_COMPARE(out.str(),
+    CORRADE_VERIFY(converter->convertDataToData(Stage::Fragment, *shaderData));
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::convertDataToData(): option noSuchOption not recognized by GlslangShaderConverter\n");
 }
 

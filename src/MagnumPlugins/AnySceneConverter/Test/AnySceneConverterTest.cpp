@@ -92,6 +92,15 @@ constexpr struct {
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordSceneConverter"}
 };
 
+const struct {
+    const char* name;
+    SceneConverterFlags flags;
+    bool quiet;
+} PropagateConfigurationUnknownData[]{
+    {"", {}, false},
+    {"quiet", SceneConverterFlag::Quiet, true}
+};
+
 AnySceneConverterTest::AnySceneConverterTest() {
     addTests({&AnySceneConverterTest::convert,
               &AnySceneConverterTest::convertBeginEnd});
@@ -109,9 +118,12 @@ AnySceneConverterTest::AnySceneConverterTest() {
               &AnySceneConverterTest::propagateFlagsBeginEnd,
 
               &AnySceneConverterTest::propagateConfigurationConvert,
-              &AnySceneConverterTest::propagateConfigurationBeginEnd,
-              &AnySceneConverterTest::propagateConfigurationUnknownConvert,
-              &AnySceneConverterTest::propagateConfigurationUnknownBeginEnd});
+              &AnySceneConverterTest::propagateConfigurationBeginEnd});
+
+    addInstancedTests({
+        &AnySceneConverterTest::propagateConfigurationUnknownConvert,
+        &AnySceneConverterTest::propagateConfigurationUnknownBeginEnd},
+        Containers::arraySize(PropagateConfigurationUnknownData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -394,6 +406,9 @@ void AnySceneConverterTest::propagateConfigurationBeginEnd() {
 }
 
 void AnySceneConverterTest::propagateConfigurationUnknownConvert() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
     #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -414,14 +429,21 @@ void AnySceneConverterTest::propagateConfigurationUnknownConvert() {
 
     Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(mesh, Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply")));
-    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::convertToFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
 }
 
 void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
     #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -442,6 +464,7 @@ void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
 
     Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     {
@@ -450,7 +473,10 @@ void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
     }
     CORRADE_VERIFY(converter->add(mesh));
     CORRADE_VERIFY(converter->endFile());
-    CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::beginFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::beginFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
 }
 
 }}}}

@@ -189,6 +189,20 @@ constexpr struct {
     {"EXR data", "depth32f-custom-channels.exr", true}
 };
 
+constexpr struct {
+    const char* name;
+    const char* filename;
+    bool asData;
+    const char* messageFunctionName;
+    ImporterFlags flags;
+    bool quiet;
+} PropagateConfigurationUnknownData[]{
+    {"", "rgb.tga", false, "openFile", {}, false},
+    {"quiet", "rgb.tga", false, "", ImporterFlag::Quiet, true},
+    {"data", "rgb.tga", true, "openData", {}, false},
+    {"data, quiet", "rgb.tga", true, "openData", ImporterFlag::Quiet, true}
+};
+
 AnyImageImporterTest::AnyImageImporterTest() {
     addInstancedTests({&AnyImageImporterTest::load1D},
         Containers::arraySize(Load1DData));
@@ -220,7 +234,7 @@ AnyImageImporterTest::AnyImageImporterTest() {
         Containers::arraySize(PropagateConfigurationData));
 
     addInstancedTests({&AnyImageImporterTest::propagateConfigurationUnknown},
-        Containers::arraySize(Load2DData));
+        Containers::arraySize(PropagateConfigurationUnknownData));
 
     addTests({&AnyImageImporterTest::propagateFileCallback});
 
@@ -514,7 +528,7 @@ void AnyImageImporterTest::propagateConfiguration() {
 }
 
 void AnyImageImporterTest::propagateConfigurationUnknown() {
-    auto&& data = Load2DData[testCaseInstanceId()];
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -522,6 +536,7 @@ void AnyImageImporterTest::propagateConfigurationUnknown() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     importer->configuration().setValue("noSuchOption", "isHere");
+    importer->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
@@ -530,7 +545,10 @@ void AnyImageImporterTest::propagateConfigurationUnknown() {
         CORRADE_VERIFY(read);
         CORRADE_VERIFY(importer->openData(*read));
     } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
-    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::{}(): option noSuchOption not recognized by TgaImporter\n", data.messageFunctionName));
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), Utility::formatString("Trade::AnyImageImporter::{}(): option noSuchOption not recognized by TgaImporter\n", data.messageFunctionName));
 }
 
 void AnyImageImporterTest::propagateFileCallback() {

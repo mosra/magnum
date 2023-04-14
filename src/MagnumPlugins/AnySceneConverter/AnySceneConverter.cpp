@@ -113,7 +113,7 @@ bool AnySceneConverter::doConvertToFile(const MeshData& mesh, const Containers::
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnySceneConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnySceneConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & SceneConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -165,7 +165,7 @@ bool AnySceneConverter::doBeginFile(const Containers::StringView filename) {
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnySceneConverter::beginFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnySceneConverter::beginFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & SceneConverterFlag::Quiet));
 
     /* Try to begin the file (error output should be printed by the plugin
        itself) */

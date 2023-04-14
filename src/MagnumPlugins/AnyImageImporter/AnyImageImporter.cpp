@@ -179,7 +179,7 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
     if(fileCallback()) importer->setFileCallback(fileCallback(), fileCallbackUserData());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openFile():", {}, metadata->name(), configuration(), importer->configuration(), !(flags() & ImporterFlag::Quiet));
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
@@ -306,7 +306,7 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     importer->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openData():", {}, metadata->name(), configuration(), importer->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageImporter::openData():", {}, metadata->name(), configuration(), importer->configuration(), !(flags() & ImporterFlag::Quiet));
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */

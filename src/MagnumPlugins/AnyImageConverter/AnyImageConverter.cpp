@@ -94,7 +94,7 @@ bool AnyImageConverter::doConvertToFile(const ImageView1D& image, const Containe
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -157,7 +157,7 @@ bool AnyImageConverter::doConvertToFile(const ImageView2D& image, const Containe
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -207,7 +207,7 @@ bool AnyImageConverter::doConvertToFile(const ImageView3D& image, const Containe
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -251,7 +251,7 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView1D& image, cons
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -295,7 +295,7 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView2D& image, cons
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -339,7 +339,7 @@ bool AnyImageConverter::doConvertToFile(const CompressedImageView3D& image, cons
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -383,7 +383,7 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -431,7 +431,7 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -479,7 +479,7 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const ImageV
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -523,7 +523,7 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -567,7 +567,7 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -611,7 +611,7 @@ bool AnyImageConverter::doConvertToFile(const Containers::ArrayView<const Compre
     converter->setFlags(flags());
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("Trade::AnyImageConverter::convertToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ImageConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

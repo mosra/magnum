@@ -101,6 +101,15 @@ constexpr struct {
     /* Not testing everything, only the most important ones */
 };
 
+const struct {
+    const char* name;
+    ImporterFlags flags;
+    bool quiet;
+} PropagateConfigurationUnknownData[]{
+    {"", {}, false},
+    {"quiet", ImporterFlag::Quiet, true}
+};
+
 AnySceneImporterTest::AnySceneImporterTest() {
     addInstancedTests({&AnySceneImporterTest::load},
         Containers::arraySize(LoadData));
@@ -115,9 +124,12 @@ AnySceneImporterTest::AnySceneImporterTest() {
     addTests({&AnySceneImporterTest::unknown,
 
               &AnySceneImporterTest::propagateFlags,
-              &AnySceneImporterTest::propagateConfiguration,
-              &AnySceneImporterTest::propagateConfigurationUnknown,
-              &AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup,
+              &AnySceneImporterTest::propagateConfiguration});
+
+    addInstancedTests({&AnySceneImporterTest::propagateConfigurationUnknown},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup,
               &AnySceneImporterTest::propagateFileCallback,
 
               &AnySceneImporterTest::sceneFieldName,
@@ -269,6 +281,9 @@ void AnySceneImporterTest::propagateConfiguration() {
 }
 
 void AnySceneImporterTest::propagateConfigurationUnknown() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -286,11 +301,15 @@ void AnySceneImporterTest::propagateConfigurationUnknown() {
     importer->configuration().addGroup("postprocess");
     importer->configuration().group("postprocess")->setValue("notHere", false);
     importer->configuration().group("postprocess")->addGroup("feh")->setValue("noHereNotEither", false);
+    importer->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply")));
-    CORRADE_COMPARE(out.str(),
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(),
         "Trade::AnySceneImporter::openFile(): option noSuchOption not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/notHere not recognized by AssimpImporter\n"
         "Trade::AnySceneImporter::openFile(): option postprocess/feh/noHereNotEither not recognized by AssimpImporter\n");

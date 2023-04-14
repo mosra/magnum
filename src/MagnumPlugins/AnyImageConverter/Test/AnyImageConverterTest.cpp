@@ -273,6 +273,15 @@ constexpr struct {
     {"KTX2 uppercase", "FIL~1.KTX2", "KtxImageConverter"}
 };
 
+const struct {
+    const char* name;
+    ImageConverterFlags flags;
+    bool quiet;
+} PropagateConfigurationUnknownData[]{
+    {"", {}, false},
+    {"quiet", ImageConverterFlag::Quiet, true}
+};
+
 AnyImageConverterTest::AnyImageConverterTest() {
     addTests({&AnyImageConverterTest::convert1D,
               &AnyImageConverterTest::convert2D,
@@ -354,29 +363,43 @@ AnyImageConverterTest::AnyImageConverterTest() {
 
               &AnyImageConverterTest::propagateConfiguration1D,
               &AnyImageConverterTest::propagateConfiguration2D,
-              &AnyImageConverterTest::propagateConfiguration3D,
-              &AnyImageConverterTest::propagateConfigurationUnknown1D,
-              &AnyImageConverterTest::propagateConfigurationUnknown2D,
-              &AnyImageConverterTest::propagateConfigurationUnknown3D,
-              &AnyImageConverterTest::propagateConfigurationCompressed1D,
-              &AnyImageConverterTest::propagateConfigurationCompressed2D,
-              &AnyImageConverterTest::propagateConfigurationCompressed3D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknown1D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknown2D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknown3D,
+              &AnyImageConverterTest::propagateConfiguration3D});
 
-              &AnyImageConverterTest::propagateConfigurationLevels1D,
+    addInstancedTests({
+        &AnyImageConverterTest::propagateConfigurationUnknown1D,
+        &AnyImageConverterTest::propagateConfigurationUnknown2D,
+        &AnyImageConverterTest::propagateConfigurationUnknown3D},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnyImageConverterTest::propagateConfigurationCompressed1D,
+              &AnyImageConverterTest::propagateConfigurationCompressed2D,
+              &AnyImageConverterTest::propagateConfigurationCompressed3D});
+
+    addInstancedTests({
+        &AnyImageConverterTest::propagateConfigurationCompressedUnknown1D,
+        &AnyImageConverterTest::propagateConfigurationCompressedUnknown2D,
+        &AnyImageConverterTest::propagateConfigurationCompressedUnknown3D},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnyImageConverterTest::propagateConfigurationLevels1D,
               &AnyImageConverterTest::propagateConfigurationLevels2D,
-              &AnyImageConverterTest::propagateConfigurationLevels3D,
-              &AnyImageConverterTest::propagateConfigurationUnknownLevels1D,
-              &AnyImageConverterTest::propagateConfigurationUnknownLevels2D,
-              &AnyImageConverterTest::propagateConfigurationUnknownLevels3D,
-              &AnyImageConverterTest::propagateConfigurationCompressedLevels1D,
+              &AnyImageConverterTest::propagateConfigurationLevels3D});
+
+    addInstancedTests({
+        &AnyImageConverterTest::propagateConfigurationUnknownLevels1D,
+        &AnyImageConverterTest::propagateConfigurationUnknownLevels2D,
+        &AnyImageConverterTest::propagateConfigurationUnknownLevels3D},
+        Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnyImageConverterTest::propagateConfigurationCompressedLevels1D,
               &AnyImageConverterTest::propagateConfigurationCompressedLevels2D,
-              &AnyImageConverterTest::propagateConfigurationCompressedLevels3D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D,
-              &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D});
+              &AnyImageConverterTest::propagateConfigurationCompressedLevels3D});
+
+    addInstancedTests({
+        &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D,
+        &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D,
+        &AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D},
+        Containers::arraySize(PropagateConfigurationUnknownData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -1306,6 +1329,9 @@ void AnyImageConverterTest::propagateConfiguration3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown1D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1317,27 +1343,41 @@ void AnyImageConverterTest::propagateConfigurationUnknown1D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(Image1D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown2D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(Image2D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.tga")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by TgaImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by TgaImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknown3D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1349,11 +1389,15 @@ void AnyImageConverterTest::propagateConfigurationUnknown3D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(Image3D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressed1D() {
@@ -1432,6 +1476,9 @@ void AnyImageConverterTest::propagateConfigurationCompressed3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown1D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1443,14 +1490,21 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown1D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1462,14 +1516,21 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown2D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknown3D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1481,11 +1542,15 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknown3D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationLevels1D() {
@@ -1570,6 +1635,9 @@ void AnyImageConverterTest::propagateConfigurationLevels3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1581,16 +1649,23 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels1D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image1D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1602,16 +1677,23 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels2D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image2D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "2d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1623,13 +1705,17 @@ void AnyImageConverterTest::propagateConfigurationUnknownLevels3D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image3D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {
@@ -1714,6 +1800,9 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels3D() {
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1725,16 +1814,23 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels1D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-1d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1746,16 +1842,23 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels2D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-2d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D() {
+    auto&& data = PropagateConfigurationUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractImageConverter> manager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -1767,13 +1870,17 @@ void AnyImageConverterTest::propagateConfigurationCompressedUnknownLevels3D() {
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     converter->configuration().setValue("noSuchOption", "isHere");
+    converter->setFlags(data.flags);
 
     std::ostringstream out;
     Warning redirectWarning{&out};
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "compressed-3d.ktx2")));
-    CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
+    if(data.quiet)
+        CORRADE_COMPARE(out.str(), "");
+    else
+        CORRADE_COMPARE(out.str(), "Trade::AnyImageConverter::convertToFile(): option noSuchOption not recognized by KtxImageConverter\n");
 }
 
 }}}}

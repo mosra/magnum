@@ -228,7 +228,7 @@ Containers::Pair<bool, Containers::String> AnyConverter::doValidateFile(const St
         converter->setDefinitions(_state->definitionViews);
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ConverterFlag::Quiet));
 
     /* Try to validate the file (error output should be printed by the plugin
        itself) */
@@ -285,7 +285,7 @@ Containers::Pair<bool, Containers::String> AnyConverter::doValidateData(const St
         converter->setDefinitions(_state->definitionViews);
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateData():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::validateData():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ConverterFlag::Quiet));
 
     /* Try to validate the data (error output should be printed by the plugin
        itself) */
@@ -369,7 +369,7 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
         converter->setOptimizationLevel(_state->optimizationLevel);
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToFile():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToFile():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -454,7 +454,7 @@ Containers::Optional<Containers::Array<char>> AnyConverter::doConvertFileToData(
         converter->setOptimizationLevel(_state->optimizationLevel);
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToData():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertFileToData():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
@@ -537,7 +537,7 @@ Containers::Optional<Containers::Array<char>> AnyConverter::doConvertDataToData(
         converter->setOptimizationLevel(_state->optimizationLevel);
 
     /* Propagate configuration */
-    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertDataToData():", {}, metadata->name(), configuration(), converter->configuration());
+    Magnum::Implementation::propagateConfiguration("ShaderTools::AnyConverter::convertDataToData():", {}, metadata->name(), configuration(), converter->configuration(), !(flags() & ConverterFlag::Quiet));
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

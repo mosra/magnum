@@ -45,7 +45,7 @@ namespace Magnum { namespace Implementation {
 /* Used only in plugins where we don't want it to be exported */
 namespace {
 
-void propagateConfiguration(const char* warningPrefix, const Containers::String& groupPrefix, const Containers::StringView plugin, const Utility::ConfigurationGroup& src, Utility::ConfigurationGroup& dst, bool warnUnrecognized = true) {
+void propagateConfiguration(const char* warningPrefix, const Containers::String& groupPrefix, const Containers::StringView plugin, const Utility::ConfigurationGroup& src, Utility::ConfigurationGroup& dst, bool warnUnrecognized, bool warnUnrecognizedNested) {
     using namespace Containers::Literals;
 
     /* Propagate values */
@@ -65,16 +65,20 @@ void propagateConfiguration(const char* warningPrefix, const Containers::String&
            customSceneFieldTypes), don't warn about unrecognized values. This
            logic is repeated for nested subgroups instead of being inherited,
            meaning that adding a nonexistent subgroup to an empty group will
-           warn again. */
-        bool warnUnrecognizedSubgroup = true;
+           warn again (unless all warnings are disabled). */
+        bool warnUnrecognizedSubgroup = warnUnrecognizedNested;
         if(!dstGroup) {
             dstGroup = dst.addGroup(group.first());
         } else if(!dstGroup->hasGroups() && !dstGroup->hasValues()) {
             warnUnrecognizedSubgroup = false;
         }
 
-        propagateConfiguration(warningPrefix, "/"_s.joinWithoutEmptyParts({groupPrefix, group.first()}), plugin, group.second(), *dstGroup, warnUnrecognizedSubgroup);
+        propagateConfiguration(warningPrefix, "/"_s.joinWithoutEmptyParts({groupPrefix, group.first()}), plugin, group.second(), *dstGroup, warnUnrecognizedSubgroup, warnUnrecognizedNested);
     }
+}
+
+void propagateConfiguration(const char* warningPrefix, const Containers::String& groupPrefix, const Containers::StringView plugin, const Utility::ConfigurationGroup& src, Utility::ConfigurationGroup& dst, bool warnUnrecognized = true) {
+    propagateConfiguration(warningPrefix, groupPrefix, plugin, src, dst, warnUnrecognized, warnUnrecognized);
 }
 
 }
