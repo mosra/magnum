@@ -1649,6 +1649,7 @@ Debug& operator<<(Debug& debug, const ImporterFlag value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(v) case ImporterFlag::v: return debug << "::" #v;
+        _c(Quiet)
         _c(Verbose)
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -1659,6 +1660,7 @@ Debug& operator<<(Debug& debug, const ImporterFlag value) {
 
 Debug& operator<<(Debug& debug, const ImporterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::ImporterFlags{}", {
+        ImporterFlag::Quiet,
         ImporterFlag::Verbose});
 }
 

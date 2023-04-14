@@ -1365,6 +1365,7 @@ Debug& operator<<(Debug& debug, const ImageConverterFlag value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(v) case ImageConverterFlag::v: return debug << "::" #v;
+        _c(Quiet)
         _c(Verbose)
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -1375,6 +1376,7 @@ Debug& operator<<(Debug& debug, const ImageConverterFlag value) {
 
 Debug& operator<<(Debug& debug, const ImageConverterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::ImageConverterFlags{}", {
+        ImageConverterFlag::Quiet,
         ImageConverterFlag::Verbose});
 }
 

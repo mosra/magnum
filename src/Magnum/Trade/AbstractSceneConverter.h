@@ -288,6 +288,12 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFeatures value
 */
 enum class SceneConverterFlag: UnsignedByte {
     /**
+     * Suppress warnings, print just errors. By default the converter prints
+     * both warnings and errors.
+     */
+    Quiet = 1 << 1,
+
+    /**
      * Print verbose diagnostic during conversion. By default the converter
      * only prints messages on error or when some operation might cause
      * unexpected data modification or loss.
@@ -296,6 +302,11 @@ enum class SceneConverterFlag: UnsignedByte {
      * @ref magnum-sceneconverter "magnum-sceneconverter".
      */
     Verbose = 1 << 0
+
+    /** @todo is warning as error (like in ShaderConverter) usable for anything
+        here? in case of a compiler it makes sense, in case of an importer not
+        so much probably? it'd also mean expanding each and every Warning
+        print (using Error, adding a return) which is a lot to maintain */
 
     /** @todo Y flip */
 };

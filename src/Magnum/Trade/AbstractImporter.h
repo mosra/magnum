@@ -106,6 +106,13 @@ typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallb
 */
 enum class ImporterFlag: UnsignedByte {
     /**
+     * Suppress warnings, print just errors. By default the converter prints
+     * both warnings and errors.
+     * @m_since_latest
+     */
+    Quiet = 1 << 1,
+
+    /**
      * Print verbose diagnostic during import. By default the importer only
      * prints messages on error or when some operation might cause unexpected
      * data modification or loss.
@@ -116,6 +123,11 @@ enum class ImporterFlag: UnsignedByte {
      * @ref magnum-player "magnum-player".
      */
     Verbose = 1 << 0,
+
+    /** @todo is warning as error (like in ShaderConverter) usable for anything
+        here? in case of a compiler it makes sense, in case of an importer not
+        so much probably? it'd also mean expanding each and every Warning
+        print (using Error, adding a return) which is a lot to maintain */
 
     /** @todo ~~Y flip~~ Y up for images, "I want to import just once, don't copy" ... */
 };

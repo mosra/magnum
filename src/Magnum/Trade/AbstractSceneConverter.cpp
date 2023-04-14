@@ -1756,6 +1756,7 @@ Debug& operator<<(Debug& debug, const SceneConverterFlag value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(v) case SceneConverterFlag::v: return debug << "::" #v;
+        _c(Quiet)
         _c(Verbose)
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -1766,6 +1767,7 @@ Debug& operator<<(Debug& debug, const SceneConverterFlag value) {
 
 Debug& operator<<(Debug& debug, const SceneConverterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::SceneConverterFlags{}", {
+        SceneConverterFlag::Quiet,
         SceneConverterFlag::Verbose});
 }
 
