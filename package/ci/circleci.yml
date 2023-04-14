@@ -1,6 +1,14 @@
 version: 2.1
 
 orbs:
+  # Version 3.2.4 is the "new" uploader, but it's a 50 MB Node.js *binary* and
+  # doesn't work on ARM64 Linux (or ARM Macs, or FreeBSD for that matter) and
+  # nobody seems to care. Issues opened since Septembe 2021:
+  #   https://github.com/codecov/uploader/issues/347
+  #   https://github.com/codecov/uploader/issues/523
+  #   https://github.com/codecov/uploader/issues/849
+  # The old 1.1.1 still seems to work even though codecov got removed from pip
+  # on 2023-04-14.
   codecov: codecov/codecov@1.1.1
 
 executors:
@@ -45,6 +53,8 @@ commands:
         default: ""
     steps:
     - run:
+        # TODO when switching to the new codecov uploader, gpg and git needs to
+        #   be installed as well
         name: Update apt and install base packages
         # Git is needed always for cloning Corrade
         command: |
@@ -261,6 +271,27 @@ commands:
           lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/MagnumExternal/*" --output-file coverage.info > /dev/null
           lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
           lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null
+    # Official docs say "token not needed for public repos", in reality not
+    # using the token is "extremely flakey". What's best is that if the upload
+    # fails, the damn thing exits with a success error code, and nobody cares:
+    # https://github.com/codecov/codecov-circleci-orb/issues/139
+    # https://community.codecov.com/t/commit-sha-does-not-match-circle-build/4266
+    #
+    # Second best thing is that the codecov/upload helper takes a `token`
+    # parameter. But the token parameter is an ENVIRONMENT VARIABLE NAME!! So
+    # one just *can't* pass the token there. It got changed arbitrarily in
+    # https://github.com/codecov/codecov-circleci-orb/pull/93 "because
+    # CircleCI docs suggested so", yet all codecov docs suggest just commiting
+    # that token directly to the YML files because "it's fine". So if it's
+    # fine, why do I have to suffer like this?!
+    - run:
+        name: Set codecov upload token because everything is a dumpster fire
+        # An icing on the cake is that CircleCI commands don't allow setting
+        # `environment` for `commands`, only for `jobs`, so I have to do that
+        # via bash, and because the environment isn't passsed from a run to
+        # run, use the BASH_ENV hack. Mmm. Technology.
+        command: |
+          echo 'export CODECOV_TOKEN=3b1a7cc0-8bfb-4cde-8d99-dc04572a43c3' >> "$BASH_ENV"
     - codecov/upload:
         file: coverage.info
 

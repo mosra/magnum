@@ -117,10 +117,11 @@ install:
 # Ninja. `cinst ninja` started 503ing in late November 2019 and wasn't really
 # reliable before either. So install by hand, as that's reliable always.
 - IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ninja-win.zip appveyor DownloadFile https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip
-- 7z x ninja-win.zip -oC:/tools/ninja
+- 7z x ninja-win.zip -oC:/tools
+- set PATH=C:/tools;%PATH%
 
-- set PATH=C:/tools/ninja;%PATH%
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" pip install codecov
+# Codecov uploader
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" appveyor DownloadFile https://uploader.codecov.io/latest/windows/codecov.exe -FileName C:/tools/codecov.exe
 
 - IF "%TARGET_GLES2%" == "ON" set TARGET_GLES3=OFF
 - IF "%TARGET_GLES2%" == "OFF" set TARGET_GLES3=ON

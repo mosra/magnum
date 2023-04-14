@@ -74,4 +74,14 @@ cmake --build . --target install || exit /b
 rem Coverage upload
 set PATH=C:\msys64\usr\bin;%PATH%
 bash %APPVEYOR_BUILD_FOLDER%\package\ci\appveyor-lcov.sh || exit /b
-codecov -f coverage.info -X gcov
+rem The damn new codecov binary is apparently unable to work with
+rem subdirectories on Windows. Nobody cares.
+rem https://github.com/codecov/codecov-action/issues/862
+cd %APPVEYOR_BUILD_FOLDER%
+move build\coverage.info coverage.info || exit /b
+rem Official docs say "not needed for public repos", in reality not using the
+rem token is "extremely flakey". What's best is that if the upload fails, the
+rem damn thing exits with a success error code, and nobody cares:
+rem https://github.com/codecov/codecov-circleci-orb/issues/139
+rem https://community.codecov.com/t/commit-sha-does-not-match-circle-build/4266
+codecov -f ./coverage.info -t 3b1a7cc0-8bfb-4cde-8d99-dc04572a43c3 -X gcov || exit /b
