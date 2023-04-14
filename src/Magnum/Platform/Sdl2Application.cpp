@@ -44,8 +44,10 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Arguments.h>
 
+#include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
@@ -361,11 +363,18 @@ void Sdl2Application::setWindowIcon(const ImageView2D& image) {
             CORRADE_ASSERT_UNREACHABLE("Platform::Sdl2Application::setWindowIcon(): unexpected format" << image.format(), );
     }
 
-    /* Images are loaded with origin at bottom left, flip it to top left.
-       Fortunately SDL accepts negative stride, so we don't need to do an
-       expensive flip ourselves. */
-    Containers::StridedArrayView3D<const char> pixels = image.pixels().flipped<0>();
-    SDL_Surface* icon = SDL_CreateRGBSurfaceWithFormatFrom(const_cast<void*>(pixels.data()) , image.size().x(), image.size().y(), 32, pixels.stride()[0], format);
+    /* Images are loaded with origin at bottom left, flip it to top left. SDL
+       only accepted a negative stride until version 2.23.1 and commit
+        https://github.com/libsdl-org/SDL/commit/535fdc3adcdc08a193ab0d45540014fd536cf251
+       so we need to manually flip the image now */
+    /** @todo take ImageFlag::YUp into account once it exists */
+    Image2D flippedImage{PixelStorage{}.setAlignment(1), image.format(), image.size(), Containers::Array<char>{NoInit, std::size_t(image.size().product()*image.pixelSize())}};
+    const Containers::StridedArrayView3D<char> flippedPixels = flippedImage.pixels();
+    Utility::copy(image.pixels().flipped<0>(), flippedPixels);
+
+    SDL_Surface* const icon = SDL_CreateRGBSurfaceWithFormatFrom(const_cast<void*>(flippedPixels.data()) , flippedImage.size().x(), flippedImage.size().y(), 32, flippedPixels.stride()[0], format);
+    CORRADE_INTERNAL_ASSERT(icon);
+
     SDL_SetWindowIcon(_window, icon);
     SDL_FreeSurface(icon);
 }
