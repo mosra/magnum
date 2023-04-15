@@ -50,40 +50,47 @@ struct ImageConverterTest: TestSuite::Tester {
 using namespace Containers::Literals;
 
 const struct {
-    const char* name;
+    TestSuite::TestCaseDescriptionSourceLocation name;
     Containers::Array<Containers::String> args;
     const char* requiresImporter;
     const char* requiresConverter;
     const char* expected;
 } InfoData[]{
-    {"importer", Containers::array<Containers::String>({
-        "--info-importer", "-i", "someOption=yes"}),
+    {"importer", {InPlaceInit, {
+            "--info-importer", "-i", "someOption=yes"
+        }},
         "AnyImageImporter", nullptr,
         "info-importer.txt"},
-    {"converter", Containers::array<Containers::String>({
-        "-C", "AnyImageConverter", "--info-converter", "-c", "someOption=yes"}),
+    {"converter", {InPlaceInit, {
+            "-C", "AnyImageConverter", "--info-converter", "-c", "someOption=yes"
+        }},
         nullptr, "AnyImageConverter",
         "info-converter.txt"},
-    {"converter, implicit", Containers::array<Containers::String>({
-        "--info-converter", "-c", "someOption=yes"}),
+    {"converter, implicit", {InPlaceInit, {
+            "--info-converter", "-c", "someOption=yes"
+        }},
         nullptr, "AnyImageConverter",
         "info-converter.txt"},
-    {"importer, ignored input and output", Containers::array<Containers::String>({
-        "--info-importer", "a.png", "b.png", "out.jpg"}),
+    {"importer, ignored input and output", {InPlaceInit, {
+            "--info-importer", "a.png", "b.png", "out.jpg"
+        }},
         "AnySceneImporter", nullptr,
         "info-importer-ignored-input-output.txt"},
-    {"data", Containers::array<Containers::String>({
-        "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga")}),
+    {"data", {InPlaceInit, {
+            "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga")
+        }},
         "TgaImporter", nullptr,
         "info-data.txt"},
-    {"data, map", Containers::array<Containers::String>({
-        "--map", "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga")}),
+    {"data, map", {InPlaceInit, {
+            "--map", "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga")
+        }},
         "TgaImporter", nullptr,
         /** @todo change to something else once we have a plugin that can
             zero-copy pass the imported data */
         "info-data.txt"},
-    {"data, ignored output file", Containers::array<Containers::String>({
-        "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga"), "whatever.png"}),
+    {"data, ignored output file", {InPlaceInit, {
+            "-I", "TgaImporter", "--info", Utility::Path::join(TRADE_TEST_DIR, "ImageConverterTestFiles/file.tga"), "whatever.png"
+        }},
         "TgaImporter", nullptr,
         "info-data-ignored-output.txt"}
 };

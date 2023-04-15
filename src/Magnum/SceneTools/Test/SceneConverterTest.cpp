@@ -62,42 +62,51 @@ const struct {
     const char* requiresImageConverter;
     const char* expected;
 } InfoData[]{
-    {"importer", Containers::array<Containers::String>({
-        "--info-importer", "-i", "someOption=yes"}),
+    {"importer", {InPlaceInit, {
+            "--info-importer", "-i", "someOption=yes"
+        }},
         "AnySceneImporter", nullptr, nullptr,
         "info-importer.txt"},
-    {"converter", Containers::array<Containers::String>({
-        "-C", "AnySceneConverter", "--info-converter", "-c", "someOption=yes"}),
+    {"converter", {InPlaceInit, {
+            "-C", "AnySceneConverter", "--info-converter", "-c", "someOption=yes"
+        }},
         nullptr, "AnySceneConverter", nullptr,
         "info-converter.txt"},
-    {"converter, implicit", Containers::array<Containers::String>({
-        "--info-converter", "-c", "someOption=yes"}),
+    {"converter, implicit", {InPlaceInit, {
+            "--info-converter", "-c", "someOption=yes"
+        }},
         nullptr, "AnySceneConverter", nullptr,
         "info-converter.txt"},
-    {"image converter", Containers::array<Containers::String>({
-        "-P", "AnyImageConverter", "--info-image-converter", "-p", "someOption=yes"}),
+    {"image converter", {InPlaceInit, {
+            "-P", "AnyImageConverter", "--info-image-converter", "-p", "someOption=yes"
+        }},
         nullptr, nullptr, "AnyImageConverter",
         "info-image-converter.txt"},
-    {"image converter, implicit", Containers::array<Containers::String>({
-        "--info-image-converter", "-p", "someOption=yes"}),
+    {"image converter, implicit", {InPlaceInit, {
+        "--info-image-converter", "-p", "someOption=yes"
+        }},
         nullptr, nullptr, "AnyImageConverter",
         "info-image-converter.txt"},
-    {"importer, ignored input and output", Containers::array<Containers::String>({
-        "--info-importer", "input.obj", "output.ply"}),
+    {"importer, ignored input and output", {InPlaceInit, {
+            "--info-importer", "input.obj", "output.ply"
+        }},
         "AnySceneImporter", nullptr, nullptr,
         "info-importer-ignored-input-output.txt"},
-    {"data", Containers::array<Containers::String>({
-        "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}),
+    {"data", {InPlaceInit, {
+            "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")
+        }},
         "ObjImporter", nullptr, nullptr,
         "info-data.txt"},
-    {"data, map", Containers::array<Containers::String>({
-        "--map", "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")}),
+    {"data, map", {InPlaceInit, {
+            "--map", "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj")
+        }},
         "ObjImporter", nullptr, nullptr,
         /** @todo change to something else once we have a plugin that can
             zero-copy pass the imported data */
         "info-data.txt"},
-    {"data, ignored output file", Containers::array<Containers::String>({
-        "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), "whatever.ply"}),
+    {"data, ignored output file", {InPlaceInit, {
+            "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), "whatever.ply"
+        }},
         "ObjImporter", nullptr, nullptr,
         "info-data-ignored-output.txt"}
 };
