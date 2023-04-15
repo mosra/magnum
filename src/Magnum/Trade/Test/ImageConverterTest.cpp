@@ -96,10 +96,8 @@ const struct {
 };
 
 ImageConverterTest::ImageConverterTest() {
-    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     addInstancedTests({&ImageConverterTest::info},
         Containers::arraySize(InfoData));
-    #endif
 
     /* Create output dir, if doesn't already exist */
     Utility::Path::make(Utility::Path::join(TRADE_TEST_OUTPUT_DIR, "ImageConverterTestFiles"));
