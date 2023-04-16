@@ -800,19 +800,19 @@ const struct {
         "PluginManager::Manager::load(): plugin NonexistentImporter is not static and was not found in nonexistent/importers\n"
         "Available importer plugins: "},
     {"can't open a file", {InPlaceInit, {
-            "noexistent.ffs",
+            "nonexistent.ffs",
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
         }},
         "AnySceneImporter", nullptr, nullptr, nullptr,
-        "Trade::AnySceneImporter::openFile(): cannot determine the format of noexistent.ffs\n"
-        "Cannot open file noexistent.ffs\n"},
+        "Trade::AnySceneImporter::openFile(): cannot determine the format of nonexistent.ffs\n"
+        "Cannot open file nonexistent.ffs\n"},
     {"can't map a file", {InPlaceInit, {
-            "noexistent.ffs", "--map",
+            "nonexistent.ffs", "--map",
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.ply")
         }},
         "AnySceneImporter", nullptr, nullptr, nullptr,
-        "Utility::Path::mapRead(): can't open noexistent.ffs: error 2 (No such file or directory)\n"
-        "Cannot memory-map file noexistent.ffs\n"},
+        "Utility::Path::mapRead(): can't open nonexistent.ffs: error 2 (No such file or directory)\n"
+        "Cannot memory-map file nonexistent.ffs\n"},
     {"no meshes found for concatenation", {InPlaceInit, {
             "--concatenate-meshes",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/empty.gltf"),
