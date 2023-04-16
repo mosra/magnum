@@ -25,46 +25,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Function @ref Magnum::MeshTools::filterOnlyAttributes(), @ref Magnum::MeshTools::filterExceptAttributes()
- * @m_since_latest
+ * @m_deprecated_since_latest Use @ref Magnum/MeshTools/Filter.h instead.
  */
+#endif
 
-#include <initializer_list>
+#include "Magnum/configure.h"
 
-#include "Magnum/MeshTools/visibility.h"
-#include "Magnum/Trade/Trade.h"
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+
+#include "Magnum/MeshTools/Filter.h"
+
+#ifndef _MAGNUM_NO_DEPRECATED_MESHTOOLS_FILTERATTRIBUTES
+CORRADE_DEPRECATED_FILE("use Magnum/MeshTools/Filter.h instead")
+#endif
 
 namespace Magnum { namespace MeshTools {
 
 /**
-@brief Filter a mesh to contain only the selected subset of named attributes
-@m_since_latest
-
-Returns a non-owning reference to the vertex and index buffer from @p mesh with
-only the attributes that are listed in @p attributes. The index buffer, if
-present, is left untouched. Attributes from the list that are not present in
-@p mesh are skipped. All duplicates of a listed attribute are kept --- if you
-want a different behavior, use the @ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
-overload and pick attributes by their IDs instead.
-
-This function only operates on the attribute metadata --- if you'd like to have
-the vertex data repacked to contain just the remaining attributes as well, pass
-the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
-without @ref InterleaveFlag::PreserveInterleavedAttributes set.
-@see @ref reference()
-*/
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttribute> attributes);
-
-/**
- * @overload
- * @m_since_latest
- */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes);
-
-/**
 @brief Filter a mesh to contain only the selected subset of attributes
-@m_since_latest
+@m_deprecated_since_latest Use @ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView)
+    instead.
 
 Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attribute IDs listed in @p attributes. IDs specified more than once
@@ -78,42 +62,19 @@ the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<cons
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
 @see @ref reference()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const UnsignedInt> attributes);
+CORRADE_DEPRECATED("use filterAttributes() instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const UnsignedInt> attributes);
 
 /**
- * @overload
- * @m_since_latest
- */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes);
-
-/**
-@brief Filter a mesh to contain everything except the selected subset of named attributes
-@m_since_latest
-
-Returns a non-owning reference to the vertex and index buffer from @p mesh with
-only the attributes that are not listed in @p attributes. The index buffer, if
-present, is left untouched. Attributes from the list that are not present in
-@p mesh are skipped. All duplicates of a listed attribute are removed --- if
-you want a different behavior, use the @ref filterExceptAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
-overload and pick attributes by their IDs instead. If @p attributes is empty,
-the behavior is equivalent to @ref reference().
-
-This function only operates on the attribute metadata --- if you'd like to have
-the vertex mesh repacked to contain just the remaining attributes as well, pass
-the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
-without @ref InterleaveFlag::PreserveInterleavedAttributes set.
+@brief Filter a mesh to contain only the selected subset of attributes
+@m_deprecated_since_latest Use @ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView)
+    instead.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttribute> attributes);
-
-/**
- * @overload
- * @m_since_latest
- */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttribute> attributes);
+CORRADE_DEPRECATED("use filterAttributes() instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes);
 
 /**
 @brief Filter a mesh to contain everything except the selected subset of attributes
-@m_since_latest
+@m_deprecated_since_latest Use @ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView)
+    instead.
 
 Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attribute IDs that are not listed in @p attributes. IDs specified
@@ -127,14 +88,18 @@ the vertex data repacked to contain just the remaining attributes as well, pass
 the output to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags) "interleave()"
 without @ref InterleaveFlag::PreserveInterleavedAttributes set.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const UnsignedInt> attributes);
+CORRADE_DEPRECATED("use filterAttributes() instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const UnsignedInt> attributes);
 
 /**
- * @overload
- * @m_since_latest
- */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes);
+@brief Filter a mesh to contain everything except the selected subset of attributes
+@m_deprecated_since_latest Use @ref filterAttributes(const Trade::MeshData&, Containers::BitArrayView)
+    instead.
+*/
+CORRADE_DEPRECATED("use filterAttributes() instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterExceptAttributes(const Trade::MeshData& mesh, std::initializer_list<UnsignedInt> attributes);
 
 }}
+#else
+#error use Magnum/MeshTools/Filter.h instead
+#endif
 
 #endif

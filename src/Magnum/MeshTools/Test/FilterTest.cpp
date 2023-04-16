@@ -24,35 +24,50 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Vector4.h"
-#include "Magnum/MeshTools/FilterAttributes.h"
+#include "Magnum/MeshTools/Filter.h"
 #include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_MESHTOOLS_FILTERATTRIBUTES /* so it doesn't warn */
+#include "Magnum/MeshTools/FilterAttributes.h"
+#endif
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
-struct FilterAttributesTest: TestSuite::Tester {
-    explicit FilterAttributesTest();
+struct FilterTest: TestSuite::Tester {
+    explicit FilterTest();
 
-    void filterOnlyAttributeNames();
-    void filterOnlyAttributeNamesNoIndexData();
-    void filterOnlyAttributeNamesNoAttributeData();
+    void attributes();
+    void attributesNoIndexData();
+    void attributesWrongBitCount();
 
-    void filterOnlyAttributeIds();
-    void filterOnlyAttributeIdsOutOfBounds();
-    void filterOnlyAttributeIdsNoIndexData();
-    void filterOnlyAttributeIdsNoAttributeData();
+    void onlyAttributes();
+    void onlyAttributesNoIndexData();
+    void onlyAttributesNoAttributeData();
 
-    void filterExceptAttributeNames();
-    void filterExceptAttributeNamesNoIndexData();
-    void filterExceptAttributeNamesNoAttributeData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void onlyAttributeIds();
+    void onlyAttributeIdsOutOfBounds();
+    void onlyAttributeIdsNoIndexData();
+    void onlyAttributeIdsNoAttributeData();
+    #endif
 
-    void filterExceptAttributeIds();
-    void filterExceptAttributeIdsOutOfBounds();
-    void filterExceptAttributeIdsNoIndexData();
-    void filterExceptAttributeIdsNoAttributeData();
+    void exceptAttributes();
+    void exceptAttributesNoIndexData();
+    void exceptAttributesNoAttributeData();
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void exceptAttributeIds();
+    void exceptAttributeIdsOutOfBounds();
+    void exceptAttributeIdsNoIndexData();
+    void exceptAttributeIdsNoAttributeData();
+    #endif
 };
 
 const struct {
@@ -63,32 +78,42 @@ const struct {
     {"implementation-specific index type", meshIndexTypeWrap(0xcaca)}
 };
 
-FilterAttributesTest::FilterAttributesTest() {
-    addInstancedTests({&FilterAttributesTest::filterOnlyAttributeNames},
+FilterTest::FilterTest() {
+    addInstancedTests({&FilterTest::attributes},
         Containers::arraySize(ImplementationSpecificIndexTypeData));
 
-    addTests({&FilterAttributesTest::filterOnlyAttributeNamesNoIndexData,
-              &FilterAttributesTest::filterOnlyAttributeNamesNoAttributeData});
+    addTests({&FilterTest::attributesNoIndexData,
+              &FilterTest::attributesWrongBitCount});
 
-    addInstancedTests({&FilterAttributesTest::filterOnlyAttributeIds},
+    addInstancedTests({&FilterTest::onlyAttributes},
         Containers::arraySize(ImplementationSpecificIndexTypeData));
 
-    addTests({&FilterAttributesTest::filterOnlyAttributeIdsOutOfBounds,
-              &FilterAttributesTest::filterOnlyAttributeIdsNoIndexData,
-              &FilterAttributesTest::filterOnlyAttributeIdsNoAttributeData});
+    addTests({&FilterTest::onlyAttributesNoIndexData,
+              &FilterTest::onlyAttributesNoAttributeData});
 
-    addInstancedTests({&FilterAttributesTest::filterExceptAttributeNames},
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addInstancedTests({&FilterTest::onlyAttributeIds},
         Containers::arraySize(ImplementationSpecificIndexTypeData));
 
-    addTests({&FilterAttributesTest::filterExceptAttributeNamesNoIndexData,
-              &FilterAttributesTest::filterExceptAttributeNamesNoAttributeData});
+    addTests({&FilterTest::onlyAttributeIdsOutOfBounds,
+              &FilterTest::onlyAttributeIdsNoIndexData,
+              &FilterTest::onlyAttributeIdsNoAttributeData});
+    #endif
 
-    addInstancedTests({&FilterAttributesTest::filterExceptAttributeIds},
+    addInstancedTests({&FilterTest::exceptAttributes},
         Containers::arraySize(ImplementationSpecificIndexTypeData));
 
-    addTests({&FilterAttributesTest::filterExceptAttributeIdsOutOfBounds,
-              &FilterAttributesTest::filterExceptAttributeIdsNoIndexData,
-              &FilterAttributesTest::filterExceptAttributeIdsNoAttributeData});
+    addTests({&FilterTest::exceptAttributesNoIndexData,
+              &FilterTest::exceptAttributesNoAttributeData});
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addInstancedTests({&FilterTest::exceptAttributeIds},
+        Containers::arraySize(ImplementationSpecificIndexTypeData));
+
+    addTests({&FilterTest::exceptAttributeIdsOutOfBounds,
+              &FilterTest::exceptAttributeIdsNoIndexData,
+              &FilterTest::exceptAttributeIdsNoAttributeData});
+    #endif
 }
 
 struct Vertex {
@@ -97,7 +122,104 @@ struct Vertex {
     Vector2 textureCoordinates1, textureCoordinates2;
 };
 
-void FilterAttributesTest::filterOnlyAttributeNames() {
+void FilterTest::attributes() {
+    auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
+    Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
+        std::move(indexData), Trade::MeshIndexData{data.indexType, indices},
+        std::move(vertexData), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertices.slice(&Vertex::tangent)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates2)},
+        }};
+
+    Containers::BitArray attributesToKeep{ValueInit, mesh.attributeCount()};
+    attributesToKeep.set(1);
+    attributesToKeep.set(3);
+
+    Trade::MeshData filtered = filterAttributes(mesh, attributesToKeep);
+    CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleStrip);
+
+    CORRADE_VERIFY(filtered.isIndexed());
+    CORRADE_COMPARE(filtered.indexCount(), 5);
+    CORRADE_COMPARE(filtered.indexType(), data.indexType);
+    CORRADE_COMPARE(filtered.indexData().data(), indices.data());
+    CORRADE_COMPARE(filtered.indexDataFlags(), Trade::DataFlags{});
+
+    CORRADE_COMPARE(filtered.vertexCount(), 3);
+    CORRADE_COMPARE(filtered.vertexData().data(), vertices.data());
+    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlags{});
+
+    /* Testing just the offset if it matches expectations, the
+       MeshAttributeData is copied directly so no metadata should get lost */
+    CORRADE_COMPARE(filtered.attributeCount(), 2);
+    CORRADE_COMPARE(filtered.attributeName(0), Trade::MeshAttribute::Tangent);
+    CORRADE_COMPARE(filtered.attributeOffset(0), offsetof(Vertex, tangent));
+    CORRADE_COMPARE(filtered.attributeName(1), Trade::MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(filtered.attributeOffset(1), offsetof(Vertex, textureCoordinates2));
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::MeshAttributeData> attributeData = filtered.releaseAttributeData();
+    CORRADE_VERIFY(!attributeData.deleter());
+}
+
+void FilterTest::attributesNoIndexData() {
+    /* A trivial subset of filterAttributes() testing it doesn't blow up if the
+       mesh is not indexed */
+
+    Containers::Array<char> vertexData{3*sizeof(Vertex)};
+    Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
+        std::move(vertexData), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
+        }};
+
+    Trade::MeshData filtered = filterAttributes(mesh, Containers::BitArray{DirectInit, 1, true});
+    CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleFan);
+
+    CORRADE_VERIFY(!filtered.isIndexed());
+    /* Consistent with behavior in reference() for index-less meshes */
+    CORRADE_COMPARE(filtered.indexDataFlags(), Trade::DataFlags{});
+
+    CORRADE_COMPARE(filtered.vertexCount(), 3);
+    CORRADE_COMPARE(filtered.vertexData().data(), vertices.data());
+    CORRADE_COMPARE(filtered.vertexDataFlags(), Trade::DataFlags{});
+
+    /* Testing just the offset if it matches expectations, the
+       MeshAttributeData is copied directly so no metadata should get lost */
+    CORRADE_COMPARE(filtered.attributeCount(), 1);
+    CORRADE_COMPARE(filtered.attributeName(0), Trade::MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(filtered.attributeOffset(0), offsetof(Vertex, textureCoordinates1));
+}
+
+void FilterTest::attributesWrongBitCount() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
+    Vertex vertices[3];
+
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
+        {}, vertices, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(vertices).slice(&Vertex::position)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, Containers::stridedArrayView(vertices).slice(&Vertex::textureCoordinates1)}
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    filterAttributes(mesh, Containers::BitArray{ValueInit, 3});
+    CORRADE_COMPARE(out.str(), "MeshTools::filterAttributes(): expected 2 bits but got 3\n");
+}
+
+void FilterTest::onlyAttributes() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -148,7 +270,7 @@ void FilterAttributesTest::filterOnlyAttributeNames() {
     CORRADE_VERIFY(!attributeData.deleter());
 }
 
-void FilterAttributesTest::filterOnlyAttributeNamesNoIndexData() {
+void FilterTest::onlyAttributesNoIndexData() {
     /* A trivial subset of filterOnlyAttributeNames() testing it doesn't blow
        up if the mesh is not indexed */
 
@@ -180,7 +302,7 @@ void FilterAttributesTest::filterOnlyAttributeNamesNoIndexData() {
     CORRADE_COMPARE(filtered.attributeOffset(0), offsetof(Vertex, textureCoordinates1));
 }
 
-void FilterAttributesTest::filterOnlyAttributeNamesNoAttributeData() {
+void FilterTest::onlyAttributesNoAttributeData() {
     Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
@@ -206,7 +328,8 @@ void FilterAttributesTest::filterOnlyAttributeNamesNoAttributeData() {
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
 
-void FilterAttributesTest::filterOnlyAttributeIds() {
+#ifdef MAGNUM_BUILD_DEPRECATED
+void FilterTest::onlyAttributeIds() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -224,11 +347,13 @@ void FilterAttributesTest::filterOnlyAttributeIds() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates2)},
         }};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterOnlyAttributes(mesh, {
         /* The attribute 1 is specified twice, but that won't result in the
            same attribute being added twice */
         1, 1, 3
     });
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleStrip);
 
     CORRADE_VERIFY(filtered.isIndexed());
@@ -255,7 +380,7 @@ void FilterAttributesTest::filterOnlyAttributeIds() {
     CORRADE_VERIFY(!attributeData.deleter());
 }
 
-void FilterAttributesTest::filterOnlyAttributeIdsOutOfBounds() {
+void FilterTest::onlyAttributeIdsOutOfBounds() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
@@ -269,11 +394,13 @@ void FilterAttributesTest::filterOnlyAttributeIdsOutOfBounds() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     filterOnlyAttributes(mesh, {0, 0, 2});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "MeshTools::filterOnlyAttributes(): index 2 out of range for 2 attributes\n");
 }
 
-void FilterAttributesTest::filterOnlyAttributeIdsNoIndexData() {
+void FilterTest::onlyAttributeIdsNoIndexData() {
     /* A trivial subset of filterOnlyAttributeIds() testing it doesn't blow up
        if the mesh is not indexed */
 
@@ -285,9 +412,11 @@ void FilterAttributesTest::filterOnlyAttributeIdsNoIndexData() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
         }};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterOnlyAttributes(mesh, {
         0
     });
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleFan);
 
     CORRADE_VERIFY(!filtered.isIndexed());
@@ -305,14 +434,16 @@ void FilterAttributesTest::filterOnlyAttributeIdsNoIndexData() {
     CORRADE_COMPARE(filtered.attributeOffset(0), offsetof(Vertex, textureCoordinates1));
 }
 
-void FilterAttributesTest::filterOnlyAttributeIdsNoAttributeData() {
+void FilterTest::onlyAttributeIdsNoAttributeData() {
     Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
         std::move(indexData), Trade::MeshIndexData{indices}, 15};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterOnlyAttributes(mesh, std::initializer_list<UnsignedInt>{});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::Points);
 
     CORRADE_VERIFY(filtered.isIndexed());
@@ -328,8 +459,9 @@ void FilterAttributesTest::filterOnlyAttributeIdsNoAttributeData() {
 
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
+#endif
 
-void FilterAttributesTest::filterExceptAttributeNames() {
+void FilterTest::exceptAttributes() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -380,7 +512,7 @@ void FilterAttributesTest::filterExceptAttributeNames() {
     CORRADE_VERIFY(!attributeData.deleter());
 }
 
-void FilterAttributesTest::filterExceptAttributeNamesNoIndexData() {
+void FilterTest::exceptAttributesNoIndexData() {
     /* A trivial subset of filterExceptAttributeNames() testing it doesn't blow
        up if the mesh is not indexed */
 
@@ -413,7 +545,7 @@ void FilterAttributesTest::filterExceptAttributeNamesNoIndexData() {
     CORRADE_COMPARE(filtered.attributeOffset(0), offsetof(Vertex, textureCoordinates1));
 }
 
-void FilterAttributesTest::filterExceptAttributeNamesNoAttributeData() {
+void FilterTest::exceptAttributesNoAttributeData() {
     Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
@@ -439,7 +571,8 @@ void FilterAttributesTest::filterExceptAttributeNamesNoAttributeData() {
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
 
-void FilterAttributesTest::filterExceptAttributeIds() {
+#ifdef MAGNUM_BUILD_DEPRECATED
+void FilterTest::exceptAttributeIds() {
     auto&& data = ImplementationSpecificIndexTypeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -457,11 +590,13 @@ void FilterAttributesTest::filterExceptAttributeIds() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates2)},
         }};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterExceptAttributes(mesh, {
         /* The attribute 1 is specified twice, but that won't result in
            attribute 1 being removed and then again */
         1, 1, 3
     });
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleStrip);
 
     CORRADE_VERIFY(filtered.isIndexed());
@@ -488,7 +623,7 @@ void FilterAttributesTest::filterExceptAttributeIds() {
     CORRADE_VERIFY(!attributeData.deleter());
 }
 
-void FilterAttributesTest::filterExceptAttributeIdsOutOfBounds() {
+void FilterTest::exceptAttributeIdsOutOfBounds() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
@@ -502,11 +637,13 @@ void FilterAttributesTest::filterExceptAttributeIdsOutOfBounds() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     filterExceptAttributes(mesh, {0, 0, 2});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "MeshTools::filterExceptAttributes(): index 2 out of range for 2 attributes\n");
 }
 
-void FilterAttributesTest::filterExceptAttributeIdsNoIndexData() {
+void FilterTest::exceptAttributeIdsNoIndexData() {
     /* A trivial subset of filterExceptAttributeIds() testing it doesn't blow up
        if the mesh is not indexed */
 
@@ -519,9 +656,11 @@ void FilterAttributesTest::filterExceptAttributeIdsNoIndexData() {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
         }};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterExceptAttributes(mesh, {
         0
     });
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleFan);
 
     CORRADE_VERIFY(!filtered.isIndexed());
@@ -539,14 +678,16 @@ void FilterAttributesTest::filterExceptAttributeIdsNoIndexData() {
     CORRADE_COMPARE(filtered.attributeOffset(0), offsetof(Vertex, textureCoordinates1));
 }
 
-void FilterAttributesTest::filterExceptAttributeIdsNoAttributeData() {
+void FilterTest::exceptAttributeIdsNoAttributeData() {
     Containers::Array<char> indexData{5*sizeof(UnsignedShort)};
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
         std::move(indexData), Trade::MeshIndexData{indices}, 15};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterExceptAttributes(mesh, std::initializer_list<UnsignedInt>{});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::Points);
 
     CORRADE_VERIFY(filtered.isIndexed());
@@ -562,7 +703,8 @@ void FilterAttributesTest::filterExceptAttributeIdsNoAttributeData() {
 
     CORRADE_COMPARE(filtered.attributeCount(), 0);
 }
+#endif
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FilterAttributesTest)
+CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FilterTest)
