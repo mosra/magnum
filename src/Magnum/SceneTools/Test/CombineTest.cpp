@@ -70,26 +70,61 @@ void CombineTest::test() {
     setTestCaseDescription(data.name);
 
     /* Testing the four possible object types, it should be possible to combine
-       them */
+       them. Make them all non-contiguous to catch accidents in the internal
+       casting / copying code.*/
 
-    const UnsignedInt meshMappingData[]{45, 78, 23};
-    const UnsignedByte meshFieldData[]{3, 5, 17};
+    const struct Mesh {
+        UnsignedInt mapping;
+        UnsignedByte mesh;
+    } meshData[]{
+        {45, 3},
+        {78, 5},
+        {23, 17}
+    };
+    auto meshes = Containers::stridedArrayView(meshData);
 
-    const UnsignedShort parentMappingData[]{0, 1};
-    const Short parentData[]{-1, 0};
+    const struct Parent {
+        UnsignedShort mapping;
+        Short parent;
+    } parentData[]{
+        {0, -1},
+        {1, 0}
+    };
+    auto parents = Containers::stridedArrayView(parentData);
 
-    const UnsignedByte translationMappingData[]{16};
-    const Vector2d translationFieldData[]{{1.5, -0.5}};
+    const struct Translation {
+        UnsignedByte mapping;
+        Vector2d translation;
+    } translationData[]{
+        {16, {1.5, -0.5}}
+    };
+    auto translations = Containers::stridedArrayView(translationData);
 
-    const UnsignedLong fooMappingData[]{15, 23};
-    const Int fooFieldData[]{0, 1, 2, 3};
+    const struct Foo {
+        UnsignedLong mapping;
+        Int foo[2];
+    } fooData[]{
+        {15, {0, 1}},
+        {23, {2, 3}}
+    };
+    auto foos = Containers::stridedArrayView(fooData);
 
     Trade::SceneData scene = Implementation::combine(data.objectType, 167, Containers::arrayView({
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Containers::arrayView(meshMappingData), Containers::arrayView(meshFieldData)},
-        Trade::SceneFieldData{Trade::SceneField::Parent, Containers::arrayView(parentMappingData), Containers::arrayView(parentData), Trade::SceneFieldFlag::ImplicitMapping},
-        Trade::SceneFieldData{Trade::SceneField::Translation, Containers::arrayView(translationMappingData), Containers::arrayView(translationFieldData)},
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            meshes.slice(&Mesh::mapping),
+            meshes.slice(&Mesh::mesh)},
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            parents.slice(&Parent::mapping),
+            parents.slice(&Parent::parent),
+            Trade::SceneFieldFlag::ImplicitMapping},
+        Trade::SceneFieldData{Trade::SceneField::Translation,
+            translations.slice(&Translation::mapping),
+            translations.slice(&Translation::translation)},
         /* Array field */
-        Trade::SceneFieldData{Trade::sceneFieldCustom(15), Containers::arrayView(fooMappingData), Containers::StridedArrayView2D<const Int>{fooFieldData, {2, 2}}, Trade::SceneFieldFlag::OrderedMapping},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(15),
+            foos.slice(&Foo::mapping),
+            Containers::arrayCast<2, const Int>(foos.slice(&Foo::foo)),
+            Trade::SceneFieldFlag::OrderedMapping},
         /* Empty field */
         Trade::SceneFieldData{Trade::SceneField::Camera, Containers::ArrayView<const UnsignedByte>{}, Containers::ArrayView<const UnsignedShort>{}}
     }));
@@ -107,7 +142,7 @@ void CombineTest::test() {
         45, 78, 23
     }), TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.field<UnsignedByte>(0),
-        Containers::arrayView(meshFieldData),
+        meshes.slice(&Mesh::mesh),
         TestSuite::Compare::Container);
 
     CORRADE_COMPARE(scene.fieldName(1), Trade::SceneField::Parent);
@@ -118,7 +153,7 @@ void CombineTest::test() {
         0, 1
     }), TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.field<Short>(1),
-        Containers::arrayView(parentData),
+        parents.slice(&Parent::parent),
         TestSuite::Compare::Container);
 
     CORRADE_COMPARE(scene.fieldName(2), Trade::SceneField::Translation);
@@ -129,7 +164,7 @@ void CombineTest::test() {
         Containers::arrayView<UnsignedInt>({16}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.field<Vector2d>(2),
-        Containers::arrayView(translationFieldData),
+        translations.slice(&Translation::translation),
         TestSuite::Compare::Container);
 
     CORRADE_COMPARE(scene.fieldName(3), Trade::sceneFieldCustom(15));
@@ -142,10 +177,10 @@ void CombineTest::test() {
     /** @todo clean up once it's possible to compare multidimensional
         containers */
     CORRADE_COMPARE_AS(scene.field<Int[]>(3)[0],
-        (Containers::StridedArrayView2D<const Int>{fooFieldData, {2, 2}})[0],
+        (Containers::arrayCast<2, const Int>(foos.slice(&Foo::foo)))[0],
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.field<Int[]>(3)[1],
-        (Containers::StridedArrayView2D<const Int>{fooFieldData, {2, 2}})[1],
+        (Containers::arrayCast<2, const Int>(foos.slice(&Foo::foo)))[1],
         TestSuite::Compare::Container);
 
     CORRADE_COMPARE(scene.fieldName(4), Trade::SceneField::Camera);
