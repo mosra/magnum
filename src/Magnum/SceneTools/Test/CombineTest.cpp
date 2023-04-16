@@ -38,9 +38,9 @@ struct CombineTest: TestSuite::Tester {
 
     void test();
     void alignment();
-    void objectsShared();
-    void objectsPlaceholderFieldPlaceholder();
-    void objectSharedFieldPlaceholder();
+    void mappingShared();
+    void mappingPlaceholderFieldPlaceholder();
+    void mappingSharedFieldPlaceholder();
 };
 
 struct {
@@ -58,9 +58,9 @@ CombineTest::CombineTest() {
         Containers::arraySize(TestData));
 
     addTests({&CombineTest::alignment,
-              &CombineTest::objectsShared,
-              &CombineTest::objectsPlaceholderFieldPlaceholder,
-              &CombineTest::objectSharedFieldPlaceholder});
+              &CombineTest::mappingShared,
+              &CombineTest::mappingPlaceholderFieldPlaceholder,
+              &CombineTest::mappingSharedFieldPlaceholder});
 }
 
 using namespace Math::Literals;
@@ -204,7 +204,7 @@ void CombineTest::alignment() {
     CORRADE_COMPARE(scene.field(1).stride()[0], 16);
 }
 
-void CombineTest::objectsShared() {
+void CombineTest::mappingShared() {
     const UnsignedShort meshMappingData[]{15, 23, 47};
     const UnsignedByte meshFieldData[]{0, 1, 2};
     const Int meshMaterialFieldData[]{72, -1, 23};
@@ -237,7 +237,7 @@ void CombineTest::objectsShared() {
     CORRADE_COMPARE(scene.mapping(Trade::SceneField::Translation).data(), scene.mapping(Trade::SceneField::Rotation).data());
 }
 
-void CombineTest::objectsPlaceholderFieldPlaceholder() {
+void CombineTest::mappingPlaceholderFieldPlaceholder() {
     const UnsignedShort meshMappingData[]{15, 23, 47};
     const UnsignedByte meshFieldData[]{0, 1, 2};
 
@@ -290,7 +290,7 @@ void CombineTest::objectsPlaceholderFieldPlaceholder() {
     CORRADE_COMPARE(scene.field(Trade::sceneFieldCustom(15)).stride()[0], 4*2);
 }
 
-void CombineTest::objectSharedFieldPlaceholder() {
+void CombineTest::mappingSharedFieldPlaceholder() {
     const UnsignedInt meshMappingData[]{15, 23, 47};
     const UnsignedByte meshFieldData[]{0, 1, 2};
 
