@@ -96,8 +96,9 @@ Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialDa
     }
     CORRADE_INTERNAL_ASSERT(layerOffset == layers.size());
 
-    /* Copy attributes that aren't filtered away */
-    Containers::Array<Trade::MaterialAttributeData> attributes{NoInit, patchedInputAttributesToKeep.count()};
+    /* Copy attributes that aren't filtered away. Not using NoInit in order to
+       use the default deleter and have this usable from plugins. */
+    Containers::Array<Trade::MaterialAttributeData> attributes{patchedInputAttributesToKeep.count()};
     /** @todo some copyMasked() utility */
     UnsignedInt attributeOffset = 0;
     for(UnsignedInt i = 0; i != totalAttributeCount; ++i) {

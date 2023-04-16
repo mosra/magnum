@@ -89,13 +89,20 @@ void FilterTest::attributes() {
     attributesToKeep.reset(3);
     attributesToKeep.reset(4);
 
+    Trade::MaterialData filtered = filterAttributes(material, attributesToKeep, Trade::MaterialType::PbrClearCoat|Trade::MaterialType::PbrMetallicRoughness);
+
     /* The types are kept intact even if they don't make sense, that's a job
        for some higher-level utility that understands their relations to
        present attributes */
-    CORRADE_COMPARE_AS(filterAttributes(material, attributesToKeep, Trade::MaterialType::PbrClearCoat|Trade::MaterialType::PbrMetallicRoughness), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    CORRADE_COMPARE_AS(filtered, (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColorTexture, 7u},
     }}), DebugTools::CompareMaterial);
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::MaterialAttributeData> attributeData = filtered.releaseAttributeData();
+    CORRADE_VERIFY(!attributeData.deleter());
 
     /* Removing all shouldn't do anything unexpected */
     CORRADE_COMPARE_AS(filterAttributes(material, Containers::BitArray{ValueInit, 5}, {}), (Trade::MaterialData{{}, {
@@ -123,13 +130,20 @@ void FilterTest::attributesMultipleLayers() {
     attributesToKeep.reset(4);
     attributesToKeep.reset(6);
 
-    CORRADE_COMPARE_AS(filterAttributes(material, attributesToKeep), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    Trade::MaterialData filtered = filterAttributes(material, attributesToKeep);
+
+    CORRADE_COMPARE_AS(filtered, (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
         {Trade::MaterialAttribute::BaseColor, 0xffcc66ff_rgbaf},
         {Trade::MaterialLayer::ClearCoat},
         {Trade::MaterialAttribute::Roughness, 0.25f},
         /* Empty layer stays */
         {"texturePointer", nullptr},
     }, {1, 3, 3, 4}}), DebugTools::CompareMaterial);
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::MaterialAttributeData> attributeData = filtered.releaseAttributeData();
+    CORRADE_VERIFY(!attributeData.deleter());
 
     /* Removing all shouldn't do anything unexpected */
     CORRADE_COMPARE_AS(filterAttributes(material, Containers::BitArray{ValueInit, 8}), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
@@ -177,7 +191,9 @@ void FilterTest::layers() {
     layersToKeep.reset(2);
     layersToKeep.reset(5);
 
-    CORRADE_COMPARE_AS(filterLayers(material, layersToKeep, Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrSpecularGlossiness), (Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
+    Trade::MaterialData filtered = filterLayers(material, layersToKeep, Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrSpecularGlossiness);
+
+    CORRADE_COMPARE_AS(filtered, (Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColor, 0xffcc66ff_rgbaf},
         {Trade::MaterialAttribute::BaseColorTexture, 7u},
@@ -186,6 +202,11 @@ void FilterTest::layers() {
         /* Second empty layer stays */
         {"againSomething", false},
     }, {3, 5, 5, 6}}), DebugTools::CompareMaterial);
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::MaterialAttributeData> attributeData = filtered.releaseAttributeData();
+    CORRADE_VERIFY(!attributeData.deleter());
 
     /* Removing all shouldn't do anything unexpected */
     CORRADE_COMPARE_AS(filterLayers(material, Containers::BitArray{ValueInit, 7}, {}), (Trade::MaterialData{{}, {
@@ -206,11 +227,18 @@ void FilterTest::layersRemoveBase() {
     Containers::BitArray layersToKeep{DirectInit, 2, true};
     layersToKeep.reset(0);
 
-    CORRADE_COMPARE_AS(filterLayers(material, layersToKeep), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
-        /* The base layer stays but it's empty */
+    Trade::MaterialData filtered = filterLayers(material, layersToKeep);
+
+    /* The base layer stays but it's empty */
+    CORRADE_COMPARE_AS(filtered, (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
         {Trade::MaterialLayer::ClearCoat},
         {Trade::MaterialAttribute::LayerFactor, 0.7f},
     }, {0, 2}}), DebugTools::CompareMaterial);
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::MaterialAttributeData> attributeData = filtered.releaseAttributeData();
+    CORRADE_VERIFY(!attributeData.deleter());
 }
 
 void FilterTest::layersWrongBitCount() {
@@ -259,7 +287,9 @@ void FilterTest::attributesLayers() {
     layersToKeep.reset(1);
     layersToKeep.reset(2);
 
-    CORRADE_COMPARE_AS(filterAttributesLayers(material, attributesToKeep, layersToKeep, Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrSpecularGlossiness), (Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
+    Trade::MaterialData filtered = filterAttributesLayers(material, attributesToKeep, layersToKeep, Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrSpecularGlossiness);
+
+    CORRADE_COMPARE_AS(filtered, (Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, {
         {Trade::MaterialAttribute::AlphaBlend, true},
         {Trade::MaterialAttribute::BaseColorTexture, 7u},
         {"texturePointer", nullptr},
@@ -267,6 +297,11 @@ void FilterTest::attributesLayers() {
         /* Layer 5 is now empty */
         {"againSomething", false},
     }, {2, 3, 3, 3, 4}}), DebugTools::CompareMaterial);
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::MaterialAttributeData> attributeData = filtered.releaseAttributeData();
+    CORRADE_VERIFY(!attributeData.deleter());
 
     /* Removing all attributes should keep all layers but make them empty */
     CORRADE_COMPARE_AS(filterAttributesLayers(material, Containers::BitArray{ValueInit, 10}, Containers::BitArray{DirectInit, 7, true}, {}), (Trade::MaterialData{{}, {
@@ -295,10 +330,17 @@ void FilterTest::attributesLayersRemoveBaseLayer() {
     Containers::BitArray layersToKeep{DirectInit, 2, true};
     layersToKeep.reset(0);
 
-    CORRADE_COMPARE_AS(filterAttributesLayers(material, attributesToKeep, layersToKeep), (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
+    Trade::MaterialData filtered = filterAttributesLayers(material, attributesToKeep, layersToKeep);
+
+    CORRADE_COMPARE_AS(filtered, (Trade::MaterialData{Trade::MaterialType::PbrClearCoat, {
         /* The base layer stays but it's empty */
         {Trade::MaterialAttribute::LayerFactor, 0.7f},
     }, {0, 1}}), DebugTools::CompareMaterial);
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::MaterialAttributeData> attributeData = filtered.releaseAttributeData();
+    CORRADE_VERIFY(!attributeData.deleter());
 }
 
 void FilterTest::attributesLayersWrongBitCount() {
