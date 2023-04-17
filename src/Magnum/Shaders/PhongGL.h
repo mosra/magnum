@@ -668,6 +668,20 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
             VertexColor = 1 << 5,
 
             /**
+             * Double-sided rendering. By default, lighting is applied only to
+             * front-facing triangles, with back-facing triangles receiving
+             * just the ambient color or being culled away. If enabled, the
+             * shader will evaluate the lighting also on back-facing triangles
+             * with the normal flipped. Has no effect if no lights are used.
+             *
+             * Rendering back-facing triangles requires
+             * @ref GL::Renderer::Feature::FaceCulling to be disabled.
+             * @see @ref Trade::MaterialAttribute::DoubleSided
+             * @m_since_latest
+             */
+            DoubleSided = 1 << 20,
+
+            /**
              * Use the separate @ref Bitangent attribute for retrieving vertex
              * bitangents. If this flag is not present, the last component of
              * @ref Tangent4 is used to calculate bitangent direction. See

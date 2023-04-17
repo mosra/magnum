@@ -306,6 +306,7 @@ if(MAGNUM_BUILD_GL_TESTS)
 
             PhongTestFiles/colored.tga
             PhongTestFiles/defaults.tga
+            PhongTestFiles/double-sided.tga
             PhongTestFiles/instanced.tga
             PhongTestFiles/instanced-textured.tga
             PhongTestFiles/instanced-normal.tga

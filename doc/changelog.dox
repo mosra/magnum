@@ -316,6 +316,8 @@ See also:
 -   Added @ref Shaders::PhongGL::Flag::NoSpecular as a significantly faster
     alternative to setting specular color to @cpp 0x00000000_rgbaf @ce in case
     specular highlights are not desired
+-   Added @ref Shaders::PhongGL::Flag::DoubleSided for rendering double-sided
+    meshes
 
 @subsubsection changelog-latest-new-shadertools ShaderTools library
 

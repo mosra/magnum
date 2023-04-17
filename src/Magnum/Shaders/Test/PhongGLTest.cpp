@@ -59,6 +59,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Swizzle.h"
+#include "Magnum/MeshTools/FlipNormals.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Primitives/Plane.h"
@@ -169,6 +170,9 @@ struct PhongGLTest: GL::OpenGLTester {
     #endif
 
     template<PhongGL::Flag flag = PhongGL::Flag{}> void renderZeroLights();
+
+    /* This tests something that's irrelevant to UBOs */
+    void renderDoubleSided();
 
     #ifndef MAGNUM_TARGET_GLES2
     template<PhongGL::Flag flag = PhongGL::Flag{}> void renderSkinning();
@@ -842,6 +846,15 @@ const struct {
 };
 #endif
 
+const struct {
+    const char* name;
+    PhongGL::Flags flags;
+    bool flipNormals;
+} RenderDoubleSidedData[]{
+    {"normals flipped", {}, true},
+    {"double-sided rendering", PhongGL::Flag::DoubleSided, false}
+};
+
 #ifndef MAGNUM_TARGET_GLES2
 const struct {
     const char* name;
@@ -1454,6 +1467,11 @@ PhongGLTest::PhongGLTest() {
         #endif
         #endif
         },
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
+
+    addInstancedTests<PhongGLTest>({&PhongGLTest::renderDoubleSided},
+        Containers::arraySize(RenderDoubleSidedData),
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
@@ -4396,6 +4414,85 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
         CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 65534);
     }
     #endif
+}
+
+void PhongGLTest::renderDoubleSided() {
+    auto&& data = RenderDoubleSidedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Trade::MeshData sphere = Primitives::uvSphereSolid(16, 32);
+
+    Trade::MeshData sphereFlippedWinding = Primitives::uvSphereSolid(16, 32);
+    MeshTools::flipFaceWindingInPlace(sphereFlippedWinding.mutableIndices());
+
+    Trade::MeshData sphereFlippedNormalsWinding = Primitives::uvSphereSolid(16, 32);
+    MeshTools::flipNormalsInPlace(
+        sphereFlippedNormalsWinding.mutableIndices(),
+        sphereFlippedNormalsWinding.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
+
+    /* Double-sided sphere, renders from both sides if DoubleSided is
+       enabled and face culling disabled, otherwise only one depending on the
+       normal direction */
+    Trade::MeshData sphereDoubleSided = Primitives::uvSphereSolid(16, 32);
+    if(data.flipNormals)
+        MeshTools::flipNormalsInPlace(sphereDoubleSided.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
+
+    PhongGL shader{PhongGL::Configuration{}
+        .setFlags(data.flags)
+        .setLightCount(1)};
+    shader
+        .setLightPositions({{-3.0f, 3.0f, 3.0f, 0.0f}})
+        .setAmbientColor(0x111111_rgbf)
+        .setDiffuseColor(0xff3333_rgbf)
+        .setSpecularColor(0x00000000_rgbaf);
+
+    /* Top left is a sphere from the outside, with CCW triangles, with the back
+       cut off by the far plane */
+    shader
+        .setProjectionMatrix(Matrix4::orthographicProjection(Vector2{4.5f}, -1.0f, 0.0f))
+        .setTransformationMatrix(Matrix4::translation({-1.05f, 1.05f, 0.0f}))
+        .draw(MeshTools::compile(sphere));
+
+    /* Bottom left is a sphere from the inside, with CCW triangles, with the
+       front cut off by the near plane. Normals pointing outside so only top
+       left should be slightly lighted. */
+    shader
+        .setProjectionMatrix(Matrix4::orthographicProjection(Vector2{4.5f}, 0.0f, 1.0f))
+        .setTransformationMatrix(Matrix4::translation({-1.05f, -1.05f, 0.0f}))
+        .draw(MeshTools::compile(sphereFlippedWinding));
+
+    /* Top right is a sphere from the inside, with CCW triangles, with face
+       winding and normals flipped */
+    shader
+        .setProjectionMatrix(Matrix4::orthographicProjection(Vector2{4.5f}, 0.0f, 1.0f))
+        .setTransformationMatrix(Matrix4::translation({+1.05f, 1.05f, 0.0f}))
+        .draw(MeshTools::compile(sphereFlippedNormalsWinding));
+
+    GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
+
+    /* Bottom right is a sphere from the inside, with CW triangles and face
+       culling disabled. Should render like bottom right.
+        - If DoubleSided isn't enabled on the shader, the code above flipped
+          normals to point inside. If DoubleSided is accidentally active
+          always, it will flip them back outside, resulting in the same result
+          as on the bottom left.
+        - If DoubleSided is enabled on the shader, the normals weren't flipped
+          by the code above and the shader should do that instead. If it
+          doesn't, it will again wrongly render as on the bottom left. */
+    shader
+        .setProjectionMatrix(Matrix4::orthographicProjection(Vector2{4.5f}, 0.0f, 1.0f))
+        .setTransformationMatrix(Matrix4::translation({+1.05f, -1.05f, 0.0f}))
+        .draw(MeshTools::compile(sphereDoubleSided));
+
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Path::join(_testDir, "PhongTestFiles/double-sided.tga"),
+        (DebugTools::CompareImageToFile{_manager, 1.34f, 0.04f}));
 }
 
 #ifndef MAGNUM_TARGET_GLES2

@@ -342,6 +342,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         #endif
         .addSource(configuration.flags() & Flag::Bitangent ? "#define BITANGENT\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n"_s : ""_s)
+        .addSource(configuration.flags() & Flag::DoubleSided ? "#define DOUBLE_SIDED\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::AlphaMask ? "#define ALPHA_MASK\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
@@ -1337,6 +1338,7 @@ Debug& operator<<(Debug& debug, const PhongGL::Flag value) {
         _c(Bitangent)
         _c(AlphaMask)
         _c(VertexColor)
+        _c(DoubleSided)
         _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
@@ -1374,6 +1376,7 @@ Debug& operator<<(Debug& debug, const PhongGL::Flags value) {
         PhongGL::Flag::Bitangent,
         PhongGL::Flag::AlphaMask,
         PhongGL::Flag::VertexColor,
+        PhongGL::Flag::DoubleSided,
         PhongGL::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */
         PhongGL::Flag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2

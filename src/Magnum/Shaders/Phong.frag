@@ -462,6 +462,10 @@ void main() {
     );
     normalizedTransformedNormal = tbn*(normalize((texture(normalTexture, interpolatedTextureCoordinates).rgb*2.0 - vec3(1.0))*vec3(normalTextureScale, normalTextureScale, 1.0)));
     #endif
+    #ifdef DOUBLE_SIDED
+    if(!gl_FrontFacing)
+        normalizedTransformedNormal = -normalizedTransformedNormal;
+    #endif
 
     highp const vec3 cameraDirection = normalize(-transformedPosition);
 
