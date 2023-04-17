@@ -931,19 +931,16 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
     }
 
     #ifndef CORRADE_NO_ASSERT
-    /* Check that certain fields share the same object mapping. Printing as if
-       all would be pointers (and not offset-only), it's not worth the extra
-       effort just for an assert message. Also, compared to above, where
-       "begin" was always zero, here we're always comparing four values, so the
-       message for offset-only wouldn't be simpler either. */
-    const auto checkFieldMappingDataMatch = [](const SceneFieldData& a, const SceneFieldData& b) {
-        const std::size_t mappingTypeSize = sceneMappingTypeSize(a.mappingType());
-        const void* const aBegin = a._mappingData.pointer;
-        const void* const bBegin = b._mappingData.pointer;
-        const void* const aEnd = static_cast<const char*>(a._mappingData.pointer) + a._size*mappingTypeSize;
-        const void* const bEnd = static_cast<const char*>(b._mappingData.pointer) + b._size*mappingTypeSize;
-        CORRADE_ASSERT(aBegin == bBegin && aEnd == bEnd,
-            "Trade::SceneData:" << b._name << "mapping data [" << Debug::nospace << bBegin << Debug::nospace << ":" << Debug::nospace << bEnd << Debug::nospace << "] is different from" << a._name << "mapping data [" << Debug::nospace << aBegin << Debug::nospace << ":" << Debug::nospace << aEnd << Debug::nospace << "]", );
+    /* Check that certain fields share the same object mapping, i.e. the same
+       begin, size and stride. Cases where one of the two is offset-only and
+       the other not are allowed if both have the same absolute begin pointer. */
+    const auto checkFieldMappingDataMatch = [this](const SceneFieldData& a, const SceneFieldData& b) {
+        const void* const aBegin = a._flags & SceneFieldFlag::OffsetOnly ?
+            _data.begin() + a._mappingData.offset : a._mappingData.pointer;
+        const void* const bBegin = b._flags & SceneFieldFlag::OffsetOnly ?
+            _data.begin() + b._mappingData.offset : b._mappingData.pointer;
+        CORRADE_ASSERT(aBegin == bBegin && a._size == b._size && a._mappingStride == b._mappingStride,
+            "Trade::SceneData:" << b._name << "mapping data {" << Debug::nospace << bBegin << Debug::nospace << "," << b._size << Debug::nospace << "," << b._mappingStride << Debug::nospace << "} is different from" << a._name << "mapping data {" << Debug::nospace << aBegin << Debug::nospace << "," << a._size << Debug::nospace << "," << a._mappingStride << Debug::nospace << "}", );
     };
 
     /* All present TRS fields should share the same object mapping */

@@ -32,9 +32,11 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/StringIterable.h>
+#include <Corrade/Containers/StringStl.h> /** @todo drop once Debug is stream-free */
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -3894,43 +3896,102 @@ void SceneDataTest::constructMismatchedTRSViews() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Containers::ArrayView<const char> data{reinterpret_cast<char*>(0xcafe0000),
-        /* Three entries, each having a 2D TRS and 3 object IDs */
-        3*(24 + 12)};
-    Containers::ArrayView<const UnsignedInt> translationMappingData{
-        reinterpret_cast<const UnsignedInt*>(data.data()), 3};
+        4 + 3*24 + 3*4};
+    Containers::ArrayView<const UnsignedInt> mappingData{
+        reinterpret_cast<const UnsignedInt*>(data.data() + 4 + 3*24), 3};
+    Containers::ArrayView<const UnsignedInt> mappingDifferentPointerData{
+        reinterpret_cast<const UnsignedInt*>(data.data() + 3*24), 3};
+    Containers::StridedArrayView1D<const UnsignedInt> mappingDifferentStrideData{
+        data, reinterpret_cast<const UnsignedInt*>(data.data() + 4), 3, 8};
     Containers::ArrayView<const Vector2> translationFieldData{
-        reinterpret_cast<const Vector2*>(data.data() + 0x0c), 3};
-    Containers::ArrayView<const UnsignedInt> rotationMappingData{
-        reinterpret_cast<const UnsignedInt*>(data.data() + 0x24), 3};
+        reinterpret_cast<const Vector2*>(data.data() + 4), 3};
     Containers::ArrayView<const Complex> rotationFieldData{
-        reinterpret_cast<const Complex*>(data.data() + 0x30), 3};
-    Containers::ArrayView<const UnsignedInt> scalingMappingData{
-        reinterpret_cast<const UnsignedInt*>(data.data() + 0x48), 3};
+        reinterpret_cast<const Complex*>(data.data() + 4 + 8), 3};
     Containers::ArrayView<const Vector2> scalingFieldData{
-        reinterpret_cast<const Vector2*>(data.data() + 0x54), 3};
+        reinterpret_cast<const Vector2*>(data.data() + 4 + 12), 3};
 
-    SceneFieldData translations{SceneField::Translation, translationMappingData, translationFieldData};
-    SceneFieldData rotationsDifferent{SceneField::Rotation, rotationMappingData, rotationFieldData};
-    SceneFieldData scalingsDifferent{SceneField::Scaling, scalingMappingData, scalingFieldData};
-    SceneFieldData rotationsSameButLess{SceneField::Rotation, translationMappingData.exceptSuffix(1), rotationFieldData.exceptSuffix(1)};
-    SceneFieldData scalingsSameButLess{SceneField::Scaling, translationMappingData.exceptSuffix(2), scalingFieldData.exceptSuffix(2)};
+    SceneFieldData translations{SceneField::Translation, mappingData, translationFieldData};
+    SceneFieldData rotations{SceneField::Rotation, mappingData, rotationFieldData};
+    SceneFieldData scalings{SceneField::Scaling, mappingData, scalingFieldData};
+    SceneFieldData rotationsDifferentPointer{SceneField::Rotation, mappingDifferentPointerData, rotationFieldData};
+    SceneFieldData scalingsDifferentPointer{SceneField::Scaling, mappingDifferentPointerData, scalingFieldData};
+    SceneFieldData rotationsDifferentSize{SceneField::Rotation, mappingData.exceptSuffix(1), rotationFieldData.exceptSuffix(1)};
+    SceneFieldData scalingsDifferentSize{SceneField::Scaling, mappingData.exceptSuffix(1), scalingFieldData.exceptSuffix(1)};
+    SceneFieldData rotationsDifferentStride{SceneField::Rotation, mappingDifferentStrideData, rotationFieldData};
+    SceneFieldData scalingsDifferentStride{SceneField::Scaling, mappingDifferentStrideData, scalingFieldData};
+
+    SceneFieldData translationsOffsetOnly{SceneField::Translation, 3,
+        SceneMappingType::UnsignedInt, 4 + 3*24, sizeof(UnsignedInt),
+        SceneFieldType::Vector2, 4, sizeof(Vector2)};
+    SceneFieldData rotationsOffsetOnly{SceneField::Rotation, 3,
+        SceneMappingType::UnsignedInt, 4 + 3*24, sizeof(UnsignedInt),
+        SceneFieldType::Complex, 4, sizeof(Complex)};
+    SceneFieldData scalingsOffsetOnly{SceneField::Scaling, 3,
+        SceneMappingType::UnsignedInt, 4 + 3*24, sizeof(UnsignedInt),
+        SceneFieldType::Vector2, 4, sizeof(Vector2)};
+    SceneFieldData rotationsDifferentPointerOffsetOnly{SceneField::Rotation, 3,
+        SceneMappingType::UnsignedInt, 3*24, sizeof(UnsignedInt),
+        SceneFieldType::Complex, 4, sizeof(Complex)};
+    SceneFieldData scalingsDifferentPointerOffsetOnly{SceneField::Scaling, 3,
+        SceneMappingType::UnsignedInt, 3*24, sizeof(UnsignedInt),
+        SceneFieldType::Vector2, 4, sizeof(Vector2)};
+
+    /* The matching offset-only variants should give no assert */
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsOffsetOnly}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translationsOffsetOnly, rotations}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, scalingsOffsetOnly}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translationsOffsetOnly, scalings}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotations, scalingsOffsetOnly}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotationsOffsetOnly, scalings}};
 
     /* Test that all pairs get checked */
     std::ostringstream out;
     Error redirectError{&out};
-    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsDifferent}};
-    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, scalingsDifferent}};
-    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotationsDifferent, scalingsDifferent}};
-    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsSameButLess}};
-    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, scalingsSameButLess}};
-    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotationsSameButLess, scalingsSameButLess}};
-    CORRADE_COMPARE(out.str(),
-        "Trade::SceneData: Trade::SceneField::Rotation mapping data [0xcafe0024:0xcafe0030] is different from Trade::SceneField::Translation mapping data [0xcafe0000:0xcafe000c]\n"
-        "Trade::SceneData: Trade::SceneField::Scaling mapping data [0xcafe0048:0xcafe0054] is different from Trade::SceneField::Translation mapping data [0xcafe0000:0xcafe000c]\n"
-        "Trade::SceneData: Trade::SceneField::Scaling mapping data [0xcafe0048:0xcafe0054] is different from Trade::SceneField::Rotation mapping data [0xcafe0024:0xcafe0030]\n"
-        "Trade::SceneData: Trade::SceneField::Rotation mapping data [0xcafe0000:0xcafe0008] is different from Trade::SceneField::Translation mapping data [0xcafe0000:0xcafe000c]\n"
-        "Trade::SceneData: Trade::SceneField::Scaling mapping data [0xcafe0000:0xcafe0004] is different from Trade::SceneField::Translation mapping data [0xcafe0000:0xcafe000c]\n"
-        "Trade::SceneData: Trade::SceneField::Scaling mapping data [0xcafe0000:0xcafe0004] is different from Trade::SceneField::Rotation mapping data [0xcafe0000:0xcafe0008]\n");
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsDifferentPointer}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsDifferentPointerOffsetOnly}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translationsOffsetOnly, rotationsDifferentPointer}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsDifferentSize}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, rotationsDifferentStride}};
+
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, scalingsDifferentPointer}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, scalingsDifferentPointerOffsetOnly}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translationsOffsetOnly, scalingsDifferentPointer}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, scalingsDifferentSize}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {translations, scalingsDifferentStride}};
+
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotations, scalingsDifferentPointer}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotations, scalingsDifferentPointerOffsetOnly}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotationsOffsetOnly, scalingsDifferentPointer}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotations, scalingsDifferentSize}};
+    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {rotations, scalingsDifferentStride}};
+    CORRADE_COMPARE_AS(out.str(),
+        /* Different pointer, three variants with offset-only */
+        "Trade::SceneData: Trade::SceneField::Rotation mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        "Trade::SceneData: Trade::SceneField::Rotation mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        "Trade::SceneData: Trade::SceneField::Rotation mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        /* Different size */
+        "Trade::SceneData: Trade::SceneField::Rotation mapping data {0xcafe004c, 2, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        /* Different stride */
+        "Trade::SceneData: Trade::SceneField::Rotation mapping data {0xcafe0004, 3, 8} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+
+        /* Different pointer, three variants with offset-only */
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        /* Different size */
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe004c, 2, 4} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+        /* Different stride */
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0004, 3, 8} is different from Trade::SceneField::Translation mapping data {0xcafe004c, 3, 4}\n"
+
+        /* Different pointer, three variants with offset-only */
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Rotation mapping data {0xcafe004c, 3, 4}\n"
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Rotation mapping data {0xcafe004c, 3, 4}\n"
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0048, 3, 4} is different from Trade::SceneField::Rotation mapping data {0xcafe004c, 3, 4}\n"
+        /* Different size */
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe004c, 2, 4} is different from Trade::SceneField::Rotation mapping data {0xcafe004c, 3, 4}\n"
+        /* Different stride */
+        "Trade::SceneData: Trade::SceneField::Scaling mapping data {0xcafe0004, 3, 8} is different from Trade::SceneField::Rotation mapping data {0xcafe004c, 3, 4}\n",
+        TestSuite::Compare::String);
 }
 
 template<class> struct NameTraits;
@@ -4060,29 +4121,28 @@ template<class T> void SceneDataTest::constructMismatchedTRSDimensionality() {
 void SceneDataTest::constructMismatchedMeshMaterialView() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::ArrayView<const char> data{reinterpret_cast<char*>(0xcafe0000),
-        /* Three entries, each having mesh/material ID and 2 object IDs */
-        3*(8 + 8)};
-    Containers::ArrayView<const UnsignedInt> meshMappingData{
-        reinterpret_cast<const UnsignedInt*>(data.data()), 3};
-    Containers::ArrayView<const UnsignedInt> meshFieldData{
-        reinterpret_cast<const UnsignedInt*>(data.data() + 0x0c), 3};
-    Containers::ArrayView<const UnsignedInt> meshMaterialMappingData{
-        reinterpret_cast<const UnsignedInt*>(data.data() + 0x18), 3};
-    Containers::ArrayView<const Int> meshMaterialFieldData{
-        reinterpret_cast<const Int*>(data.data() + 0x24), 3};
+    /* Different sizes, strides and offset-only field handling tested
+       thoroughly in constructMismatchedTRSViews() already */
 
-    SceneFieldData meshes{SceneField::Mesh, meshMappingData, meshFieldData};
-    SceneFieldData meshMaterialsDifferent{SceneField::MeshMaterial, meshMaterialMappingData, meshMaterialFieldData};
-    SceneFieldData meshMaterialsSameButLess{SceneField::MeshMaterial, meshMappingData.exceptSuffix(1), meshMaterialFieldData.exceptSuffix(1)};
+    Containers::ArrayView<const char> data{reinterpret_cast<char*>(0xcafe0000),
+        4 + 3*8 + 3*4};
+    Containers::ArrayView<const UnsignedInt> mappingData{
+        reinterpret_cast<const UnsignedInt*>(data.data() + 4 + 3*8), 3};
+    Containers::ArrayView<const UnsignedInt> mappingDifferentPointerData{
+        reinterpret_cast<const UnsignedInt*>(data.data() + 3*8), 3};
+    Containers::ArrayView<const UnsignedInt> meshFieldData{
+        reinterpret_cast<const UnsignedInt*>(data.data() + 4), 3};
+    Containers::ArrayView<const Int> meshMaterialFieldData{
+        reinterpret_cast<const Int*>(data.data() + 4 + 3*4), 3};
+
+    SceneFieldData meshes{SceneField::Mesh, mappingData, meshFieldData};
+    SceneFieldData meshMaterialsDifferent{SceneField::MeshMaterial, mappingDifferentPointerData, meshMaterialFieldData};
 
     std::ostringstream out;
     Error redirectError{&out};
     SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {meshes, meshMaterialsDifferent}};
-    SceneData{SceneMappingType::UnsignedInt, 3, {}, data, {meshes, meshMaterialsSameButLess}};
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData: Trade::SceneField::MeshMaterial mapping data [0xcafe0018:0xcafe0024] is different from Trade::SceneField::Mesh mapping data [0xcafe0000:0xcafe000c]\n"
-        "Trade::SceneData: Trade::SceneField::MeshMaterial mapping data [0xcafe0000:0xcafe0008] is different from Trade::SceneField::Mesh mapping data [0xcafe0000:0xcafe000c]\n");
+        "Trade::SceneData: Trade::SceneField::MeshMaterial mapping data {0xcafe0018, 3, 4} is different from Trade::SceneField::Mesh mapping data {0xcafe001c, 3, 4}\n");
 }
 
 void SceneDataTest::constructAmbiguousSkinDimensions() {
