@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
@@ -120,6 +121,27 @@ void CombineTest::fields() {
     };
     auto foos = Containers::stridedArrayView(fooData);
 
+    const struct Bool {
+        UnsignedShort mapping;
+        bool bit;
+    } boolData[]{
+        {23, false},
+        {24, true},
+        {25, false},
+        {26, true}
+    };
+    auto bools = Containers::stridedArrayView(boolData);
+
+    const struct Bits {
+        UnsignedByte mapping;
+        UnsignedByte bits;
+    } bitsData[]{
+        {13, 1 << 3 | 1 << 4},
+        {25, 1 << 4},
+        {77, 1 << 1 | 1 << 2 | 1 << 3},
+    };
+    auto bits = Containers::stridedArrayView(bitsData);
+
     Trade::SceneData scene = combineFields(data.objectType, 167, {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             meshes.slice(&Mesh::mapping),
@@ -137,13 +159,23 @@ void CombineTest::fields() {
             Containers::arrayCast<2, const Int>(foos.slice(&Foo::foo)),
             Trade::SceneFieldFlag::OrderedMapping},
         /* Empty field */
-        Trade::SceneFieldData{Trade::SceneField::Camera, Containers::ArrayView<const UnsignedByte>{}, Containers::ArrayView<const UnsignedShort>{}}
+        Trade::SceneFieldData{Trade::SceneField::Camera, Containers::ArrayView<const UnsignedByte>{}, Containers::ArrayView<const UnsignedShort>{}},
+        /* Bit field */
+        Trade::SceneFieldData{Trade::sceneFieldCustom(16),
+            bools.slice(&Bool::mapping),
+            bools.slice(&Bool::bit).sliceBit(0),
+            Trade::SceneFieldFlag::ImplicitMapping},
+        /* Bit array field */
+        Trade::SceneFieldData{Trade::sceneFieldCustom(17),
+            bits.slice(&Bits::mapping),
+            Containers::StridedBitArrayView2D{Containers::BitArrayView{bitsData}, &bitsData[0].bits, 1, {3, 4}, {sizeof(Bits)*8, 1}},
+            Trade::SceneFieldFlag::OrderedMapping},
     });
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(scene.mappingType(), data.objectType);
     CORRADE_COMPARE(scene.mappingBound(), 167);
-    CORRADE_COMPARE(scene.fieldCount(), 5);
+    CORRADE_COMPARE(scene.fieldCount(), 7);
 
     CORRADE_COMPARE(scene.fieldName(0), Trade::SceneField::Mesh);
     CORRADE_COMPARE(scene.fieldFlags(0), Trade::SceneFieldFlags{});
@@ -199,6 +231,36 @@ void CombineTest::fields() {
     CORRADE_COMPARE(scene.fieldType(4), Trade::SceneFieldType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldSize(4), 0);
     CORRADE_COMPARE(scene.fieldArraySize(4), 0);
+
+    CORRADE_COMPARE(scene.fieldName(5), Trade::sceneFieldCustom(16));
+    CORRADE_COMPARE(scene.fieldFlags(5), Trade::SceneFieldFlag::ImplicitMapping);
+    CORRADE_COMPARE(scene.fieldType(5), Trade::SceneFieldType::Bit);
+    CORRADE_COMPARE(scene.fieldArraySize(5), 0);
+    CORRADE_COMPARE_AS(scene.mappingAsArray(5),
+        Containers::arrayView({23u, 24u, 25u, 26u}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldBits(5),
+        Containers::stridedArrayView({false, true, false, true}).sliceBit(0),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(scene.fieldName(6), Trade::sceneFieldCustom(17));
+    CORRADE_COMPARE(scene.fieldFlags(6), Trade::SceneFieldFlag::OrderedMapping);
+    CORRADE_COMPARE(scene.fieldType(6), Trade::SceneFieldType::Bit);
+    CORRADE_COMPARE(scene.fieldArraySize(6), 4);
+    CORRADE_COMPARE_AS(scene.mappingAsArray(6),
+        Containers::arrayView({13u, 25u, 77u}),
+        TestSuite::Compare::Container);
+    /** @todo clean up once it's possible to compare multidimensional
+        containers */
+    CORRADE_COMPARE_AS(scene.fieldBitArrays(6)[0],
+        Containers::stridedArrayView({false, false, true, true}).sliceBit(0),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldBitArrays(6)[1],
+        Containers::stridedArrayView({false, false, false, true}).sliceBit(0),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldBitArrays(6)[2],
+        Containers::stridedArrayView({true, true, true, false}).sliceBit(0),
+        TestSuite::Compare::Container);
 }
 
 void CombineTest::fieldsAlignment() {
@@ -360,12 +422,16 @@ void CombineTest::fieldsMappingPlaceholderFieldPlaceholder() {
         Trade::SceneFieldData{Trade::sceneFieldCustom(15),
             Containers::ArrayView<UnsignedShort>{nullptr, 2},
             Containers::StridedArrayView2D<Short>{{nullptr, 16}, {2, 4}}},
+        /* Bit array field */
+        Trade::SceneFieldData{Trade::sceneFieldCustom(16),
+            Containers::ArrayView<UnsignedLong>{nullptr, 3},
+            Containers::StridedBitArrayView2D{{nullptr, 1, 8}, {3, 2}}},
     });
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(scene.mappingType(), Trade::SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(scene.mappingBound(), 173);
-    CORRADE_COMPARE(scene.fieldCount(), 4);
+    CORRADE_COMPARE(scene.fieldCount(), 5);
 
     CORRADE_COMPARE(scene.fieldType(Trade::SceneField::Camera), Trade::SceneFieldType::UnsignedShort);
     CORRADE_COMPARE(scene.fieldSize(Trade::SceneField::Camera), 1);
@@ -387,18 +453,33 @@ void CombineTest::fieldsMappingPlaceholderFieldPlaceholder() {
     CORRADE_COMPARE(scene.fieldType(Trade::SceneField::Light), Trade::SceneFieldType::UnsignedInt);
     CORRADE_COMPARE(scene.fieldSize(Trade::SceneField::Light), 2);
     CORRADE_COMPARE(scene.fieldArraySize(Trade::SceneField::Light), 0);
-    CORRADE_COMPARE(scene.mapping(Trade::SceneField::Light).data(), scene.data() + 2 + 2 + 3*2 + 3 + 1);
+    CORRADE_COMPARE(scene.mapping(Trade::SceneField::Light).data(),
+        scene.data() + 2 + 2 + 3*2 + 3 + 1);
     CORRADE_COMPARE(scene.mapping(Trade::SceneField::Light).stride()[0], 2);
-    CORRADE_COMPARE(scene.field(Trade::SceneField::Light).data(), scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2);
+    CORRADE_COMPARE(scene.field(Trade::SceneField::Light).data(),
+        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2);
     CORRADE_COMPARE(scene.field(Trade::SceneField::Light).stride()[0], 4);
 
     CORRADE_COMPARE(scene.fieldType(Trade::sceneFieldCustom(15)), Trade::SceneFieldType::Short);
     CORRADE_COMPARE(scene.fieldSize(Trade::sceneFieldCustom(15)), 2);
     CORRADE_COMPARE(scene.fieldArraySize(Trade::sceneFieldCustom(15)), 4);
-    CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(15)).data(), scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4);
+    CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(15)).data(),
+        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4);
     CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(15)).stride()[0], 2);
-    CORRADE_COMPARE(scene.field(Trade::sceneFieldCustom(15)).data(), scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2);
+    CORRADE_COMPARE(scene.field(Trade::sceneFieldCustom(15)).data(),
+        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2);
     CORRADE_COMPARE(scene.field(Trade::sceneFieldCustom(15)).stride()[0], 4*2);
+
+    CORRADE_COMPARE(scene.fieldType(Trade::sceneFieldCustom(16)), Trade::SceneFieldType::Bit);
+    CORRADE_COMPARE(scene.fieldSize(Trade::sceneFieldCustom(16)), 3);
+    CORRADE_COMPARE(scene.fieldArraySize(Trade::sceneFieldCustom(16)), 2);
+    CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(16)).data(),
+        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2 + 2*8);
+    CORRADE_COMPARE(scene.mapping(Trade::sceneFieldCustom(16)).stride()[0], 2);
+    CORRADE_COMPARE(scene.fieldBitArrays(Trade::sceneFieldCustom(16)).data(),
+        scene.data() + 2 + 2 + 3*2 + 3 + 1 + 2*2 + 2 + 2*4 + 2*2 + 2*8 + 3*2);
+    CORRADE_COMPARE(scene.fieldBitArrays(Trade::sceneFieldCustom(16)).offset(), 0);
+    CORRADE_COMPARE(scene.fieldBitArrays(Trade::sceneFieldCustom(16)).stride()[0], 2);
 }
 
 void CombineTest::fieldsMappingSharedFieldPlaceholder() {
