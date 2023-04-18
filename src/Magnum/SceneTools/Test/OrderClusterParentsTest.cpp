@@ -69,7 +69,7 @@ OrderClusterParentsTest::OrderClusterParentsTest() {
 void OrderClusterParentsTest::test() {
     struct Field {
         /* To verify we don't have unnecessarily hardcoded 32-bit types */
-        UnsignedShort object;
+        UnsignedShort mapping;
         Byte parent;
     } data[]{
         /* Backward parent reference */
@@ -94,8 +94,12 @@ void OrderClusterParentsTest::test() {
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 158, {}, data, {
         /* To verify it doesn't just pick the first field ever */
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Trade::SceneMappingType::UnsignedShort, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
-        Trade::SceneFieldData{Trade::SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Trade::SceneMappingType::UnsignedShort, nullptr,
+            Trade::SceneFieldType::UnsignedInt, nullptr},
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            view.slice(&Field::mapping),
+            view.slice(&Field::parent)}
     }};
 
     CORRADE_COMPARE_AS(orderClusterParents(scene), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
@@ -165,7 +169,7 @@ void OrderClusterParentsTest::intoWrongDestinationSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
-        UnsignedInt object;
+        UnsignedInt mapping;
         Int parent;
     } data[]{
         {2, -1},
@@ -175,7 +179,9 @@ void OrderClusterParentsTest::intoWrongDestinationSize() {
     Containers::StridedArrayView1D<Field> view = data;
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 8, {}, data, {
-        Trade::SceneFieldData{Trade::SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            view.slice(&Field::mapping),
+            view.slice(&Field::parent)}
     }};
 
     UnsignedInt mappingCorrect[3];
@@ -210,7 +216,9 @@ void OrderClusterParentsTest::sparse() {
     Containers::StridedArrayView1D<Field> view = data;
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 16, {}, data, {
-        Trade::SceneFieldData{Trade::SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            view.slice(&Field::object),
+            view.slice(&Field::parent)}
     }};
 
     std::ostringstream out;
@@ -236,7 +244,9 @@ void OrderClusterParentsTest::cyclic() {
     Containers::StridedArrayView1D<Field> view = data;
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 16, {}, data, {
-        Trade::SceneFieldData{Trade::SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            view.slice(&Field::object),
+            view.slice(&Field::parent)}
     }};
 
     std::ostringstream out;
@@ -264,7 +274,9 @@ void OrderClusterParentsTest::cyclicDeep() {
     Containers::StridedArrayView1D<Field> view = data;
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 16, {}, data, {
-        Trade::SceneFieldData{Trade::SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            view.slice(&Field::object),
+            view.slice(&Field::parent)}
     }};
 
     std::ostringstream out;
@@ -294,7 +306,9 @@ void OrderClusterParentsTest::sparseAndCyclic() {
     Containers::StridedArrayView1D<Field> view = data;
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 16, {}, data, {
-        Trade::SceneFieldData{Trade::SceneField::Parent, view.slice(&Field::object), view.slice(&Field::parent)}
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            view.slice(&Field::object),
+            view.slice(&Field::parent)}
     }};
 
     std::ostringstream out;

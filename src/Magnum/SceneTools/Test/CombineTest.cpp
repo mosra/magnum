@@ -197,8 +197,12 @@ void CombineTest::alignment() {
     const Vector2d translationFieldData[]{{1.5, 3.0}}; /* 4 byte padding before */
 
     Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedShort, 167, Containers::arrayView({
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Containers::arrayView(meshMappingData), Containers::arrayView(meshFieldData)},
-        Trade::SceneFieldData{Trade::SceneField::Translation, Containers::arrayView(translationMappingData), Containers::arrayView(translationFieldData)}
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(meshMappingData),
+            Containers::arrayView(meshFieldData)},
+        Trade::SceneFieldData{Trade::SceneField::Translation,
+            Containers::arrayView(translationMappingData),
+            Containers::arrayView(translationFieldData)}
     }));
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
@@ -240,22 +244,30 @@ void CombineTest::alignment() {
 }
 
 void CombineTest::mappingShared() {
-    const UnsignedShort meshMappingData[]{15, 23, 47};
-    const UnsignedByte meshFieldData[]{0, 1, 2};
-    const Int meshMaterialFieldData[]{72, -1, 23};
+    const UnsignedShort meshMappingData[3]{};
+    const UnsignedByte meshFieldData[3]{};
+    const Int meshMaterialFieldData[3]{};
 
-    const UnsignedShort translationRotationMappingData[]{14, 22};
-    const Vector2 translationFieldData[]{{-1.0f, 25.3f}, {2.2f, 2.1f}};
-    const Complex rotationFieldData[]{Complex::rotation(35.0_degf), Complex::rotation(22.5_degf)};
+    const UnsignedShort translationRotationMappingData[2]{};
+    const Vector2 translationFieldData[2]{};
+    const Complex rotationFieldData[2]{};
 
     Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedInt, 173, Containers::arrayView({
         /* Deliberately in an arbitrary order to avoid false assumptions like
            fields sharing the same object mapping always being after each
            other */
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Containers::arrayView(meshMappingData), Containers::arrayView(meshFieldData)},
-        Trade::SceneFieldData{Trade::SceneField::Translation, Containers::arrayView(translationRotationMappingData), Containers::arrayView(translationFieldData)},
-        Trade::SceneFieldData{Trade::SceneField::MeshMaterial, Containers::arrayView(meshMappingData), Containers::arrayView(meshMaterialFieldData)},
-        Trade::SceneFieldData{Trade::SceneField::Rotation, Containers::arrayView(translationRotationMappingData), Containers::arrayView(rotationFieldData)}
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(meshMappingData),
+            Containers::arrayView(meshFieldData)},
+        Trade::SceneFieldData{Trade::SceneField::Translation,
+            Containers::arrayView(translationRotationMappingData),
+            Containers::arrayView(translationFieldData)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::arrayView(meshMappingData),
+            Containers::arrayView(meshMaterialFieldData)},
+        Trade::SceneFieldData{Trade::SceneField::Rotation,
+            Containers::arrayView(translationRotationMappingData),
+            Containers::arrayView(rotationFieldData)}
     }));
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
@@ -277,13 +289,21 @@ void CombineTest::mappingPlaceholderFieldPlaceholder() {
     const UnsignedByte meshFieldData[]{0, 1, 2};
 
     Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedShort, 173, Containers::arrayView({
-        Trade::SceneFieldData{Trade::SceneField::Camera, Containers::ArrayView<UnsignedByte>{nullptr, 1}, Containers::ArrayView<UnsignedShort>{nullptr, 1}},
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Containers::arrayView(meshMappingData), Containers::arrayView(meshFieldData)},
+        Trade::SceneFieldData{Trade::SceneField::Camera,
+            Containers::ArrayView<UnsignedByte>{nullptr, 1},
+            Containers::ArrayView<UnsignedShort>{nullptr, 1}},
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(meshMappingData),
+            Containers::arrayView(meshFieldData)},
         /* Looks like sharing object mapping with the Camera field, but
            actually both are placeholders */
-        Trade::SceneFieldData{Trade::SceneField::Light, Containers::ArrayView<UnsignedShort>{nullptr, 2}, Containers::ArrayView<UnsignedInt>{nullptr, 2}},
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::ArrayView<UnsignedShort>{nullptr, 2},
+            Containers::ArrayView<UnsignedInt>{nullptr, 2}},
         /* Array field */
-        Trade::SceneFieldData{Trade::sceneFieldCustom(15), Containers::ArrayView<UnsignedShort>{nullptr, 2}, Containers::StridedArrayView2D<Short>{{nullptr, 16}, {2, 4}}},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(15),
+            Containers::ArrayView<UnsignedShort>{nullptr, 2},
+            Containers::StridedArrayView2D<Short>{{nullptr, 16}, {2, 4}}},
     }));
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
@@ -330,8 +350,12 @@ void CombineTest::mappingSharedFieldPlaceholder() {
     const UnsignedByte meshFieldData[]{0, 1, 2};
 
     Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedInt, 173, Containers::arrayView({
-        Trade::SceneFieldData{Trade::SceneField::Mesh, Containers::arrayView(meshMappingData), Containers::arrayView(meshFieldData)},
-        Trade::SceneFieldData{Trade::SceneField::MeshMaterial, Containers::arrayView(meshMappingData), Containers::ArrayView<Int>{nullptr, 3}},
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(meshMappingData),
+            Containers::arrayView(meshFieldData)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::arrayView(meshMappingData),
+            Containers::ArrayView<Int>{nullptr, 3}},
     }));
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
