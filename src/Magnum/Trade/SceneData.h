@@ -803,6 +803,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneFieldFlags value);
 
 Convenience type for populating @ref SceneData, see
 @ref Trade-SceneData-populating "its documentation" for an introduction.
+Additionally usable in various @ref SceneTools algorithms such as
+@ref SceneTools::combineFields(Trade::SceneMappingType, UnsignedLong, Containers::ArrayView<const Trade::SceneFieldData>).
 
 @section Trade-SceneFieldData-usage Usage
 

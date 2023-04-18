@@ -158,7 +158,7 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
     }
 
     /* Combine the fields into a new SceneData */
-    Trade::SceneData out = combine(Trade::SceneMappingType::UnsignedInt, Math::max(scene.mappingBound(), UnsignedLong(newObjectOffset) + objectsToAdd), fields);
+    Trade::SceneData out = combineFields(Trade::SceneMappingType::UnsignedInt, Math::max(scene.mappingBound(), UnsignedLong(newObjectOffset) + objectsToAdd), fields);
 
     /* Copy existing parent object/field data to a prefix of the output */
     const Containers::StridedArrayView1D<UnsignedInt> outParentMapping = out.mutableMapping<UnsignedInt>(parentFieldId);

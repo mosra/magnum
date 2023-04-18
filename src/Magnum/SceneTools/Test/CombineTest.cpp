@@ -23,30 +23,37 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/SceneTools/Implementation/combine.h"
+#include "Magnum/SceneTools/Combine.h"
+#include "Magnum/Trade/SceneData.h"
 
 namespace Magnum { namespace SceneTools { namespace Test { namespace {
 
 struct CombineTest: TestSuite::Tester {
     explicit CombineTest();
 
-    void test();
-    void alignment();
-    void mappingShared();
-    void mappingPlaceholderFieldPlaceholder();
-    void mappingSharedFieldPlaceholder();
+    void fields();
+    void fieldsAlignment();
+    void fieldsMappingShared();
+    void fieldsMappingSharedPartial();
+    void fieldsMappingPlaceholderFieldPlaceholder();
+    void fieldsMappingSharedFieldPlaceholder();
+
+    void fieldsOffsetOnly();
+    void fieldsFromDataOffsetOnly();
 };
 
-struct {
+const struct {
     const char* name;
     Trade::SceneMappingType objectType;
-} TestData[]{
+} FieldsData[]{
     {"UnsignedByte output", Trade::SceneMappingType::UnsignedByte},
     {"UnsignedShort output", Trade::SceneMappingType::UnsignedShort},
     {"UnsignedInt output", Trade::SceneMappingType::UnsignedInt},
@@ -54,19 +61,23 @@ struct {
 };
 
 CombineTest::CombineTest() {
-    addInstancedTests({&CombineTest::test},
-        Containers::arraySize(TestData));
+    addInstancedTests({&CombineTest::fields},
+        Containers::arraySize(FieldsData));
 
-    addTests({&CombineTest::alignment,
-              &CombineTest::mappingShared,
-              &CombineTest::mappingPlaceholderFieldPlaceholder,
-              &CombineTest::mappingSharedFieldPlaceholder});
+    addTests({&CombineTest::fieldsAlignment,
+              &CombineTest::fieldsMappingShared,
+              &CombineTest::fieldsMappingSharedPartial,
+              &CombineTest::fieldsMappingPlaceholderFieldPlaceholder,
+              &CombineTest::fieldsMappingSharedFieldPlaceholder,
+
+              &CombineTest::fieldsOffsetOnly,
+              &CombineTest::fieldsFromDataOffsetOnly});
 }
 
 using namespace Math::Literals;
 
-void CombineTest::test() {
-    auto&& data = TestData[testCaseInstanceId()];
+void CombineTest::fields() {
+    auto&& data = FieldsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     /* Testing the four possible object types, it should be possible to combine
@@ -109,7 +120,7 @@ void CombineTest::test() {
     };
     auto foos = Containers::stridedArrayView(fooData);
 
-    Trade::SceneData scene = Implementation::combine(data.objectType, 167, Containers::arrayView({
+    Trade::SceneData scene = combineFields(data.objectType, 167, {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             meshes.slice(&Mesh::mapping),
             meshes.slice(&Mesh::mesh)},
@@ -127,7 +138,7 @@ void CombineTest::test() {
             Trade::SceneFieldFlag::OrderedMapping},
         /* Empty field */
         Trade::SceneFieldData{Trade::SceneField::Camera, Containers::ArrayView<const UnsignedByte>{}, Containers::ArrayView<const UnsignedShort>{}}
-    }));
+    });
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(scene.mappingType(), data.objectType);
@@ -190,20 +201,20 @@ void CombineTest::test() {
     CORRADE_COMPARE(scene.fieldArraySize(4), 0);
 }
 
-void CombineTest::alignment() {
+void CombineTest::fieldsAlignment() {
     const UnsignedShort meshMappingData[]{15, 23, 47};
     const UnsignedByte meshFieldData[]{0, 1, 2};
     const UnsignedShort translationMappingData[]{5}; /* 1 byte padding before */
     const Vector2d translationFieldData[]{{1.5, 3.0}}; /* 4 byte padding before */
 
-    Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedShort, 167, Containers::arrayView({
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedShort, 167, {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::arrayView(meshMappingData),
             Containers::arrayView(meshFieldData)},
         Trade::SceneFieldData{Trade::SceneField::Translation,
             Containers::arrayView(translationMappingData),
             Containers::arrayView(translationFieldData)}
-    }));
+    });
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(scene.mappingType(), Trade::SceneMappingType::UnsignedShort);
@@ -243,7 +254,7 @@ void CombineTest::alignment() {
     CORRADE_COMPARE(scene.field(1).stride()[0], 16);
 }
 
-void CombineTest::mappingShared() {
+void CombineTest::fieldsMappingShared() {
     const UnsignedShort meshMappingData[3]{};
     const UnsignedByte meshFieldData[3]{};
     const Int meshMaterialFieldData[3]{};
@@ -252,7 +263,7 @@ void CombineTest::mappingShared() {
     const Vector2 translationFieldData[2]{};
     const Complex rotationFieldData[2]{};
 
-    Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedInt, 173, Containers::arrayView({
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedInt, 173, {
         /* Deliberately in an arbitrary order to avoid false assumptions like
            fields sharing the same object mapping always being after each
            other */
@@ -268,7 +279,7 @@ void CombineTest::mappingShared() {
         Trade::SceneFieldData{Trade::SceneField::Rotation,
             Containers::arrayView(translationRotationMappingData),
             Containers::arrayView(rotationFieldData)}
-    }));
+    });
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(scene.mappingType(), Trade::SceneMappingType::UnsignedInt);
@@ -284,11 +295,56 @@ void CombineTest::mappingShared() {
     CORRADE_COMPARE(scene.mapping(Trade::SceneField::Translation).data(), scene.mapping(Trade::SceneField::Rotation).data());
 }
 
-void CombineTest::mappingPlaceholderFieldPlaceholder() {
+void CombineTest::fieldsMappingSharedPartial() {
+    const UnsignedShort mappingData[]{15, 23, 47, 26, 3};
+
+    /* Field data don't have any special treatment so their values aren't
+       tested */
+    const UnsignedByte meshData[3]{};
+    const UnsignedShort lightData[2]{};
+    const Int parentData[3]{};
+
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedInt, 173, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(mappingData).prefix(3),
+            Containers::arrayView(meshData)},
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::arrayView(mappingData).prefix(2),
+            Containers::arrayView(lightData)},
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            Containers::stridedArrayView(mappingData).every(2),
+            Containers::arrayView(parentData)},
+    });
+
+    CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
+    CORRADE_COMPARE(scene.mappingType(), Trade::SceneMappingType::UnsignedInt);
+    CORRADE_COMPARE(scene.mappingBound(), 173);
+    CORRADE_COMPARE(scene.fieldCount(), 3);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedInt>(Trade::SceneField::Mesh),
+        Containers::arrayView({15u, 23u, 47u}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedInt>(Trade::SceneField::Light),
+        Containers::arrayView({15u, 23u}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedInt>(Trade::SceneField::Parent),
+        Containers::arrayView({15u, 47u, 3u}),
+        TestSuite::Compare::Container);
+
+    /* All mappings should be deinterleaved */
+    for(UnsignedInt i = 0; i != scene.fieldCount(); ++i) {
+        CORRADE_ITERATION(scene.fieldName(i));
+        CORRADE_COMPARE(scene.mapping<UnsignedInt>(i).stride(), sizeof(UnsignedInt));
+    }
+}
+
+void CombineTest::fieldsMappingPlaceholderFieldPlaceholder() {
     const UnsignedShort meshMappingData[]{15, 23, 47};
     const UnsignedByte meshFieldData[]{0, 1, 2};
 
-    Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedShort, 173, Containers::arrayView({
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedShort, 173, {
         Trade::SceneFieldData{Trade::SceneField::Camera,
             Containers::ArrayView<UnsignedByte>{nullptr, 1},
             Containers::ArrayView<UnsignedShort>{nullptr, 1}},
@@ -304,7 +360,7 @@ void CombineTest::mappingPlaceholderFieldPlaceholder() {
         Trade::SceneFieldData{Trade::sceneFieldCustom(15),
             Containers::ArrayView<UnsignedShort>{nullptr, 2},
             Containers::StridedArrayView2D<Short>{{nullptr, 16}, {2, 4}}},
-    }));
+    });
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(scene.mappingType(), Trade::SceneMappingType::UnsignedShort);
@@ -345,18 +401,18 @@ void CombineTest::mappingPlaceholderFieldPlaceholder() {
     CORRADE_COMPARE(scene.field(Trade::sceneFieldCustom(15)).stride()[0], 4*2);
 }
 
-void CombineTest::mappingSharedFieldPlaceholder() {
+void CombineTest::fieldsMappingSharedFieldPlaceholder() {
     const UnsignedInt meshMappingData[]{15, 23, 47};
     const UnsignedByte meshFieldData[]{0, 1, 2};
 
-    Trade::SceneData scene = Implementation::combine(Trade::SceneMappingType::UnsignedInt, 173, Containers::arrayView({
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedInt, 173, {
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::arrayView(meshMappingData),
             Containers::arrayView(meshFieldData)},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
             Containers::arrayView(meshMappingData),
             Containers::ArrayView<Int>{nullptr, 3}},
-    }));
+    });
 
     CORRADE_COMPARE(scene.dataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
     CORRADE_COMPARE(scene.mappingType(), Trade::SceneMappingType::UnsignedInt);
@@ -381,6 +437,78 @@ void CombineTest::mappingSharedFieldPlaceholder() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).data(), scene.data() + 3*4 + 3 + 1);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).stride()[0], 4);
+}
+
+void CombineTest::fieldsOffsetOnly() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    const struct Field {
+        UnsignedInt mapping;
+        UnsignedByte mesh;
+        UnsignedShort light;
+    } data[]{
+        {1, 3, 5},
+        {4, 6, 8},
+    };
+    auto view = Containers::stridedArrayView(data);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    combineFields(Trade::SceneMappingType::UnsignedInt, 173, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            view.slice(&Field::mapping),
+            view.slice(&Field::mesh)},
+        Trade::SceneFieldData{Trade::SceneField::Light, 2,
+            Trade::SceneMappingType::UnsignedInt, offsetof(Field, mapping), sizeof(Field),
+            Trade::SceneFieldType::UnsignedShort, offsetof(Field, light), sizeof(Field)}
+    });
+    CORRADE_COMPARE(out.str(), "SceneTools::combineFields(): field 1 is offset-only\n");
+}
+
+void CombineTest::fieldsFromDataOffsetOnly() {
+    /* Same as fieldFromData(), but wrapped in a Scene first, which makes it
+       work */
+
+    const struct Field {
+        UnsignedInt mapping;
+        UnsignedByte mesh;
+        UnsignedShort light;
+    } data[]{
+        {1, 3, 5},
+        {4, 6, 8},
+    };
+    auto view = Containers::stridedArrayView(data);
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 22, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            view.slice(&Field::mapping),
+            view.slice(&Field::mesh)},
+        Trade::SceneFieldData{Trade::SceneField::Light, 2,
+            Trade::SceneMappingType::UnsignedInt, offsetof(Field, mapping), sizeof(Field),
+            Trade::SceneFieldType::UnsignedShort, offsetof(Field, light), sizeof(Field)}
+    }};
+
+    Trade::SceneData combined = combineFields(scene);
+    /* Since it's tightly packed, it's less data now */
+    CORRADE_COMPARE(combined.data().size(), 2*4 + 2*1 + 2*2);
+    CORRADE_COMPARE_AS(combined.data().size(), sizeof(data),
+        TestSuite::Compare::Less);
+
+    /* The two mappings are shared */
+    CORRADE_COMPARE_AS(combined.mapping<UnsignedInt>(Trade::SceneField::Mesh),
+        Containers::arrayView({1u, 4u}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(combined.mapping<UnsignedInt>(Trade::SceneField::Light),
+        Containers::arrayView({1u, 4u}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(combined.mapping(Trade::SceneField::Light).data(), combined.mapping(Trade::SceneField::Mesh).data());
+
+    CORRADE_COMPARE_AS(combined.field<UnsignedByte>(Trade::SceneField::Mesh),
+        Containers::arrayView<UnsignedByte>({3, 6}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(combined.field<UnsignedShort>(Trade::SceneField::Light),
+        Containers::arrayView<UnsignedShort>({5, 8}),
+        TestSuite::Compare::Container);
 }
 
 }}}}

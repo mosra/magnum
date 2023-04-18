@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <unordered_map>
+#include <map>
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
@@ -38,12 +38,20 @@
 
 namespace Magnum { namespace SceneTools { namespace Implementation {
 
+/* The combineFields() is currently transitively used also by Trade for
+   (deprecated) backwards compatibility in SceneData, in particular by
+   convertToSingleFunctionObjects(). Making Trade depend on SceneTools in a
+   deprecated build would be a nasty complication, so the functions are inlined
+   in a header that gets included in both */
+/** @todo move everything to Combine.cpp and anonymous namespace once that
+    compatibility is dropped */
+
 template<class T> void combineCopyMappings(const Containers::ArrayView<const Trade::SceneFieldData> fields, const Containers::ArrayView<const Containers::StridedArrayView2D<char>> itemViews, const Containers::ArrayView<const Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings) {
     std::size_t latestMapping = 0;
     for(std::size_t i = 0; i != fields.size(); ++i) {
-        /* If there are no aliased object mappings, itemViewMappings should be
+        /* If there are no shared object mappings, itemViewMappings should be
            monotonically increasing. If it's not, it means the mapping is
-           shared with something earlier and it got already copied -- skip. */
+           shared with something earlier which got already copied -- skip. */
         const std::size_t mapping = itemViewMappings[i].first();
         if(i && mapping <= latestMapping) continue;
         latestMapping = mapping;
@@ -69,28 +77,16 @@ template<class T> void combineCopyMappings(const Containers::ArrayView<const Tra
     }
 }
 
-/* Combine fields of varying mapping type together into a SceneData of a single
-   given mappingType. The fields are expected to point to existing
-   mapping/field memory, which will be then copied to the resulting scene. If
-   you supply a field with null mapping or field data, the mapping or field
-   data will not get copied, only a placeholder for copying the data later will
-   be allocated. If you however need to have placeholder mapping data shared
-   among multiple fields you have to allocate them upfront. Offset-only fields
-   are not allowed.
-
-   The resulting fields are always tightly packed (not interleaved).
-
-   If multiple fields share the same object mapping views, those are preserved,
-   however they have to have the exact same length. Sharing object mappings
-   with different lengths will assert. */
-/** @todo when published, add an initializer_list overload and turn all
-    internal asserts into (tested!) message asserts */
-inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const UnsignedLong mappingBound, const Containers::ArrayView<const Trade::SceneFieldData> fields) {
+inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType, const UnsignedLong mappingBound, const Containers::ArrayView<const Trade::SceneFieldData> fields) {
     const std::size_t mappingTypeSize = sceneMappingTypeSize(mappingType);
     const std::size_t mappingTypeAlignment = sceneMappingTypeAlignment(mappingType);
 
-    /* Go through all fields and collect ArrayTuple allocations for these */
-    std::unordered_map<const void*, UnsignedInt> uniqueMappings;
+    /* Track unique mapping views (pointer, size, stride) so fields that shared
+       a mapping before stay shared after as well. A map<tuple> is used because
+       it has conveniently implemented ordering, an unordered_map couldn't be
+       used without manually implementing a std::tuple hash because STL DOES
+       NOT HAVE IT, UGH. */
+    std::map<std::tuple<const void*, std::size_t, std::ptrdiff_t>, UnsignedInt> uniqueMappings;
     Containers::Array<Containers::ArrayTuple::Item> items;
     Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings{NoInit, fields.size()};
 
@@ -101,57 +97,44 @@ inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const
     Containers::Array<Containers::StridedArrayView2D<char>> itemViews{fields.size()*2};
     std::size_t itemViewOffset = 0;
 
+    /* Go through all fields and collect ArrayTuple allocations for these */
     for(std::size_t i = 0; i != fields.size(); ++i) {
         const Trade::SceneFieldData& field = fields[i];
-        CORRADE_INTERNAL_ASSERT(!(field.flags() & Trade::SceneFieldFlag::OffsetOnly));
+        CORRADE_ASSERT(!(field.flags() & Trade::SceneFieldFlag::OffsetOnly),
+            "SceneTools::combineFields(): field" << i << "is offset-only", (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
 
-        /* Mapping data. Allocate if the view is a placeholder of if it wasn't
-           used by other fields yet. std::pair is used due to this being
-           returned from a std::unordered_map. */
-        std::pair<std::unordered_map<const void*, UnsignedInt>::iterator, bool> inserted;
+        /* Mapping data. If the view isn't a placeholder, check if it is
+           shared with an existing view already, and insert it if not. */
+        std::pair<std::map<std::tuple<const void*, std::size_t, std::ptrdiff_t>, UnsignedInt>::iterator, bool> inserted;
         if(field.mappingData().data())
-            inserted = uniqueMappings.emplace(field.mappingData().data(), itemViewOffset);
+            inserted = uniqueMappings.emplace(std::make_tuple(field.mappingData().data(), field.mappingData().size(), field.mappingData().stride()), itemViewOffset);
+
+        /* If it's shared (inserting failed), remember the field ID it's shared
+           with. We don't need the original size or stride for anything after
+           -- it was just used to find matching views, and if a match was
+           found, it already has a correct size, and the stride is implicit. */
         if(field.mappingData().data() && !inserted.second) {
             itemViewMappings[i].first() = inserted.first->second;
-            /* Expect that fields sharing the same object mapping view have the
-               exact same length (the length gets stored in the output view
-               during the ArrayTuple::Item construction).
 
-               We could just ignore the sharing in that case, but that'd only
-               lead to misery down the line -- imagine a field that shares the
-               first two items with a mesh and a material object mapping. If it
-               would be the last, it gets duplicated and everything is great,
-               however if it's the first then both mesh and the material get
-               duplicated, and that then asserts inside the SceneData
-               constructor, as those are always expected to share.
-
-               One option that would solve this would be to store pointer+size
-               in the objectMappings map (and then only mappings that share
-               also the same size would be shared), another would be to use the
-               longest used view (and then the shorter prefixes would share
-               with it). The ultimate option would be to have some range map
-               where it'd be possible to locate also arbitrary subranges, not
-               just prefixes. A whole other topic altogether is checking for
-               the same stride, which is not done at all.
-
-               This might theoretically lead to assertions also when two
-               compile-time arrays share a common prefix and get deduplicated
-               by the compiler. But that's unlikely, at least for the internal
-               use case we have right now. */
-            CORRADE_INTERNAL_ASSERT(itemViews[inserted.first->second].size()[0] == field.size());
+        /* If it's not shared or it's a placeholder, allocate a new mapping
+           view of given size by adding a new item to the list of views to
+           allocate by an ArrayTuple. */
         } else {
             itemViewMappings[i].first() = itemViewOffset;
             arrayAppend(items, InPlaceInit, NoInit, std::size_t(field.size()), mappingTypeSize, mappingTypeAlignment, itemViews[itemViewOffset]);
             ++itemViewOffset;
         }
 
-        /* Field data. No aliasing here right now, no sharing between mapping
-           and field data either. */
+        /* Field data, just allocate space for it. No extra logic needed -- no
+           aliasing here right now, no sharing between mapping and field data
+           either. */
         /** @todo field aliasing might be useful at some point */
         itemViewMappings[i].second() = itemViewOffset;
         arrayAppend(items, InPlaceInit, NoInit, std::size_t(field.size()), sceneFieldTypeSize(field.fieldType())*(field.fieldArraySize() ? field.fieldArraySize() : 1), sceneFieldTypeAlignment(field.fieldType()), itemViews[itemViewOffset]);
         ++itemViewOffset;
     }
+
+    CORRADE_INTERNAL_ASSERT(itemViewOffset <= itemViews.size());
 
     /* Allocate the data */
     Containers::Array<char> outData = Containers::ArrayTuple{items};
@@ -166,6 +149,7 @@ inline Trade::SceneData combine(const Trade::SceneMappingType mappingType, const
         combineCopyMappings<UnsignedInt>(fields, itemViews, itemViewMappings);
     else if(mappingType == Trade::SceneMappingType::UnsignedLong)
         combineCopyMappings<UnsignedLong>(fields, itemViews, itemViewMappings);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* Copy the field data over. No special handling needed here. */
     for(std::size_t i = 0; i != fields.size(); ++i) {

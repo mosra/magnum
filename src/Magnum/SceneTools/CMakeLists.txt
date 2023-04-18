@@ -43,10 +43,12 @@ set(MagnumSceneTools_SRCS )
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumSceneTools_GracefulAssert_SRCS
+    Combine.cpp
     FlattenTransformationHierarchy.cpp
     OrderClusterParents.cpp)
 
 set(MagnumSceneTools_HEADERS
+    Combine.h
     FlattenTransformationHierarchy.h
     OrderClusterParents.h
 
