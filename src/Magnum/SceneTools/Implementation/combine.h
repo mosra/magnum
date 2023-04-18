@@ -121,7 +121,12 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
            allocate by an ArrayTuple. */
         } else {
             itemViewMappings[i].first() = itemViewOffset;
-            arrayAppend(items, InPlaceInit, NoInit, std::size_t(field.size()), mappingTypeSize, mappingTypeAlignment, itemViews[itemViewOffset]);
+            arrayAppend(items, InPlaceInit,
+                NoInit,
+                std::size_t(field.size()),
+                mappingTypeSize,
+                mappingTypeAlignment,
+                itemViews[itemViewOffset]);
             ++itemViewOffset;
         }
 
@@ -130,7 +135,11 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
            either. */
         /** @todo field aliasing might be useful at some point */
         itemViewMappings[i].second() = itemViewOffset;
-        arrayAppend(items, InPlaceInit, NoInit, std::size_t(field.size()), sceneFieldTypeSize(field.fieldType())*(field.fieldArraySize() ? field.fieldArraySize() : 1), sceneFieldTypeAlignment(field.fieldType()), itemViews[itemViewOffset]);
+        arrayAppend(items, InPlaceInit,
+            NoInit,
+            std::size_t(field.size()), sceneFieldTypeSize(field.fieldType())*(field.fieldArraySize() ? field.fieldArraySize() : 1),
+            sceneFieldTypeAlignment(field.fieldType()),
+            itemViews[itemViewOffset]);
         ++itemViewOffset;
     }
 
@@ -153,18 +162,25 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
 
     /* Copy the field data over. No special handling needed here. */
     for(std::size_t i = 0; i != fields.size(); ++i) {
+        const Trade::SceneFieldData& field = fields[i];
+        const Containers::StridedArrayView1D<const void> src = field.fieldData();
+
         /* If the field has null field data, no need to copy anything. This
            covers reserved fields but also fields of zero size. */
-        if(!fields[i].fieldData()) continue;
+        if(!src.data()) continue;
 
         /** @todo isn't there some less awful way to create a 2D view, sigh */
-        Utility::copy(Containers::arrayCast<2, const char>(fields[i].fieldData(), sceneFieldTypeSize(fields[i].fieldType())*(fields[i].fieldArraySize() ? fields[i].fieldArraySize() : 1)), itemViews[itemViewMappings[i].second()]);
+        Utility::copy(Containers::arrayCast<2, const char>(src, sceneFieldTypeSize(field.fieldType())*(field.fieldArraySize() ? field.fieldArraySize() : 1)), itemViews[itemViewMappings[i].second()]);
     }
 
     /* Map the fields to the new data */
     Containers::Array<Trade::SceneFieldData> outFields{fields.size()};
     for(std::size_t i = 0; i != fields.size(); ++i) {
-        outFields[i] = Trade::SceneFieldData{fields[i].name(), itemViews[itemViewMappings[i].first()], fields[i].fieldType(), itemViews[itemViewMappings[i].second()], fields[i].fieldArraySize(), fields[i].flags()};
+        const Trade::SceneFieldData& field = fields[i];
+        outFields[i] = Trade::SceneFieldData{field.name(),
+            itemViews[itemViewMappings[i].first()],
+            field.fieldType(), itemViews[itemViewMappings[i].second()],
+            field.fieldArraySize(), field.flags()};
     }
 
     return Trade::SceneData{mappingType, mappingBound, std::move(outData), std::move(outFields)};
