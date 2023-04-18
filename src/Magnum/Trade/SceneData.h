@@ -827,7 +827,10 @@ actual data is allocated / populated at runtime:
 @snippet MagnumTrade.cpp SceneFieldData-usage-offset-only
 
 Offset-only fields are marked with @ref SceneFieldFlag::OffsetOnly in
-@ref flags().
+@ref flags(). Note that @ref SceneTools algorithms generally don't accept
+offset-only @ref SceneFieldData instances except when passed through a
+@ref SceneData, as for a standalone offset-only @ref SceneFieldData it's
+impossible to know what data it points to.
 
 @subsection Trade-SceneFieldData-usage-object-mapping Ordered and implicit object mapping
 
