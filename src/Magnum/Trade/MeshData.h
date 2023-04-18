@@ -414,9 +414,11 @@ but the actual data is allocated / populated at runtime:
 
 @snippet MagnumTrade.cpp MeshAttributeData-usage-offset-only
 
-Note that @ref MeshTools algorithms generally don't accept offset-only
-@ref MeshAttributeData instances except when passed through a @ref MeshData
-instance.
+Offset-only attributes return @cpp true @ce for @ref isOffsetOnly(). Note that
+@ref MeshTools algorithms generally don't accept offset-only
+@ref MeshAttributeData instances except when passed through a @ref MeshData, as
+for a standalone offset-only @ref MeshAttributeData it's impossible to know
+what data it points to.
 
 @section Trade-MeshAttributeData-custom-vertex-format Custom vertex formats
 

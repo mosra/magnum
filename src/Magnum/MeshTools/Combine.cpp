@@ -239,7 +239,7 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, Containers::A
     #ifndef CORRADE_NO_ASSERT
     for(std::size_t i = 0; i != faceAttributes.size(); ++i)
         CORRADE_ASSERT(!faceAttributes[i].isOffsetOnly(),
-            "MeshTools::combineFaceAttributes(): face attribute" << i << "is offset-only, which is not supported",
+            "MeshTools::combineFaceAttributes(): face attribute" << i << "is offset-only",
                 (Trade::MeshData{MeshPrimitive::Triangles, 0}));
     #endif
 

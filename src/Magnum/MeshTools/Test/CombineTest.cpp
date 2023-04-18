@@ -571,7 +571,7 @@ void CombineTest::combineFaceAttributesFaceAttributeOffsetOnly() {
             VertexFormat::Vector4, 0, 5, 16}
     });
     CORRADE_COMPARE(out.str(),
-        "MeshTools::combineFaceAttributes(): face attribute 1 is offset-only, which is not supported\n");
+        "MeshTools::combineFaceAttributes(): face attribute 1 is offset-only\n");
 }
 
 }}}}

@@ -1350,7 +1350,7 @@ void InterleaveTest::interleaveMeshDataExtraOffsetOnly() {
         Trade::MeshAttributeData{10},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, 3, 5, 14}
     });
-    CORRADE_COMPARE(out.str(), "MeshTools::interleave(): extra attribute 1 is offset-only, which is not supported\n");
+    CORRADE_COMPARE(out.str(), "MeshTools::interleave(): extra attribute 1 is offset-only\n");
 }
 
 void InterleaveTest::interleaveMeshDataExtraImplementationSpecificVertexFormat() {
