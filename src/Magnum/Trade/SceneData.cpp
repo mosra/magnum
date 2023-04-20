@@ -633,7 +633,8 @@ SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType map
            sparse), and even then it'd probably fail due to the two pointers
            being two unrelated pieces of memory */
         stringData - static_cast<const char*>(fieldData.data())},
-    _fieldData{fieldData.data()} {
+    _fieldData{fieldData.data()}
+{
     CORRADE_ASSERT(mappingData.size() == fieldData.size(),
         "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size(), );
     CORRADE_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
@@ -649,9 +650,6 @@ SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType map
 }
 
 SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, stringData, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, flags} {
-    /* Yes, this calls into a constexpr function defined in the header --
-       because I feel that makes more sense than duplicating the full assert
-       logic */
     CORRADE_ASSERT(fieldData.isEmpty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType),
         "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType, );
 
