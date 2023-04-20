@@ -743,7 +743,12 @@ void Context::setupDriverWorkarounds() {
     #endif
 
     #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-    if(rendererString() == "Mozilla"_s) {
+    /* Firefox used to report both rendererString() and vendorString() as
+       Mozilla (printing silly `Renderer: Mozilla by Mozilla` in the Magnum
+       startup log), but possibly in relation with WEBGL_debug_renderer_info
+       being deprecated in FF 92+ this changed and now Mozilla is only in
+       vendorString() and rendererString() is the actual system GPU. */
+    if(vendorString() == "Mozilla"_s) {
         for(const auto& extension: extensionStrings()) {
             if(extension == "GL_EXT_disjoint_timer_query"_s && !isDriverWorkaroundDisabled("firefox-fake-disjoint-timer-query-webgl2"_s)) {
                 _extensionStatus.set(Extensions::EXT::disjoint_timer_query_webgl2::Index, true);

@@ -970,6 +970,10 @@ See also:
     [mosra/magnum#535](https://github.com/mosra/magnum/issues/535))
 -   Fixed various wrong assumptions about Mac builds being always desktop GLES
     (see [mosra/magnum#](https://github.com/mosra/magnum/issues/541))
+-   Fixed the @cpp "firefox-fake-disjoint-timer-query-webgl2" @ce workaround to
+    work on Firefox again. The reported renderer string got changed, possibly
+    in relation to @webgl_extension{WEBGL,debug_renderer_info} being
+    deprecated, which broke Firefox detection in the workaround enabling code.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
