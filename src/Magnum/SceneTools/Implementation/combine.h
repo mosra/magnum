@@ -37,6 +37,7 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/PackingBatch.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/Implementation/checkSharedSceneFieldMapping.h"
 
 namespace Magnum { namespace SceneTools { namespace Implementation {
 
@@ -111,15 +112,27 @@ template<class T> std::size_t stringRangeNullTerminatedFieldSize(const char* str
 }
 
 inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType, const UnsignedLong mappingBound, const Containers::ArrayView<const Trade::SceneFieldData> fields) {
-    const std::size_t mappingTypeSize = sceneMappingTypeSize(mappingType);
-    const std::size_t mappingTypeAlignment = sceneMappingTypeAlignment(mappingType);
+    #ifndef CORRADE_NO_ASSERT
+    /* Offset-only fields are not allowed as there's no data to refer them to.
+       This has to be checked before shared scene field mapping, otherwise it'd
+       assert there first, leading to confusion. */
+    for(std::size_t i = 0; i != fields.size(); ++i) {
+        CORRADE_ASSERT(!(fields[i].flags() & Trade::SceneFieldFlag::OffsetOnly),
+            "SceneTools::combineFields(): field" << i << "is offset-only", (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
+    }
+    #endif
 
-    /* Track unique mapping views (pointer, size, stride) so fields that shared
-       a mapping before stay shared after as well. A map<tuple> is used because
-       it has conveniently implemented ordering, an unordered_map couldn't be
-       used without manually implementing a std::tuple hash because STL DOES
-       NOT HAVE IT, UGH. */
-    std::map<std::tuple<const void*, std::size_t, std::ptrdiff_t>, UnsignedInt> uniqueMappings;
+    /* Find fields that have to share the mapping views */
+    const Trade::Implementation::SharedSceneFieldIds sharedSceneFieldIds = Trade::Implementation::findSharedSceneFields(fields);
+
+    /* Check that they actually share the same object mapping, i.e. the same
+       begin, size and stride. As offset-only fields are disallowed, the data
+       pointer can be whatever, just needs to be large enough. */
+    #ifndef CORRADE_NO_ASSERT
+    if(!checkSharedSceneFieldMapping("SceneTools::combineFields():", sharedSceneFieldIds, {nullptr, ~std::size_t{}}, fields))
+        return Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}};
+    #endif
+
     Containers::Array<Containers::ArrayTuple::Item> items;
     Containers::Array<Containers::Triple<UnsignedInt, UnsignedInt, UnsignedInt>> itemViewMappings{NoInit, fields.size()};
 
@@ -135,11 +148,45 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
     Containers::Array<CombineItemView> itemViews{fields.size()*3};
     std::size_t itemViewOffset = 0;
 
+    const std::size_t mappingTypeSize = sceneMappingTypeSize(mappingType);
+    const std::size_t mappingTypeAlignment = sceneMappingTypeAlignment(mappingType);
+
+    /* If any share group has a placeholder view (which thanks to the above
+       check implies that all present fields in that group), add a mapping view
+       for it -- it'll get picked up below */
+    Containers::Optional<UnsignedInt> sharedTrsMapping;
+    if(sharedSceneFieldIds.trs[0] != ~UnsignedInt{} && !fields[sharedSceneFieldIds.trs[0]].mappingData().data()) {
+        sharedTrsMapping = itemViewOffset;
+        arrayAppend(items, InPlaceInit,
+            NoInit,
+            std::size_t(fields[sharedSceneFieldIds.trs[0]].size()),
+            mappingTypeSize,
+            mappingTypeAlignment,
+            itemViews[itemViewOffset].types);
+        ++itemViewOffset;
+    }
+    Containers::Optional<UnsignedInt> sharedMeshMaterialMapping;
+    if(sharedSceneFieldIds.meshMaterial[0] != ~UnsignedInt{} && !fields[sharedSceneFieldIds.meshMaterial[0]].mappingData().data()) {
+        sharedMeshMaterialMapping = itemViewOffset;
+        arrayAppend(items, InPlaceInit,
+            NoInit,
+            std::size_t(fields[sharedSceneFieldIds.meshMaterial[0]].size()),
+            mappingTypeSize,
+            mappingTypeAlignment,
+            itemViews[itemViewOffset].types);
+        ++itemViewOffset;
+    }
+
+    /* Track unique mapping views (pointer, size, stride) so fields that shared
+       a mapping before stay shared after as well. A map<tuple> is used because
+       it has conveniently implemented ordering, an unordered_map couldn't be
+       used without manually implementing a std::tuple hash because STL DOES
+       NOT HAVE IT, UGH. */
+    std::map<std::tuple<const void*, std::size_t, std::ptrdiff_t>, UnsignedInt> uniqueMappings;
+
     /* Go through all fields and collect ArrayTuple allocations for these */
     for(std::size_t i = 0; i != fields.size(); ++i) {
         const Trade::SceneFieldData& field = fields[i];
-        CORRADE_ASSERT(!(field.flags() & Trade::SceneFieldFlag::OffsetOnly),
-            "SceneTools::combineFields(): field" << i << "is offset-only", (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
 
         /* Mapping data. If the view isn't a placeholder, check if it is
            shared with an existing view already, and insert it if not. */
@@ -153,6 +200,18 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
            found, it already has a correct size, and the stride is implicit. */
         if(field.mappingData().data() && !inserted.second) {
             itemViewMappings[i].first() = inserted.first->second;
+
+        /* If it's a placeholder in one of the required-to-be-shared groups,
+           add a view that was preallocated above */
+        } else if(!field.mappingData().data() &&
+            (field.name() == Trade::SceneField::Translation ||
+             field.name() == Trade::SceneField::Rotation ||
+             field.name() == Trade::SceneField::Scaling)) {
+            itemViewMappings[i].first() = *sharedTrsMapping;
+        } else if(!field.mappingData().data() &&
+            (field.name() == Trade::SceneField::Mesh ||
+             field.name() == Trade::SceneField::MeshMaterial)) {
+            itemViewMappings[i].first() = *sharedMeshMaterialMapping;
 
         /* If it's not shared or it's a placeholder, allocate a new mapping
            view of given size by adding a new item to the list of views to

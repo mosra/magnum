@@ -29,7 +29,7 @@
 
 #include "Magnum/Trade/SceneData.h"
 
-/* Used by SceneData internals */
+/* Used by SceneData and SceneTools::combineFields() internals */
 
 namespace Magnum { namespace Trade { namespace Implementation {
 

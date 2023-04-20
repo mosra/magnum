@@ -24,6 +24,8 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/StringView.h>
@@ -50,7 +52,10 @@ struct CombineTest: TestSuite::Tester {
     void fieldsMappingSharedPartial();
     void fieldsMappingPlaceholderFieldPlaceholder();
     void fieldsMappingSharedFieldPlaceholder();
+    void fieldsMappingSharedTRSPlaceholder();
+    void fieldsMappingSharedMeshMaterialPlaceholder();
 
+    void fieldsSharedMappingExpected();
     void fieldsStringPlaceholder();
     void fieldsOffsetOnly();
     void fieldsFromDataOffsetOnly();
@@ -68,6 +73,82 @@ const struct {
     {"UnsignedLong output", Trade::SceneMappingType::UnsignedLong},
 };
 
+const struct {
+    const char* name;
+    bool translationPresent, rotationPresent, scalingPresent;
+    /* Either all or none can be placeholders */
+    bool placeholders;
+} FieldsMappingSharedTRSPlaceholderData[]{
+    {"all",
+        true, true, true,
+        false},
+    {"all, placeholders",
+        true, true, true,
+        true},
+    {"rotation & scaling",
+        false, true, true,
+        false},
+    {"rotation & scaling, placeholders",
+        false, true, true,
+        true},
+    {"translation & scaling",
+        true, false, true,
+        false},
+    {"translation & scaling, placeholders",
+        true, false, true,
+        true},
+    {"translation & rotation",
+        true, true, false,
+        false},
+    {"translation & rotation, placeholders",
+        true, true, false,
+        true},
+    {"translation",
+        true, false, false,
+        false},
+    {"translation, placeholder",
+        true, false, false,
+        true},
+    {"rotation",
+        false, true, false,
+        false},
+    {"rotation, placeholder",
+        false, true, false,
+        true},
+    {"scaling",
+        false, false, true,
+        false},
+    {"scaling, placeholder",
+        false, false, true,
+        true},
+};
+
+const struct {
+    const char* name;
+    bool meshPresent, meshMaterialPresent;
+    /* Either all or none can be placeholders */
+    bool placeholders;
+} FieldsMappingSharedMeshMaterialPlaceholderData[]{
+    {"both placeholders",
+        true, true,
+        false},
+    {"no placeholders",
+        true, true,
+        true},
+    {"just mesh present, placeholder",
+        true, false,
+        false},
+    {"just mesh present, not a placeholder",
+        true, false,
+        true},
+    {"just mesh material present, placeholder",
+        false, true,
+        false},
+    {"just mesh material present, not a placeholder",
+        false, true,
+        true},
+};
+
 CombineTest::CombineTest() {
     addInstancedTests({&CombineTest::fields},
         Containers::arraySize(FieldsData));
@@ -81,8 +162,15 @@ CombineTest::CombineTest() {
               &CombineTest::fieldsMappingShared,
               &CombineTest::fieldsMappingSharedPartial,
               &CombineTest::fieldsMappingPlaceholderFieldPlaceholder,
-              &CombineTest::fieldsMappingSharedFieldPlaceholder,
+              &CombineTest::fieldsMappingSharedFieldPlaceholder});
 
+    addInstancedTests({&CombineTest::fieldsMappingSharedTRSPlaceholder},
+        Containers::arraySize(FieldsMappingSharedTRSPlaceholderData));
+
+    addInstancedTests({&CombineTest::fieldsMappingSharedMeshMaterialPlaceholder},
+        Containers::arraySize(FieldsMappingSharedMeshMaterialPlaceholderData));
+
+    addTests({&CombineTest::fieldsSharedMappingExpected,
               &CombineTest::fieldsStringPlaceholder,
               &CombineTest::fieldsOffsetOnly,
               &CombineTest::fieldsFromDataOffsetOnly});
@@ -745,6 +833,191 @@ void CombineTest::fieldsMappingSharedFieldPlaceholder() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).data(), scene.data() + 3*4 + 3 + 1);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).stride()[0], 4);
+}
+
+void CombineTest::fieldsMappingSharedTRSPlaceholder() {
+    auto&& data = FieldsMappingSharedTRSPlaceholderData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    const UnsignedShort mapping[]{13, 31, 67};
+
+    const Vector2 translationData[]{{1.0f, 2.0f}, {3.0f, 4.0f}, {5.0f, 6.0f}};
+    const Complex rotationData[]{Complex::rotation(30.0_degf), Complex::rotation(60.0_degf), Complex::rotation(90.0_degf)};
+    const Vector2 scalingData[]{{7.0f, -1.0f}, {8.0f, -2.0f}, {9.0f, -3.0f}};
+    const UnsignedByte meshData[]{5, 7, 119};
+
+    Containers::Array<Trade::SceneFieldData> fields;
+    if(data.translationPresent) arrayAppend(fields, InPlaceInit,
+        Trade::SceneField::Translation,
+        data.placeholders ?
+            Containers::ArrayView<UnsignedShort>{nullptr, 3} :
+            Containers::arrayView(mapping),
+        Containers::arrayView(translationData));
+    if(data.rotationPresent) arrayAppend(fields, InPlaceInit,
+        Trade::SceneField::Rotation,
+        data.placeholders ?
+            Containers::ArrayView<UnsignedShort>{nullptr, 3} :
+            Containers::arrayView(mapping),
+        Containers::arrayView(rotationData));
+
+    /* Add a placeholder mapping field from another share group with the same
+       pointer/size/stride to verify they don't get shared by accident; add it
+       among the other fields to avoid them accidentally being treated as always
+       together */
+    arrayAppend(fields, InPlaceInit,
+        Trade::SceneField::Mesh,
+        Containers::ArrayView<UnsignedShort>{nullptr, 3},
+        Containers::arrayView(meshData));
+
+    if(data.scalingPresent) arrayAppend(fields, InPlaceInit,
+        Trade::SceneField::Scaling,
+        data.placeholders ?
+            Containers::ArrayView<UnsignedShort>{nullptr, 3} :
+            Containers::arrayView(mapping),
+        Containers::arrayView(scalingData));
+
+    /* The assertions inside SceneData will verify that the mapping is
+       shared */
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedInt, 173, fields);
+
+    Containers::StridedArrayView1D<const UnsignedInt> mappingData;
+    if(data.translationPresent) {
+        CORRADE_VERIFY(scene.hasField(Trade::SceneField::Translation));
+        CORRADE_COMPARE_AS(scene.field<Vector2>(Trade::SceneField::Translation),
+            Containers::arrayView(translationData),
+            TestSuite::Compare::Container);
+        mappingData = scene.mapping<UnsignedInt>(Trade::SceneField::Translation);
+    }
+    if(data.rotationPresent) {
+        CORRADE_VERIFY(scene.hasField(Trade::SceneField::Rotation));
+        CORRADE_COMPARE_AS(scene.field<Complex>(Trade::SceneField::Rotation),
+            Containers::arrayView(rotationData),
+            TestSuite::Compare::Container);
+        mappingData = scene.mapping<UnsignedInt>(Trade::SceneField::Rotation);
+    }
+    if(data.scalingPresent) {
+        CORRADE_VERIFY(scene.hasField(Trade::SceneField::Scaling));
+        CORRADE_COMPARE_AS(scene.field<Vector2>(Trade::SceneField::Scaling),
+            Containers::arrayView(scalingData),
+            TestSuite::Compare::Container);
+        mappingData = scene.mapping<UnsignedInt>(Trade::SceneField::Scaling);
+    }
+
+    if(!data.placeholders)
+        CORRADE_COMPARE_AS(mappingData,
+            Containers::arrayView({13u, 31u, 67u}),
+            TestSuite::Compare::Container);
+
+    /* The other field should be copied as well, but with its own mapping
+       data */
+    CORRADE_VERIFY(scene.hasField(Trade::SceneField::Mesh));
+    CORRADE_VERIFY(scene.mapping(Trade::SceneField::Mesh).data() != mappingData.data());
+    CORRADE_COMPARE_AS(scene.field<UnsignedByte>(Trade::SceneField::Mesh),
+        Containers::arrayView(meshData),
+        TestSuite::Compare::Container);
+}
+
+void CombineTest::fieldsMappingSharedMeshMaterialPlaceholder() {
+    auto&& data = FieldsMappingSharedMeshMaterialPlaceholderData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    const UnsignedShort mapping[]{13, 31, 67};
+
+    const UnsignedByte meshData[]{5, 7, 119};
+    const Int meshMaterialData[]{25, -1, 23};
+
+    const Vector2 translationData[]{{1.0f, 2.0f}, {3.0f, 4.0f}, {5.0f, 6.0f}};
+
+    Containers::Array<Trade::SceneFieldData> fields;
+    if(data.meshPresent) arrayAppend(fields, InPlaceInit,
+        Trade::SceneField::Mesh,
+        data.placeholders ?
+            Containers::ArrayView<UnsignedShort>{nullptr, 3} :
+            Containers::arrayView(mapping),
+        Containers::arrayView(meshData));
+
+    /* Add a placeholder mapping field from another share group to verify
+       they're not shared by accident; add it among the other fields to avoid
+       them accidentally being treated as always together */
+    arrayAppend(fields, InPlaceInit,
+        Trade::SceneField::Translation,
+        Containers::ArrayView<UnsignedShort>{nullptr, 3},
+        Containers::arrayView(translationData));
+
+    if(data.meshMaterialPresent) arrayAppend(fields, InPlaceInit,
+        Trade::SceneField::MeshMaterial,
+        data.placeholders ?
+            Containers::ArrayView<UnsignedShort>{nullptr, 3} :
+            Containers::arrayView(mapping),
+        Containers::arrayView(meshMaterialData));
+
+    /* The assertions inside SceneData will verify that the mapping is
+       shared */
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedInt, 173, fields);
+
+    Containers::StridedArrayView1D<const UnsignedInt> mappingData;
+    if(data.meshPresent) {
+        CORRADE_VERIFY(scene.hasField(Trade::SceneField::Mesh));
+        CORRADE_COMPARE_AS(scene.field<UnsignedByte>(Trade::SceneField::Mesh),
+            Containers::arrayView(meshData),
+            TestSuite::Compare::Container);
+        mappingData = scene.mapping<UnsignedInt>(Trade::SceneField::Mesh);
+    }
+    if(data.meshMaterialPresent) {
+        CORRADE_VERIFY(scene.hasField(Trade::SceneField::MeshMaterial));
+        CORRADE_COMPARE_AS(scene.field<Int>(Trade::SceneField::MeshMaterial),
+            Containers::arrayView(meshMaterialData),
+            TestSuite::Compare::Container);
+        mappingData = scene.mapping<UnsignedInt>(Trade::SceneField::MeshMaterial);
+    }
+
+    if(!data.placeholders)
+        CORRADE_COMPARE_AS(mappingData,
+            Containers::arrayView({13u, 31u, 67u}),
+            TestSuite::Compare::Container);
+
+    /* The other field should be copied as well, but with its own mapping
+       data */
+    CORRADE_VERIFY(scene.hasField(Trade::SceneField::Translation));
+    CORRADE_VERIFY(scene.mapping(Trade::SceneField::Translation).data() != mappingData.data());
+    CORRADE_COMPARE_AS(scene.field<Vector2>(Trade::SceneField::Translation),
+        Containers::arrayView(translationData),
+        TestSuite::Compare::Container);
+}
+
+void CombineTest::fieldsSharedMappingExpected() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* Tested thoroughly in SceneDataTest::constructMismatchedTRSViews() and
+       constructMismatchedMeshMaterialViews(), here it uses the same internal
+       utility so test just that it's correctly called */
+
+    UnsignedInt meshes[3]{};
+    Int materials[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    combineFields(Trade::SceneMappingType::UnsignedInt, 3, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::ArrayView<UnsignedInt>{reinterpret_cast<UnsignedInt*>(0xdead), 3},
+            Containers::arrayView(meshes)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::ArrayView<UnsignedInt>{reinterpret_cast<UnsignedInt*>(0xbeef), 2},
+            Containers::arrayView(materials).prefix(2)},
+    });
+    combineFields(Trade::SceneMappingType::UnsignedInt, 3, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::ArrayView<UnsignedInt>{reinterpret_cast<UnsignedInt*>(0xdead), 3},
+            Containers::arrayView(meshes)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::ArrayView<UnsignedInt>{nullptr, 3},
+            Containers::arrayView(materials)},
+    });
+    CORRADE_COMPARE(out.str(),
+        "SceneTools::combineFields(): Trade::SceneField::MeshMaterial mapping data {0xbeef, 2, 4} is different from Trade::SceneField::Mesh mapping data {0xdead, 3, 4}\n"
+        /* Placeholder mapping is also disallowed right now -- it has to be
+           either all placeholders or none */
+        "SceneTools::combineFields(): Trade::SceneField::MeshMaterial mapping data {0x0, 3, 4} is different from Trade::SceneField::Mesh mapping data {0xdead, 3, 4}\n");
 }
 
 void CombineTest::fieldsStringPlaceholder() {
