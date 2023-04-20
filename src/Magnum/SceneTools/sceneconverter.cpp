@@ -559,8 +559,8 @@ well, the IDs reference attributes of the first mesh.)")
         Error{} << "The --mesh-level option can only be used with --mesh";
         return 1;
     }
-    /** @todo remove this once only-attributes can work with attribute names
-        and thus for more meshes */
+    /** @todo remove this once only-mesh-attributes can work with attribute
+        names and thus for more meshes */
     if(args.value<Containers::StringView>("only-mesh-attributes") && !args.value<Containers::StringView>("mesh") && !args.isSet("concatenate-meshes")) {
         Error{} << "The --only-mesh-attributes option can only be used with --mesh or --concatenate-meshes";
         return 1;
