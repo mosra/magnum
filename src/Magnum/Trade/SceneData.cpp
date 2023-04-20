@@ -44,6 +44,7 @@
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/PackingBatch.h"
 #include "Magnum/Trade/Implementation/arrayUtilities.h"
+#include "Magnum/Trade/Implementation/checkSharedSceneFieldMapping.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
@@ -798,8 +799,6 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
     UnsignedInt rotationField = ~UnsignedInt{};
     UnsignedInt scalingField = ~UnsignedInt{};
     #ifndef CORRADE_NO_ASSERT
-    UnsignedInt meshField = ~UnsignedInt{};
-    UnsignedInt meshMaterialField = ~UnsignedInt{};
     UnsignedInt skinField = ~UnsignedInt{};
     #endif
     for(std::size_t i = 0; i != _fields.size(); ++i) {
@@ -923,11 +922,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
             scalingField = i;
         }
         #ifndef CORRADE_NO_ASSERT
-        else if(field._name == SceneField::Mesh) {
-            meshField = i;
-        } else if(field._name == SceneField::MeshMaterial) {
-            meshMaterialField = i;
-        } else if(field._name == SceneField::Skin) {
+        else if(field._name == SceneField::Skin) {
             skinField = i;
         }
         #endif
@@ -937,28 +932,7 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
     /* Check that certain fields share the same object mapping, i.e. the same
        begin, size and stride. Cases where one of the two is offset-only and
        the other not are allowed if both have the same absolute begin pointer. */
-    const auto checkFieldMappingDataMatch = [this](const SceneFieldData& a, const SceneFieldData& b) {
-        const void* const aBegin = a._flags & SceneFieldFlag::OffsetOnly ?
-            _data.begin() + a._mappingData.offset : a._mappingData.pointer;
-        const void* const bBegin = b._flags & SceneFieldFlag::OffsetOnly ?
-            _data.begin() + b._mappingData.offset : b._mappingData.pointer;
-        CORRADE_ASSERT(aBegin == bBegin && a._size == b._size && a._mappingStride == b._mappingStride,
-            "Trade::SceneData:" << b._name << "mapping data {" << Debug::nospace << bBegin << Debug::nospace << "," << b._size << Debug::nospace << "," << b._mappingStride << Debug::nospace << "} is different from" << a._name << "mapping data {" << Debug::nospace << aBegin << Debug::nospace << "," << a._size << Debug::nospace << "," << a._mappingStride << Debug::nospace << "}", );
-    };
-
-    /* All present TRS fields should share the same object mapping */
-    if(translationField != ~UnsignedInt{}) {
-        if(rotationField != ~UnsignedInt{})
-            checkFieldMappingDataMatch(_fields[translationField], _fields[rotationField]);
-        if(scalingField != ~UnsignedInt{})
-            checkFieldMappingDataMatch(_fields[translationField], _fields[scalingField]);
-    }
-    if(rotationField != ~UnsignedInt{} && scalingField != ~UnsignedInt{})
-        checkFieldMappingDataMatch(_fields[rotationField], _fields[scalingField]);
-
-    /* Mesh and materials also */
-    if(meshField != ~UnsignedInt{} && meshMaterialField != ~UnsignedInt{})
-        checkFieldMappingDataMatch(_fields[meshField], _fields[meshMaterialField]);
+    Implementation::checkSharedSceneFieldMapping("Trade::SceneData:", Implementation::findSharedSceneFields(_fields), _data, _fields);
     #endif
 
     /* Decide about dimensionality based on transformation type, if present */

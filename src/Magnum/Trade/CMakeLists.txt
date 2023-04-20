@@ -79,6 +79,7 @@ set(MagnumTrade_HEADERS
 
 set(MagnumTrade_PRIVATE_HEADERS
     Implementation/arrayUtilities.h
+    Implementation/checkSharedSceneFieldMapping.h
     Implementation/converterUtilities.h
     Implementation/materialAttributeProperties.hpp)
 
