@@ -62,8 +62,11 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterAttributes(const Trade::MeshData& 
 Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attributes that are listed in @p attributes. The index buffer, if
 present, is left untouched. Attributes from the list that are not present in
-@p mesh are skipped. All duplicates of a listed attribute are kept --- if you
-want a different behavior, use the @ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
+@p mesh are skipped, duplicates in the list are treated the same as if given
+attribute was listed just once. If given attribute is present multiple times in
+the mesh (such as secondary colors or texture coordinates), all its occurences
+are kept --- if you want a different behavior, use the
+@ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
 overload and pick attributes by their IDs instead.
 
 This function only operates on the attribute metadata --- if you'd like to have
@@ -87,10 +90,12 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData filterOnlyAttributes(const Trade::MeshDa
 Returns a non-owning reference to the vertex and index buffer from @p mesh with
 only the attributes that are not listed in @p attributes. The index buffer, if
 present, is left untouched. Attributes from the list that are not present in
-@p mesh are skipped. All duplicates of a listed attribute are removed --- if
-you want a different behavior, use the @ref filterExceptAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
-overload and pick attributes by their IDs instead. If @p attributes is empty,
-the behavior is equivalent to @ref reference().
+@p mesh are skipped, duplicates in the list are treated the same as if given
+attribute was listed just once. If given attribute is present multiple times in
+the mesh (such as secondary colors or texture coordinates), all its occurences
+are removed --- if you want a different behavior, use the
+@ref filterOnlyAttributes(const Trade::MeshData&, Containers::ArrayView<const UnsignedInt>)
+overload and pick attributes by their IDs instead.
 
 This function only operates on the attribute metadata --- if you'd like to have
 the vertex mesh repacked to contain just the remaining attributes as well, pass

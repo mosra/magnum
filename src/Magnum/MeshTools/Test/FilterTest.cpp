@@ -238,9 +238,10 @@ void FilterTest::onlyAttributes() {
         }};
 
     Trade::MeshData filtered = filterOnlyAttributes(mesh, {
+        Trade::MeshAttribute::TextureCoordinates, /* present twice in the mesh */
         Trade::MeshAttribute::Position,
-        Trade::MeshAttribute::Normal, /* not present, ignored */
-        Trade::MeshAttribute::TextureCoordinates, /* present twice */
+        Trade::MeshAttribute::Normal, /* not present in the mesh, ignored */
+        Trade::MeshAttribute::Position, /* listed twice, ignored */
     });
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleStrip);
 
@@ -257,6 +258,8 @@ void FilterTest::onlyAttributes() {
     /* Testing just the offset if it matches expectations, the
        MeshAttributeData is copied directly so no metadata should get lost */
     CORRADE_COMPARE(filtered.attributeCount(), 3);
+    /* The original order stays even though Position was specified after
+       TextureCoordinates in the list */
     CORRADE_COMPARE(filtered.attributeName(0), Trade::MeshAttribute::Position);
     CORRADE_COMPARE(filtered.attributeOffset(0), offsetof(Vertex, position));
     CORRADE_COMPARE(filtered.attributeName(1), Trade::MeshAttribute::TextureCoordinates);
@@ -483,8 +486,9 @@ void FilterTest::exceptAttributes() {
 
     Trade::MeshData filtered = filterExceptAttributes(mesh, {
         Trade::MeshAttribute::Position,
-        Trade::MeshAttribute::Normal, /* not present, ignored */
-        Trade::MeshAttribute::TextureCoordinates, /* present twice */
+        Trade::MeshAttribute::Normal, /* not present in the mesh, ignored */
+        Trade::MeshAttribute::TextureCoordinates, /* present twice in the mesh */
+        Trade::MeshAttribute::Position, /* listed twice, ignored */
     });
     CORRADE_COMPARE(filtered.primitive(), MeshPrimitive::TriangleStrip);
 
