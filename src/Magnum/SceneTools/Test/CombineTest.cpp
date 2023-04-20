@@ -24,7 +24,10 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StringIterable.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
@@ -41,15 +44,19 @@ struct CombineTest: TestSuite::Tester {
     explicit CombineTest();
 
     void fields();
+    template<class T> void fieldsStrings();
     void fieldsAlignment();
     void fieldsMappingShared();
     void fieldsMappingSharedPartial();
     void fieldsMappingPlaceholderFieldPlaceholder();
     void fieldsMappingSharedFieldPlaceholder();
 
+    void fieldsStringPlaceholder();
     void fieldsOffsetOnly();
     void fieldsFromDataOffsetOnly();
 };
+
+using namespace Containers::Literals;
 
 const struct {
     const char* name;
@@ -65,12 +72,18 @@ CombineTest::CombineTest() {
     addInstancedTests({&CombineTest::fields},
         Containers::arraySize(FieldsData));
 
-    addTests({&CombineTest::fieldsAlignment,
+    addTests({&CombineTest::fieldsStrings<UnsignedByte>,
+              &CombineTest::fieldsStrings<UnsignedShort>,
+              &CombineTest::fieldsStrings<UnsignedInt>,
+              &CombineTest::fieldsStrings<UnsignedLong>,
+
+              &CombineTest::fieldsAlignment,
               &CombineTest::fieldsMappingShared,
               &CombineTest::fieldsMappingSharedPartial,
               &CombineTest::fieldsMappingPlaceholderFieldPlaceholder,
               &CombineTest::fieldsMappingSharedFieldPlaceholder,
 
+              &CombineTest::fieldsStringPlaceholder,
               &CombineTest::fieldsOffsetOnly,
               &CombineTest::fieldsFromDataOffsetOnly});
 }
@@ -260,6 +273,220 @@ void CombineTest::fields() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(scene.fieldBitArrays(6)[2],
         Containers::stridedArrayView({true, true, true, false}).sliceBit(0),
+        TestSuite::Compare::Container);
+}
+
+/* Taken from SceneDataTest */
+template<class T> struct StringFieldTraits;
+template<> struct StringFieldTraits<UnsignedByte> {
+    static const char* name() { return "8"; }
+    static Trade::SceneFieldType offsetType() { return Trade::SceneFieldType::StringOffset8; }
+    static Trade::SceneFieldType rangeType() { return Trade::SceneFieldType::StringRange8; }
+    static Trade::SceneFieldType rangeNullTerminatedType() {
+        return Trade::SceneFieldType::StringRangeNullTerminated8;
+    }
+};
+template<> struct StringFieldTraits<UnsignedShort> {
+    static const char* name() { return "16"; }
+    static Trade::SceneFieldType offsetType() { return Trade::SceneFieldType::StringOffset16; }
+    static Trade::SceneFieldType rangeType() { return Trade::SceneFieldType::StringRange16; }
+    static Trade::SceneFieldType rangeNullTerminatedType() {
+        return Trade::SceneFieldType::StringRangeNullTerminated16;
+    }
+};
+template<> struct StringFieldTraits<UnsignedInt> {
+    static const char* name() { return "32"; }
+    static Trade::SceneFieldType offsetType() { return Trade::SceneFieldType::StringOffset32; }
+    static Trade::SceneFieldType rangeType() { return Trade::SceneFieldType::StringRange32; }
+    static Trade::SceneFieldType rangeNullTerminatedType() {
+        return Trade::SceneFieldType::StringRangeNullTerminated32;
+    }
+};
+template<> struct StringFieldTraits<UnsignedLong> {
+    static const char* name() { return "64"; }
+    static Trade::SceneFieldType offsetType() { return Trade::SceneFieldType::StringOffset64; }
+    static Trade::SceneFieldType rangeType() { return Trade::SceneFieldType::StringRange64; }
+    static Trade::SceneFieldType rangeNullTerminatedType() {
+        return Trade::SceneFieldType::StringRangeNullTerminated64;
+    }
+};
+
+template<class T> void CombineTest::fieldsStrings() {
+    setTestCaseTemplateName(StringFieldTraits<T>::name());
+
+    /* Null-terminated ranges */
+    Containers::StringView tagStrings =
+        "SOFT\0"        /* 0 */
+        "mouldy!"_s;    /* 5, assumes it's stored null-terminated */
+    /* With null termination it's 13 bytes. If only 12 would be copied, the
+       next ArrayTuple item (likely Name::mapping) would get aligned right
+       after, failing the null terminator check */
+    CORRADE_COMPARE(tagStrings.size(), 12);
+
+    const struct Tag {
+        UnsignedByte mapping;
+        T rangeNullTerminated;
+    } tagsData[]{
+        {3, 0},
+        {7, 5},
+        {7, 0},
+        {1, 0}
+    };
+    auto tags = Containers::stridedArrayView(tagsData);
+
+    /* Non-null-terminated offsets */
+    Containers::StringView nameStrings =
+        "Chair"         /* 5 */
+        "Lampshade"     /* 14 */
+        "Sofa37"_s;     /* 20 */
+    CORRADE_COMPARE(nameStrings.size(), 20);
+
+    const struct Name {
+        UnsignedByte mapping;
+        T offset;
+    } namesData[]{
+        {3, 5},
+        {7, 14},
+        {1, 20}
+    };
+    auto names = Containers::stridedArrayView(namesData);
+
+    /* Null-terminated offsets */
+    Containers::StringView keyStrings =
+        "color\0"       /* 6 */
+        "age\0"         /* 10 */
+        "age"_s;        /* 14, assumes it's stored null-terminated */
+
+    const struct Key {
+        UnsignedByte mapping;
+        T offsetNullTerminated;
+    } keysData[]{
+        {11, 6},
+        {3, 10},
+        {12, 14}
+    };
+    auto keys = Containers::stridedArrayView(keysData);
+
+    Containers::StringView valueStrings =
+        "light\0brown"  /* 0, 11 */
+        "ancient"       /* 11, 7 */
+        "new"_s;        /* 18, 3 */
+
+    /* Non-null-terminated ranges */
+    const struct Value {
+        UnsignedByte mapping;
+        Containers::Pair<T, T> range;
+    } valuesData[]{
+        {3, {18, 3}},
+        {12, {11, 7}},
+        {7, {18, 3}},
+        {11, {0, 11}}
+    };
+    auto values = Containers::stridedArrayView(valuesData);
+
+    /* Using just 8-bit mapping to not have any extra padding between things
+       and thus better catch accidentally forgotten null termination and
+       such */
+    Trade::SceneData scene = combineFields(Trade::SceneMappingType::UnsignedByte, 167, {
+        Trade::SceneFieldData{Trade::sceneFieldCustom(0),
+            tags.slice(&Tag::mapping),
+            tagStrings.data(), StringFieldTraits<T>::rangeNullTerminatedType(),
+            tags.slice(&Tag::rangeNullTerminated)},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(1),
+            names.slice(&Name::mapping),
+            nameStrings.data(), StringFieldTraits<T>::offsetType(),
+            names.slice(&Name::offset)},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(2),
+            keys.slice(&Key::mapping),
+            keyStrings.data(), StringFieldTraits<T>::offsetType(),
+            keys.slice(&Key::offsetNullTerminated),
+            Trade::SceneFieldFlag::NullTerminatedString},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(3),
+            values.slice(&Value::mapping),
+            valueStrings.data(), StringFieldTraits<T>::rangeType(),
+            values.slice(&Value::range)},
+        /* Empty string field, shouldn't crash or anything */
+        Trade::SceneFieldData{Trade::sceneFieldCustom(4),
+            Containers::ArrayView<const UnsignedByte>{},
+            nullptr, StringFieldTraits<T>::offsetType(),
+            Containers::ArrayView<const T>{}},
+    });
+
+    CORRADE_COMPARE(scene.fieldName(0), Trade::sceneFieldCustom(0));
+    CORRADE_COMPARE(scene.fieldFlags(0), Trade::SceneFieldFlag::NullTerminatedString);
+    CORRADE_COMPARE(scene.fieldType(0), StringFieldTraits<T>::rangeNullTerminatedType());
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedByte>(0),
+        tags.slice(&Tag::mapping),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<T>(0),
+        tags.slice(&Tag::rangeNullTerminated),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldStrings(0),
+        (Containers::StringIterable{"SOFT", "mouldy!", "SOFT", "SOFT"}),
+        TestSuite::Compare::Container);
+    /* All should stay null-terminated -- i.e., the null terminator included in
+       the size calculation when the string gets copied */
+    for(Containers::StringView i: scene.fieldStrings(0)) {
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+
+    CORRADE_COMPARE(scene.fieldName(1), Trade::sceneFieldCustom(1));
+    CORRADE_COMPARE(scene.fieldFlags(1), Trade::SceneFieldFlags{});
+    CORRADE_COMPARE(scene.fieldType(1), StringFieldTraits<T>::offsetType());
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedByte>(1),
+        names.slice(&Name::mapping),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<T>(1),
+        names.slice(&Name::offset),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldStrings(1),
+        (Containers::StringIterable{"Chair", "Lampshade", "Sofa37"}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(scene.fieldName(2), Trade::sceneFieldCustom(2));
+    CORRADE_COMPARE(scene.fieldFlags(2), Trade::SceneFieldFlag::NullTerminatedString);
+    CORRADE_COMPARE(scene.fieldType(2), StringFieldTraits<T>::offsetType());
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedByte>(2),
+        keys.slice(&Key::mapping),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.field<T>(2),
+        keys.slice(&Key::offsetNullTerminated),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldStrings(2),
+        (Containers::StringIterable{"color", "age", "age"}),
+        TestSuite::Compare::Container);
+    /* All should stay null-terminated -- i.e., the null terminator included in
+       the size calculation when the string gets copied */
+    for(Containers::StringView i: scene.fieldStrings(2)) {
+        CORRADE_COMPARE(i.flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(i[i.size()], '\0');
+    }
+
+    CORRADE_COMPARE(scene.fieldName(3), Trade::sceneFieldCustom(3));
+    CORRADE_COMPARE(scene.fieldFlags(3), Trade::SceneFieldFlags{});
+    CORRADE_COMPARE(scene.fieldType(3), StringFieldTraits<T>::rangeType());
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedByte>(3),
+        values.slice(&Value::mapping),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((scene.field<Containers::Pair<T, T>>(3)),
+        values.slice(&Value::range),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldStrings(3),
+        (Containers::StringIterable{"new", "ancient", "new", "light\0brown"_s}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(scene.fieldName(4), Trade::sceneFieldCustom(4));
+    CORRADE_COMPARE(scene.fieldFlags(4), Trade::SceneFieldFlags{});
+    CORRADE_COMPARE(scene.fieldType(4), StringFieldTraits<T>::offsetType());
+    CORRADE_COMPARE_AS(scene.mapping<UnsignedByte>(4),
+        Containers::ArrayView<const UnsignedByte>{},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((scene.field<T>(4)),
+        Containers::ArrayView<const T>{},
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(scene.fieldStrings(4),
+        Containers::StringIterable{},
         TestSuite::Compare::Container);
 }
 
@@ -518,6 +745,43 @@ void CombineTest::fieldsMappingSharedFieldPlaceholder() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).data(), scene.data() + 3*4 + 3 + 1);
     CORRADE_COMPARE(scene.field(Trade::SceneField::MeshMaterial).stride()[0], 4);
+}
+
+void CombineTest::fieldsStringPlaceholder() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Containers::StringView nameStrings = ""_s;
+    const struct Name {
+        UnsignedByte mapping;
+        UnsignedByte offset;
+    } namesData[3]{};
+    auto names = Containers::stridedArrayView(namesData);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    /* A null string data pointer could work in this case (because it doesn't
+       need to be accessed), but disallowing it always for consistency */
+    combineFields(Trade::SceneMappingType::UnsignedByte, 167, {
+        /* Just to verify it prints correct field IDs */
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            names.slice(&Name::mapping),
+            names.slice(&Name::offset)},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(16),
+            names.slice(&Name::mapping),
+            nullptr, Trade::SceneFieldType::StringOffset8,
+            names.slice(&Name::offset)},
+    });
+    /* With placeholder field data it's impossible to know the actual string
+       size */
+    combineFields(Trade::SceneMappingType::UnsignedByte, 167, {
+        Trade::SceneFieldData{Trade::sceneFieldCustom(16),
+            names.slice(&Name::mapping),
+            nameStrings.data(), Trade::SceneFieldType::StringRangeNullTerminated16,
+            Containers::StridedArrayView1D<const UnsignedShort>{{nullptr, 6}, 3}},
+    });
+    CORRADE_COMPARE(out.str(),
+        "SceneTools::combineFields(): string field 1 has a placeholder string data\n"
+        "SceneTools::combineFields(): string field 0 has a placeholder data\n");
 }
 
 void CombineTest::fieldsOffsetOnly() {

@@ -29,8 +29,9 @@
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Functions.h"
@@ -52,9 +53,10 @@ union CombineItemView {
 
     Containers::StridedArrayView2D<char> types;
     Containers::MutableStridedBitArrayView2D bits;
+    Containers::MutableStringView strings;
 };
 
-template<class T> void combineCopyMappings(const Containers::ArrayView<const Trade::SceneFieldData> fields, const Containers::ArrayView<const CombineItemView> itemViews, const Containers::ArrayView<const Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings) {
+template<class T> void combineCopyMappings(const Containers::ArrayView<const Trade::SceneFieldData> fields, const Containers::ArrayView<const CombineItemView> itemViews, const Containers::ArrayView<const Containers::Triple<UnsignedInt, UnsignedInt, UnsignedInt>> itemViewMappings) {
     std::size_t latestMapping = 0;
     for(std::size_t i = 0; i != fields.size(); ++i) {
         /* If there are no shared object mappings, itemViewMappings should be
@@ -85,6 +87,29 @@ template<class T> void combineCopyMappings(const Containers::ArrayView<const Tra
     }
 }
 
+/* Offsets have the total string size as the last item. If it's null-terminated
+   the size is included in the offset, so no special handling needed. */
+template<class T> std::size_t stringOffsetFieldSize(const Containers::StridedArrayView1D<const void>& field) {
+    return Containers::arrayCast<const T>(field).back();
+}
+/* Ranges have the total string size as the max "end" of all offset+size
+   pairs. Again, the null terminator is included in the size so no special
+   handling needed. */
+template<class T> std::size_t stringRangeFieldSize(const Containers::StridedArrayView1D<const void>& field) {
+    std::size_t max = 0;
+    for(const Containers::Pair<T, T> i: Containers::arrayCast<const Containers::Pair<T, T>>(field))
+        max = Math::max(std::size_t(i.first() + i.second()), max);
+    return max;
+}
+/* Null-terminated ranges have the size implicitly calculated using strlen,
+   returning + 1 as it needs to include the last null terminator as well. */
+template<class T> std::size_t stringRangeNullTerminatedFieldSize(const char* string, const Containers::StridedArrayView1D<const void>& field) {
+    std::size_t max = 0;
+    for(const T i: Containers::arrayCast<const T>(field))
+        max = i + Math::max(std::strlen(string + i), max);
+    return max + 1;
+}
+
 inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType, const UnsignedLong mappingBound, const Containers::ArrayView<const Trade::SceneFieldData> fields) {
     const std::size_t mappingTypeSize = sceneMappingTypeSize(mappingType);
     const std::size_t mappingTypeAlignment = sceneMappingTypeAlignment(mappingType);
@@ -96,15 +121,18 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
        NOT HAVE IT, UGH. */
     std::map<std::tuple<const void*, std::size_t, std::ptrdiff_t>, UnsignedInt> uniqueMappings;
     Containers::Array<Containers::ArrayTuple::Item> items;
-    Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> itemViewMappings{NoInit, fields.size()};
+    Containers::Array<Containers::Triple<UnsignedInt, UnsignedInt, UnsignedInt>> itemViewMappings{NoInit, fields.size()};
 
-    /* The item views are referenced from ArrayTuple::Item, not using a
-       growable array in order to avoid an accidental reallocation. It's either
-       of the two views in the union based on whether it's a mapping or data
-       view and what the data field type is */
+    /* The item views are referenced from ArrayTuple::Item. It's either of the
+       three views in the union --- from the group of (up to) 3 views per
+       field, first is for the mapping (unless shared with another view) and is
+       always `types`, second for the data (either `types` or `bits`) and third
+       for the string data (`strings`, if the field is a string). In most cases
+       they array won't be fully used but we need to avoid accidental
+       reallocation so the array is made with an upper bound on size. */
     /** @todo once never-reallocating allocators are present, use them instead
         of the manual offset */
-    Containers::Array<CombineItemView> itemViews{fields.size()*2};
+    Containers::Array<CombineItemView> itemViews{fields.size()*3};
     std::size_t itemViewOffset = 0;
 
     /* Go through all fields and collect ArrayTuple allocations for these */
@@ -151,14 +179,65 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
                 NoInit,
                 Containers::Size2D{std::size_t(field.size()), field.fieldArraySize() ? field.fieldArraySize() : 1},
                 itemViews[itemViewOffset].bits);
+            ++itemViewOffset;
         } else {
             arrayAppend(items, InPlaceInit,
                 NoInit,
                 std::size_t(field.size()), sceneFieldTypeSize(fieldType)*(field.fieldArraySize() ? field.fieldArraySize() : 1),
                 sceneFieldTypeAlignment(fieldType),
                 itemViews[itemViewOffset].types);
+            ++itemViewOffset;
+
+            /* For string fields we need to allocate also for the actual string
+               data. For space reasons the SceneFieldData stores only the data
+               pointer, size is implicit, so need to calculate it as the max of
+               end pointers of all strings */
+            if(Trade::Implementation::isSceneFieldTypeString(fieldType)) {
+                const Containers::StridedArrayView1D<const void> fieldData = field.fieldData();
+                CORRADE_ASSERT(!field.size() || fieldData.data(),
+                    "SceneTools::combineFields(): string field" << i << "has a placeholder data", (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
+
+                const char* const stringData = field.stringData();
+                CORRADE_ASSERT(!field.size() || stringData,
+                    "SceneTools::combineFields(): string field" << i << "has a placeholder string data", (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
+
+                std::size_t size;
+                if(field.size() == 0)
+                    size = 0;
+                else if(fieldType == Trade::SceneFieldType::StringOffset8)
+                    size = stringOffsetFieldSize<UnsignedByte>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringOffset16)
+                    size = stringOffsetFieldSize<UnsignedShort>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringOffset32)
+                    size = stringOffsetFieldSize<UnsignedInt>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringOffset64)
+                    size = stringOffsetFieldSize<UnsignedLong>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRange8)
+                    size = stringRangeFieldSize<UnsignedByte>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRange16)
+                    size = stringRangeFieldSize<UnsignedShort>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRange32)
+                    size = stringRangeFieldSize<UnsignedInt>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRange64)
+                    size = stringRangeFieldSize<UnsignedLong>(fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRangeNullTerminated8)
+                    size = stringRangeNullTerminatedFieldSize<UnsignedByte>(stringData, fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRangeNullTerminated16)
+                    size = stringRangeNullTerminatedFieldSize<UnsignedShort>(stringData, fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRangeNullTerminated32)
+                    size = stringRangeNullTerminatedFieldSize<UnsignedInt>(stringData, fieldData);
+                else if(fieldType == Trade::SceneFieldType::StringRangeNullTerminated64)
+                    size = stringRangeNullTerminatedFieldSize<UnsignedLong>(stringData, fieldData);
+                else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
+                itemViewMappings[i].third() = itemViewOffset;
+                arrayAppend(items, InPlaceInit,
+                    NoInit,
+                    size,
+                    itemViews[itemViewOffset].strings);
+                ++itemViewOffset;
+            }
         }
-        ++itemViewOffset;
     }
 
     CORRADE_INTERNAL_ASSERT(itemViewOffset <= itemViews.size());
@@ -207,6 +286,14 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
 
             /** @todo isn't there some less awful way to create a 2D view, sigh */
             Utility::copy(Containers::arrayCast<2, const char>(src, sceneFieldTypeSize(fieldType)*(field.fieldArraySize() ? field.fieldArraySize() : 1)), itemViews[itemViewMappings[i].second()].types);
+
+            /* If the field is a string, copy also the actual string data. The
+               size was calculated above and is recorded into the output
+               view. */
+            if(Trade::Implementation::isSceneFieldTypeString(fieldType)) {
+                const Containers::MutableStringView dst = itemViews[itemViewMappings[i].third()].strings;
+                Utility::copy(Containers::arrayView(field.stringData(), dst.size()), dst);
+            }
         }
     }
 
@@ -228,6 +315,12 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
                     /** @todo creating a 1D view isn't really easy either, huh? */
                     itemViews[itemViewMappings[i].second()].bits.transposed<0, 1>()[0],
                     field.flags()};
+        } else if(Trade::Implementation::isSceneFieldTypeString(fieldType)) {
+            outFields[i] = Trade::SceneFieldData{field.name(),
+                itemViews[itemViewMappings[i].first()].types,
+                itemViews[itemViewMappings[i].third()].strings.data(),
+                fieldType, itemViews[itemViewMappings[i].second()].types,
+                field.flags()};
         } else {
             outFields[i] = Trade::SceneFieldData{field.name(),
                 itemViews[itemViewMappings[i].first()].types,

@@ -53,8 +53,10 @@ Fields pointing to existing memory are copied to the output, fields with
 (sized) @cpp nullptr @ce mapping or data views are treated as placeholders for
 copying the data later, with memory left uninitialized. If you however want to
 have placeholder mapping data shared among multiple fields you have to allocate
-them upfront. Note that offset-only @ref Trade::SceneFieldData instances are
-not supported in the @p fields array.
+them upfront. Fields with a string @ref Trade::SceneFieldType can't have
+placeholder data views or @cpp nullptr @ce string data pointers, as they're
+used to calculate the total string data size. Note that offset-only
+@ref Trade::SceneFieldData instances are not supported in the @p fields array.
 
 The resulting fields are always tightly packed (not interleaved). Returned data
 flags have both @ref Trade::DataFlag::Mutable and @ref Trade::DataFlag::Owned,
