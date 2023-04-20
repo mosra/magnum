@@ -4125,7 +4125,7 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
     _fieldData{fieldOffset} {}
 
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_t size, const SceneMappingType mappingType, const std::size_t mappingOffset, const std::ptrdiff_t mappingStride, const std::size_t fieldOffset, const std::size_t fieldBitOffset, const std::ptrdiff_t fieldStride, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
-    _size{(CORRADE_CONSTEXPR_ASSERT(size < std::size_t{1} << (sizeof(std::size_t)*8 - 3),
+    _size{(CORRADE_CONSTEXPR_DEBUG_ASSERT(size < std::size_t{1} << (sizeof(std::size_t)*8 - 3),
         "Trade::SceneFieldData: size expected to be smaller than 2^" << Debug::nospace << (sizeof(std::size_t)*8 - 3) << "bits, got" << size), size)},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, SceneFieldType::Bit),
         "Trade::SceneFieldData:" << SceneFieldType::Bit << "is not a valid type for" << name), name)},
@@ -4141,7 +4141,7 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
         (CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
             "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride)),
         SceneFieldType::Bit, fieldArraySize,
-        (CORRADE_CONSTEXPR_ASSERT(fieldBitOffset < 8,
+        (CORRADE_CONSTEXPR_DEBUG_ASSERT(fieldBitOffset < 8,
             "Trade::SceneFieldData: bit offset expected to be smaller than 8, got" << fieldBitOffset), UnsignedByte(fieldBitOffset))},
     _fieldData{fieldOffset} {}
 
