@@ -27,7 +27,7 @@
 
 #include <Corrade/Containers/Optional.h>
 
-#include "Magnum/MeshTools/FilterAttributes.h"
+#include "Magnum/MeshTools/Filter.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -61,7 +61,9 @@ Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transfor
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
+    /** @todo isn't there some less silly way to take just the indices from the
+        mesh?! */
+    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const Trade::MeshAttribute>{}), attributes, flags);
 
     /* If the position attribute wasn't in a desired format, unpack it */
     if(positionAttributeFormat != VertexFormat::Vector2)
@@ -166,7 +168,9 @@ Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transfor
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
+    /** @todo isn't there some less silly way to take just the indices from the
+        mesh?! */
+    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const Trade::MeshAttribute>{}), attributes, flags);
 
     /* If the position/TBN attributes weren't in a desired format, unpack them */
     if(positionAttributeFormat != VertexFormat::Vector3)
@@ -287,7 +291,9 @@ Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const
 
     /* Create the output mesh, making more room for the full formats if
        necessary */
-    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const UnsignedInt>{}), attributes, flags);
+    /** @todo isn't there some less silly way to take just the indices from the
+        mesh?! */
+    Trade::MeshData out = interleave(filterOnlyAttributes(mesh, Containers::ArrayView<const Trade::MeshAttribute>{}), attributes, flags);
 
     /* If the position attribute wasn't in a desired format, unpack it */
     if(mesh.attributeFormat(*textureCoordinateAttributeId) != VertexFormat::Vector2)
