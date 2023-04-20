@@ -4158,7 +4158,13 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
     _field{
         (CORRADE_CONSTEXPR_ASSERT(fieldStride >= -32768 && fieldStride <= 32767,
             "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldStride), Short(fieldStride)),
-        Long(stringOffset)},
+        (
+            #ifndef CORRADE_TARGET_32BIT
+            /* 47 because the distance is signed */
+            CORRADE_CONSTEXPR_ASSERT(stringOffset < (1ull << 47),
+                "Trade::SceneFieldData: expected string data offset to fit into 48 bits but got" << stringOffset),
+            #endif
+        Long(stringOffset))},
     _fieldData{fieldOffset} {}
 
 template<class T> Containers::StridedArrayView1D<const T> SceneData::mapping(const UnsignedInt fieldId) const {

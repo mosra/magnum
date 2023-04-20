@@ -647,6 +647,11 @@ SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType map
         "Trade::SceneFieldData: expected mapping view stride to fit into 16 bits but got" << mappingData.stride(), );
     CORRADE_ASSERT(fieldData.stride() >= -32768 && fieldData.stride() <= 32767,
         "Trade::SceneFieldData: expected field view stride to fit into 16 bits but got" << fieldData.stride(), );
+    #ifndef CORRADE_TARGET_32BIT
+    /* 47 because the distance is signed */
+    CORRADE_ASSERT(Utility::abs(stringData - static_cast<const char*>(fieldData.data())) < (1ll << 47),
+        "Trade::SceneFieldData: (signed) distance between string data and field data expected to fit into 48 bits but got" << static_cast<const void*>(stringData) << "and" << fieldData.data(), );
+    #endif
 }
 
 SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, stringData, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, flags} {

@@ -127,6 +127,9 @@ struct SceneDataTest: TestSuite::Tester {
     void constructFieldArrayTypeErased2DNonContiguous();
     void constructFieldBitTooLargeBitOffset();
     void constructFieldBitTooLargeSize();
+    #ifndef CORRADE_TARGET_32BIT
+    void constructFieldStringDataTooFarApart();
+    #endif
 
     void construct();
     void constructZeroFields();
@@ -471,6 +474,9 @@ SceneDataTest::SceneDataTest() {
               &SceneDataTest::constructFieldArrayTypeErased2DNonContiguous,
               &SceneDataTest::constructFieldBitTooLargeBitOffset,
               &SceneDataTest::constructFieldBitTooLargeSize,
+              #ifndef CORRADE_TARGET_32BIT
+              &SceneDataTest::constructFieldStringDataTooFarApart,
+              #endif
 
               &SceneDataTest::construct,
               &SceneDataTest::constructZeroFields,
@@ -2433,6 +2439,32 @@ void SceneDataTest::constructFieldBitTooLargeSize() {
     CORRADE_COMPARE(out.str(), "Trade::SceneFieldData: size expected to be smaller than 2^29 bits, got 536870912\n");
     #endif
 }
+
+#ifndef CORRADE_TARGET_32BIT
+void SceneDataTest::constructFieldStringDataTooFarApart() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedShort mappingData[3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    SceneFieldData{sceneFieldCustom(166),
+        Containers::arrayView(mappingData),
+        reinterpret_cast<const char*>(0xfeedbeefull), SceneFieldType::StringOffset8,
+        Containers::arrayView(reinterpret_cast<const UnsignedByte*>(0x8000feedbeefull), 3)};
+    SceneFieldData{sceneFieldCustom(166),
+        Containers::arrayView(mappingData),
+        reinterpret_cast<const char*>(0x8000feedbeefull), SceneFieldType::StringOffset8,
+        Containers::arrayView(reinterpret_cast<const UnsignedByte*>(0xfeedbeefull), 3)};
+    SceneFieldData{sceneFieldCustom(661), 3,
+        SceneMappingType::UnsignedShort, 1725676, 2,
+        0x800000000000ull, SceneFieldType::StringOffset8, 72567654, 8};
+    CORRADE_COMPARE(out.str(),
+        "Trade::SceneFieldData: (signed) distance between string data and field data expected to fit into 48 bits but got 0xfeedbeef and 0x8000feedbeef\n"
+        "Trade::SceneFieldData: (signed) distance between string data and field data expected to fit into 48 bits but got 0x8000feedbeef and 0xfeedbeef\n"
+        "Trade::SceneFieldData: expected string data offset to fit into 48 bits but got 140737488355328\n");
+}
+#endif
 
 void SceneDataTest::construct() {
     struct TransformParent {
