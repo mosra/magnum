@@ -24,6 +24,8 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
@@ -32,6 +34,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Transform.h"
+#include "Magnum/SceneTools/Filter.h"
 #include "Magnum/SceneTools/Hierarchy.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -41,6 +44,22 @@
 using namespace Magnum;
 
 int main() {
+{
+/* [filterFieldEntries-shared-mapping] */
+Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
+
+Containers::BitArray transformationsToKeep = DOXYGEN_ELLIPSIS({});
+Containers::BitArray lightsToKeep = DOXYGEN_ELLIPSIS({});
+
+/* Mesh and MeshMaterial fields stay unchanged */
+Trade::SceneData filtered = SceneTools::filterFieldEntries(scene, {
+    {Trade::SceneField::Translation, transformationsToKeep},
+    {Trade::SceneField::Rotation, transformationsToKeep},
+    {Trade::SceneField::Light, lightsToKeep}
+});
+/* [filterFieldEntries-shared-mapping] */
+}
+
 {
 /* [absoluteFieldTransformations2D-mesh-concatenate] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::SceneTools::filterFields(), @ref Magnum::SceneTools::filterOnlyFields(), @ref Magnum::SceneTools::filterExceptFields()
+ * @brief Function @ref Magnum::SceneTools::filterFields(), @ref Magnum::SceneTools::filterOnlyFields(), @ref Magnum::SceneTools::filterExceptFields(), @ref Magnum::SceneTools::filterFieldEntries()
  * @m_since_latest
  */
 
@@ -92,6 +92,70 @@ MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterExceptFields(const Trade::SceneD
 @m_since_latest
 */
 MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterExceptFields(const Trade::SceneData& scene, std::initializer_list<Trade::SceneField> fields);
+
+/**
+@brief Filter individual entries of fields in a scene
+@m_since_latest
+
+Returns a copy of @p scene containing the same fields but only with entries for
+which the corresponding bit in @p entriesToKeep is set. Each item in
+@p entriesToKeep is a pair of a field ID and a mask of entries to keep in that
+field. The field ID is expected to be unique in the list and less than
+@ref Trade::SceneData::fieldCount(), size of the mask then equal to
+@ref Trade::SceneData::fieldSize() for that field. Fields not listed in the
+@p entriesToKeep array are passed through unchanged, use @ref filterFields(),
+@ref filterExceptFields() or @ref filterOnlyFields() to deal with them as a
+whole if needed.
+
+Fields that fully share their mapping views (such as @ref Trade::SceneField::Mesh
+and @relativeref{Trade::SceneField,MeshMaterial}, including fields for which
+this isn't enforced) either need to be listed all in @p entriesToKeep with the
+same mask view, or all omitted so they're passed through. Fields that share the
+mapping only partially don't have any special handling. The data repacking is
+performed using @ref combineFields(), see its documentation for more
+information.
+
+As an example, let's assume in the following snippet the scene contains
+@ref Trade::SceneField::Translation,
+@relativeref{Trade::SceneField,Rotation}, @relativeref{Trade::SceneField,Mesh},
+@relativeref{Trade::SceneField,MeshMaterial} and
+@relativeref{Trade::SceneField,Light}, with the intent to filter some
+translations and lights away. Filtering translations means the rotations have
+to be filtered as well, however neither meshes nor materials (which share the
+mapping as well) need to be listed if they're not filtered:
+
+@snippet MagnumSceneTools.cpp filterFieldEntries-shared-mapping
+
+At the moment, @ref Trade::SceneFieldType::Bit and string fields can't be
+filtered, only passed through.
+@experimental
+*/
+MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, Containers::ArrayView<const Containers::Pair<UnsignedInt, Containers::BitArrayView>> entriesToKeep);
+
+/**
+@overload
+@m_since_latest
+*/
+MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, std::initializer_list<Containers::Pair<UnsignedInt, Containers::BitArrayView>> entriesToKeep);
+
+/**
+@brief Filter individual entries of named fields in a scene
+@m_since_latest
+
+Translates field names in @p entriesToKeep to field IDs using
+@ref Trade::SceneData::fieldId() and delegates to
+@ref filterFieldEntries(const Trade::SceneData&, Containers::ArrayView<const Containers::Pair<UnsignedInt, Containers::BitArrayView>>).
+Expects that all listed fields exist in @p scene, see the referenced function
+documentation for other expectations.
+@experimental
+*/
+MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, Containers::ArrayView<const Containers::Pair<Trade::SceneField, Containers::BitArrayView>> entriesToKeep);
+
+/**
+@overload
+@m_since_latest
+*/
+MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, std::initializer_list<Containers::Pair<Trade::SceneField, Containers::BitArrayView>> entriesToKeep);
 
 }}
 
