@@ -38,7 +38,7 @@
 #include "Magnum/MeshTools/Reference.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
-#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
+#include "Magnum/SceneTools/Hierarchy.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
@@ -311,9 +311,9 @@ on meshes and materials before passing them to any converter.
 If `--concatenate-meshes` is given, all meshes of the input file are
 first concatenated into a single mesh using @ref MeshTools::concatenate(), with
 the scene hierarchy transformation baked in using
-@ref SceneTools::flattenTransformationHierarchy3D(), and then passed through
-the remaining operations. Only attributes that are present in the first mesh
-are taken, if `--only-mesh-attributes` is specified as well, the IDs reference
+@ref SceneTools::absoluteFieldTransformations3D(), and then passed through the
+remaining operations. Only attributes that are present in the first mesh are
+taken, if `--only-mesh-attributes` is specified as well, the IDs reference
 attributes of the first mesh.
 */
 
@@ -820,7 +820,7 @@ well, the IDs reference attributes of the first mesh.)")
                 Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>
                     meshesMaterials = scene->meshesMaterialsAsArray();
                 Containers::Array<Matrix4> transformations =
-                    SceneTools::flattenTransformationHierarchy3D(*scene, Trade::SceneField::Mesh);
+                    SceneTools::absoluteFieldTransformations3D(*scene, Trade::SceneField::Mesh);
                 Containers::Array<Trade::MeshData> flattenedMeshes;
                 {
                     Trade::Implementation::Duration d{conversionTime};

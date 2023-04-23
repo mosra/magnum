@@ -28,9 +28,9 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Function @ref Magnum::SceneTools::flattenMeshHierarchy2D(), @ref Magnum::SceneTools::flattenMeshHierarchy2DInto(), @ref Magnum::SceneTools::flattenMeshHierarchy3D(), @ref Magnum::SceneTools::flattenMeshHierarchy3DInto()
- * @m_deprecated_since_latest Use @ref Magnum/SceneTools/FlattenTransformationHierarchy.h
- *      and the @relativeref{Magnum,SceneTools::flattenTransformationHierarchy2D()} /
- *      @relativeref{Magnum,SceneTools::flattenTransformationHierarchy3D()}
+ * @m_deprecated_since_latest Use @ref Magnum/SceneTools/Hierarchy.h and the
+ *      @relativeref{Magnum,SceneTools::absoluteFieldTransformations2D()} /
+ *      @relativeref{Magnum,SceneTools::absoluteFieldTransformations3D()}
  *      functions instead.
  */
 #endif
@@ -47,7 +47,7 @@
 #include "Magnum/Trade/Trade.h"
 
 #ifndef _MAGNUM_NO_DEPRECATED_FLATTENMESHHIERARCHY
-CORRADE_DEPRECATED_FILE("use Magnum/SceneTools/FlattenTransformationHierarchy.h and the SceneTools::flattenTransformationHierarchy*D() functions instead")
+CORRADE_DEPRECATED_FILE("use Magnum/SceneTools/Hierarchy.h and the SceneTools::absoluteFieldTransformations*D() functions instead")
 #endif
 
 namespace Magnum { namespace SceneTools {
@@ -55,11 +55,11 @@ namespace Magnum { namespace SceneTools {
 /**
 @brief Flatten a 2D mesh hierarchy
 
-@m_deprecated_since_latest Use @ref flattenTransformationHierarchy2D(const Trade::SceneData&, Trade::SceneField, const Matrix3& globalTransformation)
+@m_deprecated_since_latest Use @ref absoluteFieldTransformations2D(const Trade::SceneData&, Trade::SceneField, const Matrix3&)
     with @ref Trade::SceneField::Mesh together with
     @ref Trade::SceneData::meshesMaterialsAsArray() instead.
 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy2D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation = {});
+CORRADE_DEPRECATED("use absoluteFieldTransformations2D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation = {});
 
 /**
 @brief Flatten a 2D mesh hierarchy into an existing array
@@ -67,19 +67,19 @@ CORRADE_DEPRECATED("use flattenTransformationHierarchy2D() instead") MAGNUM_SCEN
 @param[out] transformations Where to put the calculated transformations
 @param[in]  globalTransformation Global transformation to prepend
 
-@m_deprecated_since_latest Use @ref flattenTransformationHierarchy2DInto(const Trade::SceneData&, Trade::SceneField, const Containers::StridedArrayView1D<Matrix3>&, const Matrix3&)
+@m_deprecated_since_latest Use @ref absoluteFieldTransformations2DInto(const Trade::SceneData&, Trade::SceneField, const Containers::StridedArrayView1D<Matrix3>&, const Matrix3&)
     with @ref Trade::SceneField::Mesh instead.
 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy2DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation = {});
+CORRADE_DEPRECATED("use absoluteFieldTransformations2DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation = {});
 
 /**
 @brief Flatten a 3D mesh hierarchy
 
-@m_deprecated_since_latest Use @ref flattenTransformationHierarchy3D(const Trade::SceneData&, Trade::SceneField, const Matrix4&)
+@m_deprecated_since_latest Use @ref absoluteFieldTransformations3D(const Trade::SceneData&, Trade::SceneField, const Matrix4&)
     with @ref Trade::SceneField::Mesh together with
     @ref Trade::SceneData::meshesMaterialsAsArray() instead.
 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy3D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation = {});
+CORRADE_DEPRECATED("use absoluteFieldTransformations3D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation = {});
 
 /**
 @brief Flatten a 3D mesh hierarchy into an existing array
@@ -87,14 +87,14 @@ CORRADE_DEPRECATED("use flattenTransformationHierarchy3D() instead") MAGNUM_SCEN
 @param[out] transformations Where to put the calculated transformations
 @param[in]  globalTransformation Global transformation to prepend
 
-@m_deprecated_since_latest Use @ref flattenTransformationHierarchy3DInto(const Trade::SceneData&, Trade::SceneField, const Containers::StridedArrayView1D<Matrix4>&, const Matrix4&)
+@m_deprecated_since_latest Use @ref absoluteFieldTransformations3DInto(const Trade::SceneData&, Trade::SceneField, const Containers::StridedArrayView1D<Matrix4>&, const Matrix4&)
     with @ref Trade::SceneField::Mesh instead.
 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy3DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation = {});
+CORRADE_DEPRECATED("use absoluteFieldTransformations3DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation = {});
 
 }}
 #else
-#error use Magnum/SceneTools/FlattenTransformationHierarchy.h and the SceneTools::flattenTransformationHierarchy*D() functions instead
+#error use Magnum/SceneTools/FlattenTransformationHierarchy.h and the SceneTools::absoluteFieldTransformations*D() functions instead
 #endif
 
 #endif

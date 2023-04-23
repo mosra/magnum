@@ -34,7 +34,7 @@
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
-#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
+#include "Magnum/SceneTools/Hierarchy.h"
 #include "Magnum/Trade/SceneData.h"
 
 namespace Magnum { namespace SceneTools {
@@ -44,18 +44,18 @@ namespace {
 template<UnsignedInt> struct DimensionTraits;
 template<> struct DimensionTraits<2> {
     static Containers::Array<Matrix3> flatten(const Trade::SceneData& scene, const UnsignedInt fieldId, const Matrix3& globalTransformation) {
-        return flattenTransformationHierarchy2D(scene, fieldId, globalTransformation);
+        return absoluteFieldTransformations2D(scene, fieldId, globalTransformation);
     }
     static void flattenInto(const Trade::SceneData& scene, const UnsignedInt fieldId, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation) {
-        return flattenTransformationHierarchy2DInto(scene, fieldId, transformations, globalTransformation);
+        return absoluteFieldTransformations2DInto(scene, fieldId, transformations, globalTransformation);
     }
 };
 template<> struct DimensionTraits<3> {
     static Containers::Array<Matrix4> flatten(const Trade::SceneData& scene, const UnsignedInt fieldId, const Matrix4& globalTransformation) {
-        return flattenTransformationHierarchy3D(scene, fieldId, globalTransformation);
+        return absoluteFieldTransformations3D(scene, fieldId, globalTransformation);
     }
     static void flattenInto(const Trade::SceneData& scene, const UnsignedInt fieldId, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation) {
-        return flattenTransformationHierarchy3DInto(scene, fieldId, transformations, globalTransformation);
+        return absoluteFieldTransformations3DInto(scene, fieldId, transformations, globalTransformation);
     }
 };
 

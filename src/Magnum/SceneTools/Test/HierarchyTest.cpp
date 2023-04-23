@@ -31,24 +31,24 @@
 
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
-#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
+#include "Magnum/SceneTools/Hierarchy.h"
 #include "Magnum/Trade/SceneData.h"
 
 namespace Magnum { namespace SceneTools { namespace Test { namespace {
 
-struct FlattenTransformationHierarchyTest: TestSuite::Tester {
-    explicit FlattenTransformationHierarchyTest();
+struct HierarchyTest: TestSuite::Tester {
+    explicit HierarchyTest();
 
-    void test2D();
-    void test3D();
+    void absoluteFieldTransformations2D();
+    void absoluteFieldTransformations3D();
 
-    void fieldNotFound();
-    void not2DNot3D();
-    void noParentField();
+    void absoluteFieldTransformationsFieldNotFound();
+    void absoluteFieldTransformationsNot2DNot3D();
+    void absoluteFieldTransformationsNoParentField();
 
-    void into2D();
-    void into3D();
-    void intoInvalidSize();
+    void absoluteFieldTransformationsInto2D();
+    void absoluteFieldTransformationsInto3D();
+    void absoluteFieldTransformationsIntoInvalidSize();
 };
 
 using namespace Math::Literals;
@@ -102,20 +102,20 @@ const struct {
         5},
 };
 
-FlattenTransformationHierarchyTest::FlattenTransformationHierarchyTest() {
-    addInstancedTests({&FlattenTransformationHierarchyTest::test2D,
-                       &FlattenTransformationHierarchyTest::test3D},
+HierarchyTest::HierarchyTest() {
+    addInstancedTests({&HierarchyTest::absoluteFieldTransformations2D,
+                       &HierarchyTest::absoluteFieldTransformations3D},
         Containers::arraySize(TestData));
 
-    addTests({&FlattenTransformationHierarchyTest::fieldNotFound,
-              &FlattenTransformationHierarchyTest::not2DNot3D,
-              &FlattenTransformationHierarchyTest::noParentField});
+    addTests({&HierarchyTest::absoluteFieldTransformationsFieldNotFound,
+              &HierarchyTest::absoluteFieldTransformationsNot2DNot3D,
+              &HierarchyTest::absoluteFieldTransformationsNoParentField});
 
-    addInstancedTests({&FlattenTransformationHierarchyTest::into2D,
-                       &FlattenTransformationHierarchyTest::into3D},
+    addInstancedTests({&HierarchyTest::absoluteFieldTransformationsInto2D,
+                       &HierarchyTest::absoluteFieldTransformationsInto3D},
         Containers::arraySize(IntoData));
 
-    addTests({&FlattenTransformationHierarchyTest::intoInvalidSize});
+    addTests({&HierarchyTest::absoluteFieldTransformationsIntoInvalidSize});
 }
 
 const struct Scene {
@@ -198,7 +198,7 @@ const struct Scene {
      {16, 113}}
 }};
 
-void FlattenTransformationHierarchyTest::test2D() {
+void HierarchyTest::absoluteFieldTransformations2D() {
     auto&& data = TestData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -230,14 +230,14 @@ void FlattenTransformationHierarchyTest::test2D() {
     /* To test all overloads */
     if(data.globalTransformation2D != Matrix3{}) {
         if(data.fieldIdInsteadOfName)
-            out = flattenTransformationHierarchy2D(scene, 2, data.globalTransformation2D);
+            out = SceneTools::absoluteFieldTransformations2D(scene, 2, data.globalTransformation2D);
         else
-            out = flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh, data.globalTransformation2D);
+            out = SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Mesh, data.globalTransformation2D);
     } else {
         if(data.fieldIdInsteadOfName)
-            out = flattenTransformationHierarchy2D(scene, 2);
+            out = SceneTools::absoluteFieldTransformations2D(scene, 2);
         else
-            out = flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh);
+            out = SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Mesh);
     }
 
     CORRADE_COMPARE_AS(out, Containers::arrayView({
@@ -257,7 +257,7 @@ void FlattenTransformationHierarchyTest::test2D() {
     }).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
 }
 
-void FlattenTransformationHierarchyTest::test3D() {
+void HierarchyTest::absoluteFieldTransformations3D() {
     auto&& data = TestData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -289,14 +289,14 @@ void FlattenTransformationHierarchyTest::test3D() {
     /* To test all overloads */
     if(data.globalTransformation3D != Matrix4{}) {
         if(data.fieldIdInsteadOfName)
-            out = flattenTransformationHierarchy3D(scene, 2, data.globalTransformation3D);
+            out = SceneTools::absoluteFieldTransformations3D(scene, 2, data.globalTransformation3D);
         else
-            out = flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh, data.globalTransformation3D);
+            out = SceneTools::absoluteFieldTransformations3D(scene, Trade::SceneField::Mesh, data.globalTransformation3D);
     } else {
         if(data.fieldIdInsteadOfName)
-            out = flattenTransformationHierarchy3D(scene, 2);
+            out = SceneTools::absoluteFieldTransformations3D(scene, 2);
         else
-            out = flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh);
+            out = SceneTools::absoluteFieldTransformations3D(scene, Trade::SceneField::Mesh);
     }
 
     CORRADE_COMPARE_AS(out, Containers::arrayView({
@@ -316,7 +316,7 @@ void FlattenTransformationHierarchyTest::test3D() {
     }).prefix(data.expectedOutputSize), TestSuite::Compare::Container);
 }
 
-void FlattenTransformationHierarchyTest::fieldNotFound() {
+void HierarchyTest::absoluteFieldTransformationsFieldNotFound() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
@@ -326,18 +326,18 @@ void FlattenTransformationHierarchyTest::fieldNotFound() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh);
-    flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh);
-    flattenTransformationHierarchy2D(scene, 2);
-    flattenTransformationHierarchy3D(scene, 2);
+    SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Mesh);
+    SceneTools::absoluteFieldTransformations3D(scene, Trade::SceneField::Mesh);
+    SceneTools::absoluteFieldTransformations2D(scene, 2);
+    SceneTools::absoluteFieldTransformations3D(scene, 2);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchy(): field Trade::SceneField::Mesh not found\n"
-        "SceneTools::flattenTransformationHierarchy(): field Trade::SceneField::Mesh not found\n"
-        "SceneTools::flattenTransformationHierarchy(): index 2 out of range for 2 fields\n"
-        "SceneTools::flattenTransformationHierarchy(): index 2 out of range for 2 fields\n");
+        "SceneTools::absoluteFieldTransformations(): field Trade::SceneField::Mesh not found\n"
+        "SceneTools::absoluteFieldTransformations(): field Trade::SceneField::Mesh not found\n"
+        "SceneTools::absoluteFieldTransformations(): index 2 out of range for 2 fields\n"
+        "SceneTools::absoluteFieldTransformations(): index 2 out of range for 2 fields\n");
 }
 
-void FlattenTransformationHierarchyTest::not2DNot3D() {
+void HierarchyTest::absoluteFieldTransformationsNot2DNot3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
@@ -346,18 +346,18 @@ void FlattenTransformationHierarchyTest::not2DNot3D() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    flattenTransformationHierarchy2D(scene, Trade::SceneField::Parent);
-    flattenTransformationHierarchy2D(scene, 0);
-    flattenTransformationHierarchy3D(scene, Trade::SceneField::Parent);
-    flattenTransformationHierarchy3D(scene, 0);
+    SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Parent);
+    SceneTools::absoluteFieldTransformations2D(scene, 0);
+    SceneTools::absoluteFieldTransformations3D(scene, Trade::SceneField::Parent);
+    SceneTools::absoluteFieldTransformations3D(scene, 0);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 2D\n"
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 2D\n"
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 3D\n"
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 3D\n");
+        "SceneTools::absoluteFieldTransformations(): the scene is not 2D\n"
+        "SceneTools::absoluteFieldTransformations(): the scene is not 2D\n"
+        "SceneTools::absoluteFieldTransformations(): the scene is not 3D\n"
+        "SceneTools::absoluteFieldTransformations(): the scene is not 3D\n");
 }
 
-void FlattenTransformationHierarchyTest::noParentField() {
+void HierarchyTest::absoluteFieldTransformationsNoParentField() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
@@ -366,14 +366,14 @@ void FlattenTransformationHierarchyTest::noParentField() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    flattenTransformationHierarchy2D(scene, Trade::SceneField::Transformation);
-    flattenTransformationHierarchy2D(scene, 0);
+    SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Transformation);
+    SceneTools::absoluteFieldTransformations2D(scene, 0);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchy(): the scene has no hierarchy\n"
-        "SceneTools::flattenTransformationHierarchy(): the scene has no hierarchy\n");
+        "SceneTools::absoluteFieldTransformations(): the scene has no hierarchy\n"
+        "SceneTools::absoluteFieldTransformations(): the scene has no hierarchy\n");
 }
 
-void FlattenTransformationHierarchyTest::into2D() {
+void HierarchyTest::absoluteFieldTransformationsInto2D() {
     auto&& data = IntoData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -403,14 +403,14 @@ void FlattenTransformationHierarchyTest::into2D() {
     /* To test all overloads */
     if(data.globalTransformation2D != Matrix3{}) {
         if(data.fieldIdInsteadOfName)
-            flattenTransformationHierarchy2DInto(scene, 2, out, data.globalTransformation2D);
+            absoluteFieldTransformations2DInto(scene, 2, out, data.globalTransformation2D);
         else
-            flattenTransformationHierarchy2DInto(scene, Trade::SceneField::Mesh, out, data.globalTransformation2D);
+            absoluteFieldTransformations2DInto(scene, Trade::SceneField::Mesh, out, data.globalTransformation2D);
     } else {
         if(data.fieldIdInsteadOfName)
-            flattenTransformationHierarchy2DInto(scene, 2, out);
+            absoluteFieldTransformations2DInto(scene, 2, out);
         else
-            flattenTransformationHierarchy2DInto(scene, Trade::SceneField::Mesh, out);
+            absoluteFieldTransformations2DInto(scene, Trade::SceneField::Mesh, out);
     }
 
     CORRADE_COMPARE_AS(out, Containers::arrayView<Matrix3>({
@@ -430,7 +430,7 @@ void FlattenTransformationHierarchyTest::into2D() {
     }), TestSuite::Compare::Container);
 }
 
-void FlattenTransformationHierarchyTest::into3D() {
+void HierarchyTest::absoluteFieldTransformationsInto3D() {
     auto&& data = IntoData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -460,14 +460,14 @@ void FlattenTransformationHierarchyTest::into3D() {
     /* To test all overloads */
     if(data.globalTransformation3D != Matrix4{}) {
         if(data.fieldIdInsteadOfName)
-            flattenTransformationHierarchy3DInto(scene, 2, out, data.globalTransformation3D);
+            absoluteFieldTransformations3DInto(scene, 2, out, data.globalTransformation3D);
         else
-            flattenTransformationHierarchy3DInto(scene, Trade::SceneField::Mesh, out, data.globalTransformation3D);
+            absoluteFieldTransformations3DInto(scene, Trade::SceneField::Mesh, out, data.globalTransformation3D);
     } else {
         if(data.fieldIdInsteadOfName)
-            flattenTransformationHierarchy3DInto(scene, 2, out);
+            absoluteFieldTransformations3DInto(scene, 2, out);
         else
-            flattenTransformationHierarchy3DInto(scene, Trade::SceneField::Mesh, out);
+            absoluteFieldTransformations3DInto(scene, Trade::SceneField::Mesh, out);
     }
 
     CORRADE_COMPARE_AS(out, Containers::arrayView<Matrix4>({
@@ -487,7 +487,7 @@ void FlattenTransformationHierarchyTest::into3D() {
     }), TestSuite::Compare::Container);
 }
 
-void FlattenTransformationHierarchyTest::intoInvalidSize() {
+void HierarchyTest::absoluteFieldTransformationsIntoInvalidSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Data {
@@ -515,17 +515,17 @@ void FlattenTransformationHierarchyTest::intoInvalidSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    flattenTransformationHierarchy2DInto(scene2D, Trade::SceneField::Mesh, transformations2D);
-    flattenTransformationHierarchy2DInto(scene2D, 1, transformations2D);
-    flattenTransformationHierarchy3DInto(scene3D, Trade::SceneField::Mesh, transformations3D);
-    flattenTransformationHierarchy3DInto(scene3D, 1, transformations3D);
+    absoluteFieldTransformations2DInto(scene2D, Trade::SceneField::Mesh, transformations2D);
+    absoluteFieldTransformations2DInto(scene2D, 1, transformations2D);
+    absoluteFieldTransformations3DInto(scene3D, Trade::SceneField::Mesh, transformations3D);
+    absoluteFieldTransformations3DInto(scene3D, 1, transformations3D);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 6\n"
-        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 6\n"
-        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 4\n"
-        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 4\n");
+        "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 6\n"
+        "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 6\n"
+        "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 4\n"
+        "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 4\n");
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::SceneTools::Test::FlattenTransformationHierarchyTest)
+CORRADE_TEST_MAIN(Magnum::SceneTools::Test::HierarchyTest)

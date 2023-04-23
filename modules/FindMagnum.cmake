@@ -910,7 +910,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # SceneTools library
         elseif(_component STREQUAL SceneTools)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES FlattenTransformationHierarchy.h)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Hierarchy.h)
 
         # ShaderTools library
         elseif(_component STREQUAL ShaderTools)

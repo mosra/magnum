@@ -32,7 +32,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Transform.h"
-#include "Magnum/SceneTools/FlattenTransformationHierarchy.h"
+#include "Magnum/SceneTools/Hierarchy.h"
 #include "Magnum/SceneTools/OrderClusterParents.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/MeshData.h"
@@ -43,14 +43,14 @@ using namespace Magnum;
 
 int main() {
 {
-/* [flattenTransformationHierarchy2D-mesh-concatenate] */
+/* [absoluteFieldTransformations2D-mesh-concatenate] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 Containers::Array<Trade::MeshData> meshes = DOXYGEN_ELLIPSIS({});
 
 Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>
     meshesMaterials = scene.meshesMaterialsAsArray();
 Containers::Array<Matrix3> transformations =
-    SceneTools::flattenTransformationHierarchy2D(scene, Trade::SceneField::Mesh);
+    SceneTools::absoluteFieldTransformations2D(scene, Trade::SceneField::Mesh);
 
 /* Since a mesh can be referenced multiple times, we can't operate in-place */
 Containers::Array<Trade::MeshData> flattenedMeshes;
@@ -60,16 +60,16 @@ for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
 }
 
 Trade::MeshData concatenated = MeshTools::concatenate(flattenedMeshes);
-/* [flattenTransformationHierarchy2D-mesh-concatenate] */
+/* [absoluteFieldTransformations2D-mesh-concatenate] */
 } {
-/* [flattenTransformationHierarchy3D-mesh-concatenate] */
+/* [absoluteFieldTransformations3D-mesh-concatenate] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 Containers::Array<Trade::MeshData> meshes = DOXYGEN_ELLIPSIS({});
 
 Containers::Array<Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>>
     meshesMaterials = scene.meshesMaterialsAsArray();
 Containers::Array<Matrix4> transformations =
-    SceneTools::flattenTransformationHierarchy3D(scene, Trade::SceneField::Mesh);
+    SceneTools::absoluteFieldTransformations3D(scene, Trade::SceneField::Mesh);
 
 /* Since a mesh can be referenced multiple times, we can't operate in-place */
 Containers::Array<Trade::MeshData> flattenedMeshes;
@@ -79,7 +79,7 @@ for(std::size_t i = 0; i != meshesMaterials.size(); ++i) {
 }
 
 Trade::MeshData concatenated = MeshTools::concatenate(flattenedMeshes);
-/* [flattenTransformationHierarchy3D-mesh-concatenate] */
+/* [absoluteFieldTransformations3D-mesh-concatenate] */
 }
 
 {

@@ -311,7 +311,7 @@ void FlattenMeshHierarchyTest::not2DNot3D() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Used to assert even on an empty scene, now it does an early-out if the
-       mesh field doesn't exist because flattenTransformationHierarchy() would
+       mesh field doesn't exist because absoluteFieldTransformations() would
        assert instead. That behavioral change is fine for a deprecated API. */
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
         Trade::SceneFieldData{Trade::SceneField::Mesh, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
@@ -324,15 +324,15 @@ void FlattenMeshHierarchyTest::not2DNot3D() {
     flattenMeshHierarchy3D(scene);
     CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 2D\n"
-        "SceneTools::flattenTransformationHierarchy(): the scene is not 3D\n");
+        "SceneTools::absoluteFieldTransformations(): the scene is not 2D\n"
+        "SceneTools::absoluteFieldTransformations(): the scene is not 3D\n");
 }
 
 void FlattenMeshHierarchyTest::noParentField() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* Used to assert even on an empty scene, now it does an early-out if the
-       mesh field doesn't exist because flattenTransformationHierarchy() would
+       mesh field doesn't exist because absoluteFieldTransformations() would
        assert instead. That behavioral change is fine for a deprecated API. */
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
         Trade::SceneFieldData{Trade::SceneField::Mesh, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::UnsignedInt, nullptr},
@@ -345,7 +345,7 @@ void FlattenMeshHierarchyTest::noParentField() {
     flattenMeshHierarchy2D(scene);
     CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchy(): the scene has no hierarchy\n");
+        "SceneTools::absoluteFieldTransformations(): the scene has no hierarchy\n");
 }
 
 void FlattenMeshHierarchyTest::noMeshField() {
@@ -499,8 +499,8 @@ void FlattenMeshHierarchyTest::intoInvalidSize() {
     flattenMeshHierarchy3DInto(scene3D, transformations3D);
     CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(),
-        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 6\n"
-        "SceneTools::flattenTransformationHierarchyInto(): bad output size, expected 5 but got 4\n");
+        "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 6\n"
+        "SceneTools::absoluteFieldTransformationsInto(): bad output size, expected 5 but got 4\n");
 }
 
 }}}}
