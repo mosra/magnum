@@ -97,32 +97,16 @@ Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHier
     return flattenMeshHierarchyImplementation<2>(scene, globalTransformation);
 }
 
-Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene) {
-    return flattenMeshHierarchyImplementation<2>(scene, {});
-}
-
 void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation) {
     return flattenMeshHierarchyIntoImplementation<2>(scene, transformations, globalTransformation);
-}
-
-void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations) {
-    return flattenMeshHierarchyIntoImplementation<2>(scene, transformations, {});
 }
 
 Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation) {
     return flattenMeshHierarchyImplementation<3>(scene, globalTransformation);
 }
 
-Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene) {
-    return flattenMeshHierarchyImplementation<3>(scene, {});
-}
-
 void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation) {
     return flattenMeshHierarchyIntoImplementation<3>(scene, transformations, globalTransformation);
-}
-
-void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations) {
-    return flattenMeshHierarchyIntoImplementation<3>(scene, transformations, {});
 }
 
 }}

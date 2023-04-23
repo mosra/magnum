@@ -41,6 +41,8 @@
 #include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/SceneTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
@@ -57,13 +59,7 @@ namespace Magnum { namespace SceneTools {
     with @ref Trade::SceneField::Mesh together with
     @ref Trade::SceneData::meshesMaterialsAsArray() instead.
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation = {});
-#else
-/* To avoid including Matrix3 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy2D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation);
-CORRADE_DEPRECATED("use flattenTransformationHierarchy2D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene);
-#endif
+CORRADE_DEPRECATED("use flattenTransformationHierarchy2D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix3>> flattenMeshHierarchy2D(const Trade::SceneData& scene, const Matrix3& globalTransformation = {});
 
 /**
 @brief Flatten a 2D mesh hierarchy into an existing array
@@ -74,13 +70,7 @@ CORRADE_DEPRECATED("use flattenTransformationHierarchy2D() instead") MAGNUM_SCEN
 @m_deprecated_since_latest Use @ref flattenTransformationHierarchy2DInto(const Trade::SceneData&, Trade::SceneField, const Containers::StridedArrayView1D<Matrix3>&, const Matrix3&)
     with @ref Trade::SceneField::Mesh instead.
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation = {});
-#else
-/* To avoid including Matrix3 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy2DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation);
-CORRADE_DEPRECATED("use flattenTransformationHierarchy2DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations);
-#endif
+CORRADE_DEPRECATED("use flattenTransformationHierarchy2DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy2DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix3>& transformations, const Matrix3& globalTransformation = {});
 
 /**
 @brief Flatten a 3D mesh hierarchy
@@ -89,13 +79,7 @@ CORRADE_DEPRECATED("use flattenTransformationHierarchy2DInto() instead") MAGNUM_
     with @ref Trade::SceneField::Mesh together with
     @ref Trade::SceneData::meshesMaterialsAsArray() instead.
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation = {});
-#else
-/* To avoid including Matrix4 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy3D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation);
-CORRADE_DEPRECATED("use flattenTransformationHierarchy3D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene);
-#endif
+CORRADE_DEPRECATED("use flattenTransformationHierarchy3D() instead") MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Triple<UnsignedInt, Int, Matrix4>> flattenMeshHierarchy3D(const Trade::SceneData& scene, const Matrix4& globalTransformation = {});
 
 /**
 @brief Flatten a 3D mesh hierarchy into an existing array
@@ -106,13 +90,7 @@ CORRADE_DEPRECATED("use flattenTransformationHierarchy3D() instead") MAGNUM_SCEN
 @m_deprecated_since_latest Use @ref flattenTransformationHierarchy3DInto(const Trade::SceneData&, Trade::SceneField, const Containers::StridedArrayView1D<Matrix4>&, const Matrix4&)
     with @ref Trade::SceneField::Mesh instead.
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
 CORRADE_DEPRECATED("use flattenTransformationHierarchy3DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation = {});
-#else
-/* To avoid including Matrix3 */
-CORRADE_DEPRECATED("use flattenTransformationHierarchy3DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations, const Matrix4& globalTransformation);
-CORRADE_DEPRECATED("use flattenTransformationHierarchy3DInto() instead") MAGNUM_SCENETOOLS_EXPORT void flattenMeshHierarchy3DInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<Matrix4>& transformations);
-#endif
 
 }}
 #else
