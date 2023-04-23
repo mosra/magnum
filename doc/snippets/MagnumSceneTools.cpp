@@ -33,7 +33,6 @@
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/SceneTools/Hierarchy.h"
-#include "Magnum/SceneTools/OrderClusterParents.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -83,7 +82,7 @@ Trade::MeshData concatenated = MeshTools::concatenate(flattenedMeshes);
 }
 
 {
-/* [orderClusterParents-transformations] */
+/* [parentsBreadthFirst-transformations] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 
 /* Put all transformations into an array indexed by object ID. Objects
@@ -101,12 +100,12 @@ for(const Containers::Pair<UnsignedInt, Matrix4>& transformation:
    function ensures that the parent transformation is already calculated when
    referenced by child nodes. */
 for(const Containers::Pair<UnsignedInt, Int>& parent:
-    SceneTools::orderClusterParents(scene))
+    SceneTools::parentsBreadthFirst(scene))
 {
     transformations[parent.first() + 1] =
         transformations[parent.second() + 1]*
         transformations[parent.first() + 1];
 }
-/* [orderClusterParents-transformations] */
+/* [parentsBreadthFirst-transformations] */
 }
 }

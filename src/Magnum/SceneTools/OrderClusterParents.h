@@ -25,59 +25,50 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Function @ref Magnum::SceneTools::orderClusterParents(), @ref Magnum::SceneTools::orderClusterParentsInto()
- * @m_since_latest
+ * @m_deprecated_since_latest Use @ref Magnum/SceneTools/Hierarchy.h and the
+ *      @relativeref{Magnum,SceneTools::parentsBreadthFirst()} function
+ *      instead.
  */
+#endif
 
-#include "Magnum/Magnum.h"
-#include "Magnum/SceneTools/visibility.h"
-#include "Magnum/Trade/Trade.h"
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Macros.h>
+
+#include "Magnum/SceneTools/Hierarchy.h"
+
+CORRADE_DEPRECATED_FILE("use Magnum/SceneTools/Hierarchy.h and the SceneTools::parentsBreadthFirst() function instead")
 
 namespace Magnum { namespace SceneTools {
 
+/* Made header-only to not have to maintain a deprecated source file */
+
 /**
 @brief Calculate ordered and clustered parents
-@m_since_latest
-
-Extracts the @ref Trade::SceneField::Parent field from @p scene and converts it
-to match the following rules:
-
--   a parent object reference appears always before any of its children
--   the array is clustered so children sharing the same parent are together
-
-This form is useful primarily for calculating absolute object transformations,
-for example:
-
-@snippet MagnumSceneTools.cpp orderClusterParents-transformations
-
-The operation is done in an @f$ \mathcal{O}(n) @f$ execution time and memory
-complexity, with @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The
-@ref Trade::SceneField::Parent field is expected to be contained in the scene,
-having no cycles (i.e., every node listed just once) and not being sparse
-(i.e., every node listed in the field reachable from the root).
-
-@experimental
-
-@see @ref Trade::SceneData::hasField()
+@m_deprecated_since_latest Use @ref parentsBreadthFirst(const Trade::SceneData&)
+    instead.
 */
-MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Pair<UnsignedInt, Int>> orderClusterParents(const Trade::SceneData& scene);
+inline CORRADE_DEPRECATED("use parentsBreadthFirst() instead") Containers::Array<Containers::Pair<UnsignedInt, Int>> orderClusterParents(const Trade::SceneData& scene) {
+    return parentsBreadthFirst(scene);
+}
 
 /**
-@brief Calculate ordered and clustered parents into a pre-allocated view
-@m_since_latest
-
-Like @ref orderClusterParents(), but puts the result into
-@p mappingDestination and @p parentDestination instead of allocating a new
-array. Expect that both views have a size equal to size of the
-@ref Trade::SceneField::Parent view in @p scene.
-
-@experimental
-
-@see @ref Trade::SceneData::fieldSize(SceneField) const
+@brief Calculate ordered and clustered parents
+@m_deprecated_since_latest Use @ref parentsBreadthFirstInto(const Trade::SceneData&, const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Int>&)
+    instead.
 */
-MAGNUM_SCENETOOLS_EXPORT void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& parentDestination);
+inline CORRADE_DEPRECATED("use parentsBreadthFirstInto() instead") void orderClusterParentsInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& parentDestination) {
+    return parentsBreadthFirstInto(scene, mappingDestination, parentDestination);
+}
 
 }}
+#else
+#error use Magnum/SceneTools/Hierarchy.h and the SceneTools::parentsBreadthFirst() function instead
+#endif
 
 #endif

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
+ * @brief Function @ref Magnum::SceneTools::parentsBreadthFirst(), @ref Magnum::SceneTools::parentsBreadthFirstInto(), @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
  * @m_since_latest
  */
 
@@ -35,6 +35,48 @@
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace SceneTools {
+
+/**
+@brief Retrieve parents in a breadth-first order
+@m_since_latest
+
+Extracts the @ref Trade::SceneField::Parent field mapping and data from
+@p scene and converts it to match the following rules:
+
+-   a parent object reference appears always before any of its children
+-   the array is clustered so children sharing the same parent are together
+
+This form is useful primarily for calculating absolute object transformations,
+for example:
+
+@snippet MagnumSceneTools.cpp parentsBreadthFirst-transformations
+
+The operation is done in an @f$ \mathcal{O}(n) @f$ execution time and memory
+complexity, with @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The
+@ref Trade::SceneField::Parent field is expected to be contained in the scene,
+having no cycles (i.e., every node listed just once) and not being sparse
+(i.e., every node listed in the field reachable from the root).
+
+@experimental
+
+@see @ref Trade::SceneData::hasField()
+*/
+MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Pair<UnsignedInt, Int>> parentsBreadthFirst(const Trade::SceneData& scene);
+
+/**
+@brief Retrieve parents in a breadth-first order into a pre-allocated view
+@m_since_latest
+
+Like @ref parentsBreadthFirst(), but puts the result into @p mappingDestination
+and @p parentDestination instead of allocating a new array. Expect that both
+views have a size equal to size of the @ref Trade::SceneField::Parent view in
+@p scene.
+
+@experimental
+
+@see @ref Trade::SceneData::fieldSize(SceneField) const
+*/
+MAGNUM_SCENETOOLS_EXPORT void parentsBreadthFirstInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& parentDestination);
 
 /**
 @brief Calculate absolute 2D transformations for given field
@@ -50,7 +92,7 @@ If the field is empty, the function returns an empty array.
 The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of @p fieldId and @f$ n @f$ being
 @ref Trade::SceneData::mappingBound(). The function calls
-@ref orderClusterParents() internally.
+@ref parentsBreadthFirst() internally.
 
 The returned data are in the same order as object mapping entries in
 @p fieldId. Fields attached to objects without a @ref Trade::SceneField::Parent
@@ -148,7 +190,7 @@ If the field is empty, the function returns an empty array.
 The operation is done in an @f$ \mathcal{O}(m + n) @f$ execution time and
 memory complexity, with @f$ m @f$ being size of @p fieldId and @f$ n @f$ being
 @ref Trade::SceneData::mappingBound(). The function calls
-@ref orderClusterParents() internally.
+@ref parentsBreadthFirst() internally.
 
 The returned data are in the same order as object mapping entries in
 @p fieldId. Fields attached to objects without a @ref Trade::SceneField::Parent

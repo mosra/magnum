@@ -45,14 +45,12 @@ set(MagnumSceneTools_SRCS )
 set(MagnumSceneTools_GracefulAssert_SRCS
     Combine.cpp
     Filter.cpp
-    Hierarchy.cpp
-    OrderClusterParents.cpp)
+    Hierarchy.cpp)
 
 set(MagnumSceneTools_HEADERS
     Combine.h
     Filter.h
     Hierarchy.h
-    OrderClusterParents.h
 
     visibility.h)
 
@@ -65,7 +63,8 @@ if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumSceneTools_GracefulAssert_SRCS FlattenMeshHierarchy.cpp)
     list(APPEND MagnumSceneTools_HEADERS
         FlattenMeshHierarchy.h
-        FlattenTransformationHierarchy.h)
+        FlattenTransformationHierarchy.h
+        OrderClusterParents.h)
 endif()
 
 ## Objects shared between main and test library
