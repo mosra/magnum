@@ -157,6 +157,29 @@ MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterFieldEntries(const Trade::SceneD
 */
 MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, std::initializer_list<Containers::Pair<Trade::SceneField, Containers::BitArrayView>> entriesToKeep);
 
+/**
+@brief Filter objects in a scene
+@m_since_latest
+
+Returns a copy of @p scene containing the same fields but only with entries
+mapped to objects for which the corresponding bit in @p objectsToKeep is set.
+The size of @p objectsToKeep is expected to be equal to
+@ref Trade::SceneData::mappingBound().
+
+Fields that don't contain any entries mapped to filtered-out objects are passed
+through unchanged. The data filtering is performed using
+@ref filterFieldEntries() which then delegates to @ref combineFields() for
+repacking the data, see their documentation for more information.
+
+Note that this function performs only filtering of the data, it doesn't change
+the data in any other way. If there are references to the removed objects from
+other fields such as @ref Trade::SceneField::Parent, it's the responsibility of
+the caller to deal with them either before or after calling this API, otherwise
+the returned data may end up being unusable.
+@experimental
+*/
+MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterObjects(const Trade::SceneData& scene, Containers::BitArrayView objectsToKeep);
+
 }}
 
 #endif

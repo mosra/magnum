@@ -26,6 +26,7 @@
 #include "Filter.h"
 
 #include <map>
+#include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/BitArray.h>
 #include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/Optional.h>
@@ -257,6 +258,135 @@ Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, const Contain
 
 Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, const std::initializer_list<Containers::Pair<Trade::SceneField, Containers::BitArrayView>> entriesToKeep) {
     return filterFieldEntries(scene, Containers::arrayView(entriesToKeep));
+}
+
+namespace {
+
+template<class T> std::size_t filterObjectsImplementation(const Trade::SceneData& scene, const Containers::ArrayView<Containers::Pair<UnsignedInt, Containers::BitArrayView>> fieldStorage, const Containers::MutableBitArrayView maskStorage, const Containers::BitArrayView objects, std::map<std::tuple<const void*, std::size_t, std::ptrdiff_t>, Containers::Optional<UnsignedInt>>& uniqueMappings) {
+    std::size_t fieldOffset = 0;
+    std::size_t maskOffset = 0;
+    for(UnsignedInt fieldId = 0; fieldId != scene.fieldCount(); ++fieldId) {
+        /* Skip empty fields as there's nothing to do for them and they don't
+           even have an entry in the uniqueMappings map */
+        if(!scene.fieldSize(fieldId))
+            continue;
+
+        const Containers::StridedArrayView1D<const T> mapping = scene.mapping<T>(fieldId);
+
+        /* Shared mappings need to stay shared, thus filterFieldEntries() needs
+           to get the exact same mask for such fields -- for implementation
+           simplicity not just the bit values but the actual view */
+        Containers::Optional<UnsignedInt>& sharedMapping = uniqueMappings.at(std::make_tuple(mapping.data(), mapping.size(), mapping.stride()));
+
+        /* If a mask was already calculated for this mapping, reuse the view */
+        if(sharedMapping) {
+            /* If the field wasn't filtered in any way, it wasn't added to the
+               list, which is indicated by ~UnsignedInt{}. Do nothing in that
+               case. */
+            if(*sharedMapping != ~UnsignedInt{})
+                fieldStorage[fieldOffset++] = {fieldId, fieldStorage[*sharedMapping].second()};
+
+        /* If not, calculate the mask and remember it for potential other
+           fields that share the same mapping view */
+        } else {
+            const Containers::MutableBitArrayView mask = maskStorage.sliceSize(maskOffset, mapping.size());
+
+            bool anyFiltered = false;
+            for(std::size_t i = 0; i != mapping.size(); ++i) {
+                /** @todo ugh! mask.set(i, objects[mapping[i]]) and then .all()
+                    once it's implemented (needs BMI variants similarly to
+                    count()) */
+                if(objects[mapping[i]])
+                    mask.set(i);
+                else {
+                    anyFiltered = true;
+                    mask.reset(i);
+                }
+            }
+
+            /* Only add the field to the list if it's not all 1s */
+            if(anyFiltered) {
+                sharedMapping = fieldOffset;
+                fieldStorage[fieldOffset++] = {fieldId, mask};
+                /* Not bothering with rounding this to whole bytes as
+                Utility::copyMasked() has to special-case the begin/end
+                anyway */
+                maskOffset += mask.size();
+            } else {
+                sharedMapping = ~UnsignedInt{};
+            }
+        }
+    }
+
+    CORRADE_INTERNAL_ASSERT(fieldOffset <= fieldStorage.size());
+    CORRADE_INTERNAL_ASSERT(maskOffset <= maskStorage.size());
+
+    return fieldOffset;
+}
+
+}
+
+Trade::SceneData filterObjects(const Trade::SceneData& scene, const Containers::BitArrayView objects) {
+    CORRADE_ASSERT(objects.size() == scene.mappingBound(),
+        "SceneTools::filterObjects(): expected" << scene.mappingBound() << "bits but got" << objects.size(), (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
+
+    /** @todo while a BitArrayView is certainly faster for lookup than an
+        unordered list of IDs, it might become rather problematic in cases
+        where the mapping bound is sparse and *really huge* (i.e., storing
+        pointers) -- then there either needs to be an overload that takes an
+        `ArrayView<const UnsignedLong>` and does some less ideal lookup, or a
+        `packObjects()` tool that makes the object numbering contiguous for
+        this API to be usable, storing also mapping back to the original ID in
+        the scene, and an `unpackObjects()` that restores the original IDs */
+
+    /* Count the total count of bits possibly needed */
+    std::size_t bitCount = 0;
+    for(UnsignedInt i = 0; i != scene.fieldCount(); ++i)
+        bitCount += scene.fieldSize(i);
+
+    /* Allocate scratch memory for all the bits and field references */
+    Containers::ArrayView<Containers::Pair<UnsignedInt, Containers::BitArrayView>> fieldStorage;
+    Containers::MutableBitArrayView maskStorage;
+    Containers::ArrayTuple storage{
+        {NoInit, scene.fieldCount(), fieldStorage},
+        {NoInit, bitCount, maskStorage}
+    };
+
+    /* Collect a map of unique mappings. The value is a placeholder where
+       filterObjectsImplementation() will subsequently record a reference to a
+       BitArrayView that should be used for all fields. */
+    std::map<std::tuple<const void*, std::size_t, std::ptrdiff_t>, Containers::Optional<UnsignedInt>> uniqueMappings;
+    for(UnsignedInt i = 0; i != scene.fieldCount(); ++i) {
+        /* Skip empty fields as those make no sense to include for sharing */
+        if(!scene.fieldSize(i))
+            continue;
+
+        const Containers::StridedArrayView2D<const char> mapping = scene.mapping(i);
+        uniqueMappings.emplace(std::make_tuple(mapping.data(), mapping.size()[0], mapping.stride()[0]), Containers::NullOpt);
+    }
+
+    /* Delegate to a concrete filtering implementation based on used mapping
+       type. Returns the prefix of fieldStorage that got filled, with fields
+       that didn't need to be changed omitted. */
+    std::size_t fieldCount = ~std::size_t{};
+    switch(scene.mappingType()) {
+        case Trade::SceneMappingType::UnsignedByte:
+            fieldCount = filterObjectsImplementation<UnsignedByte>(scene, fieldStorage, maskStorage, objects, uniqueMappings);
+            break;
+        case Trade::SceneMappingType::UnsignedShort:
+            fieldCount = filterObjectsImplementation<UnsignedShort>(scene, fieldStorage, maskStorage, objects, uniqueMappings);
+            break;
+        case Trade::SceneMappingType::UnsignedInt:
+            fieldCount = filterObjectsImplementation<UnsignedInt>(scene, fieldStorage, maskStorage, objects, uniqueMappings);
+            break;
+        case Trade::SceneMappingType::UnsignedLong:
+            fieldCount = filterObjectsImplementation<UnsignedLong>(scene, fieldStorage, maskStorage, objects, uniqueMappings);
+            break;
+    }
+    CORRADE_INTERNAL_ASSERT(fieldCount != ~std::size_t{});
+
+    /* Delegate the rest to the low-level field entry filtering API */
+    return filterFieldEntries(scene, fieldStorage.prefix(fieldCount));
 }
 
 }}

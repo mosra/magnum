@@ -59,6 +59,12 @@ struct FilterTest: TestSuite::Tester {
 
     void fieldEntriesSharedMapping();
     void fieldEntriesSharedMappingInvalid();
+
+    template<class T> void objects();
+    void objectsUnchangedFields();
+    void objectsSharedMapping();
+    void objectsSharedMappingAllRemoved();
+    void objectsWrongBitCount();
 };
 
 using namespace Math::Literals;
@@ -91,7 +97,16 @@ FilterTest::FilterTest() {
               &FilterTest::fieldEntriesBitField,
 
               &FilterTest::fieldEntriesSharedMapping,
-              &FilterTest::fieldEntriesSharedMappingInvalid});
+              &FilterTest::fieldEntriesSharedMappingInvalid,
+
+              &FilterTest::objects<UnsignedByte>,
+              &FilterTest::objects<UnsignedShort>,
+              &FilterTest::objects<UnsignedInt>,
+              &FilterTest::objects<UnsignedLong>,
+              &FilterTest::objectsUnchangedFields,
+              &FilterTest::objectsSharedMapping,
+              &FilterTest::objectsSharedMappingAllRemoved,
+              &FilterTest::objectsWrongBitCount});
 }
 
 void FilterTest::fields() {
@@ -758,6 +773,310 @@ void FilterTest::fieldEntriesSharedMappingInvalid() {
         "SceneTools::filterFieldEntries(): field Trade::SceneField::Custom(1) shares mapping with Trade::SceneField::MeshMaterial but was passed a different mask view\n"
         "SceneTools::filterFieldEntries(): field Trade::SceneField::Mesh shares mapping with 3 fields but only 2 are filtered\n"
         "SceneTools::filterFieldEntries(): field Trade::SceneField::Custom(1) shares mapping with 3 fields but only 2 are filtered\n");
+}
+
+template<class T> void FilterTest::objects() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const struct {
+        T meshMapping[5]{7, 8, 15, 3, 2};
+        UnsignedByte mesh[5]{2, 222, 3, 222, 222};
+        T lightMapping[4]{2, 1, 3, 2};
+        UnsignedInt light[4]{66666, 23, 66666, 66666};
+        T parentMapping[3]{2, 3, 8};
+        Short parents[3]{6666, 6666, 6666};
+    } data[1];
+
+    Trade::SceneData scene{Trade::Implementation::sceneMappingTypeFor<T>(), 76, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(data->meshMapping),
+            Containers::arrayView(data->mesh)},
+        /* This one has duplicate entries for an object, both will be removed */
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::arrayView(data->lightMapping),
+            Containers::arrayView(data->light)},
+        /* This one gets all entries removed */
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            Containers::arrayView(data->parentMapping),
+            Containers::arrayView(data->parents)},
+        /* This one is already empty */
+        Trade::SceneFieldData{Trade::SceneField::Camera,
+            Containers::ArrayView<T>{},
+            Containers::ArrayView<UnsignedByte>{}},
+    }};
+
+    Containers::BitArray objectsToKeep{DirectInit, std::size_t(scene.mappingBound()), true};
+    objectsToKeep.reset(8);
+    objectsToKeep.reset(3);
+    objectsToKeep.reset(2);
+
+    Trade::SceneData filtered = filterObjects(scene, objectsToKeep);
+
+    CORRADE_COMPARE(filtered.fieldCount(), 4);
+    CORRADE_COMPARE(filtered.mappingType(), Trade::Implementation::sceneMappingTypeFor<T>());
+    CORRADE_COMPARE(filtered.mappingBound(), 76);
+
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Mesh));
+    CORRADE_COMPARE_AS(filtered.mapping<T>(Trade::SceneField::Mesh),
+        Containers::arrayView<T>({7, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(filtered.field<UnsignedByte>(Trade::SceneField::Mesh),
+        Containers::arrayView<UnsignedByte>({2, 3}),
+        TestSuite::Compare::Container);
+
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Light));
+    CORRADE_COMPARE_AS(filtered.mapping<T>(Trade::SceneField::Light),
+        Containers::arrayView<T>({1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(filtered.field<UnsignedInt>(Trade::SceneField::Light),
+        Containers::arrayView<UnsignedInt>({23}),
+        TestSuite::Compare::Container);
+
+    /* Parents are all removed */
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Parent));
+    CORRADE_COMPARE(filtered.fieldSize(Trade::SceneField::Parent), 0);
+
+    /* Cameras were empty before already */
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Camera));
+    CORRADE_COMPARE(filtered.fieldSize(Trade::SceneField::Camera), 0);
+
+    /* The attribute data should not be a growable array to make this usable in
+       plugins */
+    Containers::Array<Trade::SceneFieldData> fieldData = filtered.releaseFieldData();
+    CORRADE_VERIFY(!fieldData.deleter());
+}
+
+void FilterTest::objectsUnchangedFields() {
+    /* Compared to above, this contains fields that don't have any objects
+       that should be filtered out, which are thus passed through unchanged
+       (and thus can be even of type that is unuspported by
+       filterFieldEntries()) */
+
+    const struct {
+        UnsignedShort meshMapping[5]{7, 8, 15, 3, 2};
+        UnsignedByte mesh[5]{2, 222, 3, 222, 222};
+        UnsignedShort visibilityMapping[2]{22, 1};
+        bool visible[2]{false, true};
+    } data[1];
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 76, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(data->meshMapping),
+            Containers::arrayView(data->mesh)},
+        Trade::SceneFieldData{Trade::sceneFieldCustom(15),
+            Containers::arrayView(data->visibilityMapping),
+            Containers::stridedArrayView(data->visible).sliceBit(0)},
+    }};
+
+    Containers::BitArray objectsToKeep{DirectInit, std::size_t(scene.mappingBound()), true};
+    objectsToKeep.reset(8);
+    objectsToKeep.reset(3);
+    objectsToKeep.reset(2);
+
+    Trade::SceneData filtered = filterObjects(scene, objectsToKeep);
+    CORRADE_COMPARE(filtered.fieldCount(), 2);
+    CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(filtered.mappingBound(), 76);
+
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Mesh));
+    CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Mesh),
+        Containers::arrayView<UnsignedShort>({7, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(filtered.field<UnsignedByte>(Trade::SceneField::Mesh),
+        Containers::arrayView<UnsignedByte>({2, 3}),
+        TestSuite::Compare::Container);
+
+    /* Bits weren't affected and thus were passed through unchanged */
+    CORRADE_VERIFY(filtered.hasField(Trade::sceneFieldCustom(15)));
+    CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::sceneFieldCustom(15)),
+        Containers::arrayView(data->visibilityMapping),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(filtered.fieldBits(Trade::sceneFieldCustom(15)),
+        Containers::stridedArrayView(data->visible).sliceBit(0),
+        TestSuite::Compare::Container);
+}
+
+void FilterTest::objectsSharedMapping() {
+    const struct {
+        UnsignedShort meshMaterialMapping[5]{7, 8, 15, 3, 2};
+        UnsignedByte mesh[5]{2, 222, 3, 222, 222};
+        Byte meshMaterial[5]{-1, 111, 7, 111, 111};
+        UnsignedShort trsMapping[5]{1, 8, 7, 2, 15};
+        Vector2 translation[5]{
+            {1.0f, 2.0f},
+            {},
+            {3.0f, 4.0f},
+            {},
+            {5.0f, 6.0f}
+        };
+        Complex rotation[5]{
+            Complex::rotation(15.0_degf),
+            {},
+            Complex::rotation(30.0_degf),
+            {},
+            Complex::rotation(45.0_degf)
+        };
+        Float uniformScale[5]{10.0f, 0.0f, -5.0f, 0.0f, 555.0f};
+        UnsignedInt light[2]{34, 25};
+        Int parent[3]{-1, 0, 3};
+    } data[1]{};
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 176, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(data->meshMaterialMapping),
+            Containers::arrayView(data->mesh)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::arrayView(data->meshMaterialMapping),
+            Containers::arrayView(data->meshMaterial)},
+        Trade::SceneFieldData{Trade::SceneField::Translation,
+            Containers::arrayView(data->trsMapping),
+            Containers::arrayView(data->translation)},
+        Trade::SceneFieldData{Trade::SceneField::Rotation,
+            Containers::arrayView(data->trsMapping),
+            Containers::arrayView(data->rotation)},
+        /* Shares trsMapping, sharing should be preserved even though not
+           enforced */
+        Trade::SceneFieldData{Trade::sceneFieldCustom(15),
+            Containers::arrayView(data->trsMapping),
+            Containers::arrayView(data->uniformScale)},
+        /* Shares a prefix of meshMaterialMapping, should not be preserved */
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::arrayView(data->meshMaterialMapping).prefix(2),
+            Containers::arrayView(data->light)},
+        /* Shares every 2nd item of trsMapping, should not be preserved */
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            Containers::stridedArrayView(data->trsMapping).every(2),
+            Containers::arrayView(data->parent)},
+    }};
+
+    Containers::BitArray objectsToKeep{DirectInit, std::size_t(scene.mappingBound()), true};
+    objectsToKeep.reset(8);
+    objectsToKeep.reset(3);
+    objectsToKeep.reset(2);
+
+    Trade::SceneData filtered = filterObjects(scene, objectsToKeep);
+    CORRADE_COMPARE(filtered.fieldCount(), 7);
+    CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(filtered.mappingBound(), 176);
+
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Mesh));
+    CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Mesh),
+        Containers::arrayView<UnsignedShort>({7, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(filtered.field<UnsignedByte>(Trade::SceneField::Mesh),
+        Containers::arrayView<UnsignedByte>({2, 3}),
+        TestSuite::Compare::Container);
+
+    /* Mapping shared with Mesh */
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::MeshMaterial));
+    CORRADE_COMPARE(filtered.mapping(Trade::SceneField::MeshMaterial).data(),
+        filtered.mapping(Trade::SceneField::Mesh).data());
+    CORRADE_COMPARE_AS(filtered.field<Byte>(Trade::SceneField::MeshMaterial),
+        Containers::arrayView<Byte>({-1, 7}),
+        TestSuite::Compare::Container);
+
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Translation));
+    CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Translation),
+        Containers::arrayView<UnsignedShort>({1, 7, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(filtered.field<Vector2>(Trade::SceneField::Translation),
+        Containers::arrayView<Vector2>({{1.0f, 2.0f}, {3.0f, 4.0f}, {5.0f, 6.0f}}),
+        TestSuite::Compare::Container);
+
+    /* Mapping shared with Translation */
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Rotation));
+    CORRADE_COMPARE(filtered.mapping(Trade::SceneField::Rotation).data(),
+        filtered.mapping(Trade::SceneField::Translation).data());
+    CORRADE_COMPARE_AS(filtered.field<Complex>(Trade::SceneField::Rotation),
+        Containers::arrayView<Complex>({Complex::rotation(15.0_degf), Complex::rotation(30.0_degf), Complex::rotation(45.0_degf)}),
+        TestSuite::Compare::Container);
+
+    /* Mapping shared with Translation again */
+    CORRADE_VERIFY(filtered.hasField(Trade::sceneFieldCustom(15)));
+    CORRADE_COMPARE(filtered.mapping(Trade::sceneFieldCustom(15)).data(),
+        filtered.mapping(Trade::SceneField::Translation).data());
+    CORRADE_COMPARE_AS(filtered.field<Float>(Trade::sceneFieldCustom(15)),
+        Containers::arrayView({10.0f, -5.0f, 555.0f}),
+        TestSuite::Compare::Container);
+
+    /* These fields don't share any mapping even though they could */
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Light));
+    CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Light),
+        Containers::arrayView<UnsignedShort>({7}),
+        TestSuite::Compare::Container);
+    CORRADE_VERIFY(filtered.mapping(Trade::SceneField::Light).data() != filtered.mapping(Trade::SceneField::Mesh).data());
+    CORRADE_COMPARE_AS(filtered.field<UnsignedInt>(Trade::SceneField::Light),
+        Containers::arrayView<UnsignedInt>({34}),
+        TestSuite::Compare::Container);
+
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Parent));
+    CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Parent),
+        Containers::arrayView<UnsignedShort>({1, 7, 15}),
+        TestSuite::Compare::Container);
+    CORRADE_VERIFY(filtered.mapping(Trade::SceneField::Parent).data() != filtered.mapping(Trade::SceneField::Translation).data());
+    CORRADE_COMPARE_AS(filtered.field<Int>(Trade::SceneField::Parent),
+        Containers::arrayView(data->parent),
+        TestSuite::Compare::Container);
+}
+
+void FilterTest::objectsSharedMappingAllRemoved() {
+    const struct {
+        UnsignedShort meshMaterialMapping[3]{8, 3, 2};
+        UnsignedByte mesh[3]{};
+        UnsignedShort lightMapping[3]{2, 1, 3};
+        UnsignedInt light[3]{66666, 23, 66666};
+        Byte meshMaterial[3]{};
+    } data[1];
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 76, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Mesh,
+            Containers::arrayView(data->meshMaterialMapping),
+            Containers::arrayView(data->mesh)},
+        Trade::SceneFieldData{Trade::SceneField::Light,
+            Containers::arrayView(data->lightMapping),
+            Containers::arrayView(data->light)},
+        Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
+            Containers::arrayView(data->meshMaterialMapping),
+            Containers::arrayView(data->meshMaterial)},
+    }};
+
+    Containers::BitArray objectsToKeep{DirectInit, std::size_t(scene.mappingBound()), true};
+    objectsToKeep.reset(8);
+    objectsToKeep.reset(3);
+    objectsToKeep.reset(2);
+
+    Trade::SceneData filtered = filterObjects(scene, objectsToKeep);
+    CORRADE_COMPARE(filtered.fieldCount(), 3);
+    CORRADE_COMPARE(filtered.mappingType(), Trade::SceneMappingType::UnsignedShort);
+    CORRADE_COMPARE(filtered.mappingBound(), 76);
+
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Mesh));
+    CORRADE_COMPARE(filtered.fieldSize(Trade::SceneField::Mesh), 0);
+
+    /* This one should reuse the (emptied) Mesh mapping instead of going
+       through everything again */
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::MeshMaterial));
+    CORRADE_COMPARE(filtered.fieldSize(Trade::SceneField::MeshMaterial), 0);
+
+    /* Other fields get filtered as usual */
+    CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Light));
+    CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Light),
+        Containers::arrayView<UnsignedShort>({1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(filtered.field<UnsignedInt>(Trade::SceneField::Light),
+        Containers::arrayView<UnsignedInt>({23}),
+        TestSuite::Compare::Container);
+}
+
+void FilterTest::objectsWrongBitCount() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 176, nullptr, {}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    filterObjects(scene, Containers::BitArray{ValueInit, 177});
+    CORRADE_COMPARE(out.str(), "SceneTools::filterObjects(): expected 176 bits but got 177\n");
 }
 
 }}}}
