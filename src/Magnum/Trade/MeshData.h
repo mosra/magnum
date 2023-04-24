@@ -2499,7 +2499,11 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableIndices() {
 }
 
 #ifndef CORRADE_NO_ASSERT
-template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttributeData& attribute, const char* const prefix) const {
+template<class T> bool MeshData::checkVertexFormatCompatibility(const MeshAttributeData& attribute, const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const prefix
+    #endif
+) const {
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
         prefix << "can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), false);
     CORRADE_ASSERT(Implementation::isVertexFormatCompatible<typename std::remove_extent<T>::type>(attribute._format),

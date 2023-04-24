@@ -39,11 +39,11 @@
 #ifndef CORRADE_STANDARD_ASSERT
 #include <cstdlib>
 #include <Corrade/Utility/Debug.h>
-
-#include "Magnum/Vk/Result.h"
 #elif !defined(NDEBUG)
 #include <cassert>
 #endif
+
+#include "Magnum/Vk/Result.h"
 #endif
 
 /**

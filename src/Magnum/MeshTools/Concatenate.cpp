@@ -63,7 +63,7 @@ struct MeshAttributeHash: std::hash<typename std::underlying_type<Trade::MeshAtt
 };
 
 Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::Iterable<const Trade::MeshData>& meshes, const char* const assertPrefix) {
-    #ifdef CORRADE_NO_ASSERT
+    #if defined(CORRADE_NO_ASSERT) || defined(CORRADE_STANDARD_ASSERT)
     static_cast<void>(assertPrefix);
     #endif
 

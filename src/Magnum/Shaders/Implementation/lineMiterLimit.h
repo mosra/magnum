@@ -32,7 +32,7 @@
 namespace Magnum { namespace Shaders { namespace Implementation {
 
 inline Float lineMiterLengthLimit(const char* const name, const Float limit) {
-    #ifdef CORRADE_NO_ASSERT
+    #if defined(CORRADE_NO_ASSERT) || defined(CORRADE_STANDARD_ASSERT)
     static_cast<void>(name);
     #endif
     CORRADE_ASSERT(limit >= 1.0f && !Math::isInf(limit),
@@ -43,7 +43,7 @@ inline Float lineMiterLengthLimit(const char* const name, const Float limit) {
 
 inline Float lineMiterAngleLimit(const char* const name, const Rad limit) {
     using namespace Math::Literals;
-    #ifdef CORRADE_NO_ASSERT
+    #if defined(CORRADE_NO_ASSERT) || defined(CORRADE_STANDARD_ASSERT)
     static_cast<void>(name);
     #endif
     CORRADE_ASSERT(limit > 0.0_radf && limit <= Rad{Constants::pi()},

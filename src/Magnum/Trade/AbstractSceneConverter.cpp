@@ -905,7 +905,12 @@ bool AbstractSceneConverter::doAdd(UnsignedInt, const TextureData&, Containers::
 #ifndef CORRADE_NO_ASSERT
 namespace {
 
-template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const ImageData<dimensions>& image) {
+template<UnsignedInt dimensions> bool checkImageValidity(const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const messagePrefix
+    #endif
+    , const ImageData<dimensions>& image)
+{
     /* At some point there might be a file format that allows zero-sized
        images, but so far I don't know about any. When such format appears,
        this check will get moved to plugin implementations that can't work with
@@ -920,7 +925,12 @@ template<UnsignedInt dimensions> bool checkImageValidity(const char* const messa
     return true;
 }
 
-template<UnsignedInt dimensions> bool checkImageValidity(const char* const messagePrefix, const Containers::Iterable<const ImageData<dimensions>>& imageLevels) {
+template<UnsignedInt dimensions> bool checkImageValidity(const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const messagePrefix
+    #endif
+    , const Containers::Iterable<const ImageData<dimensions>>& imageLevels)
+{
     CORRADE_ASSERT(!imageLevels.isEmpty(),
         messagePrefix << "at least one image level has to be specified", false);
 

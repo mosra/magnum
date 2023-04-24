@@ -40,7 +40,12 @@ namespace Magnum { namespace Implementation {
 #ifndef CORRADE_NO_ASSERT
 inline void checkImageFlagsForSize(const char*, const ImageFlags1D, const Math::Vector<1, Int>&) {}
 inline void checkImageFlagsForSize(const char*, const ImageFlags2D, const Vector2i&) {}
-inline void checkImageFlagsForSize(const char* const prefix, const ImageFlags3D flags, const Vector3i& size) {
+inline void checkImageFlagsForSize(const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const prefix
+    #endif
+    , const ImageFlags3D flags, const Vector3i& size)
+{
     CORRADE_ASSERT(!(flags & ImageFlag3D::CubeMap) || size.x() == size.y(),
         prefix << "expected square faces for a cube map, got" << Debug::packed << size.xy(), );
     CORRADE_ASSERT(!(flags & ImageFlag3D::CubeMap) || (flags & ImageFlag3D::Array) || size.z() == 6,

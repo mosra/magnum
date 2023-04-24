@@ -4162,7 +4162,11 @@ template<class T> Containers::StridedArrayView1D<T> SceneData::mutableMapping(co
 }
 
 #ifndef CORRADE_NO_ASSERT
-template<class T> bool SceneData::checkFieldTypeCompatibility(const SceneFieldData& field, const char* const prefix) const {
+template<class T> bool SceneData::checkFieldTypeCompatibility(const SceneFieldData& field, const char*
+    #ifndef CORRADE_STANDARD_ASSERT
+    const prefix
+    #endif
+) const {
     CORRADE_ASSERT(Implementation::SceneFieldTypeTraits<typename std::remove_extent<T>::type>::isCompatible(field.fieldType()),
         prefix << field._name << "is" << field.fieldType() << "but requested a type equivalent to" << Implementation::SceneFieldTypeFor<typename std::remove_extent<T>::type>::type(), false);
     CORRADE_ASSERT(!field.fieldArraySize() || std::is_array<T>::value,

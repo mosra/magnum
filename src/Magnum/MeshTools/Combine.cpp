@@ -40,7 +40,7 @@ namespace Magnum { namespace MeshTools {
 namespace {
 
 Trade::MeshData combineIndexedImplementation(
-    #ifndef CORRADE_NO_ASSERT
+    #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
     const char* assertPrefix,
     #endif
     const MeshPrimitive primitive, Containers::Array<char>& combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::Iterable<const Trade::MeshData>& meshes)
@@ -164,7 +164,7 @@ Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade:
     }
 
     return combineIndexedImplementation(
-        #ifndef CORRADE_NO_ASSERT
+        #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
         "MeshTools::combineIndexedAttributes():",
         #endif
         primitive, combinedIndices, indexCount, indexStride, meshes);
@@ -227,7 +227,7 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
 
     /* Then combine the two into a single buffer */
     return combineIndexedImplementation(
-        #ifndef CORRADE_NO_ASSERT
+        #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
         "MeshTools::combineFaceAttributes():",
         #endif
         mesh.primitive(), combinedIndices, meshIndexCount, indexStride, {
