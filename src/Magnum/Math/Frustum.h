@@ -175,7 +175,7 @@ template<class T> class Frustum {
          * Expects that @p i is less than @cpp 6 @ce.
          */
         Vector4<T>& operator[](std::size_t i) {
-            CORRADE_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range",
+            CORRADE_DEBUG_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range",
                 _data[i]);
             return _data[i];
         }
@@ -183,7 +183,7 @@ template<class T> class Frustum {
         /** @overload */
         /* returns const& so [][] operations are also constexpr */
         constexpr const Vector4<T>& operator[](std::size_t i) const {
-            return CORRADE_CONSTEXPR_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range"), _data[i];
+            return CORRADE_CONSTEXPR_DEBUG_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range"), _data[i];
         }
 
         /**

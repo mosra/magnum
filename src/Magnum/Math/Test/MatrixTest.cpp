@@ -412,7 +412,7 @@ void MatrixTest::invertedOrthogonal() {
 }
 
 void MatrixTest::invertedOrthogonalNotOrthogonal() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream o;
     Error redirectError{&o};

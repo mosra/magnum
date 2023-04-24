@@ -25,6 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Assert.h>
+
 #include "Magnum/Math/Functions.h"
 
 namespace Magnum { namespace Shaders { namespace Implementation {

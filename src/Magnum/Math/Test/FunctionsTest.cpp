@@ -323,7 +323,7 @@ void FunctionsTest::binomialCoefficient() {
 }
 
 void FunctionsTest::binomialCoefficientInvalidInput() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -332,7 +332,7 @@ void FunctionsTest::binomialCoefficientInvalidInput() {
 }
 
 void FunctionsTest::binomialCoefficientOverflow() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -516,7 +516,7 @@ void FunctionsTest::reflect() {
 }
 
 void FunctionsTest::reflectNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -543,7 +543,7 @@ void FunctionsTest::refract() {
 }
 
 void FunctionsTest::refractNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

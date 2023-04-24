@@ -24,9 +24,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/Assert.h>
-
 #include "Functions.h"
+
+#include <Corrade/Utility/DebugAssert.h>
 
 namespace Magnum { namespace Math {
 
@@ -69,7 +69,7 @@ UnsignedInt log2(UnsignedInt number) {
 }
 
 UnsignedLong binomialCoefficient(const UnsignedInt n, UnsignedInt k) {
-    CORRADE_ASSERT(n >= k,
+    CORRADE_DEBUG_ASSERT(n >= k,
         "Math::binomialCoefficient(): k can't be greater than n in (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", {});
 
     /* k and n - k gives the same value, optimize the calculation to do fewer
@@ -80,7 +80,8 @@ UnsignedLong binomialCoefficient(const UnsignedInt n, UnsignedInt k) {
 
     UnsignedLong result = n;
     for(UnsignedInt i = 2; i <= k; ++i) {
-        CORRADE_ASSERT(result < ~UnsignedLong{} / (n-i+1), "Math::binomialCoefficient(): overflow for (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", {});
+        CORRADE_DEBUG_ASSERT(result < ~UnsignedLong{} / (n-i+1),
+            "Math::binomialCoefficient(): overflow for (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", {});
 
         result *= n - i + 1;
         result /= i;

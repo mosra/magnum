@@ -28,6 +28,7 @@
 #include "ObjectData3D.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Utility/Assert.h>
 
 namespace Magnum { namespace Trade {
 

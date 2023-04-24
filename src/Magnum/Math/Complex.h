@@ -29,10 +29,10 @@
  * @brief Class @ref Magnum::Math::Complex, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle()
  */
 
-#include <Corrade/Utility/Assert.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
+#include <Corrade/Utility/DebugAssert.h>
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector2.h"
@@ -76,7 +76,7 @@ passed to @f$ \arccos @f$.
     @ref angle(const Vector<size, FloatingPoint>&, const Vector<size, FloatingPoint>&)
 */
 template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::angle(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return Rad<T>(std::acos(clamp(dot(normalizedA, normalizedB), T(-1), T(1))));
 }
@@ -522,7 +522,7 @@ template<class T> class Complex {
          * @see @ref isNormalized(), @ref inverted()
          */
         Complex<T> invertedNormalized() const {
-            CORRADE_ASSERT(isNormalized(),
+            CORRADE_DEBUG_ASSERT(isNormalized(),
                 "Math::Complex::invertedNormalized():" << *this << "is not normalized", {});
             return conjugated();
         }
@@ -608,7 +608,7 @@ Expects that both complex numbers are normalized. @f[
     @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 */
 template<class T> inline Complex<T> lerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::lerp(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
 }
@@ -630,7 +630,7 @@ the same, returns the first argument. @f[
     @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
 */
 template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::slerp(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
     const T cosAngle = dot(normalizedA, normalizedB);
 
@@ -652,7 +652,7 @@ template<class T> inline Complex<T> Complex<T>::fromMatrix(const Matrix2x2<T>& m
        fuzzy comparison should be 1 ± 2ε. This is similar to
        Vector::isNormalized(), which compares the dot product (length squared)
        to 1 ± 2ε. */
-    CORRADE_ASSERT(std::abs(matrix.determinant() - T(1)) < T(2)*TypeTraits<T>::epsilon(),
+    CORRADE_DEBUG_ASSERT(std::abs(matrix.determinant() - T(1)) < T(2)*TypeTraits<T>::epsilon(),
         "Math::Complex::fromMatrix(): the matrix is not a rotation:" << Corrade::Utility::Debug::newline << matrix, {});
     return Implementation::complexFromMatrix(matrix);
 }

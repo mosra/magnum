@@ -890,7 +890,7 @@ void CubicHermiteTest::lerpComplex() {
 }
 
 void CubicHermiteTest::lerpComplexNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -933,7 +933,7 @@ void CubicHermiteTest::lerpQuaternion() {
 }
 
 void CubicHermiteTest::lerpQuaternionNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -975,7 +975,7 @@ void CubicHermiteTest::lerpQuaternionShortestPath() {
 }
 
 void CubicHermiteTest::lerpQuaternionShortestPathNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1013,7 +1013,7 @@ void CubicHermiteTest::slerpComplex() {
 }
 
 void CubicHermiteTest::slerpComplexNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1056,7 +1056,7 @@ void CubicHermiteTest::slerpQuaternion() {
 }
 
 void CubicHermiteTest::slerpQuaternionNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1099,7 +1099,7 @@ void CubicHermiteTest::slerpQuaternionShortestPath() {
 }
 
 void CubicHermiteTest::slerpQuaternionShortestPathNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1173,7 +1173,7 @@ void CubicHermiteTest::splerpComplex() {
 }
 
 void CubicHermiteTest::splerpComplexNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1212,7 +1212,7 @@ void CubicHermiteTest::splerpQuaternion() {
 }
 
 void CubicHermiteTest::splerpQuaternionNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

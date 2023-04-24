@@ -437,7 +437,7 @@ void ComplexTest::invertedNormalized() {
 }
 
 void ComplexTest::invertedNormalizedNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -476,7 +476,7 @@ void ComplexTest::angleNormalizedButOver1() {
 }
 
 void ComplexTest::angleNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -516,7 +516,7 @@ void ComplexTest::matrix() {
 }
 
 void ComplexTest::matrixNotRotation() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -551,7 +551,7 @@ void ComplexTest::lerp() {
 }
 
 void ComplexTest::lerpNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -579,7 +579,7 @@ void ComplexTest::slerp() {
 }
 
 void ComplexTest::slerpNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

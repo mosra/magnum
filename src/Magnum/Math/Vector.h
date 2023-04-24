@@ -30,10 +30,10 @@
  */
 
 #include <utility>
-#include <Corrade/Utility/Assert.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
+#include <Corrade/Utility/DebugAssert.h>
 #include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/visibility.h"
@@ -130,7 +130,7 @@ Rad<FloatingPoint>
 typename std::enable_if<std::is_floating_point<FloatingPoint>::value, Rad<FloatingPoint>>::type
 #endif
 angle(const Vector<size, FloatingPoint>& normalizedA, const Vector<size, FloatingPoint>& normalizedB) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::angle(): vectors" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return Rad<FloatingPoint>(std::acos(clamp(dot(normalizedA, normalizedB), FloatingPoint(-1), FloatingPoint(1))));
 }
@@ -1510,7 +1510,7 @@ inline Vector<size, T>
 template<class U> inline typename std::enable_if<std::is_floating_point<U>::value, Vector<size, T>>::type
 #endif
 Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
-    CORRADE_ASSERT(line.isNormalized(),
+    CORRADE_DEBUG_ASSERT(line.isNormalized(),
         "Math::Vector::projectedOntoNormalized(): line" << line << "is not normalized", {});
     return line*Math::dot(*this, line);
 }

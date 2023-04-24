@@ -539,6 +539,9 @@ See also:
 
 @subsubsection changelog-latest-changes-math Math library
 
+-   Assertions in all @ref Math APIs except for batch functions in
+    @ref Magnum/Math/PackingBatch.h and @ref Magnum/Math/FunctionsBatch.h
+    were changed to debug-only for better performance in release builds
 -   Added @ref Math::BitVector::set(std::size_t) and
     @ref Math::BitVector::reset(std::size_t) for branchless bit setting
 -   Added @ref Math::castInto() overloads for casting between @ref UnsignedByte

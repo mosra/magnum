@@ -223,7 +223,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
                 T c = T(0);
                 T s = T(1);
                 for(std::size_t i = l; i != k+1; ++i) {
-                    CORRADE_INTERNAL_ASSERT(i <= k+1);
+                    CORRADE_INTERNAL_DEBUG_ASSERT(i <= k+1);
 
                     const T f = s*e[i];
                     e[i] = c*e[i];
@@ -276,7 +276,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
             T c = T(1);
             T s = T(1);
             for(std::size_t i = l+1; i != k+1; ++i) {
-                CORRADE_INTERNAL_ASSERT(i <= k+1);
+                CORRADE_INTERNAL_DEBUG_ASSERT(i <= k+1);
 
                 const T g1 = c*e[i];
                 const T h1 = s*e[i];

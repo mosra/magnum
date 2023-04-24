@@ -460,7 +460,7 @@ void IntersectionTest::sphereConeView() {
 }
 
 void IntersectionTest::sphereConeViewNotRigid() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

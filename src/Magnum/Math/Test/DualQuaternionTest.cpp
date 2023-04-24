@@ -439,7 +439,7 @@ void DualQuaternionTest::invertedNormalized() {
 }
 
 void DualQuaternionTest::invertedNormalizedNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -467,7 +467,7 @@ void DualQuaternionTest::rotation() {
 }
 
 void DualQuaternionTest::rotationNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -521,7 +521,7 @@ void DualQuaternionTest::matrix() {
 }
 
 void DualQuaternionTest::matrixNotOrthogonal() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -558,7 +558,7 @@ void DualQuaternionTest::transformVectorNormalized() {
 }
 
 void DualQuaternionTest::transformVectorNormalizedNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -602,7 +602,7 @@ void DualQuaternionTest::transformPointNormalized() {
 }
 
 void DualQuaternionTest::transformPointNormalizedNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

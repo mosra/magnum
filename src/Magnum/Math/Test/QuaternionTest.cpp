@@ -375,7 +375,7 @@ void QuaternionTest::axisAngle() {
 }
 
 void QuaternionTest::axisAngleNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -478,7 +478,7 @@ void QuaternionTest::invertedNormalized() {
 }
 
 void QuaternionTest::invertedNormalizedNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -508,7 +508,7 @@ void QuaternionTest::rotation() {
 }
 
 void QuaternionTest::rotationNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -550,7 +550,7 @@ void QuaternionTest::angleNormalizedButOver1() {
 }
 
 void QuaternionTest::angleNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -613,7 +613,7 @@ void QuaternionTest::matrix() {
 }
 
 void QuaternionTest::matrixNotRotation() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -657,7 +657,7 @@ void QuaternionTest::euler() {
 }
 
 void QuaternionTest::eulerNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -694,7 +694,7 @@ void QuaternionTest::lerp2D() {
 }
 
 void QuaternionTest::lerpNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -726,7 +726,7 @@ void QuaternionTest::lerpShortestPath() {
 }
 
 void QuaternionTest::lerpShortestPathNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -811,7 +811,7 @@ void QuaternionTest::slerpNormalizedButOver1() {
 }
 
 void QuaternionTest::slerpNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -872,7 +872,7 @@ template<class T> void QuaternionTest::slerpShortestPathLinearFallbackIsNormaliz
 }
 
 void QuaternionTest::slerpShortestPathNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -906,7 +906,7 @@ void QuaternionTest::transformVectorNormalized() {
 }
 
 void QuaternionTest::transformVectorNormalizedNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

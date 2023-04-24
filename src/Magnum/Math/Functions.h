@@ -763,7 +763,7 @@ calculated as: @f[
     @ref Matrix4::reflection()
 */
 template<std::size_t size, class T> inline Vector<size, T> reflect(const Vector<size, T>& vector, const Vector<size, T>& normal) {
-    CORRADE_ASSERT(normal.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normal.isNormalized(),
         "Math::reflect(): normal" << normal << "is not normalized", {});
     return vector - T(2.0)*dot(vector, normal)*normal;
 }
@@ -792,7 +792,7 @@ Wikipedia has a [List of refractive indices](https://en.wikipedia.org/wiki/List_
     @ref Vector::isNormalized()
 */
 template<std::size_t size, class T> inline Vector<size, T> refract(const Vector<size, T>& vector, const Vector<size, T>& normal, T eta) {
-    CORRADE_ASSERT(vector.isNormalized() && normal.isNormalized(),
+    CORRADE_DEBUG_ASSERT(vector.isNormalized() && normal.isNormalized(),
         "Math::refract(): vectors" << vector << "and" << normal << "are not normalized", {});
     const T dot = Math::dot(vector, normal);
     const T k  = T(1.0) - eta*eta*(T(1.0) - dot*dot);

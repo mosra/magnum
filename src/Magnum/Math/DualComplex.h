@@ -102,7 +102,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      @ref Matrix3::isRigidTransformation()
          */
         static DualComplex<T> fromMatrix(const Matrix3<T>& matrix) {
-            CORRADE_ASSERT(matrix.isRigidTransformation(),
+            CORRADE_DEBUG_ASSERT(matrix.isRigidTransformation(),
                 "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation:" << Corrade::Utility::Debug::newline << matrix, {});
             return {Implementation::complexFromMatrix(matrix.rotationScaling()), Complex<T>(matrix.translation())};
         }

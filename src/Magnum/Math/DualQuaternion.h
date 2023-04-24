@@ -79,7 +79,7 @@ Note that this function does not check for shortest path interpolation, see
     @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
 */
 template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& normalizedA, const DualQuaternion<T>& normalizedB, const T t) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::sclerp(): dual quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
     const T cosHalfAngle = dot(normalizedA.real(), normalizedB.real());
 
@@ -145,7 +145,7 @@ otherwise, the interpolation is performed as: @f[
     @ref slerpShortestPath()
 */
 template<class T> inline DualQuaternion<T> sclerpShortestPath(const DualQuaternion<T>& normalizedA, const DualQuaternion<T>& normalizedB, const T t) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::sclerp(): dual quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
     const T cosHalfAngle = dot(normalizedA.real(), normalizedB.real());
 
@@ -240,7 +240,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      @ref Matrix4::isRigidTransformation()
          */
         static DualQuaternion<T> fromMatrix(const Matrix4<T>& matrix) {
-            CORRADE_ASSERT(matrix.isRigidTransformation(),
+            CORRADE_DEBUG_ASSERT(matrix.isRigidTransformation(),
                 "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent a rigid transformation:" << Corrade::Utility::Debug::newline << matrix, {});
 
             Quaternion<T> q = Implementation::quaternionFromMatrix(matrix.rotationScaling());
@@ -501,7 +501,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see @ref isNormalized(), @ref inverted()
          */
         DualQuaternion<T> invertedNormalized() const {
-            CORRADE_ASSERT(isNormalized(),
+            CORRADE_DEBUG_ASSERT(isNormalized(),
                 "Math::DualQuaternion::invertedNormalized():" << *this << "is not normalized", {});
             return quaternionConjugated();
         }
@@ -556,7 +556,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      @ref DualComplex::transformPoint()
          */
         Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
-            CORRADE_ASSERT(isNormalized(),
+            CORRADE_DEBUG_ASSERT(isNormalized(),
                 "Math::DualQuaternion::transformPointNormalized():" << *this << "is not normalized", {});
             return ((*this)*DualQuaternion<T>(vector)*conjugated()).dual().vector();
         }

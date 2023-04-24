@@ -377,7 +377,7 @@ void Matrix3Test::reflection() {
 }
 
 void Matrix3Test::reflectionNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -505,7 +505,7 @@ void Matrix3Test::rotationPart() {
 }
 
 void Matrix3Test::rotationPartNotOrthogonal() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -557,7 +557,7 @@ void Matrix3Test::rotationNormalizedPart() {
 }
 
 void Matrix3Test::rotationNormalizedPartNotOrthogonal() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -619,7 +619,7 @@ void Matrix3Test::uniformScalingPart() {
 }
 
 void Matrix3Test::uniformScalingPartNotUniform() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -665,7 +665,7 @@ void Matrix3Test::invertedRigid() {
 }
 
 void Matrix3Test::invertedRigidNotRigid() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

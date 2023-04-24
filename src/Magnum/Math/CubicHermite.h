@@ -94,7 +94,7 @@ template<class T> class CubicHermite {
         typename std::enable_if<std::is_base_of<Vector<dimensions, U>, T>::value, CubicHermite<T>>::type
         #endif
         fromBezier(const CubicBezier<dimensions, U>& a, const CubicBezier<dimensions, U>& b) {
-            return CORRADE_CONSTEXPR_ASSERT(a[3] == b[0],
+            return CORRADE_CONSTEXPR_DEBUG_ASSERT(a[3] == b[0],
                 "Math::CubicHermite::fromBezier(): segments are not adjacent"),
                 CubicHermite<T>{3*(a[3] - a[2]), a[3], 3*(b[1] - a[3])};
         }
@@ -512,7 +512,7 @@ Expects that @ref CubicHermite::point() is a normalized complex number in both
     @ref slerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T)
 */
 template<class T> Complex<T> splerp(const CubicHermiteComplex<T>& a, const CubicHermiteComplex<T>& b, T t) {
-    CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
+    CORRADE_DEBUG_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
         "Math::splerp(): complex spline points" << a.point() << "and" << b.point() << "are not normalized", {});
     return ((T(2)*t*t*t - T(3)*t*t + T(1))*a.point() +
         (t*t*t - T(2)*t*t + t)*a.outTangent() +
@@ -542,7 +542,7 @@ and @p b.
     @ref slerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 */
 template<class T> Quaternion<T> splerp(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
-    CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
+    CORRADE_DEBUG_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
         "Math::splerp(): quaternion spline points" << a.point() << "and" << b.point() << "are not normalized", {});
     return ((T(2)*t*t*t - T(3)*t*t + T(1))*a.point() +
         (t*t*t - T(2)*t*t + t)*a.outTangent() +

@@ -402,7 +402,7 @@ void DualComplexTest::invertedNormalized() {
 }
 
 void DualComplexTest::invertedNormalizedNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -464,7 +464,7 @@ void DualComplexTest::matrix() {
 }
 
 void DualComplexTest::matrixNotOrthogonal() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream o;
     Error redirectError{&o};

@@ -1087,7 +1087,7 @@ MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(4, Matrix4)
 #endif
 
 template<class T> Matrix4<T> Matrix4<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {
-    CORRADE_ASSERT(normalizedAxis.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normalizedAxis.isNormalized(),
         "Math::Matrix4::rotation(): axis" << normalizedAxis << "is not normalized", {});
 
     const T sine = std::sin(T(angle));
@@ -1149,7 +1149,7 @@ template<class T> Matrix4<T> Matrix4<T>::rotationZ(const Rad<T> angle) {
 }
 
 template<class T> Matrix4<T> Matrix4<T>::reflection(const Vector3<T>& normal) {
-    CORRADE_ASSERT(normal.isNormalized(),
+    CORRADE_DEBUG_ASSERT(normal.isNormalized(),
         "Math::Matrix4::reflection(): normal" << normal << "is not normalized", {});
     return from(Matrix3x3<T>() - T(2)*normal*RectangularMatrix<1, 3, T>(normal).transposed(), {});
 }
@@ -1226,7 +1226,7 @@ template<class T> Matrix3x3<T> Matrix4<T>::rotation() const {
     Matrix3x3<T> rotation{(*this)[0].xyz().normalized(),
                           (*this)[1].xyz().normalized(),
                           (*this)[2].xyz().normalized()};
-    CORRADE_ASSERT(rotation.isOrthogonal(),
+    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
         "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
     return rotation;
 }
@@ -1235,21 +1235,21 @@ template<class T> Matrix3x3<T> Matrix4<T>::rotationNormalized() const {
     Matrix3x3<T> rotation{(*this)[0].xyz(),
                           (*this)[1].xyz(),
                           (*this)[2].xyz()};
-    CORRADE_ASSERT(rotation.isOrthogonal(),
+    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
         "Math::Matrix4::rotationNormalized(): the rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
     return rotation;
 }
 
 template<class T> T Matrix4<T>::uniformScalingSquared() const {
     const T scalingSquared = (*this)[0].xyz().dot();
-    CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xyz().dot(), scalingSquared) &&
+    CORRADE_DEBUG_ASSERT(TypeTraits<T>::equals((*this)[1].xyz().dot(), scalingSquared) &&
                    TypeTraits<T>::equals((*this)[2].xyz().dot(), scalingSquared),
         "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling:" << Corrade::Utility::Debug::newline << rotationScaling(), {});
     return scalingSquared;
 }
 
 template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {
-    CORRADE_ASSERT(isRigidTransformation(),
+    CORRADE_DEBUG_ASSERT(isRigidTransformation(),
         "Math::Matrix4::invertedRigid(): the matrix doesn't represent a rigid transformation:" << Corrade::Utility::Debug::newline << *this, {});
 
     Matrix3x3<T> inverseRotation = rotationScaling().transposed();

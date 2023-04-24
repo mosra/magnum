@@ -426,7 +426,7 @@ void Matrix4Test::rotation() {
 }
 
 void Matrix4Test::rotationNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -476,7 +476,7 @@ void Matrix4Test::reflection() {
 }
 
 void Matrix4Test::reflectionNotNormalized() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -738,7 +738,7 @@ void Matrix4Test::rotationPart() {
 }
 
 void Matrix4Test::rotationPartNotOrthogonal() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -798,7 +798,7 @@ void Matrix4Test::rotationNormalizedPart() {
 }
 
 void Matrix4Test::rotationNormalizedPartNotOrthogonal() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -861,7 +861,7 @@ void Matrix4Test::uniformScalingPart() {
 }
 
 void Matrix4Test::uniformScalingPartNotUniform() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out}; Matrix4::scaling(Vector3::yScale(3.0f)).uniformScaling();
@@ -1032,7 +1032,7 @@ void Matrix4Test::invertedRigid() {
 }
 
 void Matrix4Test::invertedRigidNotRigid() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};

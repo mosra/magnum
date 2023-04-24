@@ -25,6 +25,8 @@
 
 #include "LightData.h"
 
+#include <Corrade/Utility/Assert.h>
+
 namespace Magnum { namespace Trade {
 
 using namespace Math::Literals;

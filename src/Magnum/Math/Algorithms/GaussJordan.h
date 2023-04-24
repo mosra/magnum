@@ -122,7 +122,7 @@ returning the inverted matrix. Expects that the matrix is invertible.
 */
 template<std::size_t size, class T> Matrix<size, T> gaussJordanInverted(Matrix<size, T> matrix) {
     Matrix<size, T> inverted{Math::IdentityInit};
-    CORRADE_INTERNAL_ASSERT_OUTPUT(gaussJordanInPlaceTransposed(matrix, inverted));
+    CORRADE_INTERNAL_DEBUG_ASSERT_OUTPUT(gaussJordanInPlaceTransposed(matrix, inverted));
     return inverted;
 }
 

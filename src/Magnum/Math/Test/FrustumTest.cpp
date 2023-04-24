@@ -354,7 +354,7 @@ void FrustumTest::data() {
 }
 
 void FrustumTest::dataOutOfRange() {
-    CORRADE_SKIP_IF_NO_ASSERT();
+    CORRADE_SKIP_IF_NO_DEBUG_ASSERT();
 
     Frustum a;
     constexpr Frustum ca;

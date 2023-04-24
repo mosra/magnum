@@ -161,7 +161,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      @ref reflect()
          */
         static Matrix3<T> reflection(const Vector2<T>& normal) {
-            CORRADE_ASSERT(normal.isNormalized(),
+            CORRADE_DEBUG_ASSERT(normal.isNormalized(),
                 "Math::Matrix3::reflection(): normal" << normal << "is not normalized", {});
             return from(Matrix2x2<T>() - T(2)*normal*RectangularMatrix<1, 2, T>(normal).transposed(), {});
         }
@@ -764,7 +764,7 @@ template<class T> Matrix3<T> Matrix3<T>::projection(const Vector2<T>& bottomLeft
 template<class T> Matrix2x2<T> Matrix3<T>::rotation() const {
     Matrix2x2<T> rotation{(*this)[0].xy().normalized(),
                           (*this)[1].xy().normalized()};
-    CORRADE_ASSERT(rotation.isOrthogonal(),
+    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
         "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
     return rotation;
 }
@@ -772,20 +772,20 @@ template<class T> Matrix2x2<T> Matrix3<T>::rotation() const {
 template<class T> Matrix2x2<T> Matrix3<T>::rotationNormalized() const {
     Matrix2x2<T> rotation{(*this)[0].xy(),
                           (*this)[1].xy()};
-    CORRADE_ASSERT(rotation.isOrthogonal(),
+    CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
         "Math::Matrix3::rotationNormalized(): the rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
     return rotation;
 }
 
 template<class T> T Matrix3<T>::uniformScalingSquared() const {
     const T scalingSquared = (*this)[0].xy().dot();
-    CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xy().dot(), scalingSquared),
+    CORRADE_DEBUG_ASSERT(TypeTraits<T>::equals((*this)[1].xy().dot(), scalingSquared),
         "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling:" << Corrade::Utility::Debug::newline << rotationScaling(), {});
     return scalingSquared;
 }
 
 template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
-    CORRADE_ASSERT(isRigidTransformation(),
+    CORRADE_DEBUG_ASSERT(isRigidTransformation(),
         "Math::Matrix3::invertedRigid(): the matrix doesn't represent a rigid transformation:" << Corrade::Utility::Debug::newline << *this, {});
 
     Matrix2x2<T> inverseRotation = rotationScaling().transposed();
