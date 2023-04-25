@@ -291,6 +291,25 @@ template<class T> class Quaternion {
         static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
         /**
+         * @brief Reflection quaternion
+         * @param normal        Normal of the plane through which to reflect
+         * @m_since_latest
+         *
+         * Expects that the normal is normalized. @f[
+         *      q = [\boldsymbol n, 0]
+         * @f]
+         * Note that reflection quaternions behave differently from usual
+         * rotations, in particular they *can't* be concatenated together with
+         * usual quaternion multiplication, @ref toMatrix() will *not* create a
+         * reflection matrix out of them and @ref transformVector() will *not*
+         * do a proper reflection either, you have to use @ref reflectVector()
+         * instead. See its documentation for more information.
+         * @see @ref Matrix4::reflection(), @ref Vector::isNormalized(),
+         *      @ref reflect()
+         */
+        static Quaternion<T> reflection(const Vector3<T>& normal);
+
+        /**
          * @brief Create a quaternion from a rotation matrix
          *
          * Expects that the matrix is a pure rotation, i.e. orthogonal and
@@ -659,8 +678,11 @@ template<class T> class Quaternion {
          * quaternions. @f[
          *      v' = qvq^{-1} = q [\boldsymbol v, 0] q^{-1}
          * @f]
+         * Note that this function will not give the correct result for
+         * quaternions created with @ref reflection(), for those use
+         * @ref reflectVector() instead.
          * @see @ref Quaternion(const Vector3<T>&), @ref vector(),
-         *      @ref Matrix4::transformVector(),
+         *      @ref reflectVector(), @ref Matrix4::transformVector(),
          *      @ref DualQuaternion::transformPoint(),
          *      @ref Complex::transformVector()
          */
@@ -688,6 +710,31 @@ template<class T> class Quaternion {
          *      @ref Complex::transformVector()
          */
         Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const;
+
+        /**
+         * @brief Reflect a vector with a reflection quaternion
+         * @m_since_latest
+         *
+         * Compared to the usual vector transformation performed with
+         * rotation quaternions and @ref transformVector(), the reflection is
+         * done like this: @f[
+         *      v' = qvq = q [\boldsymbol v, 0] q
+         * @f]
+         * You can use @ref reflection() to create a quaternion reflecting
+         * along given normal. Note that it's **not possible to combine
+         * reflections and rotations with the usual quaternion multiplication.
+         * Assuming a (normalized) rotation quaternion @f$ r @f$, a combined
+         * rotation and reflection of vector @f$ v @f$ would look like this
+         * instead: @f[
+         *      v' = rqvqr^{-1} = rqvqr^* = rq [\boldsymbol v, 0] qr^*
+         * @f]
+         * See also [quaternion reflection at Euclidean Space](https://www.euclideanspace.com/maths/geometry/affine/reflection/quaternion/index.htm).
+         * @see @ref Quaternion(const Vector3<T>&), @ref vector(),
+         *      @ref Matrix4::transformVector()
+         */
+        Vector3<T> reflectVector(const Vector3<T>& vector) const {
+            return ((*this)*Quaternion<T>{vector}*(*this)).vector();
+        }
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -784,6 +831,12 @@ template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angl
     CORRADE_DEBUG_ASSERT(normalizedAxis.isNormalized(),
         "Math::Quaternion::rotation(): axis" << normalizedAxis << "is not normalized", {});
     return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
+}
+
+template<class T> inline Quaternion<T> Quaternion<T>::reflection(const Vector3<T>& normal) {
+    CORRADE_DEBUG_ASSERT(normal.isNormalized(),
+        "Math::Quaternion::reflection(): normal" << normal << "is not normalized", {});
+    return {normal, 0.0f};
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix3x3<T>& matrix) {

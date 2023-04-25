@@ -207,6 +207,10 @@ See also:
     @relativeref{Math::Intersection,pointSphere()}, which are just wrappers
     over trivial code but easier to discover
 -   Added an unary @cpp operator+() @ce to all @ref Math classes
+-   Added @ref Math::Quaternion::reflection() and
+    @ref Math::Quaternion::reflectVector(), but mainly just for documentation
+    purposes as reflections cannot be combined with rotations and thus are
+    mostly useless in practice
 
 @subsubsection changelog-latest-new-materialtools MaterialTools library
 
