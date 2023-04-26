@@ -750,12 +750,11 @@ void CombineTest::fieldsMappingSharedFieldPlaceholder() {
 void CombineTest::fieldsStringPlaceholder() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Containers::StringView nameStrings = ""_s;
-    const struct Name {
+    const struct Data {
         UnsignedByte mapping;
-        UnsignedByte offset;
-    } namesData[3]{};
-    auto names = Containers::stridedArrayView(namesData);
+        UnsignedByte mesh;
+    } data[3]{};
+    auto view = Containers::stridedArrayView(data);
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -764,19 +763,27 @@ void CombineTest::fieldsStringPlaceholder() {
     combineFields(Trade::SceneMappingType::UnsignedByte, 167, {
         /* Just to verify it prints correct field IDs */
         Trade::SceneFieldData{Trade::SceneField::Mesh,
-            names.slice(&Name::mapping),
-            names.slice(&Name::offset)},
+            view.slice(&Data::mapping),
+            view.slice(&Data::mesh)},
         Trade::SceneFieldData{Trade::sceneFieldCustom(16),
-            names.slice(&Name::mapping),
+            view.slice(&Data::mapping),
             nullptr, Trade::SceneFieldType::StringOffset8,
-            names.slice(&Name::offset)},
+            /* Have to fake a pointer because in some cases (ARM64 Linux) the
+               distance between nullptr and stack-allocated memory (such as
+               `data`) *may* be larger than what can fit into 48 bits,
+               triggering an assert */
+            Containers::arrayView(reinterpret_cast<UnsignedByte*>(0xfece5), 3)},
     });
     /* With placeholder field data it's impossible to know the actual string
        size */
     combineFields(Trade::SceneMappingType::UnsignedByte, 167, {
         Trade::SceneFieldData{Trade::sceneFieldCustom(16),
-            names.slice(&Name::mapping),
-            nameStrings.data(), Trade::SceneFieldType::StringRangeNullTerminated16,
+            view.slice(&Data::mapping),
+            /* Have to fake a pointer because in some cases (ARM64 Linux) the
+               distance between nullptr and stack-allocated memory (such as
+               `data`) *may* be larger than what can fit into 48 bits,
+               triggering an assert */
+            reinterpret_cast<char*>(0xfece5), Trade::SceneFieldType::StringRangeNullTerminated16,
             Containers::StridedArrayView1D<const UnsignedShort>{{nullptr, 6}, 3}},
     });
     CORRADE_COMPARE(out.str(),
