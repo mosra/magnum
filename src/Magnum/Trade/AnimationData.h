@@ -41,7 +41,10 @@ namespace Magnum { namespace Trade {
 /**
 @brief Type of animation track data
 
-@see @ref AnimationData
+A type in which track data for given @ref AnimationTrackTarget is stored, See
+@ref AnimationData for more information.
+@see @ref AnimationData, @ref animationTrackTypeSize(),
+    @ref animationTrackTypeAlignment()
 @experimental
 */
 enum class AnimationTrackType: UnsignedByte {
@@ -164,6 +167,22 @@ enum class AnimationTrackType: UnsignedByte {
 
 /** @debugoperatorenum{AnimationTrackType} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AnimationTrackType value);
+
+/**
+@brief Size of given animation track data type
+@m_since_latest
+
+@see @ref animationTrackTypeAlignment()
+*/
+MAGNUM_TRADE_EXPORT UnsignedInt animationTrackTypeSize(AnimationTrackType type);
+
+/**
+@brief Alignment of given animation track data type
+@m_since_latest
+
+@see @ref animationTrackTypeSize()
+*/
+MAGNUM_TRADE_EXPORT UnsignedInt animationTrackTypeAlignment(AnimationTrackType type);
 
 namespace Implementation {
     enum: UnsignedShort { AnimationTrackTargetCustom = 32768 };

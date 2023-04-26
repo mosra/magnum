@@ -73,6 +73,93 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
     return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
 }
 
+UnsignedInt animationTrackTypeSize(const AnimationTrackType type) {
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(type) {
+        case AnimationTrackType::Bool:
+        case AnimationTrackType::BitVector2:
+        case AnimationTrackType::BitVector3:
+        case AnimationTrackType::BitVector4:
+            return 1;
+        case AnimationTrackType::Float:
+        case AnimationTrackType::UnsignedInt:
+        case AnimationTrackType::Int:
+            return 4;
+        case AnimationTrackType::Vector2:
+        case AnimationTrackType::Vector2ui:
+        case AnimationTrackType::Vector2i:
+        case AnimationTrackType::Complex:
+            return 8;
+        case AnimationTrackType::Vector3:
+        case AnimationTrackType::Vector3ui:
+        case AnimationTrackType::Vector3i:
+        case AnimationTrackType::CubicHermite1D:
+            return 12;
+        case AnimationTrackType::Vector4:
+        case AnimationTrackType::Vector4ui:
+        case AnimationTrackType::Vector4i:
+        case AnimationTrackType::Quaternion:
+            return 16;
+        case AnimationTrackType::CubicHermite2D:
+        case AnimationTrackType::CubicHermiteComplex:
+            return 24;
+        case AnimationTrackType::DualQuaternion:
+            return 32;
+        case AnimationTrackType::CubicHermite3D:
+            return 36;
+        case AnimationTrackType::CubicHermiteQuaternion:
+            return 48;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("Trade::animationTrackTypeSize(): invalid type" << type, {});
+}
+
+UnsignedInt animationTrackTypeAlignment(const AnimationTrackType type) {
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
+    switch(type) {
+        case AnimationTrackType::Bool:
+        case AnimationTrackType::BitVector2:
+        case AnimationTrackType::BitVector3:
+        case AnimationTrackType::BitVector4:
+            return 1;
+        case AnimationTrackType::Float:
+        case AnimationTrackType::UnsignedInt:
+        case AnimationTrackType::Int:
+        case AnimationTrackType::Vector2:
+        case AnimationTrackType::Vector2ui:
+        case AnimationTrackType::Vector2i:
+        case AnimationTrackType::Complex:
+        case AnimationTrackType::Vector3:
+        case AnimationTrackType::Vector3ui:
+        case AnimationTrackType::Vector3i:
+        case AnimationTrackType::CubicHermite1D:
+        case AnimationTrackType::Vector4:
+        case AnimationTrackType::Vector4ui:
+        case AnimationTrackType::Vector4i:
+        case AnimationTrackType::Quaternion:
+        case AnimationTrackType::CubicHermite2D:
+        case AnimationTrackType::CubicHermiteComplex:
+        case AnimationTrackType::DualQuaternion:
+        case AnimationTrackType::CubicHermite3D:
+        case AnimationTrackType::CubicHermiteQuaternion:
+            return 4;
+    }
+    #ifdef CORRADE_TARGET_GCC
+    #pragma GCC diagnostic pop
+    #endif
+
+    CORRADE_ASSERT_UNREACHABLE("Trade::animationTrackTypeAlignment(): invalid type" << type, {});
+}
+
 Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
     const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
 

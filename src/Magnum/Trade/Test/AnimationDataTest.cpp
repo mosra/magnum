@@ -28,7 +28,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/CubicHermite.h"
-#include "Magnum/Math/Quaternion.h"
+#include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Trade/AnimationData.h"
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
@@ -36,6 +36,8 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnimationDataTest: TestSuite::Tester {
     explicit AnimationDataTest();
 
+    void trackTypeSizeAlignment();
+    void trackTypeSizeAlignmentInvalid();
     void debugTrackType();
     void debugTrackTypePacked();
 
@@ -97,7 +99,9 @@ struct {
 };
 
 AnimationDataTest::AnimationDataTest() {
-    addTests({&AnimationDataTest::debugTrackType,
+    addTests({&AnimationDataTest::trackTypeSizeAlignment,
+              &AnimationDataTest::trackTypeSizeAlignmentInvalid,
+              &AnimationDataTest::debugTrackType,
               &AnimationDataTest::debugTrackTypePacked,
 
               &AnimationDataTest::customTrackTarget,
@@ -153,6 +157,41 @@ AnimationDataTest::AnimationDataTest() {
 }
 
 using namespace Math::Literals;
+
+void AnimationDataTest::trackTypeSizeAlignment() {
+    /* Obvious cases */
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::BitVector3), sizeof(BitVector3));
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::UnsignedInt), sizeof(UnsignedInt));
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::Vector2), sizeof(Vector2));
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::Vector4i), sizeof(Vector4i));
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::DualQuaternion), sizeof(DualQuaternion));
+    /* Possibly non-obvious */
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::CubicHermite1D), sizeof(CubicHermite1D));
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::CubicHermiteComplex), sizeof(CubicHermiteComplex));
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::CubicHermite3D), sizeof(CubicHermite3D));
+    CORRADE_COMPARE(animationTrackTypeSize(AnimationTrackType::CubicHermiteQuaternion), sizeof(CubicHermiteQuaternion));
+
+    /* Alignment is 4 for most types, except for bit-sized ones */
+    CORRADE_COMPARE(animationTrackTypeAlignment(AnimationTrackType::BitVector4), 1);
+    CORRADE_COMPARE(animationTrackTypeAlignment(AnimationTrackType::Float), alignof(Float));
+    CORRADE_COMPARE(animationTrackTypeAlignment(AnimationTrackType::CubicHermiteQuaternion), alignof(CubicHermiteQuaternion));
+}
+
+void AnimationDataTest::trackTypeSizeAlignmentInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    animationTrackTypeSize(AnimationTrackType{});
+    animationTrackTypeAlignment(AnimationTrackType{});
+    animationTrackTypeSize(AnimationTrackType(0x73));
+    animationTrackTypeAlignment(AnimationTrackType(0x73));
+    CORRADE_COMPARE(out.str(),
+        "Trade::animationTrackTypeSize(): invalid type Trade::AnimationTrackType(0x0)\n"
+        "Trade::animationTrackTypeAlignment(): invalid type Trade::AnimationTrackType(0x0)\n"
+        "Trade::animationTrackTypeSize(): invalid type Trade::AnimationTrackType(0x73)\n"
+        "Trade::animationTrackTypeAlignment(): invalid type Trade::AnimationTrackType(0x73)\n");
+}
 
 void AnimationDataTest::debugTrackType() {
     std::ostringstream out;

@@ -382,6 +382,9 @@ See also:
     also exposed via a `--map` option in the
     @ref magnum-sceneconverter "magnum-sceneconverter" and
     @ref magnum-imageconverter "magnum-imageconverter" utilities
+-   Added @ref Trade::animationTrackTypeSize() and
+    @ref Trade::animationTrackTypeAlignment() for API consistency with other
+    type enums
 -   Added @ref Trade::isAnimationTrackTargetCustom() and
     @ref Trade::animationTrackTargetCustom() helpers as well as
     @ref Trade::AbstractImporter::animationTrackTargetName() and
