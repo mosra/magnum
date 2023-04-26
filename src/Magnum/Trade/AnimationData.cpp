@@ -33,6 +33,78 @@
 
 namespace Magnum { namespace Trade {
 
+Debug& operator<<(Debug& debug, const AnimationTrackType value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::AnimationTrackType" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case AnimationTrackType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Bool)
+        _c(Float)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(BitVector2)
+        _c(BitVector3)
+        _c(BitVector4)
+        _c(Vector2)
+        _c(Vector2ui)
+        _c(Vector2i)
+        _c(Vector3)
+        _c(Vector3ui)
+        _c(Vector3i)
+        _c(Vector4)
+        _c(Vector4ui)
+        _c(Vector4i)
+        _c(Complex)
+        _c(Quaternion)
+        _c(DualQuaternion)
+        _c(CubicHermite1D)
+        _c(CubicHermite2D)
+        _c(CubicHermite3D)
+        _c(CubicHermiteComplex)
+        _c(CubicHermiteQuaternion)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
+}
+
+Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+
+    if(!packed)
+        debug << "Trade::AnimationTrackTarget" << Debug::nospace;
+
+    if(isAnimationTrackTargetCustom(value))
+        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << animationTrackTargetCustom(value) << Debug::nospace << ")";
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case AnimationTrackTarget::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
+        _c(Translation2D)
+        _c(Translation3D)
+        _c(Rotation2D)
+        _c(Rotation3D)
+        _c(Scaling2D)
+        _c(Scaling3D)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        /* To silence compiler warnings about unhandled values */
+        case AnimationTrackTarget::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+    }
+
+    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
+}
+
 namespace {
 
 auto animationInterpolatorFor(const Animation::Interpolation interpolation, const AnimationTrackType type, const AnimationTrackType resultType) -> void(*)() {
@@ -215,7 +287,6 @@ template<class V, class R> auto animationInterpolatorFor(Animation::Interpolatio
     return Animation::interpolatorFor<V, R>(interpolation);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<bool, bool>(Animation::Interpolation) -> bool(*)(const bool&, const bool&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Float, Float>(Animation::Interpolation) -> Float(*)(const Float&, const Float&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<UnsignedInt, UnsignedInt>(Animation::Interpolation) -> UnsignedInt(*)(const UnsignedInt&, const UnsignedInt&, Float);
@@ -240,78 +311,5 @@ template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermite2D, Math:
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermite3D, Math::Vector3<Float>>(Animation::Interpolation) -> Math::Vector3<Float>(*)(const CubicHermite3D&, const CubicHermite3D&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteComplex, Complex>(Animation::Interpolation) -> Complex(*)(const CubicHermiteComplex&, const CubicHermiteComplex&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteQuaternion, Quaternion>(Animation::Interpolation) -> Quaternion(*)(const CubicHermiteQuaternion&, const CubicHermiteQuaternion&, Float);
-
-Debug& operator<<(Debug& debug, const AnimationTrackType value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::AnimationTrackType" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case AnimationTrackType::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Bool)
-        _c(Float)
-        _c(UnsignedInt)
-        _c(Int)
-        _c(BitVector2)
-        _c(BitVector3)
-        _c(BitVector4)
-        _c(Vector2)
-        _c(Vector2ui)
-        _c(Vector2i)
-        _c(Vector3)
-        _c(Vector3ui)
-        _c(Vector3i)
-        _c(Vector4)
-        _c(Vector4ui)
-        _c(Vector4i)
-        _c(Complex)
-        _c(Quaternion)
-        _c(DualQuaternion)
-        _c(CubicHermite1D)
-        _c(CubicHermite2D)
-        _c(CubicHermite3D)
-        _c(CubicHermiteComplex)
-        _c(CubicHermiteQuaternion)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << (packed ? "" : ")");
-}
-
-Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
-    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
-
-    if(!packed)
-        debug << "Trade::AnimationTrackTarget" << Debug::nospace;
-
-    if(isAnimationTrackTargetCustom(value))
-        return debug << (packed ? "Custom(" : "::Custom(") << Debug::nospace << animationTrackTargetCustom(value) << Debug::nospace << ")";
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case AnimationTrackTarget::value: return debug << (packed ? "" : "::") << Debug::nospace << #value;
-        _c(Translation2D)
-        _c(Translation3D)
-        _c(Rotation2D)
-        _c(Rotation3D)
-        _c(Scaling2D)
-        _c(Scaling3D)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        /* To silence compiler warnings about unhandled values */
-        case AnimationTrackTarget::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-        CORRADE_IGNORE_DEPRECATED_POP
-        #endif
-    }
-
-    return debug << (packed ? "" : "(") << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << (packed ? "" : ")");
-}
-#endif
 
 }}
