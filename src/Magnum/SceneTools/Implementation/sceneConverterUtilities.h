@@ -796,7 +796,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         d << Debug::newline << "  Type:" << Debug::packed
             << Debug::color(Debug::Color::Cyan)
             << info.data.type() << Debug::resetColor;
-        if(info.data.type() == Trade::LightData::Type::Spot)
+        if(info.data.type() == Trade::LightType::Spot)
             d << Debug::nospace << "," << Debug::packed
                 << Deg(info.data.innerConeAngle()) << Debug::nospace
                 << "° -" << Debug::packed << Deg(info.data.outerConeAngle())
@@ -807,8 +807,8 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         d << Debug::packed << info.data.color();
         if(!Math::equal(info.data.intensity(), 1.0f))
             d << "*" << info.data.intensity();
-        if(info.data.type() != Trade::LightData::Type::Ambient &&
-           info.data.type() != Trade::LightData::Type::Directional)
+        if(info.data.type() != Trade::LightType::Ambient &&
+           info.data.type() != Trade::LightType::Directional)
             d << Debug::newline << "  Attenuation:" << Debug::packed
                 << info.data.attenuation();
         if(info.data.range() != Constants::inf())

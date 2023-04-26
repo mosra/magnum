@@ -464,7 +464,7 @@ void SceneConverterImplementationTest::infoLights() {
         Containers::Optional<Trade::LightData> doLight(UnsignedInt id) override {
             /* First a blue spot light */
             if(id == 0) return Trade::LightData{
-                Trade::LightData::Type::Spot,
+                Trade::LightType::Spot,
                 0x3457ff_rgbf,
                 15.0f,
                 {1.2f, 0.3f, 0.04f},
@@ -475,7 +475,7 @@ void SceneConverterImplementationTest::infoLights() {
 
             /* Second a yellow directional light with infinite range */
             if(id == 1) return Trade::LightData{
-                Trade::LightData::Type::Directional,
+                Trade::LightType::Directional,
                 0xff5734_rgbf,
                 5.0f
             };
@@ -998,17 +998,17 @@ void SceneConverterImplementationTest::infoReferenceCount() {
         }
         Containers::Optional<Trade::LightData> doLight(UnsignedInt id) override {
             if(id == 0) return Trade::LightData{
-                Trade::LightData::Type::Directional,
+                Trade::LightType::Directional,
                 0x57ff34_rgbf,
                 5.0f
             };
             if(id == 1) return Trade::LightData{
-                Trade::LightData::Type::Ambient,
+                Trade::LightType::Ambient,
                 0xff5734_rgbf,
                 0.1f
             };
             if(id == 2) return Trade::LightData{
-                Trade::LightData::Type::Directional,
+                Trade::LightType::Directional,
                 0x3457ff_rgbf,
                 1.0f
             };

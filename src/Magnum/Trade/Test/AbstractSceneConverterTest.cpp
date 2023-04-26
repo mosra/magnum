@@ -1080,7 +1080,7 @@ void AbstractSceneConverterTest::thingNotSupported() {
     converter.setDefaultScene(0);
 
     converter.add(AnimationData{nullptr, nullptr});
-    converter.add(LightData{LightData::Type::Point, {}, 0.0f});
+    converter.add(LightData{LightType::Point, {}, 0.0f});
     converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f});
     converter.add(SkinData2D{nullptr, nullptr});
     converter.add(SkinData3D{nullptr, nullptr});
@@ -2584,7 +2584,7 @@ void AbstractSceneConverterTest::thingNoBegin() {
     converter.add(AnimationData{nullptr, nullptr});
 
     converter.lightCount();
-    converter.add(LightData{LightData::Type::Point, {}, 0.0f});
+    converter.add(LightData{LightType::Point, {}, 0.0f});
 
     converter.cameraCount();
     converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f});
@@ -3106,10 +3106,10 @@ void AbstractSceneConverterTest::addLight() {
 
     CORRADE_VERIFY(converter.begin());
     CORRADE_COMPARE(converter.lightCount(), 0);
-    CORRADE_COMPARE(converter.add(LightData{LightData::Type::Point, {}, 0.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
+    CORRADE_COMPARE(converter.add(LightData{LightType::Point, {}, 0.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 0);
     CORRADE_VERIFY(converter.addCalled);
     CORRADE_COMPARE(converter.lightCount(), 1);
-    CORRADE_COMPARE(converter.add(LightData{LightData::Type::Point, {}, 0.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
+    CORRADE_COMPARE(converter.add(LightData{LightType::Point, {}, 0.0f, reinterpret_cast<const void*>(0xdeadbeef)}, "hello"), 1);
     CORRADE_COMPARE(converter.lightCount(), 2);
 }
 
@@ -3134,7 +3134,7 @@ void AbstractSceneConverterTest::addLightFailed() {
     {
         std::ostringstream out;
         Error redirectError{&out};
-        CORRADE_VERIFY(!converter.add(LightData{LightData::Type::Point, {}, 0.0f}));
+        CORRADE_VERIFY(!converter.add(LightData{LightType::Point, {}, 0.0f}));
         CORRADE_COMPARE(out.str(), "");
     }
 
@@ -3159,7 +3159,7 @@ void AbstractSceneConverterTest::addLightNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    converter.add(LightData{LightData::Type::Point, {}, 0.0f});
+    converter.add(LightData{LightType::Point, {}, 0.0f});
     CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): light conversion advertised but not implemented\n");
 }
 
@@ -5926,7 +5926,7 @@ void AbstractSceneConverterTest::addImporterContents() {
             return Utility::format("Light {}", id);
         }
         Containers::Optional<LightData> doLight(UnsignedInt id) override {
-            return LightData{LightData::Type::Point, {}, {}, reinterpret_cast<const void*>(0x11600000 + id)};
+            return LightData{LightType::Point, {}, {}, reinterpret_cast<const void*>(0x11600000 + id)};
         }
 
         UnsignedInt doCameraCount() const override {
@@ -6355,7 +6355,7 @@ void AbstractSceneConverterTest::addImporterContentsImportFail() {
         }
         Containers::Optional<LightData> doLight(UnsignedInt id) override {
             if(id == 2) return {};
-            return LightData{LightData::Type::Point, {}, {}};
+            return LightData{LightType::Point, {}, {}};
         }
 
         UnsignedInt doCameraCount() const override {
@@ -6597,7 +6597,7 @@ void AbstractSceneConverterTest::addImporterContentsConversionFail() {
             return 4;
         }
         Containers::Optional<LightData> doLight(UnsignedInt) override {
-            return LightData{LightData::Type::Point, {}, {}};
+            return LightData{LightType::Point, {}, {}};
         }
 
         UnsignedInt doCameraCount() const override {
@@ -7160,7 +7160,7 @@ void AbstractSceneConverterTest::addSupportedImporterContents() {
 
         UnsignedInt doLightCount() const override { return 4; }
         Containers::Optional<LightData> doLight(UnsignedInt) override {
-            return LightData{LightData::Type::Point, {}, {}};
+            return LightData{LightType::Point, {}, {}};
         }
 
         UnsignedInt doCameraCount() const override { return 5; }

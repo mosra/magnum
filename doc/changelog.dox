@@ -1112,9 +1112,11 @@ See also:
     possible cases. The variant taking an @ref Animation::TrackView is kept
     however as it may be convenient when exporting already-populated animation
     instances.
--   @cpp Trade::LightData::Type::Infinite @ce, originally adapted from the
+-   @cpp Trade::LightData::Type @ce is deprecated in favor of
+    @ref Trade::LightType that is shorter to type and can be forward-declared
+-   @cpp Trade::LightType::Infinite @ce, originally adapted from the
     OpenGEX specification, is deprecated in favor of
-    @ref Trade::LightData::Type::Directional as that's the more commonly used
+    @ref Trade::LightType::Directional as that's the more commonly used
     term
 -   @cpp Trade::PhongMaterialData::ambientCoordinateSet() @ce,
     @cpp diffuseCoordinateSet() @ce, @cpp specularCoordinateSet() @ce and

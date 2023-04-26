@@ -82,6 +82,7 @@ typedef ImageData<1> ImageData1D;
 typedef ImageData<2> ImageData2D;
 typedef ImageData<3> ImageData3D;
 
+enum class LightType: UnsignedByte;
 class LightData;
 
 enum class MeshAttribute: UnsignedShort;

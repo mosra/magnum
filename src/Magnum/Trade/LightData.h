@@ -36,6 +36,63 @@
 namespace Magnum { namespace Trade {
 
 /**
+@brief Light type
+@m_since_latest
+
+@see @ref LightData::type()
+*/
+enum class LightType: UnsignedByte {
+    /* Zero reserved for an invalid value */
+
+    /**
+     * Ambient light, without any position, direction or attenuation. Meant to
+     * be added to ambient color in Phong workflows, has no use in physically
+     * based workflows.
+     * @m_since_latest
+     */
+    Ambient = 1,
+
+    /**
+     * Light at a position that is infinitely far away, emitted in a direction
+     * of negative Z axis. The rotation is inherited from absolute object
+     * transformation; scale and position don't affect the light in any way.
+     * Because the light is at infinite distance, it's not attenuated in any
+     * way.
+     * @m_since_latest
+     */
+    Directional,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Directional light.
+     * @m_deprecated_since_latest Use @ref LightType::Directional instead.
+     */
+    Infinite CORRADE_DEPRECATED_ENUM("use LightType::Directional instead") = Directional,
+    #endif
+
+    /**
+     * Point light, emitting light in all directions. The position is inherited
+     * from absolute object transformation; scale and rotation don't affect the
+     * light in any way. Brightness attenuates depending on the
+     * @ref LightData::range() value.
+     */
+    Point,
+
+    /**
+     * Spot light, emitting light in a cone in direction of local negative Z
+     * axis. The position and rotation is inherited from absolute object
+     * transformation; scale doesn't affect the light in any way. The angle and
+     * falloff of the cone is defined using @ref LightData::innerConeAngle()
+     * and @ref LightData::outerConeAngle() and brightness attenuates depending
+     * on the @ref LightData::range() value.
+     */
+    Spot
+};
+
+/** @debugoperatorenum{LightType} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, LightType value);
+
+/**
 @brief Light data
 
 @section Trade-LightData-usage Usage
@@ -50,20 +107,22 @@ everything except spotlights.
 
 You can choose a constructor overload that matches the subset of input
 parameters and let the class set the rest implicitly. For example, a
-@ref Type::Point light constructed using a range will have @ref attenuation()
-implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce and cone angles to
-@cpp 360.0_degf @ce:
+@ref LightType::Point light constructed using a range will have
+@ref attenuation() implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce and cone
+angles to @cpp 360.0_degf @ce:
 
 @snippet MagnumTrade.cpp LightData-populating-range
 
-Or, a @ref Type::Spot light constructed from a constant / linear / quadratic
-attenuation will have @ref range() implicitly set to @ref Constants::inf():
+Or, a @ref LightType::Spot light constructed from a constant / linear /
+quadratic attenuation will have @ref range() implicitly set to
+@ref Constants::inf():
 
 @snippet MagnumTrade.cpp LightData-populating-attenuation
 
-And a @ref Type::Directional light that doesn't attenuate can be constructed
-without either, causing @ref attenuation() to be @cpp {1.0f, 0.0f, 0.0f} @ce
-and @ref range() @ref Constants::inf(), cancelling out the attenuation equation:
+And a @ref LightType::Directional light that doesn't attenuate can be
+constructed without either, causing @ref attenuation() to be
+@cpp {1.0f, 0.0f, 0.0f} @ce and @ref range() @ref Constants::inf(), cancelling
+out the attenuation equation:
 
 @snippet MagnumTrade.cpp LightData-populating-none
 
@@ -100,7 +159,7 @@ a simple inverse square: @f[
     F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 \mathbin{\color{m-dim} -} {\color{m-dim} (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} + {\color{m-dim} K_l d} \mathbin{\color{m-dim} +} {\color{m-success} K_q} d^2} = \frac{1}{1 + d^2}
 @f]
 
-As a special case, a @ref Type::Directional light is defined by
+As a special case, a @ref LightType::Directional light is defined by
 @ref attenuation() set to @cpp {1.0f, 0.0f, 0.0f} @ce and @ref range() to
 @ref Constants::inf() --- thus without any attenuation: @f[
     F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 \mathbin{\color{m-dim} -} {\color{m-dim} (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} \mathbin{\color{m-dim} +} {\color{m-dim} K_l d + K_q d^2}} = 1
@@ -109,67 +168,20 @@ As a special case, a @ref Type::Directional light is defined by
 @section Trade-LightData-units Units
 
 To follow physically-based principles in lighting calculation, intensity is
-assumed to be in in *candela* (lm/sr) for @ref Type::Point and @ref Type::Spot,
-and in *lux* (lm/m<sup>2</sup>) for @ref Type::Directional. Distance @f$ d @f$
-is in meters.
+assumed to be in in *candela* (lm/sr) for @ref LightType::Point and
+@ref LightType::Spot, and in *lux* (lm/m<sup>2</sup>) for
+@ref LightType::Directional. Distance @f$ d @f$ is in meters.
 
 @see @ref AbstractImporter::light()
 */
 class MAGNUM_TRADE_EXPORT LightData {
     public:
-        /**
-         * @brief Light type
-         *
-         * @see @ref type()
-         * @todo move this to LightType outside of the class for consistency
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief LightType
+         * @m_deprecated_since_latest Use @ref LightType instead.
          */
-        enum class Type: UnsignedByte {
-            /* Zero reserved for an invalid value */
-
-            /**
-             * Ambient light, without any position, direction or attenuation.
-             * Meant to be added to ambient color in Phong workflows, has no
-             * use in physically based workflows.
-             * @m_since_latest
-             */
-            Ambient = 1,
-
-            /**
-             * Light at a position that is infinitely far away, emitted in a
-             * direction of negative Z axis. The rotation is inherited from
-             * absolute object transformation; scale and position don't affect
-             * the light in any way. Because the light is at infinite distance,
-             * it's not attenuated in any way.
-             * @m_since_latest
-             */
-            Directional,
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * Directional light.
-             * @m_deprecated_since_latest Use @ref Type::Directional instead.
-             */
-            Infinite CORRADE_DEPRECATED_ENUM("use Type::Directional instead") = Directional,
-            #endif
-
-            /**
-             * Point light, emitting light in all directions. The position is
-             * inherited from absolute object transformation; scale and
-             * rotation don't affect the light in any way. Brightness
-             * attenuates depending on the @ref range() value.
-             */
-            Point,
-
-            /**
-             * Spot light, emitting light in a cone in direction of local
-             * negative Z axis. The position and rotation is inherited from
-             * absolute object transformation; scale doesn't affect the light
-             * in any way. The angle and falloff of the cone is defined using
-             * @ref innerConeAngle() and @ref outerConeAngle() and brightness
-             * attenuates depending on the @ref range() value.
-             */
-            Spot
-        };
+        typedef CORRADE_DEPRECATED("use LightType instead") LightType Type;
+        #endif
 
         /**
          * @brief Constructor
@@ -178,35 +190,37 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param attenuation       Constant, linear and quadratic light
          *      attenuation factor. Expected to be @cpp {1.0f, 0.0f, 0.0f} @ce
-         *      for an @ref Type::Ambient and @ref Type::Directional light.
+         *      for an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param range             Light range, after which the intensity is
          *      considered to be zero. Expected to be @ref Constants::inf() for
-         *      an @ref Type::Ambient and @ref Type::Directional light.
+         *      an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param innerConeAngle    Inner cone angle. Expected to be greater
          *      than or equal to @cpp 0.0_degf @ce and less than or equal to
-         *      @p outerConeAngle for a @ref Type::Spot light,
+         *      @p outerConeAngle for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param outerConeAngle    Outer cone angle. Expected to be greater
          *      than or equal to @p innerConeAngle and less than or equal to
-         *      @cpp 360.0_degf @ce for a @ref Type::Spot light,
+         *      @cpp 360.0_degf @ce for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
          * This is a combined constructor including both attenuation and range
-         * parameters. Use @ref LightData(Type, const Color3&, Float, const Vector3&, Rad, Rad, const void*)
+         * parameters. Use @ref LightData(LightType, const Color3&, Float, const Vector3&, Rad, Rad, const void*)
          * for light data defined by just attenuation parameters and
-         * @ref LightData(Type, const Color3&, Float, Float, Rad, Rad, const void*)
+         * @ref LightData(LightType, const Color3&, Float, Float, Rad, Rad, const void*)
          * for light data defined by a range alone, and
-         * @ref LightData(Type, const Color3&, Float, Rad, Rad, const void*)
+         * @ref LightData(LightType, const Color3&, Float, Rad, Rad, const void*)
          * for an implicit inverse square attenuation. See
          * @ref Trade-LightData-attenuation for more information.
          *
          * For lights other than spot it may be more convenient to use
-         * @ref LightData(Type, const Color3&, Float, const Vector3&, Float, const void*)
+         * @ref LightData(LightType, const Color3&, Float, const Vector3&, Float, const void*)
          * and friends instead.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, const Vector3& attenuation, Float range, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, const Vector3& attenuation, Float range, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct with implicit cone angles
@@ -215,29 +229,31 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param attenuation       Constant, linear and quadratic light
          *      attenuation factor. Expected to be @cpp {1.0f, 0.0f, 0.0f} @ce
-         *      for an @ref Type::Ambient and @ref Type::Directional light.
+         *      for an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param range             Light range, after which the intensity is
          *      considered to be zero. Expected to be @ref Constants::inf() for
-         *      an @ref Type::Ambient and @ref Type::Directional light.
+         *      an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
          * This is a combined constructor including both attenuation and range
-         * parameters. Use @ref LightData(Type, const Color3&, Float, const Vector3&, const void*)
+         * parameters. Use @ref LightData(LightType, const Color3&, Float, const Vector3&, const void*)
          * for light data defined by just attenuation parameters and
-         * @ref LightData(Type, const Color3&, Float, Float, const void*) for
-         * light data defined by a range alone, and
-         * @ref LightData(Type, const Color3&, Float, const void*) for an
+         * @ref LightData(LightType, const Color3&, Float, Float, const void*)
+         * for light data defined by a range alone, and
+         * @ref LightData(LightType, const Color3&, Float, const void*) for an
          * implicit inverse square attenuation. See
          * @ref Trade-LightData-attenuation for more information.
          *
-         * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
-         * and both are @cpp 360.0_degf @ce otherwise. Use
-         * @ref LightData(Type, const Color3&, Float, const Vector3&, Float, Rad, Rad, const void*)
+         * For a @ref LightType::Spot light, @ref innerConeAngle() is
+         * implicitly set to @cpp 0.0_degf @ce and @ref outerConeAngle() to
+         * @cpp 90.0_degf @ce, and both are @cpp 360.0_degf @ce otherwise. Use
+         * @ref LightData(LightType, const Color3&, Float, const Vector3&, Float, Rad, Rad, const void*)
          * in order to specify cone angles as well.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, const Vector3& attenuation, Float range, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, const Vector3& attenuation, Float range, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct attenuation-based light data
@@ -246,14 +262,15 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param attenuation       Constant, linear and quadratic light
          *      attenuation factor. Expected to be @cpp {1.0f, 0.0f, 0.0f} @ce
-         *      for an @ref Type::Ambient and @ref Type::Directional light.
+         *      for an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param innerConeAngle    Inner cone angle. Expected to be greater
          *      than or equal to @cpp 0.0_degf @ce and less than or equal to
-         *      @p outerConeAngle for a @ref Type::Spot light,
+         *      @p outerConeAngle for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param outerConeAngle    Inner cone angle. Expected to be greater
          *      than or equal to @p innerConeAngle and less than or equal to
-         *      @cpp 360.0_degf @ce for a @ref Type::Spot light,
+         *      @cpp 360.0_degf @ce for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param importerState     Importer-specific state
          * @m_since_latest
@@ -262,10 +279,10 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @ref Trade-LightData-attenuation for more information.
          *
          * For lights other than spot it may be more convenient to use
-         * @ref LightData(Type, const Color3&, Float, const Vector3&, const void*)
+         * @ref LightData(LightType, const Color3&, Float, const Vector3&, const void*)
          * instead.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, const Vector3& attenuation, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, const Vector3& attenuation, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct attenuation-based light data with implicit cone angles
@@ -274,20 +291,21 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param attenuation       Constant, linear and quadratic light
          *      attenuation factor. Expected to be @cpp {1.0f, 0.0f, 0.0f} @ce
-         *      for an @ref Type::Ambient and @ref Type::Directional light.
+         *      for an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
          * The @ref range() is implicitly set to @ref Constants::inf(). See
          * @ref Trade-LightData-attenuation for more information.
          *
-         * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
-         * and both are @cpp 360.0_degf @ce otherwise. Use
-         * @ref LightData(Type, const Color3&, Float, const Vector3&, Rad, Rad, const void*)
+         * For a @ref LightType::Spot light, @ref innerConeAngle() is
+         * implicitly set to @cpp 0.0_degf @ce and @ref outerConeAngle() to
+         * @cpp 90.0_degf @ce, and both are @cpp 360.0_degf @ce otherwise. Use
+         * @ref LightData(LightType, const Color3&, Float, const Vector3&, Rad, Rad, const void*)
          * in order to specify cone angles as well.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, const Vector3& attenuation, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, const Vector3& attenuation, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct range-based light data
@@ -296,29 +314,30 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param range             Light range, after which the intensity is
          *      considered to be zero. Expected to be @ref Constants::inf() for
-         *      an @ref Type::Ambient and @ref Type::Directional light.
+         *      an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param innerConeAngle    Inner cone angle. Expected to be greater
          *      than or equal to @cpp 0.0_degf @ce and less than or equal to
-         *      @p outerConeAngle for a @ref Type::Spot light,
+         *      @p outerConeAngle for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param outerConeAngle    Outer cone angle. Expected to be greater
          *      than or equal to @p innerConeAngle and less than or equal to
-         *      @cpp 360.0_degf @ce for a @ref Type::Spot light,
+         *      @cpp 360.0_degf @ce for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
          * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
-         * for a @ref Type::Point and @ref Type::Spot light and to
-         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
-         * @ref Type::Directional light. See @ref Trade-LightData-attenuation
-         * for more information.
+         * for a @ref LightType::Point and @ref LightType::Spot light and to
+         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref LightType::Ambient and
+         * @ref LightType::Directional light. See
+         * @ref Trade-LightData-attenuation for more information.
          *
          * For lights other than spot it may be more convenient to use
-         * @ref LightData(Type, const Color3&, Float, Float, const void*)
+         * @ref LightData(LightType, const Color3&, Float, Float, const void*)
          * instead.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, Float range, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, Float range, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct range-based light data with implicit cone angles
@@ -327,23 +346,24 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param range             Light range, after which the intensity is
          *      considered to be zero. Expected to be @ref Constants::inf() for
-         *      an @ref Type::Ambient and @ref Type::Directional light.
+         *      an @ref LightType::Ambient and @ref LightType::Directional
+         *      light.
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
          * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
-         * for a @ref Type::Point and @ref Type::Spot light and to
-         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
-         * @ref Type::Directional light. See @ref Trade-LightData-attenuation
-         * for more information.
+         * for a @ref LightType::Point and @ref LightType::Spot light and to
+         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref LightType::Ambient and
+         * @ref LightType::Directional light. See
+         * @ref Trade-LightData-attenuation for more information.
          *
-         * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
-         * and both are @cpp 360.0_degf @ce otherwise. Use
-         * @ref LightData(Type, const Color3&, Float, Float, Rad, Rad, const void*)
+         * For a @ref LightType::Spot light, @ref innerConeAngle() is
+         * implicitly set to @cpp 0.0_degf @ce and @ref outerConeAngle() to
+         * @cpp 90.0_degf @ce, and both are @cpp 360.0_degf @ce otherwise. Use
+         * @ref LightData(LightType, const Color3&, Float, Float, Rad, Rad, const void*)
          * in order to specify cone angles as well.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, Float range, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, Float range, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct light data with implicit attenuation
@@ -352,26 +372,27 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param innerConeAngle    Inner cone angle. Expected to be greater
          *      than or equal to @cpp 0.0_degf @ce and less than or equal to
-         *      @p outerConeAngle for a @ref Type::Spot light,
+         *      @p outerConeAngle for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param outerConeAngle    Outer cone angle. Expected to be greater
          *      than or equal to @p innerConeAngle and less than or equal to
-         *      @cpp 360.0_degf @ce for a @ref Type::Spot light,
+         *      @cpp 360.0_degf @ce for a @ref LightType::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
          * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
-         * for a @ref Type::Point and @ref Type::Spot light and to
-         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
-         * @ref Type::Directional light; @ref range() is always
+         * for a @ref LightType::Point and @ref LightType::Spot light and to
+         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref LightType::Ambient and
+         * @ref LightType::Directional light; @ref range() is always
          * @ref Constants::inf(). See @ref Trade-LightData-attenuation for more
          * information.
          *
          * For lights other than spot it may be more convenient to use
-         * @ref LightData(Type, const Color3&, Float, const void*) instead.
+         * @ref LightData(LightType, const Color3&, Float, const void*)
+         * instead.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, Rad innerConeAngle, Rad outerConeAngle, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct light data with implicit attenuation and cone angles
@@ -381,19 +402,19 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param importerState     Importer-specific state
          *
          * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
-         * for a @ref Type::Point and @ref Type::Spot light and to
-         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
-         * @ref Type::Directional light; @ref range() is always
+         * for a @ref LightType::Point and @ref LightType::Spot light and to
+         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref LightType::Ambient and
+         * @ref LightType::Directional light; @ref range() is always
          * @ref Constants::inf(). See @ref Trade-LightData-attenuation for more
          * information.
          *
-         * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
-         * and both are @cpp 360.0_degf @ce otherwise. Use
-         * @ref LightData(Type, const Color3&, Float, Rad, Rad, const void*) in
-         * order to specify cone angles as well.
+         * For a @ref LightType::Spot light, @ref innerConeAngle() is
+         * implicitly set to @cpp 0.0_degf @ce and @ref outerConeAngle() to
+         * @cpp 90.0_degf @ce, and both are @cpp 360.0_degf @ce otherwise. Use
+         * @ref LightData(LightType, const Color3&, Float, Rad, Rad, const void*)
+         * in order to specify cone angles as well.
          */
-        explicit LightData(Type type, const Color3& color, Float intensity, const void* importerState = nullptr) noexcept;
+        explicit LightData(LightType type, const Color3& color, Float intensity, const void* importerState = nullptr) noexcept;
 
         /** @brief Copying is not allowed */
         LightData(const LightData&) = delete;
@@ -408,7 +429,7 @@ class MAGNUM_TRADE_EXPORT LightData {
         LightData& operator=(LightData&&) noexcept = default;
 
         /** @brief Light type */
-        Type type() const { return _type; }
+        LightType type() const { return _type; }
 
         /** @brief Light color */
         Color3 color() const { return _color; }
@@ -416,9 +437,9 @@ class MAGNUM_TRADE_EXPORT LightData {
         /**
          * @brief Light intensity
          *
-         * Defined in *candela* (lm/sr) for @ref Type::Point and
-         * @ref Type::Spot, and in *lux* (lm/m<sup>2</sup>) for
-         * @ref Type::Directional.
+         * Defined in *candela* (lm/sr) for @ref LightType::Point and
+         * @ref LightType::Spot, and in *lux* (lm/m<sup>2</sup>) for
+         * @ref LightType::Directional.
          */
         Float intensity() const { return _intensity; }
 
@@ -429,11 +450,11 @@ class MAGNUM_TRADE_EXPORT LightData {
          * Values of @f$ \color{m-success} K_c @f$,
          * @f$ \color{m-success} K_l @f$ and @f$ \color{m-success} K_q @f$ in
          * the @ref Trade-LightData-attenuation "attenuation equation". Always
-         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
-         * @ref Type::Directional light, set to @cpp {1.0f, 0.0f, 1.0f} @ce for
-         * range-based attenuation --- and if @ref range() is
-         * @ref Constants::inf() as well, the attenuation equation is simply
-         * @f$ F_{att} = \frac{1}{1 + d^2} @f$.
+         * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref LightType::Ambient and
+         * @ref LightType::Directional light, set to
+         * @cpp {1.0f, 0.0f, 1.0f} @ce for range-based attenuation --- and if
+         * @ref range() is @ref Constants::inf() as well, the attenuation
+         * equation is simply @f$ F_{att} = \frac{1}{1 + d^2} @f$.
          */
         Vector3 attenuation() const { return _attenuation; }
 
@@ -450,7 +471,8 @@ class MAGNUM_TRADE_EXPORT LightData {
          * -    if @ref attenuation() is @cpp {1.0f, 0.0f, 0.0f} @ce, the
          *      attenuation equation is @f$ F_{att} = 1 @f$.
          *
-         * The latter is always the case for a @ref Type::Directional light.
+         * The latter is always the case for a @ref LightType::Directional
+         * light.
          */
         Float range() const { return _range; }
 
@@ -458,9 +480,9 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @brief Inner cone angle
          * @m_since_latest
          *
-         * For a @ref Type::Spot light, it's always less than
-         * @ref outerConeAngle(). For a @ref Type::Directional or
-         * @ref Type::Point light it's always @cpp 360.0_degf @ce.
+         * For a @ref LightType::Spot light, it's always less than
+         * @ref outerConeAngle(). For a @ref LightType::Directional or
+         * @ref LightType::Point light it's always @cpp 360.0_degf @ce.
          */
         Rad innerConeAngle() const { return _innerConeAngle; }
 
@@ -468,10 +490,10 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @brief Outer cone angle
          * @m_since_latest
          *
-         * For a @ref Type::Spot light, it's always greater than
+         * For a @ref LightType::Spot light, it's always greater than
          * @ref outerConeAngle() and less than or equal to @cpp 90.0_degf @ce.
-         * For a @ref Type::Directional or @ref Type::Point light it's always
-         * @cpp 360.0_degf @ce.
+         * For a @ref LightType::Directional or @ref LightType::Point light
+         * it's always @cpp 360.0_degf @ce.
          */
         Rad outerConeAngle() const { return _outerConeAngle; }
 
@@ -483,7 +505,7 @@ class MAGNUM_TRADE_EXPORT LightData {
         const void* importerState() const { return _importerState; }
 
     private:
-        Type _type;
+        LightType _type;
         Vector3 _color;
         Float _intensity;
         Vector3 _attenuation;
@@ -491,9 +513,6 @@ class MAGNUM_TRADE_EXPORT LightData {
         Rad _innerConeAngle, _outerConeAngle;
         const void* _importerState;
 };
-
-/** @debugoperatorclassenum{LightData,LightData::Type} */
-MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, LightData::Type value);
 
 }}
 

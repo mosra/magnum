@@ -496,7 +496,7 @@ for(auto&& row: data.mutablePixels<Color3ub>())
 
 {
 /* [LightData-populating-range] */
-Trade::LightData data{Trade::LightData::Type::Point,
+Trade::LightData data{Trade::LightType::Point,
     0xfff3d6_srgbf, 1.0f,
     15.0f};
 /* [LightData-populating-range] */
@@ -504,7 +504,7 @@ Trade::LightData data{Trade::LightData::Type::Point,
 
 {
 /* [LightData-populating-attenuation] */
-Trade::LightData data{Trade::LightData::Type::Spot,
+Trade::LightData data{Trade::LightType::Spot,
     0xf3d6ff_srgbf, 10.0f,
     {0.01f, 0.5f, 2.0f},
     25.0_degf, 55.0_degf};
@@ -513,7 +513,7 @@ Trade::LightData data{Trade::LightData::Type::Spot,
 
 {
 /* [LightData-populating-none] */
-Trade::LightData data{Trade::LightData::Type::Directional,
+Trade::LightData data{Trade::LightType::Directional,
     0xd6fff3_srgbf, 0.25f};
 /* [LightData-populating-none] */
 }
