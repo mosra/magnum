@@ -330,7 +330,15 @@ option(MAGNUM_BUILD_DEPRECATED "Include deprecated API in the build" ON)
 set(MAGNUM_DEPLOY_PREFIX "."
     CACHE STRING "Prefix where to put final application executables")
 
-option(MAGNUM_BUILD_STATIC "Build static libraries (default are shared)" OFF)
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(OFF_EXCEPT_ANDROID_EMSCRIPTEN ON)
+else()
+    set(OFF_EXCEPT_ANDROID_EMSCRIPTEN OFF)
+endif()
+
+# Dynamic linking is meaningless on Emscripten and too inconvenient on Android
+option(MAGNUM_BUILD_STATIC "Build static libraries" ${OFF_EXCEPT_ANDROID_EMSCRIPTEN})
+
 # Disable PIC on Emscripten by default (but still allow it to be enabled
 # explicitly if one so desires). Currently causes linker errors related to
 # __memory_base etc.: https://github.com/emscripten-core/emscripten/issues/8761
@@ -341,7 +349,8 @@ else()
 endif()
 option(MAGNUM_BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" ${ON_EXCEPT_EMSCRIPTEN})
 cmake_dependent_option(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS "Build static libraries with globals unique across shared libraries" ${ON_EXCEPT_EMSCRIPTEN} "MAGNUM_BUILD_STATIC" OFF)
-option(MAGNUM_BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
+# Dynamic plugins are not working on iOS or Windows RT at the moment
+cmake_dependent_option(MAGNUM_BUILD_PLUGINS_STATIC "Build static plugins" ${OFF_EXCEPT_ANDROID_EMSCRIPTEN} "NOT CORRADE_TARGET_IOS;NOT CORRADE_TARGET_WINDOWS_RT" ON)
 option(MAGNUM_BUILD_TESTS "Build unit tests" OFF)
 cmake_dependent_option(MAGNUM_BUILD_GL_TESTS "Build unit tests for OpenGL code" OFF "MAGNUM_BUILD_TESTS;MAGNUM_TARGET_GL" OFF)
 cmake_dependent_option(MAGNUM_BUILD_AL_TESTS "Build unit tests for OpenAL code" ON "MAGNUM_BUILD_TESTS;MAGNUM_WITH_AUDIO" OFF)
@@ -539,15 +548,6 @@ if(MAGNUM_BUILD_DEPRECATED)
             endif()
         endif()
     endif()
-endif()
-
-# Dynamic linking is meaningless on Emscripten and too inconvenient on Android
-if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(MAGNUM_BUILD_STATIC ON)
-    set(MAGNUM_BUILD_PLUGINS_STATIC ON)
-# Dynamic plugins are not working on iOS or Windows RT at the moment
-elseif(CORRADE_TARGET_IOS OR CORRADE_TARGET_WINDOWS_RT)
-    set(MAGNUM_BUILD_PLUGINS_STATIC ON)
 endif()
 
 # Check dependencies
