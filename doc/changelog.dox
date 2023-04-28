@@ -732,13 +732,13 @@ See also:
 -   Added @ref Platform::EmscriptenApplication::Configuration::addWindowFlags()
     and @ref Platform::EmscriptenApplication::Configuration::clearWindowFlags()
     for consistency with other application implementations
--   Added @ref Platform::Sdl2Application::KeyEvent::Key::CapsLock,
-    @relativeref{Platform::Sdl2Application::KeyEvent::Key,ScrollLock},
-    @relativeref{Platform::Sdl2Application::KeyEvent::Key,NumLock},
-    @relativeref{Platform::Sdl2Application::KeyEvent::Key,PrintScreen},
-    @relativeref{Platform::Sdl2Application::KeyEvent::Key,Pause} and
-    @relativeref{Platform::Sdl2Application::KeyEvent::Key,Menu} for consistency
-    with @ref Platform::EmscriptenApplication and
+-   Added @ref Platform::Sdl2ApplicationWindow::KeyEvent::Key::CapsLock,
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent::Key,ScrollLock},
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent::Key,NumLock},
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent::Key,PrintScreen},
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent::Key,Pause} and
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent::Key,Menu} for
+    consistency with @ref Platform::EmscriptenApplication and
     @ref Platform::GlfwApplication (see [mosra/magnum#547](https://github.com/mosra/magnum/pull/547))
 -   @ref Platform::Sdl2Application now overrides SDL's default behavior that
     prevents computer from entering a power-saving mode while the application
@@ -1103,9 +1103,9 @@ See also:
     destroyed could fail with an error saying "cannot make the previous context
     current" on certain system. This was due to EGL not destroying the context
     if it's still made current.
--   Fixed handling of @ref Platform::Sdl2Application::InputEvent::Modifier::Super,
-    which was misreported as @relativeref{Platform::Sdl2Application::InputEvent::Modifier,Alt} (see
-    [mosra/magnum#547](https://github.com/mosra/magnum/pull/547))
+-   Fixed handling of @ref Platform::Sdl2ApplicationWindow::InputEvent::Modifier::Super,
+    which was misreported as @relativeref{Platform::Sdl2ApplicationWindow::InputEvent::Modifier,Alt}
+    (see [mosra/magnum#547](https://github.com/mosra/magnum/pull/547))
 -   For meshes with multiple sets of vertex attributes (such as texture
     coordinates), @ref MeshTools::compile() should be using only the first set
     but it wasn't.
@@ -1969,12 +1969,12 @@ Released 2020-06-27, tagged as
     @ref Platform::AbstractXApplication::mainLoopIteration() for consistency
     with @ref Platform::Sdl2Application (see
     [mosra/magnum#387](https://github.com/mosra/magnum/pull/387))
--   Added @ref Platform::Sdl2Application::KeyEvent::Key::Quote "Key::Quote",
-    @ref Platform::Sdl2Application::KeyEvent::Key::LeftBracket "Key::LeftBracket",
-    @ref Platform::Sdl2Application::KeyEvent::Key::RightBracket "Key::RightBracket",
-    @ref Platform::Sdl2Application::KeyEvent::Key::Backslash "Key::Backslash" and
-    @ref Platform::Sdl2Application::KeyEvent::Key::Backquote "Key::Backquote"
-    keys to @ref Platform::Sdl2Application::KeyEvent and
+-   Added @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent,Key::Quote},
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent,Key::LeftBracket},
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent,Key::RightBracket},
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent,Key::Backslash} and
+    @relativeref{Platform::Sdl2ApplicationWindow::KeyEvent,Key::Backquote}
+    keys to @cpp Platform::Sdl2Application::KeyEvent @ce and
     @ref Platform::GlfwApplication::KeyEvent
 -   Added @ref Platform::GlfwApplication::KeyEvent::Key::World1 and
     @ref Platform::GlfwApplication::KeyEvent::Key::World2
@@ -1992,12 +1992,9 @@ Released 2020-06-27, tagged as
 -   CUDA device selection in @ref Platform::WindowlessEglApplication (see
     [mosra/magnum#449](https://github.com/mosra/magnum/pull/449))
 -   Added @ref Platform::GlfwApplication::Configuration::WindowFlag::Borderless
--   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop,
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::AlwaysOnTop "AlwaysOnTop",
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::SkipTaskbar "SkipTaskbar",
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::Utility "Utility",
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::Tooltip "Tooltip"
-    and @ref Platform::Sdl2Application::Configuration::WindowFlag::PopupMenu "PopupMenu"
+-   Added @cpp  Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop @ce,
+    @cpp AlwaysOnTop @ce, @cpp SkipTaskbar @ce, @cpp Utility @ce,
+    @cpp Tooltip @ce and @cpp PopupMenu @ce
 -   Added @ref Platform::Sdl2Application::Configuration::addWindowFlags() and
     @ref Platform::Sdl2Application::Configuration::clearWindowFlags() "clearWindowFlags()"
     for consistency with similar functions in
@@ -2299,7 +2296,7 @@ Released 2020-06-27, tagged as
 -   The @ref Primitives::cylinderSolid() and @ref Primitives::coneSolid()
     primitives were missing a face when both caps and texture coordinates were
     enabled (see [mosra/magnum#386](https://github.com/mosra/magnum/issues/386))
--   @ref Platform::Sdl2Application::Configuration::WindowFlag::Vulkan was
+-   @cpp Platform::Sdl2Application::Configuration::WindowFlag::Vulkan @ce was
     enabled conditionally only for SDL >= 2.0.6, but the version defines were
     never included so it was always disabled
 -   Fixed missing handling of
@@ -2330,7 +2327,7 @@ Released 2020-06-27, tagged as
     caused @ref Platform::Sdl2Application::setMinimalLoopPeriod() "setMinimalLoopPeriod()"
     to be ignored even though Vsync was in fact not enabled.
 -   It was not possible to override DPI scaling using
-    @ref Platform::Sdl2Application::Configuration as command-line arguments
+    @cpp Platform::Sdl2Application::Configuration @ce as command-line arguments
     always got a priority (see [mosra/magnum#416](https://github.com/mosra/magnum/issues/416))
 -   Fixed an otherwise harmless OOB access in @ref MeshTools::tipsifyInPlace()
     that could trigger ASan or debug iterator errors
@@ -2832,10 +2829,10 @@ Released 2019-10-24, tagged as
     in @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication)
     for changing window title at runtime as opposed to setting them on
     application startup
--   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::OpenGL and
-    @ref Platform::Sdl2Application::Configuration::WindowFlag::Vulkan "WindowFlag::Vulkan",
-    meant to be used together with @ref Platform::Sdl2Application::Configuration::WindowFlag::Contextless for
-    manual creation of OpenGL contexts and Vulkan instances
+-   Added @cpp Platform::Sdl2Application::Configuration::WindowFlag::OpenGL @ce
+    and @cpp WindowFlag::Vulkan @ce, meant to be used together with
+    @cpp Platform::Sdl2Application::Configuration::WindowFlag::Contextless @ce
+    for manual creation of OpenGL contexts and Vulkan instances
 -   @ref Platform::WindowlessEglApplication now uses the
     @m_class{m-doc-external} [EGL_EXT_device_enumeration](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_device_enumeration.txt),
     @m_class{m-doc-external} [EGL_EXT_platform_base](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_base.txt) and
