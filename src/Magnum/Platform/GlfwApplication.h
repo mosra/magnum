@@ -185,7 +185,7 @@ class GlfwApplication {
 
         #ifdef MAGNUM_TARGET_GL
         /**
-         * @brief Construct with given configuration for OpenGL context
+         * @brief Construct with an OpenGL context
          * @param arguments         Application arguments
          * @param configuration     Application configuration
          * @param glConfiguration   OpenGL context configuration
@@ -203,7 +203,7 @@ class GlfwApplication {
         #endif
 
         /**
-         * @brief Construct with given configuration
+         * @brief Construct without explicit GPU context configuration
          *
          * If @ref Configuration::WindowFlag::Contextless is present or Magnum
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
@@ -216,15 +216,13 @@ class GlfwApplication {
          *
          * See also @ref building-features for more information.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit GlfwApplication(const Arguments& arguments, const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is only forward-declared at this point */
         explicit GlfwApplication(const Arguments& arguments, const Configuration& configuration);
-
-        /**
-         * @brief Construct with default configuration
-         *
-         * Equivalent to calling @ref GlfwApplication(const Arguments&, const Configuration&)
-         * with default-constructed @ref Configuration.
-         */
         explicit GlfwApplication(const Arguments& arguments);
+        #endif
 
         /**
          * @brief Construct without creating a window
@@ -1112,7 +1110,6 @@ class GlfwApplication::Configuration {
             #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_NO_API)
             /**
              * Do not create any GPU context. Use together with
-             * @ref GlfwApplication(const Arguments&),
              * @ref GlfwApplication(const Arguments&, const Configuration&),
              * @ref create(const Configuration&) or
              * @ref tryCreate(const Configuration&) to prevent implicit

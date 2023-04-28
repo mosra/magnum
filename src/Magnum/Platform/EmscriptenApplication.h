@@ -302,7 +302,7 @@ class EmscriptenApplication {
 
         #ifdef MAGNUM_TARGET_GL
         /**
-         * @brief Construct with given configuration for WebGL context
+         * @brief Construct with a WebGL context
          * @param arguments         Application arguments
          * @param configuration     Application configuration
          * @param glConfiguration   WebGL context configuration
@@ -320,7 +320,7 @@ class EmscriptenApplication {
         #endif
 
         /**
-         * @brief Construct with given configuration
+         * @brief Construct without explicit GPU context configuration
          *
          * If @ref Configuration::WindowFlag::Contextless is present or Magnum
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
@@ -333,15 +333,13 @@ class EmscriptenApplication {
          *
          * See also @ref building-features for more information.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit EmscriptenApplication(const Arguments& arguments, const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is only forward-declared at this point */
         explicit EmscriptenApplication(const Arguments& arguments, const Configuration& configuration);
-
-        /**
-         * @brief Construct with default configuration
-         *
-         * Equivalent to calling @ref EmscriptenApplication(const Arguments&, const Configuration&)
-         * with default-constructed @ref Configuration.
-         */
         explicit EmscriptenApplication(const Arguments& arguments);
+        #endif
 
         /**
          * @brief Construct without setting up a canvas
@@ -1215,7 +1213,6 @@ class EmscriptenApplication::Configuration {
         enum class WindowFlag: UnsignedShort {
             /**
              * Do not create any GPU context. Use together with
-             * @ref EmscriptenApplication(const Arguments&),
              * @ref EmscriptenApplication(const Arguments&, const Configuration&),
              * @ref create(const Configuration&) or
              * @ref tryCreate(const Configuration&) to prevent implicit

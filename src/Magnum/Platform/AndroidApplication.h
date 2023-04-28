@@ -189,7 +189,7 @@ class AndroidApplication {
         #endif
 
         /**
-         * @brief Construct with given configuration for OpenGL context
+         * @brief Construct with an OpenGL context
          * @param arguments         Application arguments
          * @param configuration     Application configuration
          * @param glConfiguration   OpenGL context configuration
@@ -202,20 +202,17 @@ class AndroidApplication {
         explicit AndroidApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration);
 
         /**
-         * @brief Construct with given configuration
+         * @brief Construct without explicit GPU context configuration
          *
          * Equivalent to calling @ref AndroidApplication(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit AndroidApplication(const Arguments& arguments, const Configuration& configuration = Configuration{});
+        #else
         explicit AndroidApplication(const Arguments& arguments, const Configuration& configuration);
-
-        /**
-         * @brief Construct with default configuration
-         *
-         * Equivalent to calling @ref AndroidApplication(const Arguments&, const Configuration&)
-         * with default-constructed @ref Configuration.
-         */
         explicit AndroidApplication(const Arguments& arguments);
+        #endif
 
         /**
          * @brief Construct without creating a window

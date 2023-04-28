@@ -104,7 +104,7 @@ If no other application header is included, this class is also aliased to
 class XEglApplication: public AbstractXApplication {
     public:
         /**
-         * @brief Construct with given configuration for OpenGL context
+         * @brief Construct with an OpenGL context
          * @param arguments         Application arguments
          * @param configuration     Application configuration
          * @param glConfiguration   OpenGL context configuration

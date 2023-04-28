@@ -508,7 +508,7 @@ class Sdl2Application {
 
         #ifdef MAGNUM_TARGET_GL
         /**
-         * @brief Construct with given configuration for OpenGL context
+         * @brief Construct with an OpenGL context
          * @param arguments         Application arguments
          * @param configuration     Application configuration
          * @param glConfiguration   OpenGL context configuration
@@ -526,7 +526,7 @@ class Sdl2Application {
         #endif
 
         /**
-         * @brief Construct with given configuration
+         * @brief Construct without explicit GPU context configuration
          *
          * If @ref Configuration::WindowFlag::Contextless is present or Magnum
          * was not built with @ref MAGNUM_TARGET_GL, this creates a window
@@ -539,15 +539,13 @@ class Sdl2Application {
          *
          * See also @ref building-features for more information.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is only forward-declared at this point */
         explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration);
-
-        /**
-         * @brief Construct with default configuration
-         *
-         * Equivalent to calling @ref Sdl2Application(const Arguments&, const Configuration&)
-         * with default-constructed @ref Configuration.
-         */
         explicit Sdl2Application(const Arguments& arguments);
+        #endif
 
         /**
          * @brief Construct without creating a window
@@ -1735,7 +1733,7 @@ class Sdl2Application::Configuration {
             /**
              * Request a window for use with OpenGL. Useful in combination with
              * @ref WindowFlag::Contextless, otherwise enabled implicitly when
-             * creating an OpenGL context using @ref Sdl2Application(const Arguments&),
+             * creating an OpenGL context using
              * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
              * @ref create(const Configuration&, const GLConfiguration&) or
              * @ref tryCreate(const Configuration&, const GLConfiguration&).
