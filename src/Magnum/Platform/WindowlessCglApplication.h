@@ -390,13 +390,7 @@ class WindowlessCglApplication {
          * alternative.
          * @see @ref WindowlessCglContext
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration);
-        explicit WindowlessCglApplication(const Arguments& arguments);
-        #endif
+        explicit WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration = Configuration{});
 
         /**
          * @brief Construct without creating the context

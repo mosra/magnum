@@ -637,13 +637,7 @@ class WindowlessEglApplication {
          * alternative.
          * @see @ref WindowlessEglContext
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit WindowlessEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit WindowlessEglApplication(const Arguments& arguments, const Configuration& configuration);
-        explicit WindowlessEglApplication(const Arguments& arguments);
-        #endif
+        explicit WindowlessEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration{});
 
         /**
          * @brief Constructor

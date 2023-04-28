@@ -686,10 +686,6 @@ WindowlessEglContext::Configuration::Configuration()
     #endif
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments): WindowlessEglApplication{arguments, Configuration{}} {}
-#endif
-
 WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessEglApplication{arguments, NoCreate} {
     createContext(configuration);
 }

@@ -87,10 +87,6 @@ WindowlessIosContext::Configuration::Configuration() {
     GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments): WindowlessIosApplication{arguments, Configuration{}} {}
-#endif
-
 WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments, const Configuration& configuration): WindowlessIosApplication{arguments, NoCreate} {
     createContext(configuration);
 }

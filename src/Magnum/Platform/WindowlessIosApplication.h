@@ -356,13 +356,7 @@ class WindowlessIosApplication {
          * alternative.
          * @see @ref WindowlessIosContext
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit WindowlessIosApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit WindowlessIosApplication(const Arguments& arguments, const Configuration& configuration);
-        explicit WindowlessIosApplication(const Arguments& arguments);
-        #endif
+        explicit WindowlessIosApplication(const Arguments& arguments, const Configuration& configuration = Configuration{});
 
         /**
          * @brief Constructor

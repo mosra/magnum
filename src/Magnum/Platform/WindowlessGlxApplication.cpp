@@ -323,10 +323,6 @@ WindowlessGlxContext::Configuration::Configuration() {
     #endif
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments): WindowlessGlxApplication{arguments, Configuration{}}  {}
-#endif
-
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration): WindowlessGlxApplication{arguments, NoCreate} {
     createContext(configuration);
 }

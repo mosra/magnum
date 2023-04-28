@@ -448,13 +448,7 @@ class WindowlessGlxApplication {
          * alternative.
          * @see @ref WindowlessGlxContext
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration);
-        explicit WindowlessGlxApplication(const Arguments& arguments);
-        #endif
+        explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration{});
 
         /**
          * @brief Constructor
