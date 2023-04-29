@@ -42,6 +42,7 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Arguments.h>
 
@@ -88,13 +89,79 @@ enum class Sdl2ApplicationWindow::WindowFlag: UnsignedByte {
 
 Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application, NoCreateT): _application{application}, _windowFlags{WindowFlag::Redraw} {}
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application, const Configuration& configuration): Sdl2ApplicationWindow{application, NoCreate} {
+    if(!tryCreateWindow(configuration)) std::exit(1);
+}
+
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application): Sdl2ApplicationWindow{application, Configuration{}} {}
+#endif
+
 Sdl2ApplicationWindow::~Sdl2ApplicationWindow() {
-    /* SDL_DestroyWindow(_window) crashes on windows when _window is nullptr
-       (it doesn't seem to crash on Linux) */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    if(_window) SDL_DestroyWindow(_window);
+    /* If the window isn't created yet because tryCreateWindow(), nothing to
+       do. This also covers the case for the main application window, which
+       gets destroyed (and reset to null) from within ~Sdl2Application()
+       because it has to be done before SDL_Quit(), and this destructor is
+       called after that. There it also means that it's not needed to remove
+       itself from the window list, as the list is already gone at this
+       point. */
+    if(_window)
+        destroyWindow();
     #endif
 }
+
+bool Sdl2ApplicationWindow::tryCreateWindow(const Configuration& configuration) {
+    CORRADE_ASSERT(!_window,
+        "Platform::Sdl2ApplicationWindow::tryCreateWindow(): window already created", false);
+
+    /* Save DPI scaling values from configuration for future use, scale window
+       based on those */
+    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
+
+    /* Create a window */
+    if(!(_window = SDL_CreateWindow(
+        #ifndef CORRADE_TARGET_IOS
+        configuration.title().data(),
+        #else
+        nullptr,
+        #endif
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        scaledWindowSize.x(), scaledWindowSize.y(),
+        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags())|_application._configurationFlags)))
+    {
+        Error() << "Platform::Sdl2ApplicationWindow::tryCreateWindow(): cannot create a window:" << SDL_GetError();
+        return false;
+    }
+
+    /* Add itself to the window list */
+    const std::size_t windowId = SDL_GetWindowID(_window);
+    if(windowId >= _application._windows.size()) {
+        for(Sdl2ApplicationWindow*& i: arrayAppend(_application._windows, NoInit, windowId - _application._windows.size() + 1))
+            i = nullptr;
+    }
+    CORRADE_INTERNAL_ASSERT(!_application._windows[windowId]);
+    _application._windows[windowId] = this;
+
+    return true;
+}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2ApplicationWindow::destroyWindow() {
+    /* To prevent accidental double destructions and such, this function should
+       only be called if a window is actually created */
+    CORRADE_INTERNAL_ASSERT(_window);
+
+    /* Remove itself from the window list */
+    const std::size_t id = SDL_GetWindowID(_window);
+    CORRADE_INTERNAL_ASSERT(id < _application._windows.size());
+    _application._windows[id] = nullptr;
+
+    SDL_DestroyWindow(_window);
+}
+#endif
 
 Vector2 Sdl2ApplicationWindow::dpiScaling(const Configuration& configuration) {
     /* Print a helpful warning in case some extra steps are needed for HiDPI
@@ -568,27 +635,18 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         return tryCreate(configuration, GLConfiguration{});
     #endif
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Save DPI scaling values from configuration for future use, scale window
-       based on those */
-    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
-    _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
+    /* Save the application-global configuration flags to be used to create all
+       windows */
+    _configurationFlags = Uint32(configuration.flags());
 
-    /* Create window */
-    if(!(_window = SDL_CreateWindow(
-        #ifndef CORRADE_TARGET_IOS
-        configuration.title().data(),
-        #else
-        nullptr,
-        #endif
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags()))))
-    {
-        Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Create the main window */
+    if(!tryCreateWindow(configuration))
         return false;
-    }
+
+    /* Register the main window in the window list */
+    CORRADE_INTERNAL_ASSERT(_windows.isEmpty());
+    arrayAppend(_windows, this);
 
     /* Emscripten-specific initialization */
     #else
@@ -620,7 +678,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
        based on those */
     _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
     _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = windowSize*dpiScaling(configuration);
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
     if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
@@ -646,6 +704,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     CORRADE_ASSERT(_context->version() == GL::Version::None,
         "Platform::Sdl2Application::tryCreate(): context already created", false);
 
+    /* Save the application-global configuration flags to be used to create all
+       windows. Since we're creating a GL context, request the window to also
+       be OpenGL-enabled. */
+    _configurationFlags = Uint32(configuration.flags()|Configuration::Flag::OpenGL);
+
     /* Enable double buffering, set up buffer sizes */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_RED_SIZE, glConfiguration.colorBufferSize().r());
@@ -665,12 +728,6 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Save DPI scaling values from configuration for future use, scale window
-       based on those */
-    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
-    _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
-
     /* Request debug context if GpuValidation is enabled either via the
        configuration or via command-line */
     GLConfiguration::Flags glFlags = glConfiguration.flags();
@@ -732,25 +789,18 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         #endif
     }
 
-    /* Create a window. Hide it by default so we don't have distracting window
+    /* Hide the main window by default so we don't have distracting window
        blinking in case the context creation fails due to unsupported
        configuration or if it gets destroyed for fallback context creation
        below. */
-    if(!(_window = SDL_CreateWindow(
-        #ifndef CORRADE_TARGET_IOS
-        configuration.title().data(),
-        #else
-        nullptr,
-        #endif
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()))))
-    {
-        Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
-        return false;
-    }
+    Sdl2ApplicationWindow::Configuration hiddenWindowConfiguration{configuration};
+    hiddenWindowConfiguration.addWindowFlags(Sdl2ApplicationWindow::Configuration::WindowFlag::Hidden);
 
-    /* Create context */
+    /* Create a window */
+    if(!tryCreateWindow(hiddenWindowConfiguration))
+        return false;
+
+    /* Create a context */
     _glContext = SDL_GL_CreateContext(_window);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -791,7 +841,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
            on Linux at least, but better stay on the safe side as this way
            worked correctly for 10+ years on all platforms and reusing an
            existing window might not. */
-        SDL_DestroyWindow(_window);
+        destroyWindow();
+        _window = nullptr;
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -804,14 +855,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags & ~GLConfiguration::Flag::ForwardCompatible) & 0xffffffffu));
 
         /* Create a new window using the refreshed GL attributes */
-        if(!(_window = SDL_CreateWindow(configuration.title().data(),
-            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            scaledWindowSize.x(), scaledWindowSize.y(),
-            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags()))))
-        {
-            Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
+        if(!tryCreateWindow(hiddenWindowConfiguration))
             return false;
-        }
 
         /* Create compatibility context */
         _glContext = SDL_GL_CreateContext(_window);
@@ -821,7 +866,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     /* Cannot create context (or fallback compatibility context on desktop) */
     if(!_glContext) {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create context:" << SDL_GetError();
-        SDL_DestroyWindow(_window);
+        destroyWindow();
         _window = nullptr;
         return false;
     }
@@ -867,7 +912,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
        based on those */
     _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
     _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2i scaledWindowSize = windowSize*dpiScaling();
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
     if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
@@ -887,7 +932,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     if(!_context->tryCreate(glConfiguration)) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GL_DeleteContext(_glContext);
-        SDL_DestroyWindow(_window);
+        destroyWindow();
         _window = nullptr;
         #else
         SDL_FreeSurface(_surface);
@@ -946,10 +991,20 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
 }
 
 Sdl2Application::~Sdl2Application() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Destroy the main SDL window first. After that, there should be no
+       remaining registered windows. */
+    if(_window)
+        destroyWindow();
+    for(Sdl2ApplicationWindow* i: _windows)
+        CORRADE_ASSERT(!i, "Sdl2Application: destructed with windows still open", );
+    #else
     /* SDL_DestroyWindow(_window) crashes on windows when _window is nullptr
        (it doesn't seem to crash on Linux). Because this seems to be yet
        another pointless platform difference, to be safe do the same check with
-       all. */
+       all APIs. */
+    if(_window) SDL_DestroyWindow(_window);
+    #endif
 
     #ifdef MAGNUM_TARGET_GL
     /* Destroy Magnum context first to avoid it potentially accessing the
@@ -967,14 +1022,6 @@ Sdl2Application::~Sdl2Application() {
     for(auto& cursor: _cursors)
         SDL_FreeCursor(cursor);
     #endif
-
-    /* The window would be destroyed in the base ~Sdl2ApplicationWindow(), but
-       that's too late. Do it before calling SDL_Quit() and then reset the
-       window pointer so it's not called again after. */
-    if(_window) {
-        SDL_DestroyWindow(_window);
-        _window = nullptr;
-    }
 
     SDL_Quit();
 }
@@ -998,6 +1045,28 @@ void Sdl2Application::exit(const int exitCode) {
     emscripten_cancel_main_loop();
     #endif
     _exitCode = exitCode;
+}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::makeContextCurrent(Sdl2ApplicationWindow& window) {
+    /* Only do it if it is not active already */
+    if(_activeGlContextWindow != window._window) {
+        SDL_GL_MakeCurrent(window._window, _glContext);
+        _activeGlContextWindow = window._window;
+#warning TODO
+        // Context::current().resetState(Context::State::WindowSpecific);
+    }
+}
+#endif
+
+template<class ...Args> inline void Sdl2Application::callEventHandler(std::size_t windowId, void(Sdl2ApplicationWindow::*eventHandler)(Args...), Args&&... args) {
+    // if(!(windowId < _windows.size() && _windows[windowId])) {
+    //     Debug() << "HUH" << windowId << _windows.size();
+    //     return;
+    // }
+
+    CORRADE_INTERNAL_ASSERT(windowId < _windows.size() && _windows[windowId]);
+    (_windows[windowId]->*eventHandler)(std::forward<Args>(args)...);
 }
 
 bool Sdl2Application::mainLoopIteration() {
@@ -1045,6 +1114,7 @@ bool Sdl2Application::mainLoopIteration() {
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
             case SDL_WINDOWEVENT:
+                CORRADE_INTERNAL_ASSERT(event.window.windowID < _windows.size() && _windows[event.window.windowID]);
                 switch(event.window.event) {
                     /* Not using SDL_WINDOWEVENT_RESIZED, because that doesn't
                        get fired when the window is resized programmatically
@@ -1066,15 +1136,18 @@ bool Sdl2Application::mainLoopIteration() {
                             #endif
                             dpiScaling()};
                         /** @todo handle also WM_DPICHANGED events when a window is moved between displays with different DPI */
-                        viewportEvent(e);
-                        _windowFlags |= WindowFlag::Redraw;
+#warning make context current here? probably??
+                        makeContextCurrent(*_windows[event.window.windowID]);
+                        callEventHandler(event.window.windowID, &Sdl2ApplicationWindow::viewportEvent, e);
+                        _windows[event.window.windowID]->_windowFlags |= WindowFlag::Redraw;
                         #endif
                     } break;
+#warning SDL_WINDOWEVENT_CLOSE
                     /* Direct everything that wasn't exposed via a callback to
                        anyEvent(), so users can implement event handling for
                        things not present in the Application APIs */
                     case SDL_WINDOWEVENT_EXPOSED:
-                        _windowFlags |= WindowFlag::Redraw;
+                        _windows[event.window.windowID]->_windowFlags |= WindowFlag::Redraw;
                         if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
                         break;
                     default:
@@ -1084,7 +1157,9 @@ bool Sdl2Application::mainLoopIteration() {
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
                 KeyEvent e{event, static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0};
-                event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
+                callEventHandler(event.key.windowID,
+                    event.type == SDL_KEYDOWN ? &Sdl2ApplicationWindow::keyPressEvent : &Sdl2ApplicationWindow::keyReleaseEvent,
+                    e);
             } break;
 
             case SDL_MOUSEBUTTONDOWN:
@@ -1094,34 +1169,37 @@ bool Sdl2Application::mainLoopIteration() {
                     , event.button.clicks
                     #endif
                     };
-                event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+                callEventHandler(event.key.windowID,
+                    event.type == SDL_MOUSEBUTTONDOWN ? &Sdl2ApplicationWindow::mousePressEvent : &Sdl2ApplicationWindow::mouseReleaseEvent,
+                    e);
             } break;
 
             case SDL_MOUSEWHEEL: {
                 MouseScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
-                mouseScrollEvent(e);
+                callEventHandler(event.wheel.windowID, &Sdl2ApplicationWindow::mouseScrollEvent, e);
             } break;
 
             case SDL_MOUSEMOTION: {
                 MouseMoveEvent e{event, {event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state)};
-                mouseMoveEvent(e);
+                callEventHandler(event.motion.windowID, &Sdl2ApplicationWindow::mouseMoveEvent, e);
                 break;
             }
 
             case SDL_MULTIGESTURE: {
                 MultiGestureEvent e{event, {event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers};
+#warning wtf, why no window ID?!
                 multiGestureEvent(e);
                 break;
             }
 
             case SDL_TEXTINPUT: {
                 TextInputEvent e{event, event.text.text};
-                textInputEvent(e);
+                callEventHandler(event.text.windowID, &Sdl2ApplicationWindow::textInputEvent, e);
             } break;
 
             case SDL_TEXTEDITING: {
                 TextEditingEvent e{event, event.edit.text, event.edit.start, event.edit.length};
-                textEditingEvent(e);
+                callEventHandler(event.edit.windowID, &Sdl2ApplicationWindow::textEditingEvent, e);
             } break;
 
             case SDL_QUIT: {
@@ -1147,11 +1225,18 @@ bool Sdl2Application::mainLoopIteration() {
     /* Tick event */
     if(!(_flags & Flag::NoTickEvent)) tickEvent();
 
-    /* Draw event */
-    if(_windowFlags & WindowFlag::Redraw) {
-        _windowFlags &= ~WindowFlag::Redraw;
-        drawEvent();
+    /* Draw events */
+    bool somethingDrawn = false;
+    for(std::size_t i = 0; i != _windows.size(); ++i) {
+        if(!_windows[i] || !(_windows[i]->_windowFlags & WindowFlag::Redraw)) continue;
 
+        _windows[i]->_windowFlags &= ~WindowFlag::Redraw;
+        callEventHandler(i,
+            &Sdl2ApplicationWindow::drawEvent);
+        somethingDrawn = true;
+    }
+
+    if(somethingDrawn) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
         if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriod) {

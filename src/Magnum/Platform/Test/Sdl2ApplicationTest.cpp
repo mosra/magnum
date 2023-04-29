@@ -23,9 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/ImageView.h"
@@ -53,6 +55,106 @@
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 using namespace Containers::Literals;
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+struct Sdl2ApplicationTestWindow: Platform::ApplicationWindow {
+    explicit Sdl2ApplicationTestWindow(Platform::Application& application, std::size_t id): Platform::ApplicationWindow{application, Configuration{}
+        .setTitle(Utility::format("Window {}", id))
+        .setSize({400, 300})
+        .addWindowFlags(Configuration::WindowFlag::Resizable)
+    }, _id{id} {}
+
+    void viewportEvent(ViewportEvent& event) override {
+        Debug{} << "window" << _id << "viewport event" << event.windowSize()
+            #ifdef MAGNUM_TARGET_GL
+            << event.framebufferSize()
+            #endif
+            << event.dpiScaling();
+#warning query the GL fb size here and compare
+        // GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+    }
+
+    void drawEvent() override {
+        Debug{} << "window" << _id << "draw event";
+        #ifdef MAGNUM_TARGET_GL
+        GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+        #endif
+
+        swapBuffers();
+    }
+
+    /* For testing event coordinates */
+    void mousePressEvent(MouseEvent& event) override {
+        Debug{} << "window" << _id << "mouse press event:" << event.position() << Int(event.button());
+    }
+
+    void mouseReleaseEvent(MouseEvent& event) override {
+        Debug{} << "window" << _id << "mouse release event:" << event.position() << Int(event.button());
+    }
+
+    void mouseMoveEvent(MouseMoveEvent& event) override {
+        Debug{} << "window" << _id << "mouse move event:" << event.position() << event.relativePosition() << Uint32(event.buttons());
+    }
+
+    void mouseScrollEvent(MouseScrollEvent& event) override {
+        Debug{} << "window" << _id << "mouse scroll event:" << event.offset() << event.position();
+    }
+
+    void keyPressEvent(KeyEvent& event) override {
+        Debug{} << "window" << _id << "key press event:" << SDL_Keycode(event.key()) << event.keyName();
+
+        if(event.key() == KeyEvent::Key::F1) {
+            Debug{} << "starting text input";
+            application().startTextInput();
+        } else if(event.key() == KeyEvent::Key::Esc) {
+            Debug{} << "stopping text input";
+            application().stopTextInput();
+        } else if(event.key() == KeyEvent::Key::T) {
+            Debug{} << "setting window title";
+            setWindowTitle("This is a UTF-8 Window Title™ and it should have no exclamation mark!!"_s.exceptSuffix(2));
+        }
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        else if(event.key() == KeyEvent::Key::S) {
+            Debug{} << "setting window size, which should trigger a viewport event";
+            setWindowSize(Vector2i{300, 200});
+        } else if(event.key() == KeyEvent::Key::W) {
+            Debug{} << "setting max window size, which should trigger a viewport event";
+            setMaxWindowSize(Vector2i{700, 500});
+        }
+        #endif
+        else if(event.key() == KeyEvent::Key::H) {
+            Debug{} << "toggling hand cursor";
+            setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
+        }
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        else if(event.key() == KeyEvent::Key::L) {
+            Debug{} << "toggling locked mouse";
+            setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
+        }
+        #else
+        else if(event.key() == KeyEvent::Key::F) {
+            Debug{} << "toggling fullscreen";
+            setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
+        }
+        #endif
+        else if(event.key() == KeyEvent::Key::X) {
+            Debug{} << "requesting an exit with code 5";
+            exit(5);
+        }
+    }
+
+    void keyReleaseEvent(KeyEvent& event) override {
+        Debug{} << "window" << _id << "key release event:" << SDL_Keycode(event.key()) << event.keyName();
+    }
+
+    void textInputEvent(TextInputEvent& event) override {
+        Debug{} << "window" << _id << "text input event:" << event.text();
+    }
+
+    private:
+        std::size_t _id;
+};
+#endif
 
 struct Sdl2ApplicationTest: Platform::Application {
     explicit Sdl2ApplicationTest(const Arguments& arguments);
@@ -118,6 +220,10 @@ struct Sdl2ApplicationTest: Platform::Application {
             Debug{} << "setting max window size, which should trigger a viewport event";
             setMaxWindowSize(Vector2i{700, 500});
         }
+        else if(event.key() == KeyEvent::Key::O) {
+            Debug{} << "opening window" << _windows.size();
+            arrayAppend(_windows, Containers::pointer<Sdl2ApplicationTestWindow>(*this, _windows.size()));
+        }
         #endif
         else if(event.key() == KeyEvent::Key::H) {
             Debug{} << "toggling hand cursor";
@@ -157,10 +263,12 @@ struct Sdl2ApplicationTest: Platform::Application {
         if(event.type == SDL_WINDOWEVENT) d << event.window.event;
     }
 
-    #ifdef CORRADE_TARGET_EMSCRIPTEN
     private:
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        Containers::Array<Containers::Pointer<Sdl2ApplicationTestWindow>> _windows;
+        #else
         bool _fullscreen = false;
-    #endif
+        #endif
 };
 
 Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {

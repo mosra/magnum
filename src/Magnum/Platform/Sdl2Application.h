@@ -118,6 +118,19 @@ class Sdl2ApplicationWindow {
         class TextInputEvent;
         class TextEditingEvent;
 
+        /**
+         * @brief Constructor
+         *
+         * @ref TODOTODO document
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, const Configuration& configuration = Configuration{});
+        #else
+        /* Configuration is only forward-declared at this point */
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, const Configuration& configuration);
+        explicit Sdl2ApplicationWindow(Sdl2Application& application);
+        #endif
+
         /** @brief Copying is not allowed */
         Sdl2ApplicationWindow(const Sdl2ApplicationWindow&) = delete;
 
@@ -134,6 +147,10 @@ class Sdl2ApplicationWindow {
            a pointer, standalone windows most likely will, so the destructor is
            virtual */
         virtual ~Sdl2ApplicationWindow();
+
+        /** @brief Application instance */
+        Sdl2Application& application() { return _application; }
+        const Sdl2Application& application() const { return _application; } /**< @overload */
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -506,11 +523,21 @@ class Sdl2ApplicationWindow {
         explicit Sdl2ApplicationWindow(Sdl2Application& application, NoCreateT);
 
         Vector2 dpiScalingInternal(Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        bool tryCreateWindow(const Configuration& configuration);
+        void destroyWindow();
+        #endif
 
         Sdl2Application& _application;
 
+        /* These are saved from configuration to be reused in dpiScaling() and
+           viewportEvent() later */
+        Implementation::Sdl2DpiScalingPolicy _configurationDpiScalingPolicy{};
+        Vector2 _configurationDpiScaling;
+
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window{};
+        Vector2i _viewportSize;
         #else
         SDL_Surface* _surface{};
         Vector2i _lastKnownCanvasSize;
@@ -1328,17 +1355,26 @@ class Sdl2Application: public Sdl2ApplicationWindow {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
+        void makeContextCurrent(Sdl2ApplicationWindow& window);
+        #endif
+        template<class ...Args> void callEventHandler(std::size_t windowId, void(Sdl2ApplicationWindow::*eventHandler)(Args...), Args&&...);
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Cursor* _cursors[12]{};
         #else
         Cursor _cursor;
         #endif
 
-        /* These are saved from command-line arguments, and from configuration
-           to be reused in dpiScaling() and viewportEvent() later */
+        /* These are saved from command-line arguments to be reused in
+           dpiScaling() and viewportEvent() later */
         bool _verboseLog{};
-        Implementation::Sdl2DpiScalingPolicy _commandLineDpiScalingPolicy{}, _configurationDpiScalingPolicy{};
-        Vector2 _commandLineDpiScaling, _configurationDpiScaling;
+        Implementation::Sdl2DpiScalingPolicy _commandLineDpiScalingPolicy{};
+        Vector2 _commandLineDpiScaling;
 
+        /* Configuration::Flags, propagated to all created windows. Can't use a
+           concrete type as Configuration is only a forward declaration at this
+           point. */
+        Uint32 _configurationFlags;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         UnsignedInt _minimalLoopPeriod;
         #endif
@@ -1346,11 +1382,15 @@ class Sdl2Application: public Sdl2ApplicationWindow {
         #ifdef MAGNUM_TARGET_GL
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GLContext _glContext{};
+        SDL_Window* _activeGlContextWindow{};
         #endif
         /* Has to be in an Optional because we delay-create it in a constructor
            with populated Arguments and it gets explicitly destroyed before the
            GL context */
         Containers::Optional<Platform::GLContext> _context;
+        #endif
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        Containers::Array<Sdl2ApplicationWindow*> _windows;
         #endif
 
         Flags _flags;
