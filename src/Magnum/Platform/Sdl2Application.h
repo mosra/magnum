@@ -1761,20 +1761,7 @@ class Sdl2Application::Configuration {
          *
          * @see @ref setWindowFlags()
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<WindowFlag, SDL_WINDOW_RESIZABLE|
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
-            SDL_WINDOW_FULLSCREEN|SDL_WINDOW_BORDERLESS|SDL_WINDOW_HIDDEN|
-            SDL_WINDOW_MAXIMIZED|SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED|
-            #endif
-            Uint32(WindowFlag::Contextless)|SDL_WINDOW_OPENGL
-            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006
-            |SDL_WINDOW_VULKAN
-            #endif
-            > WindowFlags;
-        #else
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
-        #endif
 
         /**
          * @brief DPI scaling policy
