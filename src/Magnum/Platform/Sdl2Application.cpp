@@ -564,7 +564,7 @@ void Sdl2Application::create(const Configuration& configuration, const GLConfigu
 
 bool Sdl2Application::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))
+    if(!(configuration.flags() & Configuration::Flag::Contextless))
         return tryCreate(configuration, GLConfiguration{});
     #endif
 
@@ -584,7 +584,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags() & ~Configuration::WindowFlag::Contextless))))
+        SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags()))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
@@ -641,8 +641,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
 
 #ifdef MAGNUM_TARGET_GL
 bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    CORRADE_ASSERT(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless),
-        "Platform::Sdl2Application::tryCreate(): cannot pass Configuration::WindowFlag::Contextless when creating an OpenGL context", false);
+    CORRADE_ASSERT(!(configuration.flags() & Configuration::Flag::Contextless),
+        "Platform::Sdl2Application::tryCreate(): cannot pass Configuration::Flag::Contextless when creating an OpenGL context", false);
     CORRADE_ASSERT(_context->version() == GL::Version::None,
         "Platform::Sdl2Application::tryCreate(): context already created", false);
 
@@ -1247,6 +1247,57 @@ Sdl2ApplicationWindow::Configuration::Configuration():
     _dpiScalingPolicy{DpiScalingPolicy::Default} {}
 
 Sdl2ApplicationWindow::Configuration::~Configuration() = default;
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+namespace {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    constexpr Sdl2ApplicationWindow::Configuration::WindowFlags DeprecatedWindowFlags = Sdl2ApplicationWindow::Configuration::WindowFlag::Contextless|Sdl2ApplicationWindow::Configuration::WindowFlag::OpenGL|Sdl2ApplicationWindow::Configuration::WindowFlag::Vulkan;
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
+Sdl2Application::Configuration& Sdl2Application::Configuration::setWindowFlags(WindowFlags flags) {
+    /* If deprecated flags are present, reset these bits in the application
+       flags instead and remove them from the to-be-set window flags */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    if(const WindowFlags deprecatedFlags = flags & DeprecatedWindowFlags) {
+        _flags &= ~Flags(Uint32(DeprecatedWindowFlags));
+        _flags |= Flags(Uint32(deprecatedFlags));
+        flags &= ~deprecatedFlags;
+    }
+    #endif
+
+    Sdl2ApplicationWindow::Configuration::setWindowFlags(flags);
+    return *this;
+}
+
+Sdl2Application::Configuration& Sdl2Application::Configuration::addWindowFlags(WindowFlags flags) {
+    /* If deprecated flags are present, add these bits in the application
+       flags instead and remove them from the to-be-added window flags */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    if(const WindowFlags deprecatedFlags = flags & DeprecatedWindowFlags) {
+        _flags |= Flags(Uint32(deprecatedFlags));
+        flags &= ~deprecatedFlags;
+    }
+    #endif
+
+    Sdl2ApplicationWindow::Configuration::addWindowFlags(flags);
+    return *this;
+}
+
+Sdl2Application::Configuration& Sdl2Application::Configuration::clearWindowFlags(WindowFlags flags) {
+    /* If deprecated flags are present, add these bits in the application
+       flags instead and remove them from the to-be-cleared window flags */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    if(const WindowFlags deprecatedFlags = flags & DeprecatedWindowFlags) {
+        _flags &= ~Flags(Uint32(deprecatedFlags));
+        flags &= ~deprecatedFlags;
+    }
+    #endif
+
+    Sdl2ApplicationWindow::Configuration::clearWindowFlags(flags);
+    return *this;
+}
 
 Containers::StringView Sdl2ApplicationWindow::KeyEvent::keyName(const Key key) {
     return SDL_GetKeyName(SDL_Keycode(key));

@@ -920,6 +920,7 @@ class Sdl2Application: public Sdl2ApplicationWindow {
             char** argv;    /**< @brief Argument values */
         };
 
+        class Configuration;
         #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
         #endif
@@ -1667,8 +1668,10 @@ namespace Implementation {
 }
 
 /**
-@brief Configuration
+@brief Window configuration
 
+Inherited by @ref Sdl2Application::Configuration which adds global options for
+all windows.
 @see @ref Sdl2ApplicationWindow(),
     @ref Sdl2Application::Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
     @ref Sdl2Application::GLConfiguration, @ref Sdl2Application::create(),
@@ -1805,38 +1808,34 @@ class Sdl2ApplicationWindow::Configuration {
             #endif
             #endif
 
+            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
-             * Do not create any GPU context. Use together with
-             * @ref Sdl2Application::Sdl2Application(const Arguments&, const Configuration&),
-             * @ref Sdl2Application::create(const Configuration&) or
-             * @ref Sdl2Application::tryCreate(const Configuration&) to prevent
-             * implicit creation of an OpenGL context. Can't be used with
-             * @ref Sdl2Application::Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
-             * @ref Sdl2Application::create(const Configuration&, const GLConfiguration&) or
-             * @ref Sdl2Application::tryCreate(const Configuration&, const GLConfiguration&).
+             * Do not create any GPU context.
+             * @m_deprecated_since_latest Use the application-global
+             *      @ref Sdl2Application::Configuration::Flag::Contextless
+             *      instead.
              */
-            Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
+            Contextless CORRADE_DEPRECATED_ENUM("use Sdl2Application::Configuration::Flag::Contextless instead") = 1u << 31,
 
             /**
-             * Request a window for use with OpenGL. Useful in combination with
-             * @ref WindowFlag::Contextless, otherwise enabled implicitly when
-             * creating an OpenGL context using
-             * @ref Sdl2Application::Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
-             * @ref Sdl2Application::create(const Configuration&, const GLConfiguration&)
-             * or @ref Sdl2Application::tryCreate(const Configuration&, const GLConfiguration&).
-             * @m_since{2019,10}
+             * Request a window for use with OpenGL.
+             * @m_deprecated_since_latest Use the application-global
+             *      @ref Sdl2Application::Configuration::Flag::OpenGL
+             *      instead.
              */
-            OpenGL = SDL_WINDOW_OPENGL,
+            OpenGL CORRADE_DEPRECATED_ENUM("use Sdl2Application::Configuration::Flag::OpenGL instead") = SDL_WINDOW_OPENGL,
 
             #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT))
             /**
-             * Request a window for use with Vulkan. Useful in combination with
-             * @ref WindowFlag::Contextless.
+             * Request a window for use with Vulkan.
+             * @m_deprecated_since_latest Use the application-global
+             *      @ref Sdl2Application::Configuration::Flag::Vulkan
+             *      instead.
              * @note Available since SDL 2.0.6, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-             * @m_since{2019,10}
              */
-            Vulkan = SDL_WINDOW_VULKAN
+            Vulkan CORRADE_DEPRECATED_ENUM("use Sdl2Application::Configuration::Flag::Vulkan instead") = SDL_WINDOW_VULKAN
+            #endif
             #endif
         };
 
@@ -2055,6 +2054,142 @@ class Sdl2ApplicationWindow::Configuration {
         WindowFlags _windowFlags;
         Vector2 _dpiScaling;
 };
+
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::Configuration::WindowFlags)
+
+/**
+@brief Application configuration
+
+Inherits @ref Sdl2ApplicationWindow::Configuration.
+@see @ref Sdl2Application(), @ref create(), @ref tryCreate()
+*/
+class Sdl2Application::Configuration: public Sdl2ApplicationWindow::Configuration {
+    public:
+        /**
+         * @brief Application flag
+         * @m_since_latest
+         *
+         * @see @ref Flags, @ref setFlags()
+         */
+        enum class Flag: Uint32 {
+            /**
+             * Do not create any GPU context. Use together with
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to prevent implicit
+             * creation of an OpenGL context. Can't be used with
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             */
+            Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
+
+            /**
+             * Request a window for use with OpenGL. Useful in combination with
+             * @ref Flag::Contextless, otherwise enabled implicitly when
+             * creating an OpenGL context using
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&)
+             * or @ref tryCreate(const Configuration&, const GLConfiguration&).
+             * @m_since{2019,10}
+             */
+            OpenGL = SDL_WINDOW_OPENGL,
+
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT))
+            /**
+             * Request a window for use with Vulkan. Useful in combination with
+             * @ref Flag::Contextless.
+             * @note Available since SDL 2.0.6, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @m_since{2019,10}
+             */
+            Vulkan = SDL_WINDOW_VULKAN
+            #endif
+        };
+
+        /**
+         * @brief Application flags
+         * @m_since_latest
+         *
+         * @see @ref setFlags()
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        explicit Configuration() = default;
+
+        /**
+         * @brief Application flags
+         * @m_since_latest
+         */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set application flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add application flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear application flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
+            return *this;
+        }
+
+        /* Overloads to remove a WTF factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        Configuration& setTitle(Containers::StringView title) {
+            Sdl2ApplicationWindow::Configuration::setTitle(title);
+            return *this;
+        }
+        Configuration& setSize(const Vector2i& size, DpiScalingPolicy dpiScalingPolicy = DpiScalingPolicy::Default) {
+            Sdl2ApplicationWindow::Configuration::setSize(size, dpiScalingPolicy);
+            return *this;
+        }
+        Configuration& setSize(const Vector2i& size, const Vector2& dpiScaling) {
+            Sdl2ApplicationWindow::Configuration::setSize(size, dpiScaling);
+            return *this;
+        }
+        /* On deprecated builds these propagate the appropriate context flags
+           to setFlags() / addFlags() / clearFlags() */
+        Configuration& setWindowFlags(WindowFlags flags);
+        Configuration& addWindowFlags(WindowFlags flags);
+        Configuration& clearWindowFlags(WindowFlags flags);
+        #endif
+
+    private:
+        Flags _flags;
+};
+
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
 
 /**
 @brief Exit event
@@ -3032,7 +3167,6 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #endif
 #endif
 
-CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::Configuration::WindowFlags)
 CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::MouseMoveEvent::Buttons)
 
