@@ -561,8 +561,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         #endif
     }
 
-    /* Create window. Hide it by default so we don't have distracting window
-       blinking in case we have to destroy it again right away */
+    /* Create a window. Hide it by default so we don't have distracting window
+       blinking in case the context creation fails due to unsupported
+       configuration or if it gets destroyed for fallback context creation
+       below. */
     if(!(_window = SDL_CreateWindow(
         #ifndef CORRADE_TARGET_IOS
         configuration.title().data(),
@@ -609,6 +611,15 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
             << SDL_GetError() << "(falling back to compatibility context)";
         else SDL_GL_DeleteContext(_glContext);
 
+        /* Destroy the original window. SDL_GL_SetAttribute() says it should be
+           called before creating a window, which kind of implies the
+           attributes affect how the window is created:
+            https://wiki.libsdl.org/SDL2/SDL_GL_SetAttribute
+           Which means, if I attempt to set them differently after the window
+           is created, it *might* not work correctly. It doesn't seem to matter
+           on Linux at least, but better stay on the safe side as this way
+           worked correctly for 10+ years on all platforms and reusing an
+           existing window might not. */
         SDL_DestroyWindow(_window);
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -621,6 +632,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
            Also mask out the upper 32bits used for other flags. */
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags & ~GLConfiguration::Flag::ForwardCompatible) & 0xffffffffu));
 
+        /* Create a new window using the refreshed GL attributes */
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             scaledWindowSize.x(), scaledWindowSize.y(),
