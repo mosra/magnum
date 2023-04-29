@@ -1216,7 +1216,10 @@ class EmscriptenApplication::Configuration {
              * @ref EmscriptenApplication(const Arguments&, const Configuration&),
              * @ref create(const Configuration&) or
              * @ref tryCreate(const Configuration&) to prevent implicit
-             * creation of an WebGL context.
+             * creation of an WebGL context. Can't be used with
+             * @ref EmscriptenApplication(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
              */
             Contextless = 1 << 0,
 

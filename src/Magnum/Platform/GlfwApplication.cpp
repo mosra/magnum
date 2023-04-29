@@ -409,7 +409,10 @@ GlfwApplication::InputEvent::Modifiers currentGlfwModifiers(GLFWwindow* window) 
 
 #ifdef MAGNUM_TARGET_GL
 bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    CORRADE_ASSERT(!_window && _context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreate(): window with OpenGL context already created", false);
+    CORRADE_ASSERT(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless),
+        "Platform::GlfwApplication::tryCreate(): cannot pass Configuration::WindowFlag::Contextless when creating an OpenGL context", false);
+    CORRADE_ASSERT(!_window && _context->version() == GL::Version::None,
+        "Platform::GlfwApplication::tryCreate(): window with OpenGL context already created", false);
 
     /* Save DPI scaling values from configuration for future use, scale window
        based on those */

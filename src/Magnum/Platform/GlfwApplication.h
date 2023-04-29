@@ -1113,7 +1113,10 @@ class GlfwApplication::Configuration {
              * @ref GlfwApplication(const Arguments&, const Configuration&),
              * @ref create(const Configuration&) or
              * @ref tryCreate(const Configuration&) to prevent implicit
-             * creation of an OpenGL context.
+             * creation of an OpenGL context. Can't be used with
+             * @ref GlfwApplication(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
              *
              * @note Supported since GLFW 3.2.
              */

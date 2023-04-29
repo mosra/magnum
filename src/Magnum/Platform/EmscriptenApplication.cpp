@@ -343,7 +343,10 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
 
 #ifdef MAGNUM_TARGET_GL
 bool EmscriptenApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::EmscriptenApplication::tryCreate(): window with OpenGL context already created", false);
+    CORRADE_ASSERT(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless),
+        "Platform::EmscriptenApplication::tryCreate(): cannot pass Configuration::WindowFlag::Contextless when creating an OpenGL context", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None,
+        "Platform::EmscriptenApplication::tryCreate(): window with OpenGL context already created", false);
 
     /* Create emscripten WebGL context */
     EmscriptenWebGLContextAttributes attrs;

@@ -1726,7 +1726,10 @@ class Sdl2Application::Configuration {
              * @ref Sdl2Application(const Arguments&, const Configuration&),
              * @ref create(const Configuration&) or
              * @ref tryCreate(const Configuration&) to prevent implicit
-             * creation of an OpenGL context.
+             * creation of an OpenGL context. Can't be used with
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
              */
             Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
 
