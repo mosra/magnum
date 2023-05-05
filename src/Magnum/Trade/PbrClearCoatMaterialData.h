@@ -197,9 +197,9 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * @brief Roughness texture swizzle
          *
          * Convenience access to the @ref MaterialAttribute::RoughnessTextureSwizzle
-         * attribute in this layer. If not present, the default is @cpp 1.0f @ce.
-         * Available only if @ref MaterialAttribute::RoughnessTexture is
-         * present in this layer.
+         * attribute in this layer. If not present, the default is
+         * @ref MaterialTextureSwizzle::R. Available only if
+         * @ref MaterialAttribute::RoughnessTexture is present in this layer.
          * @see @ref hasAttribute()
          */
         MaterialTextureSwizzle roughnessTextureSwizzle() const;
