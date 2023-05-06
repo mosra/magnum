@@ -204,10 +204,16 @@ Trade::SceneData filterFieldEntries(const Trade::SceneData& scene, const Contain
             filteredMapping = {{nullptr, mappingTypeSize*filteredFieldSize}, filteredFieldSize, std::ptrdiff_t(mappingTypeSize)};
         }
 
+        /* Preserve flags, but if the field was marked as having implicit
+           mapping before, item removal causes it to be only ordered now */
+        Trade::SceneFieldFlags fieldFlags = scene.fieldFlags(fieldId);
+        if(fieldFlags >= Trade::SceneFieldFlag::ImplicitMapping)
+            fieldFlags &= (~Trade::SceneFieldFlag::ImplicitMapping)|Trade::SceneFieldFlag::OrderedMapping;
+
         const std::size_t fieldTypeSize = Trade::sceneFieldTypeSize(fieldType);
         fields[fieldId] = Trade::SceneFieldData{scene.fieldName(fieldId),
             scene.mappingType(), filteredMapping,
-            fieldType, Containers::StridedArrayView1D<const void>{{nullptr, fieldTypeSize*filteredFieldSize}, filteredFieldSize, std::ptrdiff_t(fieldTypeSize)}, scene.fieldArraySize(fieldId)};
+            fieldType, Containers::StridedArrayView1D<const void>{{nullptr, fieldTypeSize*filteredFieldSize}, filteredFieldSize, std::ptrdiff_t(fieldTypeSize)}, scene.fieldArraySize(fieldId), fieldFlags};
 
         ++sharedMapping.filteredCount;
     }

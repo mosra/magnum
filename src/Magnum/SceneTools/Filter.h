@@ -115,6 +115,15 @@ mapping only partially don't have any special handling. The data repacking is
 performed using @ref combineFields(), see its documentation for more
 information.
 
+Field flags are preserved except for @ref Trade::SceneFieldFlag::ImplicitMapping
+--- if a field with this flag is present in the list, the field is downgraded
+to @ref Trade::SceneFieldFlag::OrderedMapping, as removing field entries makes
+the mapping to no longer be an implicit sequence (but the order is still
+preserved). For simplicity this downgrade happens always, even if all bits for
+given field may be set. Fields with
+@ref Trade::SceneFieldFlag::ImplicitMapping that aren't present in the list
+have the flag preserved.
+
 As an example, let's assume in the following snippet the scene contains
 @ref Trade::SceneField::Translation,
 @relativeref{Trade::SceneField,Rotation}, @relativeref{Trade::SceneField,Mesh},

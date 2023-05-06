@@ -315,11 +315,11 @@ void FilterTest::fieldEntries() {
     setTestCaseDescription(data.name);
 
     const struct Data {
-        UnsignedShort meshMapping[5]{7, 8, 6666, 3, 6666};
+        UnsignedShort meshMapping[5]{7, 8, 900, 1000, 11000};
         UnsignedByte mesh[5]{2, 3, 222, 1, 222};
-        UnsignedShort lightMapping[4]{3, 1, 2, 2};
+        UnsignedShort lightMapping[4]{0, 1, 2, 3};
         UnsignedInt light[4]{12, 23, 32, 31};
-        UnsignedShort arrayMapping[3]{6666, 3, 2};
+        UnsignedShort arrayMapping[3]{0, 1, 2};
         Float array[3][2]{{77.0f, 88.0f}, {1.0f, 2.0f}, {3.0f, 4.0f}};
         UnsignedShort visibilityMapping[2]{12, 33};
         bool visible[2]{true, false};
@@ -328,18 +328,25 @@ void FilterTest::fieldEntries() {
     } sceneData[1]{};
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedShort, 76, {}, sceneData, {
+        /* The ordered flag should get preserved as removing items preserves
+           order*/
         Trade::SceneFieldData{Trade::SceneField::Mesh,
             Containers::arrayView(sceneData->meshMapping),
-            Containers::arrayView(sceneData->mesh)},
+            Containers::arrayView(sceneData->mesh),
+            Trade::SceneFieldFlag::OrderedMapping},
         /* Offset-only, to verify it get converted to absolute when it reaches
-           combine() at the end */
+           combine() at the end. The implicit flag gets preserved because the
+           field isn't touched in any way. */
         Trade::SceneFieldData{Trade::SceneField::Light, 4,
             Trade::SceneMappingType::UnsignedShort, offsetof(Data, lightMapping), sizeof(UnsignedShort),
-            Trade::SceneFieldType::UnsignedInt, offsetof(Data, light), sizeof(UnsignedInt)},
-        /* Array */
+            Trade::SceneFieldType::UnsignedInt, offsetof(Data, light), sizeof(UnsignedInt),
+            Trade::SceneFieldFlag::ImplicitMapping},
+        /* Array. Here the flag gets downgraded to just an OrderedMapping
+           because items are removed. */
         Trade::SceneFieldData{Trade::sceneFieldCustom(333),
             Containers::arrayView(sceneData->arrayMapping),
-            Containers::arrayCast<2, const Float>(Containers::stridedArrayView(sceneData->array))},
+            Containers::arrayCast<2, const Float>(Containers::stridedArrayView(sceneData->array)),
+            Trade::SceneFieldFlag::ImplicitMapping},
         /* Bit field. Should cause no assert as it's just passed through. */
         Trade::SceneFieldData{Trade::sceneFieldCustom(15),
             Containers::arrayView(sceneData->visibilityMapping),
@@ -384,8 +391,10 @@ void FilterTest::fieldEntries() {
     CORRADE_COMPARE(filtered.mappingBound(), 76);
 
     CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Mesh));
+    /* The flag gets preserved here */
+    CORRADE_COMPARE(filtered.fieldFlags(Trade::SceneField::Mesh), Trade::SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Mesh),
-        Containers::arrayView<UnsignedShort>({7, 8, 3}),
+        Containers::arrayView<UnsignedShort>({7, 8, 1000}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(filtered.field<UnsignedByte>(Trade::SceneField::Mesh),
         Containers::arrayView<UnsignedByte>({2, 3, 1}),
@@ -393,6 +402,8 @@ void FilterTest::fieldEntries() {
 
     /* Lights weren't listed and thus stayed untouched */
     CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Light));
+    /* The flag gets preserved here as well as the field wasn't touched */
+    CORRADE_COMPARE(filtered.fieldFlags(Trade::SceneField::Light), Trade::SceneFieldFlag::ImplicitMapping);
     CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::SceneField::Light),
         Containers::arrayView(sceneData->lightMapping),
         TestSuite::Compare::Container);
@@ -401,8 +412,10 @@ void FilterTest::fieldEntries() {
         TestSuite::Compare::Container);
 
     CORRADE_VERIFY(filtered.hasField(Trade::sceneFieldCustom(333)));
+    /* The field isn't implicitly mapped anymore */
+    CORRADE_COMPARE(filtered.fieldFlags(Trade::sceneFieldCustom(333)), Trade::SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE_AS(filtered.mapping<UnsignedShort>(Trade::sceneFieldCustom(333)),
-        Containers::arrayView<UnsignedShort>({3, 2}),
+        Containers::arrayView<UnsignedShort>({1, 2}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2>(filtered.field<Float[]>(Trade::sceneFieldCustom(333)))),
         Containers::arrayView<Vector2>({{1.0f, 2.0f}, {3.0f, 4.0f}}),
@@ -795,10 +808,12 @@ template<class T> void FilterTest::objects() {
         Trade::SceneFieldData{Trade::SceneField::Light,
             Containers::arrayView(data->lightMapping),
             Containers::arrayView(data->light)},
-        /* This one gets all entries removed */
+        /* This one gets all entries removed. The flags should get preserved
+           even in that case tho. */
         Trade::SceneFieldData{Trade::SceneField::Parent,
             Containers::arrayView(data->parentMapping),
-            Containers::arrayView(data->parents)},
+            Containers::arrayView(data->parents),
+            Trade::SceneFieldFlag::OrderedMapping},
         /* This one is already empty */
         Trade::SceneFieldData{Trade::SceneField::Camera,
             Containers::ArrayView<T>{},
@@ -832,8 +847,9 @@ template<class T> void FilterTest::objects() {
         Containers::arrayView<UnsignedInt>({23}),
         TestSuite::Compare::Container);
 
-    /* Parents are all removed */
+    /* Parents are all removed, flags stay */
     CORRADE_VERIFY(filtered.hasField(Trade::SceneField::Parent));
+    CORRADE_COMPARE(filtered.fieldFlags(Trade::SceneField::Parent), Trade::SceneFieldFlag::OrderedMapping);
     CORRADE_COMPARE(filtered.fieldSize(Trade::SceneField::Parent), 0);
 
     /* Cameras were empty before already */
