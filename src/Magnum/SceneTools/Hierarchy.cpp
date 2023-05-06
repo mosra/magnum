@@ -56,7 +56,7 @@ void parentsBreadthFirstInto(const Trade::SceneData& scene, const Containers::St
     const std::size_t parentFieldSize = scene.fieldSize(*parentFieldId);
     CORRADE_ASSERT(mappingDestination.size() == parentFieldSize,
         "SceneTools::parentsBreadthFirstInto(): expected mapping destination view with" << parentFieldSize << "elements but got" << mappingDestination.size(), );
-    CORRADE_ASSERT(parentDestination.size() == scene.fieldSize(*parentFieldId),
+    CORRADE_ASSERT(parentDestination.size() == parentFieldSize,
         "SceneTools::parentsBreadthFirstInto(): expected parent destination view with" << parentFieldSize << "elements but got" << parentDestination.size(), );
 
     /* Allocate a single storage for all temporary data */
@@ -71,7 +71,7 @@ void parentsBreadthFirstInto(const Trade::SceneData& scene, const Containers::St
            one more element when we shift the array by one below */
         {ValueInit, std::size_t(scene.mappingBound() + 3), childrenOffsets},
         {NoInit, parentFieldSize, children},
-        /* List of parents to process. Can't reuse mappingDestination because
+        /* Queue of parents to process. Can't reuse mappingDestination because
            this includes one more element for root objects. */
         {NoInit, parentFieldSize + 1, parentsToProcess}
     };
@@ -117,10 +117,10 @@ void parentsBreadthFirstInto(const Trade::SceneData& scene, const Containers::St
     for(std::size_t i = 0; i != outputOffset + 1; ++i) {
         const Int objectId = parentsToProcess[i];
         for(std::size_t j = childrenOffsets[objectId + 1], jMax = childrenOffsets[objectId + 2]; j != jMax; ++j) {
-            /** @todo better diagnostic once we can use a BitArray to detect
-                which nodes are parented more than once (OTOH maybe that's
-                unnecessary extra work which isn't desired to be done here but
-                should be instead in a dedicated cycle/sparse checker utility?) */
+            /** @todo better diagnostic with BitArray to detect which nodes are
+                parented more than once (OTOH maybe that's unnecessary extra
+                work which isn't desired to be done here but should be instead
+                in a dedicated cycle/sparse checker utility?) */
             CORRADE_ASSERT(outputOffset < parents.size(),
                 "SceneTools::parentsBreadthFirst(): hierarchy is cyclic", );
             parentsToProcess[outputOffset + 1] = children[j];
@@ -130,9 +130,9 @@ void parentsBreadthFirstInto(const Trade::SceneData& scene, const Containers::St
         }
     }
 
-    /** @todo better diagnostic once we can use a BitArray to detect which
-        nodes are unreachable from root (OTOH again maybe that's undesirable
-        extra work that doesn't belong here?) */
+    /** @todo better diagnostic with BitArray to detect which nodes are
+        unreachable from root (OTOH again maybe that's undesirable extra work
+        that doesn't belong here?) */
     CORRADE_ASSERT(outputOffset == parents.size(),
         "SceneTools::parentsBreadthFirst(): hierarchy is sparse", );
 }
