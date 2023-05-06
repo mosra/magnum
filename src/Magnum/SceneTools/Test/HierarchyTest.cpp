@@ -40,18 +40,19 @@ namespace Magnum { namespace SceneTools { namespace Test { namespace {
 struct HierarchyTest: TestSuite::Tester {
     explicit HierarchyTest();
 
-    void parentsBreadthFirst();
-    void parentsBreadthFirstNoParentField();
-    void parentsBreadthFirstEmptyParentField();
+    void parentsBreadthFirstChildrenDepthFirst();
+    void parentsBreadthFirstChildrenDepthFirstSingleBranch();
+    void parentsBreadthFirstChildrenDepthFirstNoParentField();
+    void parentsBreadthFirstChildrenDepthFirstEmptyParentField();
 
-    void parentsBreadthFirstIntoNoParentField();
-    void parentsBreadthFirstIntoEmptyParentField();
-    void parentsBreadthFirstIntoWrongDestinationSize();
+    void parentsBreadthFirstChildrenDepthFirstIntoNoParentField();
+    void parentsBreadthFirstChildrenDepthFirstIntoEmptyParentField();
+    void parentsBreadthFirstChildrenDepthFirstIntoWrongDestinationSize();
 
-    void parentsBreadthFirstSparse();
-    void parentsBreadthFirstCyclic();
-    void parentsBreadthFirstCyclicDeep();
-    void parentsBreadthFirstSparseAndCyclic();
+    void parentsBreadthFirstChildrenDepthFirstSparse();
+    void parentsBreadthFirstChildrenDepthFirstCyclic();
+    void parentsBreadthFirstChildrenDepthFirstCyclicDeep();
+    void parentsBreadthFirstChildrenDepthFirstSparseAndCyclic();
 
     void absoluteFieldTransformations2D();
     void absoluteFieldTransformations3D();
@@ -117,18 +118,19 @@ const struct {
 };
 
 HierarchyTest::HierarchyTest() {
-    addTests({&HierarchyTest::parentsBreadthFirst,
-              &HierarchyTest::parentsBreadthFirstNoParentField,
-              &HierarchyTest::parentsBreadthFirstEmptyParentField,
+    addTests({&HierarchyTest::parentsBreadthFirstChildrenDepthFirst,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstSingleBranch,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstNoParentField,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstEmptyParentField,
 
-              &HierarchyTest::parentsBreadthFirstIntoNoParentField,
-              &HierarchyTest::parentsBreadthFirstIntoEmptyParentField,
-              &HierarchyTest::parentsBreadthFirstIntoWrongDestinationSize,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoNoParentField,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoEmptyParentField,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoWrongDestinationSize,
 
-              &HierarchyTest::parentsBreadthFirstSparse,
-              &HierarchyTest::parentsBreadthFirstCyclic,
-              &HierarchyTest::parentsBreadthFirstCyclicDeep,
-              &HierarchyTest::parentsBreadthFirstSparseAndCyclic});
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstSparse,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstCyclic,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstCyclicDeep,
+              &HierarchyTest::parentsBreadthFirstChildrenDepthFirstSparseAndCyclic});
 
     addInstancedTests({&HierarchyTest::absoluteFieldTransformations2D,
                        &HierarchyTest::absoluteFieldTransformations3D},
@@ -145,7 +147,7 @@ HierarchyTest::HierarchyTest() {
     addTests({&HierarchyTest::absoluteFieldTransformationsIntoInvalidSize});
 }
 
-void HierarchyTest::parentsBreadthFirst() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirst() {
     struct Field {
         /* To verify we don't have unnecessarily hardcoded 32-bit types */
         UnsignedShort mapping;
@@ -199,9 +201,68 @@ void HierarchyTest::parentsBreadthFirst() {
         /* Children of node 6 */
         {143, 6},
     })), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(SceneTools::childrenDepthFirst(scene), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+        /* Node 3, root */
+        {3, 6},
+            /* Children of node 3, in order as found */
+            {10, 3},
+                /* Children of node 10 */
+                {9, 2},
+                    /* Children of node 9 */
+                    {6, 1},
+                        /* Children of node 6 */
+                        {143, 0},
+            {7, 0},
+            {157, 0},
+        /* Node 1, root */
+        {1, 1},
+            /* Children of node 1 */
+            {5, 0},
+        /* Node 2, root */
+        {2, 0},
+    })), TestSuite::Compare::Container);
 }
 
-void HierarchyTest::parentsBreadthFirstNoParentField() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstSingleBranch() {
+    /* Verifies just that the internal allocation routines are correctly sized,
+       as this should lead to the longest stack in childrenDepthFirst().
+       Shouldn't trigger anything special in parentsBreadthFirst() but testing
+       that one as well to be sure. */
+
+    struct Field {
+        UnsignedLong mapping;
+        Long parent;
+    } data[]{
+        {2, 1},
+        {1, 0},
+        {3, 2},
+        {0, -1},
+    };
+    Containers::StridedArrayView1D<Field> view = data;
+
+    Trade::SceneData scene{Trade::SceneMappingType::UnsignedLong, 4, {}, data, {
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            view.slice(&Field::mapping),
+            view.slice(&Field::parent)}
+    }};
+
+    CORRADE_COMPARE_AS(SceneTools::parentsBreadthFirst(scene), (Containers::arrayView<Containers::Pair<UnsignedInt, Int>>({
+        {0, -1},
+        {1, 0},
+        {2, 1},
+        {3, 2},
+    })), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(SceneTools::childrenDepthFirst(scene), (Containers::arrayView<Containers::Pair<UnsignedInt, UnsignedInt>>({
+        {0, 3},
+            {1, 2},
+                {2, 1},
+                    {3, 0},
+    })), TestSuite::Compare::Container);
+}
+
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstNoParentField() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 0, nullptr, {}};
@@ -209,11 +270,13 @@ void HierarchyTest::parentsBreadthFirstNoParentField() {
     std::ostringstream out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
+    SceneTools::childrenDepthFirst(scene);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::parentsBreadthFirst(): the scene has no hierarchy\n");
+        "SceneTools::parentsBreadthFirst(): the scene has no hierarchy\n"
+        "SceneTools::childrenDepthFirst(): the scene has no hierarchy\n");
 }
 
-void HierarchyTest::parentsBreadthFirstEmptyParentField() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstEmptyParentField() {
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
         Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr}
     }};
@@ -221,9 +284,12 @@ void HierarchyTest::parentsBreadthFirstEmptyParentField() {
     CORRADE_COMPARE_AS(SceneTools::parentsBreadthFirst(scene),
         (Containers::ArrayView<const Containers::Pair<UnsignedInt, Int>>{}),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(SceneTools::childrenDepthFirst(scene),
+        (Containers::ArrayView<const Containers::Pair<UnsignedInt, UnsignedInt>>{}),
+        TestSuite::Compare::Container);
 }
 
-void HierarchyTest::parentsBreadthFirstIntoNoParentField() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoNoParentField() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedByte, 0, nullptr, {}};
@@ -231,20 +297,23 @@ void HierarchyTest::parentsBreadthFirstIntoNoParentField() {
     std::ostringstream out;
     Error redirectError{&out};
     parentsBreadthFirstInto(scene, nullptr, nullptr);
+    childrenDepthFirstInto(scene, nullptr, nullptr);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::parentsBreadthFirstInto(): the scene has no hierarchy\n");
+        "SceneTools::parentsBreadthFirstInto(): the scene has no hierarchy\n"
+        "SceneTools::childrenDepthFirstInto(): the scene has no hierarchy\n");
 }
 
-void HierarchyTest::parentsBreadthFirstIntoEmptyParentField() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoEmptyParentField() {
     Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {
         Trade::SceneFieldData{Trade::SceneField::Parent, Trade::SceneMappingType::UnsignedInt, nullptr, Trade::SceneFieldType::Int, nullptr}
     }};
 
     parentsBreadthFirstInto(scene, nullptr, nullptr);
+    childrenDepthFirstInto(scene, nullptr, nullptr);
     CORRADE_VERIFY(true);
 }
 
-void HierarchyTest::parentsBreadthFirstIntoWrongDestinationSize() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstIntoWrongDestinationSize() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
@@ -267,17 +336,23 @@ void HierarchyTest::parentsBreadthFirstIntoWrongDestinationSize() {
     UnsignedInt mapping[2];
     Int parentOffsetCorrect[3];
     Int parentOffset[2];
+    UnsignedInt childCountCorrect[3];
+    UnsignedInt childCount[2];
 
     std::ostringstream out;
     Error redirectError{&out};
     parentsBreadthFirstInto(scene, mappingCorrect, parentOffset);
     parentsBreadthFirstInto(scene, mapping, parentOffsetCorrect);
+    childrenDepthFirstInto(scene, mappingCorrect, childCount);
+    childrenDepthFirstInto(scene, mapping, childCountCorrect);
     CORRADE_COMPARE(out.str(),
         "SceneTools::parentsBreadthFirstInto(): expected parent destination view with 3 elements but got 2\n"
-        "SceneTools::parentsBreadthFirstInto(): expected mapping destination view with 3 elements but got 2\n");
+        "SceneTools::parentsBreadthFirstInto(): expected mapping destination view with 3 elements but got 2\n"
+        "SceneTools::childrenDepthFirstInto(): expected child count destination view with 3 elements but got 2\n"
+        "SceneTools::childrenDepthFirstInto(): expected mapping destination view with 3 elements but got 2\n");
 }
 
-void HierarchyTest::parentsBreadthFirstSparse() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstSparse() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
@@ -303,11 +378,13 @@ void HierarchyTest::parentsBreadthFirstSparse() {
     std::ostringstream out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
+    SceneTools::childrenDepthFirst(scene);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::parentsBreadthFirst(): hierarchy is sparse\n");
+        "SceneTools::parentsBreadthFirst(): hierarchy is sparse\n"
+        "SceneTools::childrenDepthFirst(): hierarchy is sparse\n");
 }
 
-void HierarchyTest::parentsBreadthFirstCyclic() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstCyclic() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
@@ -331,11 +408,13 @@ void HierarchyTest::parentsBreadthFirstCyclic() {
     std::ostringstream out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
+    SceneTools::childrenDepthFirst(scene);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::parentsBreadthFirst(): hierarchy is sparse\n");
+        "SceneTools::parentsBreadthFirst(): hierarchy is sparse\n"
+        "SceneTools::childrenDepthFirst(): hierarchy is sparse\n");
 }
 
-void HierarchyTest::parentsBreadthFirstCyclicDeep() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstCyclicDeep() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
@@ -361,11 +440,13 @@ void HierarchyTest::parentsBreadthFirstCyclicDeep() {
     std::ostringstream out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
+    SceneTools::childrenDepthFirst(scene);
     CORRADE_COMPARE(out.str(),
-        "SceneTools::parentsBreadthFirst(): hierarchy is cyclic\n");
+        "SceneTools::parentsBreadthFirst(): hierarchy is cyclic\n"
+        "SceneTools::childrenDepthFirst(): hierarchy is cyclic\n");
 }
 
-void HierarchyTest::parentsBreadthFirstSparseAndCyclic() {
+void HierarchyTest::parentsBreadthFirstChildrenDepthFirstSparseAndCyclic() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Field {
@@ -393,9 +474,11 @@ void HierarchyTest::parentsBreadthFirstSparseAndCyclic() {
     std::ostringstream out;
     Error redirectError{&out};
     SceneTools::parentsBreadthFirst(scene);
+    SceneTools::childrenDepthFirst(scene);
     CORRADE_EXPECT_FAIL("The implementation needs to track already visited objects with a BitArray to detect this, it'd also provide a much better diagnostic.");
     CORRADE_COMPARE(out.str(),
-        "SceneTools::parentsBreadthFirst(): hierarchy is cyclic\n");
+        "SceneTools::parentsBreadthFirst(): hierarchy is cyclic\n"
+        "SceneTools::childrenDepthFirst(): hierarchy is cyclic\n");
 }
 
 const struct Scene {

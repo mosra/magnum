@@ -30,6 +30,7 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/Triple.h>
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Matrix3.h"
@@ -135,6 +136,125 @@ void parentsBreadthFirstInto(const Trade::SceneData& scene, const Containers::St
         that doesn't belong here?) */
     CORRADE_ASSERT(outputOffset == parents.size(),
         "SceneTools::parentsBreadthFirst(): hierarchy is sparse", );
+}
+
+Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> childrenDepthFirst(const Trade::SceneData& scene) {
+    const Containers::Optional<UnsignedInt> parentFieldId = scene.findFieldId(Trade::SceneField::Parent);
+    CORRADE_ASSERT(parentFieldId,
+        "SceneTools::childrenDepthFirst(): the scene has no hierarchy", {});
+    Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> out{NoInit, scene.fieldSize(*parentFieldId)};
+    childrenDepthFirstInto(scene,
+        stridedArrayView(out).slice(&decltype(out)::Type::first),
+        stridedArrayView(out).slice(&decltype(out)::Type::second));
+    return out;
+}
+
+void childrenDepthFirstInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<UnsignedInt>& childCountDestination) {
+    const Containers::Optional<UnsignedInt> parentFieldId = scene.findFieldId(Trade::SceneField::Parent);
+    CORRADE_ASSERT(parentFieldId,
+        "SceneTools::childrenDepthFirstInto(): the scene has no hierarchy", );
+    const std::size_t parentFieldSize = scene.fieldSize(*parentFieldId);
+    CORRADE_ASSERT(mappingDestination.size() == parentFieldSize,
+        "SceneTools::childrenDepthFirstInto(): expected mapping destination view with" << parentFieldSize << "elements but got" << mappingDestination.size(), );
+    CORRADE_ASSERT(childCountDestination.size() == parentFieldSize,
+        "SceneTools::childrenDepthFirstInto(): expected child count destination view with" << parentFieldSize << "elements but got" << childCountDestination.size(), );
+
+    /* Allocate a single storage for all temporary data */
+    Containers::ArrayView<Containers::Pair<UnsignedInt, Int>> parents;
+    Containers::ArrayView<UnsignedInt> childrenOffsets;
+    Containers::ArrayView<UnsignedInt> children;
+    /* Parent ID, offset of the first child in `childCountDestination`, offset
+       of next child in `children` to process */
+    Containers::ArrayView<Containers::Triple<Int, UnsignedInt, UnsignedInt>> parentsToProcess;
+    Containers::ArrayTuple storage{
+        /* Output of scene.parentsInto() */
+        {NoInit, parentFieldSize, parents},
+        /* Running children offset (+1) for each node including root (+1), plus
+           one more element when we shift the array by one below */
+        {ValueInit, std::size_t(scene.mappingBound() + 3), childrenOffsets},
+        {NoInit, parentFieldSize, children},
+        /* A stack of parents to process. It only reaches `parentFieldSize + 1`
+           if the hierarchy is a single branch, usually it's shorter. */
+        {NoInit, parentFieldSize + 1, parentsToProcess}
+    };
+
+    /* Convert the parent list to a child list to sort them toplogically */
+    scene.parentsInto(
+        stridedArrayView(parents).slice(&decltype(parents)::Type::first),
+        stridedArrayView(parents).slice(&decltype(parents)::Type::second)
+    );
+
+    /* Children offset for each node including root. First calculate the count
+       of children for each, skipping the first element (parent.second() can be
+       -1, accounting for that as well)... */
+    for(const Containers::Pair<UnsignedInt, Int>& parent: parents) {
+        CORRADE_INTERNAL_ASSERT(parent.first() < scene.mappingBound() && (parent.second() == -1 || UnsignedInt(parent.second()) < scene.mappingBound()));
+        ++childrenOffsets[parent.second() + 2];
+    }
+
+    /* ... then convert the counts to a running offset. Now
+       `[childrenOffsets[i + 2], childrenOffsets[i + 3])` contains a range in
+       which the `children` array below contains a list of children for `i`. */
+    UnsignedInt offset = 0;
+    for(UnsignedInt& i: childrenOffsets) {
+        UnsignedInt nextOffset = offset + i;
+        i = offset;
+        offset = nextOffset;
+    }
+    CORRADE_INTERNAL_ASSERT(offset == parents.size());
+
+    /* Go through the parent list again, convert that to child ranges. The
+       childrenOffsets array gets shifted by one element by the process, thus
+       now `[childrenOffsets[i + 1], childrenOffsets[i + 2])` contains a range
+       in which the `children` array below contains a list of children for
+       `i`. */
+    for(const Containers::Pair<UnsignedInt, Int>& parent: parents)
+        children[childrenOffsets[parent.second() + 2]++] = parent.first();
+
+    UnsignedInt outputOffset = 0;
+    std::size_t parentsToProcessOffset = 0;
+    parentsToProcess[parentsToProcessOffset++] = {-1, outputOffset, childrenOffsets[-1 + 1]};
+    while(parentsToProcessOffset) {
+        const Int objectId = parentsToProcess[parentsToProcessOffset - 1].first();
+        UnsignedInt& childrenOffset = parentsToProcess[parentsToProcessOffset - 1].third();
+
+        /* If all children were processed, we're done with this object */
+        if(childrenOffset == childrenOffsets[objectId + 2]) {
+            /* Save the total size. Only if it's not the root objects, for them
+               the total size is implicitly the whole output size. */
+            if(objectId != -1) {
+                const UnsignedInt firstChildOutputOffset = parentsToProcess[parentsToProcessOffset - 1].second();
+                childCountDestination[firstChildOutputOffset - 1] = outputOffset - firstChildOutputOffset;
+            }
+
+            /* Remove from the processing stack and continue with next */
+            --parentsToProcessOffset;
+            continue;
+        }
+
+        CORRADE_INTERNAL_DEBUG_ASSERT(childrenOffset < childrenOffsets[objectId + 2]);
+        CORRADE_INTERNAL_DEBUG_ASSERT(parentsToProcessOffset < parentFieldSize + 1);
+        /** @todo better diagnostic with BitArray to detect which nodes are
+            parented more than once (OTOH maybe that's undesirable extra work
+            that would be duplicated here and in parentsBreadthFirst()?) */
+        CORRADE_ASSERT(outputOffset < parents.size(),
+            "SceneTools::childrenDepthFirst(): hierarchy is cyclic", );
+
+        /* Add the current child to the mapping output and to the list of
+           parents to process next. Increment all offsets for the next
+           round. */
+        const UnsignedInt childObjectId = children[childrenOffset++];
+        mappingDestination[outputOffset] = childObjectId;
+        parentsToProcess[parentsToProcessOffset++] = {Int(childObjectId), ++outputOffset, childrenOffsets[childObjectId + 1]};
+    }
+
+    CORRADE_INTERNAL_ASSERT(parentsToProcessOffset == 0);
+
+    /** @todo better diagnostic with BitArray to detect which nodes are
+        unreachable from root (OTOH again maybe that's undesirable extra work
+        that would be duplicated here and in parentsBreadthFirst()?) */
+    CORRADE_ASSERT(outputOffset == parents.size(),
+        "SceneTools::childrenDepthFirst(): hierarchy is sparse", );
 }
 
 namespace {

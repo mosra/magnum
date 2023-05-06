@@ -101,6 +101,39 @@ Trade::MeshData concatenated = MeshTools::concatenate(flattenedMeshes);
 }
 
 {
+/* [childrenDepthFirst-extract-tree] */
+Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
+
+Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> childrenRanges =
+    SceneTools::childrenDepthFirst(scene);
+
+/* Bit array of objects to keep from the scene */
+UnsignedInt objectToLookFor = DOXYGEN_ELLIPSIS(0);
+Containers::BitArray objectsToKeep{ValueInit, std::size_t(scene.mappingBound())};
+
+/* Look for the object in the list */
+for(const Containers::Pair<UnsignedInt, UnsignedInt>& i: childrenRanges) {
+    if(i.first() != objectToLookFor) continue;
+
+    /* Right after the object appearing in the list is all its (nested)
+       children, mark them in the bit array */
+    for(const Containers::Pair<UnsignedInt, UnsignedInt>& j:
+        childrenRanges.sliceSize(&i, i.second() + 1))
+            objectsToKeep.set(j.first());
+
+    break;
+}
+
+/* Filter the scene to contain just given object and its children, and reparent
+   it to be in scene root */
+Trade::SceneData filtered = SceneTools::filterObjects(scene, objectsToKeep);
+filtered.mutableField<Int>(Trade::SceneField::Parent)[
+    filtered.fieldObjectOffset(Trade::SceneField::Parent, objectToLookFor)
+] = -1;
+/* [childrenDepthFirst-extract-tree] */
+}
+
+{
 /* [parentsBreadthFirst-transformations] */
 Trade::SceneData scene = DOXYGEN_ELLIPSIS(Trade::SceneData{{}, 0, nullptr, {}});
 

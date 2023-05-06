@@ -177,6 +177,7 @@ other fields such as @ref Trade::SceneField::Parent, it's the responsibility of
 the caller to deal with them either before or after calling this API, otherwise
 the returned data may end up being unusable.
 @experimental
+@see @ref childrenDepthFirst()
 */
 MAGNUM_SCENETOOLS_EXPORT Trade::SceneData filterObjects(const Trade::SceneData& scene, Containers::BitArrayView objectsToKeep);
 

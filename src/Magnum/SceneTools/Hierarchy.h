@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::SceneTools::parentsBreadthFirst(), @ref Magnum::SceneTools::parentsBreadthFirstInto(), @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
+ * @brief Function @ref Magnum::SceneTools::parentsBreadthFirst(), @ref Magnum::SceneTools::parentsBreadthFirstInto(), @ref Magnum::SceneTools::childrenDepthFirst(), @ref Magnum::SceneTools::childrenDepthFirstInto(), @ref Magnum::SceneTools::absoluteFieldTransformations2D(), @ref Magnum::SceneTools::absoluteFieldTransformations2DInto(), @ref Magnum::SceneTools::absoluteFieldTransformations3D(), @ref Magnum::SceneTools::absoluteFieldTransformations3DInto()
  * @m_since_latest
  */
 
@@ -59,7 +59,7 @@ having no cycles (i.e., every node listed just once) and not being sparse
 
 @experimental
 
-@see @ref Trade::SceneData::hasField()
+@see @ref Trade::SceneData::hasField(), @ref childrenDepthFirst()
 */
 MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Pair<UnsignedInt, Int>> parentsBreadthFirst(const Trade::SceneData& scene);
 
@@ -74,9 +74,61 @@ views have a size equal to size of the @ref Trade::SceneField::Parent view in
 
 @experimental
 
-@see @ref Trade::SceneData::fieldSize(SceneField) const
+@see @ref Trade::SceneData::fieldSize(SceneField) const,
+    @ref childrenDepthFirstInto()
 */
 MAGNUM_SCENETOOLS_EXPORT void parentsBreadthFirstInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<Int>& parentDestination);
+
+/**
+@brief Retrieve children in a depth-first order
+@m_since_latest
+
+Extracts the @ref Trade::SceneField::Parent field mapping and data from
+@p scene and converts it to a list of (object index, children count) pairs
+such that:
+
+-   children of given object are directly following the object itself
+-   the count includes direct children as well as nested children, next object
+    in the same level, if exists, is thus after another `count` items
+
+Objects in particular level keep the same order as they had in the
+@ref Trade::SceneField::Parent field. Size of the returned list is equal to the
+@ref Trade::SceneField::Parent field size. Implicitly, the whole returned list
+contains (nested) children of the root, which implies that the first returned
+object is the first top-level object (i.e., with a parent equal to
+@cpp -1 @ce), and size of the list is the count of all objects.
+
+This form is useful primarily for marking and extracting subtrees, for example:
+
+@snippet MagnumSceneTools.cpp childrenDepthFirst-extract-tree
+
+The operation is done in an @f$ \mathcal{O}(n) @f$ execution time and memory
+complexity, with @f$ n @f$ being @ref Trade::SceneData::mappingBound(). The
+@ref Trade::SceneField::Parent field is expected to be contained in the scene,
+having no cycles (i.e., every node listed just once) and not being sparse
+(i.e., every node listed in the field reachable from the root).
+
+@experimental
+
+@see @ref Trade::SceneData::hasField(), @ref parentsBreadthFirst()
+*/
+MAGNUM_SCENETOOLS_EXPORT Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> childrenDepthFirst(const Trade::SceneData& scene);
+
+/**
+@brief Retrieve childrem in a depth-first order into a pre-allocated view
+@m_since_latest
+
+Like @ref childrenDepthFirst(), but puts the result into @p mappingDestination
+and @p childCountDestination instead of allocating a new array. Expect that
+both views have a size equal to size of the @ref Trade::SceneField::Parent view
+in @p scene.
+
+@experimental
+
+@see @ref Trade::SceneData::fieldSize(SceneField) const,
+    @ref parentsBreadthFirstInto()
+*/
+MAGNUM_SCENETOOLS_EXPORT void childrenDepthFirstInto(const Trade::SceneData& scene, const Containers::StridedArrayView1D<UnsignedInt>& mappingDestination, const Containers::StridedArrayView1D<UnsignedInt>& childCountDestination);
 
 /**
 @brief Calculate absolute 2D transformations for given field
