@@ -42,6 +42,7 @@ struct CopyTest: TestSuite::Tester {
     explicit CopyTest();
 
     void copy();
+    void copyOffsetOnlyAttributes();
     void copyNoIndexData();
     void copyNoAttributeVertexData();
     void copyStridedIndices();
@@ -72,6 +73,7 @@ struct {
 
 CopyTest::CopyTest() {
     addTests({&CopyTest::copy,
+              &CopyTest::copyOffsetOnlyAttributes,
               &CopyTest::copyNoIndexData,
               &CopyTest::copyNoAttributeVertexData});
 
@@ -132,6 +134,30 @@ void CopyTest::copy() {
     CORRADE_VERIFY(!indexData.deleter());
     CORRADE_VERIFY(!vertexData.deleter());
     CORRADE_VERIFY(!attributeData.deleter());
+}
+
+void CopyTest::copyOffsetOnlyAttributes() {
+    Trade::MeshData circle = Primitives::circle2DSolid(5);
+    Trade::MeshData copy = MeshTools::copy(circle);
+    CORRADE_COMPARE(copy.primitive(), circle.primitive());
+    CORRADE_COMPARE(copy.vertexCount(), circle.vertexCount());
+    CORRADE_COMPARE(copy.attributeCount(), circle.attributeCount());
+
+    for(std::size_t i = 0; i != circle.attributeCount(); ++i) {
+        CORRADE_ITERATION(i);
+
+        CORRADE_COMPARE(copy.attributeName(i), circle.attributeName(i));
+        CORRADE_COMPARE(copy.attributeFormat(i), circle.attributeFormat(i));
+        CORRADE_COMPARE(copy.attributeOffset(i), circle.attributeOffset(i));
+        CORRADE_COMPARE(copy.attributeStride(i), circle.attributeStride(i));
+        CORRADE_COMPARE(copy.attributeArraySize(i), circle.attributeArraySize(i));
+
+        /* The circle has offset-only attributes, that should be preserved
+           after the copy as well */
+        CORRADE_VERIFY(copy.attributeData()[i].isOffsetOnly());
+    }
+
+    CORRADE_COMPARE_AS(copy.vertexData(), circle.vertexData(), TestSuite::Compare::Container);
 }
 
 void CopyTest::copyNoIndexData() {

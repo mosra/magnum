@@ -46,7 +46,9 @@ All other properties such as the primitive or importer state are passed through
 unchanged, the data layout isn't changed in any way. The resulting
 @ref Trade::MeshData::indexDataFlags() and
 @relativeref{Trade::MeshData,vertexDataFlags()} are always
-@ref Trade::DataFlag::Owned and @ref Trade::DataFlag::Mutable.
+@ref Trade::DataFlag::Owned and @ref Trade::DataFlag::Mutable. Attributes that
+were offset-only before are kept offset-only, others have offsets recalculated
+against the newly-allocated vertex data.
 @see @ref copy(Trade::MeshData&&), @ref reference(), @ref mutableReference()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData copy(const Trade::MeshData& mesh);
@@ -63,7 +65,9 @@ data don't have the default deleter, allocates a copy of
 @relativeref{Trade::MeshData,vertexData()} or
 @relativeref{Trade::MeshData,attributeData()}, otherwise transfers their
 ownership. The resulting data are always owned and mutable, the data layout
-isn't changed in any way.
+isn't changed in any way. Attributes that were offset-only before are kept
+offset-only, others have offsets recalculated against the
+potentially-newly-allocated vertex data.
 @see @ref reference(), @ref mutableReference()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData copy(Trade::MeshData&& mesh);

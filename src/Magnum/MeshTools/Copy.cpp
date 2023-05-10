@@ -142,15 +142,22 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
            problematic to use in plugins */
         attributeData = Containers::Array<Trade::MeshAttributeData>{DefaultInit, originalAttributeData.size()};
         for(std::size_t i = 0; i != originalAttributeData.size(); ++i) {
-            attributeData[i] = Trade::MeshAttributeData{
-                originalAttributeData[i].name(),
-                originalAttributeData[i].format(),
+            const Trade::MeshAttributeData& originalAttribute = originalAttributeData[i];
+
+            /* If the attribute is offset-only, copy it directly, yay! */
+            if(originalAttribute.isOffsetOnly())
+                attributeData[i] = originalAttribute;
+
+            /* Otherwise it's kinda verbose */
+            else attributeData[i] = Trade::MeshAttributeData{
+                originalAttribute.name(),
+                originalAttribute.format(),
                 Containers::StridedArrayView1D<const void>{
                     vertexData,
-                    vertexData.data() + originalAttributeData[i].offset(originalVertexData),
+                    vertexData.data() + originalAttribute.offset(originalVertexData),
                     vertexCount,
-                    originalAttributeData[i].stride()},
-                originalAttributeData[i].arraySize()};
+                    originalAttribute.stride()},
+                originalAttribute.arraySize()};
         }
     }
 
