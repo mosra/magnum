@@ -42,7 +42,7 @@ Two color-coded arrows for visualizing orientation (XY is RG), going from
 with @ref MeshIndexType::UnsignedShort indices, interleaved
 @ref VertexFormat::Vector2 positions and @ref VertexFormat::Vector3 colors. The
 returned instance references @ref Trade::DataFlag::Global data --- pass the
-mesh through @ref MeshTools::owned() to get a mutable copy, if needed.
+mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
 
 @image html primitives-axis2d.png width=256px
 
@@ -58,7 +58,7 @@ Three color-coded arrows for visualizing orientation (XYZ is RGB), going from
 @ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedShort indices,
 interleaved @ref VertexFormat::Vector3 positions and @ref VertexFormat::Vector3
 colors. The returned instance references @ref Trade::DataFlag::Global data ---
-pass the mesh through @ref MeshTools::owned() to get a mutable copy, if needed.
+pass the mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
 
 @image html primitives-axis3d.png width=256px
 

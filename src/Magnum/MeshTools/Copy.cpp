@@ -23,11 +23,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Reference.h"
+#include "Copy.h"
 
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_MESHTOOLS_REFERENCE
+#include "Magnum/MeshTools/Reference.h"
+#endif
 
 namespace Magnum { namespace MeshTools {
 
@@ -75,11 +80,11 @@ Trade::MeshData mutableReference(Trade::MeshData& mesh) {
         mesh.vertexCount()};
 }
 
-Trade::MeshData owned(const Trade::MeshData& mesh) {
-    return owned(reference(mesh));
+Trade::MeshData copy(const Trade::MeshData& mesh) {
+    return copy(reference(mesh));
 }
 
-Trade::MeshData owned(Trade::MeshData&& mesh) {
+Trade::MeshData copy(Trade::MeshData&& mesh) {
     /** @todo copy only the actually used range instead of the whole thing? */
 
     /* If index data are already owned, move them to the output. This works
@@ -152,5 +157,15 @@ Trade::MeshData owned(Trade::MeshData&& mesh) {
         std::move(vertexData), std::move(attributeData),
         vertexCount};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData owned(const Trade::MeshData& mesh) {
+    return copy(mesh);
+}
+
+Trade::MeshData owned(Trade::MeshData&& mesh) {
+    return copy(std::move(mesh));
+}
+#endif
 
 }}

@@ -25,69 +25,43 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Function @ref Magnum::MeshTools::reference(), @ref Magnum::MeshTools::owned()
- * @m_since{2020,06}
+ * @m_deprecated_since_latest Use @ref Magnum/MeshTools/Copy.h instead.
  */
+#endif
 
-#include "Magnum/MeshTools/visibility.h"
-#include "Magnum/Trade/Trade.h"
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+
+#include "Magnum/MeshTools/Copy.h"
+
+#ifndef _MAGNUM_NO_DEPRECATED_MESHTOOLS_REFERENCE
+CORRADE_DEPRECATED_FILE("use Magnum/MeshTools/Copy.h instead")
+#endif
 
 namespace Magnum { namespace MeshTools {
 
-/**
-@brief Create an immutable reference on a @ref Trade::MeshData
-@m_since{2020,06}
-
-The returned instance has empty @ref Trade::MeshData::indexDataFlags() and
-@ref Trade::MeshData::vertexDataFlags() and references attribute data from the
-@p mesh as well. The function performs no allocation or data copy. Use
-@ref owned() for an inverse operation.
-@see @ref mutableReference()
-*/
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData reference(const Trade::MeshData& mesh);
-
-/**
-@brief Create a mutable reference on a @ref Trade::MeshData
-@m_since{2020,06}
-
-The returned instance has @ref Trade::MeshData::indexDataFlags() and
-@ref Trade::MeshData::vertexDataFlags() set to @ref Trade::DataFlag::Mutable.
-The function performs no allocation or data copy. Use @ref owned() for an
-inverse operation. Expects that @p mesh is mutable.
-@see @ref reference()
-*/
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData mutableReference(Trade::MeshData& mesh);
-
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Create an owned @ref Trade::MeshData
-@m_since{2020,06}
-
-The returned instance owns its index, vertex and attribute data --- both
-@ref Trade::MeshData::indexDataFlags() and
-@ref Trade::MeshData::vertexDataFlags() have @ref Trade::DataFlag::Mutable and
-@ref Trade::DataFlag::Owned set. This function unconditionally does an
-allocation and a copy even if the @p mesh is already owned, use
-@ref owned(Trade::MeshData&&) to make an owned copy only if the instance isn't
-already owned.
-@see @ref reference(), @ref mutableReference()
+@m_deprecated_since_latest Use @ref copy(const Trade::MeshData&) instead.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(const Trade::MeshData& mesh);
+CORRADE_DEPRECATED("use copy(Trade::MeshData&&) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(const Trade::MeshData& mesh);
 
 /**
 @brief Create an owned @ref Trade::MeshData, if not already
-@m_since{2020,06}
-
-The returned instance owns its index, vertex and attribute data --- both
-@ref Trade::MeshData::indexDataFlags() and
-@ref Trade::MeshData::vertexDataFlags() have @ref Trade::DataFlag::Mutable and
-@ref Trade::DataFlag::Owned set. Index, vertex and attribute data that are
-already owned are simply moved to the output, otherwise the data get copied
-into newly allocated arrays.
-@see @ref reference(), @ref mutableReference()
+@m_deprecated_since_latest Use @ref copy(Trade::MeshData&&) instead.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(Trade::MeshData&& mesh);
+CORRADE_DEPRECATED("use copy(Trade::MeshData&&) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(Trade::MeshData&& mesh);
+#endif
 
 }}
+#else
+#error use Magnum/MeshTools/Copy.h instead
+#endif
 
 #endif

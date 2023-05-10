@@ -35,7 +35,7 @@
 
 #include "Magnum/MaterialTools/PhongToPbrMetallicRoughness.h"
 #include "Magnum/MeshTools/Concatenate.h"
-#include "Magnum/MeshTools/Reference.h"
+#include "Magnum/MeshTools/Copy.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/SceneTools/Hierarchy.h"

@@ -36,7 +36,7 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/BoundingVolume.h"
-#include "Magnum/MeshTools/Reference.h"
+#include "Magnum/MeshTools/Copy.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Primitives/Capsule.h"
 #include "Magnum/Primitives/Cube.h"
@@ -173,7 +173,7 @@ void BoundingVolumeTest::sphereBouncingBubble() {
 
     /* Cube -- translated and scaled */
     } {
-        Trade::MeshData cubeMesh = MeshTools::owned(Primitives::cubeSolid());
+        Trade::MeshData cubeMesh = MeshTools::copy(Primitives::cubeSolid());
         constexpr Vector3 translation{1.0f, 2.0f, 3.0f};
         constexpr Float scale = 13.2f;
         MeshTools::transform3DInPlace(cubeMesh, Matrix4::translation(translation)*Matrix4::scaling(Vector3{scale}));
@@ -191,7 +191,7 @@ void BoundingVolumeTest::sphereBouncingBubble() {
 
     for(Deg degrees = 0.0_degf; degrees < 360.0_degf; degrees += 60.0_degf) {
         CORRADE_ITERATION(degrees);
-        Trade::MeshData cubeMesh = MeshTools::owned(Primitives::cubeSolid());
+        Trade::MeshData cubeMesh = MeshTools::copy(Primitives::cubeSolid());
         constexpr Vector3 translation{1.0f, 2.0f, 3.0f};
         MeshTools::transform3DInPlace(cubeMesh, Matrix4::rotationY(degrees)*Matrix4::translation(translation));
         const Containers::Pair<Vector3, Float> sphere =

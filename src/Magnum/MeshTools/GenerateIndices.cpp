@@ -30,7 +30,7 @@
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Vector3.h"
-#include "Magnum/MeshTools/Reference.h"
+#include "Magnum/MeshTools/Copy.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {

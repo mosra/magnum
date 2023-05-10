@@ -30,7 +30,7 @@
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
-#include "Magnum/MeshTools/Reference.h"
+#include "Magnum/MeshTools/Copy.h"
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED

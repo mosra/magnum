@@ -37,7 +37,7 @@
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/MeshTools/Reference.h"
+#include "Magnum/MeshTools/Copy.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
@@ -417,14 +417,13 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     /* Turn the passed data into an interleaved owned mutable instance we can
-       operate on -- owned() alone only makes the data owned, interleave()
-       alone only makes the data interleaved (but the index data can stay
-       non-owned). Additionally we need to ensure the interleaved data are
-       tightly packed by removing InterleaveFlag::PreserveInterleavedAttributes
-       which is set by default, otherwise random padding bytes or filtered-out
-       attributes may contribute to the non-uniqueness of particular
-       elements. */
-    Trade::MeshData ownedInterleaved = owned(interleave(mesh, {}, InterleaveFlags{}));
+       operate on -- copy() alone only makes the data owned, interleave() alone
+       only makes the data interleaved (but the index data can stay non-owned).
+       Additionally we need to ensure the interleaved data are tightly packed
+       by removing InterleaveFlag::PreserveInterleavedAttributes which is set
+       by default, otherwise random padding bytes or filtered-out attributes
+       may contribute to the non-uniqueness of particular elements. */
+    Trade::MeshData ownedInterleaved = copy(interleave(mesh, {}, InterleaveFlags{}));
 
     /* Because the interleaved mesh was forced to be repacked, the vertex data
        should span the whole stride -- this is relied on in the attribute
@@ -480,7 +479,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, const Float f
     /* Turn the passed data into an owned mutable instance we can operate on.
        There's a chance the original data are already like this, in which case
        this will be just a passthrough. */
-    Trade::MeshData owned = MeshTools::owned(std::move(mesh));
+    Trade::MeshData owned = MeshTools::copy(std::move(mesh));
 
     /* Allocate an interleaved index array for all vertices times all
        attributes */

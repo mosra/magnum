@@ -1078,6 +1078,12 @@ See also:
     practice that meant compiling at most two or three shaders at once. The new
     API allows for much larger parallelism as well as an ability to query
     completion status.
+-   @cpp MeshTools::owned() @ce was deprecated in favor of a more clearly named
+    @ref MeshTools::copy() utility living in a new @ref Magnum/MeshTools/Copy.h
+    header. To avoid having too many little headers,
+    @ref MeshTools::reference() and @ref MeshTools::mutableReference() were
+    moved there as well, with @cpp Magnum/MeshTools/Reference.h @ce being a
+    deprecated alias now.
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,

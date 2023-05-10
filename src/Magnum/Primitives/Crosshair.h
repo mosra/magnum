@@ -40,7 +40,7 @@ namespace Magnum { namespace Primitives {
 2x2 crosshair (two crossed lines), centered at origin. Non-indexed
 @ref MeshPrimitive::Lines with @ref VertexFormat::Vector2 positions. The
 returned instance references @ref Trade::DataFlag::Global data --- pass the
-mesh through @ref MeshTools::owned() to get a mutable copy, if needed.
+mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
 
 @image html primitives-crosshair2d.png width=256px
 
@@ -54,7 +54,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData crosshair2D();
 2x2x2 crosshair (three crossed lines), centered at origin. Non-indexed
 @ref MeshPrimitive::Lines with @ref VertexFormat::Vector3 positions. The
 returned instance references @ref Trade::DataFlag::Global data --- pass the
-mesh through @ref MeshTools::owned() to get a mutable copy, if needed.
+mesh through @ref MeshTools::copy() to get a mutable copy, if needed.
 
 @image html primitives-crosshair3d.png width=256px
 

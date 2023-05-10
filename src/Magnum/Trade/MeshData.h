@@ -786,7 +786,7 @@ cases when it's desirable to modify the data in-place, there's the
 @ref mutableAttribute() set of functions. To use these, you need to check that
 the data are mutable using @ref indexDataFlags() or @ref vertexDataFlags()
 first, and if not then you may want to make a mutable copy first using
-@ref MeshTools::owned(). The following snippet applies a transformation to the
+@ref MeshTools::copy(). The following snippet applies a transformation to the
 mesh positions:
 
 @snippet MagnumTrade.cpp MeshData-usage-mutable
