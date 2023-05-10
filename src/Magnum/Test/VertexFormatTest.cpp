@@ -537,8 +537,10 @@ void VertexFormatTest::assembleInvalidComponentCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    vertexFormat(VertexFormat::Vector3, 0, false);
     vertexFormat(VertexFormat::Vector3, 5, false);
     CORRADE_COMPARE(out.str(),
+        "vertexFormat(): invalid component count 0\n"
         "vertexFormat(): invalid component count 5\n");
 }
 

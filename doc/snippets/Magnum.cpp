@@ -30,6 +30,7 @@
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/VertexFormat.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/ResourceManager.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -319,5 +320,17 @@ Resource<GL::Mesh> myMesh = manager.get<GL::Mesh>("my-mesh");
 /* [AbstractResourceLoader-use] */
 }
 #endif
+
+{
+/* [vertexFormat] */
+VertexFormat normalFormat = DOXYGEN_ELLIPSIS({});
+
+VertexFormat tangentFormat = vertexFormat(
+    normalFormat,
+    4,
+    isVertexFormatNormalized(normalFormat));
+/* [vertexFormat] */
+static_cast<void>(tangentFormat);
+}
 
 }

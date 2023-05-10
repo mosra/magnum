@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::VertexFormat, function @ref Magnum::isVertexFormatImplementationSpecific(), @ref Magnum::vertexFormatWrap(), @ref Magnum::vertexFormatUnwrap(), @ref Magnum::vertexFormatSize(), @ref Magnum::vertexFormatComponentFormat(), @ref Magnum::vertexFormatComponentCount(), @ref Magnum::vertexFormatVectorCount(), @ref Magnum::vertexFormatVectorStride(), @ref Magnum::isVertexFormatNormalized()
+ * @brief Enum @ref Magnum::VertexFormat, function @ref Magnum::isVertexFormatImplementationSpecific(), @ref Magnum::vertexFormatWrap(), @ref Magnum::vertexFormatUnwrap(), @ref Magnum::vertexFormatSize(), @ref Magnum::vertexFormatComponentFormat(), @ref Magnum::vertexFormatComponentCount(), @ref Magnum::vertexFormatVectorCount(), @ref Magnum::vertexFormatVectorStride(), @ref Magnum::isVertexFormatNormalized(), @ref Magnum::vertexFormat()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -62,6 +62,12 @@ information about the mapping. Note that not every format may be available, use
 For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format);
 for Metal, corresponds to @m_class{m-doc-external} [MTLVertexFormat](https://developer.apple.com/documentation/metal/mtlvertexformat?language=objc).
 See documentation of each value for more information about the mapping.
+
+See also @ref vertexFormatSize(), @ref vertexFormatComponentFormat(),
+@ref vertexFormatComponentCount(), @ref vertexFormatVectorCount(),
+@ref vertexFormatVectorStride(), @ref isVertexFormatNormalized() and
+@ref vertexFormat() for querying various aspects of a format and assembling it
+from a set of singular properties.
 @see @ref Trade::MeshData, @ref Trade::MeshAttributeData,
     @ref Trade::MeshAttribute
 */
@@ -1364,8 +1370,9 @@ template<class T = UnsignedInt> constexpr T vertexFormatUnwrap(VertexFormat form
 @m_since{2020,06}
 
 To get size of a single component, call this function on a result of
-@ref vertexFormatComponentFormat().
-@see @ref pixelFormatSize()
+@ref vertexFormatComponentFormat(). Expects that the vertex format is *not*
+implementation-specific.
+@see @ref isVertexFormatImplementationSpecific(), @ref pixelFormatSize()
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatSize(VertexFormat format);
 
@@ -1379,8 +1386,10 @@ The function also removes the normalization aspect from the format --- use
 @ref VertexFormat::UnsignedByte for @ref VertexFormat::Vector3ub.
 Calling @ref vertexFormatComponentCount() on the returned value will always
 give @cpp 1 @ce; calling @ref isVertexFormatNormalized() on the returned
-value will always give @cpp false @ce.
-@see @ref vertexFormat(VertexFormat, UnsignedInt, bool),
+value will always give @cpp false @ce. Expects that the vertex format is *not*
+implementation-specific.
+@see @ref isVertexFormatImplementationSpecific(),
+    @ref vertexFormat(VertexFormat, UnsignedInt, bool),
     @ref pixelFormatChannelFormat()
 */
 MAGNUM_EXPORT VertexFormat vertexFormatComponentFormat(VertexFormat format);
@@ -1390,8 +1399,10 @@ MAGNUM_EXPORT VertexFormat vertexFormatComponentFormat(VertexFormat format);
 @m_since{2020,06}
 
 Returns @cpp 1 @ce for scalar formats and e.g. @cpp 3 @ce for
-@ref VertexFormat::Vector3ub.
-@see @ref vertexFormat(VertexFormat, UnsignedInt, bool),
+@ref VertexFormat::Vector3ub. Expects that the vertex format is *not*
+implementation-specific.
+@see @ref isVertexFormatImplementationSpecific(),
+    @ref vertexFormat(VertexFormat, UnsignedInt, bool),
     @ref pixelFormatChannelCount()
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatComponentCount(VertexFormat format);
@@ -1401,7 +1412,9 @@ MAGNUM_EXPORT UnsignedInt vertexFormatComponentCount(VertexFormat format);
 @m_since{2020,06}
 
 Returns @cpp 1 @ce for scalar and vector formats and e.g. @cpp 3 @ce for
-@ref VertexFormat::Matrix3x2d.
+@ref VertexFormat::Matrix3x2d. Expects that the vertex format is *not*
+implementation-specific.
+@see @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatVectorCount(VertexFormat format);
 
@@ -1411,7 +1424,9 @@ MAGNUM_EXPORT UnsignedInt vertexFormatVectorCount(VertexFormat format);
 
 Returns type size for scalar and vector formats and e.g. @cpp 8 @ce for
 @ref VertexFormat::Matrix2x3hAligned (but @cpp 6 @ce for
-@ref VertexFormat::Matrix2x3h).
+@ref VertexFormat::Matrix2x3h). Expects that the vertex format is *not*
+implementation-specific.
+@see @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_EXPORT UnsignedInt vertexFormatVectorStride(VertexFormat format);
 
@@ -1422,8 +1437,10 @@ MAGNUM_EXPORT UnsignedInt vertexFormatVectorStride(VertexFormat format);
 Returns @cpp true @ce for `*Normalized` formats, @cpp false @ce otherwise. In
 particular, floating-point formats are *not* treated as normalized, even though
 for example colors might commonly have values only in the @f$ [0.0, 1.0] @f$
-range (or normals in the @f$ [-1.0, 1.0] @f$ range).
-@see @ref vertexFormat(VertexFormat, UnsignedInt, bool)
+range (or normals in the @f$ [-1.0, 1.0] @f$ range). Expects that the vertex
+format is *not* implementation-specific.
+@see @ref isVertexFormatImplementationSpecific(),
+    @ref vertexFormat(VertexFormat, UnsignedInt, bool)
 */
 MAGNUM_EXPORT bool isVertexFormatNormalized(VertexFormat format);
 
@@ -1432,10 +1449,19 @@ MAGNUM_EXPORT bool isVertexFormatNormalized(VertexFormat format);
 @m_since{2020,06}
 
 Converts @p format to a new format of desired component count and
-normalization. Expects that @p componentCount is not larger than @cpp 4 @ce and
-@p normalized is @cpp true @ce only for 8- and 16-byte integer formats.
-@see @ref vertexFormatComponentFormat(),
-    @ref vertexFormatComponentCount(),
+normalization. Expects that @p componentCount is @cpp 1 @ce, @cpp 2 @ce,
+@cpp 3 @ce or @cpp 4 @ce and @p normalized is @cpp true @ce only for 8- and
+16-bit integer formats. Expects that the vertex format is *not*
+implementation-specific.
+
+Example usage --- picking a format for four-component tangents to match an
+existing (three-component) vertex normal format:
+
+@snippet Magnum.cpp vertexFormat
+
+@see @ref isVertexFormatImplementationSpecific(),
+    @ref vertexFormat(VertexFormat, UnsignedInt, UnsignedInt, bool),
+    @ref vertexFormatComponentFormat(), @ref vertexFormatComponentCount(),
     @ref isVertexFormatNormalized()
 */
 MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt componentCount, bool normalized);
@@ -1447,11 +1473,12 @@ MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt compone
 Converts @p format to a new format of desired component and vertex count and
 normalization. Expects that both @p vectorCount and @p componentCount is either
 @cpp 2 @ce, @cpp 3 @ce or @cpp 4 @ce, and @p format is floating-point or
-8-/16-bit signed integer.
-@see @ref vertexFormatComponentFormat(),
-    @ref vertexFormatComponentCount(),
-    @ref vertexFormatVectorCount(),
-    @ref vertexFormatVectorStride(),
+8-/16-bit signed integer. Expects that the vertex format is *not*
+implementation-specific.
+@see @ref isVertexFormatImplementationSpecific(),
+    @ref vertexFormat(VertexFormat, UnsignedInt, bool),
+    @ref vertexFormatComponentFormat(), @ref vertexFormatComponentCount(),
+    @ref vertexFormatVectorCount(), @ref vertexFormatVectorStride(),
     @ref isVertexFormatNormalized()
 */
 MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt vectorCount, UnsignedInt componentCount, bool aligned);
