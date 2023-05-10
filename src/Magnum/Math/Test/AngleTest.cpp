@@ -220,6 +220,11 @@ void AngleTest::constructNoInit() {
         /* The warning is reported for both debug and release build */
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+        /* On GCC 13 it's -Wuninitialized now, the compiler is now EVEN MORE
+           DEFINITELY RIGHT that I'm doing something wrong */
+        #if __GNUC__ >= 13
+        #pragma GCC diagnostic ignored "-Wuninitialized"
+        #endif
         #ifdef __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
         #endif
