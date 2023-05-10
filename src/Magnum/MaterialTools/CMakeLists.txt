@@ -29,6 +29,7 @@ set(CMAKE_FOLDER "Magnum/MaterialTools")
 
 # Files shared between main library and unit test library
 set(MagnumMaterialTools_SRCS
+    Copy.cpp
     PhongToPbrMetallicRoughness.cpp)
 
 # Files compiled with different flags for main library and unit test library
@@ -37,6 +38,7 @@ set(MagnumMaterialTools_GracefulAssert_SRCS
     Merge.cpp)
 
 set(MagnumMaterialTools_HEADERS
+    Copy.h
     Filter.h
     Merge.h
     PhongToPbrMetallicRoughness.h
