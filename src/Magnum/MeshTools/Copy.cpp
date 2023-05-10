@@ -138,7 +138,9 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
     /* Otherwise we have to allocate a new one and re-route the attributes to
        a potentially different vertex array */
     } else {
-        attributeData = Containers::Array<Trade::MeshAttributeData>{originalAttributeData.size()};
+        /* Using DefaultInit so the array has a default deleter and isn't
+           problematic to use in plugins */
+        attributeData = Containers::Array<Trade::MeshAttributeData>{DefaultInit, originalAttributeData.size()};
         for(std::size_t i = 0; i != originalAttributeData.size(); ++i) {
             attributeData[i] = Trade::MeshAttributeData{
                 originalAttributeData[i].name(),

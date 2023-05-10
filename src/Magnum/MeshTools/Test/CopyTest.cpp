@@ -124,6 +124,14 @@ void CopyTest::copy() {
 
     CORRADE_COMPARE_AS(copy.indexData(), cube.indexData(), TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(copy.vertexData(), cube.vertexData(), TestSuite::Compare::Container);
+
+    /* The data should have a default deleter to make this usable in plugins */
+    Containers::Array<char> indexData = copy.releaseIndexData();
+    Containers::Array<char> vertexData = copy.releaseVertexData();
+    Containers::Array<Trade::MeshAttributeData> attributeData = copy.releaseAttributeData();
+    CORRADE_VERIFY(!indexData.deleter());
+    CORRADE_VERIFY(!vertexData.deleter());
+    CORRADE_VERIFY(!attributeData.deleter());
 }
 
 void CopyTest::copyNoIndexData() {
