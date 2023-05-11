@@ -7639,10 +7639,13 @@ void SceneDataTest::releaseData() {
     CORRADE_COMPARE(released.data(), view.data());
     CORRADE_COMPARE(released.size(), 3*sizeof(Field));
 
-    /* Both fields and data are all gone */
-    CORRADE_COMPARE(static_cast<const void*>(scene.fieldData()), nullptr);
-    CORRADE_COMPARE(scene.fieldCount(), 0);
+    /* Data are gone */
     CORRADE_COMPARE(static_cast<const void*>(scene.data()), nullptr);
+
+    /* Fields stay untouched so it's possible to release them separately
+       without being forced to order these two releases in any way */
+    CORRADE_VERIFY(scene.fieldData().data());
+    CORRADE_COMPARE(scene.fieldCount(), 2);
 
     /* Object count and type stays untouched, as it con't result in any
        dangling data access */

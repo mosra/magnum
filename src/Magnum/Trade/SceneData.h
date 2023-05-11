@@ -3684,14 +3684,15 @@ class MAGNUM_TRADE_EXPORT SceneData {
          * @brief Release data storage
          * @m_since_latest
          *
-         * Releases the ownership of the data array and resets internal
-         * field-related state to default. The scene then behaves like it has
-         * no fields and no data. If you want to release field data as well,
-         * first call @ref releaseFieldData() and then this function.
+         * Releases the ownership of the data array. Note that the returned
+         * array has a custom no-op deleter when the data are not owned by the
+         * scene, and while the returned array type is mutable, the actual
+         * memory might be not.
          *
-         * Note that the returned array has a custom no-op deleter when the
-         * data are not owned by the scene, and while the returned array type
-         * is mutable, the actual memory might be not.
+         * @attention Querying any field after calling @ref releaseData() has
+         *      undefined behavior and might lead to crashes. This is done
+         *      intentionally in order to simplify the interaction between this
+         *      function and @ref releaseFieldData().
          * @see @ref data(), @ref dataFlags()
          */
         Containers::Array<char> releaseData();

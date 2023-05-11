@@ -2927,7 +2927,6 @@ Containers::Array<SceneFieldData> SceneData::releaseFieldData() {
 }
 
 Containers::Array<char> SceneData::releaseData() {
-    _fields = {};
     Containers::Array<char> out = std::move(_data);
     _data = {};
     return out;
