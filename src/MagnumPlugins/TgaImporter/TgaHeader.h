@@ -38,7 +38,7 @@ namespace Magnum { namespace Trade { namespace Implementation {
 struct TgaHeader {
     UnsignedByte    identsize;      /* Size of ID field that follows header (0) */
     UnsignedByte    colorMapType;   /* 0 = None, 1 = paletted */
-    UnsignedByte    imageType;      /* 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
+    UnsignedByte    imageType;      /* 0 = none, 1 = indexed, 2 = rgb, 3 = gray, +8=rle */
     UnsignedShort   colorMapStart;  /* First color map entry */
     UnsignedShort   colorMapLength; /* Number of colors */
     UnsignedByte    colorMapBpp;    /* Bits per palette entry */
