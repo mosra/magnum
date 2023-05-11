@@ -1440,7 +1440,8 @@ for example colors might commonly have values only in the @f$ [0.0, 1.0] @f$
 range (or normals in the @f$ [-1.0, 1.0] @f$ range). Expects that the vertex
 format is *not* implementation-specific.
 @see @ref isVertexFormatImplementationSpecific(),
-    @ref vertexFormat(VertexFormat, UnsignedInt, bool)
+    @ref vertexFormat(VertexFormat, UnsignedInt, bool),
+    @ref isPixelFormatNormalized()
 */
 MAGNUM_EXPORT bool isVertexFormatNormalized(VertexFormat format);
 
