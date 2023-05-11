@@ -814,7 +814,8 @@ MAGNUM_EXPORT UnsignedInt pixelFormatChannelCount(PixelFormat format);
 @m_since_latest
 
 Returns @cpp true @ce for `*Srgb` formats, @cpp false @ce otherwise. Expects
-that the pixel format is *not* implementation-specific.
+that the pixel format is *not* implementation-specific and not a
+depth/stencil format.
 @see @ref isPixelFormatImplementationSpecific()
 */
 MAGNUM_EXPORT bool isPixelFormatSrgb(PixelFormat format);

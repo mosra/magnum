@@ -352,6 +352,7 @@ bool isPixelFormatSrgb(const PixelFormat format) {
         case PixelFormat::RG32F:
         case PixelFormat::RGB32F:
         case PixelFormat::RGBA32F:
+            return false;
         case PixelFormat::Depth16Unorm:
         case PixelFormat::Depth24Unorm:
         case PixelFormat::Depth32F:
@@ -359,7 +360,7 @@ bool isPixelFormatSrgb(const PixelFormat format) {
         case PixelFormat::Depth16UnormStencil8UI:
         case PixelFormat::Depth24UnormStencil8UI:
         case PixelFormat::Depth32FStencil8UI:
-            return false;
+            CORRADE_ASSERT_UNREACHABLE("isPixelFormatSrgb(): can't determine colorspace of" << format, {});
     }
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop

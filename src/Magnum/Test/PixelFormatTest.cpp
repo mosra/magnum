@@ -50,7 +50,7 @@ struct PixelFormatTest: TestSuite::Tester {
 
     void isSrgb();
     void isSrgbInvalid();
-    void isSrgbImplementationSpecific();
+    void isSrgbDepthStencilImplementationSpecific();
 
     void isDepthOrStencil();
     void isDepthOrStencilInvalid();
@@ -100,7 +100,7 @@ PixelFormatTest::PixelFormatTest() {
 
               &PixelFormatTest::isSrgb,
               &PixelFormatTest::isSrgbInvalid,
-              &PixelFormatTest::isSrgbImplementationSpecific,
+              &PixelFormatTest::isSrgbDepthStencilImplementationSpecific,
 
               &PixelFormatTest::isDepthOrStencil,
               &PixelFormatTest::isDepthOrStencilInvalid,
@@ -319,8 +319,8 @@ void PixelFormatTest::channelFormatCountDepthStencilImplementationSpecific() {
 
 void PixelFormatTest::isSrgb() {
     CORRADE_VERIFY(isPixelFormatSrgb(PixelFormat::RG8Srgb));
+    CORRADE_VERIFY(!isPixelFormatSrgb(PixelFormat::RG8Snorm));
     CORRADE_VERIFY(!isPixelFormatSrgb(PixelFormat::RGB16F));
-    CORRADE_VERIFY(!isPixelFormatSrgb(PixelFormat::Stencil8UI));
 }
 
 void PixelFormatTest::isSrgbInvalid() {
@@ -335,14 +335,16 @@ void PixelFormatTest::isSrgbInvalid() {
         "isPixelFormatSrgb(): invalid format PixelFormat(0xdead)\n");
 }
 
-void PixelFormatTest::isSrgbImplementationSpecific() {
+void PixelFormatTest::isSrgbDepthStencilImplementationSpecific() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
     Error redirectError{&out};
     isPixelFormatSrgb(pixelFormatWrap(0xdead));
+    isPixelFormatSrgb(PixelFormat::Depth16Unorm);
     CORRADE_COMPARE(out.str(),
-        "isPixelFormatSrgb(): can't determine colorspace of an implementation-specific format 0xdead\n");
+        "isPixelFormatSrgb(): can't determine colorspace of an implementation-specific format 0xdead\n"
+        "isPixelFormatSrgb(): can't determine colorspace of PixelFormat::Depth16Unorm\n");
 }
 
 void PixelFormatTest::isDepthOrStencil() {
