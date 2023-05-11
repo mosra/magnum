@@ -684,6 +684,49 @@ bool isPixelFormatDepthOrStencil(const PixelFormat format) {
     CORRADE_ASSERT_UNREACHABLE("isPixelFormatDepthOrStencil(): invalid format" << format, {});
 }
 
+PixelFormat pixelFormat(const PixelFormat format, const UnsignedInt channelCount, const bool srgb) {
+    CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
+        "pixelFormat(): can't assemble a format out of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
+    CORRADE_ASSERT(!isPixelFormatDepthOrStencil(format),
+        "pixelFormat(): can't assemble a format out of" << format, {});
+
+    PixelFormat channelFormat = pixelFormatChannelFormat(format);
+
+    /* First turn the format into a sRGB one or remove the sRGB property, if
+       requested. The [RGBA]8Srgb formats follow [RGBA]8Unorm in the same order
+       so it's just constant addition / subtraction for all four variants. */
+    if(srgb && channelFormat != PixelFormat::R8Srgb) {
+        CORRADE_ASSERT(channelFormat == PixelFormat::R8Unorm,
+            "pixelFormat():" << format << "can't be made sRGB", {});
+        channelFormat = PixelFormat(UnsignedInt(channelFormat) - UnsignedInt(PixelFormat::R8Unorm) + UnsignedInt(PixelFormat::R8Srgb));
+    } else if(!srgb && channelFormat == PixelFormat::R8Srgb) {
+        channelFormat = PixelFormat(UnsignedInt(channelFormat) - UnsignedInt(PixelFormat::R8Srgb) + UnsignedInt(PixelFormat::R8Unorm));
+    }
+
+    CORRADE_ASSERT(channelCount >= 1 && channelCount <= 4,
+        "pixelFormat(): invalid component count" << channelCount, {});
+
+    /* The two-, three- and four-channel variants follow each other, so it's
+       just addition again. There may be packed formats in the future, so
+       whitelist for the known set of single-channel formats. */
+    if(channelFormat == PixelFormat::R8Unorm ||
+       channelFormat == PixelFormat::R8Snorm ||
+       channelFormat == PixelFormat::R8Srgb ||
+       channelFormat == PixelFormat::R8UI ||
+       channelFormat == PixelFormat::R8I ||
+       channelFormat == PixelFormat::R16Unorm ||
+       channelFormat == PixelFormat::R16Snorm ||
+       channelFormat == PixelFormat::R16UI ||
+       channelFormat == PixelFormat::R16I ||
+       channelFormat == PixelFormat::R32UI ||
+       channelFormat == PixelFormat::R32I ||
+       channelFormat == PixelFormat::R16F ||
+       channelFormat == PixelFormat::R32F)
+        return PixelFormat(UnsignedInt(channelFormat) + channelCount - 1);
+
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
 namespace {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */

@@ -333,4 +333,16 @@ VertexFormat tangentFormat = vertexFormat(
 static_cast<void>(tangentFormat);
 }
 
+{
+/* [pixelFormat] */
+PixelFormat grayscaleFormat = DOXYGEN_ELLIPSIS({});
+
+PixelFormat rgbFormat = pixelFormat(
+    grayscaleFormat,
+    pixelFormatChannelCount(grayscaleFormat) == 2 ? 4 : 3,
+    isPixelFormatSrgb(grayscaleFormat));
+/* [pixelFormat] */
+static_cast<void>(rgbFormat);
+}
+
 }

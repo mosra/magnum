@@ -1463,7 +1463,8 @@ existing (three-component) vertex normal format:
 @see @ref isVertexFormatImplementationSpecific(),
     @ref vertexFormat(VertexFormat, UnsignedInt, UnsignedInt, bool),
     @ref vertexFormatComponentFormat(), @ref vertexFormatComponentCount(),
-    @ref isVertexFormatNormalized()
+    @ref isVertexFormatNormalized(),
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool)
 */
 MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt componentCount, bool normalized);
 
@@ -1480,7 +1481,8 @@ implementation-specific.
     @ref vertexFormat(VertexFormat, UnsignedInt, bool),
     @ref vertexFormatComponentFormat(), @ref vertexFormatComponentCount(),
     @ref vertexFormatVectorCount(), @ref vertexFormatVectorStride(),
-    @ref isVertexFormatNormalized()
+    @ref isVertexFormatNormalized(),
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool)
 */
 MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt vectorCount, UnsignedInt componentCount, bool aligned);
 

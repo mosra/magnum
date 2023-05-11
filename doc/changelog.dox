@@ -55,8 +55,9 @@ See also:
     @ref DebugTools::CompareImage
 -   New @ref pixelFormatChannelFormat(), @ref pixelFormatChannelCount(),
     @ref isPixelFormatNormalized(), @ref isPixelFormatIntegral(),
-    @ref isPixelFormatFloatingPoint(), @ref isPixelFormatSrgb() and
-    @ref isPixelFormatDepthOrStencil() helpers
+    @ref isPixelFormatFloatingPoint(), @ref isPixelFormatSrgb(),
+    @ref isPixelFormatDepthOrStencil() and
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool) helpers
 -   New @ref Degh, @ref Radh, @ref Range1Dh, @ref Range2Dh and @ref Range3Dh
     typedefs for half-float angles and ranges
 -   New @ref Range1Dui, @ref Range2Dui and @ref Range3Dui typedefs for unsigned

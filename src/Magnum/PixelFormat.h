@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::pixelFormatChannelFormat(), @ref Magnum::pixelFormatChannelCount(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatIntegral(), @ref Magnum::isPixelFormatFloatingPoint(), @ref Magnum::isPixelFormatSrgb(), @ref Magnum::isPixelFormatDepthOrStencil(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
+ * @brief Enum @ref Magnum::PixelFormat, @ref Magnum::CompressedPixelFormat, function @ref Magnum::pixelFormatSize(), @ref Magnum::pixelFormatChannelFormat(), @ref Magnum::pixelFormatChannelCount(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatNormalized(), @ref Magnum::isPixelFormatIntegral(), @ref Magnum::isPixelFormatFloatingPoint(), @ref Magnum::isPixelFormatSrgb(), @ref Magnum::isPixelFormatDepthOrStencil(), @ref Magnum::pixelFormat(), @ref Magnum::isPixelFormatImplementationSpecific(), @ref Magnum::pixelFormatWrap(), @ref Magnum::pixelFormatUnwrap(), @ref Magnum::compressedPixelFormatBlockSize(), @ref Magnum::compressedPixelFormatBlockDataSize(), @ref Magnum::isCompressedPixelFormatImplementationSpecific(), @ref Magnum::compressedPixelFormatWrap(), @ref Magnum::compressedPixelFormatUnwrap()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -68,8 +68,9 @@ See documentation of each value for more information about the mapping.
 See also @ref pixelFormatSize(), @ref pixelFormatChannelFormat(),
 @ref pixelFormatChannelCount(), @ref isPixelFormatNormalized(),
 @ref isPixelFormatIntegral(), @ref isPixelFormatFloatingPoint(),
-@ref isPixelFormatSrgb() and @ref isPixelFormatDepthOrStencil() for querying
-various aspects of a format.
+@ref isPixelFormatSrgb(), @ref isPixelFormatDepthOrStencil() and
+@ref pixelFormat() for querying various aspects of a format and assembling it
+from a set of singular properties.
 @see @ref CompressedPixelFormat, @ref Image, @ref ImageView, @ref VertexFormat
 */
 enum class PixelFormat: UnsignedInt {
@@ -828,6 +829,7 @@ For any pixel format, exactly one of @ref isPixelFormatNormalized(),
 @cpp true @ce.
 @see @ref isPixelFormatImplementationSpecific(),
     @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb(),
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool),
     @ref isVertexFormatNormalized()
 */
 MAGNUM_EXPORT bool isPixelFormatNormalized(PixelFormat format);
@@ -845,7 +847,8 @@ For any pixel format, exactly one of @ref isPixelFormatNormalized(),
 @ref isPixelFormatIntegral() and @ref isPixelFormatFloatingPoint() returns
 @cpp true @ce.
 @see @ref isPixelFormatImplementationSpecific(),
-    @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb()
+    @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb(),
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool)
 */
 MAGNUM_EXPORT bool isPixelFormatIntegral(PixelFormat format);
 
@@ -863,7 +866,8 @@ For any pixel format, exactly one of @ref isPixelFormatNormalized(),
 @ref isPixelFormatIntegral() and @ref isPixelFormatFloatingPoint() returns
 @cpp true @ce.
 @see @ref isPixelFormatImplementationSpecific(),
-    @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb()
+    @ref isPixelFormatDepthOrStencil(), @ref isPixelFormatSrgb(),
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool)
 */
 MAGNUM_EXPORT bool isPixelFormatFloatingPoint(PixelFormat format);
 
@@ -875,7 +879,8 @@ Returns @cpp true @ce for `*Srgb` formats, @cpp false @ce otherwise. If this
 function returns true, @ref isPixelFormatNormalized() also returns true.
 Expects that the pixel format is *not* implementation-specific and not a
 depth/stencil format.
-@see @ref isPixelFormatImplementationSpecific()
+@see @ref isPixelFormatImplementationSpecific(),
+    @ref pixelFormat(PixelFormat, UnsignedInt, bool)
 */
 MAGNUM_EXPORT bool isPixelFormatSrgb(PixelFormat format);
 
@@ -888,6 +893,31 @@ formats, @cpp false @ce otherwise. Expects that the pixel format is *not* implem
 @see @ref isPixelFormatImplementationSpecific()
 */
 MAGNUM_EXPORT bool isPixelFormatDepthOrStencil(PixelFormat format);
+
+/**
+@brief Assemble a pixel format from parts
+@m_since_latest
+
+Converts @p format to a new format with desired channel count and
+normalization. Expects that the pixel format is *not* implementation-specific
+and not a depth/stencil format, @p channelCount is @cpp 1 @ce, @cpp 2 @ce,
+@cpp 3 @ce or @cpp 4 @ce and @p srgb is @cpp true @ce only for 8-bit integer
+formats.
+
+Example usage --- picking a three or four-channel format corresponding to a
+grayscale or grayscale + alpha format:
+
+@snippet Magnum.cpp pixelFormat
+
+@see @ref pixelFormatChannelFormat(), @ref pixelFormatChannelCount(),
+    @ref vertexFormat(VertexFormat, UnsignedInt, bool)
+@todo Unlike @ref vertexFormat(), this doesn't allow changing the normalized
+    property because I don't see a point as integral pixels are usually treated
+    as a vastly different kind of data. Once such use case exists, it might
+    make sense to add a pixelFormat(PixelFormat, UnsignedInt, bool, bool)
+    overload, the two bools are rather nasty though.
+*/
+MAGNUM_EXPORT PixelFormat pixelFormat(PixelFormat format, UnsignedInt channelCount, bool srgb);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**

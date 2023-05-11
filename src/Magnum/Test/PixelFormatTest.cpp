@@ -61,6 +61,12 @@ struct PixelFormatTest: TestSuite::Tester {
     void isDepthOrStencilInvalid();
     void isDepthOrStencilImplementationSpecific();
 
+    void assemble();
+    void assembleRoundtrip();
+    void assembleInvalidSrgb();
+    void assembleInvalidComponentCount();
+    void assembleDepthStencilImplementationSpecific();
+
     void compressedBlockSize();
     void compressedBlockSizeInvalid();
     void compressedBlockSizeImplementationSpecific();
@@ -91,6 +97,25 @@ struct PixelFormatTest: TestSuite::Tester {
     void compresedConfiguration();
 };
 
+const struct {
+    PixelFormat channelType;
+    bool srgb;
+} AssembleRoundtripData[]{
+    {PixelFormat::R8Unorm, false},
+    {PixelFormat::R8Snorm, false},
+    {PixelFormat::R8Srgb, true},
+    {PixelFormat::R8UI, false},
+    {PixelFormat::R8I, false},
+    {PixelFormat::R16Unorm, false},
+    {PixelFormat::R16Snorm, false},
+    {PixelFormat::R16UI, false},
+    {PixelFormat::R16I, false},
+    {PixelFormat::R32UI, false},
+    {PixelFormat::R32I, false},
+    {PixelFormat::R16F, false},
+    {PixelFormat::R32F, false},
+};
+
 PixelFormatTest::PixelFormatTest() {
     addTests({&PixelFormatTest::mapping,
               &PixelFormatTest::compressedMapping,
@@ -114,6 +139,15 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::isDepthOrStencil,
               &PixelFormatTest::isDepthOrStencilInvalid,
               &PixelFormatTest::isDepthOrStencilImplementationSpecific,
+
+              &PixelFormatTest::assemble});
+
+    addRepeatedInstancedTests({&PixelFormatTest::assembleRoundtrip}, 4,
+        Containers::arraySize(AssembleRoundtripData));
+
+    addTests({&PixelFormatTest::assembleInvalidSrgb,
+              &PixelFormatTest::assembleInvalidComponentCount,
+              &PixelFormatTest::assembleDepthStencilImplementationSpecific,
 
               &PixelFormatTest::compressedBlockSize,
               &PixelFormatTest::compressedBlockSizeInvalid,
@@ -447,6 +481,76 @@ void PixelFormatTest::isDepthOrStencilImplementationSpecific() {
     isPixelFormatDepthOrStencil(pixelFormatWrap(0xdead));
     CORRADE_COMPARE(out.str(),
         "isPixelFormatDepthOrStencil(): can't determine type of an implementation-specific format 0xdead\n");
+}
+
+void PixelFormatTest::assemble() {
+    /* Changing component count */
+    CORRADE_COMPARE(pixelFormat(PixelFormat::RGB16F, 4, false), PixelFormat::RGBA16F);
+    CORRADE_COMPARE(pixelFormat(PixelFormat::RGBA32UI, 2, false), PixelFormat::RG32UI);
+    CORRADE_COMPARE(pixelFormat(PixelFormat::R8Snorm, 3, false), PixelFormat::RGB8Snorm);
+
+    /* Same as pixelFormatChannelFormat() */
+    CORRADE_COMPARE(pixelFormat(PixelFormat::RGB32F, 1, false), pixelFormatChannelFormat(PixelFormat::RGB32F));
+
+    /* Adding / removing a sRGB property */
+    CORRADE_COMPARE(pixelFormat(PixelFormat::RGB8Unorm, 3, true), PixelFormat::RGB8Srgb);
+    CORRADE_COMPARE(pixelFormat(PixelFormat::RGBA8Srgb, 4, false), PixelFormat::RGBA8Unorm);
+}
+
+void PixelFormatTest::assembleRoundtrip() {
+    auto&& data = AssembleRoundtripData[testCaseInstanceId()];
+
+    std::ostringstream out;
+    {
+        Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
+        d << data.channelType;
+        if(data.srgb) d << Debug::nospace << ", srgb";
+    }
+    setTestCaseDescription(out.str());
+
+    PixelFormat result = pixelFormat(data.channelType, testCaseRepeatId() + 1, data.srgb);
+    CORRADE_COMPARE(pixelFormat(result, testCaseRepeatId() + 1, data.srgb), result);
+    CORRADE_COMPARE(pixelFormatChannelFormat(result), data.channelType);
+    CORRADE_COMPARE(pixelFormatChannelCount(result), testCaseRepeatId() + 1);
+    CORRADE_COMPARE(isPixelFormatSrgb(result), data.srgb);
+}
+
+void PixelFormatTest::assembleInvalidSrgb() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    pixelFormat(PixelFormat::R8Snorm, 1, true);
+    pixelFormat(PixelFormat::RGB16Unorm, 4, true);
+    pixelFormat(PixelFormat::RGBA16F, 3, true);
+    CORRADE_COMPARE(out.str(),
+        "pixelFormat(): PixelFormat::R8Snorm can't be made sRGB\n"
+        "pixelFormat(): PixelFormat::RGB16Unorm can't be made sRGB\n"
+        "pixelFormat(): PixelFormat::RGBA16F can't be made sRGB\n");
+}
+
+void PixelFormatTest::assembleInvalidComponentCount() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    pixelFormat(PixelFormat::RGB8Unorm, 0, false);
+    pixelFormat(PixelFormat::RGB8Unorm, 5, false);
+    CORRADE_COMPARE(out.str(),
+        "pixelFormat(): invalid component count 0\n"
+        "pixelFormat(): invalid component count 5\n");
+}
+
+void PixelFormatTest::assembleDepthStencilImplementationSpecific() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    pixelFormat(pixelFormatWrap(0xdead), 1, true);
+    pixelFormat(PixelFormat::Depth32F, 1, true);
+    CORRADE_COMPARE(out.str(),
+        "pixelFormat(): can't assemble a format out of an implementation-specific format 0xdead\n"
+        "pixelFormat(): can't assemble a format out of PixelFormat::Depth32F\n");
 }
 
 void PixelFormatTest::compressedBlockSize() {
