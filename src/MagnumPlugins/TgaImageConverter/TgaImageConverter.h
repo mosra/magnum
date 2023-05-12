@@ -114,6 +114,10 @@ While TGA files can have several extensions, @ref extension() always returns
 @cpp "tga" @ce as that's the most common one. As TGA doesn't have a registered
 MIME type, @ref mimeType() returns @cpp "image/x-tga" @ce.
 
+The converter recognizes @ref ImageConverterFlag::Verbose, printing additional
+info when the flag is enabled. @ref ImageConverterFlag::Quiet is recognized as
+well and causes all conversion warnings to be suppressed.
+
 @section Trade-TgaImageConverter-configuration Plugin-specific configuration
 
 It's possible to tune various output options through @ref configuration(). See

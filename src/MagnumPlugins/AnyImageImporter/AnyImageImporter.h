@@ -161,6 +161,11 @@ Calls to the @ref image1DCount() / @ref image2DCount() / @ref image3DCount(),
 and @ref image1D() / @ref image2D() / @ref image3D() functions are then proxied
 to the concrete implementation. The @ref close() function closes and discards
 the internally instantiated plugin; @ref isOpened() works as usual.
+
+Besides delegating the flags, the @ref AnyImageImporter itself recognizes
+@ref ImporterFlag::Verbose, printing info about the concrete plugin being used
+when the flag is enabled. @ref ImporterFlag::Quiet is recognized as well and
+causes all warnings to be suppressed.
 */
 class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
     public:

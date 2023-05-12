@@ -146,6 +146,11 @@ present in the default configuration of the target plugin.
 The output of the @ref validateFile() / @ref validateData(),
 @ref convertFileToFile() / @ref convertFileToData() / @ref convertDataToData()
 function called on the concrete implementation is then proxied back.
+
+Besides delegating the flags, the @ref AnyConverter itself recognizes
+@ref ConverterFlag::Verbose, printing info about the concrete plugin being used
+when the flag is enabled. @ref ConverterFlag::Quiet is recognized as well and
+causes all warnings to be suppressed.
 */
 class MAGNUM_ANYSHADERCONVERTER_EXPORT AnyConverter: public AbstractConverter {
     public:

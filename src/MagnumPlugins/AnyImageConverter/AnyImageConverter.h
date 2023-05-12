@@ -134,6 +134,11 @@ empty string.
 
 The output of the @ref convertToFile() function called on the concrete
 implementation is then proxied back.
+
+Besides delegating the flags, the @ref AnyImageConverter itself recognizes
+@ref ImageConverterFlag::Verbose, printing info about the concrete plugin being
+used when the flag is enabled. @ref ImageConverterFlag::Quiet is recognized as
+well and causes all warnings to be suppressed.
 */
 class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageConverter {
     public:

@@ -121,6 +121,11 @@ advertising support for any actual data types. These are included only once
 Calls to the @ref endFile(), @ref add() and related functions are then proxied
 to the concrete implementation. The @ref abort() function aborts and destroys
 the internally instantiated plugin; @ref isConverting() works as usual.
+
+Besides delegating the flags, the @ref AnySceneConverter itself recognizes
+@ref SceneConverterFlag::Verbose, printing info about the concrete plugin being
+used when the flag is enabled. @ref SceneConverterFlag::Quiet is recognized as
+well and causes all warnings to be suppressed.
 */
 class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneConverter {
     public:

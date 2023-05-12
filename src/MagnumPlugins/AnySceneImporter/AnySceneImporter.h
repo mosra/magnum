@@ -157,6 +157,11 @@ plugin; @ref isOpened() works as usual.
 While the @ref meshAttributeName(), @ref meshAttributeForName(),
 @ref sceneFieldName() and @ref sceneFieldForName() APIs can be called without a
 file opened, they return an empty string or an invalid attribute in that case.
+
+Besides delegating the flags, the @ref AnySceneImporter itself recognizes
+@ref ImporterFlag::Verbose, printing info about the concrete plugin being used
+when the flag is enabled. @ref ImporterFlag::Quiet is recognized as well and
+causes all warnings to be suppressed.
 */
 class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
     public:

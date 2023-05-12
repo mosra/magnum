@@ -108,6 +108,10 @@ RLE compression is supported, paletted images are not.
 
 If a TGA 2 footer is recognized in the file, the optional extension and
 developer area blocks at the end of the file are ignored.
+
+The importer recognizes @ref ImporterFlag::Verbose, printing additional info
+when the flag is enabled. @ref ImporterFlag::Quiet is recognized as well and
+causes all import warnings to be suppressed.
 */
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
