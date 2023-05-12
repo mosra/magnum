@@ -113,7 +113,7 @@ std::nullptr_t data = nullptr;
 Image2D image{PixelFormat::RGB8Unorm, {128, 128}, data};
 
 Containers::StridedArrayView2D<Color3ub> pixels = image.pixels<Color3ub>();
-for(auto row: pixels.slice({48, 48}, {80, 80})) {
+for(auto row: pixels.sliceSize({48, 48}, {32, 32})) {
     for(Color3ub& pixel: row) pixel *= 1.1f;
 }
 /* [Image-pixels] */
@@ -122,8 +122,21 @@ for(auto row: pixels.slice({48, 48}, {80, 80})) {
 {
 char data[3];
 /* [ImageView-usage] */
-ImageView2D image{PixelFormat::RGBA8Unorm, {512, 256}, data};
+ImageView2D view{PixelFormat::RGBA8Unorm, {512, 256}, data};
 /* [ImageView-usage] */
+}
+
+{
+char tightlyPackedData[3];
+/* [ImageView-usage-alignment] */
+PixelFormat format = DOXYGEN_ELLIPSIS({});
+Vector2i size = DOXYGEN_ELLIPSIS({});
+std::size_t rowLength = size.x()*pixelFormatSize(format);
+
+ImageView2D view{
+    PixelStorage{}.setAlignment(rowLength % 4 == 0 ? 4 : 1),
+    format, size, tightlyPackedData};
+/* [ImageView-usage-alignment] */
 }
 
 {
@@ -142,10 +155,10 @@ frame.setData(oddFrameData);
 {
 char data[3];
 /* [ImageView-usage-storage] */
-ImageView2D image{
+ImageView2D view{
     PixelStorage{}
+        .setAlignment(1)
         .setRowLength(75)
-        .setAlignment(4)
         .setSkip({25, 25, 0}),
     PixelFormat::RGBA8Unorm, {25, 25}, data};
 /* [ImageView-usage-storage] */
@@ -155,13 +168,13 @@ ImageView2D image{
 {
 char data[3];
 /* [ImageView-usage-gl] */
-ImageView2D image{GL::PixelFormat::DepthComponent,
-                  GL::PixelType::UnsignedInt, {512, 256}, data};
+ImageView2D view{GL::PixelFormat::DepthComponent,
+                 GL::PixelType::UnsignedInt, {512, 256}, data};
 /* [ImageView-usage-gl] */
 
 /* [ImageView-usage-gl-extract] */
-auto format = pixelFormatUnwrap<GLenum>(image.format());
-auto type = GLenum(image.formatExtra());
+auto format = pixelFormatUnwrap<GLenum>(view.format());
+auto type = GLenum(view.formatExtra());
 /* [ImageView-usage-gl-extract] */
 static_cast<void>(format);
 static_cast<void>(type);
@@ -180,7 +193,7 @@ ImageView2D view{{}, MTLPixelFormatRGBA8Unorm_sRGB, {}, 4, {256, 256}, data};
 {
 char data[3];
 /* [CompressedImageView-usage] */
-CompressedImageView2D image{CompressedPixelFormat::Bc1RGBUnorm,
+CompressedImageView2D view{CompressedPixelFormat::Bc1RGBUnorm,
     {512, 256}, data};
 /* [CompressedImageView-usage] */
 }
@@ -201,7 +214,7 @@ frame.setData(oddFrameData);
 {
 char data[3];
 /* [CompressedImageView-usage-storage] */
-CompressedImageView2D image{
+CompressedImageView2D view{
     CompressedPixelStorage{}
         .setRowLength(64)
         .setCompressedBlockSize({4, 4, 1})
@@ -215,12 +228,12 @@ CompressedImageView2D image{
 {
 char data[3];
 /* [CompressedImageView-usage-gl] */
-CompressedImageView2D image{GL::CompressedPixelFormat::SignedRGRgtc2,
+CompressedImageView2D view{GL::CompressedPixelFormat::SignedRGRgtc2,
     {512, 256}, data};
 /* [CompressedImageView-usage-gl] */
 
 /* [CompressedImageView-usage-gl-extract] */
-auto format = compressedPixelFormatUnwrap<GLenum>(image.format());
+auto format = compressedPixelFormatUnwrap<GLenum>(view.format());
 /* [CompressedImageView-usage-gl-extract] */
 static_cast<void>(format);
 }
@@ -228,26 +241,50 @@ static_cast<void>(format);
 
 {
 /* [Image-usage] */
-Containers::Array<char> data;
-Image2D image{PixelFormat::RGBA8Unorm, {512, 256}, std::move(data)};
+Vector2i size{512, 256};
+PixelFormat format = PixelFormat::RGBA8Unorm;
+
+Image2D image{format, size, Containers::Array<char>{ValueInit,
+    std::size_t(size.product()*pixelFormatSize(format))}};
 /* [Image-usage] */
+}
+
+{
+/* [Image-usage-padding] */
+PixelFormat format = PixelFormat::RGB8Unorm;
+Vector2i size{173, 232};
+std::size_t rowStride = 4*((size.x()*pixelFormatSize(format) + 3)/4);
+
+Image2D image{format, size,
+    Containers::Array<char>{ValueInit, std::size_t(size.y()*rowStride)}};
+/* [Image-usage-padding] */
+}
+
+{
+/* [Image-usage-alignment] */
+Vector2i size{173, 232};
+PixelFormat format = PixelFormat::RGB8Unorm;
+std::size_t rowLength = size.x()*pixelFormatSize(format);
+
+Image2D image{
+    PixelStorage{}.setAlignment(rowLength % 4 == 0 ? 4 : 1), format, size,
+    Containers::Array<char>{ValueInit, std::size_t(size.y()*rowLength)}};
+/* [Image-usage-alignment] */
 }
 
 #if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES)
 {
 /* [Image-usage-query] */
 GL::Texture2D texture;
-Image2D image = texture.image(0, {GL::PixelFormat::DepthComponent,
-                                  GL::PixelType::UnsignedInt});
+Image2D image = texture.image(0, Image2D{PixelFormat::Depth32F});
 /* [Image-usage-query] */
 }
 #endif
 
 {
 /* [CompressedImage-usage] */
-Containers::Array<char> data;
 CompressedImage2D image{CompressedPixelFormat::Bc1RGBUnorm,
-    {512, 256}, std::move(data)};
+    {512, 256}, Containers::Array<char>{ValueInit, DOXYGEN_ELLIPSIS(0)}};
 /* [CompressedImage-usage] */
 }
 
@@ -255,7 +292,7 @@ CompressedImage2D image{CompressedPixelFormat::Bc1RGBUnorm,
 {
 /* [CompressedImage-usage-query] */
 GL::Texture2D texture;
-CompressedImage2D image = texture.compressedImage(0, {});
+CompressedImage2D image = texture.compressedImage(0, CompressedImage2D{});
 /* [CompressedImage-usage-query] */
 }
 #endif

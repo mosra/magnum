@@ -66,16 +66,20 @@ functionality targeted on compressed image formats.
 
 @section ImageView-usage Basic usage
 
-Usually, the view is created on some pre-existing data array in order to
-describe its layout, with pixel format being one of the values from the generic
-@link PixelFormat @endlink:
+The view is created from a @ref PixelFormat, size in pixels and a data view:
 
 @snippet Magnum.cpp ImageView-usage
 
-On construction, the image view internally calculates pixel size corresponding
-to given pixel format using @ref pixelFormatSize(). This value is needed to
-check that the passed data array is large enough and is also required by most
-image manipulation operations.
+The constructor internally checks that the passed array is large enough. For
+performance reasons it by default expects rows aligned to four bytes, which you
+need to account for if using odd image sizes in combination with one-, two- or
+three-component formats. While the recommended way is to pad the row data to
+satisfy the alignment similarly as shown in @ref Image-usage "Image usage docs",
+but with views it's more likely that you have to adapt to a layout of an
+existing data array by passing a @ref PixelStorage instance with the alignment
+value overriden if needed:
+
+@snippet Magnum.cpp ImageView-usage-alignment
 
 It's also possible to create an empty view and assign the memory later. That is
 useful for example in case of multi-buffered video streaming, where each frame
@@ -83,25 +87,27 @@ has the same properties but a different memory location:
 
 @snippet Magnum.cpp ImageView-usage-streaming
 
-It's possible to have views on image sub-rectangles, 3D texture slices or
-images with over-aligned rows by passing a particular @ref PixelStorage as
-first parameter. In the following snippet, the view is the center 25x25
-sub-rectangle of a 75x75 8-bit RGB image , with rows aligned to four bytes:
+The @ref PixelStorage also allows for specifying arbitrary image slices by
+passing appropriate row length, image height and skip parameters. In the
+following snippet, the view is the center 25x25 sub-rectangle of a 75x75 8-bit
+RGB image (with tightly packed rows again):
 
 @snippet Magnum.cpp ImageView-usage-storage
 
+Image views provides pixel data access via @ref pixels() in the same way as the
+@ref Image class. See @ref Image-pixel-access "its documentation for more information".
+
 @section ImageView-mutable Data mutability
 
-When using types derived from @ref BasicImageView (e.g. @ref ImageView2D), the
-viewed data are immutable. This is the most common use case. In order to be
-able to mutate the underlying data (for example in order to read into a
-pre-allocated memory), use @ref BasicMutableImageView
-(e.g. @ref MutableImageView2D) instead. @ref Image and @ref Trade::ImageData
-are convertible to either of these. Similarly to
-@ref Corrade::Containers::ArrayView etc., a mutable view is also implicitly
-convertible to a const one.
+The @ref ImageView2D type and related one- and three-dimensional variants only
+provide immutable access to the referenced data, as that's the most common use
+case. In order to be able to modify the data (for example in order to read into
+a pre-allocated memory), use @ref MutableImageView2D and friends instead.
+@ref Image and @ref Trade::ImageData are convertible to either of these.
+Similarly to @ref Corrade::Containers::ArrayView etc., a mutable view is also
+implicitly convertible to a const one.
 
-@subsection ImageView-usage-implementation-specific Implementation-specific formats
+@section ImageView-usage-implementation-specific Implementation-specific formats
 
 For known graphics APIs, there's a set of utility functions converting from
 @ref PixelFormat to implementation-specific format identifiers and such
@@ -138,7 +144,7 @@ image view using Metal-specific format identifier:
 
 @see @ref BasicImageView, @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
     @ref BasicMutableImageView, @ref MutableImageView1D,
-    @ref MutableImageView2D, @ref MutableImageView3D, @ref Image-pixel-views
+    @ref MutableImageView2D, @ref MutableImageView3D
 */
 template<UnsignedInt dimensions, class T> class ImageView {
     public:
@@ -486,7 +492,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @m_since{2019,10}
          *
          * Provides direct and easy-to-use access to image pixels. See
-         * @ref Image-pixel-views for more information. If the view is empty
+         * @ref Image-pixel-access for more information. If the view is empty
          * (with @ref data() being @cpp nullptr @ce), returns @cpp nullptr @ce
          * as well.
          */
@@ -501,7 +507,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * correct type for given @ref format() --- checking it on the library
          * side is not possible for the general case. If the view is empty
          * (with @ref data() being @cpp nullptr @ce), returns @cpp nullptr @ce
-         * as well.
+         * as well. See also @ref Image-pixel-access for more information.
          */
         template<class U> Containers::StridedArrayView<dimensions, typename std::conditional<std::is_const<Type>::value, typename std::add_const<U>::type, U>::type> pixels() const {
             if(!_data && !_data.size()) return {};
@@ -608,9 +614,8 @@ functionality targeted on non-compressed image formats.
 
 @section CompressedImageView-usage Basic usage
 
-Usually, the view is created on some pre-existing data array in order to
-describe its layout, with pixel format being one of the values from the generic
-@link CompressedPixelFormat @endlink:
+The view is created from a @ref CompressedPixelFormat, size in pixels and a
+data view:
 
 @snippet Magnum.cpp CompressedImageView-usage
 

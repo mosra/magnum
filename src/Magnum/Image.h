@@ -62,19 +62,27 @@ functionality targeted on compressed image formats.
 
 @section Image-usage Basic usage
 
-The image takes ownership of a passed @ref Corrade::Containers::Array, together
-with storing image size and one of the generic @ref PixelFormat values:
+The image takes ownership of a passed @relativeref{Corrade,Containers::Array},
+together with a @ref PixelFormat and size in pixels:
 
 @snippet Magnum.cpp Image-usage
 
-On construction, the image internally calculates pixel size corresponding to
-given pixel format using @ref pixelFormatSize(). This value is needed to check
-that the passed data array is large enough and is also required by most image
-manipulation operations.
+The constructor internally checks that the passed array is large enough. For
+performance reasons it by default expects rows aligned to four bytes, which you
+need to account for if using odd image sizes in combination with one-, two- or
+three-component formats. The recommended way is to pad the row data to satisfy
+the alignment:
+
+@snippet Magnum.cpp Image-usage-padding
+
+Alternatively, if padding is not possible or desirable, you can pass a
+@ref PixelStorage instance with the alignment overriden to @cpp 1 @ce:
+
+@snippet Magnum.cpp Image-usage-alignment
 
 It's also possible to create just an image placeholder, storing only the image
 properties without data or size. That is useful for example to specify desired
-format of image queries in graphics APIs:
+format of image queries in graphics APIs such as @ref GL::Texture::image():
 
 @snippet Magnum.cpp Image-usage-query
 
@@ -82,7 +90,7 @@ As with @ref ImageView, this class supports extra storage parameters and
 implementation-specific pixel format specification. See the @ref ImageView
 documentation for more information.
 
-@section Image-pixel-views Obtaining a view on pixel data
+@section Image-pixel-access Pixel data access
 
 While the raw image data are available through @ref data(), for correct pixel
 addressing it's required to incorporate all @ref storage() parameters such as
@@ -90,30 +98,29 @@ row alignment, row length, skip offset and such. This is very error-prone to
 do by hand even with the help of @ref dataProperties().
 
 The @ref pixels() accessor returns a multi-dimensional
-@ref Corrade::Containers::StridedArrayView describing layout of the data and
-providing easy access to particular rows, pixels and pixel channels. The
-non-templated version returns a view that has one dimension more than the
+@relativeref{Corrade,Containers::StridedArrayView} describing layout of the
+data and providing easy access to particular rows, pixels and pixel contents.
+The non-templated version returns a view that has one dimension more than the
 actual image, with the last dimension being bytes in a particular pixels. The
 second-to-last dimension is always pixels in a row, the one before (if the
 image is at least 2D) is rows in an image, and for 3D images the very first
 dimension describes image slices. Desired usage is casting to a concrete type
 based on @ref format() first, either using the templated @ref pixels<T>() or
-using @ref Corrade::Containers::arrayCast() and then operating on the
+using @relativeref{Corrade,Containers::arrayCast()} and then operating on the
 concretely typed array. The following example brightens the center 32x32 area
 of an image:
 
 @snippet Magnum.cpp Image-pixels
 
-@attention Note that the correctness of the cast is can't be generally checked
-    apart from expecting that the last dimension size is equal to the new type
-    size. It's the user responsibility to ensure the type matches given
-    @ref format().
+@attention Note that the correctness of the cast can't be generally checked
+    apart from comparing that the last dimension size to the type size. It's
+    the user responsibility to ensure the type matches given @ref format().
 
-This operation is available also on @ref ImageView and non-compressed
-@ref Trade::ImageData. See @ref Corrade::Containers::StridedArrayView docs for
-more information about transforming, slicing and converting the view further.
-
-@see @ref Image1D, @ref Image2D, @ref Image3D, @ref CompressedImage
+This operation is available also on a @ref ImageView, and non-compressed
+@ref Trade::ImageData. See @relativeref{Corrade,Containers::StridedArrayView}
+docs for more information about transforming, slicing and casting the view
+further.
+@see @ref Image1D, @ref Image2D, @ref Image3D
 */
 template<UnsignedInt dimensions> class Image {
     public:
@@ -460,7 +467,7 @@ template<UnsignedInt dimensions> class Image {
          * @m_since{2019,10}
          *
          * Provides direct and easy-to-use access to image pixels. See
-         * @ref Image-pixel-views for more information.
+         * @ref Image-pixel-access for more information.
          */
         Containers::StridedArrayView<dimensions + 1, char> pixels();
         Containers::StridedArrayView<dimensions + 1, const char> pixels() const; /**< @overload */
@@ -472,7 +479,8 @@ template<UnsignedInt dimensions> class Image {
          * Compared to non-templated @ref pixels() in addition casts the pixel
          * data to a specified type. The user is responsible for choosing
          * correct type for given @ref format() --- checking it on the library
-         * side is not possible for the general case.
+         * side is not possible for the general case. See also
+         * @ref Image-pixel-access for more information.
          */
         template<class T> Containers::StridedArrayView<dimensions, T> pixels() {
             /* Deliberately not adding a StridedArrayView include, it should
@@ -535,9 +543,8 @@ for equivalent functionality targeted on non-compressed image formats.
 
 @section CompressedImage-usage Basic usage
 
-The image takes ownership of a passed @ref Corrade::Containers::Array, together
-with storing image size and one of the generic @ref CompressedPixelFormat
-values:
+The image takes ownership of a passed @relativeref{Corrade,Containers::Array},
+together with a @ref CompressedPixelFormat and size in pixels:
 
 @snippet Magnum.cpp CompressedImage-usage
 
@@ -550,7 +557,6 @@ format of image queries in graphics APIs:
 As with @ref CompressedImageView, this class supports extra storage parameters
 and implementation-specific compressed pixel format specification. See its
 documentation for more information.
-
 @see @ref CompressedImage1D, @ref CompressedImage2D, @ref CompressedImage3D
 */
 template<UnsignedInt dimensions> class CompressedImage {

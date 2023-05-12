@@ -54,6 +54,13 @@ namespace Magnum { namespace Trade {
 /**
 @brief Image data
 
+Provides access to both uncompressed and compressed image data together with
+information about data layout, image size and pixel format. Populated instances
+of this class are returned from @ref AbstractImporter::image1D(),
+@relativeref{AbstractImporter,image2D()},
+@relativeref{AbstractImporter,image3D()},
+@ref AbstractImageConverter::convert() and other APIs.
+
 Used mainly by @ref AbstractImporter classes to store either compressed or
 non-compressed multi-dimensional image data together with layout and pixel
 format description.
@@ -66,28 +73,19 @@ Particular graphics API wrappers provide additional image classes, for example
 
 @section Trade-ImageData-usage Basic usage
 
-The image usually comes out of @ref AbstractImporter::image1D(),
-@ref AbstractImporter::image2D() "image2D()" or
-@ref AbstractImporter::image3D() "image3D()" and, based on what format the
-particular imported data is in, it stores either compressed or uncompressed
-data.
-
-@snippet MagnumTrade.cpp ImageData-construction
-
-@snippet MagnumTrade.cpp ImageData-construction-compressed
-
-As with @ref Image / @ref ImageView, this class supports extra storage
-parameters and implementation-specific format specification, if the importer
-has a need for that. See the @ref ImageView documentation for more information.
-
-When using the image, its compression status can be distinguished using
-@ref isCompressed(). Uncompressed image properties are available through
-@ref storage(), @ref format(), @ref formatExtra() and @ref pixelSize();
+Based on whether the @ref ImageData has an uncompressed or compressed pixel
+format, it behaves either like an @ref Image / @ref ImageView or like a
+@ref CompressedImage / @ref CompressedImageView. It can be distinguished using
+@ref isCompressed(); uncompressed image properties are then available through
+@ref storage(), @ref format(), @ref formatExtra() and @ref pixelSize(),
 compressed properties through @ref compressedStorage() and
-@ref compressedFormat(). Example of uploading the image to
+@ref compressedFormat(). Example of uploading the image to a
 @link GL::Texture @endlink:
 
 @snippet MagnumTrade.cpp ImageData-usage
+
+Uncompressed image data instances provide pixel data access via @ref pixels()
+in the same way as the @ref Image class. See @ref Image-pixel-access "its documentation for more information".
 
 @section Trade-ImageData-usage-mutable Mutable data access
 
@@ -101,8 +99,44 @@ first. The following snippet flips the R and B channels of the imported image:
 
 @snippet MagnumTrade.cpp ImageData-usage-mutable
 
-@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D,
-    @ref Image-pixel-views
+@section Trade-ImageData-populating Populating an instance
+
+An @ref ImageData instance by default takes over the ownership of an
+@relativeref{Corrade,Containers::Array} containing the pixel data together
+with size and either @ref PixelFormat or @ref CompressedPixelFormat, similarly
+to the @ref Image and @ref CompressedImage classes:
+
+@snippet MagnumTrade.cpp ImageData-populating
+
+The constructor internally checks that the passed array is large enough and as
+with other image classes, care must be taken in presence of
+non-four-byte-aligned rows. This often closely depends on behavior of the code
+or library that operates with the image data and the recommended way is to pad
+the row data to satisfy the alignment:
+
+@snippet MagnumTrade.cpp ImageData-populating-padding
+
+Alternatively, if padding is not possible or desirable, you can pass a
+@ref PixelStorage instance with the alignment overriden to @cpp 1 @ce:
+
+@snippet MagnumTrade.cpp ImageData-populating-alignment
+
+As with @ref Image / @ref ImageView, this class supports extra storage
+parameters and implementation-specific format specification, if the importer
+has a need for that. See the @ref ImageView documentation for more information.
+
+@subsection Trade-ImageData-populating-non-owned Non-owned instances
+
+In some cases you may want the @ref ImageData instance to only refer to
+external data without taking ownership, for example with a memory-mapped file,
+global data etc. For that, instead of moving in an
+@relativeref{Corrade,Containers::Array}, pass @ref DataFlags describing data
+mutability and ownership together with an
+@relativeref{Corrade,Containers::ArrayView}:
+
+@snippet MagnumTrade.cpp ImageData-populating-non-owned
+
+@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */
 template<UnsignedInt dimensions> class ImageData {
     public:
@@ -802,7 +836,7 @@ template<UnsignedInt dimensions> class ImageData {
          * the image is not compressed. The last dimension represents the
          * actual data type (its size is equal to type size) and is guaranteed
          * to be contiguous. Use the templated overload below to get pixels in
-         * a concrete type. See @ref Image-pixel-views for more information.
+         * a concrete type. See @ref Image-pixel-access for more information.
          * @see @ref isCompressed(),
          *      @ref Corrade::Containers::StridedArrayView::isContiguous()
          */
@@ -813,7 +847,8 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_since{2020,06}
          *
          * Like @ref pixels() const, but returns a non-const view. Expects that
-         * the image is mutable.
+         * the image is mutable. See also @ref Image-pixel-access for more
+         * information.
          * @see @ref dataFlags()
          */
         Containers::StridedArrayView<dimensions + 1, char> mutablePixels();
@@ -825,7 +860,8 @@ template<UnsignedInt dimensions> class ImageData {
          * Compared to non-templated @ref pixels() in addition casts the pixel
          * data to a specified type. The user is responsible for choosing
          * correct type for given @ref format() --- checking it on the library
-         * side is not possible for the general case.
+         * side is not possible for the general case. See also
+         * @ref Image-pixel-access for more information.
          */
         template<class T> Containers::StridedArrayView<dimensions, const T> pixels() const {
             /* Deliberately not adding a StridedArrayView include, it should

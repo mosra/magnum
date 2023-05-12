@@ -415,34 +415,67 @@ for(UnsignedInt i = 0; i != data.trackCount(); ++i) {
 }
 
 {
-/* [ImageData-construction] */
-Containers::Array<char> data;
-Trade::ImageData2D image{PixelFormat::RGB8Unorm, {32, 32}, std::move(data)};
-/* [ImageData-construction] */
+/* [ImageData-populating] */
+Containers::Array<char> uncompressedData = DOXYGEN_ELLIPSIS({});
+Trade::ImageData2D uncompressed{PixelFormat::RGB8Unorm,
+    {32, 32}, std::move(uncompressedData)};
+
+Containers::Array<char> compressedData = DOXYGEN_ELLIPSIS({});
+Trade::ImageData2D compressed{CompressedPixelFormat::Bc1RGBUnorm,
+    {32, 32}, std::move(compressedData)};
+/* [ImageData-populating] */
 }
 
 {
-/* [ImageData-construction-compressed] */
-Containers::Array<char> data;
-Trade::ImageData2D image{CompressedPixelFormat::Bc1RGBUnorm,
-    {32, 32}, std::move(data)};
-/* [ImageData-construction-compressed] */
+/* [ImageData-populating-non-owned] */
+Color3ub uncompressedData[]{DOXYGEN_ELLIPSIS({})};
+Trade::ImageData2D uncompressed{PixelFormat::RGB8Unorm,
+    {32, 32}, Trade::DataFlag::Mutable, uncompressedData};
+
+Containers::ArrayView<const char> compressedData = DOXYGEN_ELLIPSIS({});
+Trade::ImageData2D compressed{CompressedPixelFormat::Bc1RGBUnorm,
+    {32, 32}, Trade::DataFlags{}, compressedData};
+/* [ImageData-populating-non-owned] */
+}
+
+{
+/* [ImageData-populating-padding] */
+PixelFormat format = DOXYGEN_ELLIPSIS({});
+Vector2i size = DOXYGEN_ELLIPSIS({});
+std::size_t rowStride = 4*((size.x()*pixelFormatSize(format) + 3)/4);
+Containers::Array<char> data{ValueInit, std::size_t(size.y()*rowStride)};
+DOXYGEN_ELLIPSIS()
+
+Trade::ImageData2D image{format, size, std::move(data)};
+/* [ImageData-populating-padding] */
+}
+
+{
+/* [ImageData-populating-alignment] */
+PixelFormat format = DOXYGEN_ELLIPSIS({});
+Vector2i size = DOXYGEN_ELLIPSIS({});
+std::size_t rowLength = size.x()*pixelFormatSize(format);
+Containers::Array<char> data{ValueInit, std::size_t(size.y()*rowLength)};
+DOXYGEN_ELLIPSIS()
+
+Trade::ImageData2D image{
+    PixelStorage{}.setAlignment(rowLength % 4 == 0 ? 4 : 1),
+    format, size, std::move(data)};
+/* [ImageData-populating-alignment] */
 }
 
 #ifdef MAGNUM_TARGET_GL
 {
 /* [ImageData-usage] */
-Containers::Pointer<Trade::AbstractImporter> importer;
-Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
-if(!image) Fatal{} << "Oopsie!";
+Trade::ImageData2D image = DOXYGEN_ELLIPSIS(Trade::ImageData2D{PixelFormat{}, {}, nullptr});
 
 GL::Texture2D texture;
 DOXYGEN_ELLIPSIS()
-texture.setStorage(1, GL::textureFormat(image->format()), image->size());
-if(!image->isCompressed())
-    texture.setSubImage(0, {}, *image);
+texture.setStorage(1, GL::textureFormat(image.format()), image.size());
+if(!image.isCompressed())
+    texture.setSubImage(0, {}, image);
 else
-    texture.setCompressedSubImage(0, {}, *image);
+    texture.setCompressedSubImage(0, {}, image);
 /* [ImageData-usage] */
 }
 #endif
