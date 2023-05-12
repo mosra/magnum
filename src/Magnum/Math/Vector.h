@@ -344,7 +344,7 @@ template<std::size_t size, class T> class Vector {
          * Enabled only for signed types. @f[
          *      \boldsymbol b_i = -\boldsymbol a_i
          * @f]
-         * @see @ref Vector2::perpendicular()
+         * @see @ref flipped(), @ref Vector2::perpendicular()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         Vector<size, T>
@@ -634,8 +634,10 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Flipped vector
          *
-         * Returns the vector with components in reverse order.
-         * @see @ref RectangularMatrix::flippedCols(),
+         * Returns the vector with components in reverse order. If you want to
+         * flip the vector *direction* instead, negate it.
+         * @see @ref operator-() const,
+         *      @ref RectangularMatrix::flippedCols(),
          *      @ref RectangularMatrix::flippedRows()
          */
         constexpr Vector<size, T> flipped() const {
