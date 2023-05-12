@@ -1919,11 +1919,14 @@ internally sorted by name to allow a @f$ \mathcal{O}(\log n) @f$ lookup.
 
 @snippet MagnumTrade.cpp MaterialData-populating
 
-In addition to passing ownership of an array it's also possible to have the
-@ref MaterialData instance refer to external data (for example in a
-memory-mapped file, constant memory etc.). Instead of moving in an
-@relativeref{Corrade,Containers::Array} you pass @ref DataFlags describing if
-the data is mutable or not together with an
+@subsection Trade-MaterialData-populating-non-owned Non-owned instances
+
+In some cases you may want the @ref MaterialData instance to only refer to
+external data without taking ownership, for example with a memory-mapped file,
+global data etc. For that, instead of moving in an
+@relativeref{Corrade,Containers::Array} of @ref MaterialAttributeData or
+allocating it implicitly from an initializer list in the constructor, pass
+@ref DataFlags describing data mutability and ownership together with an
 @relativeref{Corrade,Containers::ArrayView}. Note that in this case, since the
 attribute data is treated as immutable, you *have to* ensure the list is
 already sorted by name.

@@ -817,20 +817,22 @@ Alternatively, you can pass typeless @cpp const void @ce or 2D views and supply
 
 @subsection Trade-SceneFieldData-usage-offset-only Offset-only field data
 
-If the actual field / object data location is not known yet, the instance can
-be created as "offset-only", meaning the actual view gets created only later
-when passed to a @ref SceneData instance with a concrete data array. This is
-useful mainly to avoid pointer patching during data serialization, less so when
-the data layout is static (and thus can be defined at compile time), but the
-actual data is allocated / populated at runtime:
+If the actual field / mapping data location is not known yet, the instance can
+be created as "offset-only" using @ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, SceneFieldType, std::size_t, std::ptrdiff_t, UnsignedShort, SceneFieldFlags)
+and related constructor overloads, meaning the actual views get created only
+later when passed to a @ref SceneData instance with a concrete data array. This
+is useful mainly to avoid pointer patching during data serialization, but also
+for example when the data layout is static (and thus can be defined at compile
+time), but the actual data is allocated / populated at runtime.
 
 @snippet MagnumTrade.cpp SceneFieldData-usage-offset-only
 
-Offset-only fields are marked with @ref SceneFieldFlag::OffsetOnly in
-@ref flags(). Note that @ref SceneTools algorithms generally don't accept
-offset-only @ref SceneFieldData instances except when passed through a
-@ref SceneData, as for a standalone offset-only @ref SceneFieldData it's
-impossible to know what data it points to.
+See @ref Trade-SceneData-populating-non-owned "the corresponding SceneData documentation"
+for a complete usage example. Offset-only fields are marked with
+@ref SceneFieldFlag::OffsetOnly in @ref flags(). Note that @ref SceneTools
+algorithms generally don't accept offset-only @ref SceneFieldData instances
+except when passed through a @ref SceneData, as for a standalone offset-only
+@ref SceneFieldData it's impossible to know what data it points to.
 
 @subsection Trade-SceneFieldData-usage-object-mapping Ordered and implicit object mapping
 
@@ -1196,8 +1198,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @param mappingType       Object mapping type
          * @param mappingOffset     Object mapping data offset
          * @param mappingStride     Object mapping data stride
-         * @param fieldType         Field type. @ref SceneFieldType::Bit and
-         *      `SceneFieldType::String*` values are not allowed here.
+         * @param fieldType         Field type
          * @param fieldOffset       Field data offset
          * @param fieldStride       Field data stride
          * @param fieldArraySize    Field array size. Use @cpp 0 @ce for
@@ -1217,6 +1218,13 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @p fieldType / @p fieldArraySize checks against @p fieldStride can
          * be done. You're encouraged to use the @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, SceneFieldType, const Containers::StridedArrayView1D<const void>&, UnsignedShort, SceneFieldFlags)
          * constructor if you want additional safeguards.
+         *
+         * @ref SceneFieldType::Bit and `SceneFieldType::String*` values are
+         * not allowed in @p fieldType. For offset-only bit fields use the
+         * @ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, std::size_t, std::size_t, std::ptrdiff_t, UnsignedShort, SceneFieldFlags)
+         * constructor instead, for offset-only string fields use
+         * @ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, std::size_t, SceneFieldType, std::size_t, std::ptrdiff_t, SceneFieldFlags)
+         * instead.
          * @see @ref flags(), @ref fieldArraySize() const,
          *      @ref mappingData(Containers::ArrayView<const void>) const,
          *      @ref fieldData(Containers::ArrayView<const void>) const
@@ -1257,7 +1265,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * You're encouraged to use the @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, const Containers::StridedBitArrayView1D&, SceneFieldFlags)
          * or @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, const Containers::StridedBitArrayView2D&, SceneFieldFlags)
          * constructors if you want additional safeguards.
-         * @see @ref flags(),
+         * @see @ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, SceneFieldType, std::size_t, std::ptrdiff_t, UnsignedShort, SceneFieldFlags),
+         *      @ref flags(),
          *      @ref mappingData(Containers::ArrayView<const void>) const,
          *      @ref fieldData(Containers::ArrayView<const void>) const
          */
@@ -1299,7 +1308,8 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
          * @p fieldType checks against @p fieldStride can be done. You're
          * encouraged to use the @ref SceneFieldData(SceneField, SceneMappingType, const Containers::StridedArrayView1D<const void>&, SceneFieldType, const Containers::StridedArrayView1D<const void>&, UnsignedShort, SceneFieldFlags)
          * constructor if you want additional safeguards.
-         * @see @ref flags(),
+         * @see @ref SceneFieldData(SceneField, std::size_t, SceneMappingType, std::size_t, std::ptrdiff_t, SceneFieldType, std::size_t, std::ptrdiff_t, UnsignedShort, SceneFieldFlags),
+         *      @ref flags(),
          *      @ref mappingData(Containers::ArrayView<const void>) const,
          *      @ref fieldData(Containers::ArrayView<const void>) const
          */
@@ -1523,7 +1533,8 @@ Containers::Array<SceneFieldData> MAGNUM_TRADE_EXPORT sceneFieldDataNonOwningArr
 
 Contains scene node hierarchy, transformations, resource assignment as well as
 any other data associated with the scene. Populated instances of this class are
-returned from @ref AbstractImporter::scene().
+returned from @ref AbstractImporter::scene() as well as from various
+@ref SceneTools algorithms.
 
 @section Trade-SceneData-representation Data representation and terminology
 
@@ -1745,6 +1756,31 @@ representation that matches your use case best, with fields interleaved
 together or not. See also the @ref SceneFieldData class documentation for
 additional ways how to specify and annotate the data.
 
+@subsection Trade-SceneData-populating-non-owned Non-owned instances and static data layouts
+
+In some cases you may want the @ref SceneData instance to only refer to
+external data without taking ownership, for example with a memory-mapped file,
+global data etc. For that, instead of moving in an
+@relativeref{Corrade,Containers::Array}, pass @ref DataFlags describing data
+mutability and ownership together with an
+@relativeref{Corrade,Containers::ArrayView} to the
+@ref SceneData(SceneMappingType, UnsignedLong, DataFlags, Containers::ArrayView<const void>, Containers::Array<SceneFieldData>&&, const void*)
+constructor:
+
+@snippet MagnumTrade.cpp SceneData-populating-non-owned
+
+The @ref SceneFieldData list is still implicitly allocated in the above case,
+but it can also be defined externally and referenced via
+@ref sceneFieldDataNonOwningArray() instead if desired. Finally, if the data
+layout is constant but the actual data is allocated / populated at runtime, the
+@ref SceneFieldData instances can be defined in a global array as offset-only
+and then subsequently referenced from a @ref SceneData with a concrete data
+array:
+
+@snippet MagnumTrade.cpp SceneData-populating-offset-only
+
+See also the @ref Trade-SceneFieldData-usage-offset-only "corresponding SceneFieldData documentation for offset-only fields".
+
 @subsection Trade-SceneData-populating-custom Custom scene fields and non-node objects
 
 Let's say that, in addition to the node hierarchy from above, our scene
@@ -1825,8 +1861,6 @@ While there's many options how to store the string, retrieving of any string
 @ref SceneFieldType can be conveniently done using @ref fieldStrings():
 
 @snippet MagnumTrade.cpp SceneData-populating-strings-retrieve
-
-@see @ref AbstractImporter::scene()
 */
 class MAGNUM_TRADE_EXPORT SceneData {
     public:

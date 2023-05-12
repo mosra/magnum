@@ -387,8 +387,9 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
 @brief Mesh attribute data
 @m_since{2020,06}
 
-Convenience type for populating @ref MeshData, see its documentation for an
-introduction. Additionally usable in various @ref MeshTools algorithms such as
+Convenience type for populating @ref MeshData, see
+@ref Trade-MeshData-populating "its documentation" for an introduction.
+Additionally usable in various @ref MeshTools algorithms such as
 @ref MeshTools::duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>)
 or @ref MeshTools::interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>, InterleaveFlags).
 
@@ -406,19 +407,21 @@ supply @ref VertexFormat explicitly.
 @subsection Trade-MeshAttributeData-usage-offset-only Offset-only attribute data
 
 If the actual attribute data location is not known yet, the instance can be
-created as "offset-only", meaning the actual view gets created only later when
-passed to a @ref MeshData instance with a concrete vertex data array. This is
-useful mainly to avoid pointer patching during data serialization, but also for
-example when vertex layout is static (and thus can be defined at compile time),
-but the actual data is allocated / populated at runtime:
+created as "offset-only" using @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t, UnsignedShort),
+meaning the actual view gets created only later when passed to a @ref MeshData
+instance with a concrete vertex data array. This is useful mainly to avoid
+pointer patching during data serialization, but also for example when vertex
+layout is static (and thus can be defined at compile time), but the actual data
+is allocated / populated at runtime.
 
 @snippet MagnumTrade.cpp MeshAttributeData-usage-offset-only
 
-Offset-only attributes return @cpp true @ce for @ref isOffsetOnly(). Note that
-@ref MeshTools algorithms generally don't accept offset-only
-@ref MeshAttributeData instances except when passed through a @ref MeshData, as
-for a standalone offset-only @ref MeshAttributeData it's impossible to know
-what data it points to.
+See @ref Trade-MeshData-populating-non-owned "the corresponding MeshData documentation"
+for a complete usage example. Offset-only attributes return @cpp true @ce for
+@ref isOffsetOnly(). Note that @ref MeshTools algorithms generally don't accept
+offset-only @ref MeshAttributeData instances except when passed through a
+@ref MeshData, as for a standalone offset-only @ref MeshAttributeData it's
+impossible to know what data it points to.
 
 @section Trade-MeshAttributeData-custom-vertex-format Custom vertex formats
 
@@ -696,7 +699,9 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
 
 Useful when you have the attribute definitions statically defined (for example
 when the vertex data themselves are already defined at compile time) and don't
-want to allocate just to pass those to @ref MeshData.
+want to allocate just to pass those to @ref MeshData. See documentation about
+@ref Trade-MeshData-populating "populating a MeshData instance" for more
+information.
 */
 Containers::Array<MeshAttributeData> MAGNUM_TRADE_EXPORT meshAttributeDataNonOwningArray(Containers::ArrayView<const MeshAttributeData> view);
 
@@ -706,8 +711,8 @@ Containers::Array<MeshAttributeData> MAGNUM_TRADE_EXPORT meshAttributeDataNonOwn
 
 Provides access to mesh vertex and index data, together with additional
 information such as primitive type. Populated instances of this class are
-returned from @ref AbstractImporter::mesh() and from particular functions in
-the @ref Primitives library.
+returned from @ref AbstractImporter::mesh(), from particular functions in
+the @ref Primitives library as well as from various @ref MeshTools algorithms.
 
 @section Trade-MeshData-usage-compile Quick usage with MeshTools::compile()
 
@@ -837,14 +842,31 @@ neither are possible too:
 
 @snippet MagnumTrade.cpp MeshData-populating
 
-In cases where you want the @ref MeshData instance to only refer to external
-data without taking ownership (for example in a memory-mapped file, constant
-memory etc.). Instead of moving in an @relativeref{Corrade,Containers::Array}
-you pass @ref DataFlags describing if the data is mutable or not together with
-an @relativeref{Corrade,Containers::ArrayView}. A variant of the above where
-the index data is constant and vertex data mutable, both referenced externally:
+@subsection Trade-MeshData-populating-non-owned Non-owned instances and static vertex layouts
+
+In some cases you may want the @ref MeshData instance to only refer to external
+data without taking ownership, for example with a memory-mapped file, global
+data etc. For that, instead of moving in
+@relativeref{Corrade,Containers::Array} instances, pass @ref DataFlags
+describing data mutability and ownership together with
+@relativeref{Corrade,Containers::ArrayView} instances to the
+@ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
+constructor. The following snippet is a variant of the above where the index
+data is constant and vertex data mutable, both referenced externally:
 
 @snippet MagnumTrade.cpp MeshData-populating-non-owned
+
+There are also other constructor overloads allowing you to mix and match owned
+vertex data with non-owned index data and vice versa. The @ref MeshAttributeData
+list is still implicitly allocated in the above case, but it can also be
+defined externally and referenced via @ref meshAttributeDataNonOwningArray()
+instead if desired. Finally, if the vertex layout is constant but the actual
+data is allocated / populated at runtime, the @ref MeshAttributeData instances
+can be defined in a global array as offset-only:
+
+@snippet MagnumTrade.cpp MeshData-populating-offset-only
+
+See also the @ref Trade-MeshAttributeData-usage-offset-only "corresponding MeshAttributeData documentation for offset-only fields".
 
 @subsection Trade-MeshData-populating-custom Custom mesh attributes
 
@@ -870,7 +892,6 @@ you can also supply implementation-specific values that are not available in
 the generic @relativeref{Magnum,MeshPrimitive} enum, similarly see also
 @ref Trade-MeshAttributeData-custom-vertex-format for details on
 implementation-specific @ref VertexFormat values.
-@see @ref AbstractImporter::mesh()
 */
 class MAGNUM_TRADE_EXPORT MeshData {
     public:
@@ -896,14 +917,20 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param importerState Importer-specific state
          *
          * The @p indices are expected to point to a sub-range of @p indexData.
+         * For a non-indexed mesh either pass default-constructed
+         * @ref indexData and @p indices arguments, or use the
+         * @ref MeshData(MeshPrimitive, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
+         * constructor.
+         *
          * The @p attributes are expected to reference (sparse) sub-ranges of
          * @p vertexData. Particular attributes can have additional
          * restrictions, see documentation of @ref MeshAttribute values for
          * more information. If the mesh has no attributes, the @p indices are
-         * expected to be valid (but can be empty). If you want to create an
-         * attribute-less non-indexed mesh, use
-         * @ref MeshData(MeshPrimitive, UnsignedInt, const void*) to specify
-         * desired vertex count.
+         * expected to be valid (but can be empty), you can also use the
+         * @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, UnsignedInt, const void*)
+         * constructor in that case. If you want to create an attribute-less
+         * non-indexed mesh, use @ref MeshData(MeshPrimitive, UnsignedInt, const void*)
+         * instead.
          *
          * The @ref indexDataFlags() / @ref vertexDataFlags() are implicitly
          * set to a combination of @ref DataFlag::Owned and
@@ -937,6 +964,15 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * data. The @p indexDataFlags / @p vertexDataFlags parameters can
          * contain @ref DataFlag::Mutable to indicate the external data can be
          * modified, and are expected to *not* have @ref DataFlag::Owned set.
+         *
+         * Use @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
+         * to create a mesh with only index data non-owned and
+         * @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
+         * to create a mesh with only vertex data non-owned. There's also a
+         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
+         * convenience overload for non-indexed meshes with non-owned vertex
+         * data and @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, UnsignedInt, const void*)
+         * for attribute-less meshes with non-owned index data.
          */
         explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
@@ -965,6 +1001,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * have @ref DataFlag::Owned set. The @ref vertexDataFlags() are
          * implicitly set to a combination of @ref DataFlag::Owned and
          * @ref DataFlag::Mutable.
+         * @see @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          */
         explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
@@ -993,6 +1030,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * have @ref DataFlag::Owned set. The @ref indexDataFlags() are
          * implicitly set to a combination of @ref DataFlag::Owned and
          * @ref DataFlag::Mutable.
+         * @see @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          */
         explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
@@ -1068,8 +1106,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * with default-constructed @p vertexData and @p attributes arguments.
          * The @p indices are expected to be valid (but can be empty). If you
          * want to create an attribute-less non-indexed mesh, use
-         * @ref MeshData(MeshPrimitive, UnsignedInt, const void*) to specify
-         * desired vertex count.
+         * @ref MeshData(MeshPrimitive, UnsignedInt, const void*) instead.
          *
          * The @ref indexDataFlags() are implicitly set to a combination of
          * @ref DataFlag::Owned and @ref DataFlag::Mutable. For consistency,

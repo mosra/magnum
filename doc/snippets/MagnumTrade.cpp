@@ -758,24 +758,20 @@ Trade::MeshAttributeData data{Trade::MeshAttribute::Position, positions};
 }
 
 {
+UnsignedInt vertexCount{};
 /* [MeshAttributeData-usage-offset-only] */
 struct Vertex {
     Vector3 position;
     Vector4 color;
 };
 
-/* Layout defined statically, 15 vertices in total */
-constexpr Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
-    VertexFormat::Vector3, offsetof(Vertex, position), 15, sizeof(Vertex)};
-constexpr Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
-    VertexFormat::Vector4, offsetof(Vertex, color), 15, sizeof(Vertex)};
-
-/* Actual data populated later */
-Containers::Array<char> vertexData{15*sizeof(Vertex)};
-DOXYGEN_ELLIPSIS()
-Trade::MeshData{MeshPrimitive::Triangles, std::move(vertexData),
-    {positions, colors}};
+Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+    VertexFormat::Vector3, offsetof(Vertex, position), vertexCount, sizeof(Vertex)};
+Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
+    VertexFormat::Vector4, offsetof(Vertex, color), vertexCount, sizeof(Vertex)};
 /* [MeshAttributeData-usage-offset-only] */
+static_cast<void>(positions);
+static_cast<void>(colors);
 }
 
 #ifdef MAGNUM_TARGET_VK
@@ -895,18 +891,18 @@ struct Vertex {
 Containers::Array<char> indexData{indexCount*sizeof(UnsignedShort)};
 Containers::Array<char> vertexData{vertexCount*sizeof(Vertex)};
 DOXYGEN_ELLIPSIS()
-auto vertices = Containers::arrayCast<const Vertex>(vertexData);
-auto indices = Containers::arrayCast<const UnsignedShort>(indexData);
+Containers::StridedArrayView1D<const Vertex> vertices =
+    Containers::arrayCast<const Vertex>(vertexData);
+Containers::ArrayView<const UnsignedShort> indices =
+    Containers::arrayCast<const UnsignedShort>(indexData);
 
 Trade::MeshData data{MeshPrimitive::Triangles,
     std::move(indexData), Trade::MeshIndexData{indices},
     std::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            Containers::StridedArrayView1D<const Vector3>{vertices,
-                &vertices[0].position, vertexCount, sizeof(Vertex)}},
+            vertices.slice(&Vertex::position)},
         Trade::MeshAttributeData{Trade::MeshAttribute::Color,
-            Containers::StridedArrayView1D<const Vector4>{vertices,
-                &vertices[0].color, vertexCount, sizeof(Vertex)}}
+            vertices.slice(&Vertex::color)}
     }};
 /* [MeshData-populating] */
 }
@@ -917,27 +913,49 @@ struct Vertex {
     Vector4 color;
 };
 /* [MeshData-populating-non-owned] */
-const UnsignedShort indices[] {
-    0, 1, 2,
-    2, 1, 3,
-    3, 4, 5,
-    5, 4, 6
+const UnsignedShort indices[]{
+    DOXYGEN_ELLIPSIS(0)
 };
-Vertex vertices[7];
+Vertex vertices[]{
+    DOXYGEN_ELLIPSIS({})
+};
 
 Trade::MeshData data{MeshPrimitive::Triangles,
     Trade::DataFlags{}, indices, Trade::MeshIndexData{indices},
     Trade::DataFlag::Mutable, vertices, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            Containers::StridedArrayView1D<const Vector3>{
-                Containers::arrayView(vertices), &vertices[0].position,
-                Containers::arraySize(vertices), sizeof(Vertex)}},
+            Containers::stridedArrayView(vertices).slice(&Vertex::position)},
         Trade::MeshAttributeData{Trade::MeshAttribute::Color,
-            Containers::StridedArrayView1D<const Vector4>{
-                Containers::arrayView(vertices), &vertices[0].color,
-                Containers::arraySize(vertices), sizeof(Vertex)}}
+            Containers::stridedArrayView(vertices).slice(&Vertex::color)}
     }};
 /* [MeshData-populating-non-owned] */
+}
+
+{
+UnsignedInt vertexCount{};
+/* [MeshData-populating-offset-only] */
+struct Vertex {
+    Vector3 position;
+    Vector4 color;
+};
+
+/* Layout known in advance, except for vertex count */
+constexpr Trade::MeshAttributeData attributes[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        VertexFormat::Vector3, offsetof(Vertex, position), 0, sizeof(Vertex)},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+        VertexFormat::Vector4, offsetof(Vertex, color), 15, sizeof(Vertex)}
+};
+
+/* Actual data populated later */
+Containers::Array<char> vertexData{vertexCount*sizeof(Vertex)};
+DOXYGEN_ELLIPSIS()
+
+/* Using the statically defined attribute layout together with explicitly
+   passed vertex count */
+Trade::MeshData mesh{MeshPrimitive::Triangles, std::move(vertexData),
+    Trade::meshAttributeDataNonOwningArray(attributes), vertexCount};
+/* [MeshData-populating-offset-only] */
 }
 
 {
@@ -1060,27 +1078,23 @@ Trade::SceneFieldData field{Trade::SceneField::Transformation,
 }
 
 {
+std::size_t objectCount = 120;
 /* [SceneFieldData-usage-offset-only] */
 struct Node {
-    UnsignedInt object;
+    UnsignedInt mapping;
     Int parent;
-    Matrix4 transform;
+    Matrix4 transformation;
 };
 
-/* Layout defined statically, 120 objects in total */
-constexpr Trade::SceneFieldData parents{Trade::SceneField::Parent, 120,
-    Trade::SceneMappingType::UnsignedInt, offsetof(Node, object), sizeof(Node),
+Trade::SceneFieldData parents{Trade::SceneField::Parent, objectCount,
+    Trade::SceneMappingType::UnsignedInt, offsetof(Node, mapping), sizeof(Node),
     Trade::SceneFieldType::Int, offsetof(Node, parent), sizeof(Node)};
-constexpr Trade::SceneFieldData transforms{Trade::SceneField::Transformation, 120,
-    Trade::SceneMappingType::UnsignedInt, offsetof(Node, object), sizeof(Node),
-    Trade::SceneFieldType::Matrix4x4, offsetof(Node, transform), sizeof(Node)};
-
-/* Actual data populated later */
-Containers::Array<char> data{120*sizeof(Node)};
-DOXYGEN_ELLIPSIS()
-Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 120, std::move(data),
-    {parents, transforms}};
+Trade::SceneFieldData transformations{Trade::SceneField::Transformation, objectCount,
+    Trade::SceneMappingType::UnsignedInt, offsetof(Node, mapping), sizeof(Node),
+    Trade::SceneFieldType::Matrix4x4, offsetof(Node, transformation), sizeof(Node)};
 /* [SceneFieldData-usage-offset-only] */
+static_cast<void>(parents);
+static_cast<void>(transformations);
 }
 
 {
@@ -1197,7 +1211,7 @@ for(std::size_t i = 0; i != transformationMapping.size(); ++i) {
 const std::size_t nodeCount{}, meshAssignmentCount{};
 /* [SceneData-populating] */
 struct Common {
-    UnsignedShort object;
+    UnsignedShort mapping;
     Short parent;
     Matrix4 transformation;
 };
@@ -1219,15 +1233,69 @@ Trade::SceneData scene{
     Trade::SceneMappingType::UnsignedShort, nodeCount,
     std::move(data), {
         Trade::SceneFieldData{Trade::SceneField::Parent,
-            common.slice(&Common::object), common.slice(&Common::parent)},
+            common.slice(&Common::mapping),
+            common.slice(&Common::parent)},
         Trade::SceneFieldData{Trade::SceneField::Transformation,
-            common.slice(&Common::object), common.slice(&Common::transformation)},
+            common.slice(&Common::mapping), common.slice(&Common::transformation)},
         Trade::SceneFieldData{Trade::SceneField::Mesh,
-            meshMaterialMapping, meshes},
+            meshMaterialMapping,
+            meshes},
         Trade::SceneFieldData{Trade::SceneField::MeshMaterial,
-            meshMaterialMapping, meshMaterials}
+            meshMaterialMapping,
+            meshMaterials}
     }};
 /* [SceneData-populating] */
+}
+
+{
+constexpr std::size_t objectCount = 1;
+/* [SceneData-populating-non-owned] */
+constexpr struct Data {
+    UnsignedShort mapping;
+    Short parent;
+    Matrix4 transformation;
+} data[objectCount]{
+    DOXYGEN_ELLIPSIS({})
+};
+
+Trade::SceneData scene{
+    Trade::SceneMappingType::UnsignedShort, objectCount,
+    Trade::DataFlag::Global, data, {
+        Trade::SceneFieldData{Trade::SceneField::Parent,
+            Containers::stridedArrayView(data).slice(&Data::mapping),
+            Containers::stridedArrayView(data).slice(&Data::parent)},
+        DOXYGEN_ELLIPSIS()
+    }};
+/* [SceneData-populating-non-owned] */
+}
+
+{
+constexpr std::size_t objectCount = 1;
+/* [SceneData-populating-offset-only] */
+struct Data {
+    UnsignedInt mapping;
+    Int parent;
+    Matrix4 transformation;
+};
+
+/* Layout defined statically */
+constexpr Trade::SceneFieldData fields[]{
+    Trade::SceneFieldData{Trade::SceneField::Parent, objectCount,
+        Trade::SceneMappingType::UnsignedInt, offsetof(Data, mapping), sizeof(Data),
+        Trade::SceneFieldType::Int, offsetof(Data, parent), sizeof(Data)},
+    Trade::SceneFieldData{Trade::SceneField::Transformation, objectCount,
+        Trade::SceneMappingType::UnsignedInt, offsetof(Data, mapping), sizeof(Data),
+        Trade::SceneFieldType::Matrix4x4, offsetof(Data, transformation), sizeof(Data)}
+};
+
+/* Actual data populated later */
+Containers::Array<char> data{objectCount*sizeof(Data)};
+DOXYGEN_ELLIPSIS()
+
+/* Using the statically defined field layout */
+Trade::SceneData scene{Trade::SceneMappingType::UnsignedInt, objectCount,
+    std::move(data), Trade::sceneFieldDataNonOwningArray(fields)};
+/* [SceneData-populating-offset-only] */
 }
 
 {
