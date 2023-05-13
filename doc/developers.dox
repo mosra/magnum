@@ -276,6 +276,57 @@ following cases apply:
     interface. A rather exhaustive list of ABI-affecting changes is in the KDE
     Community Wiki: https://community.kde.org/Policies/Binary_Compatibility_Issues_With_C%2B%2B
 
+@subsection developers-plugin-interface-updating-importers Checklist for updating the @ref Trade::AbstractImporter plugin interface
+
+-   Newly added `do*()` APIs need to be also handled in all proxies:
+    -   @relativeref{Trade,AnyImageImporter}
+    -   @relativeref{Trade,AnySceneImporter}
+-   Newly added data types need to be reflected in all APIs operating with
+    whole importers:
+    -   @ref Trade::SceneContent
+    -   @ref Trade::AbstractSceneConverter::addImporterContents()
+    -   @ref Trade::AbstractSceneConverter::addSupportedImporterContents()
+    -   @ref magnum-sceneconverter "magnum-sceneconverter" /
+        @ref magnum-imageconverter "magnum-imageconverter", at the very least
+        the `--info`
+-   Newly added @ref Trade::ImporterFlag values need to be reflected in:
+    -   All plugins that may make use of them, together with documenting if
+        they're recognized
+    -   New command-line options in
+        @ref magnum-sceneconverter "magnum-sceneconverter" /
+        @ref magnum-imageconverter "magnum-imageconverter"
+-   It's highly likely that APIs added to / changed in the importer will also
+    need a corresponding change in @ref Trade::AbstractImageConverter and
+    @ref Trade::AbstractSceneConverter
+
+@subsection developers-plugin-interface-updating-image-converters Checklist for updating the @ref Trade::AbstractImageConverter plugin interface
+
+-   Newly added `do*()` APIs need to be also handled in all proxies:
+    -   @relativeref{Trade,AnyImageConverter}
+-   Corresponding changes in @ref magnum-imageconverter "magnum-imageconverter"
+    and possibly also @ref magnum-sceneconverter "magnum-sceneconverter"
+-   Newly added @ref Trade::ImageConverterFlag values need to be reflected in:
+    -   All plugins that may make use of them, together with documenting if
+        they're recognized
+    -   New command-line options in
+        @ref magnum-sceneconverter "magnum-sceneconverter" /
+        @ref magnum-imageconverter "magnum-imageconverter"
+-   It's highly likely that APIs added to / changed in the image converter will
+    also need a corresponding change in @ref Trade::AbstractSceneConverter
+
+@subsection developers-plugin-interface-updating-scene-converters Checklist for updating the @ref Trade::AbstractSceneConverter plugin interface
+
+-   Newly added `do*()` APIs need to be also handled in all proxies:
+    -   @relativeref{Trade,AnySceneConverter}
+-   Corresponding changes in @ref magnum-sceneconverter "magnum-sceneconverter"
+-   Newly added @ref Trade::SceneConverterFlag values need to be reflected in:
+    -   All plugins that may make use of them, together with documenting if
+        they're recognized
+    -   New command-line options in
+        @ref magnum-sceneconverter "magnum-sceneconverter"
+    -   Translation to @ref Trade::ImageConverterFlag in plugins that proxy
+        image conversion to image converter plugins
+
 @section developers-tool Checklist for adding / removing a tool
 
 @todoc write
