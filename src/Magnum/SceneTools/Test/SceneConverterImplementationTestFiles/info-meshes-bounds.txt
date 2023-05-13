@@ -10,7 +10,7 @@ Mesh 0:
       Bounds: (12, 155)
     Normal @ Vector3bNormalized, offset 76, stride 3
       Bounds: ({-1, 0, 0}, {0, 1, 1})
-    Custom(25:NormalButCustomSoNoBoundsPrinted) @ Vector3b, offset 76, stride 3
+    Custom(25:normalButCustomSoNoBoundsPrinted) @ Vector3b, offset 76, stride 3
     TextureCoordinates @ Vector2, offset 84, stride 8
       Bounds: ({0.5, 0.5}, {1.5, 0.5})
     Color @ Vector4, offset 100, stride 16

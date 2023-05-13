@@ -3767,18 +3767,18 @@ void AbstractImporterTest::sceneFieldName() {
         void doClose() override {}
 
         SceneField doSceneFieldForName(Containers::StringView name) override {
-            if(name == "OctreeCell") return sceneFieldCustom(100037);
+            if(name == "octreeCell") return sceneFieldCustom(100037);
             return SceneField{};
         }
 
         Containers::String doSceneFieldName(SceneField id) override {
-            if(id == sceneFieldCustom(100037)) return "OctreeCell";
+            if(id == sceneFieldCustom(100037)) return "octreeCell";
             return "";
         }
     } importer;
 
-    CORRADE_COMPARE(importer.sceneFieldForName("OctreeCell"), sceneFieldCustom(100037));
-    CORRADE_COMPARE(importer.sceneFieldName(sceneFieldCustom(100037)), "OctreeCell");
+    CORRADE_COMPARE(importer.sceneFieldForName("octreeCell"), sceneFieldCustom(100037));
+    CORRADE_COMPARE(importer.sceneFieldName(sceneFieldCustom(100037)), "octreeCell");
 }
 
 void AbstractImporterTest::sceneFieldNameNotImplemented() {

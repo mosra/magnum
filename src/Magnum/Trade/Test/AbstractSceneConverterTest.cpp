@@ -6216,8 +6216,8 @@ void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
             return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
         }
         Containers::String doSceneFieldName(SceneField name) override {
-            if(name == sceneFieldCustom(34977)) return "OffsetSmall";
-            if(name == sceneFieldCustom(5266)) return "ValueData";
+            if(name == sceneFieldCustom(34977)) return "offsetSmall";
+            if(name == sceneFieldCustom(5266)) return "valueData";
             CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -6250,11 +6250,11 @@ void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
     CORRADE_COMPARE(out.str(),
         "Adding scene\n"
         /** @todo cache the names to avoid querying repeatedly */
-        "Setting field 34977 name to OffsetSmall\n"
-        "Setting field 5266 name to ValueData\n"
+        "Setting field 34977 name to offsetSmall\n"
+        "Setting field 5266 name to valueData\n"
         "Adding scene\n"
-        "Setting field 34977 name to OffsetSmall\n"
-        "Setting field 5266 name to ValueData\n"
+        "Setting field 34977 name to offsetSmall\n"
+        "Setting field 5266 name to valueData\n"
         "Adding scene\n");
 }
 
@@ -6281,8 +6281,8 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
             return MeshData{MeshPrimitive::Points, 0};
         }
         Containers::String doMeshAttributeName(MeshAttribute name) override {
-            if(name == meshAttributeCustom(31977)) return "OffsetSmall";
-            if(name == meshAttributeCustom(5266)) return "ValueData";
+            if(name == meshAttributeCustom(31977)) return "offsetSmall";
+            if(name == meshAttributeCustom(5266)) return "valueData";
             CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -6316,10 +6316,10 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
     CORRADE_COMPARE(out.str(),
         "Adding mesh levels\n"
         /** @todo cache the names to avoid querying repeatedly */
-        "Setting attribute 31977 name to OffsetSmall\n"
-        "Setting attribute 5266 name to ValueData\n"
-        "Setting attribute 31977 name to OffsetSmall\n"
-        "Setting attribute 5266 name to ValueData\n"
+        "Setting attribute 31977 name to offsetSmall\n"
+        "Setting attribute 5266 name to valueData\n"
+        "Setting attribute 31977 name to offsetSmall\n"
+        "Setting attribute 5266 name to valueData\n"
         "Adding mesh levels\n");
 }
 

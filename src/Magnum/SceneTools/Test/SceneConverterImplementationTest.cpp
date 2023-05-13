@@ -225,7 +225,7 @@ void SceneConverterImplementationTest::infoScenesObjects() {
             return "";
         }
         Containers::String doSceneFieldName(Trade::SceneField name) override {
-            if(name == Trade::sceneFieldCustom(1337)) return "DirectionVector";
+            if(name == Trade::sceneFieldCustom(1337)) return "directionVector";
             return "";
         }
         Containers::Optional<Trade::SceneData> doScene(UnsignedInt id) override {
@@ -757,7 +757,7 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
 
         Containers::String doMeshAttributeName(Trade::MeshAttribute name) override {
             if(name == Trade::meshAttributeCustom(25))
-                return "NormalButCustomSoNoBoundsPrinted";
+                return "normalButCustomSoNoBoundsPrinted";
             return "";
         }
 
