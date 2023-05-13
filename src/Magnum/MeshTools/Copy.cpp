@@ -135,6 +135,9 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
 
     /* Otherwise we have to allocate a new one and re-route the attributes to
        a potentially different vertex array */
+    /** @todo could theoretically also just modify the array in-place if it has
+        a default deleter, but would need to pay attention to not copy items
+        to themselves and such */
     } else {
         /* Using DefaultInit so the array has a default deleter and isn't
            problematic to use in plugins */

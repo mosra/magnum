@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Color.h"
@@ -42,14 +43,13 @@ struct CopyTest: TestSuite::Tester {
     explicit CopyTest();
 
     void copy();
-    void copyOffsetOnlyAttributes();
     void copyNoIndexData();
     void copyNoAttributeVertexData();
     void copyStridedIndices();
-    void copyArrayAttribute();
-    void copyImplementationSpecificVertexFormat();
-    void copyRvaluePassthrough();
-    void copyRvaluePartialPassthrough();
+
+    void copyRvalueNotOwned();
+    void copyRvalueIndicesVerticesAttributesOwned();
+    void copyRvalueAttributesOwned();
 
     void reference();
     void referenceNoIndexData();
@@ -73,17 +73,15 @@ struct {
 
 CopyTest::CopyTest() {
     addTests({&CopyTest::copy,
-              &CopyTest::copyOffsetOnlyAttributes,
               &CopyTest::copyNoIndexData,
               &CopyTest::copyNoAttributeVertexData});
 
     addInstancedTests({&CopyTest::copyStridedIndices},
         Containers::arraySize(StridedIndicesData));
 
-    addTests({&CopyTest::copyArrayAttribute,
-              &CopyTest::copyImplementationSpecificVertexFormat,
-              &CopyTest::copyRvaluePassthrough,
-              &CopyTest::copyRvaluePartialPassthrough,
+    addTests({&CopyTest::copyRvalueNotOwned,
+              &CopyTest::copyRvalueIndicesVerticesAttributesOwned,
+              &CopyTest::copyRvalueAttributesOwned,
 
               &CopyTest::reference,
               &CopyTest::referenceNoIndexData,
@@ -98,34 +96,89 @@ CopyTest::CopyTest() {
 }
 
 void CopyTest::copy() {
-    Trade::MeshData cube = Primitives::cubeSolid();
-    CORRADE_COMPARE(cube.indexDataFlags(), Trade::DataFlag::Global);
-    CORRADE_COMPARE(cube.vertexDataFlags(), Trade::DataFlag::Global);
+    const struct Vertex {
+        Vector3 position;
+        Short array[3];
+        Vector2ub textureCoordinates;
+        bool bit;
+    } vertices[]{
+        {{1.0f, 2.0f, 3.0f}, {15, -36, 0}, {4, 5}, false},
+        {{6.0f, 7.0f, 8.0f}, {0, -36, 12}, {9, 0}, true}
+    };
+    const UnsignedShort indices[]{
+        /* First is not used */
+        2, 1, 0, 1
+    };
 
-    Trade::MeshData copy = MeshTools::copy(cube);
+    Trade::MeshData mesh{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{Containers::arrayView(indices).exceptPrefix(1)},
+        {}, vertices, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::stridedArrayView(vertices).slice(&Vertex::position)},
+            /* Array attribute */
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(37),
+                VertexFormat::Short,
+                Containers::stridedArrayView(vertices).slice(&Vertex::array), 3},
+            /* Offset-only attribute */
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+                VertexFormat::Vector2ub,
+                offsetof(Vertex, textureCoordinates), 2, sizeof(Vertex)},
+            /* Implementation-specific vertex format */
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(56),
+                vertexFormatWrap(0xb001),
+                Containers::stridedArrayView(vertices).slice(&Vertex::bit)},
+        }};
+
+    Trade::MeshData copy = MeshTools::copy(mesh);
     CORRADE_VERIFY(copy.isIndexed());
-    CORRADE_COMPARE(copy.primitive(), cube.primitive());
+    CORRADE_COMPARE(copy.primitive(), mesh.primitive());
     CORRADE_COMPARE(copy.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_COMPARE(copy.indexCount(), cube.indexCount());
-    CORRADE_COMPARE(copy.indexType(), cube.indexType());
-    CORRADE_COMPARE(copy.indexOffset(), cube.indexOffset());
-    CORRADE_COMPARE(copy.indexStride(), cube.indexStride());
-    CORRADE_COMPARE(copy.vertexCount(), cube.vertexCount());
-    CORRADE_COMPARE(copy.attributeCount(), cube.attributeCount());
 
-    for(std::size_t i = 0; i != cube.attributeCount(); ++i) {
+    CORRADE_COMPARE(copy.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(copy.indices<UnsignedShort>(),
+        Containers::arrayView(indices).exceptPrefix(1),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(copy.vertexCount(), 2);
+    CORRADE_COMPARE(copy.attributeCount(), 4);
+
+    for(std::size_t i = 0; i != mesh.attributeCount(); ++i) {
         CORRADE_ITERATION(i);
 
-        CORRADE_COMPARE(copy.attributeName(i), cube.attributeName(i));
-        CORRADE_COMPARE(copy.attributeFormat(i), cube.attributeFormat(i));
-        CORRADE_COMPARE(copy.attributeOffset(i), cube.attributeOffset(i));
-        CORRADE_COMPARE(copy.attributeStride(i), cube.attributeStride(i));
-        CORRADE_COMPARE(copy.attributeArraySize(i), cube.attributeArraySize(i));
+        CORRADE_COMPARE(copy.attributeName(i), mesh.attributeName(i));
+        CORRADE_COMPARE(copy.attributeFormat(i), mesh.attributeFormat(i));
+        CORRADE_COMPARE(copy.attributeArraySize(i), mesh.attributeArraySize(i));
     }
 
-    CORRADE_COMPARE_AS(copy.indexData(), cube.indexData(), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(copy.vertexData(), cube.vertexData(), TestSuite::Compare::Container);
+    /* Offset-only attributes should be just passed through during the copy,
+       not made absolute */
+    CORRADE_VERIFY(copy.attributeData()[2].isOffsetOnly());
+
+    CORRADE_COMPARE_AS(copy.attribute<Vector3>(Trade::MeshAttribute::Position),
+        Containers::stridedArrayView(vertices).slice(&Vertex::position),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(copy.attribute<Short[]>(Trade::meshAttributeCustom(37))[0],
+        Containers::arrayView<Short>({15, -36, 0}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(copy.attribute<Short[]>(Trade::meshAttributeCustom(37))[1],
+        Containers::arrayView<Short>({0, -36, 12}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(copy.attribute<Vector2ub>(Trade::MeshAttribute::TextureCoordinates),
+        Containers::stridedArrayView(vertices).slice(&Vertex::textureCoordinates),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((Containers::arrayCast<const bool>(copy.attribute(Trade::meshAttributeCustom(56))).transposed<0, 1>()[0]),
+        Containers::stridedArrayView(vertices).slice(&Vertex::bit),
+        TestSuite::Compare::Container);
+
+    /* The data layout should be the same and thus the raw data should match
+       as well */
+    CORRADE_COMPARE_AS(copy.indexData(),
+        mesh.indexData(),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(copy.vertexData(),
+        mesh.vertexData(),
+        TestSuite::Compare::Container);
 
     /* The data should have a default deleter to make this usable in plugins */
     Containers::Array<char> indexData = copy.releaseIndexData();
@@ -134,30 +187,6 @@ void CopyTest::copy() {
     CORRADE_VERIFY(!indexData.deleter());
     CORRADE_VERIFY(!vertexData.deleter());
     CORRADE_VERIFY(!attributeData.deleter());
-}
-
-void CopyTest::copyOffsetOnlyAttributes() {
-    Trade::MeshData circle = Primitives::circle2DSolid(5);
-    Trade::MeshData copy = MeshTools::copy(circle);
-    CORRADE_COMPARE(copy.primitive(), circle.primitive());
-    CORRADE_COMPARE(copy.vertexCount(), circle.vertexCount());
-    CORRADE_COMPARE(copy.attributeCount(), circle.attributeCount());
-
-    for(std::size_t i = 0; i != circle.attributeCount(); ++i) {
-        CORRADE_ITERATION(i);
-
-        CORRADE_COMPARE(copy.attributeName(i), circle.attributeName(i));
-        CORRADE_COMPARE(copy.attributeFormat(i), circle.attributeFormat(i));
-        CORRADE_COMPARE(copy.attributeOffset(i), circle.attributeOffset(i));
-        CORRADE_COMPARE(copy.attributeStride(i), circle.attributeStride(i));
-        CORRADE_COMPARE(copy.attributeArraySize(i), circle.attributeArraySize(i));
-
-        /* The circle has offset-only attributes, that should be preserved
-           after the copy as well */
-        CORRADE_VERIFY(copy.attributeData()[i].isOffsetOnly());
-    }
-
-    CORRADE_COMPARE_AS(copy.vertexData(), circle.vertexData(), TestSuite::Compare::Container);
 }
 
 void CopyTest::copyNoIndexData() {
@@ -228,78 +257,120 @@ void CopyTest::copyStridedIndices() {
         TestSuite::Compare::Container);
 }
 
-void CopyTest::copyArrayAttribute() {
-    const Vector3us vertexData[13]{};
-    /* Verify that array attributes are propagated correctly */
-    Trade::MeshData weirdThing{MeshPrimitive::Faces,
-        {}, vertexData,
-        {Trade::MeshAttributeData{Trade::meshAttributeCustom(42), VertexFormat::Half, Containers::arrayView(vertexData), 3}}};
+void CopyTest::copyRvalueNotOwned() {
+    Vector3 positions[]{
+        {1.0f, 2.0f, 3.0f},
+        {6.0f, 7.0f, 8.0f},
+    };
+    const UnsignedShort indices[]{
+        1, 0, 1
+    };
+    const Trade::MeshAttributeData attributes[]{
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::arrayView(positions)},
+    };
 
-    Trade::MeshData copy = MeshTools::copy(weirdThing);
-    CORRADE_COMPARE(copy.vertexCount(), 13);
-    CORRADE_COMPARE(copy.attributeCount(), 1);
-    CORRADE_COMPARE(copy.attributeArraySize(0), 3);
-}
-
-void CopyTest::copyImplementationSpecificVertexFormat() {
-    const Int vertexData[13]{};
-    /* Verify that custom vertex formats are propagated without a problem */
-    Trade::MeshData weirdThing{MeshPrimitive::Faces,
-        {}, vertexData,
-        {Trade::MeshAttributeData{Trade::meshAttributeCustom(42), vertexFormatWrap(0xcaca), Containers::arrayView(vertexData)}}};
-
-    Trade::MeshData copy = MeshTools::copy(weirdThing);
-    CORRADE_COMPARE(copy.vertexCount(), 13);
-    CORRADE_COMPARE(copy.attributeCount(), 1);
-    CORRADE_COMPARE(copy.attributeArraySize(0), 0);
-    CORRADE_COMPARE(copy.attributeFormat(0), vertexFormatWrap(0xcaca));
-    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Int>(copy.attribute(0))),
-        Containers::arrayView(vertexData),
-        TestSuite::Compare::Container);
-}
-
-void CopyTest::copyRvaluePassthrough() {
-    Trade::MeshData grid = Primitives::grid3DSolid({15, 3}, Primitives::GridFlag::Tangents);
-    CORRADE_COMPARE(grid.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_COMPARE(grid.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    UnsignedInt indexCount = grid.indexCount();
-    MeshIndexType indexType = grid.indexType();
-    std::size_t indexOffset = grid.indexOffset();
-    Int indexStride = grid.indexStride();
-    UnsignedInt vertexCount = grid.vertexCount();
-    const void* indexData = grid.indexData();
-    const void* vertexData = grid.vertexData();
-    const void* attributeData = grid.attributeData();
-
-    Trade::MeshData copy = MeshTools::copy(std::move(grid));
+    Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles,
+        Trade::DataFlag::ExternallyOwned, indices, Trade::MeshIndexData{indices},
+        Trade::DataFlag::Mutable, positions, Trade::meshAttributeDataNonOwningArray(attributes)});
     CORRADE_VERIFY(copy.isIndexed());
+    CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(copy.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_COMPARE(copy.indexCount(), indexCount);
-    CORRADE_COMPARE(copy.indexType(), indexType);
-    CORRADE_COMPARE(copy.indexOffset(), indexOffset);
-    CORRADE_COMPARE(copy.indexStride(), indexStride);
-    CORRADE_COMPARE(copy.vertexCount(), vertexCount);
-    CORRADE_COMPARE(copy.indexData(), indexData);
-    CORRADE_COMPARE(copy.vertexData(), vertexData);
-    CORRADE_COMPARE(copy.attributeData(), attributeData);
+
+    CORRADE_COMPARE(copy.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(copy.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(copy.vertexCount(), 2);
+    CORRADE_COMPARE(copy.attributeCount(), 1);
+    CORRADE_COMPARE_AS(copy.attribute<Vector3>(Trade::MeshAttribute::Position),
+        Containers::arrayView(positions),
+        TestSuite::Compare::Container);
+
+    /* Nothing should be copied in this case */
+    CORRADE_VERIFY(copy.indexData().data() != static_cast<const void*>(indices));
+    CORRADE_VERIFY(copy.vertexData().data() != static_cast<void*>(positions));
+    CORRADE_VERIFY(copy.attributeData().data() != attributes);
 }
 
-void CopyTest::copyRvaluePartialPassthrough() {
-    Trade::MeshData gradient = Primitives::gradient3DHorizontal({}, {});
-    CORRADE_COMPARE(gradient.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    UnsignedInt vertexCount = gradient.vertexCount();
-    const void* vertexData = gradient.vertexData();
-    const void* attributeData = gradient.attributeData();
+void CopyTest::copyRvalueIndicesVerticesAttributesOwned() {
+    Containers::Array<char> vertexData{NoInit, sizeof(Vector3)*2};
+    auto positions = Containers::arrayCast<Vector3>(vertexData);
+    Utility::copy({
+        {1.0f, 2.0f, 3.0f},
+        {6.0f, 7.0f, 8.0f},
+    }, positions);
 
-    Trade::MeshData copy = MeshTools::copy(std::move(gradient));
-    CORRADE_VERIFY(!copy.isIndexed());
+    Containers::Array<char> indexData{NoInit, sizeof(UnsignedShort)*3};
+    auto indices = Containers::arrayCast<UnsignedShort>(indexData);
+    Utility::copy({
+        1, 0, 1
+    }, indices);
+
+    /* InPlaceInit causes a non-default deleter to be used, which would cause
+       a copy to be made internally */
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 1};
+    attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::arrayView(positions)};
+    const Trade::MeshAttributeData* originalAttributes = attributes;
+
+    Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles,
+        std::move(indexData), Trade::MeshIndexData{indices},
+        std::move(vertexData), std::move(attributes)});
+    CORRADE_VERIFY(copy.isIndexed());
+    CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(copy.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
-    CORRADE_COMPARE(copy.vertexCount(), vertexCount);
-    CORRADE_COMPARE(copy.vertexData(), vertexData);
-    /* Attribute data is constant in the original, so this gets copied */
-    CORRADE_VERIFY(copy.attributeData() != attributeData);
+
+    CORRADE_COMPARE(copy.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(copy.indices<UnsignedShort>(),
+        Containers::arrayView(indices),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(copy.vertexCount(), 2);
+    CORRADE_COMPARE(copy.attributeCount(), 1);
+    CORRADE_COMPARE_AS(copy.attribute<Vector3>(Trade::MeshAttribute::Position),
+        Containers::arrayView(positions),
+        TestSuite::Compare::Container);
+
+    /* All data should be transferred without any copy */
+    CORRADE_COMPARE(copy.indexData().data(), static_cast<const void*>(indices));
+    CORRADE_COMPARE(copy.vertexData().data(), static_cast<void*>(positions));
+    CORRADE_COMPARE(copy.attributeData().data(), originalAttributes);
+}
+
+void CopyTest::copyRvalueAttributesOwned() {
+    Vector3 positions[]{
+        {1.0f, 2.0f, 3.0f},
+        {6.0f, 7.0f, 8.0f},
+    };
+
+    /* InPlaceInit causes a non-default deleter to be used, which would cause
+       a copy to be made internally */
+    Containers::Array<Trade::MeshAttributeData> attributes{ValueInit, 1};
+    attributes[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::arrayView(positions)};
+    const Trade::MeshAttributeData* originalAttributes = attributes;
+
+    Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles, {}, positions, std::move(attributes)});
+    CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+
+    CORRADE_COMPARE(copy.vertexCount(), 2);
+    CORRADE_COMPARE(copy.attributeCount(), 1);
+    CORRADE_COMPARE_AS(copy.attribute<Vector3>(Trade::MeshAttribute::Position),
+        Containers::arrayView(positions),
+        TestSuite::Compare::Container);
+
+    /* Data should be copied */
+    CORRADE_VERIFY(copy.vertexData().data() != static_cast<void*>(positions));
+    {
+        CORRADE_EXPECT_FAIL("Attribute data currently get copied always when they need to be modified.");
+        CORRADE_COMPARE(copy.attributeData().data(), originalAttributes);
+    }
 }
 
 void CopyTest::reference() {
