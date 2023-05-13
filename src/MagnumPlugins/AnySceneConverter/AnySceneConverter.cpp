@@ -208,6 +208,10 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Animati
     return !!_converter->add(animation, name);
 }
 
+void AnySceneConverter::doSetAnimationTrackTargetName(const AnimationTrackTarget target, const Containers::StringView name) {
+    return _converter->setAnimationTrackTargetName(target, name);
+}
+
 bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const LightData& light, const Containers::StringView name) {
     CORRADE_INTERNAL_ASSERT(id == _converter->lightCount());
     return !!_converter->add(light, name);

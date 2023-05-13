@@ -151,6 +151,8 @@ class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneCon
         MAGNUM_ANYSCENECONVERTER_LOCAL void doSetDefaultScene(UnsignedInt id) override;
 
         MAGNUM_ANYSCENECONVERTER_LOCAL bool doAdd(UnsignedInt id, const AnimationData& animation, Containers::StringView name) override;
+        MAGNUM_ANYSCENECONVERTER_LOCAL void doSetAnimationTrackTargetName(AnimationTrackTarget target, Containers::StringView name) override;
+
         MAGNUM_ANYSCENECONVERTER_LOCAL bool doAdd(UnsignedInt id, const LightData& light, Containers::StringView name) override;
         MAGNUM_ANYSCENECONVERTER_LOCAL bool doAdd(UnsignedInt id, const CameraData& camera, Containers::StringView name) override;
         MAGNUM_ANYSCENECONVERTER_LOCAL bool doAdd(UnsignedInt id, const SkinData2D& skin, Containers::StringView name) override;
