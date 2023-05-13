@@ -78,7 +78,8 @@ Calls @ref combineFields(Trade::SceneMappingType, UnsignedLong, Containers::Arra
 with mapping type, bound and fields coming from @p scene. Useful for
 conveniently repacking an existing scene and throwing away data not referenced
 by any field.
-@see @ref filterFields(), @ref filterOnlyFields(), @ref filterExceptFields()
+@see @ref filterFields(), @ref filterOnlyFields(), @ref filterExceptFields(),
+    @ref copy(const Trade::SceneData&)
 */
 MAGNUM_SCENETOOLS_EXPORT Trade::SceneData combineFields(const Trade::SceneData& scene);
 

@@ -51,6 +51,7 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
     INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(SceneToolsCombineTest CombineTest.cpp LIBRARIES MagnumSceneToolsTestLib)
+corrade_add_test(SceneToolsCopyTest CopyTest.cpp LIBRARIES MagnumSceneTools)
 corrade_add_test(SceneToolsConvertToSingleFunc___Test ConvertToSingleFunctionObjectsTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsFilterTest FilterTest.cpp LIBRARIES MagnumSceneToolsTestLib)
 corrade_add_test(SceneToolsHierarchyTest HierarchyTest.cpp LIBRARIES MagnumSceneToolsTestLib)
