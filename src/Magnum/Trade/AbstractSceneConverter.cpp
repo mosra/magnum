@@ -675,6 +675,19 @@ bool AbstractSceneConverter::doAdd(UnsignedInt, const AnimationData&, Containers
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractSceneConverter::add(): animation conversion advertised but not implemented", {});
 }
 
+void AbstractSceneConverter::setAnimationTrackTargetName(const AnimationTrackTarget target, const Containers::StringView name) {
+    CORRADE_ASSERT(features() & SceneConverterFeature::AddAnimations,
+        "Trade::AbstractSceneConverter::setAnimationTrackTargetName(): feature not supported", );
+    CORRADE_ASSERT(_state,
+        "Trade::AbstractSceneConverter::setAnimationTrackTargetName(): no conversion in progress", );
+    CORRADE_ASSERT(isAnimationTrackTargetCustom(target),
+        "Trade::AbstractSceneConverter::setAnimationTrackTargetName():" << target << "is not custom", );
+
+    doSetAnimationTrackTargetName(target, name);
+}
+
+void AbstractSceneConverter::doSetAnimationTrackTargetName(AnimationTrackTarget, Containers::StringView) {}
+
 UnsignedInt AbstractSceneConverter::lightCount() const {
     CORRADE_ASSERT(_state, "Trade::AbstractSceneConverter::lightCount(): no conversion in progress", {});
     return _state->lightCount;

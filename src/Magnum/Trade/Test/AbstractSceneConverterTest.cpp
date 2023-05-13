@@ -168,6 +168,10 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
     void addAnimationFailed();
     void addAnimationNotImplemented();
 
+    void setAnimationTrackTargetName();
+    void setAnimationTrackTargetNameNotImplemented();
+    void setAnimationTrackTargetNameNotCustom();
+
     void addLight();
     void addLightFailed();
     void addLightNotImplemented();
@@ -717,6 +721,10 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::addAnimationFailed,
               &AbstractSceneConverterTest::addAnimationNotImplemented,
 
+              &AbstractSceneConverterTest::setAnimationTrackTargetName,
+              &AbstractSceneConverterTest::setAnimationTrackTargetNameNotImplemented,
+              &AbstractSceneConverterTest::setAnimationTrackTargetNameNotCustom,
+
               &AbstractSceneConverterTest::addLight,
               &AbstractSceneConverterTest::addLightFailed,
               &AbstractSceneConverterTest::addLightNotImplemented,
@@ -1080,6 +1088,8 @@ void AbstractSceneConverterTest::thingNotSupported() {
     converter.setDefaultScene(0);
 
     converter.add(AnimationData{nullptr, nullptr});
+    converter.setAnimationTrackTargetName({}, {});
+
     converter.add(LightData{LightType::Point, {}, 0.0f});
     converter.add(CameraData{CameraType::Orthographic3D, {}, 0.0f, 1.0f});
     converter.add(SkinData2D{nullptr, nullptr});
@@ -1107,7 +1117,7 @@ void AbstractSceneConverterTest::thingNotSupported() {
     converter.add({image3D, image3D});
     converter.add({compressedImage3D, compressedImage3D});
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE_AS(out.str(),
         "Trade::AbstractSceneConverter::convert(): mesh conversion not supported\n"
         "Trade::AbstractSceneConverter::convertInPlace(): mesh conversion not supported\n"
         "Trade::AbstractSceneConverter::convertToData(): mesh conversion not supported\n"
@@ -1123,6 +1133,8 @@ void AbstractSceneConverterTest::thingNotSupported() {
         "Trade::AbstractSceneConverter::setDefaultScene(): feature not supported\n"
 
         "Trade::AbstractSceneConverter::add(): animation conversion not supported\n"
+        "Trade::AbstractSceneConverter::setAnimationTrackTargetName(): feature not supported\n"
+
         "Trade::AbstractSceneConverter::add(): light conversion not supported\n"
         "Trade::AbstractSceneConverter::add(): camera conversion not supported\n"
         "Trade::AbstractSceneConverter::add(): 2D skin conversion not supported\n"
@@ -1148,7 +1160,8 @@ void AbstractSceneConverterTest::thingNotSupported() {
         "Trade::AbstractSceneConverter::add(): 3D image conversion not supported\n"
         "Trade::AbstractSceneConverter::add(): compressed 3D image conversion not supported\n"
         "Trade::AbstractSceneConverter::add(): multi-level 3D image conversion not supported\n"
-        "Trade::AbstractSceneConverter::add(): multi-level compressed 3D image conversion not supported\n");
+        "Trade::AbstractSceneConverter::add(): multi-level compressed 3D image conversion not supported\n",
+        TestSuite::Compare::String);
 }
 
 void AbstractSceneConverterTest::thingLevelsNotSupported() {
@@ -2582,6 +2595,7 @@ void AbstractSceneConverterTest::thingNoBegin() {
 
     converter.animationCount();
     converter.add(AnimationData{nullptr, nullptr});
+    converter.setAnimationTrackTargetName({}, {});
 
     converter.lightCount();
     converter.add(LightData{LightType::Point, {}, 0.0f});
@@ -2637,6 +2651,7 @@ void AbstractSceneConverterTest::thingNoBegin() {
 
         "Trade::AbstractSceneConverter::animationCount(): no conversion in progress\n"
         "Trade::AbstractSceneConverter::add(): no conversion in progress\n"
+        "Trade::AbstractSceneConverter::setAnimationTrackTargetName(): no conversion in progress\n"
 
         "Trade::AbstractSceneConverter::lightCount(): no conversion in progress\n"
         "Trade::AbstractSceneConverter::add(): no conversion in progress\n"
@@ -3078,6 +3093,67 @@ void AbstractSceneConverterTest::addAnimationNotImplemented() {
     Error redirectError{&out};
     converter.add(AnimationData{nullptr, nullptr});
     CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::add(): animation conversion advertised but not implemented\n");
+}
+
+void AbstractSceneConverterTest::setAnimationTrackTargetName() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddAnimations;
+        }
+
+        bool doBegin() override { return true; }
+
+        void doSetAnimationTrackTargetName(AnimationTrackTarget target, Containers::StringView name) override {
+            CORRADE_COMPARE(target, animationTrackTargetCustom(1337));
+            CORRADE_COMPARE(name, "hello!");
+            setAnimationTrackTargetNameCalled = true;
+        }
+
+        bool setAnimationTrackTargetNameCalled = false;
+    } converter;
+
+    CORRADE_VERIFY(true); /* capture correct function name */
+
+    CORRADE_VERIFY(converter.begin());
+    converter.setAnimationTrackTargetName(animationTrackTargetCustom(1337), "hello!");
+    CORRADE_VERIFY(converter.setAnimationTrackTargetNameCalled);
+}
+
+void AbstractSceneConverterTest::setAnimationTrackTargetNameNotImplemented() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddAnimations;
+        }
+
+        bool doBegin() override { return true; }
+    } converter;
+
+    /* This should work, there's no need for a plugin to implement this */
+    CORRADE_VERIFY(converter.begin());
+    converter.setAnimationTrackTargetName(animationTrackTargetCustom(1337), "hello!");
+    CORRADE_VERIFY(true);
+}
+
+void AbstractSceneConverterTest::setAnimationTrackTargetNameNotCustom() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultiple|
+                   SceneConverterFeature::AddAnimations;
+        }
+
+        bool doBegin() override { return true; }
+    } converter;
+
+    CORRADE_VERIFY(converter.begin());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setAnimationTrackTargetName(AnimationTrackTarget::Scaling2D, "hello!");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::setAnimationTrackTargetName(): Trade::AnimationTrackTarget::Scaling2D is not custom\n");
 }
 
 void AbstractSceneConverterTest::addLight() {
