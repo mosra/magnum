@@ -185,6 +185,18 @@ Int AnySceneImporter::doAnimationForName(const Containers::StringView name) { re
 Containers::String AnySceneImporter::doAnimationName(const UnsignedInt id) { return _in->animationName(id); }
 Containers::Optional<AnimationData> AnySceneImporter::doAnimation(const UnsignedInt id) { return _in->animation(id); }
 
+AnimationTrackTarget AnySceneImporter::doAnimationTrackTargetForName(const Containers::StringView name) {
+    /* This API can be called even if no file is opened, in that case return
+       an invalid ID */
+    return _in ? _in->animationTrackTargetForName(name) : AnimationTrackTarget{};
+
+}
+Containers::String AnySceneImporter::doAnimationTrackTargetName(const AnimationTrackTarget name) {
+    /* This API can be called even if no file is opened, in that case return
+       an empty name */
+    return _in ? _in->animationTrackTargetName(name) : Containers::String{};
+}
+
 Int AnySceneImporter::doDefaultScene() const { return _in->defaultScene(); }
 
 UnsignedInt AnySceneImporter::doSceneCount() const { return _in->sceneCount(); }

@@ -37,6 +37,7 @@
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/SceneData.h"
 
@@ -67,6 +68,8 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void propagateConfigurationUnknownInEmptySubgroup();
     void propagateFileCallback();
 
+    void animationTrackTargetName();
+    void animationTrackTargetNameNoFileOpened();
     void sceneFieldName();
     void sceneFieldNameNoFileOpened();
     void meshAttributeName();
@@ -132,6 +135,8 @@ AnySceneImporterTest::AnySceneImporterTest() {
     addTests({&AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup,
               &AnySceneImporterTest::propagateFileCallback,
 
+              &AnySceneImporterTest::animationTrackTargetName,
+              &AnySceneImporterTest::animationTrackTargetNameNoFileOpened,
               &AnySceneImporterTest::sceneFieldName,
               &AnySceneImporterTest::sceneFieldNameNoFileOpened,
               &AnySceneImporterTest::meshAttributeName,
@@ -367,6 +372,34 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
+}
+
+void AnySceneImporterTest::animationTrackTargetName() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("UfbxImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("UfbxImporter plugin can't be loaded.");
+
+    /* Make sure UfbxImporter is preferred over Assimp */
+    manager.setPreferredPlugins("FbxImporter", {"UfbxImporter"});
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "animation-visibility.fbx")));
+    CORRADE_COMPARE(importer->animationTrackTargetForName("visibility"), animationTrackTargetCustom(0));
+    CORRADE_COMPARE(importer->animationTrackTargetForName("nonexistent"), AnimationTrackTarget{});
+    CORRADE_COMPARE(importer->animationTrackTargetName(animationTrackTargetCustom(0)), "visibility");
+    CORRADE_COMPARE(importer->animationTrackTargetName(animationTrackTargetCustom(3)), "");
+}
+
+void AnySceneImporterTest::animationTrackTargetNameNoFileOpened() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+
+    CORRADE_COMPARE(importer->animationTrackTargetForName(""), AnimationTrackTarget{});
+    CORRADE_COMPARE(importer->animationTrackTargetName(animationTrackTargetCustom(0)), "");
 }
 
 void AnySceneImporterTest::sceneFieldName() {

@@ -183,6 +183,8 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doAnimationName(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doAnimationForName(Containers::StringView name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL AnimationTrackTarget doAnimationTrackTargetForName(Containers::StringView name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doAnimationTrackTargetName(AnimationTrackTarget name) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doDefaultScene() const override;
 
