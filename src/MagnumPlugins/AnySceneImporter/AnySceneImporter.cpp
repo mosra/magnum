@@ -202,7 +202,7 @@ SceneField AnySceneImporter::doSceneFieldForName(const Containers::StringView na
 }
 Containers::String AnySceneImporter::doSceneFieldName(const SceneField name) {
     /* This API can be called even if no file is opened, in that case return
-       an invalid ID */
+       an empty name */
     return _in ? _in->sceneFieldName(name) : Containers::String{};
 }
 
@@ -252,7 +252,7 @@ MeshAttribute AnySceneImporter::doMeshAttributeForName(const Containers::StringV
 }
 Containers::String AnySceneImporter::doMeshAttributeName(const MeshAttribute id) {
     /* This API can be called even if no file is opened, in that case return
-       an invalid ID */
+       an empty name */
     return _in ? _in->meshAttributeName(id) : Containers::String{};
 }
 

@@ -1485,10 +1485,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Expects that a conversion is currently in progress,
          * @ref SceneConverterFeature::AddMeshes is supported and @p attribute
-         * is a custom attribute. The attribute name will get used only mesh
-         * data added after this function has been called. If the converter
-         * doesn't support custom mesh attributes or doesn't support naming
-         * them, the call is ignored.
+         * is a custom attribute. The attribute name will get used only for
+         * mesh data added after this function has been called. If the
+         * converter doesn't support custom mesh attributes or doesn't support
+         * naming them, the call is ignored.
          * @see @ref isConverting(), @ref features(),
          *      @ref isMeshAttributeCustom(), @ref setSceneFieldName()
          */
