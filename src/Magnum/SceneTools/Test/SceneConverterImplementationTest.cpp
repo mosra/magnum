@@ -224,8 +224,8 @@ void SceneConverterImplementationTest::infoScenesObjects() {
             if(id == 8) return "Not in any scene";
             return "";
         }
-        Containers::String doSceneFieldName(UnsignedInt name) override {
-            if(name == 1337) return "DirectionVector";
+        Containers::String doSceneFieldName(Trade::SceneField name) override {
+            if(name == Trade::sceneFieldCustom(1337)) return "DirectionVector";
             return "";
         }
         Containers::Optional<Trade::SceneData> doScene(UnsignedInt id) override {
@@ -340,8 +340,8 @@ void SceneConverterImplementationTest::infoAnimations() {
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
 
-        Containers::String doAnimationTrackTargetName(UnsignedShort name) override {
-            if(name == 333)
+        Containers::String doAnimationTrackTargetName(Trade::AnimationTrackTarget name) override {
+            if(name == Trade::animationTrackTargetCustom(333))
                 return "visibility";
             return {};
         }
@@ -646,11 +646,11 @@ void SceneConverterImplementationTest::infoMeshes() {
         Containers::String doMeshName(UnsignedInt id) override {
             return id == 1 ? "LODs? No, meshets." : "";
         }
-        Containers::String doMeshAttributeName(UnsignedShort name) override {
-            if(name == 25) return "vertices";
-            if(name == 26) return "triangles";
+        Containers::String doMeshAttributeName(Trade::MeshAttribute name) override {
+            if(name == Trade::meshAttributeCustom(25)) return "vertices";
+            if(name == Trade::meshAttributeCustom(26)) return "triangles";
             /* 37 (triangleCount) deliberately not named */
-            if(name == 116) return "vertexCount";
+            if(name == Trade::meshAttributeCustom(116)) return "vertexCount";
 
             return "";
         }
@@ -755,8 +755,9 @@ void SceneConverterImplementationTest::infoMeshesBounds() {
                 }};
         }
 
-        Containers::String doMeshAttributeName(UnsignedShort name) override {
-            if(name == 25) return "NormalButCustomSoNoBoundsPrinted";
+        Containers::String doMeshAttributeName(Trade::MeshAttribute name) override {
+            if(name == Trade::meshAttributeCustom(25))
+                return "NormalButCustomSoNoBoundsPrinted";
             return "";
         }
 

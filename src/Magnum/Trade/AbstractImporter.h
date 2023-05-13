@@ -1964,10 +1964,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref sceneFieldName()
          * @m_since_latest
          *
-         * Receives the custom ID extracted via @ref sceneFieldCustom(SceneField).
-         * Default implementation returns an empty string.
+         * The @p name is always custom. Default implementation returns an
+         * empty string.
          */
-        virtual Containers::String doSceneFieldName(UnsignedInt name);
+        virtual Containers::String doSceneFieldName(SceneField name);
 
         /**
          * @brief Implementation for @ref animationCount()
@@ -2008,11 +2008,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref animationTrackTargetName()
          * @m_since_latest
          *
-         * Receives the custom ID extracted via
-         * @ref animationTrackTargetCustom(AnimationTrackTarget). Default
-         * implementation returns an empty string.
+         * The @p name is always custom. Default implementation returns an
+         * empty string.
          */
-        virtual Containers::String doAnimationTrackTargetName(UnsignedShort name);
+        virtual Containers::String doAnimationTrackTargetName(AnimationTrackTarget name);
 
         /**
          * @brief Implementation for @ref lightCount()
@@ -2309,10 +2308,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref meshAttributeName()
          * @m_since{2020,06}
          *
-         * Receives the custom ID extracted via @ref meshAttributeCustom(MeshAttribute).
-         * Default implementation returns an empty string.
+         * The @p name is always custom. Default implementation returns an
+         * empty string.
          */
-        virtual Containers::String doMeshAttributeName(UnsignedShort name);
+        virtual Containers::String doMeshAttributeName(MeshAttribute name);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -2637,7 +2636,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TRADE_ABSTRACTIMPORTER_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Trade.AbstractImporter/0.5.1"
+"cz.mosra.magnum.Trade.AbstractImporter/0.5.2"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

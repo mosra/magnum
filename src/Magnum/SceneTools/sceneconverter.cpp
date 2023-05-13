@@ -775,7 +775,7 @@ well, the IDs reference attributes of the first mesh.)")
                     if(!isMeshAttributeCustom(attributeName)) continue;
                     /* Appending even empty ones so we don't have to
                        special-case "not found" in doMeshAttributeName() */
-                    arrayAppend(attributeNames, InPlaceInit, meshAttributeCustom(attributeName), original.meshAttributeName(attributeName));
+                    arrayAppend(attributeNames, InPlaceInit, attributeName, original.meshAttributeName(attributeName));
                 }
             }
 
@@ -787,8 +787,8 @@ well, the IDs reference attributes of the first mesh.)")
             Containers::String doMeshName(UnsignedInt) override {
                 return name;
             }
-            Containers::String doMeshAttributeName(UnsignedShort name) override {
-                for(const Containers::Pair<UnsignedShort, Containers::String>& i: attributeNames)
+            Containers::String doMeshAttributeName(Trade::MeshAttribute name) override {
+                for(const Containers::Pair<Trade::MeshAttribute, Containers::String>& i: attributeNames)
                     if(i.first() == name) return i.second();
                 /* All custom attributes, including the unnamed, are in the
                    attributeNames array and both our attribute name propagation
@@ -803,7 +803,7 @@ well, the IDs reference attributes of the first mesh.)")
 
             Trade::MeshData mesh;
             Containers::String name;
-            Containers::Array<Containers::Pair<UnsignedShort, Containers::String>> attributeNames;
+            Containers::Array<Containers::Pair<Trade::MeshAttribute, Containers::String>> attributeNames;
         };
 
         /* Save the previous importer so we can pass it to the constructor in

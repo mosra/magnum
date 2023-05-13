@@ -622,10 +622,10 @@ void AbstractSceneConverter::setSceneFieldName(const SceneField field, const Con
     CORRADE_ASSERT(isSceneFieldCustom(field),
         "Trade::AbstractSceneConverter::setSceneFieldName():" << field << "is not custom", );
 
-    doSetSceneFieldName(sceneFieldCustom(field), name);
+    doSetSceneFieldName(field, name);
 }
 
-void AbstractSceneConverter::doSetSceneFieldName(UnsignedInt, Containers::StringView) {}
+void AbstractSceneConverter::doSetSceneFieldName(SceneField, Containers::StringView) {}
 
 void AbstractSceneConverter::setObjectName(const UnsignedLong object, const Containers::StringView name) {
     CORRADE_ASSERT(features() & SceneConverterFeature::AddScenes,
@@ -849,10 +849,10 @@ void AbstractSceneConverter::setMeshAttributeName(const MeshAttribute attribute,
     CORRADE_ASSERT(isMeshAttributeCustom(attribute),
         "Trade::AbstractSceneConverter::setMeshAttributeName():" << attribute << "is not custom", );
 
-    doSetMeshAttributeName(meshAttributeCustom(attribute), name);
+    doSetMeshAttributeName(attribute, name);
 }
 
-void AbstractSceneConverter::doSetMeshAttributeName(UnsignedShort, Containers::StringView) {}
+void AbstractSceneConverter::doSetMeshAttributeName(MeshAttribute, Containers::StringView) {}
 
 UnsignedInt AbstractSceneConverter::materialCount() const {
     CORRADE_ASSERT(_state, "Trade::AbstractSceneConverter::materialCount(): no conversion in progress", {});

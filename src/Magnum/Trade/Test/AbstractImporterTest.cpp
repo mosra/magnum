@@ -3771,8 +3771,8 @@ void AbstractImporterTest::sceneFieldName() {
             return SceneField{};
         }
 
-        Containers::String doSceneFieldName(UnsignedInt id) override {
-            if(id == 100037) return "OctreeCell";
+        Containers::String doSceneFieldName(SceneField id) override {
+            if(id == sceneFieldCustom(100037)) return "OctreeCell";
             return "";
         }
     } importer;
@@ -3822,7 +3822,7 @@ void AbstractImporterTest::sceneFieldNameCustomDeleter() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
-        Containers::String doSceneFieldName(UnsignedInt) override {
+        Containers::String doSceneFieldName(SceneField) override {
             return Containers::String{"a", 1, [](char*, std::size_t) {}};
         }
     } importer;
@@ -4098,8 +4098,8 @@ void AbstractImporterTest::animationTrackTargetName() {
             return AnimationTrackTarget{};
         }
 
-        Containers::String doAnimationTrackTargetName(UnsignedShort id) override {
-            if(id == 37) return "visibility";
+        Containers::String doAnimationTrackTargetName(AnimationTrackTarget id) override {
+            if(id == animationTrackTargetCustom(37)) return "visibility";
             return "";
         }
     } importer;
@@ -4149,7 +4149,7 @@ void AbstractImporterTest::animationTrackTargetNameCustomDeleter() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
-        Containers::String doAnimationTrackTargetName(UnsignedShort) override {
+        Containers::String doAnimationTrackTargetName(AnimationTrackTarget) override {
             return Containers::String{"a", 1, [](char*, std::size_t) {}};
         }
     } importer;
@@ -5911,8 +5911,8 @@ void AbstractImporterTest::meshAttributeName() {
             return MeshAttribute{};
         }
 
-        Containers::String doMeshAttributeName(UnsignedShort id) override {
-            if(id == 37) return "SMOOTH_GROUP_ID";
+        Containers::String doMeshAttributeName(MeshAttribute id) override {
+            if(id == meshAttributeCustom(37)) return "SMOOTH_GROUP_ID";
             return "";
         }
     } importer;
@@ -5962,7 +5962,7 @@ void AbstractImporterTest::meshAttributeNameCustomDeleter() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
-        Containers::String doMeshAttributeName(UnsignedShort) override {
+        Containers::String doMeshAttributeName(MeshAttribute) override {
             return Containers::String{"a", 1, [](char*, std::size_t) {}};
         }
     } importer;

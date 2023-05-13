@@ -200,10 +200,10 @@ SceneField AnySceneImporter::doSceneFieldForName(const Containers::StringView na
        an invalid ID */
     return _in ? _in->sceneFieldForName(name) : SceneField{};
 }
-Containers::String AnySceneImporter::doSceneFieldName(const UnsignedInt name) {
+Containers::String AnySceneImporter::doSceneFieldName(const SceneField name) {
     /* This API can be called even if no file is opened, in that case return
        an invalid ID */
-    return _in ? _in->sceneFieldName(sceneFieldCustom(name)) : Containers::String{};
+    return _in ? _in->sceneFieldName(name) : Containers::String{};
 }
 
 UnsignedInt AnySceneImporter::doLightCount() const { return _in->lightCount(); }
@@ -250,10 +250,10 @@ MeshAttribute AnySceneImporter::doMeshAttributeForName(const Containers::StringV
        an invalid ID */
     return _in ? _in->meshAttributeForName(name) : MeshAttribute{};
 }
-Containers::String AnySceneImporter::doMeshAttributeName(const UnsignedShort id) {
+Containers::String AnySceneImporter::doMeshAttributeName(const MeshAttribute id) {
     /* This API can be called even if no file is opened, in that case return
        an invalid ID */
-    return _in ? _in->meshAttributeName(meshAttributeCustom(id)) : Containers::String{};
+    return _in ? _in->meshAttributeName(id) : Containers::String{};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

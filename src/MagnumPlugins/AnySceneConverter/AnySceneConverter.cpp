@@ -191,8 +191,8 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const SceneDa
     return !!_converter->add(scene, name);
 }
 
-void AnySceneConverter::doSetSceneFieldName(const UnsignedInt field, const Containers::StringView name) {
-    return _converter->setSceneFieldName(sceneFieldCustom(field), name);
+void AnySceneConverter::doSetSceneFieldName(const SceneField field, const Containers::StringView name) {
+    return _converter->setSceneFieldName(field, name);
 }
 
 void AnySceneConverter::doSetObjectName(const UnsignedLong object, const Containers::StringView name) {
@@ -238,8 +238,8 @@ bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const Contain
     return !!_converter->add(meshLevels, name);
 }
 
-void AnySceneConverter::doSetMeshAttributeName(const UnsignedShort attribute, const Containers::StringView name) {
-    return _converter->setMeshAttributeName(meshAttributeCustom(attribute), name);
+void AnySceneConverter::doSetMeshAttributeName(const MeshAttribute attribute, const Containers::StringView name) {
+    return _converter->setMeshAttributeName(attribute, name);
 }
 
 bool AnySceneConverter::doAdd(CORRADE_UNUSED const UnsignedInt id, const MaterialData& material, const Containers::StringView name) {

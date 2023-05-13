@@ -385,13 +385,13 @@ SceneField AbstractImporter::doSceneFieldForName(Containers::StringView) {
 Containers::String AbstractImporter::sceneFieldName(const SceneField name) {
     CORRADE_ASSERT(isSceneFieldCustom(name),
         "Trade::AbstractImporter::sceneFieldName():" << name << "is not custom", {});
-    Containers::String out = doSceneFieldName(sceneFieldCustom(name));
+    Containers::String out = doSceneFieldName(name);
     CORRADE_ASSERT(out.isSmall() || !out.deleter(),
         "Trade::AbstractImporter::sceneFieldName(): implementation is not allowed to use a custom String deleter", {});
     return out;
 }
 
-Containers::String AbstractImporter::doSceneFieldName(UnsignedInt) { return {}; }
+Containers::String AbstractImporter::doSceneFieldName(SceneField) { return {}; }
 
 UnsignedInt AbstractImporter::animationCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationCount(): no file opened", {});
@@ -462,13 +462,13 @@ AnimationTrackTarget AbstractImporter::doAnimationTrackTargetForName(Containers:
 Containers::String AbstractImporter::animationTrackTargetName(const AnimationTrackTarget name) {
     CORRADE_ASSERT(isAnimationTrackTargetCustom(name),
         "Trade::AbstractImporter::animationTrackTargetName():" << name << "is not custom", {});
-    Containers::String out = doAnimationTrackTargetName(animationTrackTargetCustom(name));
+    Containers::String out = doAnimationTrackTargetName(name);
     CORRADE_ASSERT(out.isSmall() || !out.deleter(),
         "Trade::AbstractImporter::animationTrackTargetName(): implementation is not allowed to use a custom String deleter", {});
     return out;
 }
 
-Containers::String AbstractImporter::doAnimationTrackTargetName(UnsignedShort) { return {}; }
+Containers::String AbstractImporter::doAnimationTrackTargetName(AnimationTrackTarget) { return {}; }
 
 UnsignedInt AbstractImporter::lightCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightCount(): no file opened", {});
@@ -1175,13 +1175,13 @@ MeshAttribute AbstractImporter::doMeshAttributeForName(Containers::StringView) {
 Containers::String AbstractImporter::meshAttributeName(const MeshAttribute name) {
     CORRADE_ASSERT(isMeshAttributeCustom(name),
         "Trade::AbstractImporter::meshAttributeName():" << name << "is not custom", {});
-    Containers::String out = doMeshAttributeName(meshAttributeCustom(name));
+    Containers::String out = doMeshAttributeName(name);
     CORRADE_ASSERT(out.isSmall() || !out.deleter(),
         "Trade::AbstractImporter::meshAttributeName(): implementation is not allowed to use a custom String deleter", {});
     return out;
 }
 
-Containers::String AbstractImporter::doMeshAttributeName(UnsignedShort) { return {}; }
+Containers::String AbstractImporter::doMeshAttributeName(MeshAttribute) { return {}; }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt AbstractImporter::mesh2DCount() const {

@@ -2197,11 +2197,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @brief Implementation for @ref setSceneFieldName()
          * @m_since_latest
          *
-         * Receives the custom ID extracted via
-         * @ref sceneFieldCustom(SceneField). Default implementation does
-         * nothing.
+         * The @p field is always custom. Default implementation does nothing.
          */
-        virtual void doSetSceneFieldName(UnsignedInt field, Containers::StringView name);
+        virtual void doSetSceneFieldName(SceneField field, Containers::StringView name);
 
         /**
          * @brief Implementation for @ref setObjectName()
@@ -2308,11 +2306,10 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @brief Implementation for @ref setMeshAttributeName()
          * @m_since_latest
          *
-         * Receives the custom ID extracted via
-         * @ref meshAttributeCustom(MeshAttribute). Default implementation does
+         * The @p attribute is always custom. Default implementation does
          * nothing.
          */
-        virtual void doSetMeshAttributeName(UnsignedShort attribute, Containers::StringView name);
+        virtual void doSetMeshAttributeName(MeshAttribute attribute, Containers::StringView name);
 
         /**
          * @brief Implementation for @ref add(const MaterialData&, Containers::StringView)
@@ -2441,7 +2438,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TRADE_ABSTRACTSCENECONVERTER_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Trade.AbstractSceneConverter/0.2.1"
+"cz.mosra.magnum.Trade.AbstractSceneConverter/0.2.2"
 /* [interface] */
 
 }}

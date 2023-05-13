@@ -146,7 +146,7 @@ class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneCon
         bool doEndFile(Containers::StringView filename) override;
 
         bool doAdd(UnsignedInt id, const SceneData& scene, Containers::StringView name) override;
-        void doSetSceneFieldName(UnsignedInt field, Containers::StringView name) override;
+        void doSetSceneFieldName(SceneField field, Containers::StringView name) override;
         void doSetObjectName(UnsignedLong object, Containers::StringView name) override;
         void doSetDefaultScene(UnsignedInt id) override;
 
@@ -158,7 +158,7 @@ class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneCon
 
         bool doAdd(UnsignedInt id, const MeshData& mesh, Containers::StringView name) override;
         bool doAdd(UnsignedInt id, const Containers::Iterable<const MeshData>& meshLevels, Containers::StringView name) override;
-        void doSetMeshAttributeName(UnsignedShort attribute, Containers::StringView name) override;
+        void doSetMeshAttributeName(MeshAttribute attribute, Containers::StringView name) override;
 
         bool doAdd(UnsignedInt id, const MaterialData& material, Containers::StringView name) override;
         bool doAdd(UnsignedInt id, const TextureData& texture, Containers::StringView name) override;

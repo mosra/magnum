@@ -2823,8 +2823,8 @@ void AbstractSceneConverterTest::setSceneFieldName() {
 
         bool doBegin() override { return true; }
 
-        void doSetSceneFieldName(UnsignedInt field, Containers::StringView name) override {
-            CORRADE_COMPARE(field, 1337);
+        void doSetSceneFieldName(SceneField field, Containers::StringView name) override {
+            CORRADE_COMPARE(field, sceneFieldCustom(1337));
             CORRADE_COMPARE(name, "hello!");
             setSceneFieldNameCalled = true;
         }
@@ -4122,8 +4122,8 @@ void AbstractSceneConverterTest::setMeshAttributeName() {
 
         bool doBegin() override { return true; }
 
-        void doSetMeshAttributeName(UnsignedShort field, Containers::StringView name) override {
-            CORRADE_COMPARE(field, 1337);
+        void doSetMeshAttributeName(MeshAttribute field, Containers::StringView name) override {
+            CORRADE_COMPARE(field, meshAttributeCustom(1337));
             CORRADE_COMPARE(name, "hello!");
             setMeshAttributeNameCalled = true;
         }
@@ -6215,9 +6215,9 @@ void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
                 }};
             return SceneData{SceneMappingType::UnsignedInt, 0, nullptr, {}};
         }
-        Containers::String doSceneFieldName(UnsignedInt name) override {
-            if(name == 34977) return "OffsetSmall";
-            if(name == 5266) return "ValueData";
+        Containers::String doSceneFieldName(SceneField name) override {
+            if(name == sceneFieldCustom(34977)) return "OffsetSmall";
+            if(name == sceneFieldCustom(5266)) return "ValueData";
             CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -6236,8 +6236,8 @@ void AbstractSceneConverterTest::addImporterContentsCustomSceneFields() {
             Debug{} << "Adding scene";
             return true;
         }
-        void doSetSceneFieldName(UnsignedInt field, Containers::StringView name) override {
-            Debug{} << "Setting field" << field << "name to" << name;
+        void doSetSceneFieldName(SceneField field, Containers::StringView name) override {
+            Debug{} << "Setting field" << sceneFieldCustom(field) << "name to" << name;
         }
     } converter;
 
@@ -6280,9 +6280,9 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
                 }};
             return MeshData{MeshPrimitive::Points, 0};
         }
-        Containers::String doMeshAttributeName(UnsignedShort name) override {
-            if(name == 31977) return "OffsetSmall";
-            if(name == 5266) return "ValueData";
+        Containers::String doMeshAttributeName(MeshAttribute name) override {
+            if(name == meshAttributeCustom(31977)) return "OffsetSmall";
+            if(name == meshAttributeCustom(5266)) return "ValueData";
             CORRADE_FAIL("This should not be reached");
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
         }
@@ -6302,8 +6302,8 @@ void AbstractSceneConverterTest::addImporterContentsCustomMeshAttributes() {
             Debug{} << "Adding mesh levels";
             return true;
         }
-        void doSetMeshAttributeName(UnsignedShort attribute, Containers::StringView name) override {
-            Debug{} << "Setting attribute" << attribute << "name to" << name;
+        void doSetMeshAttributeName(MeshAttribute attribute, Containers::StringView name) override {
+            Debug{} << "Setting attribute" << meshAttributeCustom(attribute) << "name to" << name;
         }
     } converter;
 

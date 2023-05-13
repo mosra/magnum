@@ -194,7 +194,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doObjectName(UnsignedLong id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<SceneData> doScene(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL SceneField doSceneFieldForName(Containers::StringView name) override;
-        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doSceneFieldName(Magnum::UnsignedInt name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doSceneFieldName(SceneField name) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doLightCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doLightForName(Containers::StringView name) override;
@@ -238,7 +238,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL MeshAttribute doMeshAttributeForName(Containers::StringView name) override;
-        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doMeshAttributeName(UnsignedShort id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doMeshAttributeName(MeshAttribute id) override;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMesh2DCount() const override;
