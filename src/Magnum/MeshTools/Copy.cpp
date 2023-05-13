@@ -85,13 +85,11 @@ Trade::MeshData copy(const Trade::MeshData& mesh) {
 }
 
 Trade::MeshData copy(Trade::MeshData&& mesh) {
-    /** @todo copy only the actually used range instead of the whole thing? */
-
-    /* If index data are already owned, move them to the output. This works
-       without any extra effort also for non-indexed meshes. */
+    /* Transfer index data if they're owned and mutable. This works without any
+       extra effort also for non-indexed meshes. */
     Containers::Array<char> indexData;
     Trade::MeshIndexData indices;
-    if(mesh.indexDataFlags() & Trade::DataFlag::Owned) {
+    if(mesh.indexDataFlags() >= (Trade::DataFlag::Owned|Trade::DataFlag::Mutable)) {
         indices = Trade::MeshIndexData{mesh.indices()};
         indexData = mesh.releaseIndexData();
 
