@@ -1324,7 +1324,7 @@ class MAGNUM_TRADE_EXPORT SceneFieldData {
         constexpr SceneField name() const { return _name; }
 
         /** @brief Number of entries */
-        constexpr UnsignedLong size() const { return _size; }
+        constexpr std::size_t size() const { return _size; }
 
         /** @brief Object mapping type */
         constexpr SceneMappingType mappingType() const {

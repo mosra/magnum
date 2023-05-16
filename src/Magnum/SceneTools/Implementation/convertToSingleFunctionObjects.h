@@ -124,11 +124,11 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
             /** @todo wow this placeholder construction is HIDEOUS */
             fields[i] = Trade::SceneFieldData{field.name(),
                 field.mappingType(),
-                Containers::ArrayView<const UnsignedInt>{nullptr, std::size_t(field.size() + fieldsToCopyAdditionCount[*fieldToCopy])},
+                Containers::ArrayView<const UnsignedInt>{nullptr, field.size() + fieldsToCopyAdditionCount[*fieldToCopy]},
                 field.fieldType(),
                 Containers::StridedArrayView1D<const void>{
                     {nullptr, ~std::size_t{}},
-                    std::size_t(field.size() + fieldsToCopyAdditionCount[*fieldToCopy]),
+                    field.size() + fieldsToCopyAdditionCount[*fieldToCopy],
                     std::ptrdiff_t((field.fieldArraySize() ? field.fieldArraySize() : 1)*sceneFieldTypeSize(field.fieldType()))
                 },
                 field.fieldArraySize(),
@@ -140,7 +140,7 @@ inline Trade::SceneData convertToSingleFunctionObjects(const Trade::SceneData& s
         } else if(field.name() == Trade::SceneField::Parent) {
             /** @todo some nicer constructor for placeholders once this is in
                 public interest */
-            fields[i] = Trade::SceneFieldData{Trade::SceneField::Parent, Containers::ArrayView<const UnsignedInt>{nullptr, std::size_t(field.size() + objectsToAdd)}, Containers::ArrayView<const Int>{nullptr, std::size_t(field.size() + objectsToAdd)},
+            fields[i] = Trade::SceneFieldData{Trade::SceneField::Parent, Containers::ArrayView<const UnsignedInt>{nullptr, field.size() + objectsToAdd}, Containers::ArrayView<const Int>{nullptr, field.size() + objectsToAdd},
                 /* If the field is ordered, we preserve that. But if it's
                    implicit, we can't. */
                 field.flags() & ~(Trade::SceneFieldFlag::ImplicitMapping & ~Trade::SceneFieldFlag::OrderedMapping)

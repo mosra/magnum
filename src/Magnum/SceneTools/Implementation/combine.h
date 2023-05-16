@@ -159,7 +159,7 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
         sharedTrsMapping = itemViewOffset;
         arrayAppend(items, InPlaceInit,
             NoInit,
-            std::size_t(fields[sharedSceneFieldIds.trs[0]].size()),
+            fields[sharedSceneFieldIds.trs[0]].size(),
             mappingTypeSize,
             mappingTypeAlignment,
             itemViews[itemViewOffset].types);
@@ -170,7 +170,7 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
         sharedMeshMaterialMapping = itemViewOffset;
         arrayAppend(items, InPlaceInit,
             NoInit,
-            std::size_t(fields[sharedSceneFieldIds.meshMaterial[0]].size()),
+            fields[sharedSceneFieldIds.meshMaterial[0]].size(),
             mappingTypeSize,
             mappingTypeAlignment,
             itemViews[itemViewOffset].types);
@@ -220,7 +220,7 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
             itemViewMappings[i].first() = itemViewOffset;
             arrayAppend(items, InPlaceInit,
                 NoInit,
-                std::size_t(field.size()),
+                field.size(),
                 mappingTypeSize,
                 mappingTypeAlignment,
                 itemViews[itemViewOffset].types);
@@ -236,13 +236,13 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
         if(fieldType == Trade::SceneFieldType::Bit) {
             arrayAppend(items, InPlaceInit,
                 NoInit,
-                Containers::Size2D{std::size_t(field.size()), field.fieldArraySize() ? field.fieldArraySize() : 1},
+                Containers::Size2D{field.size(), field.fieldArraySize() ? field.fieldArraySize() : 1},
                 itemViews[itemViewOffset].bits);
             ++itemViewOffset;
         } else {
             arrayAppend(items, InPlaceInit,
                 NoInit,
-                std::size_t(field.size()), sceneFieldTypeSize(fieldType)*(field.fieldArraySize() ? field.fieldArraySize() : 1),
+                field.size(), sceneFieldTypeSize(fieldType)*(field.fieldArraySize() ? field.fieldArraySize() : 1),
                 sceneFieldTypeAlignment(fieldType),
                 itemViews[itemViewOffset].types);
             ++itemViewOffset;
