@@ -666,6 +666,9 @@ See also:
     `--info-materials`, `--info-meshes`, `--info-skins` and `--info-textures`
     for printing information just about particular data type, with `--info`
     being a shortcut for all specified together
+-   Added a `--prefer` option to @ref magnum-sceneconverter "magnum-sceneconverter",
+    allowing to specify what plugins should be preferred for particular import
+    and conversion plugin aliases
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 

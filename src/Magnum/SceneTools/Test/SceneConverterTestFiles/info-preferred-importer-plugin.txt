@@ -1,0 +1,4 @@
+Trade::AnyImageImporter::openFile(): using PngImporter (provided by StbImageImporter)
+2D image 0:
+  Level 0: {4, 4} @ RGB8Unorm (0.0 kB)
+Total image data size: 0.0 kB

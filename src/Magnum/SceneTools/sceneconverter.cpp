@@ -179,7 +179,8 @@ magnum-sceneconverter scene.gltf scene.decimated.gltf \
 @code{.sh}
 magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [-C|--converter PLUGIN]... [-P|--image-converter PLUGIN]...
-    [-M|--mesh-converter PLUGIN]... [--plugin-dir DIR] [--map]
+    [-M|--mesh-converter PLUGIN]... [--plugin-dir DIR]
+    [--prefer alias:plugin1,plugin2,…]... [--map]
     [--only-mesh-attributes N1,N2-N3…] [--remove-duplicate-vertices]
     [--remove-duplicate-vertices-fuzzy EPSILON] [--phong-to-pbr]
     [-i|--importer-options key=val,key2=val2,…]
@@ -209,6 +210,8 @@ Arguments:
 -   `-M`, `--mesh-converter PLUGIN` --- converter plugin(s) to apply to each
     mesh in the scene
 -   `--plugin-dir DIR` --- override base plugin dir
+-   `--prefer alias:plugin1,plugin2,…` --- prefer particular plugins for given
+    alias(es)
 -   `--map` --- memory-map the input for zero-copy import (works only for
     standalone files)
 -   `--only-mesh-attributes N1,N2-N3…` --- include only mesh attributes of
@@ -413,6 +416,7 @@ int main(int argc, char** argv) {
         .addArrayOption('P', "image-converter").setHelp("image-converter", "converter plugin(s) to apply to each image in the scene", "PLUGIN")
         .addArrayOption('M', "mesh-converter").setHelp("mesh-converter", "converter plugin(s) to apply to each mesh in the scene", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        .addArrayOption("prefer").setHelp("prefer", "prefer particular plugins for given alias(es)", "alias:plugin1,plugin2,…")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
         #endif
@@ -577,6 +581,59 @@ well, the IDs reference attributes of the first mesh.)")
         args.value("plugin-dir").empty() ? Containers::String{} :
         Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractSceneConverter::pluginSearchPaths().back()).second())};
     converterManager.registerExternalManager(imageConverterManager);
+
+    /* Set preferred plugins */
+    for(std::size_t i = 0, iMax = args.arrayValueCount("prefer"); i != iMax; ++i) {
+        const auto value = args.arrayValue<Containers::StringView>("prefer", i);
+        const Containers::Array3<Containers::StringView> aliasNames = value.partition(':');
+        if(!aliasNames[1]) {
+            Error{} << "Invalid --prefer option" << value;
+            return 1;
+        }
+
+        /* Figure out manager name */
+        PluginManager::AbstractManager* manager;
+        if(aliasNames[0].hasSuffix("Importer"_s))
+            manager = &importerManager;
+        else if(aliasNames[0].hasSuffix("ImageConverter"_s))
+            manager = &imageConverterManager;
+        else if(aliasNames[0].hasSuffix("SceneConverter"_s))
+            manager = &converterManager;
+        else {
+            Error{} << "Alias" << aliasNames[0] << "not recognized for a --prefer option";
+            return 1;
+        }
+
+        /* The alias has to be found, otherwise it'd assert */
+        if(manager->loadState(aliasNames[0]) == PluginManager::LoadState::NotFound) {
+            Error{} << "Alias" << aliasNames[0] << "not found for a --prefer option";
+            return 1;
+        }
+
+        /* Check that the names actually provide given alias, otherwise it'd
+           assert */
+        const Containers::Array<Containers::StringView> names = aliasNames[2].splitWithoutEmptyParts(',');
+        for(const Containers::StringView name: names) {
+            /* Not found plugins are allowed in the list */
+            const PluginManager::PluginMetadata* const metadata = manager->metadata(name);
+            if(!metadata)
+                continue;
+
+            bool found = false;
+            for(const Containers::StringView provides: metadata->provides()) {
+                if(provides == aliasNames[0]) {
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                Error{} << name << "doesn't provide" << aliasNames[0] << "for a --prefer option";
+                return 1;
+            }
+        }
+
+        manager->setPreferredPlugins(aliasNames[0], names);
+    }
 
     /* Print plugin info, if requested */
     /** @todo these all duplicate plugin loading & option setting, move to

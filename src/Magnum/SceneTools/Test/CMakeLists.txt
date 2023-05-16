@@ -124,6 +124,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/info-image-converter.txt
             SceneConverterTestFiles/info-importer.txt
             SceneConverterTestFiles/info-importer-ignored-input-output.txt
+            SceneConverterTestFiles/info-preferred-importer-plugin.txt
             SceneConverterTestFiles/materials-3d.gltf
             SceneConverterTestFiles/materials-pbr.gltf
             SceneConverterTestFiles/materials-phong.mtl
@@ -149,6 +150,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/red2x2.png
             # magnum-imageconverter --layers red2x2.png --array red2x2x1.ktx2 -c writerName=
             SceneConverterTestFiles/red2x2x1.ktx2
+            SceneConverterTestFiles/rgba.png # copied from PngImporter tests
             SceneConverterTestFiles/two-quads-duplicates-fuzzy.bin
             SceneConverterTestFiles/two-quads-duplicates-fuzzy.gltf
             SceneConverterTestFiles/two-quads-duplicates.bin

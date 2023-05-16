@@ -108,7 +108,16 @@ const struct {
             "-I", "ObjImporter", "--info", Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/point.obj"), "whatever.ply"
         }},
         "ObjImporter", nullptr, nullptr,
-        "info-data-ignored-output.txt"}
+        "info-data-ignored-output.txt"},
+    {"data, preferred importer plugin", {InPlaceInit, {
+            "-I", "AnyImageImporter", "--info",
+            /* Tested thoroughly in convert(preferred importer plugin), here it
+               just verifies that the option has an effect on --info as well */
+            "--prefer", "PngImporter:StbImageImporter", "-v",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/blue4x4.png")
+        }},
+        "StbImageImporter", nullptr, nullptr,
+        "info-preferred-importer-plugin.txt"},
 };
 
 const struct {
@@ -786,6 +795,77 @@ const struct {
         /* Compared to "data unsupported by the converter" this message is
            printed by sceneconverter itself, not the converter interface */
         "Ignoring 1 materials not supported by the converter\n"},
+    {"preferred importer plugin", {InPlaceInit, {
+            /* First is not found, second should be always found, third might
+               be also but shouldn't be picked. The trailing comma should be allowed, using the plugin itself in the list should work too. */
+            "--prefer", "PngImporter:Sdl3ImageImporter,StbImageImporter,SpngImporter,",
+            "-v",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-2d.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/images-2d.gltf")
+        }},
+        "GltfImporter", "StbImageImporter", "GltfSceneConverter",
+        {"PngImageConverter", nullptr}, nullptr,
+        /* Not checking either of the files, the verbose output is enough to
+           verify */
+        nullptr, nullptr,
+        "Trade::AnySceneImporter::openFile(): using GltfImporter\n"
+        "Trade::AnySceneConverter::beginFile(): using GltfSceneConverter\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 0 out of 2\n"
+        "Trade::AnyImageImporter::openFile(): using PngImporter (provided by StbImageImporter)\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 1 out of 2\n"
+        "Trade::AnyImageImporter::openFile(): using PngImporter (provided by StbImageImporter)\n"},
+    {"preferred image converter plugin", {InPlaceInit, {
+            /* The main logic was tested in "preferred importer plugin" above,
+               this just verifies that it works for image converters too. The
+               converter doesn't use AnyImageConverter so we can't rely on
+               verbose output, instead we convert a RGBA image to a JPEG
+               (embedded in a glTF) and check the warning message. */
+            "--prefer", "JpegImageConverter:StbImageConverter",
+            "-I", "PngImporter",
+            "-c", "imageConverter=JpegImageConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/rgba.png"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/rgba.gltf")
+        }},
+        "PngImporter", nullptr, "GltfSceneConverter",
+        {"StbImageConverter", nullptr}, nullptr,
+        /* Not checking either of the files, the warning output is enough to
+           verify */
+        nullptr, nullptr,
+        "Trade::StbImageConverter::convertToData(): ignoring alpha channel for BMP/JPEG output\n"},
+    {"preferred scene converter plugin", {InPlaceInit, {
+            /* There aren't any alternative implementations for any scene
+               converters so can only ensure the code doesn't blow up if scene
+               converters are passed to --prefer */
+            "--prefer", "GltfSceneConverter:",
+            /* Removing the generator identifier for a roundtrip */
+            "-c", "generator=",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/empty.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/empty.gltf")
+        }},
+        "GltfImporter", nullptr, "GltfSceneConverter",
+        {}, nullptr,
+        /* It should give back the same file  */
+        "empty.gltf", nullptr,
+        {}},
+    {"multiple --prefer options", {InPlaceInit, {
+            /* Basically a combination of "preferred importer plugin" and
+               "preferred image converter plugin" cases */
+            "--prefer", "PngImporter:StbImageImporter",
+            "--prefer", "JpegImageConverter:StbImageConverter",
+            "-I", "AnyImageImporter",
+            "-c", "imageConverter=JpegImageConverter", "-v",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/rgba.png"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/rgba.gltf")
+        }},
+        "PngImporter", nullptr, "GltfSceneConverter",
+        {"StbImageConverter", nullptr}, nullptr,
+        /* Not checking either of the files, the warning output is enough to
+           verify */
+        nullptr, nullptr,
+        "Trade::AnyImageImporter::openFile(): using PngImporter (provided by StbImageImporter)\n"
+        "Trade::AnySceneConverter::beginFile(): using GltfSceneConverter\n"
+        "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 0 out of 1\n"
+        "Trade::StbImageConverter::convertToData(): ignoring alpha channel for BMP/JPEG output\n"},
 };
 
 const struct {
@@ -820,6 +900,27 @@ const struct {
         }},
         nullptr, nullptr, nullptr, nullptr,
         "The --only-mesh-attributes option can only be used with --mesh or --concatenate-meshes\n"},
+    {"--prefer without a colon", {InPlaceInit, {
+            "--prefer", "PngImporter=StbImageImporter", "a", "b",
+        }},
+        nullptr, nullptr, nullptr, nullptr,
+        "Invalid --prefer option PngImporter=StbImageImporter\n"},
+    {"--prefer alias suffix unknown", {InPlaceInit, {
+            "--prefer", "TrueTypeFont:HarfBuzzFont", "a", "b",
+        }},
+        nullptr, nullptr, nullptr, nullptr,
+        "Alias TrueTypeFont not recognized for a --prefer option\n"},
+    {"--prefer alias name not found", {InPlaceInit, {
+            "--prefer", "FbxSceneConverter:UfbxSceneConverter", "a", "b",
+        }},
+        nullptr, nullptr, nullptr, nullptr,
+        "Alias FbxSceneConverter not found for a --prefer option\n"},
+    {"--prefer plugin doesn't provide alias", {InPlaceInit, {
+            "--prefer", "GltfImporter:UfbxImporter", "a", "b",
+        }},
+        /* UfbxImporter is not really an image importer but it works here */
+        "GltfImporter", "UfbxImporter", nullptr, nullptr,
+        "UfbxImporter doesn't provide GltfImporter for a --prefer option\n"},
     {"can't load importer plugin", {InPlaceInit, {
             /* Override also the plugin directory for consistent output */
             "--plugin-dir", "nonexistent", "-I", "NonexistentImporter", "whatever.obj",
@@ -1221,7 +1322,9 @@ void SceneConverterTest::convert() {
     CORRADE_COMPARE(output.second(), data.message);
     CORRADE_VERIFY(output.first());
 
-    CORRADE_COMPARE_AS(Utility::Path::join({SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles", data.expected}),
+    /* In some cases the test verifies only the printed output and doesn't
+       check any file */
+    if(data.expected) CORRADE_COMPARE_AS(Utility::Path::join({SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles", data.expected}),
         Utility::Path::join({SCENETOOLS_TEST_DIR, "SceneConverterTestFiles", data.expected}),
         TestSuite::Compare::File);
     if(data.expected2) CORRADE_COMPARE_AS(Utility::Path::join({SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles", data.expected2}),
