@@ -230,7 +230,7 @@ Arguments:
     options to pass to mesh converter(s)
 -   `--mesh ID` --- convert just a single mesh instead of the whole scene
 -   `--mesh-level LEVEL` --- level to select for single-mesh conversion
--   `--concatenate-meshes` -- flatten mesh hierarchy and concatenate them all
+-   `--concatenate-meshes` --- flatten mesh hierarchy and concatenate them all
     together @m_class{m-label m-warning} **experimental**
 -   `--info-importer` --- print info about the importer plugin and exit
 -   `--info-converter` --- print info about the scene or mesh converter plugin

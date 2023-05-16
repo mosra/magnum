@@ -136,7 +136,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/quad-normals-texcoords.obj
             SceneConverterTestFiles/quad-strip.bin
             SceneConverterTestFiles/quad-strip.gltf
-            SceneConverterTestFiles/quad.bin
+            SceneConverterTestFiles/quad.bin # generated from quad.obj
             SceneConverterTestFiles/quad.gltf
             SceneConverterTestFiles/quad.obj
             SceneConverterTestFiles/quad.ply
