@@ -180,8 +180,8 @@ magnum-sceneconverter scene.gltf scene.decimated.gltf \
 magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [-C|--converter PLUGIN]... [-P|--image-converter PLUGIN]...
     [-M|--mesh-converter PLUGIN]... [--plugin-dir DIR]
-    [--prefer alias:plugin1,plugin2,…]... [--map]
-    [--only-mesh-attributes N1,N2-N3…] [--remove-duplicate-vertices]
+    [--prefer alias:plugin1,plugin2,…]... [--set plugin:key=val,key2=val2,…]...
+    [--map] [--only-mesh-attributes N1,N2-N3…] [--remove-duplicate-vertices]
     [--remove-duplicate-vertices-fuzzy EPSILON] [--phong-to-pbr]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]...
@@ -212,6 +212,7 @@ Arguments:
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `--prefer alias:plugin1,plugin2,…` --- prefer particular plugins for given
     alias(es)
+-   `--set plugin:key=val,key2=val2,…` ---  set global plugin(s) option
 -   `--map` --- memory-map the input for zero-copy import (works only for
     standalone files)
 -   `--only-mesh-attributes N1,N2-N3…` --- include only mesh attributes of
@@ -417,7 +418,7 @@ int main(int argc, char** argv) {
         .addArrayOption('M', "mesh-converter").setHelp("mesh-converter", "converter plugin(s) to apply to each mesh in the scene", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addArrayOption("prefer").setHelp("prefer", "prefer particular plugins for given alias(es)", "alias:plugin1,plugin2,…")
-        .addArrayOption("set").setHelp("set", "set global plugin option(s)", "plugin:key=val,key2=val2,…")
+        .addArrayOption("set").setHelp("set", "set global plugin(s) options", "plugin:key=val,key2=val2,…")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
         #endif
