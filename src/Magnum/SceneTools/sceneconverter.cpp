@@ -417,6 +417,7 @@ int main(int argc, char** argv) {
         .addArrayOption('M', "mesh-converter").setHelp("mesh-converter", "converter plugin(s) to apply to each mesh in the scene", "PLUGIN")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addArrayOption("prefer").setHelp("prefer", "prefer particular plugins for given alias(es)", "alias:plugin1,plugin2,…")
+        .addArrayOption("set").setHelp("set", "set global plugin option(s)", "plugin:key=val,key2=val2,…")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
         .addBooleanOption("map").setHelp("map", "memory-map the input for zero-copy import (works only for standalone files)")
         #endif
@@ -633,6 +634,41 @@ well, the IDs reference attributes of the first mesh.)")
         }
 
         manager->setPreferredPlugins(aliasNames[0], names);
+    }
+
+    /* Set global plugin options */
+    for(std::size_t i = 0, iMax = args.arrayValueCount("set"); i != iMax; ++i) {
+        const auto value = args.arrayValue<Containers::StringView>("set", i);
+        const Containers::Array3<Containers::StringView> nameOptions = value.partition(':');
+        if(!nameOptions[1]) {
+            Error{} << "Invalid --set option" << value;
+            return 1;
+        }
+
+        /* Figure out manager name */
+        PluginManager::AbstractManager* manager;
+        if(nameOptions[0].hasSuffix("Importer"_s))
+            manager = &importerManager;
+        else if(nameOptions[0].hasSuffix("ImageConverter"_s))
+            manager = &imageConverterManager;
+        else if(nameOptions[0].hasSuffix("SceneConverter"_s))
+            manager = &converterManager;
+        else {
+            Error{} << "Plugin" << nameOptions[0] << "not recognized for a --set option";
+            return 1;
+        }
+
+        /* Get the metadata to access global configuration */
+        PluginManager::PluginMetadata* const metadata = manager->metadata(nameOptions[0]);
+        if(!metadata) {
+            Error{} << "Plugin" << nameOptions[0] << "not found for a --set option";
+            return 1;
+        }
+
+        /* Set options. Doing things like --set AnyImageImporter:foo=bar makes
+           no sense, so this isn't excluding any "Any*" plugins from the
+           unrecognized option warnings */
+        Implementation::setOptions(nameOptions[0], metadata->configuration(), {}, nameOptions[2]);
     }
 
     /* Print plugin info, if requested */

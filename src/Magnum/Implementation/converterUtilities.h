@@ -38,7 +38,7 @@ namespace Magnum { namespace Implementation {
 /* Used only in executables where we don't want it to be exported */
 namespace {
 
-void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringView anyPluginName, const Containers::StringView options) {
+void setOptions(const Containers::StringView pluginName, Utility::ConfigurationGroup& configuration, const Containers::StringView anyPluginName, const Containers::StringView options) {
     std::unordered_set<const Utility::ConfigurationGroup*> emptySubgroups;
     for(const Containers::StringView option: options.splitWithoutEmptyParts(',')) {
         auto keyValue = option.partition('=');
@@ -47,7 +47,7 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringV
 
         const Containers::Array<Containers::StringView> keyParts = keyValue[0].split('/');
         CORRADE_INTERNAL_ASSERT(!keyParts.isEmpty());
-        Utility::ConfigurationGroup* group = &plugin.configuration();
+        Utility::ConfigurationGroup* group = &configuration;
         bool groupNotRecognized = false;
         for(std::size_t i = 0; i != keyParts.size() - 1; ++i) {
             Utility::ConfigurationGroup* subgroup = group->group(keyParts[i]);
@@ -82,9 +82,9 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringV
                 /* The warning isn't printed in case a value is added into an
                    empty subgroup, see above */
                 emptySubgroups.find(group) == emptySubgroups.end()
-            )) && plugin.plugin() != anyPluginName)
+            )) && pluginName != anyPluginName)
         {
-            Warning{} << "Option" << keyValue[0] << "not recognized by" << plugin.plugin();
+            Warning{} << "Option" << keyValue[0] << "not recognized by" << pluginName;
         }
 
         /* If the option doesn't have an =, treat it as a boolean flag that's
@@ -95,6 +95,10 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringV
         else
             group->setValue(keyParts.back(), true);
     }
+}
+
+void setOptions(PluginManager::AbstractPlugin& plugin, const Containers::StringView anyPluginName, const Containers::StringView options) {
+    setOptions(plugin.plugin(), plugin.configuration(), anyPluginName, options);
 }
 
 }

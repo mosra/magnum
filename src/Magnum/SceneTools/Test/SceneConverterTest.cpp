@@ -118,6 +118,15 @@ const struct {
         }},
         "StbImageImporter", nullptr, nullptr,
         "info-preferred-importer-plugin.txt"},
+    {"data, global plugin options", {InPlaceInit, {
+            "-I", "StbImageImporter", "--info",
+            /* Tested thoroughly in convert(global importer options), here it
+               just verifies that the option has an effect on --info as well */
+            "--set", "StbImageImporter:forceChannelCount=1", "-v",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/blue4x4.png")
+        }},
+        "StbImageImporter", nullptr, nullptr,
+        "info-global-plugin-options.txt"},
 };
 
 const struct {
@@ -866,6 +875,62 @@ const struct {
         "Trade::AnySceneConverter::beginFile(): using GltfSceneConverter\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding 2D image 0 out of 1\n"
         "Trade::StbImageConverter::convertToData(): ignoring alpha channel for BMP/JPEG output\n"},
+    {"global importer options", {InPlaceInit, {
+            /* The image is RGB, but we import it as RGBA to trigger a warning
+               inside the JPEG converter plugin */
+            "--set", "StbImageImporter:forceChannelCount=4,unrecognizedOption=yes",
+            "-I", "StbImageImporter",
+            "-c", "imageConverter=StbJpegImageConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/blue4x4.png"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/rgba.gltf")
+        }},
+        "StbImageImporter", nullptr, "GltfSceneConverter",
+        {"StbImageConverter", nullptr}, nullptr,
+        /* Not checking either of the files, the warning output is enough to
+           verify the option got properly set */
+        nullptr, nullptr,
+        "Option unrecognizedOption not recognized by StbImageImporter\n"
+        "Trade::StbImageConverter::convertToData(): ignoring alpha channel for BMP/JPEG output\n"},
+    {"global image converter options", {InPlaceInit, {
+            /* This produces the same output as "2D image converter, two images"
+               above, it's just that the options are specified through --set */
+            "--set", "StbResizeImageConverter:size=\"1 1\"",
+            "-P", "StbResizeImageConverter",
+            /* Removing the generator identifier for a smaller file, bundling
+               the images to avoid having too many files */
+            "-c", "bundleImages,generator=",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-2d.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/images-2d-1x1.gltf")
+        }},
+        "GltfImporter", "PngImporter", "GltfSceneConverter",
+        {"StbResizeImageConverter", "PngImageConverter"}, nullptr,
+        "images-2d-1x1.gltf", "images-2d-1x1.bin",
+        {}},
+    {"global scene converter options", {InPlaceInit, {
+            /* Same as -c generator= */
+            "--set", "GltfSceneConverter:generator=",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/empty.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/empty.gltf")
+        }},
+        "GltfImporter", nullptr, "GltfSceneConverter",
+        {}, nullptr,
+        "empty.gltf", nullptr,
+        {}},
+    {"multiple --set options", {InPlaceInit, {
+            /* Another variant of "2D image converter, two images", this time
+               with everything specified through --set */
+            "--set", "StbResizeImageConverter:size=\"1 1\"",
+            /* Removing the generator identifier for a smaller file, bundling
+               the images to avoid having too many files */
+            "--set", "GltfSceneConverter:bundleImages,generator=",
+            "-P", "StbResizeImageConverter",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-2d.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/images-2d-1x1.gltf")
+        }},
+        "GltfImporter", "PngImporter", "GltfSceneConverter",
+        {"StbResizeImageConverter", "PngImageConverter"}, nullptr,
+        "images-2d-1x1.gltf", "images-2d-1x1.bin",
+        {}},
 };
 
 const struct {
@@ -921,6 +986,21 @@ const struct {
         /* UfbxImporter is not really an image importer but it works here */
         "GltfImporter", "UfbxImporter", nullptr, nullptr,
         "UfbxImporter doesn't provide GltfImporter for a --prefer option\n"},
+    {"--set without a colon", {InPlaceInit, {
+            "--set", "StbImageImporter=forceChannelCount=3", "a", "b",
+        }},
+        nullptr, nullptr, nullptr, nullptr,
+        "Invalid --set option StbImageImporter=forceChannelCount=3\n"},
+    {"--set plugin suffix unknown", {InPlaceInit, {
+            "--set", "TrueTypeFont:hinting=slight", "a", "b",
+        }},
+        nullptr, nullptr, nullptr, nullptr,
+        "Plugin TrueTypeFont not recognized for a --set option\n"},
+    {"--set plugin name not found", {InPlaceInit, {
+            "--set", "FbxSceneConverter:binary=true", "a", "b",
+        }},
+        nullptr, nullptr, nullptr, nullptr,
+        "Plugin FbxSceneConverter not found for a --set option\n"},
     {"can't load importer plugin", {InPlaceInit, {
             /* Override also the plugin directory for consistent output */
             "--plugin-dir", "nonexistent", "-I", "NonexistentImporter", "whatever.obj",

@@ -669,6 +669,8 @@ See also:
 -   Added a `--prefer` option to @ref magnum-sceneconverter "magnum-sceneconverter",
     allowing to specify what plugins should be preferred for particular import
     and conversion plugin aliases
+-   Added a `--set` option to @ref magnum-sceneconverter "magnum-sceneconverter",
+    allowing to set configuration options to arbitrary plugins
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 

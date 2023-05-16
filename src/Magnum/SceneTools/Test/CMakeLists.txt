@@ -121,6 +121,7 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/info-data.txt
             SceneConverterTestFiles/info-data-ignored-output.txt
             SceneConverterTestFiles/info-converter.txt
+            SceneConverterTestFiles/info-global-plugin-options.txt
             SceneConverterTestFiles/info-image-converter.txt
             SceneConverterTestFiles/info-importer.txt
             SceneConverterTestFiles/info-importer-ignored-input-output.txt
