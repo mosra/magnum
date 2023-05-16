@@ -594,6 +594,20 @@ const struct {
         "    65536 -> 65536 shaded pixels\n"
         "    65536 -> 65536 covered pixels\n"
         "    overdraw 1 -> 1\n"},
+    {"mesh converter, passthrough on failure", {InPlaceInit, {
+            "-M", "MeshOptimizerSceneConverter",
+            "--passthrough-on-mesh-converter-failure",
+            /* Removing the generator identifier for a roundtrip */
+            "-c", "generator=",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/mesh-passthrough-on-failure.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/mesh-passthrough-on-failure.gltf")
+        }},
+        "GltfImporter", nullptr, "GltfSceneConverter",
+        {}, "MeshOptimizerSceneConverter",
+        /* The output is exactly the same as the input */
+        "mesh-passthrough-on-failure.gltf", "mesh-passthrough-on-failure.bin",
+        "Trade::MeshOptimizerSceneConverter::convert(): expected an indexed mesh\n"
+        "Cannot process mesh 0 with MeshOptimizerSceneConverter, passing the original through\n"},
     {"2D image converter, two images", {InPlaceInit, {
             "-P", "StbResizeImageConverter", "-p", "size=\"1 1\"",
             /* Removing the generator identifier for a smaller file, bundling
@@ -673,6 +687,21 @@ const struct {
         "Processing 3D image 1 with StbResizeImageConverter...\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding texture 0 out of 2\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding texture 1 out of 2\n"},
+    {"2D image converter, passthrough on failure", {InPlaceInit, {
+            /* Size explicitly not set to trigger a failure */
+            "-P", "StbResizeImageConverter",
+            "--passthrough-on-image-converter-failure",
+            /* Removing the generator identifier for a roundtrip */
+            "-c", "generator=",
+            Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/image-passthrough-on-failure.gltf"),
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/image-passthrough-on-failure.gltf")
+        }},
+        "GltfImporter", "PngImporter", "GltfSceneConverter",
+        {"StbResizeImageConverter", "PngImageConverter"}, nullptr,
+        /* The output is exactly the same as the input */
+        "image-passthrough-on-failure.gltf", "image-passthrough-on-failure.0.png",
+        "Trade::StbResizeImageConverter::convert(): output size was not specified\n"
+        "Cannot process 2D image 0 with StbResizeImageConverter, passing the original through\n"},
     {"Phong to PBR", {InPlaceInit, {
             "-I", "UfbxImporter", "-C", "GltfSceneConverter", "--phong-to-pbr",
             /* We need the file as minimal as possible, so no index buffer.

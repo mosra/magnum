@@ -186,6 +186,8 @@ magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [-c|--converter-options key=val,key2=val2,…]...
     [-p|--image-converter-options key=val,key2=val2,…]...
     [-m|--mesh-converter-options key=val,key2=val2,…]...
+    [--passthrough-on-image-converter-failure]
+    [--passthrough-on-mesh-converter-failure]
     [--mesh ID] [--mesh-level INDEX] [--concatenate-meshes] [--info-importer]
     [--info-converter] [--info-image-converter] [--info-animations]
     [--info-images] [--info-lights] [--info-cameras] [--info-materials]
@@ -228,6 +230,10 @@ Arguments:
     options to pass to image converter(s)
 -   `-m`, `--mesh-converter-options key=val,key2=val2,…` --- configuration
     options to pass to mesh converter(s)
+-   `--passthrough-on-image-converter-failure` --- pass original data through
+    if `--image-converter` fails
+-   `--passthrough-on-mesh-converter-failure` --- pass original data through
+    if `--mesh-converter` fails
 -   `--mesh ID` --- convert just a single mesh instead of the whole scene
 -   `--mesh-level LEVEL` --- level to select for single-mesh conversion
 -   `--concatenate-meshes` --- flatten mesh hierarchy and concatenate them all
@@ -335,6 +341,8 @@ bool isDataInfoRequested(const Utility::Arguments& args) {
 }
 
 template<UnsignedInt dimensions> bool runImageConverters(PluginManager::Manager<Trade::AbstractImageConverter>& imageConverterManager, const Utility::Arguments& args, const UnsignedInt i, Containers::Optional<Trade::ImageData<dimensions>>& image) {
+    const bool passthroughOnConversionFailure = args.isSet("passthrough-on-image-converter-failure");
+
     for(std::size_t j = 0, imageConverterCount = args.arrayValueCount("image-converter"); j != imageConverterCount; ++j) {
         const Containers::StringView imageConverterName = args.arrayValue<Containers::StringView>("image-converter", j);
         if(args.isSet("verbose")) {
@@ -381,7 +389,11 @@ template<UnsignedInt dimensions> bool runImageConverters(PluginManager::Manager<
         /** @todo handle image levels here, once GltfSceneConverter is capable
             of converting them (which needs AbstractImageConverter to be
             reworked around ImageData) */
-        if(!(image = imageConverter->convert(*image))) {
+        if(Containers::Optional<Trade::ImageData<dimensions>> converted = imageConverter->convert(*image)) {
+            image = std::move(converted);
+        } else if(passthroughOnConversionFailure) {
+            Warning{} << "Cannot process" << dimensions << Debug::nospace << "D image" << i << "with" << imageConverterName << Debug::nospace << ", passing the original through";
+        } else {
             Error{} << "Cannot process" << dimensions << Debug::nospace << "D image" << i << "with" << imageConverterName;
             return false;
         }
@@ -412,6 +424,8 @@ int main(int argc, char** argv) {
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addArrayOption('p', "image-converter-options").setHelp("image-converter-options", "configuration options to pass to the image converter(s)", "key=val,key2=val2,…")
         .addArrayOption('m', "mesh-converter-options").setHelp("mesh-converter-options", "configuration options to pass to the mesh converter(s)", "key=val,key2=val2,…")
+        .addBooleanOption("passthrough-on-image-converter-failure").setHelp("passthrough-on-image-converter-failure", "pass original data through if --image-converter fails")
+        .addBooleanOption("passthrough-on-mesh-converter-failure").setHelp("passthrough-on-mesh-converter-failure", "pass original data through if --mesh-converter fails")
         .addOption("mesh").setHelp("mesh", "convert just a single mesh instead of the whole scene, ignored if --concatenate-meshes is specified", "ID")
         .addOption("mesh-level").setHelp("mesh-level", "level to select for single-mesh conversion", "index")
         .addBooleanOption("concatenate-meshes").setHelp("concatenate-meshes", "flatten mesh hierarchy and concatenate them all together")
@@ -879,6 +893,8 @@ well, the IDs reference attributes of the first mesh.)")
        args.value<Containers::StringView>("remove-duplicate-vertices-fuzzy") ||
        args.arrayValueCount("mesh-converter"))
     {
+        const bool passthroughOnConversionFailure = args.isSet("passthrough-on-mesh-converter-failure");
+
         arrayReserve(meshes, importer->meshCount());
 
         for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
@@ -954,7 +970,11 @@ well, the IDs reference attributes of the first mesh.)")
 
                 /** @todo handle mesh levels here, once any plugin is capable
                     of converting them */
-                if(!(mesh = meshConverter->convert(*mesh))) {
+                if(Containers::Optional<Trade::MeshData> converted = meshConverter->convert(*mesh)) {
+                    mesh = std::move(converted);
+                } else if(passthroughOnConversionFailure) {
+                    Warning{} << "Cannot process mesh" << i << "with" << meshConverterName << Debug::nospace << ", passing the original through";
+                } else {
                     Error{} << "Cannot process mesh" << i << "with" << meshConverterName;
                     return 1;
                 }

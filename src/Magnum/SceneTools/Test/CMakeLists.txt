@@ -106,6 +106,10 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/broken-scene.gltf
             SceneConverterTestFiles/dxt1.dds
             SceneConverterTestFiles/empty.gltf
+            # Same as blue4x4.png, just named like this to have the file
+            # roundtrip on conversion
+            SceneConverterTestFiles/image-passthrough-on-failure.0.png
+            SceneConverterTestFiles/image-passthrough-on-failure.gltf
             SceneConverterTestFiles/image-dds.gltf
             SceneConverterTestFiles/images-2d.gltf
             SceneConverterTestFiles/images-2d-1x1.bin
@@ -125,6 +129,8 @@ if(CORRADE_TARGET_UNIX AND NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
             SceneConverterTestFiles/materials-phong.mtl
             SceneConverterTestFiles/materials-phong.obj
             SceneConverterTestFiles/materials-separate-metalness-roughness.mtl
+            SceneConverterTestFiles/mesh-passthrough-on-failure.bin
+            SceneConverterTestFiles/mesh-passthrough-on-failure.gltf
             SceneConverterTestFiles/point.obj
             SceneConverterTestFiles/quad-duplicates-fuzzy.obj
             SceneConverterTestFiles/quad-duplicates.obj

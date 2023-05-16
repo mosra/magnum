@@ -1,0 +1,10 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "images": [
+    {
+      "uri": "image-passthrough-on-failure.0.png"
+    }
+  ]
+}
