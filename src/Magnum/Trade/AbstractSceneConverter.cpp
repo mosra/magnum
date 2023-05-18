@@ -1296,8 +1296,6 @@ Containers::Optional<UnsignedInt> AbstractSceneConverter::add(const Containers::
 bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& importer, const SceneContents contents, const bool noLevelsIfUnsupported) {
     CORRADE_ASSERT(isConverting(),
         "Trade::AbstractSceneConverter::addImporterContents(): no conversion in progress", {});
-    CORRADE_ASSERT(importer.isOpened(),
-        "Trade::AbstractSceneConverter::addImporterContents(): the importer is not opened", {});
     const SceneContents contentsSupported = sceneContentsFor(*this);
     #ifndef CORRADE_NO_ASSERT
     const SceneContents contentsPresentExceptLevels = contents & sceneContentsFor(importer);
@@ -1640,10 +1638,15 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
 
 
 bool AbstractSceneConverter::addImporterContents(AbstractImporter& importer, const SceneContents contents) {
+    CORRADE_ASSERT(importer.isOpened(),
+        "Trade::AbstractSceneConverter::addImporterContents(): the importer is not opened", {});
     return addImporterContentsInternal(importer, contents, false);
 }
 
 bool AbstractSceneConverter::addSupportedImporterContents(AbstractImporter& importer, const SceneContents contents) {
+    CORRADE_ASSERT(importer.isOpened(),
+        "Trade::AbstractSceneConverter::addSupportedImporterContents(): the importer is not opened", {});
+
     /* To avoid accidental differences in handling SceneConverterFeatures in
        sceneContentsFor(const AbstractSceneConverter&) and here, this branches
        on SceneContents instead of SceneConverterFeatures */

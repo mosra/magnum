@@ -302,6 +302,7 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 
     void addSupportedImporterContents();
     void addSupportedImporterContentsLevels();
+    void addSupportedImporterContentsNotOpened();
 
     void debugFeature();
     void debugFeaturePacked();
@@ -864,7 +865,8 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
     addInstancedTests({&AbstractSceneConverterTest::addSupportedImporterContents},
         Containers::arraySize(AddSupportedImporterContentsData));
 
-    addTests({&AbstractSceneConverterTest::addSupportedImporterContentsLevels,
+    addTests({&AbstractSceneConverterTest::addSupportedImporterContentsNotOpened,
+              &AbstractSceneConverterTest::addSupportedImporterContentsLevels,
 
               &AbstractSceneConverterTest::debugFeature,
               &AbstractSceneConverterTest::debugFeaturePacked,
@@ -7503,6 +7505,30 @@ void AbstractSceneConverterTest::addSupportedImporterContentsLevels() {
     CORRADE_COMPARE(converter.image1DCount(), importer.image1DCount());
     CORRADE_COMPARE(converter.image2DCount(), importer.image2DCount());
     CORRADE_COMPARE(converter.image3DCount(), importer.image3DCount());
+}
+
+void AbstractSceneConverterTest::addSupportedImporterContentsNotOpened() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override {
+            return SceneConverterFeature::ConvertMultipleToData;
+        }
+        bool doBeginData() override { return true; }
+    } converter;
+
+    CORRADE_VERIFY(converter.beginData());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.addSupportedImporterContents(importer));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractSceneConverter::addSupportedImporterContents(): the importer is not opened\n");
 }
 
 void AbstractSceneConverterTest::debugFeature() {
