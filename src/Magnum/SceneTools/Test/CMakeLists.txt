@@ -67,6 +67,10 @@ corrade_add_test(SceneToolsSceneConverterImple___Test SceneConverterImplementati
         SceneConverterImplementationTestFiles/info-meshes-bounds.txt
         SceneConverterImplementationTestFiles/info-meshes.txt
         SceneConverterImplementationTestFiles/info-objects.txt
+        SceneConverterImplementationTestFiles/info-object-hierarchy.txt
+        SceneConverterImplementationTestFiles/info-object-hierarchy-no-parents.txt
+        SceneConverterImplementationTestFiles/info-object-hierarchy-only-objects.txt
+        SceneConverterImplementationTestFiles/info-object-hierarchy-only-objects-no-parents.txt
         SceneConverterImplementationTestFiles/info-references.txt
         SceneConverterImplementationTestFiles/info-scenes.txt
         SceneConverterImplementationTestFiles/info-scenes-no-default.txt

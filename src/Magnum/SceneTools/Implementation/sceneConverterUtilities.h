@@ -33,6 +33,7 @@
 #include <Corrade/Utility/Arguments.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/SceneTools/Hierarchy.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
@@ -157,6 +158,8 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         std::size_t dataSize;
         Trade::DataFlags dataFlags;
         Containers::String name;
+        /* Populated only if --object-hierarchy is set */
+        Containers::Array<Containers::Pair<UnsignedInt, UnsignedInt>> childrenDepthFirst;
     };
 
     struct ObjectInfo {
@@ -198,13 +201,15 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     Containers::Array<UnsignedInt> meshReferenceCount;
     Containers::Array<UnsignedInt> skin2DReferenceCount;
     Containers::Array<UnsignedInt> skin3DReferenceCount;
-    if((args.isSet("info") || args.isSet("info-scenes")) && importer.sceneCount()) {
-        materialReferenceCount = Containers::Array<UnsignedInt>{importer.materialCount()};
-        lightReferenceCount = Containers::Array<UnsignedInt>{importer.lightCount()};
-        cameraReferenceCount = Containers::Array<UnsignedInt>{importer.cameraCount()};
-        meshReferenceCount = Containers::Array<UnsignedInt>{importer.meshCount()};
-        skin2DReferenceCount = Containers::Array<UnsignedInt>{importer.skin2DCount()};
-        skin3DReferenceCount = Containers::Array<UnsignedInt>{importer.skin3DCount()};
+    if((args.isSet("info") || args.isSet("info-scenes") || args.isSet("object-hierarchy")) && importer.sceneCount()) {
+        if(args.isSet("info") || args.isSet("info-scenes")) {
+            materialReferenceCount = Containers::Array<UnsignedInt>{importer.materialCount()};
+            lightReferenceCount = Containers::Array<UnsignedInt>{importer.lightCount()};
+            cameraReferenceCount = Containers::Array<UnsignedInt>{importer.cameraCount()};
+            meshReferenceCount = Containers::Array<UnsignedInt>{importer.meshCount()};
+            skin2DReferenceCount = Containers::Array<UnsignedInt>{importer.skin2DCount()};
+            skin3DReferenceCount = Containers::Array<UnsignedInt>{importer.skin3DCount()};
+        }
 
         for(UnsignedInt i = 0; i != importer.sceneCount(); ++i) {
             Containers::Optional<Trade::SceneData> scene = importer.scene(i);
@@ -221,7 +226,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             info.dataSize = scene->data().size();
             info.dataFlags = scene->dataFlags();
             info.name = importer.sceneName(i);
-            for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
+            if(args.isSet("info") || args.isSet("info-scenes")) for(UnsignedInt j = 0; j != scene->fieldCount(); ++j) {
                 const Trade::SceneField name = scene->fieldName(j);
 
                 if(name == Trade::SceneField::Mesh) for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>>& meshMaterial: scene->meshesMaterialsAsArray()) {
@@ -278,6 +283,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                         arrayAppend(objectInfos[object].fields, InPlaceInit, name, 1u);
                 }
             }
+
+            if(args.isSet("object-hierarchy") && scene->hasField(Trade::SceneField::Parent))
+                info.childrenDepthFirst = SceneTools::childrenDepthFirst(*scene);
 
             arrayAppend(sceneInfos, std::move(info));
         }
@@ -603,6 +611,26 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     if((args.isSet("info") || args.isSet("info-scenes")) && importer.defaultScene() != -1)
         Debug{useColor} << Debug::boldColor(Debug::Color::Default) << "Default scene:" << Debug::resetColor << importer.defaultScene();
 
+    const auto printObjectFieldInfo = [&sceneFieldNames](Debug& d, const ObjectInfo& info) {
+        for(std::size_t i = 0; i != info.fields.size(); ++i) {
+            if(i) d << Debug::nospace << ",";
+            const Containers::Pair<Trade::SceneField, UnsignedInt> nameCount = info.fields[i];
+            d << Debug::color(Debug::Color::Cyan);
+            if(Trade::isSceneFieldCustom(nameCount.first())) {
+                d << "Custom(" << Debug::nospace
+                    << Trade::sceneFieldCustom(nameCount.first())
+                    << Debug::nospace << ":" << Debug::nospace
+                    << Debug::color(Debug::Color::Yellow)
+                    << sceneFieldNames[sceneFieldCustom(nameCount.first())]
+                    << Debug::nospace
+                    << Debug::color(Debug::Color::Cyan) << ")";
+            } else d << Debug::packed << nameCount.first();
+            if(nameCount.second() != 1)
+                d << Debug::nospace << Utility::format("[{}]", nameCount.second());
+            d << Debug::resetColor;
+        }
+    };
+
     std::size_t totalSceneDataSize = 0;
     for(const SceneInfo& info: sceneInfos) {
         Debug d{useColor};
@@ -620,28 +648,62 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                 << Debug::resetColor;
         d << Debug::nospace << ")";
 
-        d << Debug::newline << "  Fields:";
-        for(const SceneFieldInfo& field: info.fields) {
-            d << Debug::newline << "   "
-                << Debug::boldColor(Debug::Color::Default);
-            if(Trade::isSceneFieldCustom(field.name)) {
-                d << "Custom(" << Debug::nospace
-                    << Trade::sceneFieldCustom(field.name)
-                    << Debug::nospace << ":" << Debug::nospace
-                    << Debug::color(Debug::Color::Yellow)
-                    << sceneFieldNames[sceneFieldCustom(field.name)]
-                    << Debug::nospace
-                    << Debug::boldColor(Debug::Color::Default) << ")";
-            } else d << Debug::packed << field.name;
+        if(info.fields) {
+            d << Debug::newline << "  Fields:";
+            for(const SceneFieldInfo& field: info.fields) {
+                d << Debug::newline << "   "
+                    << Debug::boldColor(Debug::Color::Default);
+                if(Trade::isSceneFieldCustom(field.name)) {
+                    d << "Custom(" << Debug::nospace
+                        << Trade::sceneFieldCustom(field.name)
+                        << Debug::nospace << ":" << Debug::nospace
+                        << Debug::color(Debug::Color::Yellow)
+                        << sceneFieldNames[sceneFieldCustom(field.name)]
+                        << Debug::nospace
+                        << Debug::boldColor(Debug::Color::Default) << ")";
+                } else d << Debug::packed << field.name;
 
-            d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << field.type;
-            if(field.arraySize)
-                d << Debug::nospace << Utility::format("[{}]", field.arraySize);
-            d << Debug::resetColor;
-            if(field.flags) d << Debug::nospace << ","
-                << Debug::packed << Debug::color(Debug::Color::Green)
-                << field.flags << Debug::resetColor;
-            d << Debug::nospace << "," << field.size << "entries";
+                d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << field.type;
+                if(field.arraySize)
+                    d << Debug::nospace << Utility::format("[{}]", field.arraySize);
+                d << Debug::resetColor;
+                if(field.flags) d << Debug::nospace << ","
+                    << Debug::packed << Debug::color(Debug::Color::Green)
+                    << field.flags << Debug::resetColor;
+                d << Debug::nospace << "," << field.size << "entries";
+            }
+        }
+
+        if(args.isSet("object-hierarchy") && objectInfos) {
+            d << Debug::newline << "  Object hierarchy:";
+
+            Containers::Array<std::size_t> childRangeEnds;
+            arrayAppend(childRangeEnds, info.childrenDepthFirst.size());
+            for(std::size_t i = 0; i != info.childrenDepthFirst.size(); ++i) {
+                while(childRangeEnds.back() == i)
+                    arrayRemoveSuffix(childRangeEnds, 1);
+
+                const UnsignedInt object = info.childrenDepthFirst[i].first();
+                const UnsignedInt childCount = info.childrenDepthFirst[i].second();
+                const ObjectInfo& objectInfo = objectInfos[object];
+
+                const Containers::String indent = "  "_s*(childRangeEnds.size());
+
+                d << Debug::newline << indent << Debug::nospace << Debug::boldColor(Debug::Color::Default) << "  Object"
+                    << object << Debug::nospace << ":" << Debug::resetColor;
+                if(objectInfo.name) d << Debug::boldColor(Debug::Color::Yellow)
+                    << objectInfo.name << Debug::resetColor;
+
+                if(objectInfo.fields) {
+                    d << Debug::newline << indent << Debug::nospace << "    Fields:";
+                    printObjectFieldInfo(d, objectInfo);
+                }
+
+                if(childCount) {
+                    CORRADE_INTERNAL_ASSERT(childRangeEnds.back() > i + 1);
+                    arrayAppend(childRangeEnds, i + childCount + 1);
+                }
+            }
         }
 
         totalSceneDataSize += info.dataSize;
@@ -649,7 +711,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     if(!sceneInfos.isEmpty())
         Debug{} << "Total scene data size:" << Utility::format("{:.1f}", totalSceneDataSize/1024.0f) << "kB";
 
-    for(const ObjectInfo& info: objectInfos) {
+    /* If --object-hierarchy was specified, the object list was printed as part
+       of the scene already */
+    if(!args.isSet("object-hierarchy")) for(const ObjectInfo& info: objectInfos) {
         /* Objects without a name and not referenced by any scenes are useless,
            ignore */
         if(!info.name && !info.scenes) continue;
@@ -670,24 +734,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             << info.name << Debug::resetColor;
         if(info.scenes) {
             d << Debug::newline << "  Fields:";
-
-            for(std::size_t i = 0; i != info.fields.size(); ++i) {
-                if(i) d << Debug::nospace << ",";
-                const Containers::Pair<Trade::SceneField, UnsignedInt> nameCount = info.fields[i];
-                d << Debug::color(Debug::Color::Cyan);
-                if(Trade::isSceneFieldCustom(nameCount.first())) {
-                    d << "Custom(" << Debug::nospace
-                        << Trade::sceneFieldCustom(nameCount.first())
-                        << Debug::nospace << ":" << Debug::nospace
-                        << Debug::color(Debug::Color::Yellow)
-                        << sceneFieldNames[sceneFieldCustom(nameCount.first())]
-                        << Debug::nospace
-                        << Debug::color(Debug::Color::Cyan) << ")";
-                } else d << Debug::packed << nameCount.first();
-                if(nameCount.second() != 1)
-                    d << Debug::nospace << Utility::format("[{}]", nameCount.second());
-                d << Debug::resetColor;
-            }
+            printObjectFieldInfo(d, info);
         }
     }
 

@@ -1,0 +1,7 @@
+Scene 0: A simple scene
+  Bound: 6 objects @ UnsignedInt (0.1 kB)
+  Object hierarchy:
+Scene 1:
+  Bound: 8 objects @ UnsignedByte (0.1 kB, ExternallyOwned|Mutable)
+  Object hierarchy:
+Total scene data size: 0.1 kB

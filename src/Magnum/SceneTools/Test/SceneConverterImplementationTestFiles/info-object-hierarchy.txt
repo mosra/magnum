@@ -1,0 +1,28 @@
+Scene 0: A simple scene
+  Bound: 6 objects @ UnsignedInt (0.1 kB)
+  Fields:
+    Parent @ Int, 5 entries
+    Mesh @ UnsignedInt, OrderedMapping, 4 entries
+  Object hierarchy:
+    Object 2: Two meshes, shared among two scenes
+      Fields: Parent, Mesh[2], Custom(1337:directionVector)
+      Object 1:
+        Fields: Parent, Mesh
+        Object 5:
+          Fields: Parent
+          Object 0: Parent-less mesh
+            Fields: Parent, Mesh
+      Object 4: Two custom arrays
+        Fields: Parent, Custom(1337:directionVector)[2]
+Scene 1:
+  Bound: 8 objects @ UnsignedByte (0.1 kB, ExternallyOwned|Mutable)
+  Fields:
+    Parent @ Int, 2 entries
+    Custom(42:) @ Double, 2 entries
+    Custom(1337:directionVector) @ Short[3], 3 entries
+  Object hierarchy:
+    Object 3:
+      Fields: Parent, Custom(42:)
+      Object 7:
+        Fields: Parent, Custom(42:)
+Total scene data size: 0.1 kB

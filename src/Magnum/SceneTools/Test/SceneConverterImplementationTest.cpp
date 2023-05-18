@@ -76,15 +76,47 @@ using namespace Math::Literals;
 
 const struct {
     const char* name;
-    const char* arg;
+    Containers::Array<const char*> args;
     const char* expected;
     Int defaultScene;
     bool printVisualCheck;
+    bool omitParent;
 } InfoScenesObjectsData[]{
-    {"", "--info", "info-scenes-objects.txt", 1, true},
-    {"only scenes", "--info-scenes", "info-scenes.txt", 0, false},
-    {"only scenes, no default scene", "--info-scenes", "info-scenes-no-default.txt", -1, false},
-    {"only objects", "--info-objects", "info-objects.txt", 1, false}
+    {"all", {InPlaceInit, {
+           "", "--info"
+        }}, "info-scenes-objects.txt", 1, true, false},
+    {"both", {InPlaceInit, {
+           "",  "--info-objects", "--info-scenes"
+        }}, "info-scenes-objects.txt", 1, false, false},
+    {"only scenes", {InPlaceInit, {
+            "", "--info-scenes"
+        }}, "info-scenes.txt", 0, false, false},
+    {"only scenes, no default scene", {InPlaceInit, {
+            "", "--info-scenes"
+        }}, "info-scenes-no-default.txt", -1, false, false},
+    {"only objects", {InPlaceInit, {
+            "", "--info-objects"
+        }}, "info-objects.txt", 1, false, false},
+    {"object hierarchy, all", {InPlaceInit, {
+            "", "--info", "--object-hierarchy"
+        }}, "info-object-hierarchy.txt", -1, true, false},
+    {"object hierarchy, both", {InPlaceInit, {
+            "", "--info-objects", "--info-scenes", "--object-hierarchy"
+        }}, "info-object-hierarchy.txt", -1, false, false},
+    {"object hierarchy, no parents", {InPlaceInit, {
+            "", "--info", "--object-hierarchy"
+        }}, "info-object-hierarchy-no-parents.txt", -1, false, true},
+    {"object hierarchy, only scenes", {InPlaceInit, {
+            /* --object-hierarchy is only used if --info-objects is present
+               so this is the same as just --info-scenes alone */
+            "", "--info-scenes", "--object-hierarchy"
+        }}, "info-scenes-no-default.txt", -1, false, false},
+    {"object hierarchy, only objects", {InPlaceInit, {
+            "", "--info-objects", "--object-hierarchy"
+        }}, "info-object-hierarchy-only-objects.txt", -1, true, false},
+    {"object hierarchy, only objects, no parents", {InPlaceInit, {
+            "", "--info-objects", "--object-hierarchy"
+        }}, "info-object-hierarchy-only-objects-no-parents.txt", -1, false, true},
 };
 
 const struct {
@@ -133,7 +165,8 @@ SceneConverterImplementationTest::SceneConverterImplementationTest() {
              .addBooleanOption("info-meshes")
              .addBooleanOption("info-textures")
              .addBooleanOption("info-images")
-             .addBooleanOption("bounds");
+             .addBooleanOption("bounds")
+             .addBooleanOption("object-hierarchy");
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -200,7 +233,7 @@ void SceneConverterImplementationTest::infoScenesObjects() {
     setTestCaseDescription(data.name);
 
     struct Importer: Trade::AbstractImporter {
-        explicit Importer(Int defaultScene): _defaultScene{defaultScene} {}
+        explicit Importer(Int defaultScene, bool omitParent): _defaultScene{defaultScene}, _omitParent{omitParent} {}
 
         Trade::ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -236,24 +269,27 @@ void SceneConverterImplementationTest::infoScenesObjects() {
                 Containers::ArrayView<UnsignedInt> meshMapping;
                 Containers::ArrayView<UnsignedInt> meshes;
                 Containers::ArrayTuple data{
-                    {NoInit, 3, parentMapping},
-                    {ValueInit, 3, parents},
+                    {NoInit, 5, parentMapping},
+                    {NoInit, 5, parents},
                     {NoInit, 4, meshMapping},
                     {ValueInit, 4, meshes},
                 };
-                Utility::copy({1, 3, 2}, parentMapping);
+                Utility::copy({1, 2, 5, 4, 0}, parentMapping);
+                Utility::copy({2, -1, 1, 2, 5}, parents);
                 Utility::copy({2, 0, 2, 1}, meshMapping);
-                /* No need to fill the data, zero-init is fine */
-                return Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 4, std::move(data), {
-                    Trade::SceneFieldData{Trade::SceneField::Parent, parentMapping, parents},
+                /* No need to fill the other data, zero-init is fine */
+                return Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 6, std::move(data), {
+                    Trade::SceneFieldData{_omitParent ? Trade::sceneFieldCustom(0) : Trade::SceneField::Parent, parentMapping, parents},
                     Trade::SceneFieldData{Trade::SceneField::Mesh, meshMapping, meshes, Trade::SceneFieldFlag::OrderedMapping},
                 }};
             }
 
-            /* Two custom fields, one array. Stored as an external memory. */
+            /* Two custom fields, one array, parent. Stored as an external
+               memory. */
             if(id == 1) {
                 return Trade::SceneData{Trade::SceneMappingType::UnsignedByte, 8, Trade::DataFlag::ExternallyOwned|Trade::DataFlag::Mutable, scene2Data, {
-                    Trade::SceneFieldData{Trade::sceneFieldCustom(42), Containers::arrayView(scene2Data->customMapping), Containers::arrayView(scene2Data->custom)},
+                    Trade::SceneFieldData{_omitParent ? Trade::sceneFieldCustom(0) : Trade::SceneField::Parent, Containers::arrayView(scene2Data->parentCustomMapping), Containers::arrayView(scene2Data->parent)},
+                    Trade::SceneFieldData{Trade::sceneFieldCustom(42), Containers::arrayView(scene2Data->parentCustomMapping), Containers::arrayView(scene2Data->custom)},
                     Trade::SceneFieldData{Trade::sceneFieldCustom(1337), Trade::SceneMappingType::UnsignedByte, scene2Data->customArrayMapping, Trade::SceneFieldType::Short, scene2Data->customArray, 3},
                 }};
             }
@@ -262,20 +298,21 @@ void SceneConverterImplementationTest::infoScenesObjects() {
         }
 
         struct {
-            UnsignedByte customMapping[2];
+            UnsignedByte parentCustomMapping[2];
+            Int parent[2];
             Double custom[2];
             UnsignedByte customArrayMapping[3];
             Vector3s customArray[3];
         } scene2Data[1]{{
-            /* No need to fill the data, zero-init is fine */
-            {7, 3}, {}, {2, 4, 4}, {}
+            /* No need to fill data other than parents, zero-init is fine */
+            {7, 3}, {3, -1}, {}, {2, 4, 4}, {}
         }};
 
         Int _defaultScene;
-    } importer{data.defaultScene};
+        bool _omitParent;
+    } importer{data.defaultScene, data.omitParent};
 
-    const char* argv[]{"", data.arg};
-    CORRADE_VERIFY(_infoArgs.tryParse(Containers::arraySize(argv), argv));
+    CORRADE_VERIFY(_infoArgs.tryParse(data.args.size(), data.args));
 
     std::chrono::high_resolution_clock::duration time;
 

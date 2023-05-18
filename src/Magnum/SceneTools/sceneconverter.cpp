@@ -194,7 +194,7 @@ magnum-sceneconverter [-h|--help] [-I|--importer PLUGIN]
     [--info-images] [--info-lights] [--info-cameras] [--info-materials]
     [--info-meshes] [--info-objects] [--info-scenes] [--info-skins]
     [--info-textures] [--info] [--color on|4bit|off|auto] [--bounds]
-    [-v|--verbose] [--profile] [--] input output
+    [--object-hierarchy] [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -263,6 +263,7 @@ Arguments:
     as specifying all other data-related `--info-*` options together
 -   `--color` --- colored output for `--info` (default: `auto`)
 -   `--bounds` --- show bounds of known attributes in `--info` output
+-   `--object-hierarchy` --- visualize object hierarchy in `--info` output
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
 
@@ -451,6 +452,7 @@ int main(int argc, char** argv) {
         .addBooleanOption("info").setHelp("info", "print info about everything in the input file and exit, same as specifying all other data-related --info-* options together")
         .addOption("color", "auto").setHelp("color", "colored output for --info", "on|4bit|off|auto")
         .addBooleanOption("bounds").setHelp("bounds", "show bounds of known attributes in --info output")
+        .addBooleanOption("object-hierarchy").setHelp("object-hierarchy", "visualize object hierarchy in --info output")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {

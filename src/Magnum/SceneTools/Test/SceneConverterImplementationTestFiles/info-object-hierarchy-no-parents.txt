@@ -1,12 +1,14 @@
 Scene 0: A simple scene
   Bound: 6 objects @ UnsignedInt (0.1 kB)
   Fields:
-    Parent @ Int, 5 entries
+    Custom(0:) @ Int, 5 entries
     Mesh @ UnsignedInt, OrderedMapping, 4 entries
+  Object hierarchy:
 Scene 1:
   Bound: 8 objects @ UnsignedByte (0.1 kB, ExternallyOwned|Mutable)
   Fields:
-    Parent @ Int, 2 entries
+    Custom(0:) @ Int, 2 entries
     Custom(42:) @ Double, 2 entries
     Custom(1337:directionVector) @ Short[3], 3 entries
+  Object hierarchy:
 Total scene data size: 0.1 kB

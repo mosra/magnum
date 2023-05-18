@@ -1,0 +1,14 @@
+Scene 0: A simple scene
+  Bound: 6 objects @ UnsignedInt (0.1 kB)
+  Object hierarchy:
+    Object 2: Two meshes, shared among two scenes
+      Object 1:
+        Object 5:
+          Object 0: Parent-less mesh
+      Object 4: Two custom arrays
+Scene 1:
+  Bound: 8 objects @ UnsignedByte (0.1 kB, ExternallyOwned|Mutable)
+  Object hierarchy:
+    Object 3:
+      Object 7:
+Total scene data size: 0.1 kB
