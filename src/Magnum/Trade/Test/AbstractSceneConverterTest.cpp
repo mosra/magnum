@@ -319,6 +319,16 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 using namespace Containers::Literals;
 
 const struct {
+    const char* name;
+    SceneConverterFeatures features;
+} SetMeshAttributeData[]{
+    {"batch conversion supported", SceneConverterFeature::ConvertMultiple|SceneConverterFeature::AddMeshes},
+    {"single conversion supported", SceneConverterFeature::ConvertMesh},
+    {"single to file conversion supported", SceneConverterFeature::ConvertMeshToFile},
+    {"in-place conversion supported", SceneConverterFeature::ConvertMeshInPlace},
+};
+
+const struct {
     TestSuite::TestCaseDescriptionSourceLocation name;
     SceneContents contents;
     SceneConverterFlags flags;
@@ -763,10 +773,12 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
               &AbstractSceneConverterTest::addMeshLevelsNoLevels,
               &AbstractSceneConverterTest::addMeshLevelsNotImplemented,
 
-              &AbstractSceneConverterTest::addMeshThroughLevels,
+              &AbstractSceneConverterTest::addMeshThroughLevels});
 
-              &AbstractSceneConverterTest::setMeshAttributeName,
-              &AbstractSceneConverterTest::setMeshAttributeNameNotImplemented,
+    addInstancedTests({&AbstractSceneConverterTest::setMeshAttributeName},
+        Containers::arraySize(SetMeshAttributeData));
+
+    addTests({&AbstractSceneConverterTest::setMeshAttributeNameNotImplemented,
               &AbstractSceneConverterTest::setMeshAttributeNameNotCustom,
 
               &AbstractSceneConverterTest::addMaterial,
@@ -4190,10 +4202,14 @@ void AbstractSceneConverterTest::addMeshThroughLevels() {
 }
 
 void AbstractSceneConverterTest::setMeshAttributeName() {
-    struct: AbstractSceneConverter {
+    auto&& data = SetMeshAttributeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct Converter: AbstractSceneConverter {
+        explicit Converter(SceneConverterFeatures features): features{features} {}
+
         SceneConverterFeatures doFeatures() const override {
-            return SceneConverterFeature::ConvertMultiple|
-                   SceneConverterFeature::AddMeshes;
+            return features;
         }
 
         bool doBegin() override { return true; }
@@ -4204,12 +4220,16 @@ void AbstractSceneConverterTest::setMeshAttributeName() {
             setMeshAttributeNameCalled = true;
         }
 
+        SceneConverterFeatures features;
         bool setMeshAttributeNameCalled = false;
-    } converter;
+    } converter{data.features};
 
     CORRADE_VERIFY(true); /* capture correct function name */
 
-    CORRADE_VERIFY(converter.begin());
+    /* Only single-mesh conversion can call the API alone */
+    if(data.features & SceneConverterFeature::ConvertMultiple)
+        CORRADE_VERIFY(converter.begin());
+
     converter.setMeshAttributeName(meshAttributeCustom(1337), "hello!");
     CORRADE_VERIFY(converter.setMeshAttributeNameCalled);
 }

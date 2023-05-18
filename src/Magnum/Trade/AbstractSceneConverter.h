@@ -1500,12 +1500,16 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * @brief Set name of a custom mesh attribute
          * @m_since_latest
          *
-         * Expects that a conversion is currently in progress,
-         * @ref SceneConverterFeature::AddMeshes is supported and @p attribute
-         * is a custom attribute. The attribute name will get used only for
-         * mesh data added after this function has been called. If the
-         * converter doesn't support custom mesh attributes or doesn't support
-         * naming them, the call is ignored.
+         * Expects that either a batch conversion is currently in progress and
+         * @ref SceneConverterFeature::AddMeshes is supported, or that at least
+         * one of @ref SceneConverterFeature::ConvertMesh,
+         * @relativeref{SceneConverterFeature,ConvertMeshInPlace},
+         * @relativeref{SceneConverterFeature,ConvertMeshToData} or
+         * @relativeref{SceneConverterFeature,ConvertMeshToFile} is supported.
+         * The @p attribute is expected to be custom. The name will get used
+         * only for mesh data added or converted after this function has been
+         * called. If the converter doesn't support custom mesh attributes or
+         * doesn't support naming them, the call is ignored.
          * @see @ref isConverting(), @ref features(),
          *      @ref isMeshAttributeCustom(), @ref setSceneFieldName(),
          *      @ref setAnimationTrackTargetName()

@@ -855,9 +855,18 @@ bool AbstractSceneConverter::doAdd(UnsignedInt, const Containers::Iterable<const
 }
 
 void AbstractSceneConverter::setMeshAttributeName(const MeshAttribute attribute, const Containers::StringView name) {
-    CORRADE_ASSERT(features() & SceneConverterFeature::AddMeshes,
+    CORRADE_ASSERT(features() & (SceneConverterFeature::AddMeshes|
+                                 SceneConverterFeature::ConvertMesh|
+                                 SceneConverterFeature::ConvertMeshInPlace|
+                                 SceneConverterFeature::ConvertMeshToData|
+                                 SceneConverterFeature::ConvertMeshToFile),
         "Trade::AbstractSceneConverter::setMeshAttributeName(): feature not supported", );
-    CORRADE_ASSERT(_state,
+    /* Unless single mesh conversion is supported, allow this function to be
+       called only if begin*() was called before */
+    CORRADE_ASSERT(features() & (SceneConverterFeature::ConvertMesh|
+                                 SceneConverterFeature::ConvertMeshInPlace|
+                                 SceneConverterFeature::ConvertMeshToData|
+                                 SceneConverterFeature::ConvertMeshToFile) || _state,
         "Trade::AbstractSceneConverter::setMeshAttributeName(): no conversion in progress", );
     CORRADE_ASSERT(isMeshAttributeCustom(attribute),
         "Trade::AbstractSceneConverter::setMeshAttributeName():" << attribute << "is not custom", );
