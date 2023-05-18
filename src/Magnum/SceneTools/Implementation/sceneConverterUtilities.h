@@ -452,6 +452,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
     }
 
     /* Mesh properties */
+    const bool showBounds = args.isSet("bounds");
     Containers::Array<MeshInfo> meshInfos;
     if(args.isSet("info") || args.isSet("info-meshes")) for(UnsignedInt i = 0; i != importer.meshCount(); ++i) {
         for(UnsignedInt j = 0; j != importer.meshLevelCount(i); ++j) {
@@ -482,7 +483,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                 info.indexStride = mesh->indexStride();
                 info.indexDataSize = mesh->indexData().size();
                 info.indexDataFlags = mesh->indexDataFlags();
-                if(args.isSet("bounds"))
+                if(showBounds)
                     info.indexBounds = calculateBounds(mesh->indicesAsArray());
             }
             for(UnsignedInt k = 0; k != mesh->attributeCount(); ++k) {
@@ -492,7 +493,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                    implementation-specific format and if it's not a custom
                    attribute */
                 Containers::String bounds;
-                if(args.isSet("bounds") && !isVertexFormatImplementationSpecific(mesh->attributeFormat(k))) switch(name) {
+                if(showBounds && !isVertexFormatImplementationSpecific(mesh->attributeFormat(k))) switch(name) {
                     case Trade::MeshAttribute::Position:
                         bounds = calculateBounds(mesh->positions3DAsArray(mesh->attributeId(k)));
                         break;
