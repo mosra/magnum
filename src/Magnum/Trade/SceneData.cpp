@@ -558,14 +558,15 @@ Debug& operator<<(Debug& debug, const SceneFieldFlags value) {
 }
 
 SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedArrayView2D<const char>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView2D<const char>& fieldData, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept: SceneFieldData{name, {}, Containers::StridedArrayView1D<const void>{{mappingData.data(), ~std::size_t{}}, mappingData.size()[0], mappingData.stride()[0]}, fieldType, Containers::StridedArrayView1D<const void>{{fieldData.data(), ~std::size_t{}}, fieldData.size()[0], fieldData.stride()[0]}, fieldArraySize, flags} {
+    /* Yes, this calls into a constexpr function defined in the header --
+       because I feel that makes more sense than duplicating the full assert
+       logic */
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* This caused an assertion in the delegated-to constructor, bail instead
        of cascading the asserts further */
     if(fieldType == SceneFieldType::Bit) return;
     #endif
-    /* Yes, this calls into a constexpr function defined in the header --
-       because I feel that makes more sense than duplicating the full assert
-       logic */
+
     #ifndef CORRADE_NO_ASSERT
     if(fieldArraySize) CORRADE_ASSERT(fieldData.isEmpty()[0] || fieldData.size()[1] == sceneFieldTypeSize(fieldType)*fieldArraySize,
         "Trade::SceneFieldData: second field view dimension size" << fieldData.size()[1] << "doesn't match" << fieldType << "and field array size" << fieldArraySize, );
@@ -616,6 +617,7 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
+
     CORRADE_ASSERT(fieldData.isContiguous<1>(), "Trade::SceneFieldData: second field view dimension is not contiguous", );
 }
 
