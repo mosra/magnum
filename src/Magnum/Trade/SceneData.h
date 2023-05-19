@@ -759,6 +759,23 @@ enum class SceneFieldFlag: UnsignedByte {
     ImplicitMapping = (1 << 2)|OrderedMapping,
 
     /**
+     * The field may have multiple entries for the same object. Meant to be
+     * used as a hint to distinguish between fields that are expected to have
+     * at most one entry for an object and fields that can have multiple
+     * entries for an object but sometimes have just one.
+     *
+     * Note that presence of this flag isn't enforced in any way, fields
+     * without this flag may still have multiple entries for the same object.
+     *
+     * Can't be set for @ref SceneField::Parent,
+     * @relativeref{SceneField,Transformation},
+     * @relativeref{SceneField,Translation}, @relativeref{SceneField,Rotation}
+     * or @relativeref{SceneField,Scaling}; however mapping uniqueness for
+     * those fields isn't enforced in any way either.
+     */
+    MultiEntry = 1 << 4,
+
+    /**
      * The string field is null-terminated, i.e. string views returned from
      * @ref SceneData::fieldStrings() will always have
      * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} set.
@@ -4021,6 +4038,16 @@ namespace Implementation {
             type == SceneFieldType::StringRangeNullTerminated64 ?
             SceneFieldFlag::NullTerminatedString : SceneFieldFlags{};
     }
+
+    constexpr SceneFieldFlags disallowedSceneFieldFlagsFor(SceneField name) {
+        return
+            name == SceneField::Parent ||
+            name == SceneField::Transformation ||
+            name == SceneField::Translation ||
+            name == SceneField::Rotation ||
+            name == SceneField::Scaling ?
+            SceneFieldFlag::MultiEntry : SceneFieldFlags{};
+    }
 }
 
 constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const UnsignedShort fieldArraySize, const SceneFieldFlags flags) noexcept:
@@ -4028,8 +4055,8 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappi
         "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldData.size()), mappingData.size())},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
-    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)),
-        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)) << "for a view of" << fieldType), flags)},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))),
+        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))) << "for a" << name << "view of" << fieldType), flags)},
     /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
        set but not used" */
     _mappingTypeStringType(UnsignedByte(mappingType)),
@@ -4068,8 +4095,8 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const SceneMappi
         "Trade::SceneFieldData: expected" << name << "mapping and field view to have the same size but got" << mappingData.size() << "and" << fieldSize), mappingData.size())},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, SceneFieldType::Bit),
         "Trade::SceneFieldData:" << SceneFieldType::Bit << "is not a valid type for" << name), name)},
-    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)),
-        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString)) << "for a view of" << SceneFieldType::Bit), flags)},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))),
+        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))) << "for a" << name << "view of" << SceneFieldType::Bit), flags)},
     /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
        set but not used" */
     _mappingTypeStringType(UnsignedByte(mappingType)),
@@ -4105,8 +4132,8 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
     _size{size},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
-    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::NullTerminatedString),
-        "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::NullTerminatedString) << "for" << fieldType), flags|SceneFieldFlag::OffsetOnly)},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))),
+        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))) << "for" << name << "of" << fieldType), flags|SceneFieldFlag::OffsetOnly)},
     /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
        set but not used" */
     _mappingTypeStringType(UnsignedByte(mappingType)),
@@ -4129,8 +4156,8 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
         "Trade::SceneFieldData: size expected to be smaller than 2^" << Debug::nospace << (sizeof(std::size_t)*8 - 3) << "bits, got" << size), size)},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, SceneFieldType::Bit),
         "Trade::SceneFieldData:" << SceneFieldType::Bit << "is not a valid type for" << name), name)},
-    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & SceneFieldFlag::NullTerminatedString),
-        "Trade::SceneFieldData: can't pass" << (flags & SceneFieldFlag::NullTerminatedString) << "for" << SceneFieldType::Bit), flags|SceneFieldFlag::OffsetOnly)},
+    _flags{(CORRADE_CONSTEXPR_ASSERT(!(flags & (SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))),
+        "Trade::SceneFieldData: can't pass" << (flags & (SceneFieldFlag::NullTerminatedString|Implementation::disallowedSceneFieldFlagsFor(name))) << "for" << name << "of" << SceneFieldType::Bit), flags|SceneFieldFlag::OffsetOnly)},
     /* Can't use {} because GCC 4.8 then says "warning: parameter 'mappingType'
        set but not used" */
     _mappingTypeStringType(UnsignedByte(mappingType)),
@@ -4149,6 +4176,8 @@ constexpr SceneFieldData::SceneFieldData(const SceneField name, const std::size_
     _size{size},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeCompatibleWithField(name, fieldType),
         "Trade::SceneFieldData:" << fieldType << "is not a valid type for" << name), name)},
+    /** @todo check allowed flags once disallowedSceneFieldFlagsFor() includes
+        string fields too */
     _flags{flags|SceneFieldFlag::OffsetOnly|Implementation::implicitSceneFieldFlagsFor(fieldType)},
     _mappingTypeStringType{(CORRADE_CONSTEXPR_ASSERT(Implementation::isSceneFieldTypeString(fieldType),
         "Trade::SceneFieldData: can't use a string constructor for" << fieldType), UnsignedByte(UnsignedByte(mappingType)|(UnsignedShort(fieldType) << 3)))},

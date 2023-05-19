@@ -539,6 +539,7 @@ Debug& operator<<(Debug& debug, const SceneFieldFlag value) {
         _c(OffsetOnly)
         _c(ImplicitMapping)
         _c(OrderedMapping)
+        _c(MultiEntry)
         _c(NullTerminatedString)
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -553,6 +554,7 @@ Debug& operator<<(Debug& debug, const SceneFieldFlags value) {
         SceneFieldFlag::ImplicitMapping,
         /* This one is implied by ImplicitMapping, so has to be after */
         SceneFieldFlag::OrderedMapping,
+        SceneFieldFlag::MultiEntry,
         SceneFieldFlag::NullTerminatedString
     });
 }
@@ -624,6 +626,8 @@ SceneFieldData::SceneFieldData(const SceneField name, const Containers::StridedA
 SceneFieldData::SceneFieldData(const SceneField name, const SceneMappingType mappingType, const Containers::StridedArrayView1D<const void>& mappingData, const char* const stringData, const SceneFieldType fieldType, const Containers::StridedArrayView1D<const void>& fieldData, const SceneFieldFlags flags) noexcept:
     _size{mappingData.size()},
     _name{name},
+    /** @todo check allowed flags once disallowedSceneFieldFlagsFor() includes
+        string fields too */
     _flags{flags|Implementation::implicitSceneFieldFlagsFor(fieldType)},
     _mappingTypeStringType{UnsignedByte(UnsignedByte(mappingType)|(UnsignedShort(fieldType) << 3))},
     _mappingStride{Short(mappingData.stride())},

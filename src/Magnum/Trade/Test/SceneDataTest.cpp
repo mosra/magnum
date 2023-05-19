@@ -2097,16 +2097,21 @@ void SceneDataTest::constructFieldFlagNotAllowed() {
 
     /* These are fine */
     SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), SceneFieldType::Quaternion, 0, sizeof(Quaternion), SceneFieldFlag::OffsetOnly};
-    SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), 0, 0, sizeof(Quaternion), SceneFieldFlag::OffsetOnly};
-    SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::NullTerminatedString};
-    SceneFieldData{sceneFieldCustom(24), 3, SceneMappingType::UnsignedShort, 0, 2, 0, SceneFieldType::StringOffset32, 0, 4, SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{SceneField::Mesh, Containers::arrayView(mappingData), Containers::arrayView(helloFieldData), SceneFieldFlag::MultiEntry};
+    SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, sizeof(UnsignedShort), 0, 0, sizeof(Quaternion), SceneFieldFlag::OffsetOnly|SceneFieldFlag::MultiEntry};
+    SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}, SceneFieldFlag::MultiEntry};
+    SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::NullTerminatedString|SceneFieldFlag::MultiEntry};
+    SceneFieldData{sceneFieldCustom(24), 3, SceneMappingType::UnsignedShort, 0, 2, 0, SceneFieldType::StringOffset32, 0, 4, SceneFieldFlag::NullTerminatedString|SceneFieldFlag::MultiEntry};
 
     std::ostringstream out;
     Error redirectError{&out};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly};
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::MultiEntry};
     SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::NullTerminatedString};
-    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{SceneField::Rotation, Containers::arrayView(mappingData), Containers::arrayView(rotationFieldData), SceneFieldFlag::OffsetOnly|SceneFieldFlag::NullTerminatedString|SceneFieldFlag::MultiEntry};
+    SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::Quaternion, 0, 16, SceneFieldFlag::MultiEntry};
     SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::Quaternion, 0, 16, SceneFieldFlag::NullTerminatedString};
+    SceneFieldData{SceneField::Rotation, 3, SceneMappingType::UnsignedShort, 0, 2, SceneFieldType::Quaternion, 0, 16, SceneFieldFlag::MultiEntry|SceneFieldFlag::NullTerminatedString};
 
     SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}, SceneFieldFlag::OffsetOnly};
     SceneFieldData{sceneFieldCustom(773), Containers::arrayView(mappingData), Containers::BitArrayView{hiddenFieldData, 0, 3}, SceneFieldFlag::NullTerminatedString};
@@ -2114,18 +2119,22 @@ void SceneDataTest::constructFieldFlagNotAllowed() {
     SceneFieldData{sceneFieldCustom(773), 3, SceneMappingType::UnsignedShort, 0, 2, 0, 0, 16, SceneFieldFlag::NullTerminatedString};
 
     SceneFieldData{sceneFieldCustom(24), Containers::arrayView(mappingData), helloStringData, SceneFieldType::StringOffset32, helloFieldData, SceneFieldFlag::OffsetOnly};
-    CORRADE_COMPARE(out.str(),
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view of Trade::SceneFieldType::Quaternion\n"
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Quaternion\n"
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Quaternion\n"
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneFieldType::Quaternion\n"
+    CORRADE_COMPARE_AS(out.str(),
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a Trade::SceneField::Rotation view of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::MultiEntry for a Trade::SceneField::Rotation view of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a Trade::SceneField::Rotation view of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::MultiEntry|Trade::SceneFieldFlag::NullTerminatedString for a Trade::SceneField::Rotation view of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::MultiEntry for Trade::SceneField::Rotation of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneField::Rotation of Trade::SceneFieldType::Quaternion\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::MultiEntry|Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneField::Rotation of Trade::SceneFieldType::Quaternion\n"
 
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view of Trade::SceneFieldType::Bit\n"
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Bit\n"
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::NullTerminatedString for a view of Trade::SceneFieldType::Bit\n"
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a Trade::SceneField::Custom(773) view of Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for a Trade::SceneField::Custom(773) view of Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag::NullTerminatedString for a Trade::SceneField::Custom(773) view of Trade::SceneFieldType::Bit\n"
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::NullTerminatedString for Trade::SceneField::Custom(773) of Trade::SceneFieldType::Bit\n"
 
-        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view\n");
+        "Trade::SceneFieldData: can't pass Trade::SceneFieldFlag::OffsetOnly for a view\n",
+        TestSuite::Compare::String);
 }
 
 void SceneDataTest::constructFieldWrongOffsetOnlyDataAccess() {
