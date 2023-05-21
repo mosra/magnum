@@ -25,18 +25,27 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
 
+#include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/TextureData.h"
 
 #include "configure.h"
 
@@ -64,8 +73,33 @@ struct AnySceneConverterTest: TestSuite::Tester {
     /* configuration propagation fully tested in AnySceneImporter, as there the
        plugins have configuration subgroups as well */
 
+    void animations();
+    void scenes();
+    void lights();
+    void cameras();
+    void skins2D();
+    void skins3D();
+    void meshes();
+    void meshLevels();
+    void materials();
+    void textures();
+    void images1D();
+    void images2D();
+    void images3D();
+    void imageLevels1D();
+    void imageLevels2D();
+    void imageLevels3D();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractSceneConverter> _manager{"nonexistent"};
+};
+
+const struct {
+    const char* name;
+    bool abort;
+} ConvertBeginEndData[]{
+    {"", false},
+    {"abort and retry", true},
 };
 
 constexpr struct {
@@ -102,8 +136,10 @@ const struct {
 };
 
 AnySceneConverterTest::AnySceneConverterTest() {
-    addTests({&AnySceneConverterTest::convert,
-              &AnySceneConverterTest::convertBeginEnd});
+    addTests({&AnySceneConverterTest::convert});
+
+    addInstancedTests({&AnySceneConverterTest::convertBeginEnd},
+        Containers::arraySize(ConvertBeginEndData));
 
     addInstancedTests({&AnySceneConverterTest::detectConvert},
         Containers::arraySize(DetectConvertData));
@@ -124,6 +160,23 @@ AnySceneConverterTest::AnySceneConverterTest() {
         &AnySceneConverterTest::propagateConfigurationUnknownConvert,
         &AnySceneConverterTest::propagateConfigurationUnknownBeginEnd},
         Containers::arraySize(PropagateConfigurationUnknownData));
+
+    addTests({&AnySceneConverterTest::animations,
+              &AnySceneConverterTest::scenes,
+              &AnySceneConverterTest::lights,
+              &AnySceneConverterTest::cameras,
+              &AnySceneConverterTest::skins2D,
+              &AnySceneConverterTest::skins3D,
+              &AnySceneConverterTest::meshes,
+              &AnySceneConverterTest::meshLevels,
+              &AnySceneConverterTest::materials,
+              &AnySceneConverterTest::textures,
+              &AnySceneConverterTest::images1D,
+              &AnySceneConverterTest::images2D,
+              &AnySceneConverterTest::images3D,
+              &AnySceneConverterTest::imageLevels1D,
+              &AnySceneConverterTest::imageLevels2D,
+              &AnySceneConverterTest::imageLevels3D});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -164,6 +217,9 @@ void AnySceneConverterTest::convert() {
 }
 
 void AnySceneConverterTest::convertBeginEnd() {
+    auto&& data = ConvertBeginEndData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
     #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -189,6 +245,14 @@ void AnySceneConverterTest::convertBeginEnd() {
     Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
     CORRADE_VERIFY(converter->beginFile(filename));
     CORRADE_COMPARE(converter->add(mesh), 0);
+
+    /* Aborting should abort the internal converter as well */
+    if(data.abort) {
+        converter->abort();
+        CORRADE_VERIFY(converter->beginFile(filename));
+        CORRADE_COMPARE(converter->add(mesh), 0);
+    }
+
     CORRADE_VERIFY(converter->endFile());
 
     CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENECONVERTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
@@ -266,6 +330,8 @@ void AnySceneConverterTest::propagateFlagsConvert() {
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     const Vector3 positions[] {
         {-0.5f, -0.5f, 0.0f},
@@ -304,6 +370,8 @@ void AnySceneConverterTest::propagateFlagsBeginEnd() {
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     const Vector3 positions[] {
         {-0.5f, -0.5f, 0.0f},
@@ -344,6 +412,8 @@ void AnySceneConverterTest::propagateConfigurationConvert() {
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     const struct Data {
         Vector3 position;
@@ -377,6 +447,8 @@ void AnySceneConverterTest::propagateConfigurationBeginEnd() {
         CORRADE_SKIP("StanfordSceneConverter plugin can't be loaded.");
 
     Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "file.ply");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
 
     const struct Data {
         Vector3 position;
@@ -473,6 +545,287 @@ void AnySceneConverterTest::propagateConfigurationUnknownBeginEnd() {
         CORRADE_COMPARE(out.str(), "");
     else
         CORRADE_COMPARE(out.str(), "Trade::AnySceneConverter::beginFile(): option noSuchOption not recognized by StanfordSceneConverter\n");
+}
+
+void AnySceneConverterTest::animations() {
+    CORRADE_SKIP("No plugin supports animation conversion");
+}
+
+void AnySceneConverterTest::scenes() {
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("GltfSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("GltfSceneConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "scene.gltf");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    const struct Data {
+        UnsignedInt mapping;
+        Int parent;
+        bool visible;
+    } data[]{
+        {15, -1, true}
+    };
+    auto view = Containers::stridedArrayView(data);
+
+    CORRADE_VERIFY(converter->beginFile(filename));
+    converter->setSceneFieldName(sceneFieldCustom(667), "veryNiceVisibility");
+    converter->setObjectName(15, "Very nice object");
+    CORRADE_VERIFY(converter->add(SceneData{SceneMappingType::UnsignedInt, 16, {}, data, {
+        /* To mark the scene as 3D */
+        SceneFieldData{SceneField::Transformation,
+            SceneMappingType::UnsignedInt, nullptr,
+            SceneFieldType::Matrix4x4, nullptr},
+        SceneFieldData{SceneField::Parent,
+            view.slice(&Data::mapping),
+            view.slice(&Data::parent)},
+        SceneFieldData{sceneFieldCustom(667),
+            view.slice(&Data::mapping),
+            view.slice(&Data::visible).sliceBit(0)},
+    }}, "A very nice scene"));
+    converter->setDefaultScene(0);
+    CORRADE_VERIFY(converter->endFile());
+
+    /* Load the file and check that it contains both object and scene name,
+       the custom scene field and the default scene index */
+    Containers::Optional<Containers::String> loaded = Utility::Path::readString(filename);
+    CORRADE_VERIFY(loaded);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"name\": \"Very nice object\"",
+        TestSuite::Compare::StringContains);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"name\": \"A very nice scene\"",
+        TestSuite::Compare::StringContains);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"veryNiceVisibility\": true",
+        TestSuite::Compare::StringContains);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"scene\": 0",
+        TestSuite::Compare::StringContains);
+}
+
+void AnySceneConverterTest::lights() {
+    CORRADE_SKIP("No plugin supports light conversion");
+}
+
+void AnySceneConverterTest::cameras() {
+    CORRADE_SKIP("No plugin supports camera conversion");
+}
+
+void AnySceneConverterTest::skins2D() {
+    CORRADE_SKIP("No plugin supports 2D skin conversion");
+}
+
+void AnySceneConverterTest::skins3D() {
+    CORRADE_SKIP("No plugin supports 3D skin conversion");
+}
+
+void AnySceneConverterTest::meshes() {
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("GltfSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("GltfSceneConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "mesh.gltf");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    const struct Vertex {
+        Vector3 position;
+        Float factor;
+    } vertices[3]{};
+    auto view = Containers::stridedArrayView(vertices);
+
+    CORRADE_VERIFY(converter->beginFile(filename));
+    converter->setMeshAttributeName(meshAttributeCustom(667), "veryNiceFactor");
+    CORRADE_VERIFY(converter->add(MeshData{MeshPrimitive::Triangles, {}, vertices, {
+        MeshAttributeData{MeshAttribute::Position, view.slice(&Vertex::position)},
+        MeshAttributeData{meshAttributeCustom(667), view.slice(&Vertex::factor)},
+    }}, "Very nice mesh"));
+    CORRADE_VERIFY(converter->endFile());
+
+    /* Load the file and check that it contains mesh name and the custom
+       attribute */
+    Containers::Optional<Containers::String> loaded = Utility::Path::readString(filename);
+    CORRADE_VERIFY(loaded);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"name\": \"Very nice mesh\"",
+        TestSuite::Compare::StringContains);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"veryNiceFactor\": ", /* some accessor number after */
+        TestSuite::Compare::StringContains);
+}
+
+void AnySceneConverterTest::meshLevels() {
+    CORRADE_SKIP("No plugin supports mesh level conversion");
+}
+
+void AnySceneConverterTest::materials() {
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("GltfSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("GltfSceneConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "material.gltf");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_VERIFY(converter->beginFile(filename));
+    CORRADE_VERIFY(converter->add(MaterialData{{}, {}}, "Very nice material"));
+    CORRADE_VERIFY(converter->endFile());
+
+    /* Load the file and check that it contains the material name. That alone
+       is enough to verify this works */
+    Containers::Optional<Containers::String> loaded = Utility::Path::readString(filename);
+    CORRADE_VERIFY(loaded);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"name\": \"Very nice material\"",
+        TestSuite::Compare::StringContains);
+}
+
+void AnySceneConverterTest::textures() {
+    PluginManager::Manager<AbstractImageConverter> imageManager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    manager.registerExternalManager(imageManager);
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("GltfSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("GltfSceneConverter plugin can't be loaded.");
+    if(!(imageManager.load("PngImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("PngImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "texture.gltf");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_VERIFY(converter->beginFile(filename));
+    CORRADE_VERIFY(converter->add(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, "hey"}));
+    CORRADE_VERIFY(converter->add(TextureData{
+        TextureType::Texture2D,
+        SamplerFilter::Nearest,
+        SamplerFilter::Nearest,
+        SamplerMipmap::Nearest,
+        SamplerWrapping::ClampToEdge,
+        0
+    }, "Very nice texture"));
+    CORRADE_VERIFY(converter->endFile());
+
+    /* Load the file and check that it contains the texture name. That alone is
+       enough to verify this works */
+    Containers::Optional<Containers::String> loaded = Utility::Path::readString(filename);
+    CORRADE_VERIFY(loaded);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"name\": \"Very nice texture\"",
+        TestSuite::Compare::StringContains);
+}
+
+void AnySceneConverterTest::images1D() {
+    CORRADE_SKIP("No plugin supports 1D image conversion");
+}
+
+void AnySceneConverterTest::images2D() {
+    PluginManager::Manager<AbstractImageConverter> imageManager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    manager.registerExternalManager(imageManager);
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("GltfSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("GltfSceneConverter plugin can't be loaded.");
+    if(!(imageManager.load("PngImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("PngImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "image2d.gltf");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_VERIFY(converter->beginFile(filename));
+    CORRADE_VERIFY(converter->add(ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, "hey"}, "Very nice image"));
+    CORRADE_VERIFY(converter->endFile());
+
+    /* Load the file and check that it contains the image name. That alone is
+       enough to verify this works */
+    Containers::Optional<Containers::String> loaded = Utility::Path::readString(filename);
+    CORRADE_VERIFY(loaded);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"name\": \"Very nice image\"",
+        TestSuite::Compare::StringContains);
+}
+
+void AnySceneConverterTest::images3D() {
+    PluginManager::Manager<AbstractImageConverter> imageManager{MAGNUM_PLUGINS_IMAGECONVERTER_INSTALL_DIR};
+    PluginManager::Manager<AbstractSceneConverter> manager{MAGNUM_PLUGINS_SCENECONVERTER_INSTALL_DIR};
+    manager.registerExternalManager(imageManager);
+    #ifdef ANYSCENECONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("GltfSceneConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("GltfSceneConverter plugin can't be loaded.");
+    if(!(imageManager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
+    converter->configuration().setValue("imageConverter", "KtxImageConverter");
+    converter->configuration().setValue("experimentalKhrTextureKtx", true);
+
+    Containers::String filename = Utility::Path::join(ANYSCENECONVERTER_TEST_OUTPUT_DIR, "image3d.gltf");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    CORRADE_VERIFY(converter->beginFile(filename));
+    CORRADE_VERIFY(converter->add(ImageView3D{PixelFormat::RGBA8Unorm, {1, 1, 1}, "hey", ImageFlag3D::Array}, "Very nice image"));
+    CORRADE_VERIFY(converter->endFile());
+
+    /* Load the file and check that it contains the image name. That alone is
+       enough to verify this works */
+    Containers::Optional<Containers::String> loaded = Utility::Path::readString(filename);
+    CORRADE_VERIFY(loaded);
+    CORRADE_COMPARE_AS(*loaded,
+        "\"name\": \"Very nice image\"",
+        TestSuite::Compare::StringContains);
+}
+
+void AnySceneConverterTest::imageLevels1D() {
+    CORRADE_SKIP("No plugin supports 1D image level conversion");
+}
+
+void AnySceneConverterTest::imageLevels2D() {
+    CORRADE_SKIP("No plugin supports 2D image level conversion");
+}
+
+void AnySceneConverterTest::imageLevels3D() {
+    CORRADE_SKIP("No plugin supports 3D image level conversion");
 }
 
 }}}}
