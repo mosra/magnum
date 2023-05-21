@@ -1,0 +1,13 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "images": [
+    {
+      "uri": "nonexistent.jpg"
+    },
+    {
+      "uri": "2d-mipmaps.ktx2"
+    }
+  ]
+}

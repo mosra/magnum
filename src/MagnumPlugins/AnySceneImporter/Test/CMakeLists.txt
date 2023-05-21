@@ -51,11 +51,25 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(AnySceneImporterTest AnySceneImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
-        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/mesh-primitive-points.obj
+        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/mesh-multiple.obj
+        # Copied from UfbxImporter tests
         animation-visibility.fbx
-        empty.gltf
-        mesh-custom-attribute.gltf
-        scene-custom-field.gltf
+        # All glTFs are handcrafted with possible inspiration from GltfImporter
+        # tests
+        cameras.gltf
+        images2d-levels.gltf
+        images3d-levels.gltf
+        lights.gltf
+        materials.gltf
+        meshes.gltf
+        scenes.gltf
+        skins.gltf
+        textures.gltf
+        # Copy of rgb.png, 2d-mipmaps.ktx2 and 2d-mipmaps-and-layers.ktx2 from
+        # AnyImageImporter tests
+        rgb.png
+        2d-mipmaps.ktx2
+        2d-mipmaps-and-layers.ktx2
         triangle.ply)
 target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC)

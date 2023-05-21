@@ -1,0 +1,19 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "nodes": [
+    {},
+    {},
+    {}
+  ],
+  "skins": [
+    {
+      "joints": [2]
+    },
+    {
+      "name": "A skin with two joints",
+      "joints": [0, 1]
+    }
+  ]
+}

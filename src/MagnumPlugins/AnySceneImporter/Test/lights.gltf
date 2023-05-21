@@ -1,0 +1,24 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "extensionsRequired": [
+    "KHR_lights_punctual"
+  ],
+  "extensionsUsed": [
+    "KHR_lights_punctual"
+  ],
+  "extensions": {
+    "KHR_lights_punctual": {
+      "lights": [
+        {
+          "type": "spot"
+        },
+        {
+          "name": "Point with everything implicit",
+          "type": "point"
+        }
+      ]
+    }
+  }
+}

@@ -38,13 +38,21 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
+#include "Magnum/Trade/CameraData.h"
+#include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/LightData.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/SkinData.h"
+#include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+#define _MAGNUM_NO_DEPRECATED_OBJECTDATA
 
 #include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/ObjectData3D.h"
 #endif
 
 #include "configure.h"
@@ -55,9 +63,6 @@ struct AnySceneImporterTest: TestSuite::Tester {
     explicit AnySceneImporterTest();
 
     void load();
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void loadDeprecatedMeshData();
-    #endif
     void detect();
 
     void unknown();
@@ -68,12 +73,36 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void propagateConfigurationUnknownInEmptySubgroup();
     void propagateFileCallback();
 
-    void animationTrackTargetName();
+    void animations();
     void animationTrackTargetNameNoFileOpened();
-    void sceneFieldName();
+
+    void scenes();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void scenesDeprecated2D();
+    void scenesDeprecated3D();
+    #endif
     void sceneFieldNameNoFileOpened();
-    void meshAttributeName();
+
+    void lights();
+    void cameras();
+    void skins2D();
+    void skins3D();
+
+    void meshes();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void meshesDeprecated2D();
+    void meshesDeprecated3D();
+    #endif
     void meshAttributeNameNoFileOpened();
+
+    void materials();
+    void textures();
+    void images1D();
+    void images2D();
+    void images3D();
+    void imageLevels1D();
+    void imageLevels2D();
+    void imageLevels3D();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -83,7 +112,7 @@ const struct {
     const char* name;
     Containers::String filename;
 } LoadData[]{
-    {"OBJ", Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-primitive-points.obj")},
+    {"OBJ", Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-multiple.obj")},
 };
 
 constexpr struct {
@@ -117,10 +146,6 @@ AnySceneImporterTest::AnySceneImporterTest() {
     addInstancedTests({&AnySceneImporterTest::load},
         Containers::arraySize(LoadData));
 
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    addTests({&AnySceneImporterTest::loadDeprecatedMeshData});
-    #endif
-
     addInstancedTests({&AnySceneImporterTest::detect},
         Containers::arraySize(DetectData));
 
@@ -135,12 +160,36 @@ AnySceneImporterTest::AnySceneImporterTest() {
     addTests({&AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup,
               &AnySceneImporterTest::propagateFileCallback,
 
-              &AnySceneImporterTest::animationTrackTargetName,
+              &AnySceneImporterTest::animations,
               &AnySceneImporterTest::animationTrackTargetNameNoFileOpened,
-              &AnySceneImporterTest::sceneFieldName,
+
+              &AnySceneImporterTest::scenes,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AnySceneImporterTest::scenesDeprecated2D,
+              &AnySceneImporterTest::scenesDeprecated3D,
+              #endif
               &AnySceneImporterTest::sceneFieldNameNoFileOpened,
-              &AnySceneImporterTest::meshAttributeName,
-              &AnySceneImporterTest::meshAttributeNameNoFileOpened});
+
+              &AnySceneImporterTest::lights,
+              &AnySceneImporterTest::cameras,
+              &AnySceneImporterTest::skins2D,
+              &AnySceneImporterTest::skins3D,
+
+              &AnySceneImporterTest::meshes,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AnySceneImporterTest::meshesDeprecated2D,
+              &AnySceneImporterTest::meshesDeprecated3D,
+              #endif
+              &AnySceneImporterTest::meshAttributeNameNoFileOpened,
+
+              &AnySceneImporterTest::materials,
+              &AnySceneImporterTest::textures,
+              &AnySceneImporterTest::images1D,
+              &AnySceneImporterTest::images2D,
+              &AnySceneImporterTest::images3D,
+              &AnySceneImporterTest::imageLevels1D,
+              &AnySceneImporterTest::imageLevels2D,
+              &AnySceneImporterTest::imageLevels3D});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -166,33 +215,11 @@ void AnySceneImporterTest::load() {
     /* Check only size, as it is good enough proof that it is working */
     Containers::Optional<MeshData> mesh = importer->mesh(0);
     CORRADE_VERIFY(mesh);
-    CORRADE_COMPARE(mesh->vertexCount(), 3);
+    CORRADE_COMPARE(mesh->vertexCount(), 2);
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void AnySceneImporterTest::loadDeprecatedMeshData() {
-    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
-
-    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-primitive-points.obj")));
-
-    /* Check only size, as it is good enough proof that it is working */
-
-    /* MSVC warns also on positions() */
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
-    CORRADE_VERIFY(mesh);
-    CORRADE_COMPARE(mesh->positions(0).size(), 3);
-    CORRADE_IGNORE_DEPRECATED_POP
-
-    importer->close();
-    CORRADE_VERIFY(!importer->isOpened());
-}
-#endif
 
 void AnySceneImporterTest::detect() {
     auto&& data = DetectData[testCaseInstanceId()];
@@ -337,7 +364,7 @@ void AnySceneImporterTest::propagateConfigurationUnknownInEmptySubgroup() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "empty.gltf")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "scenes.gltf")));
     CORRADE_COMPARE(out.str(),
         /* Should not warn for values added to the empty customSceneFieldTypes
            group, but should warn if a subgroup is added there. This is
@@ -354,7 +381,7 @@ void AnySceneImporterTest::propagateFileCallback() {
 
     Containers::Array<char> storage;
     importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
-        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-primitive-points.obj"));
+        Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-multiple.obj"));
         CORRADE_VERIFY(data);
         storage = *std::move(data);
         return Containers::ArrayView<const char>{storage};
@@ -363,18 +390,18 @@ void AnySceneImporterTest::propagateFileCallback() {
     CORRADE_VERIFY(true); /* Capture correct function name first */
 
     CORRADE_VERIFY(importer->openFile("you-know-where-the-file-is.obj"));
-    CORRADE_COMPARE(importer->meshCount(), 1);
+    CORRADE_COMPARE(importer->meshCount(), 3);
 
     /* Check only size, as it is good enough proof that it is working */
     Containers::Optional<MeshData> mesh = importer->mesh(0);
     CORRADE_VERIFY(mesh);
-    CORRADE_COMPARE(mesh->vertexCount(), 3);
+    CORRADE_COMPARE(mesh->vertexCount(), 2);
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
 }
 
-void AnySceneImporterTest::animationTrackTargetName() {
+void AnySceneImporterTest::animations() {
     PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -387,22 +414,34 @@ void AnySceneImporterTest::animationTrackTargetName() {
     manager.setPreferredPlugins("FbxImporter", {"UfbxImporter"});
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
-
     CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "animation-visibility.fbx")));
+    /* Would be better to have a file with multiple animations but it's FBX
+       we're dealing with here. Too painful. */
+    CORRADE_COMPARE(importer->animationCount(), 1);
+    CORRADE_COMPARE(importer->animationName(0), "Take 001");
+    CORRADE_COMPARE(importer->animationForName("Take 001"), 0);
+    CORRADE_COMPARE(importer->animationForName("nonexistent"), -1);
+
+    /* Custom track target name mapping */
     CORRADE_COMPARE(importer->animationTrackTargetForName("visibility"), animationTrackTargetCustom(0));
     CORRADE_COMPARE(importer->animationTrackTargetForName("nonexistent"), AnimationTrackTarget{});
     CORRADE_COMPARE(importer->animationTrackTargetName(animationTrackTargetCustom(0)), "visibility");
     CORRADE_COMPARE(importer->animationTrackTargetName(animationTrackTargetCustom(3)), "");
+
+    /* Check only track count, a good enough proof that it's working */
+    Containers::Optional<AnimationData> animation = importer->animation(0);
+    CORRADE_COMPARE(animation->trackCount(), 5);
 }
 
 void AnySceneImporterTest::animationTrackTargetNameNoFileOpened() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
 
+    /* Shouldn't crash if no file is opened */
     CORRADE_COMPARE(importer->animationTrackTargetForName(""), AnimationTrackTarget{});
     CORRADE_COMPARE(importer->animationTrackTargetName(animationTrackTargetCustom(0)), "");
 }
 
-void AnySceneImporterTest::sceneFieldName() {
+void AnySceneImporterTest::scenes() {
     PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -412,22 +451,68 @@ void AnySceneImporterTest::sceneFieldName() {
         CORRADE_SKIP("GltfImporter plugin can't be loaded.");
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "scenes.gltf")));
+    CORRADE_COMPARE(importer->sceneCount(), 3);
+    CORRADE_COMPARE(importer->defaultScene(), 2);
+    CORRADE_COMPARE(importer->sceneName(1), "A scene with all nodes");
+    CORRADE_COMPARE(importer->sceneForName("A scene with all nodes"), 1);
+    CORRADE_COMPARE(importer->sceneForName("nonexistent"), -1);
+    CORRADE_COMPARE(importer->objectCount(), 4);
+    CORRADE_COMPARE(importer->objectName(1), "Custom fields");
+    CORRADE_COMPARE(importer->objectForName("Custom fields"), 1);
+    CORRADE_COMPARE(importer->objectForName("nonexistent"), -1);
 
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "scene-custom-field.gltf")));
+    /* Custom field name mapping */
     CORRADE_COMPARE(importer->sceneFieldForName("radius"), sceneFieldCustom(0));
     CORRADE_COMPARE(importer->sceneFieldForName("nonexistent"), SceneField{});
     CORRADE_COMPARE(importer->sceneFieldName(sceneFieldCustom(0)), "radius");
     CORRADE_COMPARE(importer->sceneFieldName(sceneFieldCustom(3)), "");
+
+    /* Check only mapping bound, a good enough proof that it's working */
+    Containers::Optional<SceneData> scene = importer->scene(1);
+    CORRADE_COMPARE(scene->mappingBound(), 3);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AnySceneImporterTest::scenesDeprecated2D() {
+    /* PrimitiveImporter has 2D scenes, but that one isn't usable from here */
+    CORRADE_SKIP("No 2D scene plugin that AnySceneImporter would delegate to");
+}
+
+void AnySceneImporterTest::scenesDeprecated3D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "scenes.gltf")));
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer->object3DCount(), 4);
+    CORRADE_COMPARE(importer->object3DName(1), "Custom fields");
+    CORRADE_COMPARE(importer->object3DForName("Custom fields"), 1);
+    CORRADE_COMPARE(importer->object3DForName("nonexistent"), -1);
+
+    /* Check only the children list, a good enough proof that it's working */
+    Containers::Pointer<ObjectData3D> object = importer->object3D(1);
+    CORRADE_COMPARE(object->children(), std::vector<UnsignedInt>{2});
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
 
 void AnySceneImporterTest::sceneFieldNameNoFileOpened() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
 
+    /* Shouldn't crash if no file is opened */
     CORRADE_COMPARE(importer->sceneFieldForName(""), SceneField{});
     CORRADE_COMPARE(importer->sceneFieldName(sceneFieldCustom(0)), "");
 }
 
-void AnySceneImporterTest::meshAttributeName() {
+void AnySceneImporterTest::lights() {
     PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
     CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
@@ -438,18 +523,287 @@ void AnySceneImporterTest::meshAttributeName() {
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
 
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "mesh-custom-attribute.gltf")));
-    CORRADE_COMPARE(importer->meshAttributeForName("_TBN"), meshAttributeCustom(2));
-    CORRADE_COMPARE(importer->meshAttributeForName("nonexistent"), MeshAttribute{});
-    CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(2)), "_TBN");
-    CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(3)), "");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "lights.gltf")));
+    CORRADE_COMPARE(importer->lightCount(), 2);
+    CORRADE_COMPARE(importer->lightName(1), "Point with everything implicit");
+    CORRADE_COMPARE(importer->lightForName("Point with everything implicit"), 1);
+    CORRADE_COMPARE(importer->lightForName("nonexistent"), -1);
+
+    /* Check only light type, a good enough proof that it's working */
+    Containers::Optional<Trade::LightData> light = importer->light(1);
+    CORRADE_VERIFY(light);
+    CORRADE_COMPARE(light->type(), Trade::LightType::Point);
 }
+
+void AnySceneImporterTest::cameras() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "cameras.gltf")));
+    CORRADE_COMPARE(importer->cameraCount(), 2);
+    CORRADE_COMPARE(importer->cameraName(1), "Perspective 1:1 75° hFoV");
+    CORRADE_COMPARE(importer->cameraForName("Perspective 1:1 75° hFoV"), 1);
+    CORRADE_COMPARE(importer->cameraForName("nonexistent"), -1);
+
+    /* Check only camera type, a good enough proof that it's working */
+    Containers::Optional<Trade::CameraData> camera = importer->camera(1);
+    CORRADE_VERIFY(camera);
+    CORRADE_COMPARE(camera->type(), Trade::CameraType::Perspective3D);
+}
+
+void AnySceneImporterTest::skins2D() {
+    CORRADE_SKIP("No plugin imports 2D skins");
+}
+
+void AnySceneImporterTest::skins3D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "skins.gltf")));
+    CORRADE_COMPARE(importer->skin3DCount(), 2);
+    CORRADE_COMPARE(importer->skin3DName(1), "A skin with two joints");
+    CORRADE_COMPARE(importer->skin3DForName("A skin with two joints"), 1);
+    CORRADE_COMPARE(importer->skin3DForName("nonexistent"), -1);
+
+    /* Check only joint count, a good enough proof that it's working */
+    Containers::Optional<Trade::SkinData3D> skin = importer->skin3D(1);
+    CORRADE_VERIFY(skin);
+    CORRADE_COMPARE(skin->joints().size(), 2);
+}
+
+void AnySceneImporterTest::meshes() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "meshes.gltf")));
+    CORRADE_COMPARE(importer->meshCount(), 2);
+    CORRADE_COMPARE(importer->meshName(1), "Custom attributes");
+    CORRADE_COMPARE(importer->meshForName("Custom attributes"), 1);
+    CORRADE_COMPARE(importer->meshForName("nonexistent"), -1);
+
+    /* Custom attribute name mapping */
+    CORRADE_COMPARE(importer->meshAttributeForName("_TBN"), meshAttributeCustom(3));
+    CORRADE_COMPARE(importer->meshAttributeForName("nonexistent"), MeshAttribute{});
+    CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(3)), "_TBN");
+    CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(4)), "");
+
+    /* Check only attribute count, a good enough proof that it's working */
+    Containers::Optional<Trade::MeshData> mesh = importer->mesh(1);
+    CORRADE_VERIFY(mesh);
+    CORRADE_COMPARE(mesh->attributeCount(), 2);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AnySceneImporterTest::meshesDeprecated2D() {
+    /* PrimitiveImporter has 2D scenes, but that one isn't usable from here */
+    CORRADE_SKIP("No 2D mesh plugin that AnySceneImporter would delegate to");
+}
+
+void AnySceneImporterTest::meshesDeprecated3D() {
+    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(OBJIMPORTER_TEST_DIR, "mesh-multiple.obj")));
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(importer->mesh3DCount(), 3);
+    CORRADE_COMPARE(importer->mesh3DName(1), "LineMesh");
+    CORRADE_COMPARE(importer->mesh3DForName("LineMesh"), 1);
+
+    /* MSVC warns also on positions() */
+    Containers::Optional<MeshData3D> mesh = importer->mesh3D(1);
+    CORRADE_VERIFY(mesh);
+    CORRADE_COMPARE(mesh->positions(0).size(), 2);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
 
 void AnySceneImporterTest::meshAttributeNameNoFileOpened() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
 
+    /* Shouldn't crash if no file is opened */
     CORRADE_COMPARE(importer->meshAttributeForName(""), MeshAttribute{});
     CORRADE_COMPARE(importer->meshAttributeName(meshAttributeCustom(0)), "");
+}
+
+void AnySceneImporterTest::materials() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "materials.gltf")));
+    CORRADE_COMPARE(importer->materialCount(), 2);
+    CORRADE_COMPARE(importer->materialName(1), "Alpha masked and double sided");
+    CORRADE_COMPARE(importer->materialForName("Alpha masked and double sided"), 1);
+    CORRADE_COMPARE(importer->materialForName("nonexistent"), -1);
+
+    /* Check only attribute count, a good enough proof that it's working */
+    Containers::Optional<Trade::MaterialData> material = importer->material(1);
+    CORRADE_VERIFY(material);
+    CORRADE_COMPARE(material->attributeCount(), 2);
+}
+
+void AnySceneImporterTest::textures() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "textures.gltf")));
+    CORRADE_COMPARE(importer->textureCount(), 2);
+    CORRADE_COMPARE(importer->textureName(1), "Texture that references a PNG");
+    CORRADE_COMPARE(importer->textureForName("Texture that references a PNG"), 1);
+    CORRADE_COMPARE(importer->textureForName("nonexistent"), -1);
+
+    /* Check only the image reference, a good enough proof that it's working */
+    Containers::Optional<Trade::TextureData> texture = importer->texture(1);
+    CORRADE_VERIFY(texture);
+    CORRADE_COMPARE(texture->type(), Trade::TextureType::Texture2D);
+    CORRADE_COMPARE(texture->image(), 1);
+}
+
+void AnySceneImporterTest::images1D() {
+    CORRADE_SKIP("No scene plugin imports 1D images");
+}
+
+void AnySceneImporterTest::images2D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+    if(manager.load("PngImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("PngImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "textures.gltf")));
+    CORRADE_COMPARE(importer->image1DCount(), 0);
+    CORRADE_COMPARE(importer->image2DCount(), 2);
+    CORRADE_COMPARE(importer->image3DCount(), 0);
+    CORRADE_COMPARE(importer->image2DName(1), "A PNG image");
+    CORRADE_COMPARE(importer->image2DForName("A PNG image"), 1);
+    CORRADE_COMPARE(importer->image2DForName("nonexistent"), -1);
+
+    /* Check only size, a good enough proof that it's working */
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(1);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector2i{3, 2}));
+}
+
+void AnySceneImporterTest::images3D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+    if(manager.load("KtxImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    importer->configuration().setValue("experimentalKhrTextureKtx", true);
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "images3d-levels.gltf")));
+    CORRADE_COMPARE(importer->image1DCount(), 0);
+    CORRADE_COMPARE(importer->image2DCount(), 0);
+    CORRADE_COMPARE(importer->image3DCount(), 2);
+    CORRADE_COMPARE(importer->image3DName(1), "A 3D KTX2 image");
+    CORRADE_COMPARE(importer->image3DForName("A 3D KTX2 image"), 1);
+    CORRADE_COMPARE(importer->image3DForName("nonexistent"), -1);
+
+    /* Check only size, a good enough proof that it's working */
+    Containers::Optional<Trade::ImageData3D> image = importer->image3D(1);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector3i{4, 3, 3}));
+}
+
+void AnySceneImporterTest::imageLevels1D() {
+    CORRADE_SKIP("No scene plugin imports 1D images");
+}
+
+void AnySceneImporterTest::imageLevels2D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+    if(manager.load("KtxImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    importer->configuration().setValue("experimentalKhrTextureKtx", true);
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "images2d-levels.gltf")));
+    CORRADE_COMPARE(importer->image2DCount(), 2);
+    CORRADE_COMPARE(importer->image2DLevelCount(1), 3);
+
+    /* Check only size, a good enough proof that it's working */
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(1, 2);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector2i{1, 1}));
+}
+
+void AnySceneImporterTest::imageLevels3D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GltfImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GltfImporter plugin can't be loaded.");
+    if(manager.load("KtxImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    importer->configuration().setValue("experimentalKhrTextureKtx", true);
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "images3d-levels.gltf")));
+    CORRADE_COMPARE(importer->image3DCount(), 2);
+    CORRADE_COMPARE(importer->image3DLevelCount(1), 3);
+
+    /* Check only size, a good enough proof that it's working */
+    Containers::Optional<Trade::ImageData3D> image = importer->image3D(1, 2);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector3i{1, 1, 3}));
 }
 
 }}}}

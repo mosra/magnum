@@ -5,15 +5,28 @@
   "meshes": [
     {
       "primitives": [
+        {}
+      ]
+    },
+    {
+      "primitives": [
         {
           "attributes": {
-            "_TBN": 0
+            "POSITION": 0,
+            "_TBN": 1
           }
         }
-      ]
+      ],
+      "name": "Custom attributes"
     }
   ],
   "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 1,
+      "type": "VEC3"
+    },
     {
       "bufferView": 0,
       "componentType": 5120,

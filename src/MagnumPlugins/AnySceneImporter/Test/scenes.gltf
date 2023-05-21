@@ -1,0 +1,26 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "nodes": [
+    {},
+    {
+      "children": [2],
+      "extras": {
+        "radius": 56
+      },
+      "name": "Custom fields"
+    },
+    {},
+    {}
+  ],
+  "scenes": [
+    {},
+    {
+      "nodes": [0, 1],
+      "name": "A scene with all nodes"
+    },
+    {}
+  ],
+  "scene": 2
+}

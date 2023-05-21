@@ -1,0 +1,26 @@
+{
+  "asset" : {
+    "version" : "2.0"
+  },
+  "cameras" : [
+    {
+      "orthographic" : {
+        "xmag" : 2.0,
+        "ymag" : 1.5,
+        "zfar" : 100.0,
+        "znear" : 0.01
+      },
+      "type" : "orthographic"
+    },
+    {
+      "name" : "Perspective 1:1 75° hFoV",
+      "perspective" : {
+        "aspectRatio" : 1.0,
+        "yfov" : 1.308996938995747,
+        "zfar" : 150.0,
+        "znear" : 0.1
+      },
+      "type" : "perspective"
+    }
+  ]
+}

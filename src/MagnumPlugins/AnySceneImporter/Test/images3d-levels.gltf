@@ -1,0 +1,39 @@
+{
+  "asset": {
+    "version": "2.0"
+  },
+  "extensionsUsed": [
+    "KHR_texture_ktx"
+  ],
+  "extensionsRequired": [
+    "KHR_texture_ktx"
+  ],
+  "images": [
+    {
+      "uri": "nonexistent.ktx2"
+    },
+    {
+      "uri": "2d-mipmaps-and-layers.ktx2",
+      "name": "A 3D KTX2 image"
+    }
+  ],
+  "textures": [
+    {
+      "extensions": {
+        "KHR_texture_ktx": {
+          "source": 0,
+          "layer": 1
+        }
+      }
+    },
+    {
+      "name": "A 2D array texture",
+      "extensions": {
+        "KHR_texture_ktx": {
+          "source": 1,
+          "layer": 0
+        }
+      }
+    }
+  ]
+}
