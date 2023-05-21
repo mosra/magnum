@@ -30,11 +30,9 @@ set(CMAKE_FOLDER "MagnumPlugins/AnySceneConverter/Test")
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(ANYSCENECONVERTER_TEST_DIR .)
     set(ANYSCENECONVERTER_TEST_OUTPUT_DIR "write")
-    set(ANYSCENEIMPORTER_TEST_DIR .)
 else()
     set(ANYSCENECONVERTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(ANYSCENECONVERTER_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
-    set(ANYSCENEIMPORTER_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test)
 endif()
 
 if(NOT MAGNUM_ANYSCENECONVERTER_BUILD_STATIC)
@@ -53,8 +51,8 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(AnySceneConverterTest AnySceneConverterTest.cpp
     LIBRARIES MagnumTrade
     FILES
-        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test/triangle.ply
-        objectid.ply)
+        objectid.ply
+        triangle.ply)
 target_include_directories(AnySceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYSCENECONVERTER_BUILD_STATIC)
     target_link_libraries(AnySceneConverterTest PRIVATE AnySceneConverter)

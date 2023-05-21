@@ -70,7 +70,8 @@ corrade_add_test(AnySceneImporterTest AnySceneImporterTest.cpp
         rgb.png
         2d-mipmaps.ktx2
         2d-mipmaps-and-layers.ktx2
-        triangle.ply)
+        # Taken from StanfordImporter tests
+        per-face-colors-be.ply)
 target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC)
     target_link_libraries(AnySceneImporterTest PRIVATE AnySceneImporter)

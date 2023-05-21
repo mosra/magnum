@@ -235,6 +235,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMeshCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMeshLevelCount(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doMeshForName(Containers::StringView name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::String doMeshName(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override;

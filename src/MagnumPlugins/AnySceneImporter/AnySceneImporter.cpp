@@ -253,6 +253,7 @@ Containers::String AnySceneImporter::doSkin3DName(const UnsignedInt id) { return
 Containers::Optional<SkinData3D> AnySceneImporter::doSkin3D(const UnsignedInt id) { return _in->skin3D(id); }
 
 UnsignedInt AnySceneImporter::doMeshCount() const { return _in->meshCount(); }
+UnsignedInt AnySceneImporter::doMeshLevelCount(UnsignedInt id) { return _in->meshLevelCount(id); }
 Int AnySceneImporter::doMeshForName(const Containers::StringView name) { return _in->meshForName(name); }
 Containers::String AnySceneImporter::doMeshName(const UnsignedInt id) { return _in->meshName(id); }
 Containers::Optional<MeshData> AnySceneImporter::doMesh(const UnsignedInt id, const UnsignedInt level) { return _in->mesh(id, level); }

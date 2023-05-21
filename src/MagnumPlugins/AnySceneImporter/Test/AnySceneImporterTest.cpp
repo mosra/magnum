@@ -93,6 +93,7 @@ struct AnySceneImporterTest: TestSuite::Tester {
     void meshesDeprecated2D();
     void meshesDeprecated3D();
     #endif
+    void meshLevels();
     void meshAttributeNameNoFileOpened();
 
     void materials();
@@ -180,6 +181,7 @@ AnySceneImporterTest::AnySceneImporterTest() {
               &AnySceneImporterTest::meshesDeprecated2D,
               &AnySceneImporterTest::meshesDeprecated3D,
               #endif
+              &AnySceneImporterTest::meshLevels,
               &AnySceneImporterTest::meshAttributeNameNoFileOpened,
 
               &AnySceneImporterTest::materials,
@@ -263,7 +265,7 @@ void AnySceneImporterTest::propagateFlags() {
     /* Ensure Assimp is used for PLY files and not our StanfordImporter */
     manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
 
-    Containers::String filename = Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply");
+    Containers::String filename = Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "per-face-colors-be.ply");
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
     importer->setFlags(ImporterFlag::Verbose);
@@ -292,7 +294,7 @@ void AnySceneImporterTest::propagateConfiguration() {
     /* Ensure Assimp is used for PLY files and not our StanfordImporter */
     manager.setPreferredPlugins("StanfordImporter", {"AssimpImporter"});
 
-    Containers::String filename = Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply");
+    Containers::String filename = Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "per-face-colors-be.ply");
 
     Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
 
@@ -337,7 +339,7 @@ void AnySceneImporterTest::propagateConfigurationUnknown() {
 
     std::ostringstream out;
     Warning redirectWarning{&out};
-    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply")));
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "per-face-colors-be.ply")));
     if(data.quiet)
         CORRADE_COMPARE(out.str(), "");
     else
@@ -639,6 +641,28 @@ void AnySceneImporterTest::meshesDeprecated3D() {
     CORRADE_IGNORE_DEPRECATED_POP
 }
 #endif
+
+void AnySceneImporterTest::meshLevels() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("StanfordImporter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("StanfordImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnySceneImporter");
+    importer->configuration().setValue("perFaceToPerVertex", false);
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "per-face-colors-be.ply")));
+    CORRADE_COMPARE(importer->meshCount(), 1);
+    CORRADE_COMPARE(importer->meshLevelCount(0), 2);
+
+    /* Check only primitive, a good enough proof that it's working */
+    Containers::Optional<Trade::MeshData> mesh = importer->mesh(0, 1);
+    CORRADE_VERIFY(mesh);
+    CORRADE_COMPARE(mesh->primitive(), MeshPrimitive::Faces);
+}
 
 void AnySceneImporterTest::meshAttributeNameNoFileOpened() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");

@@ -160,9 +160,7 @@ void AnySceneConverterTest::convert() {
 
     Containers::Pointer<AbstractSceneConverter> converter = manager.instantiate("AnySceneConverter");
     CORRADE_VERIFY(converter->convertToFile(mesh, filename));
-    /* This file is reused in AnySceneImporter tests, so it's worth to save it
-       here */
-    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENECONVERTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
 }
 
 void AnySceneConverterTest::convertBeginEnd() {
@@ -193,9 +191,7 @@ void AnySceneConverterTest::convertBeginEnd() {
     CORRADE_COMPARE(converter->add(mesh), 0);
     CORRADE_VERIFY(converter->endFile());
 
-    /* This file is reused in AnySceneImporter tests, so it's worth to save it
-       here */
-    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENEIMPORTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYSCENECONVERTER_TEST_DIR, "triangle.ply"), TestSuite::Compare::File);
 }
 
 void AnySceneConverterTest::detectConvert() {
