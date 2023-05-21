@@ -647,7 +647,11 @@ void AnySceneConverterTest::meshes() {
     const struct Vertex {
         Vector3 position;
         Float factor;
-    } vertices[3]{};
+    } vertices[3]{
+        {{}, 0.0f},
+        {{}, 0.0f},
+        {{}, 0.0f},
+    }; /* GCC 4.8 ICEs if I do just a {} here */
     auto view = Containers::stridedArrayView(vertices);
 
     CORRADE_VERIFY(converter->beginFile(filename));
