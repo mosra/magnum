@@ -47,9 +47,7 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnyImageImporterTest: TestSuite::Tester {
     explicit AnyImageImporterTest();
 
-    void load1D();
-    void load2D();
-    void load3D();
+    void load();
     void detect();
 
     void ktxBasisFallbackFile();
@@ -66,6 +64,13 @@ struct AnyImageImporterTest: TestSuite::Tester {
        plugins have configuration subgroups as well */
     void propagateFileCallback();
 
+    void images1D();
+    void images2D();
+    void images3D();
+    void imageLevels1D();
+    void imageLevels2D();
+    void imageLevels3D();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
@@ -75,29 +80,9 @@ constexpr struct {
     const char* filename;
     bool asData;
     const char* messageFunctionName;
-} Load1DData[]{
-    {"KTX2", "1d.ktx2", false, "KtxImporter"},
-    {"KTX2 data", "1d.ktx2", true, "KtxImporter"},
-};
-
-constexpr struct {
-    const char* name;
-    const char* filename;
-    bool asData;
-    const char* messageFunctionName;
-} Load2DData[]{
+} LoadData[]{
     {"TGA", "rgb.tga", false, "openFile"},
     {"TGA data", "rgb.tga", true, "openData"}
-};
-
-constexpr struct {
-    const char* name;
-    const char* filename;
-    bool asData;
-    const char* messageFunctionName;
-} Load3DData[]{
-    {"KTX2", "3d.ktx2", false, "KtxImporter"},
-    {"KTX2 data", "3d.ktx2", true, "KtxImporter"},
 };
 
 constexpr struct {
@@ -204,14 +189,8 @@ constexpr struct {
 };
 
 AnyImageImporterTest::AnyImageImporterTest() {
-    addInstancedTests({&AnyImageImporterTest::load1D},
-        Containers::arraySize(Load1DData));
-
-    addInstancedTests({&AnyImageImporterTest::load2D},
-        Containers::arraySize(Load2DData));
-
-    addInstancedTests({&AnyImageImporterTest::load3D},
-        Containers::arraySize(Load3DData));
+    addInstancedTests({&AnyImageImporterTest::load},
+        Containers::arraySize(LoadData));
 
     addInstancedTests({&AnyImageImporterTest::detect},
         Containers::arraySize(DetectData));
@@ -228,7 +207,7 @@ AnyImageImporterTest::AnyImageImporterTest() {
     addTests({&AnyImageImporterTest::emptyData});
 
     addInstancedTests({&AnyImageImporterTest::propagateFlags},
-        Containers::arraySize(Load2DData));
+        Containers::arraySize(LoadData));
 
     addInstancedTests({&AnyImageImporterTest::propagateConfiguration},
         Containers::arraySize(PropagateConfigurationData));
@@ -236,7 +215,14 @@ AnyImageImporterTest::AnyImageImporterTest() {
     addInstancedTests({&AnyImageImporterTest::propagateConfigurationUnknown},
         Containers::arraySize(PropagateConfigurationUnknownData));
 
-    addTests({&AnyImageImporterTest::propagateFileCallback});
+    addTests({&AnyImageImporterTest::propagateFileCallback,
+
+              &AnyImageImporterTest::images1D,
+              &AnyImageImporterTest::images2D,
+              &AnyImageImporterTest::images3D,
+              &AnyImageImporterTest::imageLevels1D,
+              &AnyImageImporterTest::imageLevels2D,
+              &AnyImageImporterTest::imageLevels3D});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -249,36 +235,8 @@ AnyImageImporterTest::AnyImageImporterTest() {
     #endif
 }
 
-void AnyImageImporterTest::load1D() {
-    auto&& data = Load1DData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
-    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
-    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
-    #endif
-
-    /* Catch also ABI and interface mismatch errors */
-    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
-
-    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
-
-    if(data.asData) {
-        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
-        CORRADE_VERIFY(read);
-        CORRADE_VERIFY(importer->openData(*read));
-    } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
-    CORRADE_COMPARE(importer->image1DCount(), 1);
-
-    /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<ImageData1D> image = importer->image1D(0);
-    CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->size(), 2);
-}
-
-void AnyImageImporterTest::load2D() {
-    auto&& data = Load2DData[testCaseInstanceId()];
+void AnyImageImporterTest::load() {
+    auto&& data = LoadData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -300,34 +258,6 @@ void AnyImageImporterTest::load2D() {
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
-}
-
-void AnyImageImporterTest::load3D() {
-    auto&& data = Load3DData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
-
-    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
-    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
-    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
-    #endif
-
-    /* Catch also ABI and interface mismatch errors */
-    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
-
-    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
-
-    if(data.asData) {
-        Containers::Optional<Containers::Array<char>> read = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename));
-        CORRADE_VERIFY(read);
-        CORRADE_VERIFY(importer->openData(*read));
-    } else CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, data.filename)));
-    CORRADE_COMPARE(importer->image3DCount(), 1);
-
-    /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<ImageData3D> image = importer->image3D(0);
-    CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->size(), (Vector3i{2, 3, 2}));
 }
 
 void AnyImageImporterTest::detect() {
@@ -467,7 +397,7 @@ void AnyImageImporterTest::emptyData() {
 }
 
 void AnyImageImporterTest::propagateFlags() {
-    auto&& data = Load2DData[testCaseInstanceId()];
+    auto&& data = LoadData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -577,6 +507,130 @@ void AnyImageImporterTest::propagateFileCallback() {
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
+}
+
+void AnyImageImporterTest::images1D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "1d-mipmaps.ktx2")));
+    CORRADE_COMPARE(importer->image1DCount(), 1);
+    CORRADE_COMPARE(importer->image2DCount(), 0);
+    CORRADE_COMPARE(importer->image3DCount(), 0);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData1D> image = importer->image1D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), 4);
+}
+
+void AnyImageImporterTest::images2D() {
+    if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "rgb.tga")));
+    CORRADE_COMPARE(importer->image1DCount(), 0);
+    CORRADE_COMPARE(importer->image2DCount(), 1);
+    CORRADE_COMPARE(importer->image3DCount(), 0);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData2D> image = importer->image2D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector2i{3, 2}));
+}
+
+void AnyImageImporterTest::images3D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "2d-mipmaps-and-layers.ktx2")));
+    CORRADE_COMPARE(importer->image1DCount(), 0);
+    CORRADE_COMPARE(importer->image2DCount(), 0);
+    CORRADE_COMPARE(importer->image3DCount(), 1);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData3D> image = importer->image3D(0);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector3i{4, 3, 3}));
+}
+
+void AnyImageImporterTest::imageLevels1D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "1d-mipmaps.ktx2")));
+    CORRADE_COMPARE(importer->image1DCount(), 1);
+    CORRADE_COMPARE(importer->image1DLevelCount(0), 3);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData1D> image = importer->image1D(0, 1);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), 2);
+}
+
+void AnyImageImporterTest::imageLevels2D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "2d-mipmaps.ktx2")));
+    CORRADE_COMPARE(importer->image2DCount(), 1);
+    CORRADE_COMPARE(importer->image2DLevelCount(0), 3);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData2D> image = importer->image2D(0, 1);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector2i{2, 1}));
+}
+
+void AnyImageImporterTest::imageLevels3D() {
+    PluginManager::Manager<AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Catch also ABI and interface mismatch errors */
+    if(!(manager.load("KtxImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("KtxImporter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractImporter> importer = manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "2d-mipmaps-and-layers.ktx2")));
+    CORRADE_COMPARE(importer->image3DCount(), 1);
+    CORRADE_COMPARE(importer->image3DLevelCount(0), 3);
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<ImageData3D> image = importer->image3D(0, 1);
+    CORRADE_VERIFY(image);
+    CORRADE_COMPARE(image->size(), (Vector3i{2, 1, 3}));
 }
 
 }}}}

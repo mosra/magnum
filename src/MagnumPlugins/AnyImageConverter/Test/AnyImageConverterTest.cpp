@@ -467,9 +467,8 @@ void AnyImageConverterTest::convert1D() {
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(Image1D, filename));
     /* Compare to an expected output to ensure we actually saved the file
-       including the metadata. This also doubles as a generator for the 1d.ktx2
-       file that AnyImageImporterTest uses. */
-    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "1d.ktx2"), TestSuite::Compare::File);
+       including the metadata */
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYIMAGECONVERTER_TEST_DIR, "1d.ktx2"), TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::convert2D() {
@@ -503,9 +502,8 @@ void AnyImageConverterTest::convert3D() {
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->convertToFile(Image3D, filename));
     /* Compare to an expected output to ensure we actually saved the file
-       including the metadata. This also doubles as a generator for the
-       3d.exr file that AnyImageImporterTest uses. */
-    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "3d.ktx2"), TestSuite::Compare::File);
+       including the metadata */
+    CORRADE_COMPARE_AS(filename, Utility::Path::join(ANYIMAGECONVERTER_TEST_DIR, "3d.ktx2"), TestSuite::Compare::File);
 }
 
 void AnyImageConverterTest::convertCompressed1D() {

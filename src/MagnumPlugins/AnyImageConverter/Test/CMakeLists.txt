@@ -33,9 +33,11 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(ANYIMAGECONVERTER_TEST_DIR ".")
     set(ANYIMAGECONVERTER_TEST_OUTPUT_DIR "write")
     set(ANYIMAGEIMPORTER_TEST_DIR .)
 else()
+    set(ANYIMAGECONVERTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(ANYIMAGECONVERTER_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     set(ANYIMAGEIMPORTER_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test)
 endif()
@@ -61,8 +63,8 @@ corrade_add_test(AnyImageConverterTest AnyImageConverterTest.cpp
         # now
         Threads::Threads
     FILES
-        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/1d.ktx2
-        ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/3d.ktx2
+        1d.ktx2
+        3d.ktx2
         ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnyImageImporter/Test/depth32f-custom-channels.exr)
 target_include_directories(AnyImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC)
