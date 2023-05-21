@@ -106,10 +106,18 @@
   "nodes": [
     {
       "mesh": 0,
+      "extras": {
+        "visibility": true,
+        "geometryTransformHelper": false
+      },
       "name": "First"
     },
     {
       "mesh": 1,
+      "extras": {
+        "visibility": true,
+        "geometryTransformHelper": false
+      },
       "name": "Second"
     }
   ],
