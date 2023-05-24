@@ -272,7 +272,8 @@ The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
 converter plugin configuration. If the `=` character is omitted, it's
 equivalent to saying `key=true`; configuration subgroups are delimited with
-`/`.
+`/`. Prefix the key with `+` to add new options or multiple options of the same
+name.
 
 It's possible to specify the `-C` / `--converter` option (and correspondingly
 also `-c` / `--converter-options`) multiple times in order to chain more
@@ -438,7 +439,8 @@ read but no conversion is done and output file doesn't need to be specified.
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
 plugin configuration. If the = character is omitted, it's equivalent to saying
-key=true; configuration subgroups are delimited with /.
+key=true; configuration subgroups are delimited with /. Prefix the key with +
+to add new options or multiple options of the same name.
 
 It's possible to specify the -C / --converter option (and correspondingly also
 -c / --converter-options) multiple times in order to chain more converters

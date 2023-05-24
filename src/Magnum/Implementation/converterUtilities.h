@@ -45,6 +45,12 @@ void setOptions(const Containers::StringView pluginName, Utility::ConfigurationG
         keyValue[0] = keyValue[0].trimmed();
         keyValue[2] = keyValue[2].trimmed();
 
+        bool addValue = false;
+        if(keyValue[0].hasPrefix('+')) {
+            keyValue[0] = keyValue[0].exceptPrefix(1);
+            addValue = true;
+        }
+
         const Containers::Array<Containers::StringView> keyParts = keyValue[0].split('/');
         CORRADE_INTERNAL_ASSERT(!keyParts.isEmpty());
         Utility::ConfigurationGroup* group = &configuration;
@@ -66,7 +72,6 @@ void setOptions(const Containers::StringView pluginName, Utility::ConfigurationG
                 emptySubgroups.insert(subgroup);
             }
             group = subgroup;
-
         }
 
         /* Provide a warning message in case the plugin doesn't define given
@@ -81,7 +86,12 @@ void setOptions(const Containers::StringView pluginName, Utility::ConfigurationG
         if((groupNotRecognized || (!group->hasValue(keyParts.back()) &&
                 /* The warning isn't printed in case a value is added into an
                    empty subgroup, see above */
-                emptySubgroups.find(group) == emptySubgroups.end()
+                emptySubgroups.find(group) == emptySubgroups.end() &&
+                /* The warning also isn't printed in case a new value is added
+                   with `+` instead of modifying an existing one -- e.g. a
+                   plugin can support 0 to n values of a certain key, which
+                   means by default there won't be any */
+                !addValue
             )) && pluginName != anyPluginName)
         {
             Warning{} << "Option" << keyValue[0] << "not recognized by" << pluginName;
@@ -90,10 +100,17 @@ void setOptions(const Containers::StringView pluginName, Utility::ConfigurationG
         /* If the option doesn't have an =, treat it as a boolean flag that's
            set to true. While there's no similar way to do an inverse, it's
            still nicer than causing a fatal error with those. */
-        if(keyValue[1])
-            group->setValue(keyParts.back(), keyValue[2]);
-        else
-            group->setValue(keyParts.back(), true);
+        if(keyValue[1]) {
+            if(addValue)
+                group->addValue(keyParts.back(), keyValue[2]);
+            else
+                group->setValue(keyParts.back(), keyValue[2]);
+        } else {
+            if(addValue)
+                group->addValue(keyParts.back(), true);
+            else
+                group->setValue(keyParts.back(), true);
+        }
     }
 }
 

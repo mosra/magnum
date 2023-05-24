@@ -153,12 +153,15 @@ save it to `output`.
 The `-c` / `--converter-options` argument accept a comma-separated list of
 key/value pairs to set in the converter plugin configuration. If the `=`
 character is omitted, it's equivalent to saying `key=true`; configuration
-subgroups are delimited with `/`. It's possible to specify the `-C` /
-`--converter` option (and correspondingly also `-c` / `--converter-options`,
-`--input-format`, `--output-format`, `--input-version` and `--output-version`)
-multiple times in order to chain more converters together. All converters in
-the chain have to support the @ref ShaderTools::ConverterFeature::ConvertData
-feature, if there's just one converter it's enough for it to support
+subgroups are delimited with `/`. Prefix the key with `+` to add new options or
+multiple options of the same name.
+
+It's possible to specify the `-C` / `--converter` option (and correspondingly
+also `-c` / `--converter-options`, `--input-format`, `--output-format`,
+`--input-version` and `--output-version`) multiple times in order to chain more
+converters together. All converters in the chain have to support the
+@ref ShaderTools::ConverterFeature::ConvertData feature, if there's just one
+converter it's enough for it to support
 @ref ShaderTools::ConverterFeature::ConvertFile. If no `-C` / `--converter` is
 specified, @ref ShaderTools::AnyConverter "AnyShaderConverter" is used.
 
@@ -284,13 +287,15 @@ specified, the utility will convert the input file using (one or more) passed
 The -c / --converter-options argument accept a comma-separated list of
 key/value pairs to set in the converter plugin configuration. If the =
 character is omitted, it's equivalent to saying key=true; configuration
-subgroups are delimited with /. It's possible to specify the -C / --converter
-option (and correspondingly also -c / --converter-options, --input-format,
---output-format, --input-version and --output-version) multiple times in order
-to chain more converters together. All converters in the chain have to support
-the ConvertData feature, if there's just one converter it's enough for it to
-support ConvertFile. If no -C / --converter is specified, AnyShaderConverter is
-used.
+subgroups are delimited with /. Prefix the key with + to add new options or
+multiple options of the same name.
+
+It's possible to specify the -C / --converter option (and correspondingly also
+-c / --converter-options, --input-format, --output-format, --input-version and
+--output-version) multiple times in order to chain more converters together.
+All converters in the chain have to support the ConvertData feature, if there's
+just one converter it's enough for it to support ConvertFile. If no -C /
+--converter is specified, AnyShaderConverter is used.
 
 The -D / --define, -U / --undefine, -O / --optimize, -g / --debug-info, -E /
 --preprocess-only arguments apply only to the first converter. Split the

@@ -284,7 +284,8 @@ with `--info-meshes` will print how many objects reference given mesh).
 The `-i`, `-c` and `-m` arguments accept a comma-separated list of key/value
 pairs to set in the importer / converter plugin configuration. If the `=`
 character is omitted, it's equivalent to saying `key=true`; configuration
-subgroups are delimited with `/`.
+subgroups are delimited with `/`. Prefix the key with `+` to add new options or
+multiple options of the same name.
 
 It's possible to specify the `-C` option (and correspondingly also `-c`)
 multiple times in order to chain more converters together. All converters in
@@ -487,7 +488,8 @@ will also list reference count (for example, --info-scenes together with
 The -i, -c and -m arguments accept a comma-separated list of key/value
 pairs to set in the importer / converter plugin configuration. If the =
 character is omitted, it's equivalent to saying key=true; configuration
-subgroups are delimited with /.
+subgroups are delimited with /. Prefix the key with + to add new options or
+multiple options of the same name.
 
 It's possible to specify the -C option (and correspondingly also -c) multiple
 times in order to chain more scene converters together. All converters in the

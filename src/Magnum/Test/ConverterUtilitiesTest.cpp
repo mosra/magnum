@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -39,7 +40,7 @@ struct ConverterUtilitiesTest: TestSuite::Tester {
 };
 
 const struct {
-    const char* name;
+    TestSuite::TestCaseDescriptionSourceLocation name;
     const char* config;
     const char* options;
     const char* anyPluginName;
@@ -185,6 +186,64 @@ notFound=value
 )",
         /* The trailing space is there because the plugin name is empty */
         "Option notFound not recognized by \n"},
+
+    /* Adding new unrecognized options to existing groups doesn't warn */
+    {"add an unrecognized option that doesn't exist yet", R"([configuration]
+option=
+another=
+)",
+        "+yetanother=value", "AnyPlugin", R"([configuration]
+option=
+another=
+yetanother=value
+)", nullptr},
+    {"add an option that exists already", R"([configuration]
+option=
+another=
+)",
+        "+option=value", "AnyPlugin", R"([configuration]
+option=
+another=
+option=value
+)", nullptr},
+    {"two options, add second with implicit true", R"([configuration]
+option=
+another=
+)",
+        "option=value,+yetanother", "AnyPlugin", R"([configuration]
+option=value
+another=
+yetanother=true
+)", nullptr},
+    {"add an option to an existing subgroup", R"([configuration]
+option=
+[configuration/group]
+option=
+another=
+)",
+        "+group/option=value", "AnyPlugin", R"([configuration]
+option=
+[configuration/group]
+option=
+another=
+option=value
+)", nullptr},
+    {"add an option to an unrecognized subgroup", R"([configuration]
+option=
+[configuration/group]
+option=
+another=
+)",
+        "+notFound/option=value", "AnyPlugin", R"([configuration]
+option=
+[configuration/group]
+option=
+another=
+[configuration/notFound]
+option=value
+)",
+    /* The trailing space is there because the plugin name is empty */
+    "Option notFound/option not recognized by \n"},
 };
 
 ConverterUtilitiesTest::ConverterUtilitiesTest() {
@@ -219,7 +278,9 @@ void ConverterUtilitiesTest::setOptions() {
     CORRADE_COMPARE(conf.group("configuration")->configuration(), &conf);
     std::ostringstream out;
     conf.save(out);
-    CORRADE_COMPARE(out.str(), data.expectedConfig);
+    CORRADE_COMPARE_AS(out.str(),
+        data.expectedConfig,
+        TestSuite::Compare::String);
 }
 
 }}}
