@@ -27,6 +27,7 @@
 #include <thread> /* std::thread::hardware_concurrency(), sigh */
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/TestSuite/Compare/String.h>
@@ -460,6 +461,9 @@ void AnyImageConverterTest::convert1D() {
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
 
+    /* Drop version info from KtxImageConverter generator name */
+    manager.metadata("KtxImageConverter")->configuration().setValue("generator", "Magnum KtxImageConverter");
+
     Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "1d.ktx2");
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
@@ -494,6 +498,9 @@ void AnyImageConverterTest::convert3D() {
     /* Catch also ABI and interface mismatch errors */
     if(!(manager.load("KtxImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("KtxImageConverter plugin can't be loaded.");
+
+    /* Drop version info from KtxImageConverter generator name */
+    manager.metadata("KtxImageConverter")->configuration().setValue("generator", "Magnum KtxImageConverter");
 
     Containers::String filename = Utility::Path::join(ANYIMAGECONVERTER_TEST_OUTPUT_DIR, "3d.ktx2");
     if(Utility::Path::exists(filename))
@@ -1267,7 +1274,7 @@ void AnyImageConverterTest::propagateConfiguration1D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(Image1D, filename));
 
     Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
@@ -1316,7 +1323,7 @@ void AnyImageConverterTest::propagateConfiguration3D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(Image3D, filename));
 
     Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
@@ -1413,7 +1420,7 @@ void AnyImageConverterTest::propagateConfigurationCompressed1D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage1D, filename));
 
     Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
@@ -1438,7 +1445,7 @@ void AnyImageConverterTest::propagateConfigurationCompressed2D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage2D, filename));
 
     Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
@@ -1463,7 +1470,7 @@ void AnyImageConverterTest::propagateConfigurationCompressed3D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     CORRADE_VERIFY(converter->convertToFile(CompressedImage3D, filename));
 
     Containers::Optional<Containers::String> output = Utility::Path::readString(filename);
@@ -1566,7 +1573,7 @@ void AnyImageConverterTest::propagateConfigurationLevels1D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image1D}, filename));
@@ -1593,7 +1600,7 @@ void AnyImageConverterTest::propagateConfigurationLevels2D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image2D}, filename));
@@ -1620,7 +1627,7 @@ void AnyImageConverterTest::propagateConfigurationLevels3D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({Image3D}, filename));
@@ -1731,7 +1738,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels1D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage1D}, filename));
@@ -1758,7 +1765,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels2D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage2D}, filename));
@@ -1785,7 +1792,7 @@ void AnyImageConverterTest::propagateConfigurationCompressedLevels3D() {
         CORRADE_VERIFY(Utility::Path::remove(filename));
 
     Containers::Pointer<AbstractImageConverter> converter = manager.instantiate("AnyImageConverter");
-    converter->configuration().setValue("writerName", "Yello this did Magnum!");
+    converter->configuration().setValue("generator", "Yello this did Magnum!");
     /* Using the list API even though there's just one image, which should
        still trigger the correct code path for AnyImageConverter. */
     CORRADE_VERIFY(converter->convertToFile({CompressedImage3D}, filename));
