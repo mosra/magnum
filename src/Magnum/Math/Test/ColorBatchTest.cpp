@@ -192,6 +192,31 @@ const struct {
         '\xdd', '\xff', '\xa8', '\x6b', '\x09', '\x25', '\x95', '\x55',
         '\x79', '\xd6', '\xa7', '\x39', '\x35', '\xd5', '\x55', '\x5c'
     }}},
+    {"BC2", CompressedPixelFormat::Bc2RGBAUnorm, {1, 4}, {InPlaceInit, {
+        /* ./extract-interesting-blocks.py testcard_bc2.dds bc2.png --offset 88
+           (image taken from the bcdec repository test files) */
+        /* [7, 52], 2.427 */
+        '\xf8', '\xff', '\x91', '\xff', '\x20', '\xfa', '\x00', '\xc4',
+        '\xff', '\xff', '\x0f', '\xb3', '\x55', '\x55', '\x54', '\x50',
+        /* [6, 51], 2.427 */
+        '\x90', '\xff', '\x20', '\xfb', '\x00', '\xd4', '\x00', '\x60',
+        '\xff', '\xff', '\x0f', '\xb3', '\x54', '\x54', '\x50', '\x40',
+        /* [53, 8], 2.412 */
+        '\x6d', '\x00', '\xdf', '\x06', '\xff', '\x7e', '\xff', '\xff',
+        '\xff', '\xff', '\xf6', '\x63', '\x05', '\x15', '\x55', '\x55',
+        /* [10, 8], 2.412 */
+        '\x00', '\xd6', '\x60', '\xfd', '\xe7', '\xff', '\xff', '\xff',
+        '\xff', '\xff', '\xf6', '\x63', '\x50', '\x54', '\x55', '\x55',
+    }}, yFlipBc2InPlace, "bc2.png", {InPlaceInit, {
+        '\xff', '\xff', '\xe7', '\xff', '\x60', '\xfd', '\x00', '\xd6',
+        '\xff', '\xff', '\xf6', '\x63', '\x55', '\x55', '\x54', '\x50',
+        '\xff', '\xff', '\xff', '\x7e', '\xdf', '\x06', '\x6d', '\x00',
+        '\xff', '\xff', '\xf6', '\x63', '\x55', '\x55', '\x15', '\x05',
+        '\x00', '\x60', '\x00', '\xd4', '\x20', '\xfb', '\x90', '\xff',
+        '\xff', '\xff', '\x0f', '\xb3', '\x40', '\x50', '\x54', '\x54',
+        '\x00', '\xc4', '\x20', '\xfa', '\x91', '\xff', '\xf8', '\xff',
+        '\xff', '\xff', '\x0f', '\xb3', '\x50', '\x54', '\x55', '\x55'
+    }}},
     {"BC3", CompressedPixelFormat::Bc3RGBAUnorm, {1, 4}, {InPlaceInit, {
         /* ./extract-interesting-blocks.py dice_bc3.dds bc3.png --offset 148
            (image taken from the bcdec repository test files) */

@@ -60,6 +60,36 @@ inline void yFlipBc1BlockInPlace(char* const data) {
     }
 }
 
+inline void yFlipBc2BlockInPlace(char* data) {
+    /* The 128-bit block is laid out as follows:
+
+       - 8 bytes for 4x4 4-bit alpha values, same order as BC1
+       - 2 bytes for first endpoint color
+       - 2 bytes for second endpoint color
+       - 4 bytes for 4x4 2-bit color indices, same order as BC1
+
+       Which means, swapping the alphas and then doing the same as with BC1
+       for the color indices in the second half.
+       https://learn.microsoft.com/cs-cz/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression#bc2 */
+    {
+        char tmp1 = data[0];
+        char tmp2 = data[1];
+        data[0] = data[6];
+        data[1] = data[7];
+        data[6] = tmp1;
+        data[7] = tmp2;
+    } {
+        char tmp1 = data[2];
+        char tmp2 = data[3];
+        data[2] = data[4];
+        data[3] = data[5];
+        data[4] = tmp1;
+        data[5] = tmp2;
+    }
+
+    yFlipBc1BlockInPlace(data + 8);
+}
+
 inline void yFlipBc4BlockInPlace(char* data) {
     /* The 64-bit block is laid out as follows:
 
@@ -169,6 +199,14 @@ void yFlipBc1InPlace(const Containers::StridedArrayView4D<char>& blocks) {
     yFlipBlocksInPlace<8, yFlipBc1BlockInPlace>(blocks
         #ifndef CORRADE_NO_ASSERT
         , "Math::yFlipBc1InPlace():"
+        #endif
+    );
+}
+
+void yFlipBc2InPlace(const Containers::StridedArrayView4D<char>& blocks) {
+    yFlipBlocksInPlace<16, yFlipBc2BlockInPlace>(blocks
+        #ifndef CORRADE_NO_ASSERT
+        , "Math::yFlipBc2InPlace():"
         #endif
     );
 }

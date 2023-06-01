@@ -57,7 +57,24 @@ expected to be contiguous with size of 8.
 */
 MAGNUM_EXPORT void yFlipBc1InPlace(const Corrade::Containers::StridedArrayView4D<char>& blocks);
 
-/** @todo BC2, if used at all for anything */
+/**
+@brief Y-flip BC2 texture blocks in-place
+@m_since_latest
+
+Performs a Y flip of given 3D image by flipping block order and modifying
+internal block representation to encode the same information, just upside down.
+No decoding or re-encoding of the block data is performed, thus the operation
+is lossless. However note that this operation flips full blocks --- if size of
+the actual image isn't whole blocks, the flipped image will be shifted compared
+to the original, possibly with garbage data appearing in the first few rows.
+
+First dimension is expected to be image slices, second block rows, third
+2D blocks, fourth the 128-bit 4x4 block data, i.e. the last dimension is
+expected to be contiguous with size of 16.
+@see @ref CompressedPixelFormat::Bc2RGBAUnorm,
+    @ref CompressedPixelFormat::Bc2RGBASrgb
+*/
+MAGNUM_EXPORT void yFlipBc2InPlace(const Corrade::Containers::StridedArrayView4D<char>& blocks);
 
 /**
 @brief Y-flip BC3 texture blocks in-place

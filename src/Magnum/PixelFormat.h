@@ -1078,7 +1078,8 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc2RGBAUnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC2_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC2_RGBA](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc2_rgba?language=objc).
-     * @see @relativeref{Trade,BcDecImageConverter}
+     * @see @ref Math::yFlipBc2InPlace(),
+     *      @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC2_UNORM MTLPixelFormatBC2_RGBA}
      */
     Bc2RGBAUnorm,
@@ -1094,7 +1095,8 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc2RGBASrgb;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC2_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC2_RGBA_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc2_rgba_srgb?language=objc).
-     * @see @relativeref{Trade,BcDecImageConverter}
+     * @see @ref Math::yFlipBc2InPlace(),
+     *      @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC2_UNORM_SRGB MTLPixelFormatBC2_RGBA_sRGB}
      * @m_since{2019,10}
      */

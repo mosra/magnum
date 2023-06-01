@@ -50,6 +50,7 @@ corrade_add_test(MathColorBatchTest ColorBatchTest.cpp
     LIBRARIES MagnumMathTestLib MagnumDebugTools
     FILES
         ColorBatchTestFiles/bc1.png
+        ColorBatchTestFiles/bc2.png
         ColorBatchTestFiles/bc3.png
         ColorBatchTestFiles/bc4.png
         ColorBatchTestFiles/bc5.png
