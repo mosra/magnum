@@ -450,6 +450,15 @@ class CompareImageFile {
         explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, PluginManager::Manager<Trade::AbstractImageConverter>& converterManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, &converterManager, maxThreshold, meanThreshold} {}
 
         /**
+         * @brief Construct with an explicit importer and converter plugin manager instance and implicit thresholds
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>&, PluginManager::Manager<Trade::AbstractImageConverter>&, Float, Float)
+         * with zero values.
+         */
+        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, PluginManager::Manager<Trade::AbstractImageConverter>& imageConverterManager): _c{&importerManager, &imageConverterManager, 0.0f, 0.0f} {}
+
+        /**
          * @brief Construct with implicit thresholds
          *
          * Equivalent to calling @ref CompareImageFile(Float, Float) with zero
@@ -511,6 +520,15 @@ class CompareImageToFile {
          * for more information.
          */
         explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, PluginManager::Manager<Trade::AbstractImageConverter>& imageConverterManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, &imageConverterManager, maxThreshold, meanThreshold} {}
+
+        /**
+         * @brief Construct with an explicit importer and converter plugin manager instance and implicit thresholds
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>&, PluginManager::Manager<Trade::AbstractImageConverter>&, Float, Float)
+         * with zero values.
+         */
+        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, PluginManager::Manager<Trade::AbstractImageConverter>& imageConverterManager): _c{&importerManager, &imageConverterManager, 0.0f, 0.0f} {}
 
         /**
          * @brief Implicit constructor
