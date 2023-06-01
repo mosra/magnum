@@ -693,7 +693,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
-         * @brief Raw image ddata
+         * @brief Raw image data
          *
          * @see @ref release()
          */

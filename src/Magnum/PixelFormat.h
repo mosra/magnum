@@ -1014,6 +1014,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref GL::TextureFormat::CompressedRGBS3tcDxt1 or
      * @ref Vk::PixelFormat::CompressedBc1RGBUnorm. No D3D or Metal
      * equivalent.
+     * @see @relativeref{Trade,BcDecImageConverter}
      */
     Bc1RGBUnorm = 1,
 
@@ -1026,6 +1027,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref GL::TextureFormat::CompressedSRGBS3tcDxt1 or
      * @ref Vk::PixelFormat::CompressedBc1RGBSrgb. No D3D or Metal
      * equivalent.
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_since{2019,10}
      */
     Bc1RGBSrgb,
@@ -1040,6 +1042,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc1RGBAUnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC1_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC1_RGBA](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc1_rgba?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC1_UNORM MTLPixelFormatBC1_RGBA}
      */
     Bc1RGBAUnorm,
@@ -1054,6 +1057,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc1RGBASrgb;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC1_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC1_RGBA_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc1_rgba_srgb?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC1_UNORM_SRGB MTLPixelFormatBC1_RGBA_sRGB}
      * @m_since{2019,10}
      */
@@ -1070,6 +1074,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc2RGBAUnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC2_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC2_RGBA](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc2_rgba?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC2_UNORM MTLPixelFormatBC2_RGBA}
      */
     Bc2RGBAUnorm,
@@ -1085,6 +1090,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc2RGBASrgb;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC2_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC2_RGBA_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc2_rgba_srgb?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC2_UNORM_SRGB MTLPixelFormatBC2_RGBA_sRGB}
      * @m_since{2019,10}
      */
@@ -1101,6 +1107,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc3RGBAUnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC3_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC3_RGBA](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc3_rgba?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC3_UNORM MTLPixelFormatBC3_RGBA}
      */
     Bc3RGBAUnorm,
@@ -1108,7 +1115,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
      * compressed sRGB + linear alpha, normalized unsigned (DXT5). A 128-bit
-     * 4x4 block,  consisting of a 64-bit interpolated alpha block followed by
+     * 4x4 block, consisting of a 64-bit interpolated alpha block followed by
      * a 64-bit color block encoded the same way as BC1.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt5,
@@ -1116,6 +1123,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc3RGBASrgb;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC3_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC3_RGBA_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc3_rgba_srgb?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC3_UNORM_SRGB MTLPixelFormatBC3_RGBA_sRGB}
      * @m_since{2019,10}
      */
@@ -1131,6 +1139,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc4RUnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC4_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC4_RUnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc4_runorm?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC4_UNORM MTLPixelFormatBC4_RUnorm}
      * @m_since{2019,10}
      */
@@ -1146,6 +1155,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc4RSnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC4_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC4_RSnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc4_rsnorm?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC4_SNORM MTLPixelFormatBC4_RSnorm}
      * @m_since{2019,10}
      */
@@ -1162,6 +1172,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc5RGUnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC5_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC5_RGUnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc5_rgunorm?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC5_UNORM MTLPixelFormatBC5_RGUnorm}
      * @m_since{2019,10}
      */
@@ -1178,6 +1189,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc5RGSnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC5_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC5_RGSnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc5_rgsnorm?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC5_SNORM MTLPixelFormatBC5_RGSnorm}
      * @m_since{2019,10}
      */
@@ -1192,6 +1204,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc6hRGBUfloat;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC6H_UF16](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC6H_RGBUfloat](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc6h_rgbufloat?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC6H_UF16 MTLPixelFormatBC6H_RGBUfloat}
      * @m_since{2019,10}
      */
@@ -1206,6 +1219,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc6hRGBSfloat;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC6H_SF16](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC6H_RGBFloat](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc6h_rgbfloat?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC6H_UF16 MTLPixelFormatBC6H_RGBFloat}
      * @m_since{2019,10}
      */
@@ -1220,6 +1234,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc7RGBAUnorm;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC7_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC7_RGBAUnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc7_rgbaunorm?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC7_UNORM MTLPixelFormatBC7_RGBAUnorm}
      * @m_since{2019,10}
      */
@@ -1234,6 +1249,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedBc7RGBASrgb;
      * @m_class{m-doc-external} [DXGI_FORMAT_BC7_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC7_RGBAUnorm_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc7_rgbaunorm_srgb?language=objc).
+     * @see @relativeref{Trade,BcDecImageConverter}
      * @m_keywords{DXGI_FORMAT_BC7_UNORM_SRGB MTLPixelFormatBC7_RGBAUnorm_sRGB}
      * @m_since{2019,10}
      */
@@ -1248,6 +1264,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEacR11Unorm or
      * @m_class{m-doc-external} [MTLPixelFormatEAC_R11Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_r11unorm?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatEAC_R11Unorm}
      * @m_since{2019,10}
      */
@@ -1262,6 +1279,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEacR11Snorm or
      * @m_class{m-doc-external} [MTLPixelFormatEAC_R11Snorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_r11snorm?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatEAC_R11Unorm}
      * @m_since{2019,10}
      */
@@ -1276,6 +1294,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEacRG11Unorm or
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RG11Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rg11unorm?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatEAC_R11Unorm}
      * @m_since{2019,10}
      */
@@ -1290,6 +1309,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEacRG11Snorm or
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RG11Snorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rg11snorm?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatEAC_RG11Snorm}
      * @m_since{2019,10}
      */
@@ -1304,6 +1324,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEtc2RGB8Unorm or
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatETC2_RGB8}
      * @m_since{2019,10}
      */
@@ -1318,6 +1339,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEtc2RGB8Srgb or
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8_srgb?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatETC2_RGB8_sRGB}
      * @m_since{2019,10}
      */
@@ -1332,6 +1354,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEtc2RGB8A1Unorm or
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8A1](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8a1?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatETC2_RGB8A1}
      * @m_since{2019,10}
      */
@@ -1346,6 +1369,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEtc2RGB8A1Srgb or
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8A1_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8a1_srgb?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatETC2_RGB8A1_sRGB}
      * @m_since{2019,10}
      */
@@ -1360,6 +1384,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEtc2RGBA8Unorm or
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RGBA8](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rgba8?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatEAC_RGBA8}
      * @m_since{2019,10}
      */
@@ -1374,6 +1399,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref Vk::PixelFormat::CompressedEtc2RGBA8Srgb or
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RGBA8_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rgba8_srgb?language=objc).
      * No equivalent in D3D.
+     * @see @relativeref{Trade,EtcDecImageConverter}
      * @m_keywords{MTLPixelFormatEAC_RGBA8_sRGB}
      * @m_since{2019,10}
      */
@@ -2477,7 +2503,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 };
 
 /**
-@brief Compressed pixel format block size
+@brief Block size of given compressed pixel format
 @m_since_latest
 
 For 2D formats the Z dimension is always 1. Expects that the pixel format is
@@ -2497,7 +2523,7 @@ MAGNUM_EXPORT CORRADE_DEPRECATED("use compressedPixelFormatBlockSize() instead")
 #endif
 
 /**
-@brief Compressed pixel format block data size
+@brief Block data size of given compressed pixel format
 @m_since_latest
 
 Byte size of each compressed block. Expects that the pixel format is *not*
