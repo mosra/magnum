@@ -43,6 +43,20 @@ corrade_add_test(MathVector3Test Vector3Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector4Test Vector4Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+corrade_add_test(MathColorBatchTest ColorBatchTest.cpp
+    LIBRARIES MagnumMathTestLib MagnumDebugTools
+    FILES
+        ColorBatchTestFiles/bc1.png
+        ColorBatchTestFiles/bc3.png
+        ColorBatchTestFiles/bc4.png
+        ColorBatchTestFiles/bc5.png
+        ColorBatchTestFiles/checkerboard.png
+        ColorBatchTestFiles/checkerboard-odd.png)
+target_include_directories(MathColorBatchTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
 corrade_add_test(MathRectangularMatrixTest RectangularMatrixTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrixTest MatrixTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrix3Test Matrix3Test.cpp LIBRARIES MagnumMathTestLib)

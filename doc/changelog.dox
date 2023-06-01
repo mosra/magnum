@@ -214,6 +214,8 @@ See also:
     @ref Math::Quaternion::reflectVector(), but mainly just for documentation
     purposes as reflections cannot be combined with rotations and thus are
     mostly useless in practice
+-   New @ref Magnum/Math/ColorBatch.h header with utilities for performing Y
+    flip of various block-compressed formats
 
 @subsubsection changelog-latest-new-materialtools MaterialTools library
 

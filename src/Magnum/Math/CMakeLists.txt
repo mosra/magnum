@@ -32,6 +32,7 @@ set(MagnumMath_HEADERS
     Bezier.h
     BitVector.h
     Color.h
+    ColorBatch.h
     Complex.h
     Constants.h
     ConfigurationValue.h

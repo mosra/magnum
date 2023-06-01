@@ -140,6 +140,7 @@ set(MagnumMath_SRCS
     Math/instantiation.cpp)
 
 set(MagnumMath_GracefulAssert_SRCS
+    Math/ColorBatch.cpp
     Math/Functions.cpp
     Math/PackingBatch.cpp)
 
