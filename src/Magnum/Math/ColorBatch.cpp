@@ -71,14 +71,14 @@ inline void yFlipBc4BlockInPlace(char* data) {
        Compared to BC1, this means swapping groups of 12 bits instead of 8.
        https://learn.microsoft.com/cs-cz/windows/win32/direct3d10/d3d10-graphics-programming-guide-resources-block-compression#bc4 */
 
-    /* Load & byte-swap the whole block */
+    /* Load & byte-swap last 6 bytes */
     union {
         char bytes[8];
         UnsignedLong value;
     } block;
-    for(std::size_t i = 0; i != 8; ++i) {
+    for(std::size_t i = 0; i != 6; ++i) {
         #ifndef CORRADE_TARGET_BIG_ENDIAN
-        block.bytes[i] = data[i];
+        block.bytes[i] = data[i + 2];
         #else
         block.bytes[i] = data[7 - i];
         #endif
@@ -86,18 +86,17 @@ inline void yFlipBc4BlockInPlace(char* data) {
 
     /* Flip the 12-bit groups */
     block.value =
-        (block.value & 0x000000000000ffffull) |
-        (block.value & 0xfff0000000000000ull) >> 36 |
-        (block.value & 0x000fff0000000000ull) >> 12 |
-        (block.value & 0x000000fff0000000ull) << 12 |
-        (block.value & 0x000000000fff0000ull) << 36;
+        (block.value & 0xfff000000000ull) >> 36 |
+        (block.value & 0x000fff000000ull) >> 12 |
+        (block.value & 0x000000fff000ull) << 12 |
+        (block.value & 0x000000000fffull) << 36;
 
-    /* Byte-swap & store the block back */
-    for(std::size_t i = 0; i != 8; ++i) {
+    /* Byte-swap & store the 6 bytes back */
+    for(std::size_t i = 0; i != 6; ++i) {
         #ifndef CORRADE_TARGET_BIG_ENDIAN
-        data[i] = block.bytes[i];
+        data[i + 2] = block.bytes[i];
         #else
-        data[i] = block.bytes[7 - i];
+        data[7 - i] = block.bytes[i];
         #endif
     }
 }
