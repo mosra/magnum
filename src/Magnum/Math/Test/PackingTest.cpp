@@ -290,6 +290,7 @@ void PackingTest::unpackTypeDeduction() {
     if(std::is_signed<char>::value)
         CORRADE_COMPARE(Math::unpack<Float>('\x7F'), 1.0f);
     else {
+        CORRADE_INFO("char is unsigned");
         /* Raspberry Pi `char` is unsigned (huh) */
         CORRADE_VERIFY(std::is_unsigned<char>::value);
         CORRADE_COMPARE(Math::unpack<Float>('\x7F'), 0.498039f);
