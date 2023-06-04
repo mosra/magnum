@@ -545,6 +545,14 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
     return flags;
 }
 
+TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(PixelFormat(*const actualFormatFor)(PixelFormat), const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected) {
+    /* Figure out the actual format for the pixel view, attempting to match it
+       with what's in the expected image (such as making it sRGB if the
+       expected format is also sRGB and has the same component count and
+       underlying type as the view) */
+    return compare(actualFormatFor(expected.format()), actualPixels, expected);
+}
+
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2D& expected) {
     return compare(actual.format(), actual.pixels(), expected);
 }
@@ -608,7 +616,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const Container
     return flags;
 }
 
-TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const Containers::StringView expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat actualFormat, PixelFormat(*const actualFormatFor)(PixelFormat), const Containers::StridedArrayView3D<const char>& actualPixels, const Containers::StringView expected) {
     _state->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
@@ -644,6 +652,11 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
         return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
     }
 
+    /* Now that the image is loaded, try to match the actual format to it if
+       requested */
+    if(actualFormatFor)
+        _state->actualFormat = actualFormatFor(_state->expectedImageData->format());
+
     /* Save a view on the expected image data and proxy to the actual data
        comparison. If comparison failed, offer to save a diagnostic. */
     _state->expectedImage.emplace(*_state->expectedImageData);
@@ -654,7 +667,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const Containers::StringView expected) {
-    return compare(actual.format(), actual.pixels(), expected);
+    return compare(actual.format(), nullptr, actual.pixels(), expected);
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const Containers::StringView actual, const ImageView2D& expected) {

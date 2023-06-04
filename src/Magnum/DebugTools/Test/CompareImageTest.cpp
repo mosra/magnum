@@ -115,16 +115,30 @@ struct CompareImageTest: TestSuite::Tester {
     void fileToImageActualLoadFailed();
     void fileToImageActualIsCompressed();
 
-    void pixelsToImageZeroDelta();
+    template<unsigned dimensions> void pixelFormatFor();
+    void pixelFormatForColor();
+
+    template<class T> void pixelsToImageZeroDelta();
     void pixelsToImageNonZeroDelta();
+    void pixelsToImageDifferentFormat();
     void pixelsToImageError();
-    void pixelsToFileZeroDelta();
+    template<class T> void pixelsToFileZeroDelta();
     void pixelsToFileNonZeroDelta();
+    void pixelsToFileDifferentFormat();
     void pixelsToFileError();
+    void pixelsToFileExpectedLoadFailed();
 
     private:
         Containers::Optional<PluginManager::Manager<Trade::AbstractImporter>> _importerManager;
         Containers::Optional<PluginManager::Manager<Trade::AbstractImageConverter>> _converterManager;
+};
+
+const struct {
+    const char* name;
+    bool srgb;
+} PixelsToImageData[]{
+    {"", false},
+    {"sRGB", true}
 };
 
 CompareImageTest::CompareImageTest() {
@@ -209,13 +223,32 @@ CompareImageTest::CompareImageTest() {
 
     addTests({&CompareImageTest::fileToImageActualIsCompressed});
 
-    addTests({&CompareImageTest::pixelsToImageZeroDelta,
-              &CompareImageTest::pixelsToImageNonZeroDelta,
+    addTests({&CompareImageTest::pixelFormatFor<1>,
+              &CompareImageTest::pixelFormatFor<2>,
+              &CompareImageTest::pixelFormatFor<3>,
+              &CompareImageTest::pixelFormatFor<4>,
+              &CompareImageTest::pixelFormatForColor});
+
+    addInstancedTests<CompareImageTest>({
+        &CompareImageTest::pixelsToImageZeroDelta<Color3ub>,
+        &CompareImageTest::pixelsToImageZeroDelta<Vector3ub>},
+        Containers::arraySize(PixelsToImageData));
+
+    addTests({&CompareImageTest::pixelsToImageNonZeroDelta,
+              &CompareImageTest::pixelsToImageDifferentFormat,
               &CompareImageTest::pixelsToImageError});
 
-    addTests({&CompareImageTest::pixelsToFileZeroDelta,
-              &CompareImageTest::pixelsToFileNonZeroDelta,
-              &CompareImageTest::pixelsToFileError},
+    addInstancedTests<CompareImageTest>({
+        &CompareImageTest::pixelsToFileZeroDelta<Color3ub>,
+        &CompareImageTest::pixelsToFileZeroDelta<Vector3ub>},
+        Containers::arraySize(PixelsToImageData),
+        &CompareImageTest::setupExternalPluginManager,
+        &CompareImageTest::teardownExternalPluginManager);
+
+    addTests({&CompareImageTest::pixelsToFileNonZeroDelta,
+              &CompareImageTest::pixelsToFileDifferentFormat,
+              &CompareImageTest::pixelsToFileError,
+              &CompareImageTest::pixelsToFileExpectedLoadFailed},
         &CompareImageTest::setupExternalPluginManager,
         &CompareImageTest::teardownExternalPluginManager);
 
@@ -1654,15 +1687,132 @@ void CompareImageTest::fileToImageActualIsCompressed() {
         "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
 }
 
-void CompareImageTest::pixelsToImageZeroDelta() {
-    /* Same as image(), but taking pixels instead */
+template<UnsignedInt dimensions> void CompareImageTest::pixelFormatFor() {
+    setTestCaseTemplateName(Utility::format("{}", dimensions));
 
-    CORRADE_COMPARE_WITH(ExpectedRgb.pixels<Color3ub>(),
-        ExpectedRgb, (CompareImage{40.0f, 20.0f}));
+    /* Defaults to an integer / float format if no match */
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, UnsignedByte>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R8UI, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Byte>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R8I, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, UnsignedShort>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R16UI, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Short>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R16I, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, UnsignedInt>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R32UI, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Int>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R32I, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Float>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R32F, dimensions, false));
+
+    /* Matching normalized type if the image has it */
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, UnsignedByte>>(pixelFormat(PixelFormat::R8Unorm, dimensions, false))),
+        pixelFormat(PixelFormat::R8Unorm, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Byte>>(pixelFormat(PixelFormat::R8Snorm, dimensions, false))),
+        pixelFormat(PixelFormat::R8Snorm, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, UnsignedShort>>(pixelFormat(PixelFormat::R16Unorm, dimensions, false))),
+        pixelFormat(PixelFormat::R16Unorm, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Short>>(pixelFormat(PixelFormat::R16Snorm, dimensions, false))),
+        pixelFormat(PixelFormat::R16Snorm, dimensions, false));
+
+    /* Matching sRGB type if the image has it */
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, UnsignedByte>>(pixelFormat(PixelFormat::R8Srgb, dimensions, true))),
+        pixelFormat(PixelFormat::R8Srgb, dimensions, true));
+
+    /* But not if it has different underlying type */
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Short>>(pixelFormat(PixelFormat::R8Snorm, dimensions, false))),
+        pixelFormat(PixelFormat::R16I, dimensions, false));
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, UnsignedShort>>(pixelFormat(PixelFormat::R8Srgb, dimensions, false))),
+        pixelFormat(PixelFormat::R16UI, dimensions, false));
+}
+
+void CompareImageTest::pixelFormatForColor() {
+    /* Defaults to a normalized format if no match */
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color3ub>(PixelFormat{})),
+        PixelFormat::RGB8Unorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color4ub>(PixelFormat{})),
+        PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Color3<Byte>>(PixelFormat{})),
+        PixelFormat::RGB8Snorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Color4<Byte>>(PixelFormat{})),
+        PixelFormat::RGBA8Snorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color3us>(PixelFormat{})),
+        PixelFormat::RGB16Unorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color4us>(PixelFormat{})),
+        PixelFormat::RGBA16Unorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Color3<Short>>(PixelFormat{})),
+        PixelFormat::RGB16Snorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Color4<Short>>(PixelFormat{})),
+        PixelFormat::RGBA16Snorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color3>(PixelFormat{})),
+        PixelFormat::RGB32F);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color4>(PixelFormat{})),
+        PixelFormat::RGBA32F);
+
+    /* Matching sRGB type if the image has it */
+    CORRADE_COMPARE(
+        Implementation::pixelFormatFor<Color3ub>(PixelFormat::RGB8Srgb),
+        PixelFormat::RGB8Srgb);
+    CORRADE_COMPARE(
+        Implementation::pixelFormatFor<Color4ub>(PixelFormat::RGBA8Srgb),
+        PixelFormat::RGBA8Srgb);
+
+    /* But not if it has different underlying type or dimension count */
+    CORRADE_COMPARE(
+        Implementation::pixelFormatFor<Color3us>(PixelFormat::RGB8Srgb),
+        PixelFormat::RGB16Unorm);
+    CORRADE_COMPARE(
+        Implementation::pixelFormatFor<Color4ub>(PixelFormat::RGB8Srgb),
+        PixelFormat::RGBA8Unorm);
+}
+
+template<class T> void CompareImageTest::pixelsToImageZeroDelta() {
+    auto&& data = PixelsToImageData[testCaseInstanceId()];
+    setTestCaseTemplateName(std::is_same<T, Color3ub>::value ? "Color3ub" : "Vector3ub");
+    setTestCaseDescription(data.name);
+
+    /* Same as image(), but taking pixels instead. For T being Color3ub, the
+       autodetected PixelFormat is RGB8Unorm, for Vector3ub it's RGB8UI. It
+       should get matched to either RGB8Unorm or RGB8Srgb based on the format
+       in the expected image. */
+
+    /* Same as ExpectedRGB but with pixel format being different */
+    const ImageView2D expected{
+        PixelStorage{}.setSkip({1, 0, 0}).setRowLength(3),
+        pixelFormat(PixelFormat::RGB8Unorm, 3, data.srgb),
+        {2, 2}, ExpectedRgbData};
+
+    CORRADE_COMPARE_WITH(expected.pixels<T>(),
+        expected, (CompareImage{40.0f, 20.0f}));
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareImage> compare{40.0f, 20.0f};
-    CORRADE_COMPARE(compare(ExpectedRgb.pixels<Color3ub>(), ExpectedRgb), TestSuite::ComparisonStatusFlags{});
+    CORRADE_COMPARE(compare(expected.pixels<T>(), expected), TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::pixelsToImageNonZeroDelta() {
@@ -1685,6 +1835,22 @@ void CompareImageTest::pixelsToImageNonZeroDelta() {
     CORRADE_COMPARE(out.str(), ImageCompareVerbose);
 }
 
+void CompareImageTest::pixelsToImageDifferentFormat() {
+    std::stringstream out;
+
+    {
+        TestSuite::Comparator<CompareImage> compare{{}, {}};
+        TestSuite::ComparisonStatusFlags flags =
+            compare(ExpectedRgb.pixels<Vector3b>(), ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printMessage(flags, d, "a", "b");
+    }
+
+    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGB8I but PixelFormat::RGB8Unorm expected.\n");
+}
+
 void CompareImageTest::pixelsToImageError() {
     /* Same as imageError(), but taking pixels instead */
 
@@ -1703,8 +1869,15 @@ void CompareImageTest::pixelsToImageError() {
     CORRADE_COMPARE(out.str(), ImageCompareError);
 }
 
-void CompareImageTest::pixelsToFileZeroDelta() {
-    /* Same as imageToFile(), but taking pixels instead */
+template<class T> void CompareImageTest::pixelsToFileZeroDelta() {
+    auto&& data = PixelsToImageData[testCaseInstanceId()];
+    setTestCaseTemplateName(std::is_same<T, Color3ub>::value ? "Color3ub" : "Vector3ub");
+    setTestCaseDescription(data.name);
+
+    /* Same as imageToFile(), but taking pixels instead. For T being Color3ub,
+       the autodetected PixelFormat is RGB8Unorm, for Vector3ub it's RGB8UI. It
+       should get matched to either RGB8Unorm or RGB8Srgb based on the format
+       in the expected image. */
 
     if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1716,12 +1889,18 @@ void CompareImageTest::pixelsToFileZeroDelta() {
        views. */
     Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
 
-    CORRADE_COMPARE_WITH(ExpectedRgb.pixels<Color3ub>(), expectedFilename,
+    /* Same as ExpectedRGB but with pixel format being different */
+    const ImageView2D expected{
+        PixelStorage{}.setSkip({1, 0, 0}).setRowLength(3),
+        pixelFormat(PixelFormat::RGB8Unorm, 3, data.srgb),
+        {2, 2}, ExpectedRgbData};
+
+    CORRADE_COMPARE_WITH(expected.pixels<T>(), expectedFilename,
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-    CORRADE_COMPARE(compare(ExpectedRgb.pixels<Color3ub>(), expectedFilename),
+    CORRADE_COMPARE(compare(expected.pixels<T>(), expectedFilename),
         TestSuite::ComparisonStatusFlags{});
 }
 
@@ -1756,6 +1935,33 @@ void CompareImageTest::pixelsToFileNonZeroDelta() {
     CORRADE_COMPARE(out.str(), ImageCompareVerbose);
 }
 
+void CompareImageTest::pixelsToFileDifferentFormat() {
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /* The filenames are referenced as string views as the assumption is that
+       the whole comparison and diagnostic printing gets done in a single
+       expression. Thus don't pass them as temporaries to avoid dangling
+       views. */
+    Containers::String expectedFilename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+
+    std::stringstream out;
+
+    {
+        TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, {}, {}};
+        TestSuite::ComparisonStatusFlags flags =
+            compare(ExpectedRgb.pixels<Math::Color3<Byte>>(), expectedFilename);
+        /* Diagnostic but we're not checking it, here we just want to make sure
+           the right format gets detected */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printMessage(flags, d, "a", "b");
+    }
+
+    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGB8Snorm but PixelFormat::RGB8Unorm expected.\n");
+}
+
 void CompareImageTest::pixelsToFileError() {
     /* Same as imageToFileError(), but taking pixels instead */
 
@@ -1772,7 +1978,10 @@ void CompareImageTest::pixelsToFileError() {
     std::stringstream out;
 
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
-    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(), expectedFilename);
+    /* Vector3ub gets matched to PixelFormat::R8UI initially, but once the
+       expected image is loaded it gets updated to PixelFormat::R8Unorm to
+       match it */
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Vector3ub>(), expectedFilename);
     /* The diagnostic flag should be slapped on the failure coming from the
        operator() comparing two ImageViews */
     CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
@@ -1788,6 +1997,52 @@ void CompareImageTest::pixelsToFileError() {
        false positives */
     CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
     Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
+    if(Utility::Path::exists(filename))
+        CORRADE_VERIFY(Utility::Path::remove(filename));
+
+    if(!(_converterManager->loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager->loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
+
+    {
+        out.str({});
+        Debug redirectOutput(&out);
+        compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
+    }
+
+    /* We expect the *actual* contents, but under the *expected* filename.
+       Comparing file contents, expecting the converter makes exactly the same
+       file. */
+    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE_AS(filename,
+        Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
+}
+
+void CompareImageTest::pixelsToFileExpectedLoadFailed() {
+    /* Same as imageToFileExpectedLoadFailed(), but taking pixels instead */
+
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    std::stringstream out;
+
+    TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(), "nonexistent.tga");
+    /* Actual file *could* be loaded, so save it! */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
+    {
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printMessage(flags, d, "a", "b");
+    }
+
+    CORRADE_COMPARE(out.str(), "Expected image b (nonexistent.tga) could not be loaded.\n");
+
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Path::make(COMPAREIMAGETEST_SAVE_DIR));
+    Containers::String filename = Utility::Path::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
     if(Utility::Path::exists(filename))
         CORRADE_VERIFY(Utility::Path::remove(filename));
 

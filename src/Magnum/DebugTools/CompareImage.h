@@ -62,7 +62,9 @@ class CompareFileToImage;
 
 namespace Implementation {
 
-template<class> constexpr PixelFormat pixelFormatFor();
+/* Used by the pixel view comparators to try to guess a format matching the
+   expected image */
+template<class> constexpr PixelFormat pixelFormatFor(PixelFormat);
 
 class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
     public:
@@ -80,11 +82,15 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
 
         TestSuite::ComparisonStatusFlags operator()(const ImageView2D& actual, Containers::StringView expected);
 
-        /* Used in templated CompareImage::operator() */
         TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected);
+        /* Used in templated CompareImage::operator(), the actual format gets
+           matched to the format in the expected image */
+        TestSuite::ComparisonStatusFlags compare(PixelFormat(*actualFormatFor)(PixelFormat), const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected);
 
-        /* Used in templated CompareImageToFile::operator() */
-        TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, Containers::StringView expected);
+        /* Used in templated CompareImageToFile::operator(). If actualFormatFor
+           isn't nullptr, the actualFormat gets overriden by it once the
+           expected image is loaded. */
+        TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, PixelFormat(*actualFormatFor)(PixelFormat), const Containers::StridedArrayView3D<const char>& actualPixels, Containers::StringView expected);
 
         void printMessage(TestSuite::ComparisonStatusFlags flags, Debug& out, Containers::StringView actual, Containers::StringView expected) const;
 
@@ -121,9 +127,8 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
         }
 
         template<class T> TestSuite::ComparisonStatusFlags operator()(const Containers::StridedArrayView2D<const T>& actualPixels, const Magnum::ImageView2D& expected) {
-            /** @todo do some tryFindCompatibleFormat() here */
             return Magnum::DebugTools::Implementation::ImageComparatorBase::compare(
-                Magnum::DebugTools::Implementation::pixelFormatFor<T>(),
+                Magnum::DebugTools::Implementation::pixelFormatFor<T>,
                 Containers::arrayCast<3, const char>(actualPixels), expected);
         }
 };
@@ -149,9 +154,9 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
            having to include it -- it's not needed when comparing just images
            alone, not files */
         template<class T> TestSuite::ComparisonStatusFlags operator()(const Containers::StridedArrayView2D<const T>& actualPixels, const Containers::StringView& expected) {
-            /** @todo do some tryFindCompatibleFormat() here */
             return Magnum::DebugTools::Implementation::ImageComparatorBase::compare(
-                Magnum::DebugTools::Implementation::pixelFormatFor<T>(),
+                Magnum::DebugTools::Implementation::pixelFormatFor<T>(Magnum::PixelFormat{}),
+                Magnum::DebugTools::Implementation::pixelFormatFor<T>,
                 Containers::arrayCast<3, const char>(actualPixels), expected);
         }
 };
@@ -323,12 +328,16 @@ three-component you can cast the pixel data to just a three-component type:
 
 @snippet MagnumDebugTools-gl.cpp CompareImage-pixels-rgb
 
-Currently, comparing against pixel views has a few inherent limitations --- it
-has to be cast to one of Magnum scalar or vector types and the format is
-then autodetected from the passed type, with normalized formats preferred. In
-practice this means e.g. @ref Math::Vector2 "Math::Vector2<UnsignedByte>" will
-be understood as @ref PixelFormat::RG8Unorm and there's currently no way to
-interpret it as @ref PixelFormat::RG8UI, for example.
+The pixel views are expected to be cast to one of Magnum scalar or vector
+types. The format is then autodetected from the passed type. For types that map
+to more than one @ref PixelFormat, such as @relativeref{Magnum,Vector3ub} that
+can be @ref PixelFormat::RGB8Unorm, @relativeref{PixelFormat,RGB8Srgb} or
+@relativeref{PixelFormat,RGB8UI}, an attempt is made to match the pixel format
+of the expected image if possible. If not possible, such as comparing a
+@relativeref{Magnum,Vector3ub} view to a @ref PixelFormat::RGB8Snorm, the
+comparison fails the same way as if comparing two views of different pixel
+formats. Byte and short color types always autodetect to normalized (sRGB)
+pixel formats, never to integer formats.
 
 @see @ref CompareMaterial
 */
@@ -605,84 +614,273 @@ class CompareFileToImage {
 
 namespace Implementation {
 
-/* LCOV_EXCL_START */
-/* One-component types */
-template<> constexpr PixelFormat pixelFormatFor<UnsignedByte>() { return PixelFormat::R8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedByte>>() { return PixelFormat::R8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Byte>() { return PixelFormat::R8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Byte>>() { return PixelFormat::R8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<UnsignedShort>() { return PixelFormat::R16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedShort>>() { return PixelFormat::R16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Short>() { return PixelFormat::R16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Short>>() { return PixelFormat::R16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<UnsignedInt>() { return PixelFormat::R32UI; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedInt>>() { return PixelFormat::R32UI; }
-template<> constexpr PixelFormat pixelFormatFor<Int>() { return PixelFormat::R32I; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Int>>() { return PixelFormat::R32I; }
-template<> constexpr PixelFormat pixelFormatFor<Float>() { return PixelFormat::R32F; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Float>>() { return PixelFormat::R32F; }
+/* One-component types. The Vector<1, T> types aren't used that often so they
+   delegate to the T variants, the tests use Vector<1, T> to cover all
+   variants. */
+template<> constexpr PixelFormat pixelFormatFor<UnsignedByte>(PixelFormat expected) {
+    /* Attempt to match Srgb or Unorm if the expected image has it */
+    return expected == PixelFormat::R8Srgb ? PixelFormat::R8Srgb :
+        expected == PixelFormat::R8Unorm ? PixelFormat::R8Unorm :
+            PixelFormat::R8UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedByte>>(PixelFormat expected) {
+    return pixelFormatFor<UnsignedByte>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Byte>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::R8Snorm ? PixelFormat::R8Snorm :
+        PixelFormat::R8I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Byte>>(PixelFormat expected) {
+    return pixelFormatFor<Byte>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<UnsignedShort>(PixelFormat expected) {
+    /* Attempt to match Unorm if the expected image has it */
+    return expected == PixelFormat::R16Unorm ? PixelFormat::R16Unorm :
+        PixelFormat::R16UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedShort>>(PixelFormat expected) {
+    return pixelFormatFor<UnsignedShort>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Short>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::R16Snorm ? PixelFormat::R16Snorm :
+        PixelFormat::R16I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Short>>(PixelFormat expected) {
+    return pixelFormatFor<Short>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<UnsignedInt>(PixelFormat) {
+    return PixelFormat::R32UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedInt>>(PixelFormat expected) {
+    return pixelFormatFor<UnsignedInt>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Int>(PixelFormat) {
+    return PixelFormat::R32I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Int>>(PixelFormat expected) {
+    return pixelFormatFor<Int>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Float>(PixelFormat) {
+    return PixelFormat::R32F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Float>>(PixelFormat expected) {
+    return pixelFormatFor<Float>(expected);
+}
 
-/* Two-component types */
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedByte>>() { return PixelFormat::RG8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedByte>>() { return PixelFormat::RG8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Byte>>() { return PixelFormat::RG8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Byte>>() { return PixelFormat::RG8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedShort>>() { return PixelFormat::RG16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedShort>>() { return PixelFormat::RG16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Short>>() { return PixelFormat::RG16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Short>>() { return PixelFormat::RG16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedInt>>() { return PixelFormat::RG32UI; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedInt>>() { return PixelFormat::RG32UI; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Int>>() { return PixelFormat::RG32I; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Int>>() { return PixelFormat::RG32I; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Float>>() { return PixelFormat::RG32F; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Float>>() { return PixelFormat::RG32F; }
+/* Two-component types. The Vector<2, T> types aren't used that often so they
+   delegate to the Vector2<T> variants, the tests use Vector<2, T> to cover all
+   variants. */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedByte>>(PixelFormat expected) {
+    /* Attempt to match Srgb or Unorm if the expected image has it */
+    return expected == PixelFormat::RG8Srgb ? PixelFormat::RG8Srgb :
+        expected == PixelFormat::RG8Unorm ? PixelFormat::RG8Unorm :
+            PixelFormat::RG8UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedByte>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<UnsignedByte>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Byte>>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::RG8Snorm ? PixelFormat::RG8Snorm :
+        PixelFormat::RG8I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Byte>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<Byte>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedShort>>(PixelFormat expected) {
+    /* Attempt to match Unorm if the expected image has it */
+    return expected == PixelFormat::RG16Unorm ? PixelFormat::RG16Unorm :
+        PixelFormat::RG16UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedShort>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<UnsignedShort>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Short>>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::RG16Snorm ? PixelFormat::RG16Snorm :
+        PixelFormat::RG16I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Short>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<Short>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedInt>>(PixelFormat) {
+    return PixelFormat::RG32UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedInt>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<UnsignedInt>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Int>>(PixelFormat) {
+    return PixelFormat::RG32I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Int>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<Int>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Float>>(PixelFormat) {
+    return PixelFormat::RG32F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Float>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<Float>>(expected);
+}
 
-/* Three-component types */
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedByte>>() { return PixelFormat::RGB8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedByte>>() { return PixelFormat::RGB8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color3<UnsignedByte>>() { return PixelFormat::RGB8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Byte>>() { return PixelFormat::RGB8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Byte>>() { return PixelFormat::RGB8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Byte>>() { return PixelFormat::RGB8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedShort>>() { return PixelFormat::RGB16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedShort>>() { return PixelFormat::RGB16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color3<UnsignedShort>>() { return PixelFormat::RGB16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Short>>() { return PixelFormat::RGB16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Short>>() { return PixelFormat::RGB16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Short>>() { return PixelFormat::RGB16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedInt>>() { return PixelFormat::RGB32UI; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedInt>>() { return PixelFormat::RGB32UI; }
-/* Skipping Math::Color3<UnsignedInt>, as that isn't much used */
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Int>>() { return PixelFormat::RGB32I; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Int>>() { return PixelFormat::RGB32I; }
-/* Skipping Math::Color3<Int>, as that isn't much used */
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Float>>() { return PixelFormat::RGB32F; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Float>>() { return PixelFormat::RGB32F; }
+/* Three-component types. The Vector<3, T> types aren't used that often so they
+   delegate to the Vector3<T> variants, the tests use Vector<3, T> to cover all
+   variants. */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedByte>>(PixelFormat expected) {
+    /* Attempt to match Srgb or Unorm if the expected image has it */
+    return expected == PixelFormat::RGB8Srgb ? PixelFormat::RGB8Srgb :
+        expected == PixelFormat::RGB8Unorm ? PixelFormat::RGB8Unorm :
+            PixelFormat::RGB8UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedByte>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<UnsignedByte>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<UnsignedByte>>(PixelFormat expected) {
+    /* Attempt to match Srgb if the expected image has it. No integer fallback
+       for color types. */
+    return expected == PixelFormat::RGB8Srgb ? PixelFormat::RGB8Srgb :
+        PixelFormat::RGB8Unorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Byte>>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::RGB8Snorm ? PixelFormat::RGB8Snorm :
+        PixelFormat::RGB8I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Byte>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<Byte>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Byte>>(PixelFormat) {
+    /* No integer fallback for colors */
+    return PixelFormat::RGB8Snorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedShort>>(PixelFormat expected) {
+    /* Attempt to match Unorm if the expected image has it */
+    return expected == PixelFormat::RGB16Unorm ? PixelFormat::RGB16Unorm :
+        PixelFormat::RGB16UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedShort>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<UnsignedShort>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<UnsignedShort>>(PixelFormat) {
+    return PixelFormat::RGB16Unorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Short>>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::RGB16Snorm ? PixelFormat::RGB16Snorm :
+        PixelFormat::RGB16I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Short>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<Short>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Short>>(PixelFormat) {
+    return PixelFormat::RGB16Snorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedInt>>(PixelFormat) {
+    return PixelFormat::RGB32UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedInt>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<UnsignedInt>>(expected);
+}
+/* Skipping Math::Color3<UnsignedInt>, as integer colors should always match
+   normalized types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Int>>(PixelFormat) {
+    return PixelFormat::RGB32I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Int>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<Int>>(expected);
+}
+/* Skipping Math::Color3<Int>, as integer colors should always match normalized
+   types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Float>>(PixelFormat) {
+    return PixelFormat::RGB32F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Float>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<Float>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Float>>(PixelFormat) {
+    return PixelFormat::RGB32F;
+}
 
-/* Four-component types */
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedByte>>() { return PixelFormat::RGBA8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedByte>>() { return PixelFormat::RGBA8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color4<UnsignedByte>>() { return PixelFormat::RGBA8Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Byte>>() { return PixelFormat::RGBA8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Byte>>() { return PixelFormat::RGBA8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Byte>>() { return PixelFormat::RGBA8Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedShort>>() { return PixelFormat::RGBA16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedShort>>() { return PixelFormat::RGBA16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color4<UnsignedShort>>() { return PixelFormat::RGBA16Unorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Short>>() { return PixelFormat::RGBA16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Short>>() { return PixelFormat::RGBA16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Short>>() { return PixelFormat::RGBA16Snorm; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedInt>>() { return PixelFormat::RGBA32UI; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedInt>>() { return PixelFormat::RGBA32UI; }
-/* Skipping Math::Color4<UnsignedInt>, as that isn't much used */
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Int>>() { return PixelFormat::RGBA32I; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Int>>() { return PixelFormat::RGBA32I; }
-/* Skipping Math::Color4<Int>, as that isn't much used */
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Float>>() { return PixelFormat::RGBA32F; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Float>>() { return PixelFormat::RGBA32F; }
-template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Float>>() { return PixelFormat::RGBA32F; }
-/* LCOV_EXCL_STOP */
+/* Four-component types. The Vector<4, T> types aren't used that often so they
+   delegate to the Vector4<T> variants, the tests use Vector<4, T> to cover all
+   variants. */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedByte>>(PixelFormat expected) {
+    /* Attempt to match Srgb or Unorm if the expected image has it */
+    return expected == PixelFormat::RGBA8Srgb ? PixelFormat::RGBA8Srgb :
+        expected == PixelFormat::RGBA8Unorm ? PixelFormat::RGBA8Unorm :
+            PixelFormat::RGBA8UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedByte>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<UnsignedByte>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<UnsignedByte>>(PixelFormat expected) {
+    /* Attempt to match Srgb if the expected image has it. No integer fallback
+       for color types. */
+    return expected == PixelFormat::RGBA8Srgb ? PixelFormat::RGBA8Srgb :
+        PixelFormat::RGBA8Unorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Byte>>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::RGBA8Snorm ? PixelFormat::RGBA8Snorm :
+        PixelFormat::RGBA8I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Byte>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<Byte>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Byte>>(PixelFormat) {
+    /* No integer fallback for colors */
+    return PixelFormat::RGBA8Snorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedShort>>(PixelFormat expected) {
+    /* Attempt to match Unorm if the expected image has it */
+    return expected == PixelFormat::RGBA16Unorm ? PixelFormat::RGBA16Unorm :
+        PixelFormat::RGBA16UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedShort>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<UnsignedShort>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<UnsignedShort>>(PixelFormat) {
+    /* No integer fallback for colors */
+    return PixelFormat::RGBA16Unorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Short>>(PixelFormat expected) {
+    /* Attempt to match Snorm if the expected image has it */
+    return expected == PixelFormat::RGBA16Snorm ? PixelFormat::RGBA16Snorm :
+        PixelFormat::RGBA16I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Short>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<Short>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Short>>(PixelFormat) {
+    /* No integer fallback for colors */
+    return PixelFormat::RGBA16Snorm;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedInt>>(PixelFormat) {
+    return PixelFormat::RGBA32UI;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedInt>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<UnsignedInt>>(expected);
+}
+/* Skipping Math::Color4<UnsignedInt>, as integer colors should always match
+   normalized types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Int>>(PixelFormat) {
+    return PixelFormat::RGBA32I;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Int>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<Int>>(expected);
+}
+/* Skipping Math::Color4<Int>, as integer colors should always match normalized
+   types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Float>>(PixelFormat) {
+    return PixelFormat::RGBA32F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Float>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<Float>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Float>>(PixelFormat) {
+    return PixelFormat::RGBA32F;
+}
 
 }
 

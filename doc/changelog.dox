@@ -478,7 +478,8 @@ See also:
     relying on memory-mapping, and is now available on WebGL 2 as well (see
     [mosra/magnum#560](https://github.com/mosra/magnum/pull/560))
 -   @ref DebugTools::CompareImage now supports comparing half-float pixel
-    formats as well
+    formats as well, pixel format autodetection for pixel views tries to
+    match sRGB and normalization properties of the expected image format
 
 @subsubsection changelog-latest-changes-gl GL library
 
