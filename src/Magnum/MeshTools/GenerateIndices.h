@@ -53,10 +53,11 @@ MAGNUM_MESHTOOLS_EXPORT UnsignedInt primitiveCount(MeshPrimitive primitive, Unsi
 @brief Create index buffer for a line strip primitive
 @m_since{2020,06}
 
-Can be used to convert a @ref MeshPrimitive::LineStrip mesh to
-@ref MeshPrimitive::Lines. The @p vertexCount is expected to be either
-@cpp 0 @ce or at least @cpp 2 @ce. Primitive restart is not supported. If the
-mesh is already indexed, use @ref generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+Generates a @cpp 0, 1, 1, 2, 3, 4, ... @ce sequence. Can be used to convert a
+@ref MeshPrimitive::LineStrip mesh to @ref MeshPrimitive::Lines. The
+@p vertexCount is expected to be either @cpp 0 @ce or at least @cpp 2 @ce.
+Primitive restart is not supported. If the mesh is already indexed, use
+@ref generateLineStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
 and overloads instead.
 @see @ref generateLineStripIndicesInto(), @ref generateLineLoopIndices(),
     @ref generateTriangleStripIndices(), @ref generateTriangleFanIndices(),
@@ -145,10 +146,10 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineStripIndicesInto(const Containers::Stri
 @brief Create index buffer for a line loop primitive
 @m_since{2020,06}
 
-Can be used to convert a @ref MeshPrimitive::LineLoop mesh to
-@ref MeshPrimitive::Lines. The @p vertexCount is expected to be either
-@cpp 0 @ce or at least @cpp 2 @ce. Primitive restart is not supported. If the
-mesh is already indexed, use @ref generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
+Generates a @cpp 0, 1, 1, 2, 3, ..., 0 @ce sequence. Can be used to convert a @ref MeshPrimitive::LineLoop mesh to @ref MeshPrimitive::Lines. The
+@p vertexCount is expected to be either @cpp 0 @ce or at least @cpp 2 @ce.
+Primitive restart is not supported. If the mesh is already indexed, use
+@ref generateLineLoopIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
 and overloads instead.
 @see @ref generateLineLoopIndicesInto(), @ref generateLineStripIndices(),
     @ref generateTriangleStripIndices(), @ref generateTriangleFanIndices(),
@@ -237,7 +238,8 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(const Containers::Strid
 @brief Create index buffer for a triangle strip primitive
 @m_since{2020,06}
 
-Can be used to convert a @ref MeshPrimitive::TriangleStrip mesh to
+Generates a @cpp 0, 1, 2, 2, 1, 3, 2, 3, 4, ... @ce sequence. Can be used to
+convert a @ref MeshPrimitive::TriangleStrip mesh to
 @ref MeshPrimitive::Triangles. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 3 @ce. Primitive restart is not supported. If the
 mesh is already indexed, use @ref generateTriangleStripIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
@@ -329,7 +331,8 @@ MAGNUM_MESHTOOLS_EXPORT void generateTriangleStripIndicesInto(const Containers::
 @brief Create index buffer for a triangle fan primitive
 @m_since{2020,06}
 
-Can be used to convert a @ref MeshPrimitive::TriangleFan mesh to
+Generates a @cpp 0, 1, 2, 0, 2, 3, 0, 3, 4, ... @ce sequence. Can be used to
+convert a @ref MeshPrimitive::TriangleFan mesh to
 @ref MeshPrimitive::Triangles. The @p vertexCount is expected to be either
 @cpp 0 @ce or at least @cpp 3 @ce. Primitive restart is not supported. If the
 mesh is already indexed, use @ref generateTriangleFanIndices(const Containers::StridedArrayView1D<const UnsignedInt>&)
