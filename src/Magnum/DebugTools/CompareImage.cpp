@@ -367,11 +367,13 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
             out << *reinterpret_cast<const Color4ub*>(pixel);
             break;
 
+        /* LCOV_EXCL_START */
         case PixelFormat::Depth16UnormStencil8UI:
         case PixelFormat::Depth24UnormStencil8UI:
         case PixelFormat::Depth32FStencil8UI:
             /* Already handled by a printing assert before */
-            CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        /* LCOV_EXCL_STOP */
     }
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
