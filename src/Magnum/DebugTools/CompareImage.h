@@ -662,6 +662,12 @@ template<> constexpr PixelFormat pixelFormatFor<Int>(PixelFormat) {
 template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Int>>(PixelFormat expected) {
     return pixelFormatFor<Int>(expected);
 }
+template<> constexpr PixelFormat pixelFormatFor<Half>(PixelFormat) {
+    return PixelFormat::R16F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Half>>(PixelFormat expected) {
+    return pixelFormatFor<Half>(expected);
+}
 template<> constexpr PixelFormat pixelFormatFor<Float>(PixelFormat) {
     return PixelFormat::R32F;
 }
@@ -716,6 +722,12 @@ template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Int>>(PixelFormat)
 }
 template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Int>>(PixelFormat expected) {
     return pixelFormatFor<Math::Vector2<Int>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Half>>(PixelFormat) {
+    return PixelFormat::RG16F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Half>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector2<Half>>(expected);
 }
 template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Float>>(PixelFormat) {
     return PixelFormat::RG32F;
@@ -792,6 +804,15 @@ template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Int>>(PixelForma
 }
 /* Skipping Math::Color3<Int>, as integer colors should always match normalized
    types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Half>>(PixelFormat) {
+    return PixelFormat::RGB16F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Half>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector3<Half>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Half>>(PixelFormat) {
+    return PixelFormat::RGB16F;
+}
 template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Float>>(PixelFormat) {
     return PixelFormat::RGB32F;
 }
@@ -872,6 +893,15 @@ template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Int>>(PixelForma
 }
 /* Skipping Math::Color4<Int>, as integer colors should always match normalized
    types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Half>>(PixelFormat) {
+    return PixelFormat::RGBA16F;
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Half>>(PixelFormat expected) {
+    return pixelFormatFor<Math::Vector4<Half>>(expected);
+}
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Half>>(PixelFormat) {
+    return PixelFormat::RGBA16F;
+}
 template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Float>>(PixelFormat) {
     return PixelFormat::RGBA32F;
 }

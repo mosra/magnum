@@ -1710,6 +1710,9 @@ template<UnsignedInt dimensions> void CompareImageTest::pixelFormatFor() {
         (Implementation::pixelFormatFor<Math::Vector<dimensions, Int>>(PixelFormat{})),
         pixelFormat(PixelFormat::R32I, dimensions, false));
     CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Math::Vector<dimensions, Half>>(PixelFormat{})),
+        pixelFormat(PixelFormat::R16F, dimensions, false));
+    CORRADE_COMPARE(
         (Implementation::pixelFormatFor<Math::Vector<dimensions, Float>>(PixelFormat{})),
         pixelFormat(PixelFormat::R32F, dimensions, false));
 
@@ -1767,6 +1770,12 @@ void CompareImageTest::pixelFormatForColor() {
     CORRADE_COMPARE(
         (Implementation::pixelFormatFor<Math::Color4<Short>>(PixelFormat{})),
         PixelFormat::RGBA16Snorm);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color3h>(PixelFormat{})),
+        PixelFormat::RGB16F);
+    CORRADE_COMPARE(
+        (Implementation::pixelFormatFor<Color4h>(PixelFormat{})),
+        PixelFormat::RGBA16F);
     CORRADE_COMPARE(
         (Implementation::pixelFormatFor<Color3>(PixelFormat{})),
         PixelFormat::RGB32F);
