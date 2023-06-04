@@ -16,7 +16,7 @@ args = parser.parse_args()
 
 importer_manager = trade.ImporterManager()
 importer_manager.metadata('DdsImporter').configuration['assumeYUpZBackward'] = True
-# TODO something for KTX as well so it doesn't warn (or flip)
+importer_manager.metadata('KtxImporter').configuration['assumeOrientation'] = 'ruo'
 importer = importer_manager.load_and_instantiate('AnyImageImporter')
 importer.open_file(args.input)
 
