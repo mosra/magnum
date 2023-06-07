@@ -382,7 +382,7 @@ template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed() {
     auto indices = Containers::arrayView(indexData);
 
     /* Empty input */
-    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -420,7 +420,7 @@ template<class T> void GenerateIndicesTest::generateLineStripIndicesIndexed2D() 
     T indexData[]{60, 21, 72, 93, 44, 85};
     auto indices = Containers::arrayCast<2, char>(Containers::stridedArrayView(indexData));
 
-    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateLineStripIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -456,7 +456,7 @@ void GenerateIndicesTest::generateLineStripIndicesIntoWrongSize() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateLineStripIndicesInto(0, output);
-    MeshTools::generateLineStripIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
+    MeshTools::generateLineStripIndicesInto(Containers::arrayView(indices).prefix(0), output);
     MeshTools::generateLineStripIndicesInto(5, output);
     MeshTools::generateLineStripIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
@@ -525,7 +525,7 @@ template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed() {
     auto indices = Containers::arrayView(indexData);
 
     /* Empty input */
-    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -566,7 +566,7 @@ template<class T> void GenerateIndicesTest::generateLineLoopIndicesIndexed2D() {
     T indexData[]{60, 21, 72, 93, 44, 85};
     auto indices = Containers::arrayCast<2, char>(Containers::arrayView(indexData));
 
-    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateLineLoopIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -603,7 +603,7 @@ void GenerateIndicesTest::generateLineLoopIndicesIntoWrongSize() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateLineLoopIndicesInto(0, output);
-    MeshTools::generateLineLoopIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
+    MeshTools::generateLineLoopIndicesInto(Containers::arrayView(indices).prefix(0), output);
     MeshTools::generateLineLoopIndicesInto(5, output);
     MeshTools::generateLineLoopIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
@@ -671,7 +671,7 @@ template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed(
     auto indices = Containers::arrayView(indexData);
 
     /* Empty input */
-    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -711,7 +711,7 @@ template<class T> void GenerateIndicesTest::generateTriangleStripIndicesIndexed2
     T indexData[]{60, 21, 72, 93, 44, 85, 36, 17};
     auto indices = Containers::arrayCast<2, char>(Containers::arrayView(indexData));
 
-    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleStripIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -748,7 +748,7 @@ void GenerateIndicesTest::generateTriangleStripIndicesIntoWrongSize() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateTriangleStripIndicesInto(0, output);
-    MeshTools::generateTriangleStripIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
+    MeshTools::generateTriangleStripIndicesInto(Containers::arrayView(indices).prefix(0), output);
     MeshTools::generateTriangleStripIndicesInto(5, output);
     MeshTools::generateTriangleStripIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
@@ -816,7 +816,7 @@ template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed() 
     auto indices = Containers::arrayView(indexData);
 
     /* Empty input */
-    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -856,7 +856,7 @@ template<class T> void GenerateIndicesTest::generateTriangleFanIndicesIndexed2D(
     T indexData[]{60, 21, 72, 93, 44, 85, 36, 17};
     auto indices = Containers::arrayCast<2, char>(Containers::arrayView(indexData));
 
-    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(std::size_t{})),
+    CORRADE_COMPARE_AS(MeshTools::generateTriangleFanIndices(indices.prefix(0)),
         Containers::ArrayView<const UnsignedInt>{},
         TestSuite::Compare::Container);
 
@@ -893,7 +893,7 @@ void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::generateTriangleFanIndicesInto(0, output);
-    MeshTools::generateTriangleFanIndicesInto(Containers::arrayView(indices).prefix(std::size_t{}), output);
+    MeshTools::generateTriangleFanIndicesInto(Containers::arrayView(indices).prefix(0), output);
     MeshTools::generateTriangleFanIndicesInto(5, output);
     MeshTools::generateTriangleFanIndicesInto(indices, output);
     CORRADE_COMPARE(out.str(),
