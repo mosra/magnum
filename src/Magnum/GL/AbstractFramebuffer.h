@@ -287,8 +287,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * available, the framebuffer is bound to some target before the
          * operation (if not already).
          * @see @ref implementationColorReadType(),
-         *      @fn_gl{GetNamedFramebufferParameter} with
-         *      @def_gl_keyword{IMPLEMENTATION_COLOR_READ_FORMAT},
+         *      @fn_gl2{GetNamedFramebufferParameter,GetFramebufferParameter}
+         *      with @def_gl_keyword{IMPLEMENTATION_COLOR_READ_FORMAT},
          *      eventually @fn_gl{BindFramebuffer} and either
          *      @fn_gl{GetFramebufferParameter} or @fn_gl{Get} with
          *      @def_gl{IMPLEMENTATION_COLOR_READ_FORMAT}
@@ -304,9 +304,9 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * available, the framebuffer is bound to some target before the
          * operation (if not already).
          * @see @ref implementationColorReadFormat(),
-         *      @fn_gl{GetNamedFramebufferParameter} with
-         *      @def_gl_keyword{IMPLEMENTATION_COLOR_READ_TYPE}, eventually
-         *      @fn_gl{BindFramebuffer} and either
+         *      @fn_gl2{GetNamedFramebufferParameter,GetFramebufferParameter}
+         *      with @def_gl_keyword{IMPLEMENTATION_COLOR_READ_TYPE},
+         *      eventually @fn_gl{BindFramebuffer} and either
          *      @fn_gl{GetFramebufferParameter} or @fn_gl{Get} with
          *      @def_gl{IMPLEMENTATION_COLOR_READ_TYPE}
          */
