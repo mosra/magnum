@@ -4,6 +4,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2022 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
+    Copyright © 2023 Pablo Escobar <mail@rvrs.in>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -65,5 +66,19 @@ and [CLion docs](https://www.jetbrains.com/help/clion/configuring-debugger-optio
 for more information.
 
 See also @ref corrade-debuggers-gdb-pretty-printers "Corrade GDB pretty printers".
+
+@section magnum-debuggers-natvis MSVC Natvis files
+
+The [src/debuggers/natvis](https://github.com/mosra/magnum/tree/master/src/debuggers/natvis)
+directory contains MSVC natvis files for important @ref Math classes. Contents
+of this directory are also copied into @cb{.sh} ${CMAKE_PREFIX_PATH}/share/magnum/debuggers/natvis @ce
+during installation.
+
+Easiest way to use is to copy them to the user-specific Natvis directory for
+given version of Visual Studio, such as @cb{.bat} %USERPROFILE%/Documents/Visual Studio 2022/Visualizers @ce.
+
+For more information consult the corresponding [Natvis docs](https://learn.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects?view=vs-2022).
+
+See also @ref corrade-debuggers-natvis "Corrade MSVC Natvis files".
 */
 }
