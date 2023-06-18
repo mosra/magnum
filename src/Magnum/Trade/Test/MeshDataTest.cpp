@@ -26,10 +26,12 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/Algorithms.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Half.h"
@@ -3958,7 +3960,7 @@ void MeshDataTest::attributeNotFound() {
     data.weightsAsArray(2);
     data.weightsInto(nullptr, 2);
     data.objectIdsAsArray();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE_AS(out.str(),
         "Trade::MeshData::attributeData(): index 6 out of range for 6 attributes\n"
         "Trade::MeshData::attributeName(): index 6 out of range for 6 attributes\n"
         "Trade::MeshData::attributeId(): index 6 out of range for 6 attributes\n"
@@ -4008,7 +4010,8 @@ void MeshDataTest::attributeNotFound() {
         "Trade::MeshData::jointIdsInto(): index 2 out of range for 2 joint ID attributes\n"
         "Trade::MeshData::weightsAsArray(): index 2 out of range for 2 weight attributes\n"
         "Trade::MeshData::weightsInto(): index 2 out of range for 2 weight attributes\n"
-        "Trade::MeshData::objectIdsInto(): index 0 out of range for 0 object ID attributes\n");
+        "Trade::MeshData::objectIdsInto(): index 0 out of range for 0 object ID attributes\n",
+        TestSuite::Compare::String);
 }
 
 void MeshDataTest::attributeWrongType() {

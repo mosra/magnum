@@ -6733,7 +6733,7 @@ void SceneDataTest::fieldNotFound() {
     scene.importerStateAsArray();
     scene.importerStateInto(nullptr, nullptr);
     scene.importerStateInto(0, nullptr, nullptr);
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE_AS(out.str(),
         "Trade::SceneData::findFieldObjectOffset(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::fieldObjectOffset(): index 2 out of range for 2 fields\n"
         "Trade::SceneData::hasFieldObject(): index 2 out of range for 2 fields\n"
@@ -6814,7 +6814,8 @@ void SceneDataTest::fieldNotFound() {
         "Trade::SceneData::skinsInto(): field not found\n"
         "Trade::SceneData::importerStateInto(): field not found\n"
         "Trade::SceneData::importerStateInto(): field not found\n"
-        "Trade::SceneData::importerStateInto(): field not found\n");
+        "Trade::SceneData::importerStateInto(): field not found\n",
+        TestSuite::Compare::String);
 }
 
 void SceneDataTest::fieldWrongType() {
