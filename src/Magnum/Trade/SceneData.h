@@ -4295,45 +4295,57 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
 }
 
 template<class T, class> Containers::StridedArrayView1D<const T> SceneData::field(const SceneField name) const {
-    Containers::StridedArrayView2D<const char> data = field(name);
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::field(): field" << name << "not found", {});
+    Containers::StridedArrayView2D<const char> data = field(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[findFieldIdInternal(name)], "Trade::SceneData::field():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::field():")) return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
 
 template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> SceneData::field(const SceneField name) const {
-    Containers::StridedArrayView2D<const char> data = field(name);
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::field(): field" << name << "not found", {});
+    Containers::StridedArrayView2D<const char> data = field(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[findFieldIdInternal(name)], "Trade::SceneData::field():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::field():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
 
 template<class T, class> Containers::StridedArrayView1D<T> SceneData::mutableField(const SceneField name) {
-    Containers::StridedArrayView2D<char> data = mutableField(name);
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::mutableField(): field" << name << "not found", {});
+    Containers::StridedArrayView2D<char> data = mutableField(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[findFieldIdInternal(name)], "Trade::SceneData::mutableField():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::mutableField():")) return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
 
 template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> SceneData::mutableField(const SceneField name) {
-    Containers::StridedArrayView2D<char> data = mutableField(name);
+    const UnsignedInt fieldId = findFieldIdInternal(name);
+    CORRADE_ASSERT(fieldId != ~UnsignedInt{},
+        "Trade::SceneData::mutableField(): field" << name << "not found", {});
+    Containers::StridedArrayView2D<char> data = mutableField(fieldId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkFieldTypeCompatibility<T>(_fields[findFieldIdInternal(name)], "Trade::SceneData::mutableField():")) return {};
+    if(!checkFieldTypeCompatibility<T>(_fields[fieldId], "Trade::SceneData::mutableField():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }

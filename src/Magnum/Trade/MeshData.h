@@ -2598,45 +2598,55 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
 }
 
 template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attribute(const MeshAttribute name, const UnsignedInt id) const {
-    Containers::StridedArrayView2D<const char> data = attribute(name, id);
-    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
-    #endif
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    const Containers::StridedArrayView2D<const char> data = attribute(attributeId);
+    /* Unlike mutableAttribute(), the above can't fail, so no early return with
+       CORRADE_GRACEFUL_ASSERT */
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<1, const T>(data);
 }
 
 template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const MeshAttribute name, const UnsignedInt id) const {
-    Containers::StridedArrayView2D<const char> data = attribute(name, id);
-    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
-    if(!data.stride()[1]) return {};
-    #endif
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    const Containers::StridedArrayView2D<const char> data = attribute(attributeId);
+    /* Unlike mutableAttribute(), the above can't fail, so no early return with
+       CORRADE_GRACEFUL_ASSERT */
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::attribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
 
 template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id) {
-    Containers::StridedArrayView2D<char> data = mutableAttribute(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    Containers::StridedArrayView2D<char> data = mutableAttribute(attributeId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<1, T>(data);
 }
 
 template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id) {
-    Containers::StridedArrayView2D<char> data = mutableAttribute(name, id);
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    Containers::StridedArrayView2D<char> data = mutableAttribute(attributeId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    if(!checkVertexFormatCompatibility<T>(_attributes[findAttributeIdInternal(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
+    if(!checkVertexFormatCompatibility<T>(_attributes[attributeId], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
