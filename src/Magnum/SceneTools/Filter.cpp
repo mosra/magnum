@@ -311,8 +311,8 @@ template<class T> std::size_t filterObjectsImplementation(const Trade::SceneData
                 sharedMapping = fieldOffset;
                 fieldStorage[fieldOffset++] = {fieldId, mask};
                 /* Not bothering with rounding this to whole bytes as
-                Utility::copyMasked() has to special-case the begin/end
-                anyway */
+                   Utility::copyMasked() has to special-case the begin/end
+                   anyway */
                 maskOffset += mask.size();
             } else {
                 sharedMapping = ~UnsignedInt{};
