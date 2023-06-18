@@ -30,6 +30,7 @@
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/MeshTools/Copy.h"
+#include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -230,15 +231,11 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, const UnsignedInt vert
     /* Allocate new data array */
     Containers::Array<char> vertexData{NoInit, attributeData[0].stride()*vertexCount};
 
-    /* Convert the attributes from offset-only and zero vertex count to
-       absolute, referencing the above-allocated data array */
+    /* Convert the attributes from all being offset-only and zero vertex count
+       to absolute, referencing the above-allocated data array */
     for(Trade::MeshAttributeData& attribute: attributeData) {
-        attribute = Trade::MeshAttributeData{
-            attribute.name(), attribute.format(),
-            Containers::StridedArrayView1D<void>{vertexData,
-                vertexData + attribute.offset(vertexData),
-                vertexCount, attribute.stride()},
-            attribute.arraySize()};
+        CORRADE_INTERNAL_ASSERT(attribute.isOffsetOnly());
+        attribute = Implementation::remapAttributeData(attribute, vertexCount, vertexData, vertexData);
     }
 
     return Trade::MeshData{mesh.primitive(), std::move(vertexData), std::move(attributeData)};

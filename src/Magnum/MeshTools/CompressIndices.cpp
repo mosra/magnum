@@ -31,6 +31,7 @@
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/Copy.h"
+#include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -130,6 +131,7 @@ Trade::MeshData compressIndices(Trade::MeshData&& mesh, MeshIndexType atLeast) {
 
     /* Transfer vertex data as-is, as those don't need any changes. Release if
        possible. */
+    const Containers::ArrayView<const char> originalVertexData = mesh.vertexData();
     Containers::Array<char> vertexData;
     const UnsignedInt vertexCount = mesh.vertexCount();
     if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)
@@ -160,15 +162,12 @@ Trade::MeshData compressIndices(Trade::MeshData&& mesh, MeshIndexType atLeast) {
         result = compressIndicesImplementation<UnsignedByte>(indices, atLeast, offset);
     }
 
-    /* Recreate the attribute array */
+    /* Recreate the attribute array with each attribute being shifted by the
+       offset calculated above */
     const UnsignedInt newVertexCount = vertexCount - offset;
     Containers::Array<Trade::MeshAttributeData> attributeData{mesh.attributeCount()};
     for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
-        const UnsignedInt stride = mesh.attributeStride(i);
-        attributeData[i] = Trade::MeshAttributeData{mesh.attributeName(i),
-            mesh.attributeFormat(i),
-            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + mesh.attributeOffset(i) + offset*stride, newVertexCount, stride},
-            mesh.attributeArraySize(i)};
+        attributeData[i] = Implementation::remapAttributeData(mesh.attributeData(i), newVertexCount, originalVertexData, vertexData.exceptPrefix(offset*mesh.attributeStride(i)));
     }
 
     Trade::MeshIndexData indices{result.second(), result.first()};

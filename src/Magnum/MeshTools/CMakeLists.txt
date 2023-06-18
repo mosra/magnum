@@ -70,6 +70,7 @@ set(MagnumMeshTools_HEADERS
     visibility.h)
 
 set(MagnumMeshTools_INTERNAL_HEADERS
+    Implementation/remapAttributeData.h
     Implementation/Tipsify.h)
 
 if(MAGNUM_BUILD_DEPRECATED)

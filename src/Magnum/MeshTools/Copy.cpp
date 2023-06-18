@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #define _MAGNUM_NO_DEPRECATED_MESHTOOLS_REFERENCE
@@ -149,16 +150,8 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
             if(originalAttribute.isOffsetOnly())
                 attributeData[i] = originalAttribute;
 
-            /* Otherwise it's kinda verbose */
-            else attributeData[i] = Trade::MeshAttributeData{
-                originalAttribute.name(),
-                originalAttribute.format(),
-                Containers::StridedArrayView1D<const void>{
-                    vertexData,
-                    vertexData.data() + originalAttribute.offset(originalVertexData),
-                    vertexCount,
-                    originalAttribute.stride()},
-                originalAttribute.arraySize()};
+            /* Otherwise remap it to the new vertex data */
+            else attributeData[i] = Implementation::remapAttributeData(originalAttribute, vertexCount, originalVertexData, vertexData);
         }
     }
 

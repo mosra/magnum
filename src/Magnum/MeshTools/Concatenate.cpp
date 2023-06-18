@@ -29,6 +29,8 @@
 #include <unordered_map>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/MeshTools/Implementation/remapAttributeData.h"
+
 namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
@@ -69,14 +71,8 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
     /* Convert the attributes from offset-only and zero vertex count to
        absolute, referencing the vertex data array */
-    for(Trade::MeshAttributeData& attribute: attributeData) {
-        attribute = Trade::MeshAttributeData{
-            attribute.name(), attribute.format(),
-            Containers::StridedArrayView1D<void>{vertexData,
-                vertexData + attribute.offset(vertexData),
-                vertexCount, attribute.stride()},
-            attribute.arraySize()};
-    }
+    for(Trade::MeshAttributeData& attribute: attributeData)
+        attribute = Implementation::remapAttributeData(attribute, vertexCount, vertexData, vertexData);
 
     /* Only list primitives are supported currently */
     /** @todo delegate to `indexTriangleStrip()` (`duplicate*()`?) etc when

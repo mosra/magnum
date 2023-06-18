@@ -40,6 +40,7 @@
 #include "Magnum/MeshTools/Copy.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -456,13 +457,7 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
     /* Route all attributes to the new vertex data */
     Containers::Array<Trade::MeshAttributeData> attributeData{ownedInterleaved.attributeCount()};
     for(UnsignedInt i = 0; i != ownedInterleaved.attributeCount(); ++i)
-        attributeData[i] = Trade::MeshAttributeData{ownedInterleaved.attributeName(i),
-            ownedInterleaved.attributeFormat(i),
-            Containers::StridedArrayView1D<void>{uniqueVertexData,
-                uniqueVertexData.data() + ownedInterleaved.attributeOffset(i),
-                uniqueVertexCount,
-                ownedInterleaved.attributeStride(i)},
-            ownedInterleaved.attributeArraySize(i)};
+        attributeData[i] = Implementation::remapAttributeData(ownedInterleaved.attributeData(i), uniqueVertexCount, ownedInterleaved.vertexData(), uniqueVertexData);
 
     Trade::MeshIndexData indices{indexType, indexData};
     return Trade::MeshData{ownedInterleaved.primitive(),

@@ -31,6 +31,7 @@
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/Copy.h"
+#include "Magnum/MeshTools/Implementation/remapAttributeData.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -599,6 +600,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
 
     /* Transfer vertex / attribute data as-is, as those don't need any changes.
        Release if possible. */
+    const Containers::ArrayView<const char> originalVertexData = mesh.vertexData();
     Containers::Array<char> vertexData;
     if(mesh.vertexDataFlags() & Trade::DataFlag::Owned)
         vertexData = mesh.releaseVertexData();
@@ -611,12 +613,8 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
     /** @todo if the vertex data were moved and this array is owned, it
         wouldn't need to be recreated, but the logic is a bit complex */
     Containers::Array<Trade::MeshAttributeData> attributeData{mesh.attributeCount()};
-    for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
-        attributeData[i] = Trade::MeshAttributeData{mesh.attributeName(i),
-            mesh.attributeFormat(i),
-            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + mesh.attributeOffset(i), vertexCount, mesh.attributeStride(i)},
-            mesh.attributeArraySize(i)};
-    }
+    for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i)
+        attributeData[i] = Implementation::remapAttributeData(mesh.attributeData(i), vertexCount, originalVertexData, vertexData);
 
     /* Generate the index array */
     MeshPrimitive primitive;
