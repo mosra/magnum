@@ -28,6 +28,7 @@
 #include <Corrade/Containers/BitArray.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/BitAlgorithms.h>
 
 #include "Magnum/Trade/MaterialData.h"
 
@@ -99,13 +100,7 @@ Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialDa
     /* Copy attributes that aren't filtered away. Not using NoInit in order to
        use the default deleter and have this usable from plugins. */
     Containers::Array<Trade::MaterialAttributeData> attributes{patchedInputAttributesToKeep.count()};
-    /** @todo some copyMasked() utility */
-    UnsignedInt attributeOffset = 0;
-    for(UnsignedInt i = 0; i != totalAttributeCount; ++i) {
-        if(!patchedInputAttributesToKeep[i]) continue;
-        attributes[attributeOffset++] = material.attributeData()[i];
-    }
-    CORRADE_INTERNAL_ASSERT(attributeOffset == attributes.size());
+    Utility::copyMasked(material.attributeData(), patchedInputAttributesToKeep, attributes);
 
     return Trade::MaterialData{material.types() & typesToKeep, std::move(attributes), std::move(layers)};
 }

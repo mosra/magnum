@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/BitArray.h>
 #include <Corrade/Containers/BitArrayView.h>
+#include <Corrade/Utility/BitAlgorithms.h>
 
 #include "Magnum/Trade/MeshData.h"
 
@@ -43,14 +44,8 @@ Trade::MeshData filterAttributes(const Trade::MeshData& mesh, const Containers::
 
     /* Copy attributes that aren't filtered away. Not using NoInit in order to
        use the default deleter and have this usable from plugins. */
-    Containers::Array<Trade::MeshAttributeData> filtered{attributesToKeep.count()};
-    /** @todo some copyMasked() utility */
-    UnsignedInt attributeOffset = 0;
-    for(UnsignedInt i = 0; i != attributesToKeep.size(); ++i) {
-        if(!attributesToKeep[i]) continue;
-        filtered[attributeOffset++] = mesh.attributeData()[i];
-    }
-    CORRADE_INTERNAL_ASSERT(attributeOffset == filtered.size());
+    Containers::Array<Trade::MeshAttributeData> filtered{ValueInit, attributesToKeep.count()};
+    Utility::copyMasked(mesh.attributeData(), attributesToKeep, filtered);
 
     /* Can't do just Trade::MeshIndexData{data.indices()} as that would discard
        implementation-specific types. And can't do

@@ -42,14 +42,10 @@ Trade::SceneData filterFields(const Trade::SceneData& scene, const Containers::B
     CORRADE_ASSERT(fieldsToKeep.size() == scene.fieldCount(),
         "SceneTools::filterFields(): expected" << scene.fieldCount() << "bits but got" << fieldsToKeep.size(), (Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 0, nullptr, {}}));
 
+    /* Copy fields that aren't filtered away. Not using NoInit in order to use
+       the default deleter and have this usable from plugins. */
     Containers::Array<Trade::SceneFieldData> filtered{ValueInit, fieldsToKeep.count()};
-    std::size_t offset = 0;
-    /** @todo some "iterate set bits" API */
-    for(std::size_t i = 0; i != fieldsToKeep.size(); ++i) {
-        if(!fieldsToKeep[i]) continue;
-        filtered[offset++] = scene.fieldData(i);
-    }
-    CORRADE_INTERNAL_ASSERT(offset == filtered.size());
+    Utility::copyMasked(scene.fieldData(), fieldsToKeep, filtered);
 
     return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
         {}, scene.data(), std::move(filtered)};
