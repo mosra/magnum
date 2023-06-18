@@ -842,21 +842,19 @@ void SceneDataTest::debugFieldTypePacked() {
 
 void SceneDataTest::debugFieldFlag() {
     std::ostringstream out;
-
-    Debug(&out) << SceneFieldFlag::OffsetOnly << SceneFieldFlag(0xbe);
+    Debug{&out} << SceneFieldFlag::OffsetOnly << SceneFieldFlag(0xbe);
     CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly Trade::SceneFieldFlag(0xbe)\n");
 }
 
 void SceneDataTest::debugFieldFlagPacked() {
     std::ostringstream out;
     /* Last is not packed, ones before should not make any flags persistent */
-    Debug(&out) << Debug::packed << SceneFieldFlag::OffsetOnly << Debug::packed << SceneFieldFlag(0xbe) << SceneFieldFlag::ImplicitMapping;
+    Debug{&out} << Debug::packed << SceneFieldFlag::OffsetOnly << Debug::packed << SceneFieldFlag(0xbe) << SceneFieldFlag::ImplicitMapping;
     CORRADE_COMPARE(out.str(), "OffsetOnly 0xbe Trade::SceneFieldFlag::ImplicitMapping\n");
 }
 
 void SceneDataTest::debugFieldFlags() {
     std::ostringstream out;
-
     Debug{&out} << (SceneFieldFlag::OffsetOnly|SceneFieldFlag(0xe0)) << SceneFieldFlags{};
     CORRADE_COMPARE(out.str(), "Trade::SceneFieldFlag::OffsetOnly|Trade::SceneFieldFlag(0xe0) Trade::SceneFieldFlags{}\n");
 }
