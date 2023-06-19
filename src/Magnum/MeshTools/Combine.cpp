@@ -43,7 +43,7 @@ Trade::MeshData combineIndexedImplementation(
     #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
     const char* assertPrefix,
     #endif
-    const MeshPrimitive primitive, Containers::ArrayView<char> combinedIndices, const UnsignedInt indexCount, const UnsignedInt indexStride, const Containers::Iterable<const Trade::MeshData>& meshes)
+    const MeshPrimitive primitive, const Containers::StridedArrayView2D<char>& combinedIndices, const Containers::Iterable<const Trade::MeshData>& meshes)
 {
     /* Calculate attribute count and vertex stride */
     UnsignedInt attributeCount = 0;
@@ -61,10 +61,10 @@ Trade::MeshData combineIndexedImplementation(
     }
 
     /* Make the combined index array unique */
-    Containers::Array<char> indexData{indexCount*sizeof(UnsignedInt)};
+    Containers::Array<char> indexData{combinedIndices.size()[0]*sizeof(UnsignedInt)};
     const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
     const UnsignedInt vertexCount = removeDuplicatesInPlaceInto(
-        Containers::StridedArrayView2D<char>{combinedIndices, {indexCount, indexStride}},
+        combinedIndices,
         indexDataI);
 
     /* Allocate resulting attribute and vertex data and duplicate the
@@ -78,10 +78,9 @@ Trade::MeshData combineIndexedImplementation(
         for(const Trade::MeshData& mesh: meshes) {
             const UnsignedInt indexSize = mesh.isIndexed() ?
                 meshIndexTypeSize(mesh.indexType()) : 4;
-            Containers::StridedArrayView2D<const char> indices{combinedIndices,
-                combinedIndices.data() + indexOffset,
-                {vertexCount, indexSize},
-                {std::ptrdiff_t(indexStride), 1}};
+            Containers::StridedArrayView2D<const char> indices = combinedIndices.sliceSize(
+                {0, indexOffset},
+                {vertexCount, indexSize});
 
             for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
                 Containers::StridedArrayView2D<const char> src = mesh.attribute(i);
@@ -146,15 +145,14 @@ Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade:
         reading 32-bit values from odd addresses on some platforms) */
 
     /* Create a combined index array */
-    Containers::Array<char> combinedIndices{NoInit, indexCount*indexStride};
+    Containers::Array<char> combinedIndicesStorage{NoInit, indexCount*indexStride};
+    const Containers::StridedArrayView2D<char> combinedIndices{combinedIndicesStorage, {indexCount, indexStride}};
     {
         std::size_t indexOffset = 0;
         for(const Trade::MeshData& mesh: meshes) {
             const UnsignedInt indexSize = meshIndexTypeSize(mesh.indexType());
-            Containers::StridedArrayView2D<char> dst{combinedIndices,
-                combinedIndices.data() + indexOffset,
-                {indexCount, indexSize},
-                {std::ptrdiff_t(indexStride), 1}};
+            Containers::StridedArrayView2D<char> dst = combinedIndices
+                .sliceSize({0, indexOffset}, {indexCount, indexSize});
             Utility::copy(mesh.indices(), dst);
             indexOffset += indexSize;
         }
@@ -167,7 +165,7 @@ Trade::MeshData combineIndexedAttributes(const Containers::Iterable<const Trade:
         #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
         "MeshTools::combineIndexedAttributes():",
         #endif
-        primitive, combinedIndices, indexCount, indexStride, meshes);
+        primitive, combinedIndices, meshes);
 }
 
 Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::MeshData& faceAttributes) {
@@ -198,17 +196,18 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
         faceIndexSize = meshIndexTypeSize(faceAttributes.indexType());
     } else faceIndexSize = 4;
     const UnsignedInt indexStride = meshIndexSize + faceIndexSize;
-    Containers::Array<char> combinedIndices{NoInit, meshIndexCount*indexStride};
+    Containers::Array<char> combinedIndicesStorage{NoInit, meshIndexCount*indexStride};
+    const Containers::StridedArrayView2D<char> combinedIndices{combinedIndicesStorage, {meshIndexCount, indexStride}};
     Utility::copy(mesh.indices(),
-        Containers::StridedArrayView2D<char>{combinedIndices, {meshIndexCount, meshIndexSize}, {std::ptrdiff_t(indexStride), 1}});
+        combinedIndices.prefix({meshIndexCount, meshIndexSize}));
 
     /* Then, if the face attributes are not indexed, remove duplicates and put
        the resulting indices into the combined array above. For simplicity
        assume face data are interleaved. */
-    Containers::StridedArrayView3D<char> combinedFaceIndices{combinedIndices,
-        combinedIndices.data() + meshIndexSize,
-        {3, faceIndexCount, faceIndexSize},
-        {std::ptrdiff_t(indexStride), 3*std::ptrdiff_t(indexStride), 1}};
+    Containers::StridedArrayView3D<char> combinedFaceIndices = combinedIndices
+        .sliceSize({0, meshIndexSize}, {meshIndexCount, faceIndexSize})
+        .expanded<0>(Containers::Size2D{faceIndexCount, 3})
+        .transposed<0, 1>();
     if(!faceAttributes.isIndexed()) {
         /** @todo this could go into a dedicated removeDuplicates(MeshData)
             feature at some point, which would handle everything including
@@ -230,7 +229,7 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
         #if !defined(CORRADE_NO_ASSERT) && !defined(CORRADE_STANDARD_ASSERT)
         "MeshTools::combineFaceAttributes():",
         #endif
-        mesh.primitive(), combinedIndices, meshIndexCount, indexStride, {
+        mesh.primitive(), combinedIndices, {
             mesh, faceAttributes
         });
 }
