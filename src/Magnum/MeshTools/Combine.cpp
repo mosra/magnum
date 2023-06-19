@@ -61,7 +61,7 @@ Trade::MeshData combineIndexedImplementation(
     }
 
     /* Make the combined index array unique */
-    Containers::Array<char> indexData{combinedIndices.size()[0]*sizeof(UnsignedInt)};
+    Containers::Array<char> indexData{NoInit, combinedIndices.size()[0]*sizeof(UnsignedInt)};
     const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
     const UnsignedInt vertexCount = removeDuplicatesInPlaceInto(
         combinedIndices,
