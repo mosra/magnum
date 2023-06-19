@@ -81,8 +81,8 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributeWrongSize();
     #endif
     void constructAttributeWrongStride();
-    void constructAttributeWrongDataAccess();
     void constructAttributeOnlyArrayAllowed();
+    void constructAttributeWrongDataAccess();
 
     void constructArrayAttribute();
     void constructArrayAttributeNonContiguous();
@@ -271,8 +271,8 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttributeWrongSize,
               #endif
               &MeshDataTest::constructAttributeWrongStride,
-              &MeshDataTest::constructAttributeWrongDataAccess,
               &MeshDataTest::constructAttributeOnlyArrayAllowed,
+              &MeshDataTest::constructAttributeWrongDataAccess,
 
               &MeshDataTest::constructArrayAttribute,
               &MeshDataTest::constructArrayAttributeNonContiguous,
