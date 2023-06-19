@@ -45,6 +45,13 @@ Trade::MeshData combineIndexedImplementation(
     #endif
     const MeshPrimitive primitive, const Containers::StridedArrayView2D<char>& combinedIndices, const Containers::Iterable<const Trade::MeshData>& meshes)
 {
+    /* Make the combined index array unique */
+    Containers::Array<char> indexData{NoInit, combinedIndices.size()[0]*sizeof(UnsignedInt)};
+    const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
+    const UnsignedInt vertexCount = removeDuplicatesInPlaceInto(
+        combinedIndices,
+        indexDataI);
+
     /* Calculate attribute count and vertex stride */
     UnsignedInt attributeCount = 0;
     UnsignedInt vertexStride = 0;
@@ -59,13 +66,6 @@ Trade::MeshData combineIndexedImplementation(
             vertexStride += vertexFormatSize(format)*Math::max(meshes[i].attributeArraySize(j), UnsignedShort{1});
         }
     }
-
-    /* Make the combined index array unique */
-    Containers::Array<char> indexData{NoInit, combinedIndices.size()[0]*sizeof(UnsignedInt)};
-    const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
-    const UnsignedInt vertexCount = removeDuplicatesInPlaceInto(
-        combinedIndices,
-        indexDataI);
 
     /* Allocate resulting attribute and vertex data and duplicate the
        attributes there according to the combined index buffer */
