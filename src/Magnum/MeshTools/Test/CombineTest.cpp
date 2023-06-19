@@ -112,7 +112,9 @@ void CombineTest::combineIndexedAttributes() {
     Trade::MeshData c{MeshPrimitive::LineLoop,
         {}, indicesC, Trade::MeshIndexData{indicesC},
         {}, dataC, {Trade::MeshAttributeData{
-            Trade::meshAttributeCustom(22), Containers::arrayView(dataC)}}};
+            /* Offset-only to verify these aren't causing any issues
+               internally */
+            Trade::meshAttributeCustom(22), VertexFormat::Float, 0, 8, sizeof(Float)}}};
 
     Trade::MeshData result = MeshTools::combineIndexedAttributes({a, b, c});
     CORRADE_COMPARE(result.primitive(), MeshPrimitive::LineLoop);
