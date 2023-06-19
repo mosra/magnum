@@ -52,29 +52,40 @@ Trade::MeshData combineIndexedImplementation(
         combinedIndices,
         indexDataI);
 
-    /* Calculate attribute count and vertex stride */
-    UnsignedInt attributeCount = 0;
-    UnsignedInt vertexStride = 0;
-    for(std::size_t i = 0; i != meshes.size(); ++i) {
-        attributeCount += meshes[i].attributeCount();
-        for(UnsignedInt j = 0; j != meshes[i].attributeCount(); ++j) {
-            const VertexFormat format = meshes[i].attributeFormat(j);
-            CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-                assertPrefix << "attribute" << j << "of mesh" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
-                (Trade::MeshData{MeshPrimitive::Points, 0}));
-
-            vertexStride += vertexFormatSize(format)*Math::max(meshes[i].attributeArraySize(j), UnsignedShort{1});
+    /* Gather attributes of all input meshes together */
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    {
+        UnsignedInt attributeCount = 0;
+        for(const Trade::MeshData& mesh: meshes)
+            attributeCount += mesh.attributeCount();
+        attributes = Containers::Array<Trade::MeshAttributeData>{ValueInit, attributeCount};
+        UnsignedInt attributeOffset = 0;
+        for(std::size_t i = 0; i != meshes.size(); ++i) {
+            const Trade::MeshData& mesh = meshes[i];
+            for(std::size_t j = 0; j != mesh.attributeCount(); ++j) {
+                const VertexFormat format = mesh.attributeFormat(j);
+                /* While interleavedLayout() has the same assert, we'd have no
+                   way to detect if we should bail early if it triggers, so
+                   this is easier; plus the user gets a less confusing function
+                   name in the message */
+                CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+                    assertPrefix << "attribute" << j << "of mesh" << i << "has an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
+                    (Trade::MeshData{MeshPrimitive::Points, 0}));
+                attributes[attributeOffset++] = mesh.attributeData(j);
+            }
         }
     }
 
-    /* Allocate resulting attribute and vertex data and duplicate the
-       attributes there according to the combined index buffer */
-    Containers::Array<char> vertexData{NoInit, vertexStride*vertexCount};
-    Containers::Array<Trade::MeshAttributeData> attributeData{attributeCount};
+    /* Allocate an interleaved layout */
+    /** @todo support InterleaveFlag::PreserveInterleavedAttributes here, for
+        example by putting all the attributes into the MeshData instance and
+        not as extras? */
+    Trade::MeshData out = interleavedLayout(Trade::MeshData{primitive, 0}, vertexCount, attributes, InterleaveFlags{});
+
+    /* Duplicate the attributes there according to the combined index buffer */
     {
-        std::size_t indexOffset = 0;
-        std::size_t attributeOffset = 0;
-        std::size_t vertexOffset = 0;
+        UnsignedInt indexOffset = 0;
+        UnsignedInt attributeOffset = 0;
         for(const Trade::MeshData& mesh: meshes) {
             const UnsignedInt indexSize = mesh.isIndexed() ?
                 meshIndexTypeSize(mesh.indexType()) : 4;
@@ -82,29 +93,19 @@ Trade::MeshData combineIndexedImplementation(
                 {0, indexOffset},
                 {vertexCount, indexSize});
 
-            for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
-                Containers::StridedArrayView2D<const char> src = mesh.attribute(i);
-                Containers::StridedArrayView2D<char> dst{vertexData,
-                    vertexData.data() + vertexOffset,
-                    {vertexCount, src.size()[1]},
-                    {std::ptrdiff_t(vertexStride), 1}};
-                duplicateInto(indices, src, dst);
-                vertexOffset += src.size()[1];
-                attributeData[attributeOffset++] = Trade::MeshAttributeData{
-                    mesh.attributeName(i), mesh.attributeFormat(i), dst,
-                    mesh.attributeArraySize(i)};
-            }
+            for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i)
+                duplicateInto(indices,
+                    mesh.attribute(i),
+                    out.mutableAttribute(attributeOffset++));
 
             indexOffset += indexSize;
         }
-
-        /* Check we pre-calculated correctly */
-        CORRADE_INTERNAL_ASSERT(attributeOffset == attributeCount && vertexOffset == vertexStride);
     }
 
+    /* Combine the index buffer in */
     return Trade::MeshData{primitive,
         std::move(indexData), Trade::MeshIndexData{indexDataI},
-        std::move(vertexData), std::move(attributeData), vertexCount};
+        out.releaseVertexData(), out.releaseAttributeData(), vertexCount};
 }
 
 }
