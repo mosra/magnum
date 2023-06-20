@@ -2,7 +2,7 @@ Mesh 0:
   Level 0: 50 vertices @ Points (0.6 kB, ExternallyOwned|Mutable)
     Position @ Vector3, offset 0, stride 12
     70 indices @ UnsignedShort, offset 0, stride 2 (0.1 kB, ExternallyOwned)
-Mesh 1: LODs? No, meshets.
+Mesh 1: LODs? No, meshlets.
   Level 0: 250 vertices @ Triangles (6.8 kB)
     Position @ Vector3, offset 0, stride 12
     Tangent @ Vector4, offset 3000, stride 16

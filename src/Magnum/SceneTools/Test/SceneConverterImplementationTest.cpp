@@ -681,7 +681,7 @@ void SceneConverterImplementationTest::infoMeshes() {
             return id == 1 ? 2 : 1;
         }
         Containers::String doMeshName(UnsignedInt id) override {
-            return id == 1 ? "LODs? No, meshets." : "";
+            return id == 1 ? "LODs? No, meshlets." : "";
         }
         Containers::String doMeshAttributeName(Trade::MeshAttribute name) override {
             if(name == Trade::meshAttributeCustom(25)) return "vertices";
