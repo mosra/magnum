@@ -769,6 +769,9 @@ See also:
 -   @ref Trade::MeshData now allows array attributes to have
     implementation-specific vertex formats as well. The restriction didn't make
     sense, as there was nothing in the design preventing them from being used.
+-   @ref Trade::MeshData can now store morph target attributes next to the
+    base attributes, they're then accessed using a concrete morph target ID in
+    name-based lookup APIs
 -   Added @ref Trade::MeshData::findAttributeId() for an ability to check that
     an attribute exists and retrieve its ID in a single step, avoiding a double
     lookup compared to @relativeref{Trade::MeshData,hasAttribute()} +

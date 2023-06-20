@@ -161,8 +161,8 @@ See also @ref transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Interl
 for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using @ref transform2DInPlace().
 @see @ref transform3D(), @ref transformTextureCoordinates2D(),
-    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
-    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const,
+    @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
     @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
@@ -191,8 +191,8 @@ packed types, the in-place operation requires the position type to be
 @p id, and indices (if any) are left untouched.
 @see @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
-    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
-    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+    @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const
 */
 MAGNUM_MESHTOOLS_EXPORT void transform2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0);
 
@@ -219,8 +219,8 @@ See also @ref transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt, Interl
 for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using @ref transform3DInPlace().
 @see @ref transform2D(), @ref transformTextureCoordinates2D(),
-    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
-    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const,
+    @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
     @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
@@ -255,8 +255,8 @@ operation requires the position, normal and bitangent types to be
 than @p id, and indices (if any) are left untouched.
 @see @ref transform2DInPlace(), @ref transformTextureCoordinates2DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
-    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
-    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+    @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const
 */
 MAGNUM_MESHTOOLS_EXPORT void transform3DInPlace(Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0);
 
@@ -277,7 +277,7 @@ for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using
 @ref transformTextureCoordinates2DInPlace().
 @see @ref transform2D(), @ref transform3D(),
-    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
+    @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
     @ref isVertexFormatImplementationSpecific()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
@@ -308,8 +308,8 @@ coordinate attributes other than @p id, and indices (if any) are passed through
 untouched.
 @see @ref transform2DInPlace(), @ref transform3DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
-    @ref Trade::MeshData::attributeCount(MeshAttribute) const,
-    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt) const
+    @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
+    @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const
 */
 MAGNUM_MESHTOOLS_EXPORT void transformTextureCoordinates2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0);
 

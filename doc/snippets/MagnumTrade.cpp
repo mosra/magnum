@@ -869,6 +869,23 @@ MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{2.0f}),
 
 {
 Trade::MeshData data{MeshPrimitive::Points, 0};
+/* [MeshData-usage-morph-targets] */
+Float weights[]{0.25f, 0.5f};
+
+/* Calculate morphed positions with the above weights, assuming the mesh has
+   a Vector3 Position attribute in morph targets 0 and 1 */
+Containers::Array<Vector3> positions = data.positions3DAsArray(0, -1);
+for(Int morphTargetId: {0, 1}) {
+    Containers::StridedArrayView1D<const Vector3> morphed =
+        data.attribute<Vector3>(Trade::MeshAttribute::Position, 0, morphTargetId);
+    for(std::size_t i = 0; i != data.vertexCount(); ++i)
+        positions[i] += morphed[i]*weights[morphTargetId];
+}
+/* [MeshData-usage-morph-targets] */
+}
+
+{
+Trade::MeshData data{MeshPrimitive::Points, 0};
 /* [MeshData-usage-special-layouts] */
 if(data.attributeStride(Trade::MeshAttribute::Position) <= 0 ||
    data.attributeStride(Trade::MeshAttribute::Normal) <= 0 ||

@@ -604,7 +604,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     `isVertexFormatCompatibleWithAttribute()` if there's more than one entry
     corresponding to a particular C++ type. If the mapping is unconventional,
     be sure to mention it in the
-    @ref Trade::MeshAttributeData::MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&)
+    @ref Trade::MeshAttributeData::MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&, Int)
     constructor docs.
 4.  Update corresponding `Trade::MeshData::*Into()` convenience getters to
     ensure they can handle this type

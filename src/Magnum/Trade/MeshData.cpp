@@ -59,13 +59,13 @@ MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& d
         "Trade::MeshIndexData: second view dimension is not contiguous", );
 }
 
-MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize) noexcept: MeshAttributeData{nullptr, name, format, data, arraySize} {
+MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, const UnsignedShort arraySize, const Int morphTargetId) noexcept: MeshAttributeData{nullptr, name, format, data, arraySize, morphTargetId} {
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
 }
 
-MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView2D<const char>& data, UnsignedShort arraySize) noexcept: MeshAttributeData{nullptr, name, format, Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, arraySize} {
+MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView2D<const char>& data, UnsignedShort arraySize, const Int morphTargetId) noexcept: MeshAttributeData{nullptr, name, format, Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, arraySize, morphTargetId} {
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
@@ -218,6 +218,12 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
                     "Trade::MeshData: attribute" << i << "[" << Debug::nospace << reinterpret_cast<const void*>(begin) << Debug::nospace << ":" << Debug::nospace << reinterpret_cast<const void*>(end) << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
             }
         }
+
+        /** @todo verify that (custom) integer attributes aren't morph targets?
+            (can't check that in MeshAttributeData constructors as
+            isVertexFormatInteger() -- once implemented -- wouldn't be
+            constexpr); or just leave that unchecked, as those are often used
+            for custom unheard-of behavior anyway? */
     }
 
     /* Verify that count and array sizes of skin joint IDs and weights match */
@@ -371,11 +377,19 @@ Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(c
         _vertexCount, attribute._stride};
 }
 
+UnsignedInt MeshData::attributeCount(const Int morphTargetId) const {
+    UnsignedInt count = 0;
+    for(const MeshAttributeData& attribute: _attributes)
+        if(attribute._morphTargetId == morphTargetId)
+            ++count;
+    return count;
+}
+
 MeshAttributeData MeshData::attributeData(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeData(): index" << id << "out of range for" << _attributes.size() << "attributes", MeshAttributeData{});
     const MeshAttributeData& attribute = _attributes[id];
-    return MeshAttributeData{attribute._name, attribute._format, attributeDataViewInternal(attribute), attribute._arraySize};
+    return MeshAttributeData{attribute._name, attribute._format, attributeDataViewInternal(attribute), attribute._arraySize, attribute._morphTargetId};
 }
 
 MeshAttribute MeshData::attributeName(const UnsignedInt id) const {
@@ -388,9 +402,12 @@ UnsignedInt MeshData::attributeId(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeId(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
     const MeshAttribute name = _attributes[id]._name;
+    const Int morphTargetId = _attributes[id]._morphTargetId;
     UnsignedInt count = 0;
     for(UnsignedInt i = 0; i != id; ++i)
-        if(_attributes[i]._name == name) ++count;
+        if(_attributes[i]._name == name &&
+           _attributes[i]._morphTargetId == morphTargetId)
+            ++count;
     return count;
 }
 
@@ -419,54 +436,89 @@ UnsignedShort MeshData::attributeArraySize(const UnsignedInt id) const {
     return _attributes[id]._arraySize;
 }
 
-UnsignedInt MeshData::attributeCount(const MeshAttribute name) const {
+Int MeshData::attributeMorphTargetId(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < _attributes.size(),
+        "Trade::MeshData::attributeMorphTargetId(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
+    return _attributes[id]._morphTargetId;
+}
+
+UnsignedInt MeshData::attributeCount(const MeshAttribute name, const Int morphTargetId) const {
     UnsignedInt count = 0;
     for(const MeshAttributeData& attribute: _attributes)
-        if(attribute._name == name) ++count;
+        if(attribute._name == name &&
+           attribute._morphTargetId == morphTargetId)
+            ++count;
     return count;
 }
 
-UnsignedInt MeshData::findAttributeIdInternal(const MeshAttribute name, UnsignedInt id) const {
+UnsignedInt MeshData::findAttributeIdInternal(const MeshAttribute name, UnsignedInt id, const Int morphTargetId) const {
     for(std::size_t i = 0; i != _attributes.size(); ++i) {
-        if(_attributes[i]._name != name) continue;
+        if(_attributes[i]._name != name ||
+           _attributes[i]._morphTargetId != morphTargetId)
+            continue;
         if(id-- == 0) return i;
     }
     return ~UnsignedInt{};
 }
 
-Containers::Optional<UnsignedInt> MeshData::findAttributeId(const MeshAttribute name, UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
+Containers::Optional<UnsignedInt> MeshData::findAttributeId(const MeshAttribute name, UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
     return attributeId == ~UnsignedInt{} ? Containers::Optional<UnsignedInt>{} : attributeId;
 }
 
-UnsignedInt MeshData::attributeId(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeId(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+UnsignedInt MeshData::attributeId(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeId(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeId(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     return attributeId;
 }
 
-VertexFormat MeshData::attributeFormat(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+VertexFormat MeshData::attributeFormat(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     return _attributes[attributeId]._format;
 }
 
-std::size_t MeshData::attributeOffset(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+std::size_t MeshData::attributeOffset(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     /* Calculation is non-trivial, delegating */
     return attributeOffset(attributeId);
 }
 
-Short MeshData::attributeStride(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeStride(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+Short MeshData::attributeStride(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeStride(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeStride(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     return _attributes[attributeId]._stride;
 }
 
-UnsignedShort MeshData::attributeArraySize(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+UnsignedShort MeshData::attributeArraySize(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     return _attributes[attributeId]._arraySize;
 }
 
@@ -502,17 +554,27 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const UnsignedIn
         out.size(), out.stride()};
 }
 
-Containers::StridedArrayView2D<const char> MeshData::attribute(const MeshAttribute name, UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+Containers::StridedArrayView2D<const char> MeshData::attribute(const MeshAttribute name, UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     return attribute(attributeId);
 }
 
-Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const MeshAttribute name, UnsignedInt id) {
+Containers::StridedArrayView2D<char> MeshData::mutableAttribute(const MeshAttribute name, UnsignedInt id, const Int morphTargetId) {
     CORRADE_ASSERT(_vertexDataFlags & DataFlag::Mutable,
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     return mutableAttribute(attributeId);
 }
 
@@ -544,9 +606,14 @@ Containers::Array<UnsignedInt> MeshData::indicesAsArray() const {
     return output;
 }
 
-void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Position, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
+void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Position, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::positions2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position, morphTargetId) << "position attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::positions2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position, morphTargetId) << "position attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -588,15 +655,20 @@ void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2>& de
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Containers::Array<Vector2> MeshData::positions2DAsArray(const UnsignedInt id) const {
+Containers::Array<Vector2> MeshData::positions2DAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Vector2> out{NoInit, _vertexCount};
-    positions2DInto(out, id);
+    positions2DInto(out, id, morphTargetId);
     return out;
 }
 
-void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Position, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions3DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
+void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Position, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::positions3DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position, morphTargetId) << "position attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::positions3DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position, morphTargetId) << "position attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions3DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -669,9 +741,9 @@ void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3>& de
     }
 }
 
-Containers::Array<Vector3> MeshData::positions3DAsArray(const UnsignedInt id) const {
+Containers::Array<Vector3> MeshData::positions3DAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Vector3> out{NoInit, _vertexCount};
-    positions3DInto(out, id);
+    positions3DInto(out, id, morphTargetId);
     return out;
 }
 
@@ -693,9 +765,14 @@ void tangentsOrNormalsInto(const Containers::StridedArrayView1D<const void>& att
 
 }
 
-void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Tangent, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::tangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
+void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Tangent, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::tangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent, morphTargetId) << "tangent attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::tangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent, morphTargetId) << "tangent attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::tangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -716,15 +793,20 @@ void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3>& desti
     tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, format);
 }
 
-Containers::Array<Vector3> MeshData::tangentsAsArray(const UnsignedInt id) const {
+Containers::Array<Vector3> MeshData::tangentsAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Vector3> out{NoInit, _vertexCount};
-    tangentsInto(out, id);
+    tangentsInto(out, id, morphTargetId);
     return out;
 }
 
-void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Tangent, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentSignsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
+void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Tangent, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::bitangentSignsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent, morphTargetId) << "tangent attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::bitangentSignsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent, morphTargetId) << "tangent attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentSignsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -743,15 +825,20 @@ void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float>& d
     else CORRADE_ASSERT_UNREACHABLE("Trade::MeshData::bitangentSignsInto(): expected four-component tangents, but got" << attribute._format, );
 }
 
-Containers::Array<Float> MeshData::bitangentSignsAsArray(const UnsignedInt id) const {
+Containers::Array<Float> MeshData::bitangentSignsAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Float> out{NoInit, _vertexCount};
-    bitangentSignsInto(out, id);
+    bitangentSignsInto(out, id, morphTargetId);
     return out;
 }
 
-void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Bitangent, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Bitangent) << "bitangent attributes", );
+void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Bitangent, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::bitangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Bitangent, morphTargetId) << "bitangent attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::bitangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Bitangent, morphTargetId) << "bitangent attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -759,15 +846,20 @@ void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3>& des
     tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, attribute._format);
 }
 
-Containers::Array<Vector3> MeshData::bitangentsAsArray(const UnsignedInt id) const {
+Containers::Array<Vector3> MeshData::bitangentsAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Vector3> out{NoInit, _vertexCount};
-    bitangentsInto(out, id);
+    bitangentsInto(out, id, morphTargetId);
     return out;
 }
 
-void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Normal, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::normalsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Normal) << "normal attributes", );
+void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Normal, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::normalsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Normal, morphTargetId) << "normal attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::normalsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Normal, morphTargetId) << "normal attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::normalsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -775,15 +867,20 @@ void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3>& destin
     tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, attribute._format);
 }
 
-Containers::Array<Vector3> MeshData::normalsAsArray(const UnsignedInt id) const {
+Containers::Array<Vector3> MeshData::normalsAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Vector3> out{NoInit, _vertexCount};
-    normalsInto(out, id);
+    normalsInto(out, id, morphTargetId);
     return out;
 }
 
-void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::TextureCoordinates, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::textureCoordinates2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::TextureCoordinates) << "texture coordinate attributes", );
+void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::TextureCoordinates, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::textureCoordinates2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::TextureCoordinates, morphTargetId) << "texture coordinate attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::textureCoordinates2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::TextureCoordinates, morphTargetId) << "texture coordinate attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::textureCoordinates2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -814,15 +911,20 @@ void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vec
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Containers::Array<Vector2> MeshData::textureCoordinates2DAsArray(const UnsignedInt id) const {
+Containers::Array<Vector2> MeshData::textureCoordinates2DAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Vector2> out{NoInit, _vertexCount};
-    textureCoordinates2DInto(out, id);
+    textureCoordinates2DInto(out, id, morphTargetId);
     return out;
 }
 
-void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Color, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::colorsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Color) << "color attributes", );
+void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4>& destination, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Color, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::colorsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Color, morphTargetId) << "color attributes", );
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::colorsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Color, morphTargetId) << "color attributes in morph target" << morphTargetId, );
+    #endif
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::colorsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
@@ -867,14 +969,15 @@ void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4>& destinat
     }
 }
 
-Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {
+Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id, const Int morphTargetId) const {
     Containers::Array<Color4> out{NoInit, _vertexCount};
-    colorsInto(out, id);
+    colorsInto(out, id, morphTargetId);
     return out;
 }
 
 void MeshData::jointIdsInto(const Containers::StridedArrayView2D<UnsignedInt>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::JointIds, id);
+    /* Joint IDs can't have morph targets */
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::JointIds, id, -1);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{},
         "Trade::MeshData::jointIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "joint ID attributes", );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -899,7 +1002,8 @@ void MeshData::jointIdsInto(const Containers::StridedArrayView2D<UnsignedInt>& d
 }
 
 Containers::Array<UnsignedInt> MeshData::jointIdsAsArray(const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::JointIds, id);
+    /* Joint IDs can't have morph targets */
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::JointIds, id, -1);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{},
         "Trade::MeshData::jointIdsAsArray(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "joint ID attributes", {});
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -909,7 +1013,8 @@ Containers::Array<UnsignedInt> MeshData::jointIdsAsArray(const UnsignedInt id) c
 }
 
 void MeshData::weightsInto(const Containers::StridedArrayView2D<Float>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Weights, id);
+    /* Weights can't have morph targets */
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Weights, id, -1);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{},
         "Trade::MeshData::weightsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Weights) << "weight attributes", );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -936,7 +1041,8 @@ void MeshData::weightsInto(const Containers::StridedArrayView2D<Float>& destinat
 }
 
 Containers::Array<Float> MeshData::weightsAsArray(const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Weights, id);
+    /* Weights can't have morph targets */
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::Weights, id, -1);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::weightsAsArray(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "weight attributes", {});
     const MeshAttributeData& attribute = _attributes[attributeId];
     Containers::Array<Float> out{_vertexCount*attribute._arraySize};
@@ -945,7 +1051,8 @@ Containers::Array<Float> MeshData::weightsAsArray(const UnsignedInt id) const {
 }
 
 void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& destination, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::ObjectId, id);
+    /* Object IDs can't have morph targets */
+    const UnsignedInt attributeId = findAttributeIdInternal(MeshAttribute::ObjectId, id, -1);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::objectIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::ObjectId) << "object ID attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::objectIdsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
@@ -965,6 +1072,7 @@ void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt>& 
 
 Containers::Array<UnsignedInt> MeshData::objectIdsAsArray(const UnsignedInt id) const {
     Containers::Array<UnsignedInt> out{NoInit, _vertexCount};
+    /* Object IDs can't have morph targets */
     objectIdsInto(out, id);
     return out;
 }

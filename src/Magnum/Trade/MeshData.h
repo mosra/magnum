@@ -102,6 +102,10 @@ enum class MeshAttribute: UnsignedShort {
      *
      * @snippet MagnumTrade.cpp MeshAttribute-bitangent-from-tangent
      *
+     * When used as a morph target attribute, the handedness shouldn't change
+     * compared to the base attribute. It's not checked or enforced in any way
+     * though.
+     *
      * Corresponds to @ref Shaders::GenericGL::Tangent or
      * @ref Shaders::GenericGL::Tangent4.
      * @see @ref MeshData::tangentsAsArray(),
@@ -114,8 +118,13 @@ enum class MeshAttribute: UnsignedShort {
      * @ref VertexFormat::Vector3h, @ref VertexFormat::Vector3bNormalized or
      * @ref VertexFormat::Vector3sNormalized. For better storage efficiency,
      * the bitangent can be also reconstructed from the normal and tangent, see
-     * @ref MeshAttribute::Tangent for more information. Corresponds to
-     * @ref Shaders::GenericGL::Bitangent.
+     * @ref MeshAttribute::Tangent for more information.
+     *
+     * When used as a morph target attribute, the handedness shouldn't change
+     * compared to the base attribute. It's not checked or enforced in any way
+     * though.
+     *
+     * Corresponds to @ref Shaders::GenericGL::Bitangent.
      * @see @ref MeshData::bitangentsAsArray()
      */
     Bitangent,
@@ -164,7 +173,8 @@ enum class MeshAttribute: UnsignedShort {
      *
      * Count of instances of this attribute and array size of each instance is
      * expected to match instance count and array sizes of
-     * @ref MeshAttribute::Weights.
+     * @ref MeshAttribute::Weights. This attribute isn't allowed to be a morph
+     * target.
      *
      * Corresponds to @ref Shaders::GenericGL::JointIds and
      * @ref Shaders::GenericGL::SecondaryJointIds, divided between them based
@@ -185,7 +195,8 @@ enum class MeshAttribute: UnsignedShort {
      *
      * Count of instances of this attribute and array size of each instance is
      * expected to match instance count and array sizes of
-     * @ref MeshAttribute::JointIds.
+     * @ref MeshAttribute::JointIds. This attribute isn't allowed to be a morph
+     * target.
      *
      * Corresponds to @ref Shaders::GenericGL::Weights and
      * @ref Shaders::GenericGL::SecondaryWeights, divided between them based
@@ -199,6 +210,9 @@ enum class MeshAttribute: UnsignedShort {
      * (Instanced) object ID for editor selection or scene annotation. Type is
      * usually @ref VertexFormat::UnsignedInt, but can be also
      * @ref VertexFormat::UnsignedShort or @ref VertexFormat::UnsignedByte.
+     *
+     * This attribute isn't allowed to be a morph target.
+     *
      * Corresponds to @ref Shaders::GenericGL::ObjectId.
      * @see @ref MeshData::objectIdsAsArray()
      */
@@ -407,7 +421,7 @@ supply @ref VertexFormat explicitly.
 @subsection Trade-MeshAttributeData-usage-offset-only Offset-only attribute data
 
 If the actual attribute data location is not known yet, the instance can be
-created as "offset-only" using @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t, UnsignedShort),
+created as "offset-only" using @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t, UnsignedShort, Int),
 meaning the actual view gets created only later when passed to a @ref MeshData
 instance with a concrete vertex data array. This is useful mainly to avoid
 pointer patching during data serialization, but also for example when vertex
@@ -445,15 +459,17 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * initialization of the attribute array for @ref MeshData, expected to
          * be replaced with concrete values later.
          */
-        constexpr explicit MeshAttributeData() noexcept: _format{}, _name{}, _isOffsetOnly{false}, _vertexCount{}, _stride{}, _arraySize{}, _data{} {}
+        constexpr explicit MeshAttributeData() noexcept: _format{}, _name{}, _isOffsetOnly{false}, _morphTargetId{-1}, _vertexCount{}, _stride{}, _arraySize{}, _data{} {}
 
         /**
          * @brief Type-erased constructor
-         * @param name      Attribute name
-         * @param format    Vertex format
-         * @param data      Attribute data
-         * @param arraySize Array size. Use @cpp 0 @ce for non-array
+         * @param name              Attribute name
+         * @param format            Vertex format
+         * @param data              Attribute data
+         * @param arraySize         Array size. Use @cpp 0 @ce for non-array
          *      attributes.
+         * @param morphTargetId     Morph target ID. Use @cpp -1 @ce for
+         *      attributes that are not morph targets.
          *
          * Expects that @p data stride fits into a signed 16-bit value, that
          * vertex count fits into 32 bits, and for builtin attributes that
@@ -462,15 +478,17 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * can be zero or negative, but note that such data layouts are not
          * commonly supported by GPU APIs.
          */
-        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize = 0) noexcept;
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept;
 
         /**
          * @brief Constructor
-         * @param name      Attribute name
-         * @param format    Vertex format
-         * @param data      Attribute data
-         * @param arraySize Array size. Use @cpp 0 @ce for non-array
+         * @param name              Attribute name
+         * @param format            Vertex format
+         * @param data              Attribute data
+         * @param arraySize         Array size. Use @cpp 0 @ce for non-array
          *      attributes.
+         * @param morphTargetId     Morph target ID. Use @cpp -1 @ce for
+         *      attributes that are not morph targets.
          *
          * Expects that the second dimension of @p data is contiguous and its
          * size matches @p format and @p arraySize, and for builtin attributes
@@ -480,18 +498,28 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * or negative, but note that such data layouts are not commonly
          * supported by GPU APIs.
          */
-        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView2D<const char>& data, UnsignedShort arraySize = 0) noexcept;
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView2D<const char>& data, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept;
 
         /** @overload */
-        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, std::nullptr_t, UnsignedShort arraySize = 0) noexcept: MeshAttributeData{nullptr, name, format, nullptr, arraySize} {}
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, std::nullptr_t, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept;
+        #else
+        /* Extra template crap is needed to avoid ambiguity with the
+           offset-only constructor (where 0 passed to offset would match with
+           std::nullptr_t). 0 as null pointer constant was deprecated in C++11
+           already, WHY IS THIS STILL A PROBLEM?! */
+        template<class U, class = typename std::enable_if<std::is_convertible<U, std::nullptr_t>::value && !std::is_convertible<U, std::size_t>::value>::type> explicit MeshAttributeData(MeshAttribute name, VertexFormat format, U, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept: MeshAttributeData{nullptr, name, format, nullptr, arraySize, morphTargetId} {}
+        #endif
 
         /**
          * @brief Constructor
-         * @param name      Attribute name
-         * @param data      Attribute data
+         * @param name              Attribute name
+         * @param data              Attribute data
+         * @param morphTargetId     Morph target ID. Use @cpp -1 @ce for
+         *      attributes that are not morph targets.
          *
          * Detects @ref VertexFormat based on @p T and calls
-         * @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&, UnsignedShort).
+         * @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&, UnsignedShort, Int).
          * For most types known by Magnum, the detected @ref VertexFormat is of
          * the same name as the type (so e.g. @ref Magnum::Vector3ui "Vector3ui"
          * gets recognized as @ref VertexFormat::Vector3ui), with the
@@ -522,34 +550,38 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * @todo Pick a type based on the combination of T and name? E.g., for
          *      a Tangent it would pick Vector3sNormalized instead of Vector3s
          */
-        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept;
+        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data, Int morphTargetId = -1) noexcept;
 
         /** @overload */
-        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::ArrayView<T>& data) noexcept: MeshAttributeData{name, Containers::stridedArrayView(data)} {}
+        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::ArrayView<T>& data, Int morphTargetId = -1) noexcept: MeshAttributeData{name, Containers::stridedArrayView(data), morphTargetId} {}
 
         /**
          * @brief Construct an array attribute
-         * @param name      Attribute name
-         * @param data      Attribute data
+         * @param name              Attribute name
+         * @param data              Attribute data
+         * @param morphTargetId     Morph target ID. Use @cpp -1 @ce for
+         *      attributes that are not morph targets.
          *
          * Detects @ref VertexFormat based on @p T and calls
-         * @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&, UnsignedShort)
+         * @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&, UnsignedShort, Int)
          * with the second dimension size passed to @p arraySize. Expects that
          * the second dimension is contiguous, and if @p name is a builtin
-         * attribute, it's an array attribute. See @ref MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&)
+         * attribute, it's an array attribute. See @ref MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&, Int)
          * for details about @ref VertexFormat detection.
          */
-        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data) noexcept;
+        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data, Int morphTargetId = -1) noexcept;
 
         /**
          * @brief Construct an offset-only attribute
-         * @param name          Attribute name
-         * @param format        Attribute format
-         * @param offset        Attribute data offset
-         * @param vertexCount   Attribute vertex count
-         * @param stride        Attribute stride
-         * @param arraySize     Array size. Use @cpp 0 @ce for non-array
+         * @param name              Attribute name
+         * @param format            Attribute format
+         * @param offset            Attribute data offset
+         * @param vertexCount       Attribute vertex count
+         * @param stride            Attribute stride
+         * @param arraySize         Array size. Use @cpp 0 @ce for non-array
          *      attributes.
+         * @param morphTargetId     Morph target ID. Use @cpp -1 @ce for
+         *      attributes that are not morph targets.
          *
          * Instances created this way refer to an offset in unspecified
          * external vertex data instead of containing the data view directly.
@@ -570,7 +602,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * @see @ref isOffsetOnly(), @ref arraySize(),
          *      @ref data(Containers::ArrayView<const void>) const
          */
-        explicit constexpr MeshAttributeData(MeshAttribute name, VertexFormat format, std::size_t offset, UnsignedInt vertexCount, std::ptrdiff_t stride, UnsignedShort arraySize = 0) noexcept;
+        explicit constexpr MeshAttributeData(MeshAttribute name, VertexFormat format, std::size_t offset, UnsignedInt vertexCount, std::ptrdiff_t stride, UnsignedShort arraySize = 0, Int morphTargetId = -1) noexcept;
 
         /**
          * @brief Construct a pad value
@@ -581,7 +613,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * passed to @ref MeshData.
          * @see @ref stride()
          */
-        constexpr explicit MeshAttributeData(Int padding): _format{}, _name{}, _isOffsetOnly{false}, _vertexCount{0}, _stride{
+        constexpr explicit MeshAttributeData(Int padding): _format{}, _name{}, _isOffsetOnly{false}, _morphTargetId{-1}, _vertexCount{0}, _stride{
             (CORRADE_CONSTEXPR_ASSERT(padding >= -32768 && padding <= 32767,
                 "Trade::MeshAttributeData: expected padding to fit into 16 bits but got" << padding), Short(padding))
         }, _arraySize{}, _data{nullptr} {}
@@ -592,7 +624,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Returns @cpp true @ce if the attribute doesn't contain the data view
          * directly, but instead refers to unspecified external vertex data.
          * @see @ref data(Containers::ArrayView<const void>) const,
-         *      @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t, UnsignedShort)
+         *      @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t, UnsignedShort, Int)
          */
         constexpr bool isOffsetOnly() const { return _isOffsetOnly; }
 
@@ -622,8 +654,20 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          */
         constexpr Short stride() const { return _stride; }
 
-        /** @brief Attribute array size */
+        /**
+         * @brief Attribute array size
+         *
+         * Returns @cpp 0 @ce if the attribute isn't an array.
+         */
         constexpr UnsignedShort arraySize() const { return _arraySize; }
+
+        /**
+         * @brief Morph target ID
+         * @m_since_latest
+         *
+         * Returns @cpp -1 @ce if the attribute isn't a morph target.
+         */
+        constexpr Int morphTargetId() const { return _morphTargetId; }
 
         /**
          * @brief Type-erased attribute data
@@ -665,13 +709,16 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         /* Delegated to by all ArrayView constructors, which additionally check
            either stride or second dimension size. Nullptr first, to avoid
            accidental matches as much as possible. */
-        constexpr explicit MeshAttributeData(std::nullptr_t, MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize) noexcept;
+        constexpr explicit MeshAttributeData(std::nullptr_t, MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, UnsignedShort arraySize, Int morphTargetId) noexcept;
 
         VertexFormat _format;
         MeshAttribute _name;
         bool _isOffsetOnly;
-        /* 1 byte free for more stuff on 64b (23, aligned to 24) and on 32b
-           (19, aligned to 20) */
+        /* glTF spec says the expected number of morph targets is ~8, so 128
+           should be enough. Signed in order to use -1 as "not a morph target",
+           if 128 wouldn't be enough then this could get changed to unsigned
+           and interpreting only 255 as -1. */
+        Byte _morphTargetId;
 
         /* Vertex count in MeshData is currently 32-bit, so this doesn't need
            to be 64-bit either */
@@ -742,9 +789,8 @@ functions @ref positions2DAsArray(), @ref positions3DAsArray(),
 @ref tangentsAsArray(), @ref textureCoordinates2DAsArray(),
 @ref colorsAsArray(), @ref jointIdsAsArray(), @ref weightsAsArray() and
 @ref objectIdsAsArray(). You're expected to check for attribute presence first
-with either @ref hasAttribute() (or @ref attributeCount(MeshAttribute) const,
-as there can be multiple sets of texture coordinates, for example). If you are
-creating a @ref GL::Mesh, the usual path forward is then to
+with either @ref hasAttribute() (or @ref attributeCount(MeshAttribute, Int) const, as there can be multiple sets of texture coordinates, for example). If
+you are creating a @ref GL::Mesh, the usual path forward is then to
 @ref MeshTools::interleave() attributes of interest, upload them to a
 @ref GL::Buffer and configure attribute binding for the mesh.
 
@@ -793,6 +839,30 @@ mesh positions:
 
 If the transformation includes a rotation or non-uniform scaling, you may want
 to do a similar operation with normals and tangents as well.
+
+@section Trade-MeshData-usage-morph-targets Morph targets
+
+By default, named attribute access (either through the @ref positions3DAsArray()
+etc. convenience accesors or via @ref attribute(MeshAttribute, UnsignedInt, Int) const "attribute()"
+and similar) searches only through the base attributes. Meshes that have morph
+targets can have the additional attributes accessed by passing a
+`morphTargetId` argument to these functions:
+
+@snippet MagnumTrade.cpp MeshData-usage-morph-targets
+
+If a base attribute doesn't have a corresponding morph target attribute (which
+can be checked using @ref hasAttribute(MeshAttribute, Int) const with
+appropriate `morphTargetId` passed), the base attribute is meant to be used
+unchanged. Base attributes with multiple sets can have multiple sets of morph
+target attributes as well (which can be again checked using
+@ref attributeCount(MeshAttribute, Int) const with appropriate `morphTargetId`
+passed). If only some instances from the set have a morph target, the remaining
+attributes are expected to alias the base ones (i.e., have the same
+@ref attributeOffset(), @ref attributeStride() and @ref attributeArraySize())
+in order to match their numbering. Finally, there can attributes that are only
+defined among morph targets but have no corresponding base attribute. This
+isn't restricted in any way and their treatment is left to be
+application-specific.
 
 @section Trade-MeshData-special-layouts Special data layouts
 
@@ -1363,21 +1433,37 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * desired vertex count). See also @ref indexCount() which returns
          * count of elements in the @ref indices() array, and
          * @ref attributeCount() which returns count of different per-vertex
-         * attribute arrays.
+         * attributes.
          * @see @ref MeshTools::primitiveCount(MeshPrimitive, UnsignedInt)
          */
         UnsignedInt vertexCount() const { return _vertexCount; }
 
         /**
-         * @brief Attribute array count
+         * @brief Total attribute count
          *
-         * Count of different per-vertex attribute arrays, or @cpp 0 @ce for an
-         * attribute-less mesh. See also @ref indexCount() which returns count
-         * of elements in the @ref indices() array and @ref vertexCount() which
-         * returns count of elements in every @ref attribute() array.
-         * @see @ref attributeCount(MeshAttribute) const
+         * Count of all per-vertex attributes including extra attributes and
+         * morph targets, or @cpp 0 @ce for an attribute-less mesh. See also
+         * @ref indexCount() which returns count of elements in the
+         * @ref indices() array and @ref vertexCount() which returns count of
+         * elements in every @ref attribute().
+         * @see @ref attributeCount(Int) const,
+         *      @ref attributeCount(MeshAttribute, Int) const
          */
         UnsignedInt attributeCount() const { return UnsignedInt(_attributes.size()); }
+
+        /**
+         * @brief Attribute count for given morph target
+         * @m_since_latest
+         *
+         * Count of attributes for which @ref attributeMorphTargetId() is equal
+         * to @p morphTargetId, or @cpp 0 @ce if there's no such morph target.
+         * Use @cpp -1 @ce to get the count of base attributes that aren't
+         * morph targets. Total number of attributes in all morph targets can
+         * be calculated by subtracting the value of this function with
+         * @cpp -1 @ce from @ref attributeCount() const.
+         * @see @ref attributeCount(MeshAttribute, Int) const
+         */
+        UnsignedInt attributeCount(Int morphTargetId) const;
 
         /**
          * @brief Raw attribute data
@@ -1412,14 +1498,14 @@ class MAGNUM_TRADE_EXPORT MeshData {
         MeshAttribute attributeName(UnsignedInt id) const;
 
         /**
-         * @brief Attribute ID in a set of attributes of the same name
+         * @brief Attribute ID in a set of attributes of the same name and morph target ID
          * @m_since_latest
          *
          * The @p id is expected to be smaller than @ref attributeCount() const.
          * Returns the number of attributes of the same @ref attributeName()
-         * preceeding @p id, or @cpp 0 @ce if it's the first attribute of
-         * given name.
-         * @see @ref attributeId(MeshAttribute, UnsignedInt) const
+         * and @ref attributeMorphTargetId() preceeding @p id, or @cpp 0 @ce if
+         * it's the first attribute of given name and given morph target ID.
+         * @see @ref attributeId(MeshAttribute, UnsignedInt, Int) const
          */
         UnsignedInt attributeId(UnsignedInt id) const;
 
@@ -1427,7 +1513,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Attribute format
          *
          * The @p id is expected to be smaller than @ref attributeCount() const.
-         * You can also use @ref attributeFormat(MeshAttribute, UnsignedInt) const
+         * You can also use @ref attributeFormat(MeshAttribute, UnsignedInt, Int) const
          * to directly get a type of given named attribute.
          * @see @ref attributeName(), @ref indexType()
          */
@@ -1441,7 +1527,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * between pointers returned from @ref vertexData() and a particular
          * @ref attribute(). The @p id is expected to be smaller than
          * @ref attributeCount() const. You can also use
-         * @ref attributeOffset(MeshAttribute, UnsignedInt) const to
+         * @ref attributeOffset(MeshAttribute, UnsignedInt, Int) const to
          * directly get an offset of given named attribute.
          * @see @ref indexOffset(), @ref MeshTools::isInterleaved()
          */
@@ -1455,8 +1541,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * negative, such data layouts are however not commonly supported by
          * GPU APIs. The @p id is expected to be smaller than
          * @ref attributeCount() const. You can also use
-         * @ref attributeStride(MeshAttribute, UnsignedInt) const to directly
-         * get a stride of given named attribute.
+         * @ref attributeStride(MeshAttribute, UnsignedInt, Int) const to
+         * directly get a stride of given named attribute.
          * @see @ref MeshTools::isInterleaved()
          */
         Short attributeStride(UnsignedInt id) const;
@@ -1467,27 +1553,39 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * In case given attribute is an array (the equivalent of e.g.
          * @cpp int[30] @ce), returns array size, otherwise returns @cpp 0 @ce.
          * The @p id is expected to be smaller than @ref attributeCount() const.
-         * You can also use @ref attributeArraySize(MeshAttribute, UnsignedInt) const
+         * You can also use @ref attributeArraySize(MeshAttribute, UnsignedInt, Int) const
          * to directly get array size of given named attribute.
          *
          * Note that this is different from vertex count, which is exposed
          * through @ref vertexCount(), and is an orthogonal concept to having
          * multiple attributes of the same name (for example two sets of
          * texture coordinates), which is exposed through
-         * @ref attributeCount(MeshAttribute) const. See
+         * @ref attributeCount(MeshAttribute, Int) const. See
          * @ref Trade-MeshData-populating-custom for an example.
          * @see @ref isMeshAttributeCustom()
          */
         UnsignedShort attributeArraySize(UnsignedInt id) const;
 
         /**
+         * @brief Attribute morph target ID
+         * @m_since_latest
+         *
+         * In case given attribute is a morph target, returns its ID, otherwise
+         * returns @cpp -1 @ce. The @p id is expected to be smaller than
+         * @ref attributeCount() const.
+         */
+        Int attributeMorphTargetId(UnsignedInt id) const;
+
+        /**
          * @brief Whether the mesh has given attribute
          *
-         * @see @ref attributeCount(MeshAttribute) const,
+         * By default it checks only attributes that aren't morph targets, set
+         * @p morphTargetId to check the attribute for given morph target ID.
+         * @see @ref attributeCount(MeshAttribute, Int) const,
          *      @ref findAttributeId()
          */
-        bool hasAttribute(MeshAttribute name) const {
-            return attributeCount(name);
+        bool hasAttribute(MeshAttribute name, Int morphTargetId = -1) const {
+            return attributeCount(name, morphTargetId);
         }
 
         /**
@@ -1495,70 +1593,75 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Unlike @ref attributeCount() const this returns count for given
          * attribute name --- for example a mesh can have more than one set of
-         * texture coordinates.
-         * @see @ref hasAttribute()
+         * texture coordinates. By default it counts only attributes that
+         * aren't morph targets, set @p morphTargetId to count attributes for
+         * given morph target ID.
+         * @see @ref hasAttribute(), @ref attributeCount(Int) const
          */
-        UnsignedInt attributeCount(MeshAttribute name) const;
+        UnsignedInt attributeCount(MeshAttribute name, Int morphTargetId = -1) const;
 
         /**
          * @brief Find an absolute ID of a named attribute
          * @m_since_latest
          *
          * If @p name isn't present or @p id is not smaller than
-         * @ref attributeCount(MeshAttribute) const, returns
+         * @ref attributeCount(MeshAttribute, Int) const, returns
          * @ref Containers::NullOpt. The lookup is done in an
          * @f$ \mathcal{O}(n) @f$ complexity with @f$ n @f$ being the attribute
          * count.
          * @see @ref hasAttribute(), @ref attributeId()
          */
-        Containers::Optional<UnsignedInt> findAttributeId(MeshAttribute name, UnsignedInt id = 0) const;
+        Containers::Optional<UnsignedInt> findAttributeId(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Absolute ID of a named attribute
          *
          * Like @ref findAttributeId(), but the @p id is expected to be smaller
-         * than @ref attributeCount(MeshAttribute) const.
+         * than @ref attributeCount(MeshAttribute, Int) const.
          * @see @ref attributeId(UnsignedInt) const
          */
-        UnsignedInt attributeId(MeshAttribute name, UnsignedInt id = 0) const;
+        UnsignedInt attributeId(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Format of a named attribute
          *
          * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const.
+         * @ref attributeCount(MeshAttribute, Int) const.
          * @see @ref attributeFormat(UnsignedInt) const
          */
-        VertexFormat attributeFormat(MeshAttribute name, UnsignedInt id = 0) const;
+        VertexFormat attributeFormat(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Offset of a named attribute
          *
          * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const. See
+         * @ref attributeCount(MeshAttribute, Int) const. See
          * @ref attributeOffset(UnsignedInt) const for more information.
          */
-        std::size_t attributeOffset(MeshAttribute name, UnsignedInt id = 0) const;
+        std::size_t attributeOffset(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Stride of a named attribute
          *
          * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const. See
+         * @ref attributeCount(MeshAttribute, Int) const. See
          * @ref attributeStride(UnsignedInt) const for more information.
          */
-        Short attributeStride(MeshAttribute name, UnsignedInt id = 0) const;
+        Short attributeStride(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Array size of a named attribute
          *
          * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const. Note that this is
+         * @ref attributeCount(MeshAttribute, Int) const. Note that this is
          * different from vertex count, and is an orthogonal concept to having
          * multiple attributes of the same name --- see
          * @ref attributeArraySize(UnsignedInt) const for more information.
          */
-        UnsignedShort attributeArraySize(MeshAttribute name, UnsignedInt id = 0) const;
+        UnsignedShort attributeArraySize(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
+
+        /* No attributeMorphTargetId(MeshAttribute, ...) overload because the
+           lookup is for a concrete morphTargetId already */
 
         /**
          * @brief Data for given attribute
@@ -1573,8 +1676,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Use the templated overload below to get the attribute in a concrete
          * type. You can also use
-         * @ref attribute(MeshAttribute, UnsignedInt) const to directly get
-         * data for given named attribute.
+         * @ref attribute(MeshAttribute, UnsignedInt, Int) const to directly
+         * get data for given named attribute.
          * @see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},
          *      @ref vertexFormatSize(),
          *      @ref isVertexFormatImplementationSpecific()
@@ -1611,7 +1714,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref objectIdsAsArray() accessors to get common attributes converted
          * to usual types in contiguous arrays, but note that these operations
          * involve extra allocation and data conversion.
-         * @see @ref attribute(MeshAttribute, UnsignedInt) const,
+         * @see @ref attribute(MeshAttribute, UnsignedInt, Int) const,
          *      @ref mutableAttribute(UnsignedInt),
          *      @ref isVertexFormatImplementationSpecific(),
          *      @ref attributeArraySize()
@@ -1655,34 +1758,33 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Data for given named attribute
          *
          * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const. See
+         * @ref attributeCount(MeshAttribute, Int) const. See
          * @ref attribute(UnsignedInt) const for more information. Use the
          * templated overload below to get the attribute in a concrete type.
-         * @see @ref attribute(UnsignedInt) const,
-         *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
+         * @see @ref mutableAttribute(MeshAttribute, UnsignedInt, Int),
          *      @relativeref{Corrade,Containers::StridedArrayView::isContiguous()},
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::StridedArrayView2D<const char> attribute(MeshAttribute name, UnsignedInt id = 0) const;
+        Containers::StridedArrayView2D<const char> attribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Mutable data for given named attribute
          *
-         * Like @ref attribute(MeshAttribute, UnsignedInt) const, but returns a
-         * mutable view. Expects that the mesh is mutable.
+         * Like @ref attribute(MeshAttribute, UnsignedInt, Int) const, but
+         * returns a mutable view. Expects that the mesh is mutable.
          * @see @ref vertexDataFlags()
          */
-        Containers::StridedArrayView2D<char> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
+        Containers::StridedArrayView2D<char> mutableAttribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1);
 
         /**
          * @brief Data for given named attribute in a concrete type
          *
          * The @p id is expected to be smaller than
-         * @ref attributeCount(MeshAttribute) const and @p T is expected to
-         * correspond to @ref attributeFormat(MeshAttribute, UnsignedInt) const.
+         * @ref attributeCount(MeshAttribute, Int) const and @p T is expected
+         * to correspond to @ref attributeFormat(MeshAttribute, UnsignedInt, Int) const.
          * Expects that the vertex format is *not* implementation-specific, in
          * that case you can only access the attribute via the typeless
-         * @ref attribute(MeshAttribute, UnsignedInt) const above. The
+         * @ref attribute(MeshAttribute, UnsignedInt, Int) const above. The
          * attribute is also expected to not be an array, in that case you need
          * to use the overload below by using @cpp T[] @ce instead of
          * @cpp T @ce. In rare cases the stride of the returned view may be
@@ -1697,10 +1799,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * to usual types in contiguous arrays, but note that these operations
          * involve extra data conversion and an allocation.
          * @see @ref attribute(UnsignedInt) const,
-         *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
+         *      @ref mutableAttribute(MeshAttribute, UnsignedInt, Int),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0) const;
+        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Data for given named array attribute in a concrete type
@@ -1712,16 +1814,16 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeArraySize() for given attribute. For non-array
          * attributes the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(MeshAttribute name, UnsignedInt id = 0) const;
+        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Mutable data for given named attribute in a concrete type
          *
-         * Like @ref attribute(MeshAttribute, UnsignedInt) const, but returns a
-         * mutable view. Expects that the mesh is mutable.
+         * Like @ref attribute(MeshAttribute, UnsignedInt, Int) const, but
+         * returns a mutable view. Expects that the mesh is mutable.
          * @see @ref vertexDataFlags()
          */
-        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
+        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableAttribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1);
 
         /**
          * @brief Mutable data for given named array attribute in a concrete type
@@ -1733,7 +1835,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeArraySize() for given attribute. For non-array
          * attributes the second dimension has a size of @cpp 1 @ce.
          */
-        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
+        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(MeshAttribute name, UnsignedInt id = 0, Int morphTargetId = -1);
 
         /**
          * @brief Indices as 32-bit integers
@@ -1758,17 +1860,17 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Positions as 2D float vectors
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::Position as the first argument. Converts
          * the position array from an arbitrary underlying type and returns it
          * in a newly-allocated array. If the underlying type is
          * three-component, the last component is dropped. Expects that the
          * vertex format is *not* implementation-specific, in that case you can
-         * only access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * only access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
          * @see @ref positions2DInto(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Vector2> positions2DAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Vector2> positions2DAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Positions as 2D float vectors into a pre-allocated view
@@ -1778,22 +1880,22 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void positions2DInto(const Containers::StridedArrayView1D<Vector2>& destination, UnsignedInt id = 0) const;
+        void positions2DInto(const Containers::StridedArrayView1D<Vector2>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Positions as 3D float vectors
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::Position as the first argument. Converts
          * the position array from an arbitrary underlying type and returns it
          * in a newly-allocated array. If the underlying type is two-component,
          * the Z component is set to @cpp 0.0f @ce. Expects that the vertex
          * format is *not* implementation-specific, in that case you can only
-         * access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
          * @see @ref positions3DInto(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Vector3> positions3DAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Vector3> positions3DAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Positions as 3D float vectors into a pre-allocated view
@@ -1803,17 +1905,17 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void positions3DInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
+        void positions3DInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Tangents as 3D float vectors
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::Tangent as the first argument. Converts the
          * tangent array from an arbitrary underlying type and returns it in a
          * newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
-         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
          *
          * If the tangents contain a fourth component with bitangent direction,
          * it's ignored here --- use @ref bitangentSignsAsArray() to get those
@@ -1823,7 +1925,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *      @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Vector3> tangentsAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Vector3> tangentsAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Tangents as 3D float vectors into a pre-allocated view
@@ -1834,7 +1936,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * extract the fourth component wit bitangent direction, if present.
          * @see @ref vertexCount()
          */
-        void tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
+        void tangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Bitangent signs as floats
@@ -1847,7 +1949,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *      @ref normalsAsArray(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Float> bitangentSignsAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Float> bitangentSignsAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Bitangent signs as floats into a pre-allocated view
@@ -1857,17 +1959,17 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void bitangentSignsInto(const Containers::StridedArrayView1D<Float>& destination, UnsignedInt id = 0) const;
+        void bitangentSignsInto(const Containers::StridedArrayView1D<Float>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Bitangents as 3D float vectors
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::Bitangent as the first argument. Converts
          * the bitangent array from an arbitrary underlying type and returns it
          * in a newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
-         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
          *
          * Note that in some cases the bitangents aren't provided directly but
          * calculated from normals and four-component tangents. In that case
@@ -1878,7 +1980,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *      @ref normalsAsArray(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Vector3> bitangentsAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Vector3> bitangentsAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Bitangents as 3D float vectors into a pre-allocated view
@@ -1888,22 +1990,22 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void bitangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
+        void bitangentsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Normals as 3D float vectors
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::Normal as the first argument. Converts the
          * normal array from an arbitrary underlying type and returns it in a
          * newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
-         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
          * @see @ref normalsInto(), @ref tangentsAsArray(),
          *      @ref bitangentsAsArray(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Vector3> normalsAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Vector3> normalsAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Normals as 3D float vectors into a pre-allocated view
@@ -1913,22 +2015,22 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void normalsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0) const;
+        void normalsInto(const Containers::StridedArrayView1D<Vector3>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Texture coordinates as 2D float vectors
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::TextureCoordinates as the first argument.
          * Converts the texture coordinate array from an arbitrary underlying
          * type and returns it in a newly-allocated array. Expects that the
          * vertex format is *not* implementation-specific, in that case you can
          * only access the attribute via the typeless
-         * @ref attribute(MeshAttribute, UnsignedInt) const.
+         * @ref attribute(MeshAttribute, UnsignedInt, Int) const.
          * @see @ref textureCoordinates2DInto(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Vector2> textureCoordinates2DAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Vector2> textureCoordinates2DAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Texture coordinates as 2D float vectors into a pre-allocated view
@@ -1938,22 +2040,22 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2>& destination, UnsignedInt id = 0) const;
+        void textureCoordinates2DInto(const Containers::StridedArrayView1D<Vector2>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Colors as RGBA floats
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::Color as the first argument. Converts the
          * color array from an arbitrary underlying type and returns it in a
          * newly-allocated array. If the underlying type is three-component,
          * the alpha component is set to @cpp 1.0f @ce. Expects that the vertex
          * format is *not* implementation-specific, in that case you can only
-         * access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
          * @see @ref colorsInto(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Color4> colorsAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Color4> colorsAsArray(UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Colors as RGBA floats into a pre-allocated view
@@ -1963,21 +2065,23 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void colorsInto(const Containers::StridedArrayView1D<Color4>& destination, UnsignedInt id = 0) const;
+        void colorsInto(const Containers::StridedArrayView1D<Color4>& destination, UnsignedInt id = 0, Int morphTargetId = -1) const;
 
         /**
          * @brief Skin joint IDs as unsigned int arrays
          * @m_since_latest
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::JointIds as the first argument. Converts
          * the joint IDs array from an arbitrary underlying type and returns it
          * in a newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
-         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
+         * Unlike other attributes, @ref MeshAttribute::JointIds can't have
+         * morph targets so this function provides no morph target ID argument.
          *
          * As it's an array attribute, the returned array has @ref vertexCount()
-         * times @ref attributeArraySize(MeshAttribute, UnsignedInt) const
+         * times @ref attributeArraySize(MeshAttribute, UnsignedInt, Int) const
          * elements. You can make a 2D view onto the result to conveniently
          * index the data:
          *
@@ -2014,15 +2118,17 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Skin weights as float arrays
          * @m_since_latest
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::Weights as the first argument. Converts the
          * weights array from an arbitrary underlying types and returns them in
          * a newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
-         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
+         * Unlike other attributes, @ref MeshAttribute::Weights can't have
+         * morph targets so this function provides no morph target ID argument.
          *
          * As it's an array attribute, the returned array has @ref vertexCount()
-         * times @ref attributeArraySize(MeshAttribute, UnsignedInt) const
+         * times @ref attributeArraySize(MeshAttribute, UnsignedInt, Int) const
          * elements. You can make a 2D view onto the result to conveniently
          * index the data, see @ref jointIdsAsArray() for an example snippet.
          * @see @ref weightsInto(), @ref attributeFormat(),
@@ -2046,12 +2152,14 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Object IDs as 32-bit integers
          *
-         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt, Int) const
          * with @ref MeshAttribute::ObjectId as the first argument. Converts
          * the object ID array from an arbitrary underlying type and returns it
          * in a newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
-         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt, Int) const.
+         * Unlike other attributes, @ref MeshAttribute::ObjectId can't have
+         * morph targets so this function provides no morph target ID argument.
          * @see @ref objectIdsInto(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
@@ -2134,7 +2242,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
 
         /* Internal helper without the extra overhead from Optional, returns
            ~UnsignedInt{} on failure */
-        UnsignedInt findAttributeIdInternal(MeshAttribute name, UnsignedInt id) const;
+        UnsignedInt findAttributeIdInternal(MeshAttribute name, UnsignedInt id, Int morphTargetId) const;
 
         /* Like attribute(), but returning just a 1D view */
         MAGNUM_TRADE_LOCAL Containers::StridedArrayView1D<const void> attributeDataViewInternal(const MeshAttributeData& attribute) const;
@@ -2464,14 +2572,31 @@ namespace Implementation {
         return name == MeshAttribute::JointIds ||
                name == MeshAttribute::Weights;
     }
+
+    constexpr bool isMorphTargetAllowed(MeshAttribute name) {
+        /* It also makes no sense for custom attributes with non-normalized
+           integer formats to be morph targets, but that's impossible to check
+           in a constexpr context so we blacklist only the builtin integer
+           attributes. */
+        return
+            name != MeshAttribute::JointIds &&
+            name != MeshAttribute::Weights &&
+            name != MeshAttribute::ObjectId;
+    }
     #endif
 }
 
-constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, const UnsignedShort arraySize) noexcept:
+constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, const UnsignedShort arraySize, const Int morphTargetId) noexcept:
     _format{format},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
     _isOffsetOnly{false},
+    _morphTargetId{(
+        CORRADE_CONSTEXPR_ASSERT(morphTargetId == -1 || UnsignedInt(morphTargetId) < 128,
+            "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got" << morphTargetId),
+        CORRADE_CONSTEXPR_ASSERT(morphTargetId == -1 || Implementation::isMorphTargetAllowed(name),
+            "Trade::MeshAttributeData: morph target not allowed for" << name),
+        Byte(morphTargetId))},
     _vertexCount{(
         #ifndef CORRADE_TARGET_32BIT
         CORRADE_CONSTEXPR_ASSERT(data.size() <= 0xffffffffu, "Trade::MeshAttributeData: expected vertex count to fit into 32 bits but got" << data.size()),
@@ -2486,11 +2611,18 @@ constexpr MeshAttributeData::MeshAttributeData(std::nullptr_t, const MeshAttribu
         arraySize)},
     _data{data.data()} {}
 
-constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride, UnsignedShort arraySize) noexcept:
+constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride, UnsignedShort arraySize, const Int morphTargetId) noexcept:
     _format{format},
     _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
-    _isOffsetOnly{true}, _vertexCount{vertexCount},
+    _isOffsetOnly{true},
+    _morphTargetId{(
+        CORRADE_CONSTEXPR_ASSERT(morphTargetId == -1 || UnsignedInt(morphTargetId) < 128,
+            "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got" << morphTargetId),
+        CORRADE_CONSTEXPR_ASSERT(morphTargetId == -1 || Implementation::isMorphTargetAllowed(name),
+            "Trade::MeshAttributeData: morph target not allowed for" << name),
+        Byte(morphTargetId))},
+    _vertexCount{vertexCount},
     _stride{(CORRADE_CONSTEXPR_ASSERT(stride >= -32768 && stride <= 32767,
         "Trade::MeshAttributeData: expected stride to fit into 16 bits but got" << stride),
         Short(stride))},
@@ -2498,15 +2630,16 @@ constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const V
         "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)},
     _data{offset} {}
 
-template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{nullptr, name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), data, 0} {}
+template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data, const Int morphTargetId) noexcept: MeshAttributeData{nullptr, name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), data, 0, morphTargetId} {}
 
-template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data) noexcept: MeshAttributeData{
+template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data, const Int morphTargetId) noexcept: MeshAttributeData{
     /* Not using isContiguous<1>() as that's not constexpr */
     (CORRADE_CONSTEXPR_ASSERT(data.stride()[1] == sizeof(T), "Trade::MeshAttributeData: second view dimension is not contiguous"), nullptr),
     name,
     Implementation::vertexFormatFor<typename std::remove_const<T>::type>(),
     Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]},
-    UnsignedShort(data.size()[1])
+    UnsignedShort(data.size()[1]),
+    morphTargetId
 } {}
 
 template<class T> Containers::StridedArrayView1D<const T> MeshData::indices() const {
@@ -2597,10 +2730,14 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attribute(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
-        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     const Containers::StridedArrayView2D<const char> data = attribute(attributeId);
     /* Unlike mutableAttribute(), the above can't fail, so no early return with
        CORRADE_GRACEFUL_ASSERT */
@@ -2610,10 +2747,14 @@ template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attri
     return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const MeshAttribute name, const UnsignedInt id) const {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
-        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) const {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     const Containers::StridedArrayView2D<const char> data = attribute(attributeId);
     /* Unlike mutableAttribute(), the above can't fail, so no early return with
        CORRADE_GRACEFUL_ASSERT */
@@ -2623,10 +2764,14 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
 }
 
-template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id) {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
-        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     Containers::StridedArrayView2D<char> data = mutableAttribute(attributeId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -2637,10 +2782,14 @@ template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttr
     return Containers::arrayCast<1, T>(data);
 }
 
-template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id) {
-    const UnsignedInt attributeId = findAttributeIdInternal(name, id);
-    CORRADE_ASSERT(attributeId != ~UnsignedInt{},
-        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const MeshAttribute name, const UnsignedInt id, const Int morphTargetId) {
+    const UnsignedInt attributeId = findAttributeIdInternal(name, id, morphTargetId);
+    #ifndef CORRADE_NO_ASSERT
+    if(morphTargetId == -1) CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes", {});
+    else CORRADE_ASSERT(attributeId != ~UnsignedInt{},
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name, morphTargetId) << name << "attributes in morph target" << morphTargetId, {});
+    #endif
     Containers::StridedArrayView2D<char> data = mutableAttribute(attributeId);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};

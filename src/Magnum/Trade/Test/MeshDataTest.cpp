@@ -65,33 +65,45 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexNullptr();
 
     void constructAttribute();
+    void constructAttributeMorphTarget();
     void constructAttributeDefault();
     void constructAttributeCustom();
     void constructAttribute2D();
+    void constructAttribute2DMorphTarget();
     void constructAttribute2DWrongSize();
     void constructAttribute2DNonContiguous();
     void constructAttributeTypeErased();
+    void constructAttributeTypeErasedMorphTarget();
     void constructAttributeNullptr();
+    void constructAttributeNullptrMorphTarget();
     void constructAttributePadding();
     void constructAttributeNonOwningArray();
     void constructAttributeOffsetOnly();
+    void constructAttributeOffsetOnlyMorphTarget();
     void constructAttributeImplementationSpecificFormat();
     void constructAttributeWrongFormat();
     #ifndef CORRADE_TARGET_32BIT
     void constructAttributeWrongSize();
     #endif
     void constructAttributeWrongStride();
+    void constructAttributeWrongMorphTargetId();
+    void constructAttributeMorphTargetNotAllowed();
     void constructAttributeOnlyArrayAllowed();
     void constructAttributeWrongDataAccess();
 
     void constructArrayAttribute();
+    void constructArrayAttributeMorphTarget();
     void constructArrayAttributeNonContiguous();
     void constructArrayAttribute2D();
+    void constructArrayAttribute2DMorphTarget();
     void constructArrayAttribute2DWrongSize();
     void constructArrayAttribute2DNonContiguous();
     void constructArrayAttributeTypeErased();
+    void constructArrayAttributeTypeErasedMorphTarget();
     void constructArrayAttributeNullptr();
+    void constructArrayAttributeNullptrMorphTarget();
     void constructArrayAttributeOffsetOnly();
+    void constructArrayAttributeOffsetOnlyMorphTarget();
     void constructArrayAttributeImplementationSpecificFormat();
     void constructArrayAttributeNotAllowed();
 
@@ -231,6 +243,15 @@ const struct {
     {"mutable", DataFlag::Mutable}
 };
 
+const struct {
+    const char* name;
+    UnsignedInt id;
+    Int morphTargetId;
+} AsArrayData[]{
+    {"", 1, -1},
+    {"morph target", 0, 37}
+};
+
 MeshDataTest::MeshDataTest() {
     addTests({&MeshDataTest::customAttributeName,
               &MeshDataTest::customAttributeNameTooLarge,
@@ -255,33 +276,45 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexNullptr,
 
               &MeshDataTest::constructAttribute,
+              &MeshDataTest::constructAttributeMorphTarget,
               &MeshDataTest::constructAttributeDefault,
               &MeshDataTest::constructAttributeCustom,
               &MeshDataTest::constructAttribute2D,
+              &MeshDataTest::constructAttribute2DMorphTarget,
               &MeshDataTest::constructAttribute2DWrongSize,
               &MeshDataTest::constructAttribute2DNonContiguous,
               &MeshDataTest::constructAttributeTypeErased,
+              &MeshDataTest::constructAttributeTypeErasedMorphTarget,
               &MeshDataTest::constructAttributeNullptr,
+              &MeshDataTest::constructAttributeNullptrMorphTarget,
               &MeshDataTest::constructAttributePadding,
               &MeshDataTest::constructAttributeNonOwningArray,
               &MeshDataTest::constructAttributeOffsetOnly,
+              &MeshDataTest::constructAttributeOffsetOnlyMorphTarget,
               &MeshDataTest::constructAttributeImplementationSpecificFormat,
               &MeshDataTest::constructAttributeWrongFormat,
               #ifndef CORRADE_TARGET_32BIT
               &MeshDataTest::constructAttributeWrongSize,
               #endif
               &MeshDataTest::constructAttributeWrongStride,
+              &MeshDataTest::constructAttributeWrongMorphTargetId,
+              &MeshDataTest::constructAttributeMorphTargetNotAllowed,
               &MeshDataTest::constructAttributeOnlyArrayAllowed,
               &MeshDataTest::constructAttributeWrongDataAccess,
 
               &MeshDataTest::constructArrayAttribute,
+              &MeshDataTest::constructArrayAttributeMorphTarget,
               &MeshDataTest::constructArrayAttributeNonContiguous,
               &MeshDataTest::constructArrayAttribute2D,
+              &MeshDataTest::constructArrayAttribute2DMorphTarget,
               &MeshDataTest::constructArrayAttribute2DWrongSize,
               &MeshDataTest::constructArrayAttribute2DNonContiguous,
               &MeshDataTest::constructArrayAttributeTypeErased,
+              &MeshDataTest::constructArrayAttributeTypeErasedMorphTarget,
               &MeshDataTest::constructArrayAttributeNullptr,
+              &MeshDataTest::constructArrayAttributeNullptrMorphTarget,
               &MeshDataTest::constructArrayAttributeOffsetOnly,
+              &MeshDataTest::constructArrayAttributeOffsetOnlyMorphTarget,
               &MeshDataTest::constructArrayAttributeImplementationSpecificFormat,
               &MeshDataTest::constructArrayAttributeNotAllowed});
 
@@ -338,12 +371,16 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::indicesAsArray<UnsignedByte>,
               &MeshDataTest::indicesAsArray<UnsignedShort>,
               &MeshDataTest::indicesAsArray<UnsignedInt>,
-              &MeshDataTest::indicesIntoArrayInvalidSize,
-              &MeshDataTest::positions2DAsArray<Vector2>,
-              &MeshDataTest::positions2DAsArray<Vector2h>,
-              &MeshDataTest::positions2DAsArray<Vector3>,
-              &MeshDataTest::positions2DAsArray<Vector3h>,
-              &MeshDataTest::positions2DAsArrayPackedUnsigned<Vector2ub>,
+              &MeshDataTest::indicesIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::positions2DAsArray<Vector2>,
+        &MeshDataTest::positions2DAsArray<Vector2h>,
+        &MeshDataTest::positions2DAsArray<Vector3>,
+        &MeshDataTest::positions2DAsArray<Vector3h>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::positions2DAsArrayPackedUnsigned<Vector2ub>,
               &MeshDataTest::positions2DAsArrayPackedUnsigned<Vector2us>,
               &MeshDataTest::positions2DAsArrayPackedUnsigned<Vector3ub>,
               &MeshDataTest::positions2DAsArrayPackedUnsigned<Vector3us>,
@@ -359,12 +396,16 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::positions2DAsArrayPackedSignedNormalized<Vector2s>,
               &MeshDataTest::positions2DAsArrayPackedSignedNormalized<Vector3b>,
               &MeshDataTest::positions2DAsArrayPackedSignedNormalized<Vector3s>,
-              &MeshDataTest::positions2DIntoArrayInvalidSize,
-              &MeshDataTest::positions3DAsArray<Vector2>,
-              &MeshDataTest::positions3DAsArray<Vector2h>,
-              &MeshDataTest::positions3DAsArray<Vector3>,
-              &MeshDataTest::positions3DAsArray<Vector3h>,
-              &MeshDataTest::positions3DAsArrayPackedUnsigned<Vector2ub>,
+              &MeshDataTest::positions2DIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::positions3DAsArray<Vector2>,
+        &MeshDataTest::positions3DAsArray<Vector2h>,
+        &MeshDataTest::positions3DAsArray<Vector3>,
+        &MeshDataTest::positions3DAsArray<Vector3h>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::positions3DAsArrayPackedUnsigned<Vector2ub>,
               &MeshDataTest::positions3DAsArrayPackedUnsigned<Vector2us>,
               &MeshDataTest::positions3DAsArrayPackedUnsigned<Vector3ub>,
               &MeshDataTest::positions3DAsArrayPackedUnsigned<Vector3us>,
@@ -380,35 +421,55 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::positions3DAsArrayPackedSignedNormalized<Vector2s>,
               &MeshDataTest::positions3DAsArrayPackedSignedNormalized<Vector3b>,
               &MeshDataTest::positions3DAsArrayPackedSignedNormalized<Vector3s>,
-              &MeshDataTest::positions3DIntoArrayInvalidSize,
-              &MeshDataTest::tangentsAsArray<Vector3>,
-              &MeshDataTest::tangentsAsArray<Vector3h>,
-              &MeshDataTest::tangentsAsArray<Vector4>,
-              &MeshDataTest::tangentsAsArray<Vector4h>,
-              &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector3b>,
+              &MeshDataTest::positions3DIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::tangentsAsArray<Vector3>,
+        &MeshDataTest::tangentsAsArray<Vector3h>,
+        &MeshDataTest::tangentsAsArray<Vector4>,
+        &MeshDataTest::tangentsAsArray<Vector4h>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector3b>,
               &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector3s>,
               &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector4b>,
               &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector4s>,
-              &MeshDataTest::tangentsIntoArrayInvalidSize,
-              &MeshDataTest::bitangentSignsAsArray<Float>,
-              &MeshDataTest::bitangentSignsAsArray<Half>,
-              &MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized<Byte>,
+              &MeshDataTest::tangentsIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::bitangentSignsAsArray<Float>,
+        &MeshDataTest::bitangentSignsAsArray<Half>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized<Byte>,
               &MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized<Short>,
               &MeshDataTest::bitangentSignsAsArrayNotFourComponent,
-              &MeshDataTest::bitangentSignsIntoArrayInvalidSize,
-              &MeshDataTest::bitangentsAsArray<Vector3>,
-              &MeshDataTest::bitangentsAsArray<Vector3h>,
-              &MeshDataTest::bitangentsAsArrayPackedSignedNormalized<Vector3b>,
+              &MeshDataTest::bitangentSignsIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::bitangentsAsArray<Vector3>,
+        &MeshDataTest::bitangentsAsArray<Vector3h>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::bitangentsAsArrayPackedSignedNormalized<Vector3b>,
               &MeshDataTest::bitangentsAsArrayPackedSignedNormalized<Vector3s>,
-              &MeshDataTest::bitangentsIntoArrayInvalidSize,
-              &MeshDataTest::normalsAsArray<Vector3>,
-              &MeshDataTest::normalsAsArray<Vector3h>,
-              &MeshDataTest::normalsAsArrayPackedSignedNormalized<Vector3b>,
+              &MeshDataTest::bitangentsIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::normalsAsArray<Vector3>,
+        &MeshDataTest::normalsAsArray<Vector3h>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::normalsAsArrayPackedSignedNormalized<Vector3b>,
               &MeshDataTest::normalsAsArrayPackedSignedNormalized<Vector3s>,
-              &MeshDataTest::normalsIntoArrayInvalidSize,
-              &MeshDataTest::textureCoordinates2DAsArray<Vector2>,
-              &MeshDataTest::textureCoordinates2DAsArray<Vector2h>,
-              &MeshDataTest::textureCoordinates2DAsArrayPackedUnsigned<Vector2ub>,
+              &MeshDataTest::normalsIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::textureCoordinates2DAsArray<Vector2>,
+        &MeshDataTest::textureCoordinates2DAsArray<Vector2h>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::textureCoordinates2DAsArrayPackedUnsigned<Vector2ub>,
               &MeshDataTest::textureCoordinates2DAsArrayPackedUnsigned<Vector2us>,
               &MeshDataTest::textureCoordinates2DAsArrayPackedSigned<Vector2b>,
               &MeshDataTest::textureCoordinates2DAsArrayPackedSigned<Vector2s>,
@@ -416,12 +477,16 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::textureCoordinates2DAsArrayPackedUnsignedNormalized<Vector2us>,
               &MeshDataTest::textureCoordinates2DAsArrayPackedSignedNormalized<Vector2b>,
               &MeshDataTest::textureCoordinates2DAsArrayPackedSignedNormalized<Vector2s>,
-              &MeshDataTest::textureCoordinates2DIntoArrayInvalidSize,
-              &MeshDataTest::colorsAsArray<Color3>,
-              &MeshDataTest::colorsAsArray<Color3h>,
-              &MeshDataTest::colorsAsArray<Color4>,
-              &MeshDataTest::colorsAsArray<Color4h>,
-              &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color3ub>,
+              &MeshDataTest::textureCoordinates2DIntoArrayInvalidSize});
+
+    addInstancedTests<MeshDataTest>({
+        &MeshDataTest::colorsAsArray<Color3>,
+        &MeshDataTest::colorsAsArray<Color3h>,
+        &MeshDataTest::colorsAsArray<Color4>,
+        &MeshDataTest::colorsAsArray<Color4h>},
+        Containers::arraySize(AsArrayData));
+
+    addTests({&MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color3ub>,
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color3us>,
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4ub>,
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4us>,
@@ -819,6 +884,7 @@ void MeshDataTest::constructAttribute() {
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(positionData)};
     CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), -1);
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(positions.offset(positionData), 0);
@@ -833,12 +899,48 @@ void MeshDataTest::constructAttribute() {
     constexpr MeshAttributeData cpositions{MeshAttribute::Position, Containers::arrayView(Positions)};
     constexpr bool isOffsetOnly = cpositions.isOffsetOnly();
     constexpr UnsignedShort arraySize = cpositions.arraySize();
+    constexpr Int morphTargetId = cpositions.morphTargetId();
     constexpr MeshAttribute name = cpositions.name();
     constexpr VertexFormat format = cpositions.format();
     constexpr Short stride = cpositions.stride();
     constexpr Containers::StridedArrayView1D<const void> data = cpositions.data();
     CORRADE_VERIFY(!isOffsetOnly);
     CORRADE_COMPARE(arraySize, 0);
+    CORRADE_COMPARE(morphTargetId, -1);
+    CORRADE_COMPARE(name, MeshAttribute::Position);
+    CORRADE_COMPARE(format, VertexFormat::Vector2);
+    CORRADE_COMPARE(stride, sizeof(Vector2));
+    CORRADE_COMPARE(data.data(), Positions);
+}
+
+void MeshDataTest::constructAttributeMorphTarget() {
+    const Vector2 positionData[3];
+    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(positionData), 15};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
+    CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), 15);
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(positions.offset(positionData), 0);
+    CORRADE_COMPARE(positions.stride(), sizeof(Vector2));
+    CORRADE_VERIFY(positions.data().data() == positionData);
+
+    /* This is allowed too for simplicity, the parameter has to be large enough
+       tho */
+    char someArray[3*sizeof(Vector2)];
+    CORRADE_VERIFY(positions.data(someArray).data() == positionData);
+
+    constexpr MeshAttributeData cpositions{MeshAttribute::Position, Containers::arrayView(Positions), 15};
+    constexpr bool isOffsetOnly = cpositions.isOffsetOnly();
+    constexpr UnsignedShort arraySize = cpositions.arraySize();
+    constexpr Int morphTargetId = cpositions.morphTargetId();
+    constexpr MeshAttribute name = cpositions.name();
+    constexpr VertexFormat format = cpositions.format();
+    constexpr Short stride = cpositions.stride();
+    constexpr Containers::StridedArrayView1D<const void> data = cpositions.data();
+    CORRADE_VERIFY(!isOffsetOnly);
+    CORRADE_COMPARE(arraySize, 0);
+    CORRADE_COMPARE(morphTargetId, 15);
     CORRADE_COMPARE(name, MeshAttribute::Position);
     CORRADE_COMPARE(format, VertexFormat::Vector2);
     CORRADE_COMPARE(stride, sizeof(Vector2));
@@ -874,6 +976,21 @@ void MeshDataTest::constructAttribute2D() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, positionView};
     CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), -1);
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(positions.data().data(), positionView.data());
+}
+
+void MeshDataTest::constructAttribute2DMorphTarget() {
+    char positionData[4*sizeof(Vector2)]{};
+    auto positionView = Containers::StridedArrayView2D<char>{positionData,
+        {4, sizeof(Vector2)}}.every(2);
+
+    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, positionView, 0, 33};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
+    CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), 33);
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(positions.data().data(), positionView.data());
@@ -910,6 +1027,18 @@ void MeshDataTest::constructAttributeTypeErased() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, positionData};
     CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), -1);
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector3);
+    CORRADE_VERIFY(positions.data().data() == positionData);
+}
+
+void MeshDataTest::constructAttributeTypeErasedMorphTarget() {
+    const Vector3 positionData[3]{};
+    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, positionData, 0, 101};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
+    CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), 101);
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector3);
     CORRADE_VERIFY(positions.data().data() == positionData);
@@ -919,6 +1048,17 @@ void MeshDataTest::constructAttributeNullptr() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
     CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), -1);
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_VERIFY(!positions.data().data());
+}
+
+void MeshDataTest::constructAttributeNullptrMorphTarget() {
+    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr, 0, 67};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
+    CORRADE_COMPARE(positions.arraySize(), 0);
+    CORRADE_COMPARE(positions.morphTargetId(), 67);
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_VERIFY(!positions.data().data());
@@ -928,6 +1068,7 @@ void MeshDataTest::constructAttributePadding() {
     MeshAttributeData padding{-35};
     CORRADE_VERIFY(!padding.isOffsetOnly());
     CORRADE_COMPARE(padding.arraySize(), 0);
+    CORRADE_COMPARE(padding.morphTargetId(), -1);
     CORRADE_COMPARE(padding.name(), MeshAttribute{});
     CORRADE_COMPARE(padding.format(), VertexFormat{});
     CORRADE_COMPARE(padding.data().size(), 0);
@@ -954,6 +1095,7 @@ void MeshDataTest::constructAttributeOffsetOnly() {
     MeshAttributeData a{MeshAttribute::TextureCoordinates, VertexFormat::Vector2, sizeof(Vector2), 2, 2*sizeof(Vector2)};
     CORRADE_VERIFY(a.isOffsetOnly());
     CORRADE_COMPARE(a.arraySize(), 0);
+    CORRADE_COMPARE(a.morphTargetId(), -1);
     CORRADE_COMPARE(a.name(), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(a.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(a.offset(vertexData), sizeof(Vector2));
@@ -965,6 +1107,41 @@ void MeshDataTest::constructAttributeOffsetOnly() {
     constexpr MeshAttributeData ca{MeshAttribute::TextureCoordinates, VertexFormat::Vector2, sizeof(Vector2), 2, 2*sizeof(Vector2)};
     CORRADE_VERIFY(ca.isOffsetOnly());
     CORRADE_COMPARE(ca.arraySize(), 0);
+    CORRADE_COMPARE(ca.morphTargetId(), -1);
+    CORRADE_COMPARE(ca.name(), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(ca.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(ca.offset(vertexData), sizeof(Vector2));
+    CORRADE_COMPARE(ca.stride(), 2*sizeof(Vector2));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data(vertexData)),
+        Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
+        TestSuite::Compare::Container);
+}
+
+void MeshDataTest::constructAttributeOffsetOnlyMorphTarget() {
+    struct {
+        Vector2 position;
+        Vector2 textureCoordinates;
+    } vertexData[] {
+        {{}, {1.0f, 0.3f}},
+        {{}, {0.5f, 0.7f}},
+    };
+
+    MeshAttributeData a{MeshAttribute::TextureCoordinates, VertexFormat::Vector2, sizeof(Vector2), 2, 2*sizeof(Vector2), 0, 92};
+    CORRADE_VERIFY(a.isOffsetOnly());
+    CORRADE_COMPARE(a.arraySize(), 0);
+    CORRADE_COMPARE(a.morphTargetId(), 92);
+    CORRADE_COMPARE(a.name(), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(a.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(a.offset(vertexData), sizeof(Vector2));
+    CORRADE_COMPARE(a.stride(), 2*sizeof(Vector2));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data(vertexData)),
+        Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
+        TestSuite::Compare::Container);
+
+    constexpr MeshAttributeData ca{MeshAttribute::TextureCoordinates, VertexFormat::Vector2, sizeof(Vector2), 2, 2*sizeof(Vector2), 0, 92};
+    CORRADE_VERIFY(ca.isOffsetOnly());
+    CORRADE_COMPARE(ca.arraySize(), 0);
+    CORRADE_COMPARE(ca.morphTargetId(), 92);
     CORRADE_COMPARE(ca.name(), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(ca.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(ca.offset(vertexData), sizeof(Vector2));
@@ -1047,6 +1224,54 @@ void MeshDataTest::constructAttributeWrongStride() {
         "Trade::MeshAttributeData: expected padding to fit into 16 bits but got -32769\n");
 }
 
+void MeshDataTest::constructAttributeWrongMorphTargetId() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Vector2 positions[1];
+
+    /* These should be fine */
+    MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions), -1};
+    MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions), 127};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, -1};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, 127};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions), -56};
+    MeshAttributeData{MeshAttribute::Position, Containers::arrayView(positions), 128};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, -56};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 1, sizeof(Vector2), 0, 128};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got -56\n"
+        "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got 128\n"
+        "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got -56\n"
+        "Trade::MeshAttributeData: expected morph target ID to be either -1 or less than 128 but got 128\n");
+}
+
+void MeshDataTest::constructAttributeMorphTargetNotAllowed() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    UnsignedInt ids[4];
+
+    /* -1 is allowed */
+    MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayView(ids), -1};
+    MeshAttributeData{MeshAttribute::JointIds, Containers::stridedArrayView(ids).expanded<0>(Containers::Size2D{1, 4}), -1};
+    MeshAttributeData{MeshAttribute::ObjectId, VertexFormat::UnsignedInt, 0, 4, sizeof(UnsignedInt), 0, -1};
+    MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedInt, 0, 1, sizeof(UnsignedInt), 4, -1};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayView(ids), 37};
+    MeshAttributeData{MeshAttribute::JointIds, Containers::stridedArrayView(ids).expanded<0>(Containers::Size2D{1, 4}), 37};
+    MeshAttributeData{MeshAttribute::ObjectId, VertexFormat::UnsignedInt, 0, 4, sizeof(UnsignedInt), 0, 37};
+    MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedInt, 0, 1, sizeof(UnsignedInt), 4, 37};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshAttributeData: morph target not allowed for Trade::MeshAttribute::ObjectId\n"
+        "Trade::MeshAttributeData: morph target not allowed for Trade::MeshAttribute::JointIds\n"
+        "Trade::MeshAttributeData: morph target not allowed for Trade::MeshAttribute::ObjectId\n"
+        "Trade::MeshAttributeData: morph target not allowed for Trade::MeshAttribute::JointIds\n");
+}
+
 void MeshDataTest::constructAttributeOnlyArrayAllowed() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -1097,6 +1322,7 @@ void MeshDataTest::constructArrayAttribute() {
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), -1);
     CORRADE_VERIFY(data.data().data() == vertexData);
     CORRADE_COMPARE(data.data().size(), 3);
     CORRADE_COMPARE(data.data().stride(), sizeof(Vector2)*4);
@@ -1107,6 +1333,32 @@ void MeshDataTest::constructArrayAttribute() {
     CORRADE_COMPARE(cdata.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(cdata.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(cdata.arraySize(), 4);
+    CORRADE_COMPARE(cdata.morphTargetId(), -1);
+    CORRADE_VERIFY(cdata.data().data() == ArrayVertexData);
+    CORRADE_COMPARE(cdata.data().size(), 3);
+    CORRADE_COMPARE(cdata.data().stride(), sizeof(Vector2)*4);
+}
+
+void MeshDataTest::constructArrayAttributeMorphTarget() {
+    Vector2 vertexData[3*4];
+    Containers::StridedArrayView2D<Vector2> attribute{vertexData, {3, 4}};
+    MeshAttributeData data{meshAttributeCustom(35), attribute, 23};
+    CORRADE_VERIFY(!data.isOffsetOnly());
+    CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), 23);
+    CORRADE_VERIFY(data.data().data() == vertexData);
+    CORRADE_COMPARE(data.data().size(), 3);
+    CORRADE_COMPARE(data.data().stride(), sizeof(Vector2)*4);
+
+    constexpr Containers::StridedArrayView2D<const Vector2> cattribute{ArrayVertexData, {3, 4}};
+    constexpr MeshAttributeData cdata{meshAttributeCustom(35), cattribute, 23};
+    CORRADE_VERIFY(!cdata.isOffsetOnly());
+    CORRADE_COMPARE(cdata.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(cdata.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(cdata.arraySize(), 4);
+    CORRADE_COMPARE(cdata.morphTargetId(), 23);
     CORRADE_VERIFY(cdata.data().data() == ArrayVertexData);
     CORRADE_COMPARE(cdata.data().size(), 3);
     CORRADE_COMPARE(cdata.data().stride(), sizeof(Vector2)*4);
@@ -1132,6 +1384,20 @@ void MeshDataTest::constructArrayAttribute2D() {
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), -1);
+    CORRADE_VERIFY(data.data().data() == vertexData);
+    CORRADE_COMPARE(data.data().size(), 3);
+    CORRADE_COMPARE(data.data().stride(), sizeof(Vector2)*4);
+}
+
+void MeshDataTest::constructArrayAttribute2DMorphTarget() {
+    char vertexData[3*4*sizeof(Vector2)];
+    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, Containers::StridedArrayView2D<char>{vertexData, {3, 4*sizeof(Vector2)}}, 4, 77};
+    CORRADE_VERIFY(!data.isOffsetOnly());
+    CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), 77);
     CORRADE_VERIFY(data.data().data() == vertexData);
     CORRADE_COMPARE(data.data().size(), 3);
     CORRADE_COMPARE(data.data().stride(), sizeof(Vector2)*4);
@@ -1171,6 +1437,21 @@ void MeshDataTest::constructArrayAttributeTypeErased() {
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), -1);
+    CORRADE_VERIFY(data.data().data() == vertexData);
+    CORRADE_COMPARE(data.data().size(), 3);
+    CORRADE_COMPARE(data.data().stride(), sizeof(Vector2)*4);
+}
+
+void MeshDataTest::constructArrayAttributeTypeErasedMorphTarget() {
+    Vector2 vertexData[3*4];
+    Containers::StridedArrayView1D<Vector2> attribute{vertexData, 3, 4*sizeof(Vector2)};
+    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, attribute, 4, 99};
+    CORRADE_VERIFY(!data.isOffsetOnly());
+    CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), 99);
     CORRADE_VERIFY(data.data().data() == vertexData);
     CORRADE_COMPARE(data.data().size(), 3);
     CORRADE_COMPARE(data.data().stride(), sizeof(Vector2)*4);
@@ -1180,6 +1461,17 @@ void MeshDataTest::constructArrayAttributeNullptr() {
     MeshAttributeData positions{meshAttributeCustom(35), VertexFormat::Vector2, nullptr, 4};
     CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.arraySize(), 4);
+    CORRADE_COMPARE(positions.morphTargetId(), -1);
+    CORRADE_COMPARE(positions.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_VERIFY(!positions.data().data());
+}
+
+void MeshDataTest::constructArrayAttributeNullptrMorphTarget() {
+    MeshAttributeData positions{meshAttributeCustom(35), VertexFormat::Vector2, nullptr, 4, 37};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
+    CORRADE_COMPARE(positions.arraySize(), 4);
+    CORRADE_COMPARE(positions.morphTargetId(), 37);
     CORRADE_COMPARE(positions.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_VERIFY(!positions.data().data());
@@ -1191,6 +1483,7 @@ void MeshDataTest::constructArrayAttributeOffsetOnly() {
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), -1);
 
     Vector2 vertexData[1 + 3*4];
     CORRADE_VERIFY(data.data(vertexData).data() == vertexData + 1);
@@ -1202,6 +1495,28 @@ void MeshDataTest::constructArrayAttributeOffsetOnly() {
     CORRADE_COMPARE(cdata.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(cdata.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(cdata.arraySize(), 4);
+    CORRADE_COMPARE(cdata.morphTargetId(), -1);
+}
+
+void MeshDataTest::constructArrayAttributeOffsetOnlyMorphTarget() {
+    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, sizeof(Vector2), 3, sizeof(Vector2), 4, 44};
+    CORRADE_VERIFY(data.isOffsetOnly());
+    CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.arraySize(), 4);
+    CORRADE_COMPARE(data.morphTargetId(), 44);
+
+    Vector2 vertexData[1 + 3*4];
+    CORRADE_VERIFY(data.data(vertexData).data() == vertexData + 1);
+    CORRADE_COMPARE(data.data(vertexData).size(), 3);
+    CORRADE_COMPARE(data.data(vertexData).stride(), sizeof(Vector2));
+
+    constexpr MeshAttributeData cdata{meshAttributeCustom(35), VertexFormat::Vector2, sizeof(Vector2), 3, sizeof(Vector2), 4, 44};
+    CORRADE_VERIFY(cdata.isOffsetOnly());
+    CORRADE_COMPARE(cdata.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(cdata.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(cdata.arraySize(), 4);
+    CORRADE_COMPARE(cdata.morphTargetId(), 44);
 }
 
 void MeshDataTest::constructArrayAttributeImplementationSpecificFormat() {
@@ -1258,6 +1573,8 @@ void MeshDataTest::construct() {
         Vector3 normal;
         Vector2 textureCoordinate;
         Short id[2];
+        Vector2 positionMorphTarget;
+        Byte idMorphTarget[3];
     };
 
     Containers::Array<char> indexData{8*sizeof(UnsignedShort)};
@@ -1272,15 +1589,21 @@ void MeshDataTest::construct() {
         {{0.1f, 0.2f, 0.3f},
          Vector3::xAxis(),
          {0.000f, 0.125f},
-         {15, 74}},
+         {15, 74},
+         {0.3f, 0.1f},
+         {74, 0, 15}},
         {{0.4f, 0.5f, 0.6f},
          Vector3::yAxis(),
          {0.250f, 0.375f},
-         {-374, 2}},
+         {-374, 2},
+         {0.6f, 0.4f},
+         {2, 0, -37}},
         {{0.7f, 0.8f, 0.9f},
          Vector3::zAxis(),
          {0.500f, 0.625f},
-         {22, -1}}
+         {22, -1},
+         {0.9f, 0.7f},
+         {-1, 0, 22}}
     }, vertices);
 
     if(instanceData.vertexCount < 3)
@@ -1304,7 +1627,16 @@ void MeshDataTest::construct() {
                 vertices.slice(&Vertex::textureCoordinate)},
             /* Custom & array */
             MeshAttributeData{meshAttributeCustom(13),
-                Containers::arrayCast<2, Short>(vertices.slice(&Vertex::id))}
+                Containers::arrayCast<2, Short>(vertices.slice(&Vertex::id))},
+            /* Positions as a morph target */
+            MeshAttributeData{MeshAttribute::Position,
+                vertices.slice(&Vertex::positionMorphTarget), 37},
+            /* Array as a morph target */
+            MeshAttributeData{meshAttributeCustom(13),
+                Containers::arrayCast<2, Byte>(vertices.slice(&Vertex::idMorphTarget)), 37},
+            /* Positions as a morph target again */
+            MeshAttributeData{MeshAttribute::Position,
+                vertices.slice(&Vertex::positionMorphTarget), 37},
         },
         instanceData.vertexCount, &importerState};
 
@@ -1337,42 +1669,73 @@ void MeshDataTest::construct() {
 
     /* Attribute access by ID */
     CORRADE_COMPARE(data.vertexCount(), instanceData.expectedVertexCount);
-    CORRADE_COMPARE(data.attributeCount(), 5);
+    CORRADE_COMPARE(data.attributeCount(), 8);
+    CORRADE_COMPARE(data.attributeCount(-1), 5);
+    CORRADE_COMPARE(data.attributeCount(1), 0);
+    CORRADE_COMPARE(data.attributeCount(37), 3);
     CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
     CORRADE_COMPARE(data.attributeName(1), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(data.attributeName(2), MeshAttribute::Normal);
     CORRADE_COMPARE(data.attributeName(3), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(data.attributeName(4), meshAttributeCustom(13));
+    CORRADE_COMPARE(data.attributeName(5), MeshAttribute::Position);
+    CORRADE_COMPARE(data.attributeName(6), meshAttributeCustom(13));
+    CORRADE_COMPARE(data.attributeName(7), MeshAttribute::Position);
     CORRADE_COMPARE(data.attributeId(0), 0);
     CORRADE_COMPARE(data.attributeId(1), 0);
     CORRADE_COMPARE(data.attributeId(2), 0);
     CORRADE_COMPARE(data.attributeId(3), 1);
     CORRADE_COMPARE(data.attributeId(4), 0);
+    CORRADE_COMPARE(data.attributeId(5), 0);
+    CORRADE_COMPARE(data.attributeId(6), 0);
+    CORRADE_COMPARE(data.attributeId(7), 1);
     CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector3);
     CORRADE_COMPARE(data.attributeFormat(1), VertexFormat::Vector2);
     CORRADE_COMPARE(data.attributeFormat(2), VertexFormat::Vector3);
     CORRADE_COMPARE(data.attributeFormat(3), VertexFormat::Vector2);
     CORRADE_COMPARE(data.attributeFormat(4), VertexFormat::Short);
+    CORRADE_COMPARE(data.attributeFormat(5), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attributeFormat(6), VertexFormat::Byte);
+    CORRADE_COMPARE(data.attributeFormat(7), VertexFormat::Vector2);
     CORRADE_COMPARE(data.attributeOffset(0), 0);
     CORRADE_COMPARE(data.attributeOffset(1), 2*sizeof(Vector3));
     CORRADE_COMPARE(data.attributeOffset(2), sizeof(Vector3));
     CORRADE_COMPARE(data.attributeOffset(3), 2*sizeof(Vector3));
     CORRADE_COMPARE(data.attributeOffset(4), 2*sizeof(Vector3) + sizeof(Vector2));
+    CORRADE_COMPARE(data.attributeOffset(5), 2*sizeof(Vector3) + sizeof(Vector2) + 2*sizeof(Short));
+    CORRADE_COMPARE(data.attributeOffset(6), 2*sizeof(Vector3) + sizeof(Vector2) + 2*sizeof(Short) + sizeof(Vector2));
+    CORRADE_COMPARE(data.attributeOffset(7), 2*sizeof(Vector3) + sizeof(Vector2) + 2*sizeof(Short));
     CORRADE_COMPARE(data.attributeStride(0), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeStride(1), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeStride(2), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeStride(3), sizeof(Vertex));
+    CORRADE_COMPARE(data.attributeStride(4), sizeof(Vertex));
+    CORRADE_COMPARE(data.attributeStride(5), sizeof(Vertex));
+    CORRADE_COMPARE(data.attributeStride(6), sizeof(Vertex));
+    CORRADE_COMPARE(data.attributeStride(7), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeArraySize(0), 0);
     CORRADE_COMPARE(data.attributeArraySize(1), 0);
     CORRADE_COMPARE(data.attributeArraySize(2), 0);
     CORRADE_COMPARE(data.attributeArraySize(3), 0);
     CORRADE_COMPARE(data.attributeArraySize(4), 2);
+    CORRADE_COMPARE(data.attributeArraySize(5), 0);
+    CORRADE_COMPARE(data.attributeArraySize(6), 3);
+    CORRADE_COMPARE(data.attributeArraySize(7), 0);
+    CORRADE_COMPARE(data.attributeMorphTargetId(0), -1);
+    CORRADE_COMPARE(data.attributeMorphTargetId(1), -1);
+    CORRADE_COMPARE(data.attributeMorphTargetId(2), -1);
+    CORRADE_COMPARE(data.attributeMorphTargetId(3), -1);
+    CORRADE_COMPARE(data.attributeMorphTargetId(4), -1);
+    CORRADE_COMPARE(data.attributeMorphTargetId(5), 37);
+    CORRADE_COMPARE(data.attributeMorphTargetId(6), 37);
+    CORRADE_COMPARE(data.attributeMorphTargetId(7), 37);
 
     /* Raw attribute data access by ID */
     CORRADE_COMPARE(data.attributeData(1).name(), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(data.attributeData(1).format(), VertexFormat::Vector2);
     CORRADE_COMPARE(data.attributeData(1).data().size(), instanceData.expectedVertexCount);
     CORRADE_COMPARE(data.attributeData(1).arraySize(), 0);
+    CORRADE_COMPARE(data.attributeData(1).morphTargetId(), -1);
     if(instanceData.vertexCount)
         CORRADE_COMPARE(Containers::arrayCast<const Vector2>(data.attributeData(1).data())[1], (Vector2{0.250f, 0.375f}));
     /* Offset-only */
@@ -1380,6 +1743,7 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeData(2).format(), VertexFormat::Vector3);
     CORRADE_COMPARE(data.attributeData(2).data().size(), instanceData.expectedVertexCount);
     CORRADE_COMPARE(data.attributeData(2).arraySize(), 0);
+    CORRADE_COMPARE(data.attributeData(2).morphTargetId(), -1);
     if(instanceData.vertexCount)
         CORRADE_COMPARE(Containers::arrayCast<const Vector3>(data.attributeData(2).data())[1], Vector3::yAxis());
     /* Array */
@@ -1387,9 +1751,28 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeData(4).format(), VertexFormat::Short);
     CORRADE_COMPARE(data.attributeData(4).data().size(), instanceData.expectedVertexCount);
     CORRADE_COMPARE(data.attributeData(4).arraySize(), 2);
+    CORRADE_COMPARE(data.attributeData(4).morphTargetId(), -1);
     if(instanceData.vertexCount) {
         CORRADE_COMPARE((Containers::arrayCast<2, const Short>(data.attributeData(4).data(), 2))[1][0], -374);
         CORRADE_COMPARE((Containers::arrayCast<2, const Short>(data.attributeData(4).data(), 2))[1][1], 2);
+    }
+    /* Morph target. No special treatment in this case. */
+    CORRADE_COMPARE(data.attributeData(5).name(), MeshAttribute::Position);
+    CORRADE_COMPARE(data.attributeData(5).format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attributeData(5).data().size(), instanceData.expectedVertexCount);
+    CORRADE_COMPARE(data.attributeData(5).arraySize(), 0);
+    CORRADE_COMPARE(data.attributeData(5).morphTargetId(), 37);
+    if(instanceData.vertexCount)
+        CORRADE_COMPARE(Containers::arrayCast<const Vector2>(data.attributeData(5).data())[1], (Vector2{0.6f, 0.4f}));
+    /* Morph target array. No special treatment in this case. */
+    CORRADE_COMPARE(data.attributeData(6).name(), meshAttributeCustom(13));
+    CORRADE_COMPARE(data.attributeData(6).format(), VertexFormat::Byte);
+    CORRADE_COMPARE(data.attributeData(6).data().size(), instanceData.expectedVertexCount);
+    CORRADE_COMPARE(data.attributeData(6).arraySize(), 3);
+    CORRADE_COMPARE(data.attributeData(6).morphTargetId(), 37);
+    if(instanceData.vertexCount) {
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(data.attributeData(6).data(), 3))[1][0], 2);
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(data.attributeData(6).data(), 3))[1][2], -37);
     }
 
     /* Typeless access by ID with a cast later */
@@ -1409,6 +1792,15 @@ void MeshDataTest::construct() {
             data.attribute(4))[0])[0], 15);
         CORRADE_COMPARE((Containers::arrayCast<2, const Short>(
             data.attribute(4))[0])[1], 74);
+        /* Morph target. No special treatment in case of by ID access. */
+        CORRADE_COMPARE((Containers::arrayCast<1, const Vector2>(
+            data.attribute(5))[2]), (Vector2{0.9f, 0.7f}));
+        /* Morph target array. No special treatment in case of by ID access. */
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(
+            data.attribute(6))[0])[0], 74);
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(
+            data.attribute(6))[0])[2], 15);
+
         CORRADE_COMPARE((Containers::arrayCast<1, Vector3>(
             data.mutableAttribute(0))[1]), (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE((Containers::arrayCast<1, Vector2>(
@@ -1422,6 +1814,14 @@ void MeshDataTest::construct() {
             data.mutableAttribute(4))[0])[0], 15);
         CORRADE_COMPARE((Containers::arrayCast<2, Short>(
             data.mutableAttribute(4))[0])[1], 74);
+        /* Morph target. No special treatment in case of by ID access. */
+        CORRADE_COMPARE((Containers::arrayCast<1, Vector2>(
+            data.mutableAttribute(5))[2]), (Vector2{0.9f, 0.7f}));
+        /* Morph target array. No special treatment in case of by ID access. */
+        CORRADE_COMPARE((Containers::arrayCast<2, Byte>(
+            data.mutableAttribute(6))[0])[0], 74);
+        CORRADE_COMPARE((Containers::arrayCast<2, Byte>(
+            data.mutableAttribute(6))[0])[2], 15);
     }
 
     /* Typed access by ID */
@@ -1435,6 +1835,12 @@ void MeshDataTest::construct() {
         /* Array */
         CORRADE_COMPARE(data.attribute<Short[]>(4)[1][0], -374);
         CORRADE_COMPARE(data.attribute<Short[]>(4)[1][1], 2);
+        /* Morph target. No special treatment in case of by ID access. */
+        CORRADE_COMPARE(data.attribute<Vector2>(5)[2], (Vector2{0.9f, 0.7f}));
+        /* Morph target array. No special treatment in case of by ID access. */
+        CORRADE_COMPARE(data.attribute<Byte[]>(6)[1][0], 2);
+        CORRADE_COMPARE(data.attribute<Byte[]>(6)[1][2], -37);
+
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(0)[1], (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(1)[0], (Vector2{0.000f, 0.125f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(2)[2], Vector3::zAxis());
@@ -1442,6 +1848,11 @@ void MeshDataTest::construct() {
         /* Array */
         CORRADE_COMPARE(data.mutableAttribute<Short[]>(4)[1][0], -374);
         CORRADE_COMPARE(data.mutableAttribute<Short[]>(4)[1][1], 2);
+        /* Morph target. No special treatment in this case. */
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(5)[2], (Vector2{0.9f, 0.7f}));
+        /* Morph target array. No special treatment in case of by ID access. */
+        CORRADE_COMPARE(data.mutableAttribute<Byte[]>(6)[1][0], 2);
+        CORRADE_COMPARE(data.mutableAttribute<Byte[]>(6)[1][2], -37);
     }
 
     /* Accessing a non-array attribute as an array should be possible as well
@@ -1458,14 +1869,20 @@ void MeshDataTest::construct() {
     CORRADE_VERIFY(data.hasAttribute(MeshAttribute::Normal));
     CORRADE_VERIFY(data.hasAttribute(MeshAttribute::TextureCoordinates));
     CORRADE_VERIFY(data.hasAttribute(meshAttributeCustom(13)));
+    CORRADE_VERIFY(data.hasAttribute(MeshAttribute::Position, 37));
+    CORRADE_VERIFY(data.hasAttribute(meshAttributeCustom(13), 37));
     CORRADE_VERIFY(!data.hasAttribute(MeshAttribute::Color));
     CORRADE_VERIFY(!data.hasAttribute(meshAttributeCustom(23)));
+    CORRADE_VERIFY(!data.hasAttribute(MeshAttribute::TextureCoordinates, 37));
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::Position), 1);
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::Normal), 1);
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::TextureCoordinates), 2);
     CORRADE_COMPARE(data.attributeCount(meshAttributeCustom(13)), 1);
+    CORRADE_COMPARE(data.attributeCount(MeshAttribute::Position, 37), 2);
+    CORRADE_COMPARE(data.attributeCount(meshAttributeCustom(13), 37), 1);
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::Color), 0);
     CORRADE_COMPARE(data.attributeCount(meshAttributeCustom(23)), 0);
+    CORRADE_COMPARE(data.attributeCount(MeshAttribute::TextureCoordinates, 37), 0);
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Position), 0);
     CORRADE_COMPARE(data.attributeId(MeshAttribute::Position), 0);
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Normal), 2);
@@ -1476,8 +1893,16 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeId(MeshAttribute::TextureCoordinates, 1), 3);
     CORRADE_COMPARE(data.findAttributeId(meshAttributeCustom(13)), 4);
     CORRADE_COMPARE(data.attributeId(meshAttributeCustom(13)), 4);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Position, 0, 37), 5);
+    CORRADE_COMPARE(data.attributeId(MeshAttribute::Position, 0, 37), 5);
+    CORRADE_COMPARE(data.findAttributeId(meshAttributeCustom(13), 0, 37), 6);
+    CORRADE_COMPARE(data.attributeId(meshAttributeCustom(13), 0, 37), 6);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Position, 1, 37), 7);
+    CORRADE_COMPARE(data.attributeId(MeshAttribute::Position, 1, 37), 7);
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Color), Containers::NullOpt);
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::TextureCoordinates, 2), Containers::NullOpt);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Position, 2, 37), Containers::NullOpt);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::TextureCoordinates, 0, 37), Containers::NullOpt);
     CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position),
         VertexFormat::Vector3);
     CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Normal),
@@ -1488,20 +1913,34 @@ void MeshDataTest::construct() {
         VertexFormat::Vector2);
     CORRADE_COMPARE(data.attributeFormat(meshAttributeCustom(13)),
         VertexFormat::Short);
+    CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position, 0, 37),
+        VertexFormat::Vector2);
+    CORRADE_COMPARE(data.attributeFormat(meshAttributeCustom(13), 0, 37),
+        VertexFormat::Byte);
+    CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position, 1, 37),
+        VertexFormat::Vector2);
     CORRADE_COMPARE(data.attributeOffset(MeshAttribute::Position), 0);
     CORRADE_COMPARE(data.attributeOffset(MeshAttribute::Normal), sizeof(Vector3));
     CORRADE_COMPARE(data.attributeOffset(MeshAttribute::TextureCoordinates, 0), 2*sizeof(Vector3));
     CORRADE_COMPARE(data.attributeOffset(MeshAttribute::TextureCoordinates, 1), 2*sizeof(Vector3));    CORRADE_COMPARE(data.attributeOffset(meshAttributeCustom(13)), 2*sizeof(Vector3) + sizeof(Vector2));
+    CORRADE_COMPARE(data.attributeOffset(MeshAttribute::Position, 0, 37), 2*sizeof(Vector3) + sizeof(Vector2) + 2*sizeof(Short)); CORRADE_COMPARE(data.attributeOffset(meshAttributeCustom(13), 0, 37), 2*sizeof(Vector3) + sizeof(Vector2) + 2*sizeof(Short) + sizeof(Vector2));
+    CORRADE_COMPARE(data.attributeOffset(MeshAttribute::Position, 1, 37), 2*sizeof(Vector3) + sizeof(Vector2) + 2*sizeof(Short));
     CORRADE_COMPARE(data.attributeStride(MeshAttribute::Position), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeStride(MeshAttribute::Normal), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeStride(MeshAttribute::TextureCoordinates, 0), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeStride(MeshAttribute::TextureCoordinates, 1), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeStride(meshAttributeCustom(13)), sizeof(Vertex));
+    CORRADE_COMPARE(data.attributeStride(MeshAttribute::Position, 0, 37), sizeof(Vertex));
+    CORRADE_COMPARE(data.attributeStride(meshAttributeCustom(13), 0, 37), sizeof(Vertex));
+    CORRADE_COMPARE(data.attributeStride(MeshAttribute::Position, 1, 37), sizeof(Vertex));
     CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::Position), 0);
     CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::Normal), 0);
     CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::TextureCoordinates, 0), 0);
     CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::TextureCoordinates, 1), 0);
     CORRADE_COMPARE(data.attributeArraySize(meshAttributeCustom(13)), 2);
+    CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::Position, 0, 37), 0);
+    CORRADE_COMPARE(data.attributeArraySize(meshAttributeCustom(13), 0, 37), 3);
+    CORRADE_COMPARE(data.attributeArraySize(MeshAttribute::Position, 1, 37), 0);
 
     /* Typeless access by name with a cast later */
     CORRADE_COMPARE(data.attribute(MeshAttribute::Position).size()[0], instanceData.expectedVertexCount);
@@ -1520,6 +1959,17 @@ void MeshDataTest::construct() {
             data.attribute(meshAttributeCustom(13)))[1])[0], -374);
         CORRADE_COMPARE((Containers::arrayCast<2, const Short>(
             data.attribute(meshAttributeCustom(13)))[1])[1], 2);
+        /* Morph target */
+        CORRADE_COMPARE((Containers::arrayCast<1, const Vector2>(
+            data.attribute(MeshAttribute::Position, 0, 37))[1]), (Vector2{0.6f, 0.4f}));
+        CORRADE_COMPARE((Containers::arrayCast<1, const Vector2>(
+            data.attribute(MeshAttribute::Position, 1, 37))[2]), (Vector2{0.9f, 0.7f}));
+        /* Array morph target */
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(
+            data.attribute(meshAttributeCustom(13), 0, 37))[1])[0], 2);
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(
+            data.attribute(meshAttributeCustom(13), 0, 37))[1])[2], -37);
+
         CORRADE_COMPARE((Containers::arrayCast<1, const Vector3>(
             data.mutableAttribute(MeshAttribute::Position))[1]), (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE((Containers::arrayCast<1, Vector3>(
@@ -1533,6 +1983,16 @@ void MeshDataTest::construct() {
             data.mutableAttribute(meshAttributeCustom(13)))[1])[0], -374);
         CORRADE_COMPARE((Containers::arrayCast<2, Short>(
             data.mutableAttribute(meshAttributeCustom(13)))[1])[1], 2);
+        /* Morph target */
+        CORRADE_COMPARE((Containers::arrayCast<1, const Vector2>(
+            data.mutableAttribute(MeshAttribute::Position, 0, 37))[1]), (Vector2{0.6f, 0.4f}));
+        CORRADE_COMPARE((Containers::arrayCast<1, const Vector2>(
+            data.mutableAttribute(MeshAttribute::Position, 1, 37))[2]), (Vector2{0.9f, 0.7f}));
+        /* Array morph target */
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(
+            data.mutableAttribute(meshAttributeCustom(13), 0, 37))[1])[0], 2);
+        CORRADE_COMPARE((Containers::arrayCast<2, const Byte>(
+            data.mutableAttribute(meshAttributeCustom(13), 0, 37))[1])[2], -37);
     }
 
     /* Typed access by name */
@@ -1546,6 +2006,13 @@ void MeshDataTest::construct() {
         /* Array */
         CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][0], 22);
         CORRADE_COMPARE(data.attribute<Short[]>(meshAttributeCustom(13))[2][1], -1);
+        /* Morph target */
+        CORRADE_COMPARE(data.attribute<Vector2>(MeshAttribute::Position, 0, 37)[0], (Vector2{0.3f, 0.1f}));
+        CORRADE_COMPARE(data.attribute<Vector2>(MeshAttribute::Position, 1, 37)[2], (Vector2{0.9f, 0.7f}));
+        /* Morph target array */
+        CORRADE_COMPARE(data.attribute<Byte[]>(meshAttributeCustom(13), 0, 37)[2][0], -1);
+        CORRADE_COMPARE(data.attribute<Byte[]>(meshAttributeCustom(13), 0, 37)[2][2], 22);
+
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(MeshAttribute::Position)[1], (Vector3{0.4f, 0.5f, 0.6f}));
         CORRADE_COMPARE(data.mutableAttribute<Vector3>(MeshAttribute::Normal)[2], Vector3::zAxis());
         CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::TextureCoordinates, 0)[0], (Vector2{0.000f, 0.125f}));
@@ -1553,6 +2020,12 @@ void MeshDataTest::construct() {
         /* Array */
         CORRADE_COMPARE(data.mutableAttribute<Short[]>(meshAttributeCustom(13))[2][0], 22);
         CORRADE_COMPARE(data.mutableAttribute<Short[]>(meshAttributeCustom(13))[2][1], -1);
+        /* Morph target */
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::Position, 0, 37)[0], (Vector2{0.3f, 0.1f}));
+        CORRADE_COMPARE(data.mutableAttribute<Vector2>(MeshAttribute::Position, 1, 37)[2], (Vector2{0.9f, 0.7f}));
+        /* Morph target array */
+        CORRADE_COMPARE(data.mutableAttribute<Byte[]>(meshAttributeCustom(13), 0, 37)[2][0], -1);
+        CORRADE_COMPARE(data.mutableAttribute<Byte[]>(meshAttributeCustom(13), 0, 37)[2][2], 22);
     }
 
     /* Accessing a non-array attribute as an array should be possible as well
@@ -2839,6 +3312,8 @@ void MeshDataTest::indicesIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::positions2DAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(NameTraits<T>::name());
 
     /* Testing also that it picks the correct attribute */
@@ -2860,9 +3335,9 @@ template<class T> void MeshDataTest::positions2DAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::Position,
-            view.slice(&Vertex::position)}
+            view.slice(&Vertex::position), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.positions2DAsArray(1), Containers::arrayView<Vector2>({
+    CORRADE_COMPARE_AS(data.positions2DAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Vector2>({
         {2.0f, 1.0f}, {0.0f, -1.0f}, {-2.0f, 3.0f}
     }), TestSuite::Compare::Container);
 }
@@ -2961,6 +3436,8 @@ void MeshDataTest::positions2DIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::positions3DAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(NameTraits<T>::name());
 
     /* Testing also that it picks the correct attribute. Needs to be
@@ -2984,9 +3461,9 @@ template<class T> void MeshDataTest::positions3DAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::Position,
-            view.slice(&Vertex::position)}
+            view.slice(&Vertex::position), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.positions3DAsArray(1), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.positions3DAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Vector3>({
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{2.0f, 1.0f, 0.75f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{0.0f, -1.0f, 1.25f})),
         Vector3::pad(Math::Vector<T::Size, Float>::pad(Vector3{-2.0f, 3.0f, 2.5f}))
@@ -3093,6 +3570,8 @@ void MeshDataTest::positions3DIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::tangentsAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(NameTraits<T>::name());
 
     /* Testing also that it picks the correct attribute. Needs to be
@@ -3116,9 +3595,9 @@ template<class T> void MeshDataTest::tangentsAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::Tangent,
-            view.slice(&Vertex::tangent)}
+            view.slice(&Vertex::tangent), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.tangentsAsArray(1), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.tangentsAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -3160,6 +3639,8 @@ void MeshDataTest::tangentsIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::bitangentSignsAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     /* Testing also that it picks the correct attribute. Needs to be
@@ -3182,9 +3663,9 @@ template<class T> void MeshDataTest::bitangentSignsAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::Tangent,
-            view.slice(&Vertex::tangent)}
+            view.slice(&Vertex::tangent), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.bitangentSignsAsArray(1), Containers::arrayView<Float>({
+    CORRADE_COMPARE_AS(data.bitangentSignsAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Float>({
         -1.0f, 1.0f, -1.0f
     }), TestSuite::Compare::Container);
 }
@@ -3242,6 +3723,8 @@ void MeshDataTest::bitangentSignsIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::bitangentsAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(NameTraits<T>::name());
 
     /* Testing also that it picks the correct attribute. Needs to be
@@ -3265,9 +3748,9 @@ template<class T> void MeshDataTest::bitangentsAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::Bitangent,
-            view.slice(&Vertex::bitangent)}
+            view.slice(&Vertex::bitangent), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.bitangentsAsArray(1), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.bitangentsAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -3309,6 +3792,8 @@ void MeshDataTest::bitangentsIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::normalsAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(NameTraits<T>::name());
 
     /* Testing also that it picks the correct attribute. Needs to be
@@ -3332,9 +3817,9 @@ template<class T> void MeshDataTest::normalsAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::Normal,
-            view.slice(&Vertex::normal)}
+            view.slice(&Vertex::normal), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.normalsAsArray(1), Containers::arrayView<Vector3>({
+    CORRADE_COMPARE_AS(data.normalsAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Vector3>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -3375,6 +3860,8 @@ void MeshDataTest::normalsIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::textureCoordinates2DAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(NameTraits<T>::name());
 
     /* Testing also that it picks the correct attribute. Needs to be
@@ -3398,9 +3885,9 @@ template<class T> void MeshDataTest::textureCoordinates2DAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::TextureCoordinates,
-            view.slice(&Vertex::textureCoordinate)}
+            view.slice(&Vertex::textureCoordinate), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(1), Containers::arrayView<Vector2>({
+    CORRADE_COMPARE_AS(data.textureCoordinates2DAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Vector2>({
         {2.0f, 1.0f}, {0.0f, -1.0f}, {-2.0f, 3.0f},
     }), TestSuite::Compare::Container);
 }
@@ -3496,6 +3983,8 @@ void MeshDataTest::textureCoordinates2DIntoArrayInvalidSize() {
 }
 
 template<class T> void MeshDataTest::colorsAsArray() {
+    auto&& instanceData = AsArrayData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
     setTestCaseTemplateName(NameTraits<T>::name());
 
     /* Testing also that it picks the correct attribute. Can't use e.g.
@@ -3518,9 +4007,9 @@ template<class T> void MeshDataTest::colorsAsArray() {
         MeshAttributeData{MeshAttribute::ObjectId,
             view.slice(&Vertex::objectId)},
         MeshAttributeData{MeshAttribute::Color,
-            view.slice(&Vertex::color)}
+            view.slice(&Vertex::color), instanceData.morphTargetId}
     }};
-    CORRADE_COMPARE_AS(data.colorsAsArray(1), Containers::arrayView<Color4>({
+    CORRADE_COMPARE_AS(data.colorsAsArray(instanceData.id, instanceData.morphTargetId), Containers::arrayView<Color4>({
         {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
     }), TestSuite::Compare::Container);
 }
@@ -3974,114 +4463,162 @@ void MeshDataTest::attributeNotFound() {
         MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedByte, nullptr, 3},
         MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector4, nullptr},
         MeshAttributeData{MeshAttribute::Weights, VertexFormat::Float, nullptr, 6},
-        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedShort, nullptr, 6}
+        MeshAttributeData{MeshAttribute::JointIds, VertexFormat::UnsignedShort, nullptr, 6},
+        /* Morph targets */
+        MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector3ubNormalized, nullptr, 0, 37},
+        MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector4usNormalized, nullptr, 0, 37},
+        MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector4usNormalized, nullptr, 0, 37},
     }};
 
     /* This is fine */
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::Position), 0);
+    CORRADE_COMPARE(data.attributeCount(MeshAttribute::Position, 37), 0);
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Position), Containers::NullOpt);
     CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Color, 2), Containers::NullOpt);
+    CORRADE_COMPARE(data.findAttributeId(MeshAttribute::Color, 3, 37), Containers::NullOpt);
 
     std::ostringstream out;
     Error redirectError{&out};
-    data.attributeData(6);
-    data.attributeName(6);
-    data.attributeId(6);
-    data.attributeFormat(6);
-    data.attributeOffset(6);
-    data.attributeStride(6);
-    data.attributeArraySize(6);
-    data.attribute(6);
-    data.attribute<Vector2>(6);
-    data.attribute<Vector2[]>(6);
-    data.mutableAttribute(6);
-    data.mutableAttribute<Vector2>(6);
-    data.mutableAttribute<Vector2[]>(6);
+    data.attributeData(9);
+    data.attributeName(9);
+    data.attributeId(9);
+    data.attributeFormat(9);
+    data.attributeOffset(9);
+    data.attributeStride(9);
+    data.attributeArraySize(9);
+    data.attributeMorphTargetId(9);
+    data.attribute(9);
+    data.attribute<Vector2>(9);
+    data.attribute<Vector2[]>(9);
+    data.mutableAttribute(9);
+    data.mutableAttribute<Vector2>(9);
+    data.mutableAttribute<Vector2[]>(9);
 
     data.attributeId(MeshAttribute::Position);
     data.attributeId(MeshAttribute::Color, 2);
+    data.attributeId(MeshAttribute::Color, 3, 37);
     data.attributeFormat(MeshAttribute::Position);
     data.attributeFormat(MeshAttribute::Color, 2);
+    data.attributeFormat(MeshAttribute::Color, 3, 37);
     data.attributeOffset(MeshAttribute::Position);
     data.attributeOffset(MeshAttribute::Color, 2);
+    data.attributeOffset(MeshAttribute::Color, 3, 37);
     data.attributeStride(MeshAttribute::Position);
     data.attributeStride(MeshAttribute::Color, 2);
+    data.attributeStride(MeshAttribute::Color, 3, 37);
     data.attributeArraySize(MeshAttribute::Position);
     data.attributeArraySize(MeshAttribute::Color, 2);
+    data.attributeArraySize(MeshAttribute::Color, 3, 37);
     data.attribute(MeshAttribute::Position);
     data.attribute(MeshAttribute::Color, 2);
+    data.attribute(MeshAttribute::Color, 3, 37);
     data.attribute<Vector2>(MeshAttribute::Position);
     data.attribute<Vector2>(MeshAttribute::Color, 2);
+    data.attribute<Vector2>(MeshAttribute::Color, 3, 37);
     data.attribute<Vector2[]>(MeshAttribute::Position);
     data.attribute<Vector2[]>(MeshAttribute::Color, 2);
+    data.attribute<Vector2[]>(MeshAttribute::Color, 3, 37);
     data.mutableAttribute(MeshAttribute::Position);
     data.mutableAttribute(MeshAttribute::Color, 2);
+    data.mutableAttribute(MeshAttribute::Color, 3, 37);
     data.mutableAttribute<Vector2>(MeshAttribute::Position);
     data.mutableAttribute<Vector2>(MeshAttribute::Color, 2);
+    data.mutableAttribute<Vector2>(MeshAttribute::Color, 3, 37);
     data.mutableAttribute<Vector2[]>(MeshAttribute::Position);
     data.mutableAttribute<Vector2[]>(MeshAttribute::Color, 2);
+    data.mutableAttribute<Vector2[]>(MeshAttribute::Color, 3, 37);
 
     data.positions2DAsArray();
+    data.positions2DAsArray(0, 37);
     data.positions3DAsArray();
+    data.positions3DAsArray(0, 37);
     data.tangentsAsArray();
+    data.tangentsAsArray(0, 37);
     data.bitangentSignsAsArray();
+    data.bitangentSignsAsArray(0, 37);
     data.bitangentsAsArray();
+    data.bitangentsAsArray(0, 37);
     data.normalsAsArray();
+    data.normalsAsArray(0, 37);
     data.textureCoordinates2DAsArray();
+    data.textureCoordinates2DAsArray(0, 37);
     data.colorsAsArray(2);
+    data.colorsAsArray(3, 37);
     /* jointIdsAsArray() and weightsAsArray() have their own assert in order to
-       fetch array size, have to test also Into() for these */
+       fetch array size, have to test also Into() for these. They have no morph
+       targets however, so that's omitted for them. */
     data.jointIdsAsArray(2);
     data.jointIdsInto(nullptr, 2);
     data.weightsAsArray(2);
     data.weightsInto(nullptr, 2);
+    /* Object IDs have no morph targets either */
     data.objectIdsAsArray();
     CORRADE_COMPARE_AS(out.str(),
-        "Trade::MeshData::attributeData(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attributeName(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attributeId(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attributeFormat(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attributeOffset(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attributeStride(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attributeArraySize(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attribute(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attribute(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::attribute(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::mutableAttribute(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::mutableAttribute(): index 6 out of range for 6 attributes\n"
-        "Trade::MeshData::mutableAttribute(): index 6 out of range for 6 attributes\n"
+        "Trade::MeshData::attributeData(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attributeName(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attributeId(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attributeFormat(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attributeOffset(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attributeStride(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attributeArraySize(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attributeMorphTargetId(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attribute(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attribute(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::attribute(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 9 out of range for 9 attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 9 out of range for 9 attributes\n"
 
         "Trade::MeshData::attributeId(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeId(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attributeId(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::attributeFormat(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeFormat(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attributeFormat(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::attributeOffset(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeOffset(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attributeOffset(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::attributeStride(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeStride(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attributeStride(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::attributeArraySize(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeArraySize(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attributeArraySize(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::attribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attribute(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::attribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attribute(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::attribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::attribute(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::mutableAttribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::mutableAttribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
         "Trade::MeshData::mutableAttribute(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::mutableAttribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
+        "Trade::MeshData::mutableAttribute(): index 3 out of range for 3 Trade::MeshAttribute::Color attributes in morph target 37\n"
 
         "Trade::MeshData::positions2DInto(): index 0 out of range for 0 position attributes\n"
+        "Trade::MeshData::positions2DInto(): index 0 out of range for 0 position attributes in morph target 37\n"
         "Trade::MeshData::positions3DInto(): index 0 out of range for 0 position attributes\n"
+        "Trade::MeshData::positions3DInto(): index 0 out of range for 0 position attributes in morph target 37\n"
         "Trade::MeshData::tangentsInto(): index 0 out of range for 0 tangent attributes\n"
+        "Trade::MeshData::tangentsInto(): index 0 out of range for 0 tangent attributes in morph target 37\n"
         "Trade::MeshData::bitangentSignsInto(): index 0 out of range for 0 tangent attributes\n"
+        "Trade::MeshData::bitangentSignsInto(): index 0 out of range for 0 tangent attributes in morph target 37\n"
         "Trade::MeshData::bitangentsInto(): index 0 out of range for 0 bitangent attributes\n"
+        "Trade::MeshData::bitangentsInto(): index 0 out of range for 0 bitangent attributes in morph target 37\n"
         "Trade::MeshData::normalsInto(): index 0 out of range for 0 normal attributes\n"
+        "Trade::MeshData::normalsInto(): index 0 out of range for 0 normal attributes in morph target 37\n"
         "Trade::MeshData::textureCoordinates2DInto(): index 0 out of range for 0 texture coordinate attributes\n"
+        "Trade::MeshData::textureCoordinates2DInto(): index 0 out of range for 0 texture coordinate attributes in morph target 37\n"
         "Trade::MeshData::colorsInto(): index 2 out of range for 2 color attributes\n"
+        "Trade::MeshData::colorsInto(): index 3 out of range for 3 color attributes in morph target 37\n"
         "Trade::MeshData::jointIdsAsArray(): index 2 out of range for 2 joint ID attributes\n"
         "Trade::MeshData::jointIdsInto(): index 2 out of range for 2 joint ID attributes\n"
         "Trade::MeshData::weightsAsArray(): index 2 out of range for 2 weight attributes\n"
