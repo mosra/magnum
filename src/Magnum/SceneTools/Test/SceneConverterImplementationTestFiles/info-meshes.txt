@@ -1,6 +1,7 @@
 Mesh 0:
-  Level 0: 50 vertices @ Points (0.6 kB, ExternallyOwned|Mutable)
-    Position @ Vector3, offset 0, stride 12
+  Level 0: 50 vertices @ Points (1.0 kB, ExternallyOwned|Mutable)
+    Position @ Vector3, offset 0, stride 20
+    Position, morph target 66 @ Vector2, offset 12, stride 20
     70 indices @ UnsignedShort, offset 0, stride 2 (0.1 kB, ExternallyOwned)
 Mesh 1: LODs? No, meshlets.
   Level 0: 250 vertices @ Triangles (6.8 kB)
@@ -13,4 +14,4 @@ Mesh 1: LODs? No, meshlets.
     Custom(116:vertexCount) @ UnsignedByte, offset 85725, stride 1
 Mesh 2:
   Level 0: 15 vertices @ Instances (0.0 kB)
-Total mesh data size: 91.4 kB
+Total mesh data size: 91.8 kB

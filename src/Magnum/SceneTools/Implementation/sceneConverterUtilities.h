@@ -122,6 +122,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         std::size_t offset;
         Int stride;
         UnsignedInt arraySize;
+        Int morphTargetId;
         Trade::MeshAttribute name;
         Containers::String customName;
         VertexFormat format;
@@ -541,6 +542,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                     mesh->attributeOffset(k),
                     mesh->attributeStride(k),
                     mesh->attributeArraySize(k),
+                    mesh->attributeMorphTargetId(k),
                     name, Trade::isMeshAttributeCustom(name) ?
                         importer.meshAttributeName(name) : "",
                     mesh->attributeFormat(k),
@@ -1056,6 +1058,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                     << attribute.customName << Debug::nospace
                     << Debug::boldColor(Debug::Color::Default) << ")";
             } else d << Debug::packed << attribute.name;
+
+            if(attribute.morphTargetId != -1)
+                d << Debug::resetColor << Debug::nospace << ", morph target" << attribute.morphTargetId;
 
             d << Debug::color(Debug::Color::Blue) << "@" << Debug::packed << Debug::color(Debug::Color::Cyan) << attribute.format;
             if(attribute.arraySize)

@@ -697,7 +697,8 @@ void SceneConverterImplementationTest::infoMeshes() {
                 Trade::DataFlag::ExternallyOwned, indices,
                 Trade::MeshIndexData{indices},
                 Trade::DataFlag::ExternallyOwned|Trade::DataFlag::Mutable, points, {
-                    Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(points)}
+                    Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(points).slice(&Point::base)},
+                    Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(points).slice(&Point::morphTarget), 66},
                 }};
 
             /* Second is multi-level, with second level being indexed meshlets
@@ -740,7 +741,10 @@ void SceneConverterImplementationTest::infoMeshes() {
         }
 
         UnsignedShort indices[70];
-        Vector3 points[50];
+        struct Point {
+            Vector3 base;
+            Vector2 morphTarget;
+        } points[50];
     } importer;
 
     const char* argv[]{"", data.oneOrAll ? "--info-meshes" : "--info"};
