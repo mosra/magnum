@@ -188,7 +188,8 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
 
         attributeData[i] = Trade::MeshAttributeData{
             attributeData[i].name(), attributeData[i].format(),
-            offset, 0, std::ptrdiff_t(stride), attributeData[i].arraySize()};
+            offset, 0, std::ptrdiff_t(stride),
+            attributeData[i].arraySize(), attributeData[i].morphTargetId()};
 
         if(!interleaved) offset += attributeSize(attributeData[i]);
     }
@@ -210,7 +211,8 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
 
         attributeData[attributeIndex++] = Trade::MeshAttributeData{
             extra[i].name(), extra[i].format(),
-            offset, 0, std::ptrdiff_t(stride), extra[i].arraySize()};
+            offset, 0, std::ptrdiff_t(stride),
+            extra[i].arraySize(), extra[i].morphTargetId()};
 
         offset += attributeSize(extra[i]);
     }

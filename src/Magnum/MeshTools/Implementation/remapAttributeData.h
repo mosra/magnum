@@ -45,7 +45,8 @@ inline Trade::MeshAttributeData remapAttributeData(const Trade::MeshAttributeDat
             vertexData.data() + attribute.offset(originalVertexData),
             vertexCount,
             attribute.stride()},
-        attribute.arraySize()};
+        attribute.arraySize(),
+        attribute.morphTargetId()};
 }
 
 }}}

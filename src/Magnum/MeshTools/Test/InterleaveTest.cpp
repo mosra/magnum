@@ -730,16 +730,19 @@ void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
 
 void InterleaveTest::interleavedLayout() {
     Containers::Array<char> indexData{6};
-    Containers::Array<char> vertexData{3*24};
+    Containers::Array<char> vertexData{3*32};
 
     const Trade::MeshAttributeData attributeData[]{
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             Containers::arrayCast<Vector2>(vertexData.prefix(3*8))},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
-            Containers::arrayCast<Vector3>(vertexData.slice(3*8, 3*20))},
+            Containers::arrayCast<Vector3>(vertexData.sliceSize(3*8, 3*12))},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Short, Containers::StridedArrayView2D<char>{vertexData.exceptPrefix(3*20), {3, 4}}, 2}
+            VertexFormat::Short, Containers::StridedArrayView2D<char>{vertexData.sliceSize(3*20, 3*4), {3, 4}}, 2},
+        /* Morph target to verify it's correctly propagated */
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::arrayCast<Vector2>(vertexData.sliceSize(3*24, 3*8)), 76},
     };
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
@@ -754,24 +757,36 @@ void InterleaveTest::interleavedLayout() {
     CORRADE_VERIFY(MeshTools::isInterleaved(layout));
     CORRADE_COMPARE(layout.primitive(), MeshPrimitive::TriangleFan);
     CORRADE_VERIFY(!layout.isIndexed()); /* Indices are not preserved */
-    CORRADE_COMPARE(layout.attributeCount(), 3);
+    CORRADE_COMPARE(layout.attributeCount(), 4);
     CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
     CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
     CORRADE_COMPARE(layout.attributeName(2), Trade::meshAttributeCustom(42));
+    CORRADE_COMPARE(layout.attributeName(3), Trade::MeshAttribute::Position);
     CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
     CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
     CORRADE_COMPARE(layout.attributeFormat(2), VertexFormat::Short);
-    CORRADE_COMPARE(layout.attributeStride(0), 24);
-    CORRADE_COMPARE(layout.attributeStride(1), 24);
-    CORRADE_COMPARE(layout.attributeStride(2), 24);
+    CORRADE_COMPARE(layout.attributeFormat(3), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeStride(0), 32);
+    CORRADE_COMPARE(layout.attributeStride(1), 32);
+    CORRADE_COMPARE(layout.attributeStride(2), 32);
+    CORRADE_COMPARE(layout.attributeStride(3), 32);
     CORRADE_COMPARE(layout.attributeOffset(0), 0);
     CORRADE_COMPARE(layout.attributeOffset(1), 8);
     CORRADE_COMPARE(layout.attributeOffset(2), 20);
+    CORRADE_COMPARE(layout.attributeOffset(3), 24);
+    CORRADE_COMPARE(layout.attributeArraySize(0), 0);
+    CORRADE_COMPARE(layout.attributeArraySize(1), 0);
+    CORRADE_COMPARE(layout.attributeArraySize(2), 2);
+    CORRADE_COMPARE(layout.attributeArraySize(3), 0);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(0), -1);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(1), -1);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(2), -1);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(3), 76);
     CORRADE_COMPARE(layout.vertexCount(), 10);
     /* Needs to be like this so we can modify the data */
     CORRADE_COMPARE(layout.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_VERIFY(layout.vertexData());
-    CORRADE_COMPARE(layout.vertexData().size(), 10*24);
+    CORRADE_COMPARE(layout.vertexData().size(), 10*32);
 }
 
 void InterleaveTest::interleavedLayoutImplementationSpecificVertexFormat() {
@@ -807,32 +822,45 @@ void InterleaveTest::interleavedLayoutExtra() {
         Trade::MeshAttributeData{1},
         Trade::MeshAttributeData{Trade::MeshAttribute::Color,
             VertexFormat::Vector3, nullptr},
-        Trade::MeshAttributeData{4}
+        Trade::MeshAttributeData{4},
+        /* Morph target to verify it's correctly propagated */
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            VertexFormat::Vector4, nullptr, 0, 27},
     });
     CORRADE_VERIFY(MeshTools::isInterleaved(layout));
-    CORRADE_COMPARE(layout.attributeCount(), 4);
+    CORRADE_COMPARE(layout.attributeCount(), 5);
     CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
     CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
     CORRADE_COMPARE(layout.attributeName(2), Trade::meshAttributeCustom(15));
     CORRADE_COMPARE(layout.attributeName(3), Trade::MeshAttribute::Color);
+    CORRADE_COMPARE(layout.attributeName(4), Trade::MeshAttribute::Color);
     CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
     CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
     CORRADE_COMPARE(layout.attributeFormat(2), VertexFormat::UnsignedByte);
     CORRADE_COMPARE(layout.attributeFormat(3), VertexFormat::Vector3);
-    CORRADE_COMPARE(layout.attributeStride(0), 44);
-    CORRADE_COMPARE(layout.attributeStride(1), 44);
-    CORRADE_COMPARE(layout.attributeStride(2), 44);
-    CORRADE_COMPARE(layout.attributeStride(3), 44);
+    CORRADE_COMPARE(layout.attributeFormat(4), VertexFormat::Vector4);
+    CORRADE_COMPARE(layout.attributeStride(0), 60);
+    CORRADE_COMPARE(layout.attributeStride(1), 60);
+    CORRADE_COMPARE(layout.attributeStride(2), 60);
+    CORRADE_COMPARE(layout.attributeStride(3), 60);
+    CORRADE_COMPARE(layout.attributeStride(4), 60);
     CORRADE_COMPARE(layout.attributeOffset(0), 0);
     CORRADE_COMPARE(layout.attributeOffset(1), 8);
     CORRADE_COMPARE(layout.attributeOffset(2), 21);
     CORRADE_COMPARE(layout.attributeOffset(3), 28);
+    CORRADE_COMPARE(layout.attributeOffset(4), 44);
     CORRADE_COMPARE(layout.attributeArraySize(0), 0);
     CORRADE_COMPARE(layout.attributeArraySize(1), 0);
     CORRADE_COMPARE(layout.attributeArraySize(2), 6);
     CORRADE_COMPARE(layout.attributeArraySize(3), 0);
+    CORRADE_COMPARE(layout.attributeArraySize(4), 0);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(0), -1);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(1), -1);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(2), -1);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(3), -1);
+    CORRADE_COMPARE(layout.attributeMorphTargetId(4), 27);
     CORRADE_COMPARE(layout.vertexCount(), 7);
-    CORRADE_COMPARE(layout.vertexData().size(), 7*44);
+    CORRADE_COMPARE(layout.vertexData().size(), 7*60);
 }
 
 void InterleaveTest::interleavedLayoutExtraAliased() {
