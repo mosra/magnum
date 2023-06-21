@@ -26,7 +26,7 @@
 #include "Concatenate.h"
 
 #include <numeric>
-#include <unordered_map>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/MeshTools/Implementation/remapAttributeData.h"
@@ -55,14 +55,6 @@ Containers::Pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Con
 
     return {indexCount, vertexCount};
 }
-
-/* std::hash for enumeration types is only since C++14, so we need to make our
-   own. It's amazing how extremely verbose this can get, ugh. */
-struct MeshAttributeHash: std::hash<typename std::underlying_type<Trade::MeshAttribute>::type> {
-    std::size_t operator()(Trade::MeshAttribute value) const {
-        return std::hash<typename std::underlying_type<Trade::MeshAttribute>::type>::operator()(static_cast<typename std::underlying_type<Trade::MeshAttribute>::type>(value));
-    }
-};
 
 Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::Iterable<const Trade::MeshData>& meshes, const char* const assertPrefix) {
     #if defined(CORRADE_NO_ASSERT) || defined(CORRADE_STANDARD_ASSERT)
@@ -93,13 +85,6 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
         std::move(indexData), indices.isEmpty() ?
             Trade::MeshIndexData{} : Trade::MeshIndexData{indices},
         std::move(vertexData), std::move(attributeData), vertexCount};
-    /* Create an attribute map. Yes, this is an inevitable fugly thing that
-       allocates like mad, while everything else is zero-alloc.
-       Containers::HashMap can't be here soon enough. */
-    std::unordered_multimap<Trade::MeshAttribute, Containers::Pair<UnsignedInt, bool>, MeshAttributeHash> attributeMap;
-    attributeMap.reserve(out.attributeCount());
-    for(UnsignedInt i = 0; i != out.attributeCount(); ++i)
-        attributeMap.emplace(out.attributeName(i), Containers::pair(i, false));
 
     /* Go through all meshes and put all attributes and index arrays
        together */
@@ -134,57 +119,44 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
             indexOffset += mesh.vertexCount();
         }
 
-        /* Reset markers saying which attribute has already been copied */
-        for(auto it = attributeMap.begin(); it != attributeMap.end(); ++it)
-            it->second.second() = false;
-
         /* Copy attributes to their destination, skipping ones that don't have
            any equivalent in the destination mesh */
         for(UnsignedInt src = 0; src != mesh.attributeCount(); ++src) {
-            /* Go through destination attributes of the same name and find the
-               earliest one that hasn't been copied yet */
-            auto range = attributeMap.equal_range(mesh.attributeName(src));
-            UnsignedInt dst = ~UnsignedInt{};
-            auto found = attributeMap.end();
-            for(auto it = range.first; it != range.second; ++it) {
-                if(it->second.second()) continue;
-
-                /* The range is unordered so we need to go through everything
-                   and pick one with smallest ID */
-                if(it->second.first() < dst) {
-                    dst = it->second.first();
-                    found = it;
-                }
-            }
-
-            /* No corresponding attribute found, continue */
-            if(dst == ~UnsignedInt{}) continue;
+            /* Try to find a matching attribute in the destination mesh (same
+               name, same set). Skip if no such attribute is found. This is a
+               O(m + n) complexity (linear lookup in both the source and the
+               output mesh), but given the assumption that meshes rarely have
+               more than 8-16 attributes it should still be faster than
+               building a hashmap first and then doing a complex lookup in it
+               (which is how it used to be before, using
+               std::unordered_multimap). */
+            const Containers::Optional<UnsignedInt> dst = out.findAttributeId(mesh.attributeName(src), mesh.attributeId(src));
+            if(!dst)
+                continue;
 
             /* Check format compatibility. This won't fire for i == 0, as
                that's where out.primitive() comes from */
-            CORRADE_ASSERT(out.attributeFormat(dst) == mesh.attributeFormat(src),
-                assertPrefix << "expected" << out.attributeFormat(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeFormat(src) << "in mesh" << i << "attribute" << src,
+            CORRADE_ASSERT(out.attributeFormat(*dst) == mesh.attributeFormat(src),
+                assertPrefix << "expected" << out.attributeFormat(*dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(*dst) << Debug::nospace << ") but got" << mesh.attributeFormat(src) << "in mesh" << i << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
-            CORRADE_ASSERT(!out.attributeArraySize(dst) == !mesh.attributeArraySize(src),
-                assertPrefix << "attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ")" << (out.attributeArraySize(dst) ? "is" : "isn't") << "an array but attribute" << src << "in mesh" << i << (mesh.attributeArraySize(src) ? "is" : "isn't"),
+            CORRADE_ASSERT(!out.attributeArraySize(*dst) == !mesh.attributeArraySize(src),
+                assertPrefix << "attribute" << dst << "(" << Debug::nospace << out.attributeName(*dst) << Debug::nospace << ")" << (out.attributeArraySize(*dst) ? "is" : "isn't") << "an array but attribute" << src << "in mesh" << i << (mesh.attributeArraySize(src) ? "is" : "isn't"),
                 (Trade::MeshData{MeshPrimitive{}, 0}));
-            CORRADE_ASSERT(out.attributeArraySize(dst) >= mesh.attributeArraySize(src),
-                assertPrefix << "expected array size" << out.attributeArraySize(dst) << "or less for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeArraySize(src) << "in mesh" << i << "attribute" << src,
+            CORRADE_ASSERT(out.attributeArraySize(*dst) >= mesh.attributeArraySize(src),
+                assertPrefix << "expected array size" << out.attributeArraySize(*dst) << "or less for attribute" << dst << "(" << Debug::nospace << out.attributeName(*dst) << Debug::nospace << ") but got" << mesh.attributeArraySize(src) << "in mesh" << i << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
 
             const Containers::StridedArrayView2D<const char> srcAttribute = mesh.attribute(src);
-            const Containers::StridedArrayView2D<char> dstAttribute = out.mutableAttribute(dst);
+            const Containers::StridedArrayView2D<char> dstAttribute = out.mutableAttribute(*dst);
 
-            /* Copy the data to a slice of the output, mark the attribute as
-               copied. For non-array attributes the second dimension should be
-               matching (because the format is matching), for array attributes
-               we may be copying to just a prefix of the elements in
-               dstAttribute. */
-            CORRADE_INTERNAL_ASSERT(out.attributeArraySize(dst) || srcAttribute.size()[1] == dstAttribute.size()[1]);
+            /* Copy the data to a slice of the output. For non-array attributes
+               the second dimension should be matching (because the format is
+               matching), for array attributes we may be copying to just a
+               prefix of the elements in dstAttribute. */
+            CORRADE_INTERNAL_ASSERT(out.attributeArraySize(*dst) || srcAttribute.size()[1] == dstAttribute.size()[1]);
             Utility::copy(srcAttribute, dstAttribute.sliceSize(
                 {vertexOffset, 0},
                 {mesh.vertexCount(), srcAttribute.size()[1]}));
-            found->second.second() = true;
         }
 
         /* Update vertex offset for the next mesh */
