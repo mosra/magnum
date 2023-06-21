@@ -149,15 +149,16 @@ template<class T, class U> U transformPoints(const T& transformation, U vectors)
 @m_since_latest
 
 Expects that the mesh contains a two-dimensional
-@ref Trade::MeshAttribute::Position with index @p id and that the attribute
-does not have an implementation-specific format. To avoid data loss with packed
-types, the positions are converted to @ref VertexFormat::Vector2 if not
+@ref Trade::MeshAttribute::Position with index @p id (and in morph target
+@p morphTargetId if not @cpp -1 @ce) and that the attribute does not have an
+implementation-specific format. To avoid data loss with packed types, the  positions are converted to @ref VertexFormat::Vector2 if not
 already. In that case the data layouting is done by @ref interleavedLayout()
 with the @p flags parameter propagated to it, see its documentation for
 detailed behavior description. Other attributes, position attributes other than
-@p id, and indices (if any) are passed through untouched.
+@p id or with different @p morphTargetId, and indices (if any) are passed
+through untouched.
 
-See also @ref transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, InterleaveFlags)
+See also @ref transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
 for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using @ref transform2DInPlace().
 @see @ref transform3D(), @ref transformTextureCoordinates2D(),
@@ -165,57 +166,77 @@ copy, you can also do an in-place transformation using @ref transform2DInPlace()
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, Int morphTargetId = -1, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief transform2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+@m_deprecated_since_latest Use @ref transform2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+    instead.
+*/
+CORRADE_DEPRECATED("use transform2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id, InterleaveFlags flags);
+#endif
 
 /**
 @brief Transform 2D positions in a mesh data
 @m_since_latest
 
-Compared to @ref transform2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, InterleaveFlags)
+Compared to @ref transform2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
 this function can can perform the transformation in-place, transferring the
 data ownership to the returned instance, if both vertex and index data is
-owned, vertex data is mutable and the positions with index @p id are
-@ref VertexFormat::Vector2.
+owned, vertex data is mutable and the positions with index @p id in
+@p morphTargetId are @ref VertexFormat::Vector2.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id = 0, Int morphTargetId = -1, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+@m_deprecated_since_latest Use @ref transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+    instead.
+*/
+CORRADE_DEPRECATED("use transform2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id, InterleaveFlags flags);
+#endif
 
 /**
 @brief Transform 2D positions in a mesh data in-place
 @m_since_latest
 
 Expects that the mesh has mutable vertex data and contains a two-dimensional
-@ref Trade::MeshAttribute::Position with index @p id. To avoid data loss with
-packed types, the in-place operation requires the position type to be
-@ref VertexFormat::Vector2 --- if you can't guarantee that, use
-@ref transform2D() instead. Other attributes, position attributes other than
-@p id, and indices (if any) are left untouched.
+@ref Trade::MeshAttribute::Position with index @p id (and in morph target
+@p morphTargetId if not @cpp -1 @ce). To avoid data loss with packed types, the
+in-place operation requires the position type to be @ref VertexFormat::Vector2
+--- if you can't guarantee that, use @ref transform2D() instead. Other
+attributes, position attributes other than @p id or with different
+@p morphTargetId, and indices (if any) are left untouched.
 @see @ref transform3DInPlace(), @ref transformTextureCoordinates2DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
     @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const
 */
-MAGNUM_MESHTOOLS_EXPORT void transform2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0);
+MAGNUM_MESHTOOLS_EXPORT void transform2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, Int morphTargetId = -1);
 
 /**
 @brief Transform 3D positions, normals, tangents and bitangents in a mesh data
 @m_since_latest
 
 Expects that the mesh contains a three-dimensional
-@ref Trade::MeshAttribute::Position with index @p id. If
-@ref Trade::MeshAttribute::Normal, @ref Trade::MeshAttribute::Tangent or
-@ref Trade::MeshAttribute::Bitangent with index @p id are present as well,
-those get transformed with @ref Matrix4::normalMatrix() extracted out of
-@p transformation. All these attributes are expected to not have an
-implementation-specific format. To avoid data loss with packed types, the
-positions, normals and bitangents are converted to @ref VertexFormat::Vector3
-if not already, tangents to either @ref VertexFormat::Vector3 or
-@ref VertexFormat::Vector4 if not already. In that case the data layouting is
-done by @ref interleavedLayout() with the @p flags parameter propagated to it,
-see its documentation for detailed behavior description. Other attributes,
-additional position/TBN attributes other than @p id, and indices (if any) are
+@ref Trade::MeshAttribute::Position with index @p id (and in morph target
+@p morphTargetId if not @cpp -1 @ce). If @ref Trade::MeshAttribute::Normal,
+@ref Trade::MeshAttribute::Tangent or @ref Trade::MeshAttribute::Bitangent with
+index @p id in @p morphTargetId are present as well, those get transformed with
+@ref Matrix4::normalMatrix() extracted out of @p transformation. All these
+attributes are expected to not have an implementation-specific format. To avoid
+data loss with packed types, the positions, normals and bitangents are
+converted to @ref VertexFormat::Vector3 if not already, tangents to either
+@ref VertexFormat::Vector3 or @ref VertexFormat::Vector4 if not already. In
+that case the data layouting is done by @ref interleavedLayout() with the
+@p flags parameter propagated to it, see its documentation for detailed
+behavior description. Other attributes, additional position/TBN attributes
+other than @p id or with different @p morphTargetId, and indices (if any) are
 passed through untouched.
 
-See also @ref transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt, InterleaveFlags)
+See also @ref transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt, Int, InterleaveFlags)
 for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using @ref transform3DInPlace().
 @see @ref transform2D(), @ref transformTextureCoordinates2D(),
@@ -223,56 +244,78 @@ copy, you can also do an in-place transformation using @ref transform3DInPlace()
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const,
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0, Int morphTargetId = -1, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief transform3D(const Trade::MeshData&, const Matrix4&, UnsignedInt, Int, InterleaveFlags)
+@m_deprecated_since_latest Use @ref transform3D(const Trade::MeshData&, const Matrix4&, UnsignedInt, Int, InterleaveFlags)
+    instead.
+*/
+CORRADE_DEPRECATED("use transform3D(const Trade::MeshData&, const Matrix4&, UnsignedInt, Int, InterleaveFlags) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(const Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id, InterleaveFlags flags);
+#endif
 
 /**
 @brief Transform 3D positions, normals, tangenta and bitangents in a mesh data
 @m_since_latest
 
-Compared to @ref transform3D(const Trade::MeshData&, const Matrix4&, UnsignedInt, InterleaveFlags)
+Compared to @ref transform3D(const Trade::MeshData&, const Matrix4&, UnsignedInt, Int, InterleaveFlags)
 this function can can perform the transformation in-place, transferring the
 data ownership to the returned instance, if both vertex and index data is
-owned, vertex data is mutable, positions, normals and bitangents (if present)
-are @ref VertexFormat::Vector3 and tangents (if present) either
+owned, vertex data is mutable, positions, normals and bitangents with index
+@p id in @p morphTargetId (if present) are @ref VertexFormat::Vector3 and
+tangents with index @p id in @p morphTargetId (if present) are either
 @ref VertexFormat::Vector3 or @ref VertexFormat::Vector4.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformation, UnsignedInt id = 0, Int morphTargetId = -1, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt, Int, InterleaveFlags)
+@m_deprecated_since_latest Use @ref transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt, Int, InterleaveFlags)
+    instead.
+*/
+CORRADE_DEPRECATED("use transform3D(Trade::MeshData&&, const Matrix4&, UnsignedInt, Int, InterleaveFlags) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformation, UnsignedInt id, InterleaveFlags flags);
+#endif
 
 /**
 @brief Transform 3D positions, normals, tangents and bitangents in a mesh data in-place
 @m_since_latest
 
 Expects that the mesh has mutable vertex data and contains at least a
-three-dimensional @ref Trade::MeshAttribute::Position with index @p id;
-optionally also @ref Trade::MeshAttribute::Normal,
-@ref Trade::MeshAttribute::Tangent or @ref Trade::MeshAttribute::Bitangent with
-index @p id, those get transformed with @ref Matrix4::normalMatrix() extracted
-out of @p transformation. To avoid data loss with packed types, the in-place
-operation requires the position, normal and bitangent types to be
+three-dimensional @ref Trade::MeshAttribute::Position with index @p id (and in
+morph target @p morphTargetId if not @cpp -1 @ce); optionally also
+@ref Trade::MeshAttribute::Normal, @ref Trade::MeshAttribute::Tangent or
+@ref Trade::MeshAttribute::Bitangent with index @p id in @p morphTargetId,
+those get transformed with @ref Matrix4::normalMatrix() extracted out of
+@p transformation. To avoid data loss with packed types, the in-place operation
+requires the position, normal and bitangent types to be
 @ref VertexFormat::Vector3 and tangent either @ref VertexFormat::Vector3 or
 @ref VertexFormat::Vector4 --- if you can't guarantee that, use
 @ref transform3D() instead. Other attributes, position/TBN attributes other
-than @p id, and indices (if any) are left untouched.
+than @p id or with different @p morphTargetId, and indices (if any) are left
+untouched.
 @see @ref transform2DInPlace(), @ref transformTextureCoordinates2DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
     @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const
 */
-MAGNUM_MESHTOOLS_EXPORT void transform3DInPlace(Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0);
+MAGNUM_MESHTOOLS_EXPORT void transform3DInPlace(Trade::MeshData& mesh, const Matrix4& transformation, UnsignedInt id = 0, Int morphTargetId = -1);
 
 /**
 @brief Transform 2D texture coordinates in a mesh data
 @m_since_latest
 
 Expects that the mesh contains a @ref Trade::MeshAttribute::TextureCoordinates
-with index id. To avoid data loss with packed types, the coordinattes are
-converted to @ref VertexFormat::Vector2 if not already. In that case the data
-layouting is done by @ref interleavedLayout() with the @p flags parameter
-propagated to it, see its documentation for detailed behavior description.
-Other attributes, texture coordinate attributes other than @p id, and indices
-(if any) are passed through untouched.
+with index @p id (and in morph target @p morphTargetId if not @cpp -1 @ce). To
+avoid data loss with packed types, the coordinattes are converted to
+@ref VertexFormat::Vector2 if not already. In that case the data layouting is
+done by @ref interleavedLayout() with the @p flags parameter propagated to it,
+see its documentation for detailed behavior description. Other attributes,
+texture coordinate attributes other than @p id or with different
+@p morphTargetId, and indices (if any) are passed through untouched.
 
-See also @ref transformTextureCoordinates2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, InterleaveFlags)
+See also @ref transformTextureCoordinates2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
 for a potentially more efficient operation instead of always performing a full
 copy, you can also do an in-place transformation using
 @ref transformTextureCoordinates2DInPlace().
@@ -280,38 +323,57 @@ copy, you can also do an in-place transformation using
     @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
     @ref isVertexFormatImplementationSpecific()
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, Int morphTargetId = -1, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief transformTextureCoordinates2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+@m_deprecated_since_latest Use @ref transformTextureCoordinates2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+    instead.
+*/
+CORRADE_DEPRECATED("use transformTextureCoordinates2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(const Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id, InterleaveFlags flags);
+#endif
 
 /**
 @brief Transform 2D texture coordinates in a mesh data
 @m_since_latest
 
-Compared to @ref transformTextureCoordinates2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, InterleaveFlags)
+Compared to @ref transformTextureCoordinates2D(const Trade::MeshData&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
 this function can can perform the transformation in-place, transferring the
 data ownership to the returned instance, if both vertex and index data is
-owned, vertex data is mutable and the coordinates with index @p id are
-@ref VertexFormat::Vector2.
+owned, vertex data is mutable and the coordinates with index @p id in
+@p morphTargetId are @ref VertexFormat::Vector2.
 */
-MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id = 0, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id = 0, Int morphTargetId = -1, InterleaveFlags flags = InterleaveFlag::PreserveInterleavedAttributes);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief transformTextureCoordinates2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+@m_deprecated_since_latest Use @ref transformTextureCoordinates2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags)
+    instead.
+*/
+CORRADE_DEPRECATED("use transformTextureCoordinates2D(Trade::MeshData&&, const Matrix3&, UnsignedInt, Int, InterleaveFlags) instead") MAGNUM_MESHTOOLS_EXPORT Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matrix3& transformation, UnsignedInt id, InterleaveFlags flags);
+#endif
 
 /**
 @brief Transform 2D texture coordinates in a mesh data in-place
 @m_since_latest
 
 Expects that the mesh has mutable vertex data and contains a
-@ref Trade::MeshAttribute::TextureCoordinates with index @p id and that the
-attribute does not have an implementation-specific format. To avoid data loss
-with packed types, the in-place operation requires the coordinate type to be
+@ref Trade::MeshAttribute::TextureCoordinates with index @p id (and in morph
+target @p morphTargetId if not @cpp -1 @ce) and that the attribute does not
+have an implementation-specific format. To avoid data loss with packed types,
+the in-place operation requires the coordinate type to be
 @ref VertexFormat::Vector2 --- if you can't guarantee that, use
 @ref transformTextureCoordinates2D() instead. Other attributes, texture
-coordinate attributes other than @p id, and indices (if any) are passed through
-untouched.
+coordinate attributes other than @p id or with different @p morphTargetId, and
+indices (if any) are passed through untouched.
 @see @ref transform2DInPlace(), @ref transform3DInPlace(),
     @ref Trade::MeshData::vertexDataFlags(),
     @ref Trade::MeshData::attributeCount(MeshAttribute, Int) const,
     @ref Trade::MeshData::attributeFormat(MeshAttribute, UnsignedInt, Int) const
 */
-MAGNUM_MESHTOOLS_EXPORT void transformTextureCoordinates2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0);
+MAGNUM_MESHTOOLS_EXPORT void transformTextureCoordinates2DInPlace(Trade::MeshData& mesh, const Matrix3& transformation, UnsignedInt id = 0, Int morphTargetId = -1);
 
 }}
 
