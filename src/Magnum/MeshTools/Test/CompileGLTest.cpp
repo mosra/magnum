@@ -1566,9 +1566,10 @@ void CompileGLTest::customAttribute() {
     auto&& instanceData = CustomAttributeWarningData[testCaseInstanceId()];
     setTestCaseDescription(instanceData.name);
 
-    Trade::MeshData data{MeshPrimitive::Triangles,
-        nullptr, {Trade::MeshAttributeData{Trade::meshAttributeCustom(115),
-            VertexFormat::Short, nullptr}}};
+    Trade::MeshData data{MeshPrimitive::Triangles, nullptr, {
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(115),
+            VertexFormat::Short, nullptr}
+    }};
 
     std::ostringstream out;
     Warning redirectError{&out};
@@ -1587,9 +1588,10 @@ void CompileGLTest::unsupportedAttribute() {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_SKIP("All attributes are supported on ES3+.");
     #else
-    Trade::MeshData data{MeshPrimitive::Triangles,
-        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
-            VertexFormat::UnsignedByte, nullptr}}};
+    Trade::MeshData data{MeshPrimitive::Triangles, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+            VertexFormat::UnsignedByte, nullptr}
+    }};
 
     std::ostringstream out;
     Warning redirectError{&out};
@@ -1607,10 +1609,12 @@ void CompileGLTest::unsupportedAttributeStride() {
 
     Vector3 data[2]{};
     Trade::MeshData zero{MeshPrimitive::Points, {}, data, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::stridedArrayView(data, 1).broadcasted<0>(2)}
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::stridedArrayView(data, 1).broadcasted<0>(2)}
     }};
     Trade::MeshData negative{MeshPrimitive::Points, {}, data, {
-        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::stridedArrayView(data).flipped<0>()}
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            Containers::stridedArrayView(data).flipped<0>()}
     }};
 
     std::ostringstream out;
@@ -1626,9 +1630,10 @@ void CompileGLTest::implementationSpecificAttributeFormat() {
     auto&& instanceData = CustomAttributeWarningData[testCaseInstanceId()];
     setTestCaseDescription(instanceData.name);
 
-    Trade::MeshData data{MeshPrimitive::Triangles,
-        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            vertexFormatWrap(0xdead), nullptr}}};
+    Trade::MeshData data{MeshPrimitive::Triangles, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            vertexFormatWrap(0xdead), nullptr}
+    }};
 
     std::ostringstream out;
     Warning redirectError{&out};
@@ -1655,9 +1660,10 @@ void CompileGLTest::generateNormalsNoPosition() {
 void CompileGLTest::generateNormals2DPosition() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Trade::MeshData data{MeshPrimitive::Triangles,
-        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-            VertexFormat::Vector2, nullptr}}};
+    Trade::MeshData data{MeshPrimitive::Triangles, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector2, nullptr}
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1669,13 +1675,12 @@ void CompileGLTest::generateNormals2DPosition() {
 void CompileGLTest::generateNormalsNoFloats() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    Trade::MeshData data{MeshPrimitive::Triangles,
-        nullptr, {
-            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-                VertexFormat::Vector3, nullptr},
-            Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
-                VertexFormat::Vector3h, nullptr},
-        }};
+    Trade::MeshData data{MeshPrimitive::Triangles, nullptr, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3h, nullptr},
+    }};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1722,7 +1727,10 @@ void CompileGLTest::externalBuffers() {
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
         {}, indexData, Trade::MeshIndexData{indexData},
-        {}, positions, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}}};
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(positions)}
+        }};
 
     /* Duplicate everything if data is non-indexed */
     if(!data.indexed) meshData = duplicate(meshData);
