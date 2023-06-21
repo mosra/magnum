@@ -160,8 +160,8 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
             /* No corresponding attribute found, continue */
             if(dst == ~UnsignedInt{}) continue;
 
-            /* Check format compatibility. This won't fire for i ==
-               ~std::size_t{}, as that's where out.primitive() comes from */
+            /* Check format compatibility. This won't fire for i == 0, as
+               that's where out.primitive() comes from */
             CORRADE_ASSERT(out.attributeFormat(dst) == mesh.attributeFormat(src),
                 assertPrefix << "expected" << out.attributeFormat(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeFormat(src) << "in mesh" << i << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
