@@ -118,6 +118,7 @@ struct CompileGLTest: GL::OpenGLTester {
     void conflictingAttributes();
     void unsupportedIndexStride();
 
+    void morphTargetAttributes();
     void customAttribute();
     void unsupportedAttribute();
     void unsupportedAttributeStride();
@@ -473,7 +474,8 @@ CompileGLTest::CompileGLTest() {
 
     addTests({&CompileGLTest::unsupportedIndexStride});
 
-    addInstancedTests({&CompileGLTest::customAttribute,
+    addInstancedTests({&CompileGLTest::morphTargetAttributes,
+                       &CompileGLTest::customAttribute,
                        &CompileGLTest::unsupportedAttribute},
         Containers::arraySize(CustomAttributeWarningData));
 
@@ -1560,6 +1562,30 @@ void CompileGLTest::unsupportedIndexStride() {
     compile(data);
     CORRADE_COMPARE(out.str(),
         "MeshTools::compile(): MeshIndexType::UnsignedShort with stride of 4 bytes isn't supported by OpenGL\n");
+}
+
+void CompileGLTest::morphTargetAttributes() {
+    auto&& instanceData = CustomAttributeWarningData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    Vector3 vertexData[2]{};
+    Trade::MeshData data{MeshPrimitive::Triangles, {}, vertexData, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::arrayView(vertexData)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            Containers::arrayView(vertexData), 37},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::arrayView(vertexData), 26},
+    }};
+
+    std::ostringstream out;
+    Warning redirectError{&out};
+    if(instanceData.flags)
+        MeshTools::compile(data, instanceData.flags);
+    else
+        MeshTools::compile(data);
+    CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
+        "MeshTools::compile(): ignoring 2 morph target attributes\n");
 }
 
 void CompileGLTest::customAttribute() {

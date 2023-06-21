@@ -73,10 +73,10 @@ enum class CompileFlag: UnsignedByte {
     GenerateSmoothNormals = 1 << 1,
 
     /**
-     * By default, @ref compile() warns when it encounters custom attributes
-     * and attributes with implementation-specific format, as those get ignored
-     * by it. If you're binding those manually with
-     * @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&) or
+     * By default, @ref compile() warns when it encounters custom attributes,
+     * morph target attributes and attributes with an implementation-specific
+     * format, as those get ignored by it. If you're binding those manually
+     * with @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&) or
      * handling them in some other way on the application side already, use
      * this flag to suppress the warning messages.
      * @m_since{2020,06}

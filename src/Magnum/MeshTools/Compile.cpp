@@ -83,6 +83,10 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
     UnsignedInt weightAttributeCount = 0;
     #endif
 
+    /* All morph target attributes are ignored now, count them and print just a
+       single warning for all */
+    UnsignedInt morphTargetAttributeCount = 0;
+
     for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
         auto addAttribute = [&](GL::DynamicAttribute attribute, std::size_t offset) {
             /* Ensure each attribute gets bound only once -- so for example
@@ -122,6 +126,13 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
         if(isVertexFormatImplementationSpecific(format)) {
             if(!(flags & CompileFlag::NoWarnOnCustomAttributes))
                 Warning{} << "MeshTools::compile(): ignoring attribute" << meshData.attributeName(i) << "with an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format));
+            continue;
+        }
+
+        /* No builtin support for morph targets yet, count them and print a
+           single warning at the end */
+        if(meshData.attributeMorphTargetId(i) != -1) {
+            ++morphTargetAttributeCount;
             continue;
         }
 
@@ -219,6 +230,9 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
         if(!Trade::isMeshAttributeCustom(meshData.attributeName(i)) || !(flags & CompileFlag::NoWarnOnCustomAttributes))
             Warning{} << "MeshTools::compile(): ignoring unknown/unsupported attribute" << meshData.attributeName(i);
     }
+
+    if(morphTargetAttributeCount && !(flags & CompileFlag::NoWarnOnCustomAttributes))
+        Warning{} << "MeshTools::compile(): ignoring" << morphTargetAttributeCount << "morph target attributes";
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_INTERNAL_ASSERT(jointIdAttributeCount == weightAttributeCount);
