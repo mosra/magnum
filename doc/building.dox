@@ -675,6 +675,12 @@ Options controlling the build:
     Enabled by default for static builds. May introduce additional overhead on
     some platforms, disable if you will only link static libraries to one final
     executable and won't use any dynamic plugins.
+-   `MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS_DLL_NAME` --- Name of a DLL in which to
+    search for unique globals symbols. By default, the main executable is
+    searched, which works in most cases except when Corrade is only linked to a
+    DLL, such as in Python modules. The name is expected to be just a filename
+    without any path. Used only on Windows and only if
+    `MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS` is enabled.
 -   `MAGNUM_BUILD_PLUGINS_STATIC` --- Build plugins as static. By default,
     plugins are built as dynamic. Independent of the `MAGNUM_BUILD_STATIC`
     option to allow having static libraries with dynamic plugins and vice

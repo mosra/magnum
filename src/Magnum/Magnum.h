@@ -117,8 +117,10 @@ Defined if built as static libraries. Default are shared libraries.
 @brief Static library build with globals unique across shared libraries
 @m_since{2020,06}
 
-Enabled by default in a static build.
-@see @ref building, @ref cmake
+Enabled by default in a static build. On Windows see also the
+`MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS_DLL_NAME`
+@ref building-features "CMake option".
+@see @ref cmake
 */
 #define MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
 #undef MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS

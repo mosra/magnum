@@ -347,6 +347,15 @@ cmake_dependent_option(MAGNUM_BUILD_GL_TESTS "Build unit tests for OpenGL code" 
 cmake_dependent_option(MAGNUM_BUILD_AL_TESTS "Build unit tests for OpenAL code" ON "MAGNUM_BUILD_TESTS;MAGNUM_WITH_AUDIO" OFF)
 cmake_dependent_option(MAGNUM_BUILD_VK_TESTS "Build unit tests for Vulkan code" OFF "MAGNUM_BUILD_TESTS;MAGNUM_TARGET_VK" OFF)
 
+if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT)
+    # TODO is there some cmake_dependent_option() but for strings? I.e., to
+    #   hide this if a static build isn't enabled? I don't want to repeat the
+    #   complicated logic from inside cmake_dependent_option() just for a
+    #   single option.
+    set(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS_DLL_NAME ""
+        CACHE STRING "Name of a DLL in which to search for unique globals symbols if MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS is enabled")
+endif()
+
 # OpenGLTester / VulkanTester libraries, built by default only if GL / VK tests
 # are enabled
 cmake_dependent_option(MAGNUM_WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT MAGNUM_BUILD_GL_TESTS" ON)

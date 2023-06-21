@@ -23,28 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "WindowsWeakSymbol.h"
+/* Either a nullptr literal or a string literal with the DLL name. Windows
+   only. */
+#define WINDOWS_WEAK_SYMBOL_DLL_NAME ${WINDOWS_WEAK_SYMBOL_DLL_NAME}
 
-#include <cstdio>
-
-#define WIN32_LEAN_AND_MEAN 1
-#define VC_EXTRALEAN
-#include <windows.h>
-
-#include "Magnum/Implementation/configure.h"
-
-namespace Magnum { namespace Implementation {
-
-void* windowsWeakSymbol(const char* name, void* backup) {
-    /* FARPROC?! I want either a function pointer or a variable pointer */
-    void* address = reinterpret_cast<void*>(GetProcAddress(GetModuleHandleA(WINDOWS_WEAK_SYMBOL_DLL_NAME), name));
-    /* This shouldn't fail, except in Python, where it's a sad, sad misery. */
-    if(!address) {
-        std::fprintf(stderr, "Cannot query global symbol %s and make it unique\n"
-            "across DLLs. App may misbehave, sorry. Build Magnum as dynamic as a workaround.\n", name);
-        address = backup;
-    }
-    return address;
-}
-
-}}

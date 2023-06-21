@@ -31,6 +31,19 @@ set(CMAKE_FOLDER "Magnum")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
+# The Implementation/configure.h is used by
+# Implementation/WindowsWeakSymbol.cpp which is used only if
+# MAGNUM_BUILD_STATIC AND MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS is defined.
+if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS AND MAGNUM_BUILD_STATIC)
+    if(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS_DLL_NAME)
+        set(WINDOWS_WEAK_SYMBOL_DLL_NAME "\"${MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS_DLL_NAME}\"")
+    else()
+        set(WINDOWS_WEAK_SYMBOL_DLL_NAME nullptr)
+    endif()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Implementation/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/Implementation/configure.h)
+endif()
+
 # Generate version header. If Git is found and this is a Git working copy,
 # extract values from there, otherwise use just MAGNUM_VERSION_YEAR/MONTH that
 # are set in project root CMakeLists.

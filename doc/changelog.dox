@@ -881,6 +881,10 @@ See also:
 -   Fixed various variable shadowing warings on MSVC (see [mosra/magnum#611](https://github.com/mosra/magnum/issues/611))
 -   Fixed compilation on a non-deprecated build (see [mosra/magnum#612](https://github.com/mosra/magnum/pull/612))
 -   Fixed build of the @ref Vk library with @ref CORRADE_STANDARD_ASSERT
+-   On Windows there's a new `MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS_DLL_NAME`
+    @ref building-features "CMake option" to aid
+    @ref MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS in cases where Corrade is only
+    linked to a DLL but not the main executable.
 
 @subsection changelog-latest-bugfixes Bug fixes
 
