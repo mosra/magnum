@@ -75,8 +75,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
         attribute = Implementation::remapAttributeData(attribute, vertexCount, vertexData, vertexData);
 
     /* Only list primitives are supported currently */
-    /** @todo delegate to `indexTriangleStrip()` (`duplicate*()`?) etc when
-        those are done */
+    /** @todo delegate to generateIndices() for these */
     CORRADE_ASSERT(
         meshes.front().primitive() != MeshPrimitive::LineStrip &&
         meshes.front().primitive() != MeshPrimitive::LineLoop &&
@@ -102,7 +101,8 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
     for(UnsignedInt i = 0; i != out.attributeCount(); ++i)
         attributeMap.emplace(out.attributeName(i), Containers::pair(i, false));
 
-    /* Go through all meshes and put all attributes and index arrays together. */
+    /* Go through all meshes and put all attributes and index arrays
+       together */
     std::size_t indexOffset = 0;
     std::size_t vertexOffset = 0;
     for(std::size_t i = 0; i != meshes.size(); ++i) {
