@@ -79,11 +79,11 @@ Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformatio
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
        assert here again. */
+    const Containers::Optional<UnsignedInt> positionAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Position, id);
     if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
        (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
-        mesh.attributeCount(Trade::MeshAttribute::Position) > id &&
-        mesh.attributeFormat(Trade::MeshAttribute::Position, id) == VertexFormat::Vector2)
-    {
+        positionAttributeId && mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector2
+    ) {
         transform2DInPlace(mesh, transformation, id);
         return std::move(mesh);
     }
@@ -204,12 +204,11 @@ Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformatio
     const Containers::Optional<UnsignedInt> normalAttributeId = mesh.findAttributeId(Trade::MeshAttribute::Normal, id);
     if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
        (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
-       positionAttributeId &&
-        mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector3 &&
+       positionAttributeId && mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector3 &&
        (!tangentAttributeId || mesh.attributeFormat(*tangentAttributeId) == VertexFormat::Vector3 || mesh.attributeFormat(*tangentAttributeId) == VertexFormat::Vector4) &&
        (!bitangentAttributeId || mesh.attributeFormat(*bitangentAttributeId) == VertexFormat::Vector3) &&
-       (!normalAttributeId || mesh.attributeFormat(*normalAttributeId) == VertexFormat::Vector3))
-    {
+       (!normalAttributeId || mesh.attributeFormat(*normalAttributeId) == VertexFormat::Vector3)
+    ) {
         transform3DInPlace(mesh, transformation, id);
         return std::move(mesh);
     }
@@ -309,11 +308,11 @@ Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matr
        have positions in the right format already. Explicitly checking for
        presence of the position attribute so we don't need to duplicate the
        assert here again. */
+    const Containers::Optional<UnsignedInt> textureCoordinateAttributeId = mesh.findAttributeId(Trade::MeshAttribute::TextureCoordinates, id);
     if((mesh.indexDataFlags() & Trade::DataFlag::Owned) &&
        (mesh.vertexDataFlags() & Trade::DataFlag::Owned) &&
-        mesh.attributeCount(Trade::MeshAttribute::TextureCoordinates) > id &&
-        mesh.attributeFormat(Trade::MeshAttribute::TextureCoordinates, id) == VertexFormat::Vector2)
-    {
+        textureCoordinateAttributeId && mesh.attributeFormat(*textureCoordinateAttributeId) == VertexFormat::Vector2
+    ) {
         transformTextureCoordinates2DInPlace(mesh, transformation, id);
         return std::move(mesh);
     }
