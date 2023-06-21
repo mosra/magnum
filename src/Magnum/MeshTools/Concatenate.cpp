@@ -123,14 +123,14 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
            any equivalent in the destination mesh */
         for(UnsignedInt src = 0; src != mesh.attributeCount(); ++src) {
             /* Try to find a matching attribute in the destination mesh (same
-               name, same set). Skip if no such attribute is found. This is a
-               O(m + n) complexity (linear lookup in both the source and the
-               output mesh), but given the assumption that meshes rarely have
-               more than 8-16 attributes it should still be faster than
-               building a hashmap first and then doing a complex lookup in it
-               (which is how it used to be before, using
+               name, same set, same morph target ID). Skip if no such attribute
+               is found. This is a O(m + n) complexity (linear lookup in both
+               the source and the output mesh), but given the assumption that
+               meshes rarely have more than 8-16 attributes it should still be
+               faster than building a hashmap first and then doing a complex
+               lookup in it (which is how it used to be before, using
                std::unordered_multimap). */
-            const Containers::Optional<UnsignedInt> dst = out.findAttributeId(mesh.attributeName(src), mesh.attributeId(src));
+            const Containers::Optional<UnsignedInt> dst = out.findAttributeId(mesh.attributeName(src), mesh.attributeId(src), mesh.attributeMorphTargetId(src));
             if(!dst)
                 continue;
 
