@@ -63,7 +63,9 @@ Trade::MeshData combineIndexedImplementation(
         for(std::size_t i = 0; i != meshes.size(); ++i) {
             const Trade::MeshData& mesh = meshes[i];
             for(std::size_t j = 0; j != mesh.attributeCount(); ++j) {
+                #ifndef CORRADE_NO_ASSERT
                 const VertexFormat format = mesh.attributeFormat(j);
+                #endif
                 /* While interleavedLayout() has the same assert, we'd have no
                    way to detect if we should bail early if it triggers, so
                    this is easier; plus the user gets a less confusing function
