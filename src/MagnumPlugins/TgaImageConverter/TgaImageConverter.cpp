@@ -25,8 +25,6 @@
 
 #include "TgaImageConverter.h"
 
-#include <fstream>
-#include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>

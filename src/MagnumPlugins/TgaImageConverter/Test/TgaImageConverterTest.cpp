@@ -24,7 +24,6 @@
 */
 
 #include <sstream>
-#include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
