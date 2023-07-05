@@ -70,8 +70,6 @@ struct CompileLinesGLTest: GL::OpenGLTester {
     void emptyMesh();
 
     void notGeneratedLineMesh();
-    void noAttributes();
-    void noPositionAttribute();
 
     PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
