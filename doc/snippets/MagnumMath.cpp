@@ -703,11 +703,11 @@ if(x < 30.0_degf) foo();
 Float sine(Rad angle);
 Float a = sine(60.0_degf);      // the same as sine(1.047_radf)
 Degd b = 1.047_rad;             // the same as 60.0_deg
-Double c = Double(b);           // 60.0
-//Float d = a;                  // error, no implicit conversion
+//Double c = b;                 // error, no implicit conversion
+Double d = Double(b);           // 60.0
 /* [Deg-usage-conversion] */
 static_cast<void>(a);
-static_cast<void>(c);
+static_cast<void>(d);
 }
 
 {
