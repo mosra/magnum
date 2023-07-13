@@ -38,15 +38,67 @@
     <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g} }}</DisplayString>
     <DisplayString ExcludeView="simple">{{ x={_data[0],g} y={_data[1],g} }}</DisplayString>
   </Type>
+
+  <!-- For Vector & Quaternion types, IsNormalized() functionality was
+       implemented equivalently to Math::Implementation::isNormalizedSquared(),
+       i.e. by comparing the dot() against 1.0 with 2*epsilon, where epsilon is 1.0e-5f for float and 1.0e-14 for double variants. -->
+  <!-- Math::Vector2<Float> -->
+  <Type Name="Magnum::Math::Vector&lt;2,float&gt;">
+    <Intrinsic Name="Dot" Expression="_data[0]*_data[0]+_data[1]*_data[1]"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
+    <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_data[0],g} y={_data[1],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ x={_data[0],g} y={_data[1],g} (normalized) }}</DisplayString>
+  </Type>
+  <!-- Math::Vector2<Double> -->
+  <Type Name="Magnum::Math::Vector&lt;2,double&gt;">
+    <Intrinsic Name="Dot" Expression="_data[0]*_data[0]+_data[1]*_data[1]"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
+    <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_data[0],g} y={_data[1],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ x={_data[0],g} y={_data[1],g} (normalized) }}</DisplayString>
+  </Type>
   <!-- Math::Vector3 -->
   <Type Name="Magnum::Math::Vector&lt;3,*&gt;">
     <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g}, {_data[2],g} }}</DisplayString>
     <DisplayString ExcludeView="simple">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} }}</DisplayString>
   </Type>
+  <!-- Math::Vector3<Float> -->
+  <Type Name="Magnum::Math::Vector&lt;3,float&gt;">
+    <Intrinsic Name="Dot" Expression="_data[0]*_data[0]+_data[1]*_data[1]+_data[2]*_data[2]"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
+    <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g} {_data[2],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} (normalized) }}</DisplayString>
+  </Type>
+  <!-- Math::Vector3<Double> -->
+  <Type Name="Magnum::Math::Vector&lt;3,double&gt;">
+    <Intrinsic Name="Dot" Expression="_data[0]*_data[0]+_data[1]*_data[1]+_data[2]*_data[2]"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
+    <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g} {_data[2],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} (normalized) }}</DisplayString>
+  </Type>
   <!-- Math::Vector4 -->
   <Type Name="Magnum::Math::Vector&lt;4,*&gt;">
     <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g}, {_data[2],g}, {_data[3],g} }}</DisplayString>
     <DisplayString ExcludeView="simple">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} w={_data[3],g} }}</DisplayString>
+  </Type>
+  <!-- Math::Vector4<Float> -->
+  <Type Name="Magnum::Math::Vector&lt;4,float&gt;">
+    <Intrinsic Name="Dot" Expression="_data[0]*_data[0]+_data[1]*_data[1]+_data[2]*_data[2]+_data[3]*_data[3]"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
+    <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g} {_data[2],g} {_data[3],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} w={_data[3],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} w={_data[3],g} (normalized) }}</DisplayString>
+  </Type>
+  <!-- Math::Vector4<Double> -->
+  <Type Name="Magnum::Math::Vector&lt;4,double&gt;">
+    <Intrinsic Name="Dot" Expression="_data[0]*_data[0]+_data[1]*_data[1]+_data[2]*_data[2]+_data[3]*_data[3]"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
+    <DisplayString IncludeView="simple">{{ {_data[0],g}, {_data[1],g} {_data[2],g} {_data[3],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} w={_data[3],g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ x={_data[0],g} y={_data[1],g} z={_data[2],g} w={_data[3],g} (normalized) }}</DisplayString>
   </Type>
   <!-- Math::BitVector2 -->
   <Type Name="Magnum::Math::BitVector&lt;2&gt;">
