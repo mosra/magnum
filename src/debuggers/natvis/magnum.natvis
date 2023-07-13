@@ -163,22 +163,22 @@
   </Type>
   <!-- Magnum::Math::Deg< Float > -->
   <Type Name="Magnum::Math::Deg&lt;float&gt;">
-    <DisplayString IncludeView="simple">{_value,g}° ({_value * 0.0174532924,g} radians)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,g}° ({_value * 0.0174532924,g} radians)</DisplayString>
+    <DisplayString IncludeView="simple">{_value,g}° ({_value * 3.14159274f / 180.0f,g} radians)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g}° ({_value * 3.14159274f / 180.0f,g} radians)</DisplayString>
   </Type>
   <!-- Magnum::Math::Deg< Double > -->
   <Type Name="Magnum::Math::Deg&lt;double&gt;">
-    <DisplayString IncludeView="simple">{_value,h}° ({_value * 0.017453292519943295,h} radians)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,h}° ({_value * 0.017453292519943295,h} radians)</DisplayString>
+    <DisplayString IncludeView="simple">{_value,h}° ({_value * 3.1415926535897931 / 180.0,h} radians)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,h}° ({_value * 3.1415926535897931 / 180.0,h} radians)</DisplayString>
   </Type>
   <!-- Magnum::Math::Rad< Float > -->
   <Type Name="Magnum::Math::Rad&lt;float&gt;">
-    <DisplayString IncludeView="simple">{_value,g} radians ({_value * 57.2957764,g}°)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,g} radians ({_value * 57.2957764,g}°)</DisplayString>
+    <DisplayString IncludeView="simple">{_value,g} radians ({180.0f * _value / 3.14159274f,g}°)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g} radians ({180.0f * _value / 3.14159274f,g}°)</DisplayString>
   </Type>
   <!-- Magnum::Math::Rad< Double > -->
   <Type Name="Magnum::Math::Rad&lt;double&gt;">
-    <DisplayString IncludeView="simple">{_value,h} radians ({_value * 57.295779513082323,h}°)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,h} radians ({_value * 57.295779513082323,h}°)</DisplayString>
+    <DisplayString IncludeView="simple">{_value,h} radians ({180.0 * _value / 3.1415926535897931,h}°)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,h} radians ({180.0 * _value / 3.1415926535897931,h}°)</DisplayString>
   </Type>
 </AutoVisualizer>
