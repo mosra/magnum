@@ -7,6 +7,7 @@
                 2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2021 Jonathan Hale <squareys@googlemail.com>
     Copyright © 2023 Pablo Escobar <mail@rvrs.in>
+    Copyright © 2023 Burak Canik <canik.burak@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -163,5 +164,15 @@
         <ValuePointer>($T3 *)_data</ValuePointer>
       </ArrayItems>
     </Expand>
+  </Type>
+  <!-- Math::Deg -->
+  <Type Name="Magnum::Math::Deg&lt;*&gt;">
+    <DisplayString IncludeView="simple">{_value,g}° ({_value * 3.1415926535897931 / 180.0,g} radians)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g}° ({_value * 3.1415926535897931 / 180.0,g} radians)</DisplayString>
+  </Type>
+  <!-- Math::Rad -->
+  <Type Name="Magnum::Math::Rad&lt;*&gt;">
+    <DisplayString IncludeView="simple">{_value,g} radians ({180.0 * _value / 3.1415926535897931,g}°)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g} radians ({180.0 * _value / 3.1415926535897931,g}°)</DisplayString>
   </Type>
 </AutoVisualizer>
