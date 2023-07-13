@@ -132,10 +132,21 @@
     <DisplayString IncludeView="simple">{{ {hue._value,g}, {saturation,g}, {value,g} }}</DisplayString>
     <DisplayString ExcludeView="simple">{{ h={hue._value,g} s={saturation,g} v={value,g} }}</DisplayString>
   </Type>
-  <!-- Math::Quaternion -->
-  <Type Name="Magnum::Math::Quaternion&lt;*&gt;">
+  <!-- Math::Quaternion< Float > -->
+  <Type Name="Magnum::Math::Quaternion&lt;float&gt;">
+    <Intrinsic Name="Dot" Expression="_vector._data[0]*_vector._data[0]+_vector._data[1]*_vector._data[1]+_vector._data[2]*_vector._data[2]+_scalar*_scalar"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99980000000500002&amp;Dot()&lt;1.0001999999950000"></Intrinsic>
     <DisplayString IncludeView="simple">{{ {_vector._data[0],g}, {_vector._data[1],g}, {_vector._data[2],g}, {_scalar,g} }}</DisplayString>
-    <DisplayString ExcludeView="simple">{{ x={_vector._data[0],g} y={_vector._data[1],g} z={_vector._data[2],g} w={_scalar,g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_vector._data[0],g} y={_vector._data[1],g} z={_vector._data[2],g} w={_scalar,g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ UNIT QUATERNION x={_vector._data[0],g} y={_vector._data[1],g} z={_vector._data[2],g} w={_scalar,g} }}</DisplayString>
+  </Type>
+  <!-- Math::Quaternion< Double > -->
+  <Type Name="Magnum::Math::Quaternion&lt;double&gt;">
+    <Intrinsic Name="Dot" Expression="_vector._data[0]*_vector._data[0]+_vector._data[1]*_vector._data[1]+_vector._data[2]*_vector._data[2]+_scalar*_scalar"></Intrinsic>
+    <Intrinsic Name="IsNormalized" Expression="Dot()&gt;0.99999999999998002&amp;Dot()&lt;1.0000000000000200"></Intrinsic>
+    <DisplayString IncludeView="simple">{{ {_vector._data[0],g}, {_vector._data[1],g}, {_vector._data[2],g}, {_scalar,g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="!IsNormalized()">{{ x={_vector._data[0],g} y={_vector._data[1],g} z={_vector._data[2],g} w={_scalar,g} }}</DisplayString>
+    <DisplayString ExcludeView="simple" Condition="IsNormalized()">{{ UNIT QUATERNION x={_vector._data[0],g} y={_vector._data[1],g} z={_vector._data[2],g} w={_scalar,g} }}</DisplayString>
   </Type>
   <!-- Math::RectangularMatrix -->
   <Type Name="Magnum::Math::RectangularMatrix&lt;*&gt;">
