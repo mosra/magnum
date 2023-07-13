@@ -7,6 +7,7 @@
                 2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2021 Jonathan Hale <squareys@googlemail.com>
     Copyright © 2023 Pablo Escobar <mail@rvrs.in>
+    Copyright © 2023 Burak Canik <canik.burak@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -159,5 +160,25 @@
         <ValuePointer>($T3 *)_data</ValuePointer>
       </ArrayItems>
     </Expand>
+  </Type>
+  <!-- Magnum::Math::Deg< Float > -->
+  <Type Name="Magnum::Math::Deg&lt;float&gt;">
+    <DisplayString IncludeView="simple">{_value,g}° ({_value * 0.0174532924,g} radians)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g}° ({_value * 0.0174532924,g} radians)</DisplayString>
+  </Type>
+  <!-- Magnum::Math::Deg< Double > -->
+  <Type Name="Magnum::Math::Deg&lt;double&gt;">
+    <DisplayString IncludeView="simple">{_value,h}° ({_value * 0.017453292519943295,h} radians)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,h}° ({_value * 0.017453292519943295,h} radians)</DisplayString>
+  </Type>
+  <!-- Magnum::Math::Rad< Float > -->
+  <Type Name="Magnum::Math::Rad&lt;float&gt;">
+    <DisplayString IncludeView="simple">{_value,g} radians ({_value * 57.2957764,g}°)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g} radians ({_value * 57.2957764,g}°)</DisplayString>
+  </Type>
+  <!-- Magnum::Math::Rad< Double > -->
+  <Type Name="Magnum::Math::Rad&lt;double&gt;">
+    <DisplayString IncludeView="simple">{_value,h} radians ({_value * 57.295779513082323,h}°)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,h} radians ({_value * 57.295779513082323,h}°)</DisplayString>
   </Type>
 </AutoVisualizer>
