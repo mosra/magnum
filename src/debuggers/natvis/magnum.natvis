@@ -161,24 +161,14 @@
       </ArrayItems>
     </Expand>
   </Type>
-  <!-- Magnum::Math::Deg< Float > -->
-  <Type Name="Magnum::Math::Deg&lt;float&gt;">
-    <DisplayString IncludeView="simple">{_value,g}° ({_value * 3.14159274f / 180.0f,g} radians)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,g}° ({_value * 3.14159274f / 180.0f,g} radians)</DisplayString>
+  <!-- Magnum::Math::Deg -->
+  <Type Name="Magnum::Math::Deg&lt;*&gt;">
+    <DisplayString IncludeView="simple">{_value,g}° ({_value * 3.1415926535897931 / 180.0,g} radians)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g}° ({_value * 3.1415926535897931 / 180.0,g} radians)</DisplayString>
   </Type>
-  <!-- Magnum::Math::Deg< Double > -->
-  <Type Name="Magnum::Math::Deg&lt;double&gt;">
-    <DisplayString IncludeView="simple">{_value,h}° ({_value * 3.1415926535897931 / 180.0,h} radians)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,h}° ({_value * 3.1415926535897931 / 180.0,h} radians)</DisplayString>
-  </Type>
-  <!-- Magnum::Math::Rad< Float > -->
-  <Type Name="Magnum::Math::Rad&lt;float&gt;">
-    <DisplayString IncludeView="simple">{_value,g} radians ({180.0f * _value / 3.14159274f,g}°)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,g} radians ({180.0f * _value / 3.14159274f,g}°)</DisplayString>
-  </Type>
-  <!-- Magnum::Math::Rad< Double > -->
-  <Type Name="Magnum::Math::Rad&lt;double&gt;">
-    <DisplayString IncludeView="simple">{_value,h} radians ({180.0 * _value / 3.1415926535897931,h}°)</DisplayString>
-    <DisplayString ExcludeView="simple">{_value,h} radians ({180.0 * _value / 3.1415926535897931,h}°)</DisplayString>
+  <!-- Magnum::Math::Rad -->
+  <Type Name="Magnum::Math::Rad&lt;*&gt;">
+    <DisplayString IncludeView="simple">{_value,g} radians ({180.0 * _value / 3.1415926535897931,g}°)</DisplayString>
+    <DisplayString ExcludeView="simple">{_value,g} radians ({180.0 * _value / 3.1415926535897931,g}°)</DisplayString>
   </Type>
 </AutoVisualizer>
