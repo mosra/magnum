@@ -110,8 +110,8 @@ Are the below lists missing your name or something's wrong?
 -   **[\@biosek](https://github.com/biosek)** --- documentation fixes
 -   **Borislav Stanimirov** ([\@iboB](https://github.com/iboB)) --- strict
     weak ordering for @ref Math types
--   **Burak Canik** ([\@HaroldReyiz](https://github.com/HaroldReyiz)) --- MSVC
-    warning fixes
+-   **Burak Canik** ([\@fauder](https://github.com/fauder)) --- improvements to
+    MSVC natvis files, warning fixes
 -   **Cameron Egbert** ([\@cegbertOculus](https://github.com/cegbertOculus))
     --- fixes to Windows HiDPI support
 -   **Christophe Meyer** ([\@cmey](https://github.com/cmey)) --- documentation
