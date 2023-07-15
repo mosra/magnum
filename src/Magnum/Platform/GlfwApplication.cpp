@@ -460,6 +460,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
         #endif
         #ifdef MAGNUM_TARGET_EGL /* Force EGL if desired */
+        /** @todo fails on NVidia X11: https://github.com/glfw/glfw/issues/2365 */
         glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
         #endif
 
@@ -487,6 +488,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
         #endif
         #ifdef MAGNUM_TARGET_EGL /* Force EGL if desired */
+        /** @todo fails on NVidia X11: https://github.com/glfw/glfw/issues/2365 */
         glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
         #endif
     }
