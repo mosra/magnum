@@ -42,7 +42,8 @@
 
   <!-- For Vector & Quaternion types, isNormalized() functionality was
        implemented equivalently to Math::Implementation::isNormalizedSquared(),
-       i.e. by comparing the dot() against 1.0 with 2*epsilon, where epsilon is 1.0e-5f for float and 1.0e-14 for double variants. -->
+       i.e. by comparing the dot() against 1.0 with 2*epsilon, where epsilon is
+       1.0e-5f for float and 1.0e-14 for double variants. -->
   <!-- Math::Vector2<Float> -->
   <Type Name="Magnum::Math::Vector&lt;2,float&gt;">
     <Intrinsic Name="dot" Expression="_data[0]*_data[0]+_data[1]*_data[1]"></Intrinsic>
