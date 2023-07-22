@@ -544,20 +544,26 @@ void QuaternionTest::angle() {
     auto b = Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized();
 
     /* Verify also that the angle is the same as angle between 4D vectors */
-    CORRADE_COMPARE(Math::angle(a, b), Math::angle(
+    CORRADE_COMPARE(Math::halfAngle(a, b), Math::angle(
         Vector4{1.0f, 2.0f, -3.0f, -4.0f}.normalized(),
         Vector4{4.0f, -3.0f, 2.0f, -1.0f}.normalized()));
-    CORRADE_COMPARE(Math::angle(a, b), 1.704528_radf);
-    CORRADE_COMPARE(Math::angle(-a, -b), 1.704528_radf);
-    CORRADE_COMPARE(Math::angle(-a, b), Rad(180.0_degf) - 1.704528_radf);
-    CORRADE_COMPARE(Math::angle(a, -b), Rad(180.0_degf) - 1.704528_radf);
+    CORRADE_COMPARE(Math::halfAngle(a, b), 1.704528_radf);
+    CORRADE_COMPARE(Math::halfAngle(-a, -b), 1.704528_radf);
+    CORRADE_COMPARE(Math::halfAngle(-a, b), Rad(180.0_degf) - 1.704528_radf);
+    CORRADE_COMPARE(Math::halfAngle(a, -b), Rad(180.0_degf) - 1.704528_radf);
 
     /* Same / opposite. Well, almost. It's interesting how imprecise
        normalization can get. */
-    CORRADE_COMPARE_WITH(Math::angle(a, a), 0.0_radf,
+    CORRADE_COMPARE_WITH(Math::halfAngle(a, a), 0.0_radf,
         Corrade::TestSuite::Compare::around(0.0005_radf));
-    CORRADE_COMPARE_WITH(Math::angle(a, -a), 180.0_degf,
+    CORRADE_COMPARE_WITH(Math::halfAngle(a, -a), 180.0_degf,
         Corrade::TestSuite::Compare::around(0.0005_radf));
+
+    /* Trivial case, to verify it's actually returning the right value (hah) */
+    CORRADE_COMPARE(Math::halfAngle(
+        Quaternion::rotation(Deg(20.0f), Vector3::xAxis()),
+        Quaternion::rotation(Deg(70.0f), Vector3::xAxis())),
+        25.0_degf);
 }
 
 void QuaternionTest::angleNormalizedButOver1() {
@@ -567,8 +573,8 @@ void QuaternionTest::angleNormalizedButOver1() {
     Quaternion a{{1.0f + Math::TypeTraits<Float>::epsilon()/2,  0.0f, 0.0f}, 0.0f};
     CORRADE_VERIFY(a.isNormalized());
 
-    CORRADE_COMPARE(Math::angle(a, a), 0.0_radf);
-    CORRADE_COMPARE(Math::angle(a, -a), 180.0_degf);
+    CORRADE_COMPARE(Math::halfAngle(a, a), 0.0_radf);
+    CORRADE_COMPARE(Math::halfAngle(a, -a), 180.0_degf);
 }
 
 void QuaternionTest::angleNotNormalized() {
@@ -577,12 +583,12 @@ void QuaternionTest::angleNotNormalized() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Math::angle(Quaternion{{1.0f, 2.0f, -3.0f}, -4.0f}.normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
-    Math::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion{{4.0f, -3.0f, 2.0f}, -1.0f}.normalized());
+    Math::halfAngle(Quaternion{{1.0f, 2.0f, -3.0f}, -4.0f}.normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
+    Math::halfAngle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion{{4.0f, -3.0f, 2.0f}, -1.0f}.normalized());
 
     CORRADE_COMPARE(out.str(),
-        "Math::angle(): quaternions Quaternion({0.182574, 0.365148, -0.547723}, -0.730297) and Quaternion({4, -3, 2}, -1) are not normalized\n"
-        "Math::angle(): quaternions Quaternion({1, 2, -3}, -4) and Quaternion({0.730297, -0.547723, 0.365148}, -0.182574) are not normalized\n");
+        "Math::halfAngle(): quaternions Quaternion({0.182574, 0.365148, -0.547723}, -0.730297) and Quaternion({4, -3, 2}, -1) are not normalized\n"
+        "Math::halfAngle(): quaternions Quaternion({1, 2, -3}, -4) and Quaternion({0.730297, -0.547723, 0.365148}, -0.182574) are not normalized\n");
 }
 
 void QuaternionTest::matrix() {

@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Quaternion, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle(), @ref Magnum::Math::lerp(), @ref Magnum::Math::slerp()
+ * @brief Class @ref Magnum::Math::Quaternion, function @ref Magnum::Math::dot(), @ref Magnum::Math::halfAngle(), @ref Magnum::Math::lerp(), @ref Magnum::Math::slerp()
  */
 
 #ifndef CORRADE_NO_DEBUG
@@ -59,7 +59,7 @@ template<class T> inline T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
 }
 
 /** @relatesalso Quaternion
-@brief Angle between normalized quaternions
+@brief Half-angle between normalized quaternions
 
 Expects that both quaternions are normalized. @f[
     \theta = \arccos \left( \frac{p \cdot q}{|p| |q|} \right) = \arccos(p \cdot q)
@@ -72,11 +72,27 @@ passed to @f$ \arccos @f$.
     @ref angle(const Complex<T>&, const Complex<T>&),
     @ref angle(const Vector<size, FloatingPoint>&, const Vector<size, FloatingPoint>&)
  */
-template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+template<class T> inline Rad<T> halfAngle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
     CORRADE_DEBUG_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::angle(): quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
+        "Math::halfAngle(): quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return Rad<T>{std::acos(clamp(dot(normalizedA, normalizedB), T(-1), T(1)))};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief halfAngle(const Quaternion<T>&, const Quaternion<T>&)
+@m_deprecated_since_latest This function historically returned a half-angle
+    instead of the full angle, which is incorrect. Because fixing it would
+    break all current uses of it, it's deprecated in favor of
+    @ref halfAngle(const Quaternion<T>&, const Quaternion<T>&), which returns
+    the same value but is named appropriately. This function will get
+    reintroduced with a correct output after enough time passes to avoid
+    breaking existing code.
+*/
+template<class T> CORRADE_DEPRECATED("use halfAngle() instead") inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
+    return halfAngle(normalizedA, normalizedB);
+}
+#endif
 
 /** @relatesalso Quaternion
 @brief Linear interpolation of two quaternions

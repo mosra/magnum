@@ -72,7 +72,7 @@ To avoid numerical issues when two complex numbers are very close to each
 other, the dot product is clamped to the @f$ [-1, +1] @f$ range before being
 passed to @f$ \arccos @f$.
 @see @ref Complex::isNormalized(),
-    @ref angle(const Quaternion<T>&, const Quaternion<T>&),
+    @ref halfAngle(const Quaternion<T>&, const Quaternion<T>&),
     @ref angle(const Vector<size, FloatingPoint>&, const Vector<size, FloatingPoint>&)
 */
 template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {

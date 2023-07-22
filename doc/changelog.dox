@@ -1068,6 +1068,13 @@ See also:
     for consistency with @relativeref{Math::Color3,toSrgbInt()} and
     @relativeref{Math::Color4,toSrgbAlphaInt()} and to prevent accidental type
     mismatches
+-   @cpp Math::angle(const Quaternion<T>&, const Quaternion<T>&) @ce
+    historically returned a half-angle instead of the full angle, which is
+    incorrect. Because fixing it would break all current uses of it, it's
+    deprecated in favor of @ref Math::halfAngle(const Quaternion<T>&, const Quaternion<T>&),
+    which returns the same value but is named appropriately. This function will
+    get reintroduced with a correct output after enough time passes to avoid
+    breaking existing code.
 -   Markup styling for Emscripten application was switched to prefer using
     CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
     @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,
