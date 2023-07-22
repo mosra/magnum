@@ -894,6 +894,9 @@ See also:
     @ref building-features "CMake option" to aid
     @ref MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS in cases where Corrade is only
     linked to a DLL but not the main executable.
+-   It's now possible to build dynamic libraries on Android and Emscripten with
+    the usual options. Static libraries are still a default but it isn't
+    enforced anymore. See [mosra/magnum#617](https://github.com/mosra/magnum/pull/617).
 
 @subsection changelog-latest-bugfixes Bug fixes
 

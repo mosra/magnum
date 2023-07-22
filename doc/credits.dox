@@ -236,6 +236,8 @@ Are the below lists missing your name or something's wrong?
     --- OpenGL ES compatibility improvements
 -   **Travis Watkins** ([\@amaranth](https://github.com/amaranth)) --- support
     for windowless applications under macOS
+-   **Vincent Le Garrec** ([\@bansan85](https://github.com/bansan85)) ---
+    Android buildsystem fixes and improvements
 -   **Vladislav** ([\@dranikpg](https://github.com/dranikpg)) --- Async @ref GL
     shader compilation
 */
