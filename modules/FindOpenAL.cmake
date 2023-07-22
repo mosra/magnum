@@ -70,6 +70,11 @@ if(TARGET OpenAL OR TARGET OpenAL::OpenAL)
         # INTERFACE_INCLUDE_DIRECTORIES for some reason (apparently the
         # $<BUILD_INTERFACE:> in there doesn't work or whatever), so let's do
         # that ourselves.
+        #
+        # TODO this could be probably fixable by using target_link_libraries()
+        # instead of set_target_properties() because it evaluates generator
+        # expressions, but that needs CMake 3.10+, before that
+        # target_link_libraries() can't be called on INTERFACE targets.
         get_target_property(_OPENAL_SOURCE_DIR OpenAL SOURCE_DIR)
         set_target_properties(OpenAL::OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${_OPENAL_SOURCE_DIR}/include/AL)
 
