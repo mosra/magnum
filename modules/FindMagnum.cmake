@@ -229,15 +229,13 @@
 # Corrade library dependencies
 set(_MAGNUM_CORRADE_DEPENDENCIES )
 foreach(_component ${Magnum_FIND_COMPONENTS})
-    string(TOUPPER ${_component} _COMPONENT)
-
     # Unrolling the transitive dependencies here so this doesn't need to be
     # after resolving inter-component dependencies. Listing also all plugins.
     if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|SceneTools|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
-        set(_MAGNUM_${_COMPONENT}_CORRADE_DEPENDENCIES PluginManager)
+        set(_MAGNUM_${_component}_CORRADE_DEPENDENCIES PluginManager)
     endif()
 
-    list(APPEND _MAGNUM_CORRADE_DEPENDENCIES ${_MAGNUM_${_COMPONENT}_CORRADE_DEPENDENCIES})
+    list(APPEND _MAGNUM_CORRADE_DEPENDENCIES ${_MAGNUM_${_component}_CORRADE_DEPENDENCIES})
 endforeach()
 find_package(Corrade REQUIRED Utility ${_MAGNUM_CORRADE_DEPENDENCIES})
 
@@ -854,7 +852,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         elseif(_component STREQUAL Audio)
             find_package(OpenAL)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES Corrade::PluginManager OpenAL::OpenAL)
+                INTERFACE_LINK_LIBRARIES OpenAL::OpenAL)
 
         # No special setup for DebugTools library
 
@@ -912,26 +910,15 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         elseif(_component STREQUAL SceneTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Hierarchy.h)
 
-        # ShaderTools library
-        elseif(_component STREQUAL ShaderTools)
-            set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
-
+        # No special setup for ShaderTools library
         # No special setup for Shaders library
-
-        # Text library
-        elseif(_component STREQUAL Text)
-            set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
+        # No special setup for Text library
 
         # TextureTools library
         elseif(_component STREQUAL TextureTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
 
-        # Trade library
-        elseif(_component STREQUAL Trade)
-            set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
+        # No special setup for Trade library
 
         # Vk library
         elseif(_component STREQUAL Vk)
@@ -980,6 +967,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # are optional dependencies, defer adding them to later once we know if
         # they were found or not.
         if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
+            foreach(_dependency ${_MAGNUM_${_component}_CORRADE_DEPENDENCIES})
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES Corrade::${_dependency})
+            endforeach()
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
             set(_MAGNUM_${component}_OPTIONAL_DEPENDENCIES_TO_ADD )
