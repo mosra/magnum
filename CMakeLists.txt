@@ -44,6 +44,10 @@ endif()
 if(POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
 endif()
+# Allow also <PACKAGENAME>_ROOT (i.e., uppercase), on 3.27+
+if(POLICY CMP0144)
+    cmake_policy(SET CMP0144 NEW)
+endif()
 # Superprojects can use just set(MAGNUM_WITH_BLAH ON) without FORCE CACHE on
 # 3.13+
 if(POLICY CMP0077)
