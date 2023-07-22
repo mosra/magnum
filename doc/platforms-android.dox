@@ -813,39 +813,6 @@ include path. For some reason the NDK has two copies of system includes, one in
 and the one in `&lt;ndk&gt;/sysroot` causes the above errors. Find the
 offending include dir and point it to the other location to fix the error.
 
-@subsection platforms-android-troubleshooting-windows-nsight CMake complaining about some NVIDIA Nsight Tegra Visual Studio Edition on Windows
-
-On Windows it's possible that you get the following CMake error when
-configuring an Android project:
-
-> CMAKE_SYSTEM_NAME is 'Android' but 'NVIDIA Nsight Tegra Visual Studio
-> Edition' is not installed.
-
-This is because Visual Studio Project Files as the default generator on Windows
-is not able to build for any other system than Windows itself. To fix it, use a
-different generator --- for example [Ninja](https://ninja-build.org/). Download
-the binary, put it somewhere on your `PATH` and pass `-G Ninja` to CMake.
-Alternatively, pass the path to it using
-`-DCMAKE_MAKE_PROGRAM=C:/path/to/ninja.exe`.
-
-@m_class{m-block m-success}
-
-@par Using Ninja that's bundled with Visual Studio
-    If you have Visual Studio with CMake support installed, instead of
-    downloading Ninja yourself, you can make use of the version that's bundled
-    with it. In version 2017 it's in the following location, adjust the path
-    for other versions:
-@par
-    @parblock
-    <!-- gotta love doxygen, making easy things hard and complex things such as
-         applying a class to a nested block element next-to-impossible -->
-    @m_class{m-console-wrap}
-
-    @code{.bat}
-    cmake -G Ninja -DCMAKE_MAKE_PROGRAM=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja.exe ...
-    @endcode
-    @endparblock
-
 @subsection platforms-android-troubleshooting-multiple-devices ADB fails when more devices are connected
 
 If any `adb` command fails with
@@ -1333,6 +1300,39 @@ exact version where this got fixed is unknown.
 @code{.sh}
 TERM=xterm gradle build
 @endcode
+
+@subsection platforms-android-troubleshooting-windows-nsight CMake complaining about some NVIDIA Nsight Tegra Visual Studio Edition on Windows
+
+On Windows, with CMake versions earlier than 3.19, it's possible that you get
+the following CMake error when configuring an Android project:
+
+> CMAKE_SYSTEM_NAME is 'Android' but 'NVIDIA Nsight Tegra Visual Studio
+> Edition' is not installed.
+
+This is because Visual Studio Project Files as the default generator on Windows
+was not able to build for any other system than Windows itself. To fix it,
+either update to CMake 3.19 or newer, or use a different generator --- for
+example [Ninja](https://ninja-build.org/). Download the binary, put it
+somewhere on your `PATH` and pass `-G Ninja` to CMake. Alternatively, pass the
+path to it using `-DCMAKE_MAKE_PROGRAM=C:/path/to/ninja.exe`.
+
+@m_class{m-block m-success}
+
+@par Using Ninja that's bundled with Visual Studio
+    If you have Visual Studio with CMake support installed, instead of
+    downloading Ninja yourself, you can make use of the version that's bundled
+    with it. In version 2017 it's in the following location, adjust the path
+    for other versions:
+@par
+    @parblock
+    <!-- gotta love doxygen, making easy things hard and complex things such as
+         applying a class to a nested block element next-to-impossible -->
+    @m_class{m-console-wrap}
+
+    @code{.bat}
+    cmake -G Ninja -DCMAKE_MAKE_PROGRAM=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja.exe ...
+    @endcode
+    @endparblock
 
 */
 
