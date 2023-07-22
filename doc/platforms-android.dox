@@ -864,6 +864,7 @@ creates a key equivalent to the Gradle-generated one, adapt the location as
 necessary:
 
 @code{.sh}
+mkdir -p $HOME/.android # The destination directory has to exist
 keytool -genkeypair -keystore $HOME/.android/debug.keystore \
     -storepass android -alias androiddebugkey -keypass android \
     -keyalg RSA -validity 10000 -dname CN=,OU=,O=,L=,S=,C=
@@ -882,6 +883,20 @@ cmake . -DANDROID_APKSIGNER_KEY="--ks;/etc/android.keystore;--ks-pass;pass:secre
 You can also add further arguments to `apksigner` here. See the
 [official documentaton for apksigner](https://developer.android.com/studio/command-line/apksigner)
 for details.
+
+@subsection platforms-android-troubleshooting-signing-failed-java Signing fails because of some cryptic x509 error
+
+If you managed past the above but get an error like
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+Exception in thread "main" java.lang.IllegalAccessError: class com.android.apksig.internal.apk.v1.V1SchemeSigner (in unnamed module @0x1684264) cannot access class sun.security.x509.AlgorithmId (in module java.base) because module java.base does not export sun.security.x509 to unnamed module @0x1684264
+@endcode
+
+it's probably due to the Java version used being too new. Signing is known to
+work with Java 8, and Java 8 is also known to work for Gradle and everything
+else. See @ref platforms-android-troubleshooting-java8 for more information.
 
 @subsection platforms-android-troubleshooting-ndk-home-deprecated Warning about ANDROID_NDK_HOME being deprecated
 
@@ -1066,8 +1081,8 @@ gradle build
 @endcode
 
 On ArchLinux, Java 8 is provided by the [jdk8-openjdk](https://www.archlinux.org/packages/extra/x86_64/jdk8-openjdk/)
-package, which is pulled in as a dependency of the `android-sdk` and `gradle`
-packages.
+package. Unfortunately the `android-sdk` and `gradle` packages depend on a
+`java-runtime` alias, which allows you to pick any other version as well.
 
 @subsubsection platforms-android-troubleshooting-gradle6 Too new Gradle (or maybe NDK or...)
 
