@@ -1078,7 +1078,7 @@ constexpr struct {
         2, 2, 1, 1, true, 16,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.131f},
+        50.34f, 0.141f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1130,7 +1130,7 @@ constexpr struct {
         4, 4, 2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.131f},
+        50.34f, 0.141f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1138,7 +1138,7 @@ constexpr struct {
         0, 2, 0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.131f},
+        50.34f, 0.141f},
     #endif
     {"multidraw, colored",
         "multidraw.tga", {},
@@ -1182,7 +1182,7 @@ constexpr struct {
         4, 4, 2, 3, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.131f},
+        50.34f, 0.141f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"multidraw, texture array, shader storage",
         "multidraw-textured.tga", {},
@@ -1190,7 +1190,7 @@ constexpr struct {
         0, 4, 0, 0, false, 1,
         /* Some difference at the UV edge (texture is wrapping in the 2D case
            while the 2D array has a black area around) */
-        50.34f, 0.131f},
+        50.34f, 0.141f},
     #endif
     /** @todo test normal and per-draw scaling when there's usable texture */
 };

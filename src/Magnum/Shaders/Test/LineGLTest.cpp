@@ -2854,8 +2854,8 @@ void LineGLTest::renderMulti2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/multidraw.tga"),
-        /* Minor differences on NVidia vs Mesa Intel */
-        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.00125f}));
+        /* Minor differences on NVidia vs Mesa Intel, also on ARM Mali */
+        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.011f}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
        on known places have expected values. SwiftShader insists that the read
@@ -3085,8 +3085,8 @@ void LineGLTest::renderMulti3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(SHADERS_TEST_DIR, "LineTestFiles/multidraw.tga"),
-        /* Minor differences on NVidia vs Mesa Intel */
-        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.00125f}));
+        /* Minor differences on NVidia vs Mesa Intel, also on ARM Mali */
+        (DebugTools::CompareImageToFile{_manager, 0.67f, 0.011f}));
 
     /* Object ID -- no need to verify the whole image, just check that pixels
        on known places have expected values. SwiftShader insists that the read

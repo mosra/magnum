@@ -1054,7 +1054,8 @@ const struct {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     {"wireframe", "instanced-wireframe2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.34f, 0.00625f},
     #endif
     {"wireframe w/o GS", "instanced-wireframe-nogeo2D.tga",
         MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader,
@@ -1158,15 +1159,18 @@ constexpr struct {
     {"bind with offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.67f, 0.108f},
     {"bind with offset, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.67f, 0.073f},
     {"bind with offset, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.67f, 0.073f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"bind with offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
@@ -1193,15 +1197,18 @@ constexpr struct {
     {"draw offset, instanced object ID", "multidraw-instancedobjectid2D.tga",
         MeshVisualizerGL2D::Flag::InstancedObjectId,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.67f, 0.108f},
     {"draw offset, textured object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.67f, 0.073f},
     {"draw offset, textured array object ID", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.67f, 0.073f},
     #ifndef MAGNUM_TARGET_WEBGL
     {"draw offset, textured array object ID, shader storage", "multidraw-objectidtexture2D.tga",
         MeshVisualizerGL2D::Flag::ShaderStorageBuffers|MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::ObjectIdTexture|MeshVisualizerGL2D::Flag::TextureArrays,
@@ -1268,7 +1275,7 @@ constexpr struct {
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
         1, 1, true, 16,
         /* Minor differences on ARM Mali */
-        6.0f, 0.04f},
+        6.0f, 0.042f},
     {"bind with offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
         1, 1, true, 16,
@@ -1277,7 +1284,8 @@ constexpr struct {
     {"bind with offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId,
         1, 1, true, 16,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.34f, 0.007f},
     {"bind with offset, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
         1, 1, true, 16,
@@ -1306,7 +1314,7 @@ constexpr struct {
         MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader,
         2, 3, false, 1,
         /* Minor differences on ARM Mali */
-        6.0f, 0.04f},
+        6.0f, 0.042f},
     {"draw offset, vertex ID", "multidraw-vertexid3D.tga",
         MeshVisualizerGL3D::Flag::VertexId,
         2, 3, false, 1,
@@ -1315,7 +1323,8 @@ constexpr struct {
     {"draw offset, instanced object ID", "multidraw-instancedobjectid3D.tga",
         MeshVisualizerGL3D::Flag::InstancedObjectId,
         2, 3, false, 1,
-        0.0f, 0.0f},
+        /* Minor differences on ARM Mali */
+        0.34f, 0.007f},
     {"draw offset, textured object ID", "multidraw-objectidtexture3D.tga",
         MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::ObjectIdTexture,
         2, 3, false, 1,
@@ -5417,7 +5426,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on ARM Mali */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.012f}));
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderSkinningWireframe3D() {
@@ -5581,7 +5591,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join({_testDir, "MeshVisualizerTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager}));
+        /* Minor differences on ARM Mali */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.012f}));
 }
 #endif
 
@@ -6363,8 +6374,8 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-instanced.tga"),
-        /* SwiftShader has minor differences in the output */
-        (DebugTools::CompareImageToFile{_manager, 0.68f, 0.005f}));
+        /* SwiftShader has minor differences in the output, ARM Mali too */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.018f}));
 }
 
 template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstancedSkinningWireframe3D() {
@@ -6523,8 +6534,8 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Path::join(_testDir, "MeshVisualizerTestFiles/skinning-instanced.tga"),
-        /* SwiftShader has minor differences in the output */
-        (DebugTools::CompareImageToFile{_manager, 0.68f, 0.005f}));
+        /* SwiftShader has minor differences in the output, ARM Mali too */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.018f}));
 }
 #endif
 
