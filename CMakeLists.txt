@@ -23,7 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.4)
+# Matches Corrade requirement, see its root CMakeLists for more information.
+cmake_minimum_required(VERSION 3.5)
 
 option(HUNTER_ENABLED "Get dependencies (Corrade, GLFW, SDL2, ...) via Hunter" OFF)
 if(HUNTER_ENABLED)
@@ -503,15 +504,7 @@ if(_MAGNUM_ACCEPT_DEPRECATED_UNPREFIXED_OPTIONS AND MAGNUM_BUILD_DEPRECATED)
     endforeach()
 
     if(_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION)
-        # CMake 3.5+ has deprecation warnings enabled by default (which makes
-        # sense), 3.4 not. Use a warning there instead.
-        # TODO: drop when 3.4 is not supported anymore
-        if(CMAKE_VERSION VERSION_LESS 3.5)
-            set(DEPRECATION_OR_WARNING WARNING)
-        else()
-            set(DEPRECATION_OR_WARNING DEPRECATION)
-        endif()
-        message(${DEPRECATION_OR_WARNING} "Unprefixed options such as ${_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION} are deprecated, use MAGNUM_${_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION} instead. Delete the unprefixed variable from CMake cache or set both to the same value to silence this warning.")
+        message(DEPRECATION "Unprefixed options such as ${_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION} are deprecated, use MAGNUM_${_MAGNUM_WARN_DEPRECATED_UNPREFIXED_OPTION} instead. Delete the unprefixed variable from CMake cache or set both to the same value to silence this warning.")
     endif()
 endif()
 

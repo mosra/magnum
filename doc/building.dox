@@ -41,7 +41,7 @@ Minimal set of tools and libraries required for building is:
     everything needed are **GCC** >= 4.8.1, **Clang** >= 6 (or equivalently
     **Apple Clang** >= 10) and **MSVC** >= 2015. On Windows you can also use
     **Clang-CL** or **MinGW-w64**.
--   **CMake** >= 3.4
+-   **CMake** >= 3.5
 -   **Corrade** --- Plugin management and utility library. See
     @ref building-corrade "Corrade download and installation guide" for more
     information.

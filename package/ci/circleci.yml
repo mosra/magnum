@@ -313,7 +313,7 @@ jobs:
         count: 16
     - install-gcc-4_8
     - install-cmake:
-        version: "3.4.3"
+        version: "3.5.2"
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
@@ -326,7 +326,7 @@ jobs:
       CONFIGURATION: Debug
       PLATFORM_GL_API: GLX
     steps:
-    # Not installing the old GCC 4.8 and CMake 3.4 to speed up. These are
+    # Not installing the old GCC 4.8 and CMake 3.5 to speed up. These are
     # tested more than enough on other jobs.
     - install-base-linux-arm64:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
@@ -375,7 +375,7 @@ jobs:
         count: 16
     - install-gcc-4_8
     - install-cmake:
-        version: "3.4.3"
+        version: "3.5.2"
     - install-swiftshader-gles:
         build: ubuntu-16.04
     - build:
@@ -401,7 +401,7 @@ jobs:
         count: 16
     - install-gcc-4_8
     - install-cmake:
-        version: "3.4.3"
+        version: "3.5.2"
     - install-swiftshader-gles:
         build: ubuntu-16.04
     - build:
@@ -434,7 +434,7 @@ jobs:
         count: 16
     - install-gcc-4_8
     - install-cmake:
-        version: "3.4.3"
+        version: "3.5.2"
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
@@ -459,7 +459,7 @@ jobs:
         count: 16
     - install-gcc-4_8
     - install-cmake:
-        version: "3.4.3"
+        version: "3.5.2"
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
@@ -479,7 +479,7 @@ jobs:
         extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
     - install-clang
     - install-cmake:
-        version: "3.4.3"
+        version: "3.5.2"
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
@@ -499,7 +499,7 @@ jobs:
         extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
     - install-clang
     - install-cmake:
-        version: "3.4.3"
+        version: "3.5.2"
     - setup-null-openal-driver
     - build:
         script: unix-desktop.sh
