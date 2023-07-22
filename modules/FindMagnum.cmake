@@ -228,14 +228,26 @@
 
 # Corrade library dependencies
 set(_MAGNUM_CORRADE_DEPENDENCIES )
-foreach(_component ${Magnum_FIND_COMPONENTS})
+foreach(_magnum_component ${Magnum_FIND_COMPONENTS})
+    set(_MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES )
+
     # Unrolling the transitive dependencies here so this doesn't need to be
     # after resolving inter-component dependencies. Listing also all plugins.
-    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|SceneTools|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
-        set(_MAGNUM_${_component}_CORRADE_DEPENDENCIES PluginManager)
+    if(_magnum_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|SceneTools|ShaderTools|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font|.+ShaderConverter)$")
+        list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES PluginManager)
+    endif()
+    if(_magnum_component STREQUAL DebugTools)
+        # DebugTools depends on TestSuite optionally, so if it's not there
+        # assume it wasn't compiled against it. Also, all variables from the
+        # FindCorrade module overwrite the local variables here (in particular
+        # _component, _COMPONENT and such), so we need to prefix extensively.
+        find_package(Corrade QUIET COMPONENTS TestSuite)
+        if(Corrade_TestSuite_FOUND)
+            list(APPEND _MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES TestSuite)
+        endif()
     endif()
 
-    list(APPEND _MAGNUM_CORRADE_DEPENDENCIES ${_MAGNUM_${_component}_CORRADE_DEPENDENCIES})
+    list(APPEND _MAGNUM_CORRADE_DEPENDENCIES ${_MAGNUM_${_magnum_component}_CORRADE_DEPENDENCIES})
 endforeach()
 find_package(Corrade REQUIRED Utility ${_MAGNUM_CORRADE_DEPENDENCIES})
 
