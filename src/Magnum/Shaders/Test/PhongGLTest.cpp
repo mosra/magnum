@@ -54,6 +54,7 @@
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -2299,6 +2300,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderDefaults() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -2394,6 +2399,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderColored() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -2545,6 +2554,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSinglePixelTextured() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & PhongGL::Flag::TextureTransformation ? 4 : 3))
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -2753,6 +2766,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTextured() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & PhongGL::Flag::TextureTransformation ? 4 : 3))
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -3007,6 +3024,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & PhongGL::Flag::TextureTransformation ? 4 : 3))
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -3221,6 +3242,10 @@ template<class T, PhongGL::Flag flag> void PhongGLTest::renderVertexColor() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -3370,6 +3395,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderShininess() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -3542,6 +3571,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderAlpha() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -3713,6 +3746,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderObjectId() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & PhongGL::Flag::TextureTransformation ? 4 : 3))
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -3907,6 +3944,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderLights() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -4144,6 +4185,10 @@ void PhongGLTest::renderLightCulling() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
 
@@ -4231,6 +4276,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderZeroLights() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag >= PhongGL::Flag::UniformBuffers) {
@@ -4516,6 +4565,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderSkinning() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 4)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -4671,6 +4724,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstanced() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -5113,6 +5170,10 @@ template<PhongGL::Flag flag> void PhongGLTest::renderInstancedSkinning() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == PhongGL::Flag::UniformBuffers) {
@@ -5275,6 +5336,10 @@ void PhongGLTest::renderMulti() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
 
@@ -5685,6 +5750,10 @@ void PhongGLTest::renderMultiSkinning() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 4)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
 

@@ -50,6 +50,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -785,6 +786,10 @@ template<VectorGL2D::Flag flag> void VectorGLTest::renderDefaults2D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VectorGL2D::Flag::UniformBuffers) {
@@ -883,6 +888,10 @@ template<VectorGL3D::Flag flag> void VectorGLTest::renderDefaults3D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VectorGL3D::Flag::UniformBuffers) {
@@ -984,6 +993,10 @@ template<VectorGL2D::Flag flag> void VectorGLTest::render2D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & VectorGL2D::Flag::TextureTransformation ? 2 : 1))
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VectorGL2D::Flag::UniformBuffers) {
@@ -1108,6 +1121,10 @@ template<VectorGL3D::Flag flag> void VectorGLTest::render3D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & VectorGL2D::Flag::TextureTransformation ? 2 : 1))
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VectorGL3D::Flag::UniformBuffers) {
@@ -1239,6 +1256,10 @@ void VectorGLTest::renderMulti2D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 2)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
 
@@ -1455,6 +1476,10 @@ void VectorGLTest::renderMulti3D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 2)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
 

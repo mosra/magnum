@@ -47,6 +47,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/Math/Color.h"
@@ -650,6 +651,10 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VertexColorGL2D::Flag::UniformBuffers) {
@@ -731,6 +736,10 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::renderDefa
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VertexColorGL2D::Flag::UniformBuffers) {
@@ -812,6 +821,10 @@ template<class T, VertexColorGL2D::Flag flag> void VertexColorGLTest::render2D()
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VertexColorGL2D::Flag::UniformBuffers) {
@@ -898,6 +911,10 @@ template<class T, VertexColorGL3D::Flag flag> void VertexColorGLTest::render3D()
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
     if(flag == VertexColorGL3D::Flag::UniformBuffers) {
@@ -999,6 +1016,10 @@ void VertexColorGLTest::renderMulti2D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
 
@@ -1141,6 +1162,10 @@ void VertexColorGLTest::renderMulti3D() {
         if(!GL::Context::current().isVersionSupported(GL::Version::GLES310))
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
+
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 1)
+            CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
 
