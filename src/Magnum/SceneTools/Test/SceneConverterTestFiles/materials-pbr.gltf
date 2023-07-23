@@ -12,12 +12,16 @@
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 36
+      "byteLength": 36,
+      "byteStride": 12,
+      "target": 34962
     },
     {
       "buffer": 0,
       "byteOffset": 36,
-      "byteLength": 36
+      "byteLength": 36,
+      "byteStride": 12,
+      "target": 34962
     }
   ],
   "accessors": [
@@ -25,13 +29,17 @@
       "bufferView": 0,
       "componentType": 5126,
       "count": 3,
-      "type": "VEC3"
+      "type": "VEC3",
+      "min": [-1, -1, 0],
+      "max": [1, 1, 0]
     },
     {
       "bufferView": 1,
       "componentType": 5126,
       "count": 3,
-      "type": "VEC3"
+      "type": "VEC3",
+      "min": [-1, -1, 0],
+      "max": [1, 1, 0]
     }
   ],
   "meshes": [

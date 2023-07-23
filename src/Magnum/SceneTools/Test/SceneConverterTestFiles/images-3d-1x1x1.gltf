@@ -11,19 +11,19 @@
   "buffers": [
     {
       "uri": "images-3d-1x1x1.bin",
-      "byteLength": 510
+      "byteLength": 414
     }
   ],
   "bufferViews": [
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 255
+      "byteLength": 207
     },
     {
       "buffer": 0,
-      "byteOffset": 255,
-      "byteLength": 255
+      "byteOffset": 207,
+      "byteLength": 207
     }
   ],
   "samplers": [

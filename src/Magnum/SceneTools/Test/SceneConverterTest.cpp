@@ -150,8 +150,13 @@ const struct {
         "quad.ply", nullptr,
         {}},
     {"one mesh, whole scene converter", {InPlaceInit, {
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as that's less context
+               sensitive and thus shouldn't cause accidentally uncovered
+               code paths. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad.obj"),
-            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")
+            Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf"),
         }},
         "ObjImporter", nullptr, "GltfSceneConverter", {}, nullptr,
         "quad.gltf", "quad.bin",
@@ -343,8 +348,10 @@ const struct {
         "Mesh 1 fuzzy duplicate removal: 6 -> 4 vertices\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"},
     {"one implicit mesh, two converters", {InPlaceInit, {
-            /* Not removing the generator identifier in this case as we want to
-               test passing no options */
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as in this case as we
+               want to test passing no -c options. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-C", "MeshOptimizerSceneConverter",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")
@@ -353,8 +360,10 @@ const struct {
         "quad.gltf", "quad.bin",
         {}},
     {"one implicit mesh, two converters, explicit last", {InPlaceInit, {
-            /* Not removing the generator identifier in this case as we want to
-               test passing no options */
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as in this case as we
+               want to test passing no -c options. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-C", "MeshOptimizerSceneConverter", "-C", "GltfSceneConverter",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")
@@ -363,8 +372,10 @@ const struct {
         "quad.gltf", "quad.bin",
         {}},
     {"one implicit mesh, two converters, verbose", {InPlaceInit, {
-            /* Not removing the generator identifier in this case as we want to
-               test passing no options */
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as in this case as we
+               want to test passing no -c options. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-C", "MeshOptimizerSceneConverter", "-v",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")
@@ -393,6 +404,10 @@ const struct {
         "Trade::AnySceneConverter::beginFile(): using GltfSceneConverter\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding mesh 0 out of 1\n"},
     {"one implicit mesh, two converters, explicit last, verbose", {InPlaceInit, {
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as in this case as we
+               want to test passing no -c options. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-C", "MeshOptimizerSceneConverter", "-C", "GltfSceneConverter", "-v",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")
@@ -440,6 +455,10 @@ const struct {
         "quad.ply", nullptr,
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"},
     {"one implicit mesh, two converters, options for both", {InPlaceInit, {
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as -c is tested for
+               something else. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-C", "MeshOptimizerSceneConverter",
             "-c", "nonexistentMeshOptimizerOption=yes",
             "-c", "nonexistentAnyConverterOption=no",
@@ -451,6 +470,10 @@ const struct {
         "Option nonexistentMeshOptimizerOption not recognized by MeshOptimizerSceneConverter\n"
         "Trade::AnySceneConverter::beginFile(): option nonexistentAnyConverterOption not recognized by GltfSceneConverter\n"},
     {"one implicit mesh, two converters, explicit last, options for both", {InPlaceInit, {
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as -c is tested for
+               something else. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-C", "MeshOptimizerSceneConverter",
             "-c", "nonexistentMeshOptimizerOption=yes",
             "-C", "StanfordSceneConverter",
@@ -520,6 +543,11 @@ const struct {
         "quad-name-custom-attributes.gltf", "quad-name-custom-attributes.bin",
         {}},
     {"mesh converter", {InPlaceInit, {
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as that's less context
+               sensitive and thus shouldn't cause accidentally uncovered
+               code paths. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-M", "MeshOptimizerSceneConverter",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/quad-strip.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/quad.gltf")
@@ -571,6 +599,11 @@ const struct {
         "    overdraw 1 -> 1\n"
         "Trade::AbstractSceneConverter::addImporterContents(): adding scene 0 out of 1\n"},
     {"two mesh converters, two options, one mesh, verbose", {InPlaceInit, {
+            /* Unfortunately *have to* use an option to make the output
+               predictable. Using --set instead of -c as that's less context
+               sensitive and thus shouldn't cause accidentally uncovered
+               code paths. */
+            "--set", "GltfSceneConverter:generator=\"Magnum GltfSceneConverter\"",
             "-I", "GltfImporter", "-C", "GltfSceneConverter",
             "-M", "MeshOptimizerSceneConverter",
             "-m", "nonexistentFirstOption=yes",
@@ -674,10 +707,12 @@ const struct {
         "Processing 2D image 1 (1/2) with StbResizeImageConverter...\n"
         "Processing 2D image 1 (2/2) with StbResizeImageConverter...\n"},
     {"3D image converter, two images", {InPlaceInit, {
+            /* Removing the KTX generator identifier for predictable output */
+            "--set", "KtxImageConverter:generator=",
             "-i", "experimentalKhrTextureKtx",
             "-P", "StbResizeImageConverter", "-p", "size=\"1 1\"",
-            /* Removing the generator identifier for a smaller file, bundling
-               the images to avoid having too many files */
+            /* Removing the glTF generator identifier for predictable output,
+               bundling the images to avoid having too many files */
             "-c", "experimentalKhrTextureKtx,imageConverter=KtxImageConverter,bundleImages,generator=",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-3d.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/images-3d-1x1x1.gltf")
@@ -687,11 +722,13 @@ const struct {
         "images-3d-1x1x1.gltf", "images-3d-1x1x1.bin",
         {}},
     {"3D image converter, two images, verbose", {InPlaceInit, {
+            /* Removing the KTX generator identifier for predictable output */
+            "--set", "KtxImageConverter:generator=",
             "-I", "GltfImporter", "-C", "GltfSceneConverter",
             "-i", "experimentalKhrTextureKtx",
             "-P", "StbResizeImageConverter", "-p", "size=\"1 1\"",
-            /* Removing the generator identifier for a smaller file, bundling
-               the images to avoid having too many files */
+            /* Removing the generator identifier for predictable output,
+               bundling the images to avoid having too many files */
             "-c", "experimentalKhrTextureKtx,imageConverter=KtxImageConverter,bundleImages,generator=", "-v",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-3d.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/images-3d-1x1x1.gltf")
@@ -1189,14 +1226,13 @@ const struct {
         "GltfImporter", "PngImporter", nullptr, "PngImageConverter",
         "PngImageConverter doesn't support 2D image conversion, only Convert2DToData\n"},
     {"plugin doesn't support compressed image conversion", {InPlaceInit, {
+            /* To not print warnings about Y flip for block-compressed data */
+            "--set", "DdsImporter:assumeYUpZBackward=true",
             "-I", "GltfImporter", "-P", "StbResizeImageConverter",
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/image-dds.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
         }},
         "GltfImporter", "DdsImporter", nullptr, "StbResizeImageConverter",
-        /** @todo add an ability to pass options to AnyImageImporter to
-            suppress this */
-        "Trade::DdsImporter::openData(): block-compressed image is assumed to be encoded with Y down and Z forward, imported data will have wrong orientation. Enable assumeYUpZBackward to suppress this warning.\n"
         "StbResizeImageConverter doesn't support compressed 2D image conversion, only Convert2D|Convert3D\n"},
     {"can't process a 2D image", {InPlaceInit, {
             "-I", "GltfImporter", "-P", "StbResizeImageConverter",

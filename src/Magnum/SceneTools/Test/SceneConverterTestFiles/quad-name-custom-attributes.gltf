@@ -12,12 +12,15 @@
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 12
+      "byteLength": 12,
+      "target": 34963
     },
     {
       "buffer": 0,
       "byteOffset": 12,
-      "byteLength": 48
+      "byteLength": 48,
+      "byteStride": 12,
+      "target": 34962
     }
   ],
   "accessors": [

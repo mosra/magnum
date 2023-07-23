@@ -12,7 +12,9 @@
     {
       "buffer": 0,
       "byteOffset": 0,
-      "byteLength": 72
+      "byteLength": 72,
+      "byteStride": 12,
+      "target": 34962
     }
   ],
   "accessors": [
@@ -20,7 +22,9 @@
       "bufferView": 0,
       "componentType": 5126,
       "count": 6,
-      "type": "VEC3"
+      "type": "VEC3",
+      "min": [-1, -1, 0],
+      "max": [1, 1, 0]
     }
   ],
   "meshes": [
