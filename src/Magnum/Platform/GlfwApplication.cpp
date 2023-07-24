@@ -93,7 +93,14 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     glfwSetErrorCallback([](int, const char* const description) {
         Error{} << description;
     });
-
+    #ifdef CORRADE_TARGET_APPLE
+    /* Don't change current working directory to Resources/ in the app bundle
+       on Apple platforms. Not sure why this would be done only on a single
+       platform of all, I guess it was for compatibility with SDL1 (and then
+       SDL2+ doesn't do this anymore but in GLFW it stays)?
+        https://wiki.libsdl.org/SDL2/README/macos#working-directory */
+    glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, false);
+    #endif
     if(!glfwInit()) {
         Error() << "Could not initialize GLFW";
         std::exit(8);

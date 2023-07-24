@@ -664,6 +664,9 @@ See also:
     prevents computer from entering a power-saving mode while the application
     is running, as that's generally undesirable for regular GUI applications.
     See @ref Platform-Sdl2Application-usage-power for more information.
+-   @ref Platform::GlfwApplication now overrides GLFW's default behavior that
+    changes current working directory to `Resources/` in the app bundle on
+    Apple platforms.
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
