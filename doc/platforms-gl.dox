@@ -50,6 +50,7 @@ Various links gathered around the web:
 
 -   [Writing Portable OpenGL ES 2.0](https://www.khronos.org/assets/uploads/developers/library/2011-siggraph-mobile/Writing-Portable-OpenGL-ES-2.0_Aug-11.pdf) [PDF]
 -   [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/index.html#GLES2_Perf_Main.html)
+-   [Qualcomm Adreno Best Practices](https://developer.qualcomm.com/sites/default/files/docs/adreno-gpu/snapdragon-game-toolkit/gdg/gpu/best_practices.html)
 
 @subsection platforms-gl-es-differences Differences to desktop GL
 

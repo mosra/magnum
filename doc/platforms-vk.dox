@@ -109,6 +109,10 @@ ARM best practices:
 
 -   [Vulkan Best Practice for Mobile Developers](https://github.com/ARM-software/vulkan_best_practice_for_mobile_developers)
 
+Qualcomm best practices:
+
+-   [Qualcomm Adreno Best Practices](https://developer.qualcomm.com/sites/default/files/docs/adreno-gpu/snapdragon-game-toolkit/gdg/gpu/best_practices.html)
+
 Various useful links:
 
 -   [Yet another blog explaining Vulkan synchronization](http://themaister.net/blog/2019/08/14/yet-another-blog-explaining-vulkan-synchronization/)
