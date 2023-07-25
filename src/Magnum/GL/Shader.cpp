@@ -660,7 +660,7 @@ Shader::Shader(const Version version, const Type type): _type{type}, _flags{Obje
         _offsetLineByOneOnOldGlsl = false;
     #endif
 
-    Containers::StringView versionString;
+    Containers::Optional<Containers::StringView> versionString;
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
         case Version::GL210: versionString = "#version 120\n"_s; break;
@@ -685,12 +685,13 @@ Shader::Shader(const Version version, const Type type): _type{type}, _flags{Obje
         #endif
 
         /* The user is responsible for (not) adding #version directive */
-        case Version::None: return;
+        case Version::None: versionString = ""_s; break;
     }
 
-    CORRADE_ASSERT(!versionString.isEmpty(), "GL::Shader::Shader(): unsupported version" << version, );
+    CORRADE_ASSERT(versionString, "GL::Shader::Shader(): unsupported version" << version, );
 
-    arrayAppend(_sources, Containers::String::nullTerminatedGlobalView(versionString));
+    if(*versionString)
+        arrayAppend(_sources, Containers::String::nullTerminatedGlobalView(*versionString));
 }
 
 Shader::Shader(const Type type, const GLuint id, ObjectFlags flags) noexcept: _type{type}, _id{id}, _flags{flags}
