@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
@@ -246,17 +247,18 @@ void BufferGLTest::bindRange() {
     #endif
 
     /* Check that we have correct offset alignment */
-    CORRADE_INTERNAL_ASSERT(256 % Buffer::uniformOffsetAlignment() == 0);
+    CORRADE_COMPARE_AS(256, Buffer::uniformOffsetAlignment(),
+        TestSuite::Compare::Divisible);
 
     Buffer buffer;
     buffer.setData({nullptr, 1024}, BufferUsage::StaticDraw)
-         .bind(Buffer::Target::Uniform, 15, 256, 13);
+         .bind(Buffer::Target::Uniform, 15, 512, 256);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Buffer::bind(Buffer::Target::Uniform, 7, {
-        {&buffer, 256, 13}, {},
-        {&buffer, 768, 64}});
+        {&buffer, 256, 512}, {},
+        {&buffer, 768, 256}});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
