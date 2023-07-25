@@ -46,7 +46,11 @@
 #include "Magnum/GL/TextureArray.h"
 #endif
 
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
+#ifdef MAGNUM_BUILD_STATIC
+static void importShaderResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RESOURCES_GL)
+}
+#endif
 
 namespace Magnum { namespace Shaders {
 
@@ -187,8 +191,9 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     const GL::Version version = context.supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
-    vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    vert.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
+    vert = GL::Shader{version, GL::Shader::Type::Vertex};
+    vert.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n"_s : ""_s)
         .addSource(flags & FlagBase::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
@@ -296,8 +301,9 @@ GL::Version MeshVisualizerGLBase::setupShaders(GL::Shader& vert, GL::Shader& fra
     }
     #endif
 
-    frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-    frag.addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
+    frag = GL::Shader{version, GL::Shader::Type::Fragment};
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & FlagBase::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)
         .addSource(flags >= FlagBase::ObjectIdTexture ? "#define OBJECT_ID_TEXTURE\n"_s : ""_s)
@@ -648,8 +654,9 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(configuration.flags() & Flag::Wireframe && !(configuration.flags() & Flag::NoGeometryShader)) {
-        geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
+        geom = GL::Shader{version, GL::Shader::Type::Geometry};
         (*geom)
+            .addSource(rs.getString("compatibility.glsl"_s))
             .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n"_s)
             .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n"_s : ""_s)
             .addSource(baseFlags & FlagBase::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
@@ -1172,8 +1179,9 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
             maxVertices += 3*6;
         if(configuration.flags() & Flag::NormalDirection) maxVertices += 3*6;
 
-        geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
+        geom = GL::Shader{version, GL::Shader::Type::Geometry};
         (*geom)
+            .addSource(rs.getString("compatibility.glsl"_s))
             .addSource(Utility::format("#define MAX_VERTICES {}\n", maxVertices))
             .addSource(configuration.flags() & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n"_s : ""_s)
             .addSource(baseFlags >= FlagBase::ObjectIdTexture ? "#define TEXTURED\n"_s : ""_s)

@@ -39,7 +39,6 @@
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 #ifdef MAGNUM_BUILD_STATIC
 static void importTextureToolResources() {
@@ -103,12 +102,14 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
         GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
-    GL::Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Vertex);
-    GL::Shader frag = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Fragment);
-
-    vert.addSource(rs.getString("FullScreenTriangle.glsl"_s))
+    GL::Shader vert{v, GL::Shader::Type::Vertex};
+    vert.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(rs.getString("FullScreenTriangle.glsl"_s))
         .addSource(rs.getString("DistanceFieldShader.vert"_s));
-    frag.addSource(Utility::format("#define RADIUS {}\n", radius))
+
+    GL::Shader frag{v, GL::Shader::Type::Fragment};
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(Utility::format("#define RADIUS {}\n", radius))
         .addSource(rs.getString("DistanceFieldShader.frag"_s));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());

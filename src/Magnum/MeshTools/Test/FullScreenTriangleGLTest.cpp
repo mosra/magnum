@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Iterable.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -40,7 +41,6 @@
 #include "Magnum/GL/Version.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/FullScreenTriangle.h"
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -81,16 +81,18 @@ void FullScreenTriangleGLTest::test() {
         FullscreenFlatShader(GL::Version version) {
             Utility::Resource rs{"FullScreenTriangleTest"};
 
-            GL::Shader vert = Shaders::Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-            vert.addSource(rs.getString("FullScreenTriangle.glsl"))
+            GL::Shader vert{version, GL::Shader::Type::Vertex};
+            vert.addSource(rs.getString("compatibility.glsl"))
+                .addSource(rs.getString("FullScreenTriangle.glsl"))
                 .addSource(R"(
 void main() {
     fullScreenTriangle();
 }
                 )");
 
-            GL::Shader frag = Shaders::Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-            frag.addSource(R"(
+            GL::Shader frag{version, GL::Shader::Type::Fragment};
+            frag.addSource(rs.getString("compatibility.glsl"))
+                .addSource(R"(
 #ifdef NEW_GLSL
 out lowp vec4 fragmentColor;
 #else

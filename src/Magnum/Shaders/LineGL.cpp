@@ -39,8 +39,13 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/Line.h"
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 #include "Magnum/Shaders/Implementation/lineMiterLimit.h"
+
+#ifdef MAGNUM_BUILD_STATIC
+static void importShaderResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RESOURCES_GL)
+}
+#endif
 
 namespace Magnum { namespace Shaders {
 
@@ -145,8 +150,9 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
     CORRADE_INTERNAL_ASSERT(capStyleDefine);
     CORRADE_INTERNAL_ASSERT(joinStyleDefine);
 
-    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    vert.addSource(capStyleDefine)
+    GL::Shader vert{version, GL::Shader::Type::Vertex};
+    vert.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(capStyleDefine)
         .addSource(joinStyleDefine)
         .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n"_s : ""_s)
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s)
@@ -176,8 +182,9 @@ template<UnsignedInt dimensions> typename LineGL<dimensions>::CompileState LineG
         .addSource(rs.getString("Line.vert"_s))
         .submitCompile();
 
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-    frag.addSource(capStyleDefine)
+    GL::Shader frag{version, GL::Shader::Type::Fragment};
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(capStyleDefine)
         .addSource(joinStyleDefine)
         .addSource(configuration.flags() & Flag::VertexColor ? "#define VERTEX_COLOR\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::ObjectId ? "#define OBJECT_ID\n"_s : ""_s)

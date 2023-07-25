@@ -38,14 +38,18 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
-
 #ifndef MAGNUM_TARGET_GLES2
 #include <Corrade/Containers/String.h>
 #include <Corrade/Utility/Format.h>
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/TextureArray.h"
+#endif
+
+#ifdef MAGNUM_BUILD_STATIC
+static void importShaderResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RESOURCES_GL)
+}
 #endif
 
 namespace Magnum { namespace Shaders {
@@ -180,8 +184,9 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         1 : out._perInstanceJointCountUniform + 1;
     #endif
 
-    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    vert.addSource((configuration.flags() & Flag::Textured
+    GL::Shader vert{version, GL::Shader::Type::Vertex};
+    vert.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource((configuration.flags() & Flag::Textured
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
             #endif
@@ -286,8 +291,9 @@ template<UnsignedInt dimensions> typename FlatGL<dimensions>::CompileState FlatG
         .addSource(rs.getString("Flat.vert"_s))
         .submitCompile();
 
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-    frag.addSource(configuration.flags() & Flag::Textured ? "#define TEXTURED\n"_s : ""_s)
+    GL::Shader frag{version, GL::Shader::Type::Fragment};
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(configuration.flags() & Flag::Textured ? "#define TEXTURED\n"_s : ""_s)
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(configuration.flags() & Flag::TextureArrays ? "#define TEXTURE_ARRAYS\n"_s : ""_s)
         #endif

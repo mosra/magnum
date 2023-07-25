@@ -45,7 +45,11 @@
 #include "Magnum/GL/Buffer.h"
 #endif
 
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
+#ifdef MAGNUM_BUILD_STATIC
+static void importShaderResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RESOURCES_GL)
+}
+#endif
 
 namespace Magnum { namespace Shaders {
 
@@ -124,8 +128,9 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
         GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
-    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    vert.addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
+    GL::Shader vert{version, GL::Shader::Type::Vertex};
+    vert.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(configuration.flags() & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n"_s : ""_s)
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
@@ -151,7 +156,8 @@ template<UnsignedInt dimensions> typename VectorGL<dimensions>::CompileState Vec
         .addSource(rs.getString("Vector.vert"_s))
         .submitCompile();
 
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
+    GL::Shader frag{version, GL::Shader::Type::Fragment};
+    frag.addSource(rs.getString("compatibility.glsl"_s));
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         #ifndef MAGNUM_TARGET_WEBGL

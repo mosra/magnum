@@ -73,7 +73,6 @@ set(MagnumShaders_HEADERS
 
 # Header files to display in project view of IDEs only
 set(MagnumShaders_PRIVATE_HEADERS
-    Implementation/CreateCompatibilityShader.h
     Implementation/lineMiterLimit.h)
 
 if(NOT MAGNUM_TARGET_GLES2)

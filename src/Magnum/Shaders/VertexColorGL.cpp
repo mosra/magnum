@@ -32,6 +32,7 @@
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -43,7 +44,11 @@
 #include "Magnum/GL/Buffer.h"
 #endif
 
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
+#ifdef MAGNUM_BUILD_STATIC
+static void importShaderResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RESOURCES_GL)
+}
+#endif
 
 namespace Magnum { namespace Shaders {
 
@@ -115,8 +120,9 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
         GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
-    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    vert.addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
+    GL::Shader vert{version, GL::Shader::Type::Vertex};
+    vert.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n"_s : "#define THREE_DIMENSIONS\n"_s);
     #ifndef MAGNUM_TARGET_GLES2
     if(configuration.flags() >= Flag::UniformBuffers) {
         #ifndef MAGNUM_TARGET_WEBGL
@@ -141,8 +147,9 @@ template<UnsignedInt dimensions> typename VertexColorGL<dimensions>::CompileStat
         .addSource(rs.getString("VertexColor.vert"_s))
         .submitCompile();
 
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-    frag.addSource(rs.getString("generic.glsl"_s))
+    GL::Shader frag{version, GL::Shader::Type::Fragment};
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(rs.getString("generic.glsl"_s))
         .addSource(rs.getString("VertexColor.frag"_s))
         .submitCompile();
 

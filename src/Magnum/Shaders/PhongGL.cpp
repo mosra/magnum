@@ -49,7 +49,11 @@
 #include "Magnum/GL/TextureArray.h"
 #endif
 
-#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
+#ifdef MAGNUM_BUILD_STATIC
+static void importShaderResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RESOURCES_GL)
+}
+#endif
 
 namespace Magnum { namespace Shaders {
 
@@ -222,8 +226,9 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
             ("1.0/0.0, "_s*configuration.lightCount()).exceptSuffix(2));
     #endif
 
-    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
-    vert.addSource((configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)
+    GL::Shader vert{version, GL::Shader::Type::Vertex};
+    vert.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource((configuration.flags() & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)
             #ifndef MAGNUM_TARGET_GLES2
             || configuration.flags() >= Flag::ObjectIdTexture
             #endif
@@ -332,8 +337,9 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
         .addSource(rs.getString("Phong.vert"_s))
         .submitCompile();
 
-    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
-    frag.addSource(configuration.flags() & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n"_s : ""_s)
+    GL::Shader frag{version, GL::Shader::Type::Fragment};
+    frag.addSource(rs.getString("compatibility.glsl"_s))
+        .addSource(configuration.flags() & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n"_s : ""_s)
         .addSource(configuration.flags() & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n"_s : ""_s)
