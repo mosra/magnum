@@ -1348,6 +1348,9 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         #ifdef CORRADE_TARGET_ANDROID
         _c(ArmMali)
         #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
+        _c(QualcommAdreno)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -1370,6 +1373,9 @@ Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
         #endif
         #ifdef CORRADE_TARGET_ANDROID
         Context::DetectedDriver::ArmMali,
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
+        Context::DetectedDriver::QualcommAdreno
         #endif
     });
 }

@@ -581,6 +581,11 @@ auto Context::detectedDriver() -> DetectedDrivers {
         *_detectedDrivers |= DetectedDriver::ArmMali;
     #endif
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
+    if(vendor.contains("Qualcomm"_s) && renderer.contains("Adreno"_s))
+        *_detectedDrivers |= DetectedDriver::QualcommAdreno;
+    #endif
+
     return *_detectedDrivers;
 }
 

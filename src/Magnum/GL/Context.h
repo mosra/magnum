@@ -489,7 +489,18 @@ class MAGNUM_GL_EXPORT Context {
              *      @ref CORRADE_TARGET_ANDROID "Android".
              * @m_since{2019,10}
              */
-            ArmMali = 1 << 7
+            ArmMali = 1 << 7,
+            #endif
+
+            #if (defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)) || defined(DOXYGEN_GENERATING_OUTPUT)
+            /**
+             * Qualcomm Adreno drivers for OpenGL ES.
+             * @partialsupport Not available on
+             *      @ref CORRADE_TARGET_APPLE"Apple" platforms.
+             * @m_since_latest
+             */
+            /* Assuming these exist also on non-Android platforms (Windows?) */
+            QualcommAdreno = 1 << 8
             #endif
         };
 

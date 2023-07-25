@@ -519,6 +519,7 @@ See also:
 -   The @ref GL::Context class got significantly optimized in terms of compile
     time, header size and runtime as well, significantly reducing the amount of
     allocations done at startup.
+-   Added @ref GL::Context::DetectedDriver::QualcommAdreno
 -   To make working with cube map images easier,
     @ref GL::CubeMapTexture::setSubImage() and
     @ref GL::CubeMapTexture::subImage() taking 3D images are now exposed on all
