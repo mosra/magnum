@@ -25,7 +25,7 @@
 
 /* Inputs */
 
-#if !defined(NEW_GLSL) || defined(DISABLE_GL_MAGNUM_shader_vertex_id)
+#if !defined(NEW_GLSL) || defined(MAGNUM_DISABLE_GL_MAGNUM_shader_vertex_id)
 #ifndef NEW_GLSL
 #define in attribute
 #endif
@@ -33,7 +33,7 @@ in lowp vec4 position;
 #endif
 
 void fullScreenTriangle() {
-    #if defined(NEW_GLSL) && !defined(DISABLE_GL_MAGNUM_shader_vertex_id)
+    #if defined(NEW_GLSL) && !defined(MAGNUM_DISABLE_GL_MAGNUM_shader_vertex_id)
     gl_Position = vec4((gl_VertexID == 2) ?  3.0 : -1.0,
                        (gl_VertexID == 1) ? -3.0 :  1.0, 0.0, 1.0);
     #else

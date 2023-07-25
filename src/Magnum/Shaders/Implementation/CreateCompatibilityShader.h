@@ -49,16 +49,16 @@ inline GL::Shader createCompatibilityShader(const Utility::Resource& rs, GL::Ver
 
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::explicit_attrib_location>(version))
-        shader.addSource("#define DISABLE_GL_ARB_explicit_attrib_location\n"_s);
+        shader.addSource("#define MAGNUM_DISABLE_GL_ARB_explicit_attrib_location\n"_s);
     if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::shading_language_420pack>(version))
-        shader.addSource("#define DISABLE_GL_ARB_shading_language_420pack\n"_s);
+        shader.addSource("#define MAGNUM_DISABLE_GL_ARB_shading_language_420pack\n"_s);
     if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::explicit_uniform_location>(version))
-        shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n"_s);
+        shader.addSource("#define MAGNUM_DISABLE_GL_ARB_explicit_uniform_location\n"_s);
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     if(type == GL::Shader::Type::Vertex && GL::Context::current().isExtensionDisabled<GL::Extensions::MAGNUM::shader_vertex_id>(version))
-        shader.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n"_s);
+        shader.addSource("#define MAGNUM_DISABLE_GL_MAGNUM_shader_vertex_id\n"_s);
     #endif
 
     shader.addSource(rs.getString("compatibility.glsl"_s));
