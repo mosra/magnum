@@ -1357,20 +1357,19 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
 
 Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
     return Containers::enumSetDebugOutput(debug, value, debug.immediateFlags() >= Debug::Flag::Packed ? "{}" : "GL::Context::DetectedDrivers{}", {
-        #ifndef MAGNUM_TARGET_WEBGL
         Context::DetectedDriver::Amd,
-        #endif
         #ifdef MAGNUM_TARGET_GLES
         Context::DetectedDriver::Angle,
         #endif
-        #ifndef MAGNUM_TARGET_WEBGL
         Context::DetectedDriver::IntelWindows,
         Context::DetectedDriver::Mesa,
         Context::DetectedDriver::NVidia,
         Context::DetectedDriver::Svga3D,
         #ifdef MAGNUM_TARGET_GLES
-        Context::DetectedDriver::SwiftShader
+        Context::DetectedDriver::SwiftShader,
         #endif
+        #ifdef CORRADE_TARGET_ANDROID
+        Context::DetectedDriver::ArmMali,
         #endif
     });
 }
