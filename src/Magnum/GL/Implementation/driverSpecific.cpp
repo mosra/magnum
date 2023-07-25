@@ -108,6 +108,13 @@ constexpr Containers::StringView KnownWorkarounds[]{
 "apple-buffer-texture-unbind-on-buffer-modify"_s,
 #endif
 
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+/* Qualcomm Adreno drivers V@0615.65 (and possibly others) report __VERSION__
+   as 300 even for GLSL ES 3.10 and 3.20, breaking version-dependent shader
+   code. */
+"adreno-glsl-version-stuck-at-300"_s,
+#endif
+
 #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
 /* glBeginQuery() with GL_TIME_ELAPSED causes a GL_OUT_OF_MEMORY error when
    running from the Android shell (through ADB). No such error happens in an

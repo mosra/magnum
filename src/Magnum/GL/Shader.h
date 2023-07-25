@@ -81,6 +81,10 @@ passed to the constructor:
     isn't working correctly. You can use the artificial
     `GL_MAGNUM_shader_vertex_id` desktop, ES and WebGL extension to check for
     this case in @ref GL::Context::isExtensionSupported(Version) const.
+-   @cpp #define MAGNUM_GLSL_VERSION 310 @ce or
+    @cpp #define MAGNUM_GLSL_VERSION 320 @ce if the builtin
+    @glsl __VERSION__ @ce macro doesn't have correct value for GLSL ES 3.10 or
+    3.20
 
 See @ref opengl-workarounds for concrete information about driver workarounds
 used. If @ref Version::None is passed to the constructor, none of the above
@@ -804,6 +808,11 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
 
         /* Used by addSource(Containers::String&&) */
         Shader& addSourceInternal(Containers::String&& source);
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_APPLE)
+        static MAGNUM_GL_LOCAL Containers::StringView workaroundDefinesImplementationNoOp(Version version);
+        static MAGNUM_GL_LOCAL Containers::StringView workaroundDefinesImplementationAdrenoVersion(Version version);
+        #endif
 
         static void MAGNUM_GL_LOCAL addSourceImplementationDefault(Shader& self, Containers::String&& source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)

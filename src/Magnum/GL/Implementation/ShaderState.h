@@ -43,6 +43,9 @@ struct ShaderState {
         #endif
     };
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_APPLE)
+    Containers::StringView(*workaroundDefinesImplementation)(Version);
+    #endif
     void(*addSourceImplementation)(Shader&, Containers::String&&);
     void(*cleanLogImplementation)(Containers::String&);
     /* This is a direct pointer to a GL function, so needs a __stdcall on

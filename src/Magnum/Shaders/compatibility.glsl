@@ -47,7 +47,7 @@
     #if __VERSION__ >= 300
         #define EXPLICIT_ATTRIB_LOCATION
     #endif
-    #if __VERSION__ >= 310
+    #if __VERSION__ >= 310 || (defined(MAGNUM_GLSL_VERSION) && MAGNUM_GLSL_VERSION >= 310)
         #define EXPLICIT_BINDING
         #define EXPLICIT_UNIFORM_LOCATION
     #endif

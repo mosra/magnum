@@ -646,6 +646,24 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
 }
 #endif
 
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_APPLE)
+Containers::StringView Shader::workaroundDefinesImplementationNoOp(Version) {
+    return {};
+}
+
+Containers::StringView Shader::workaroundDefinesImplementationAdrenoVersion(const Version version) {
+    if(version == Version::GLES310)
+        return "#if __VERSION__ < 310\n"
+               "#define MAGNUM_GLSL_VERSION 310\n"
+               "#endif\n";
+    if(version == Version::GLES320)
+        return "#if __VERSION__ < 320\n"
+               "#define MAGNUM_GLSL_VERSION 320\n"
+               "#endif\n";
+    return {};
+}
+#endif
+
 Shader::Shader(const Version version, const Type type): _type{type}, _flags{ObjectFlag::DeleteOnDestruction|ObjectFlag::Created} {
     _id = glCreateShader(GLenum(_type));
 
@@ -713,6 +731,12 @@ Shader::Shader(const Version version, const Type type): _type{type}, _flags{Obje
         #ifndef MAGNUM_TARGET_GLES2
         if(type == Type::Vertex && context.isExtensionDisabled<Extensions::MAGNUM::shader_vertex_id>(version))
             arrayAppend(_sources, Containers::String::nullTerminatedGlobalView("#define MAGNUM_DISABLE_GL_MAGNUM_shader_vertex_id\n"_s));
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_APPLE)
+        if(const Containers::StringView defines = context.state().shader.workaroundDefinesImplementation(version)) {
+            arrayAppend(_sources, Containers::String::nullTerminatedGlobalView(defines));
+        }
         #endif
 
         /* Remember how many initial sources were added to have consistent

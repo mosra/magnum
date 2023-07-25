@@ -77,6 +77,14 @@ ShaderState::ShaderState(Context& context, Containers::StaticArrayView<Implement
     } else {
         completionStatusImplementation = &Shader::completionStatusImplementationFallback;
     }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_APPLE)
+    if((context.detectedDriver() & Context::DetectedDriver::QualcommAdreno) && !context.isDriverWorkaroundDisabled("adreno-glsl-version-stuck-at-300"_s)) {
+        workaroundDefinesImplementation = &Shader::workaroundDefinesImplementationAdrenoVersion;
+    } else {
+        workaroundDefinesImplementation = &Shader::workaroundDefinesImplementationNoOp;
+    }
+    #endif
 }
 
 }}}
