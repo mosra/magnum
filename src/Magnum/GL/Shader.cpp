@@ -684,20 +684,50 @@ Shader::Shader(const Version version, const Type type): _type{type}, _flags{Obje
         case Version::GLES320: versionString = "#version 320 es\n"_s; break;
         #endif
 
-        /* The user is responsible for (not) adding #version directive */
+        /* The user is responsible for (not) adding a #version directive, and
+           also any workarounds that depend on it */
         case Version::None: versionString = ""_s; break;
     }
 
     CORRADE_ASSERT(versionString, "GL::Shader::Shader(): unsupported version" << version, );
 
-    if(*versionString)
+    if(*versionString) {
         arrayAppend(_sources, Containers::String::nullTerminatedGlobalView(*versionString));
+
+        #if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_GLES2)
+        Context& context = Context::current();
+        #endif
+
+        /* Supply macros for functionality advertised by the GLSL compiler that
+           isn't actually working on given version. Search for these macros in
+           Implementation/driverSpecific.cpp for more information. */
+        #ifndef MAGNUM_TARGET_GLES
+        if(context.isExtensionDisabled<Extensions::ARB::explicit_attrib_location>(version))
+            arrayAppend(_sources, Containers::String::nullTerminatedGlobalView("#define MAGNUM_DISABLE_GL_ARB_explicit_attrib_location\n"_s));
+        if(context.isExtensionDisabled<Extensions::ARB::shading_language_420pack>(version))
+            arrayAppend(_sources, Containers::String::nullTerminatedGlobalView("#define MAGNUM_DISABLE_GL_ARB_shading_language_420pack\n"_s));
+        if(context.isExtensionDisabled<Extensions::ARB::explicit_uniform_location>(version))
+            arrayAppend(_sources, Containers::String::nullTerminatedGlobalView("#define MAGNUM_DISABLE_GL_ARB_explicit_uniform_location\n"_s));
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        if(type == Type::Vertex && context.isExtensionDisabled<Extensions::MAGNUM::shader_vertex_id>(version))
+            arrayAppend(_sources, Containers::String::nullTerminatedGlobalView("#define MAGNUM_DISABLE_GL_MAGNUM_shader_vertex_id\n"_s));
+        #endif
+
+        /* Remember how many initial sources were added to have consistent
+           #line numbering later */
+        _fileIndexOffset = _sources.size() - 1;
+    } else {
+        _fileIndexOffset = 0;
+    }
 }
 
-Shader::Shader(const Type type, const GLuint id, ObjectFlags flags) noexcept: _type{type}, _id{id}, _flags{flags}
+Shader::Shader(const Type type, const GLuint id, ObjectFlags flags) noexcept: _type{type}, _id{id}, _flags{flags},
     #ifndef MAGNUM_TARGET_GLES
-    , _offsetLineByOneOnOldGlsl{}
+    _offsetLineByOneOnOldGlsl{},
     #endif
+    _fileIndexOffset{}
     {}
 
 Shader::Shader(NoCreateT) noexcept: _type{}, _id{0} {}
@@ -706,6 +736,7 @@ Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _fl
     #ifndef MAGNUM_TARGET_GLES
     _offsetLineByOneOnOldGlsl{other._flags},
     #endif
+    _fileIndexOffset{other._fileIndexOffset},
     _sources{std::move(other._sources)}
 {
     other._id = 0;
@@ -726,6 +757,7 @@ Shader& Shader::operator=(Shader&& other) noexcept {
     #ifndef MAGNUM_TARGET_GLES
     swap(_offsetLineByOneOnOldGlsl, other._offsetLineByOneOnOldGlsl);
     #endif
+    swap(_fileIndexOffset, other._fileIndexOffset);
     swap(_sources, other._sources);
     return *this;
 }
@@ -778,7 +810,7 @@ Shader& Shader::addSourceInternal(Containers::String&& source) {
                 _offsetLineByOneOnOldGlsl ? "#line 0 {}\n" :
                 #endif
                 "#line 1 {}\n",
-            (_sources.size() + 1)/2));
+            (_sources.size() + 1 - _fileIndexOffset)/2));
         else arrayAppend(_sources, Containers::String::nullTerminatedGlobalView(""_s));
 
         Context::current().state().shader.addSourceImplementation(*this, std::move(source));

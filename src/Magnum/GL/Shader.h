@@ -50,7 +50,41 @@ namespace Implementation { struct ShaderState; }
 /**
 @brief Shader
 
-See @ref AbstractShaderProgram for usage information.
+See @ref AbstractShaderProgram for high-level usage information.
+
+@section GL-Shader-workarounds Driver workarounds
+
+Some driver workarounds used by Magnum affect also shader code, and the class
+is implicitly defining the following macros depending on the @ref Version
+passed to the constructor:
+
+-   @cpp #define MAGNUM_DISABLE_GL_ARB_explicit_attrib_location @ce if the
+    @gl_extension{ARB,explicit_attrib_location} desktop extension is reported
+    as supported by the shader compiler but isn't usable on given GLSL version.
+    In this case @ref GL::Context::isExtensionSupported(Version) const also
+    returns @cpp false @ce for this extension to be able to make appropriate
+    adjustments during shader compilation.
+-   @cpp #define MAGNUM_DISABLE_GL_ARB_shading_language_420pack @ce if the
+    @gl_extension{ARB,shading_language_420pack} desktop extension is reported
+    as supported by the shader compiler but isn't usable on given GLSL version.
+    In this case @ref GL::Context::isExtensionSupported(Version) const also
+    returns @cpp false @ce for this extension to be able to make appropriate
+    adjustments during shader compilation.
+-   @cpp #define MAGNUM_DISABLE_GL_ARB_explicit_uniform_location @ce if the
+    @gl_extension{ARB,explicit_attrib_location} desktop extension is reported
+    as supported by the shader compiler but isn't usable on given GLSL version.
+    In this case @ref GL::Context::isExtensionSupported(Version) const also
+    returns @cpp false @ce for this extension to be able to make appropriate
+    adjustments during shader compilation.
+-   @cpp #define MAGNUM_DISABLE_GL_MAGNUM_shader_vertex_id @ce if the
+    @glsl gl_VertexID @ce builtin should be present on given GLSL version but
+    isn't working correctly. You can use the artificial
+    `GL_MAGNUM_shader_vertex_id` desktop, ES and WebGL extension to check for
+    this case in @ref GL::Context::isExtensionSupported(Version) const.
+
+See @ref opengl-workarounds for concrete information about driver workarounds
+used. If @ref Version::None is passed to the constructor, none of the above
+defines are added.
 
 @section GL-Shader-errors Compilation error reporting
 
@@ -64,8 +98,9 @@ error location, usually in a form `<file>(<line>):` or `<file>:<line>:`.
     Unfortunately GLSL only allows specifying a file *number*, not a name.
 
 Source number `0` is a @glsl #version @ce directive added in the constructor
-(unless @ref Version::None is specified). which means the first added source
-has a number `1`.
+together with potential workaround defines listed above, which means the first
+added source has a number `1`. If @ref Version::None is specified, the first
+added source has a number `0` instead.
 
 @section GL-Shader-performance-optimizations Performance optimizations
 
@@ -789,6 +824,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         /* Used by addSource() / addFile(), see there for details */
         bool _offsetLineByOneOnOldGlsl;
         #endif
+        UnsignedByte _fileIndexOffset;
 
         Containers::Array<Containers::String> _sources;
 };

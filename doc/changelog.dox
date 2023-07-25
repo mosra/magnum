@@ -556,6 +556,9 @@ See also:
 -   @ref GL::Renderer::Feature::DepthClamp is now exposed on OpenGL ES as well,
     using the @gl_extension{EXT,depth_clamp} extension
 -   Added @ref GL::Shader::wrap() and @relativeref{GL::Shader,release()}
+-   @ref GL::Shader now adds defines for driver workarounds that affect shader
+    code. Until now this was done only internally for builtin shaders, now it's
+    done for all.
 -   New @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DRAW_IMPLEMENTATION() and
     @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION()
     macros for easier and more robust implementation of method chaining in

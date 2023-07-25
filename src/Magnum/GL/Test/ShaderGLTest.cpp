@@ -25,6 +25,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/Containers/StringStl.h> /* StringHasPrefix / StringHasSuffix */
@@ -127,14 +128,13 @@ void ShaderGLTest::construct() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(shader.id() > 0);
         CORRADE_COMPARE(shader.type(), Shader::Type::Fragment);
+        /* There may be various workaround defines after, so check just that
+           the first source is the version definition */
+        CORRADE_VERIFY(!shader.sources().isEmpty());
         #ifndef MAGNUM_TARGET_GLES
-        CORRADE_COMPARE_AS(shader.sources(),
-            Containers::StringIterable{"#version 130\n"},
-            TestSuite::Compare::Container);
+        CORRADE_COMPARE(shader.sources()[0], "#version 130\n");
         #else
-        CORRADE_COMPARE_AS(shader.sources(),
-            Containers::StringIterable{"#version 300 es\n"},
-            TestSuite::Compare::Container);
+        CORRADE_COMPARE(shader.sources()[0], "#version 300 es\n");
         #endif
     }
 
@@ -162,14 +162,13 @@ void ShaderGLTest::constructMove() {
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.type(), Shader::Type::Fragment);
+    /* There may be various workaround defines after, so check just that the
+       first source is the version definition */
+    CORRADE_VERIFY(!b.sources().isEmpty());
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(b.sources(),
-        Containers::StringIterable{"#version 130\n"},
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE(b.sources()[0], "#version 130\n");
     #else
-    CORRADE_COMPARE_AS(b.sources(),
-        Containers::StringIterable{"#version 300 es\n"},
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE(b.sources()[0], "#version 300 es\n");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -185,14 +184,13 @@ void ShaderGLTest::constructMove() {
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.type(), Shader::Type::Fragment);
+    /* There may be various workaround defines after, so check just that the
+       first source is the version definition */
+    CORRADE_VERIFY(!c.sources().isEmpty());
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(c.sources(),
-        Containers::StringIterable{"#version 130\n"},
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE(c.sources()[0], "#version 130\n");
     #else
-    CORRADE_COMPARE_AS(c.sources(),
-        Containers::StringIterable{"#version 300 es\n"},
-        TestSuite::Compare::Container);
+    CORRADE_COMPARE(c.sources()[0], "#version 300 es\n");
     #endif
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Shader>::value);
@@ -245,6 +243,14 @@ void ShaderGLTest::addSource() {
     Shader shader(Version::GLES200, Shader::Type::Fragment);
     #endif
 
+    /* The initial shader sources contain driver-specific workarounds, so
+       just copy them to the expected array */
+    /** @todo some StringIterable slicing during comparison instead of this? */
+    Containers::Array<Containers::StringView> expected;
+    for(Containers::StringView i: shader.sources())
+        arrayAppend(expected, i);
+    const UnsignedInt workaroundCount = expected.size() - 1;
+
     const char* data = "// r-value String\n";
 
     shader.addSource("// global, null-terminated\n"_s)
@@ -262,12 +268,7 @@ void ShaderGLTest::addSource() {
     #else
     #define _zero " 1 "
     #endif
-    Containers::StringView expected[]{
-        #ifndef MAGNUM_TARGET_GLES
-        "#version 120\n",                   // 0
-        #else
-        "#version 100\n",                   // 0
-        #endif
+    Containers::StringView expectedSuffix[]{
         "#line" _zero "1\n",
         "// global, null-terminated\n",     // 2
         "#line" _zero "2\n",
@@ -283,25 +284,30 @@ void ShaderGLTest::addSource() {
         "void main() {}\n"                  // 12
     };
     #undef _zero
+    arrayAppend(expected, expectedSuffix);
+
     CORRADE_COMPARE_AS(shader.sources(),
         Containers::StringIterable{expected},
         TestSuite::Compare::Container);
 
     /* Verify that strings get copied only when not null terminated or not
-       global, and when not moved */
+       global, and when not moved. Exclude the workaround defines added at the
+       front when comparing. */
     for(std::size_t i: {0, 2, 12}) {
         CORRADE_ITERATION(i);
-        CORRADE_COMPARE(shader.sources()[i].flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+        CORRADE_COMPARE(shader.sources()[i + workaroundCount].flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
     }
     for(std::size_t i: {1, 3, 4, 5, 6, 7, 8, 9, 10, 11}) {
         CORRADE_ITERATION(i);
-        CORRADE_COMPARE(shader.sources()[i].flags(), Containers::StringViewFlag::NullTerminated);
+        CORRADE_COMPARE(shader.sources()[i + workaroundCount].flags(), Containers::StringViewFlag::NullTerminated);
     }
-    CORRADE_VERIFY(shader.sources()[10].data() == data);
+    CORRADE_VERIFY(shader.sources()[10 + workaroundCount].data() == data);
 }
 
 void ShaderGLTest::addSourceNoVersion() {
     Shader shader(Version::None, Shader::Type::Fragment);
+
+    /* Unlike above, the initial shader sources are empty in this case */
 
     #ifndef MAGNUM_TARGET_GLES
     shader.addSource("#version 120\n"_s);
@@ -354,28 +360,33 @@ void ShaderGLTest::addFile() {
     Shader shader(Version::GLES200, Shader::Type::Fragment);
     #endif
 
+    /* The initial shader sources contain driver-specific workarounds, so
+       just copy them to the expected array */
+    /** @todo some StringIterable slicing during comparison instead of this? */
+    Containers::Array<Containers::StringView> expected;
+    for(Containers::StringView i: shader.sources())
+        arrayAppend(expected, i);
+    const UnsignedInt workaroundCount = expected.size() - 1;
+
     shader.addFile(Utility::Path::join(SHADERGLTEST_FILES_DIR, "shader.glsl"));
 
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(shader.sources(), (Containers::StringIterable{
-        "#version 120\n",
+    arrayAppend(expected, {
+        #ifndef MAGNUM_TARGET_GLES
         /* On (desktop) GLSL < 330 the #line affect next line, not current
            line; see compileFailure() for a correctness verification */
         "#line 0 1\n",
-        "void main() {}\n"
-    }), TestSuite::Compare::Container);
-    #else
-    CORRADE_COMPARE_AS(shader.sources(), (Containers::StringIterable{
-        "#version 100\n",
+        #else
         "#line 1 1\n",
+        #endif
         "void main() {}\n"
-    }), TestSuite::Compare::Container);
-    #endif
+    });
+    CORRADE_COMPARE_AS(shader.sources(), expected,
+        TestSuite::Compare::Container);
 
     /* The file source and the line number isn't global */
-    CORRADE_COMPARE(shader.sources()[0].flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
-    CORRADE_COMPARE(shader.sources()[1].flags(), Containers::StringViewFlag::NullTerminated);
-    CORRADE_COMPARE(shader.sources()[2].flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(shader.sources()[0 + workaroundCount].flags(), Containers::StringViewFlag::NullTerminated|Containers::StringViewFlag::Global);
+    CORRADE_COMPARE(shader.sources()[1 + workaroundCount].flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(shader.sources()[2 + workaroundCount].flags(), Containers::StringViewFlag::NullTerminated);
 }
 
 void ShaderGLTest::addFileNonexistent() {
