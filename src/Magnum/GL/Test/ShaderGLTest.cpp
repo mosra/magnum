@@ -481,7 +481,11 @@ void ShaderGLTest::compileFailure() {
     CORRADE_COMPARE_AS(out.str(), "11", TestSuite::Compare::StringNotContains);
     {
         #ifndef MAGNUM_TARGET_WEBGL
-        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa,
+        /* Fixed in 23.1.4, https://gitlab.freedesktop.org/mesa/mesa/-/commit/d5ff432d7d08c8bb644594ccf28b83be4b521ffe
+           Since I don't have any builtin way to compare version strings yet,
+           XFAILing only optionally, if it actually doesn't contain the
+           string. */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::Mesa && !Containers::StringView{out.str()}.contains("12"),
             "Mesa reports source number only in some cases.");
         #endif
         CORRADE_COMPARE_AS(out.str(), "12", TestSuite::Compare::StringContains);
