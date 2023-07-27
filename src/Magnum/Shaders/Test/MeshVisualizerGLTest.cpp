@@ -4581,8 +4581,9 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderObjectV
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags2D & (MeshVisualizerGL2D::Flag::TextureTransformation|MeshVisualizerGL2D::Flag::TextureArrays) ? 4 : 3))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -4796,8 +4797,9 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderObjectV
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags3D & (MeshVisualizerGL3D::Flag::TextureTransformation|MeshVisualizerGL3D::Flag::TextureArrays) ? 5 : 4))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -5290,8 +5292,9 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 4)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.jointCount ? 4 : 3))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -5451,8 +5454,9 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderSkinnin
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 4)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.jointCount ? 5 : 4))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -5613,8 +5617,9 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & MeshVisualizerGL2D::Flag::TextureTransformation ? 3 : 4))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -5911,7 +5916,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
         #endif
 
         /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) <  (data.flags & MeshVisualizerGL3D::Flag::TextureTransformation ? 5 : 4))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -6239,8 +6244,9 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 4)
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -6396,8 +6402,9 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 5)
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     } else
     #endif
@@ -6571,8 +6578,9 @@ void MeshVisualizerGLTest::renderMulti2D() {
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & MeshVisualizerGL2D::Flag::TextureTransformation ? 4 : 3))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
@@ -6910,8 +6918,9 @@ void MeshVisualizerGLTest::renderMulti3D() {
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 3)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < (data.flags & MeshVisualizerGL3D::Flag::TextureTransformation ? 5 : 4))
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
@@ -7253,7 +7262,8 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe2D() {
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
         if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 4)
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
@@ -7503,8 +7513,9 @@ void MeshVisualizerGLTest::renderMultiSkinningWireframe3D() {
             CORRADE_SKIP(GL::Version::GLES310 << "is not supported.");
         #endif
 
-        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders */
-        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 4)
+        /* Some drivers (ARM Mali-G71) don't support SSBOs in vertex shaders,
+           some others (Qualcomm Adreno 730) support just 4 blocks */
+        if(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) < 5)
             CORRADE_SKIP("Only" << GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex) << "shader storage blocks supported in vertex shaders.");
     }
     #endif
