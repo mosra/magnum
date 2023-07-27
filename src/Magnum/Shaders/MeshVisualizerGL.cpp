@@ -420,7 +420,15 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::setWireframeWidth(const Float width)
     #endif
     CORRADE_ASSERT(_flags & FlagBase::Wireframe,
         "Shaders::MeshVisualizerGL::setWireframeWidth(): the shader was not created with wireframe enabled", *this);
-    setUniform(_wireframeWidthUniform, width);
+    /* Right now, a GS-less wireframe rendering isn't able to change wireframe
+       width. The uniform is thus DCE'd in the shader, and with explicit
+       uniform location this would call setUniform(3, width) instead of -1
+       which is a GL error in certain drivers (such as Qualcomm Adreno), even
+       though the location was actually there, just DCE'd. Thus skip it
+       altogether. */
+    /** @todo actually implement wireframe width for GS-less rendering */
+    if(!(_flags & FlagBase::NoGeometryShader))
+        setUniform(_wireframeWidthUniform, width);
     return *this;
 }
 
@@ -826,8 +834,15 @@ MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D
                 _colorUniform = uniformLocation("color"_s);
             if(flags() & Flag::Wireframe) {
                 _wireframeColorUniform = uniformLocation("wireframeColor"_s);
-                _wireframeWidthUniform = uniformLocation("wireframeWidth"_s);
-                _smoothnessUniform = uniformLocation("smoothness"_s);
+                /* Right now, a GS-less wireframe rendering isn't able to
+                   change wireframe width or smoothness, the uniforms are thus DCE'd in the shader and querying them would print a
+                   warning. */
+                /** @todo actually implement wireframe width + smoothness for
+                    GS-less rendering */
+                if(!(flags() & Flag::NoGeometryShader)) {
+                    _wireframeWidthUniform = uniformLocation("wireframeWidth"_s);
+                    _smoothnessUniform = uniformLocation("smoothness"_s);
+                }
             }
             #ifndef MAGNUM_TARGET_GLES2
             if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
@@ -956,7 +971,15 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::setSmoothness(const Float smoothness) {
        asserting in this case. */
     CORRADE_ASSERT(flags() & Flag::Wireframe,
         "Shaders::MeshVisualizerGL2D::setSmoothness(): the shader was not created with wireframe enabled", *this);
-    setUniform(_smoothnessUniform, smoothness);
+    /* Right now, a GS-less wireframe rendering isn't able to change wireframe
+       smoothness. The uniform is thus DCE'd in the shader, and with explicit
+       uniform location this would call setUniform(3, width) instead of -1
+       which is a GL error in certain drivers (such as Qualcomm Adreno), even
+       though the location was actually there, just DCE'd. Thus skip it
+       altogether. */
+    /** @todo actually implement wireframe smoothness for GS-less rendering */
+    if(!(_flags & FlagBase::NoGeometryShader))
+        setUniform(_smoothnessUniform, smoothness);
     return *this;
 }
 
@@ -1377,14 +1400,26 @@ MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D
                 _colorUniform = uniformLocation("color"_s);
             if(flags() & Flag::Wireframe) {
                 _wireframeColorUniform = uniformLocation("wireframeColor"_s);
-                _wireframeWidthUniform = uniformLocation("wireframeWidth"_s);
+                /* Right now, a GS-less wireframe rendering isn't able to
+                   change wireframe width or smoothness, the uniforms are thus DCE'd in the shader and querying them would print a
+                   warning. */
+                /** @todo actually implement wireframe width + smoothness for
+                    GS-less rendering */
+                if(!(flags() & Flag::NoGeometryShader))
+                    _wireframeWidthUniform = uniformLocation("wireframeWidth"_s);
             }
             if(flags() & (Flag::Wireframe
                 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
                 |Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection
                 #endif
             )) {
-                _smoothnessUniform = uniformLocation("smoothness"_s);
+                /* Right now, a GS-less wireframe rendering isn't able to
+                   change wireframe width or smoothness, the uniforms are thus DCE'd in the shader and querying them would print a
+                   warning. */
+                /** @todo actually implement wireframe width + smoothness for
+                    GS-less rendering */
+                if(!(flags() & Flag::NoGeometryShader))
+                    _smoothnessUniform = uniformLocation("smoothness"_s);
             }
             #ifndef MAGNUM_TARGET_GLES2
             if(flags() & (Flag::ObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
@@ -1588,7 +1623,15 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::setSmoothness(const Float smoothness) {
     CORRADE_ASSERT(flags() & allowed,
         "Shaders::MeshVisualizerGL3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled", *this);
     #endif
-    setUniform(_smoothnessUniform, smoothness);
+    /* Right now, a GS-less wireframe rendering isn't able to change wireframe
+       smoothness. The uniform is thus DCE'd in the shader, and with explicit
+       uniform location this would call setUniform(3, width) instead of -1
+       which is a GL error in certain drivers (such as Qualcomm Adreno), even
+       though the location was actually there, just DCE'd. Thus skip it
+       altogether. */
+    /** @todo actually implement wireframe smoothness for GS-less rendering */
+    if(!(_flags & FlagBase::NoGeometryShader))
+        setUniform(_smoothnessUniform, smoothness);
     return *this;
 }
 
