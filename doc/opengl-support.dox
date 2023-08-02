@@ -564,11 +564,10 @@ Extension                                   | Status
 @webgl_extension{EXT,float_blend}           | |
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
-@webgl_extension{EXT,clip_cull_distance}    | done
 @webgl_extension{EXT,texture_norm16}        | done
-@webgl_extension{EXT,draw_buffers_indexed}  | done
 @webgl_extension{KHR,parallel_shader_compile} | done
 @webgl_extension{OES,texture_float_linear}  | done
+@webgl_extension{OES,draw_buffers_indexed} \n (originally named `EXT_draw_buffers_indexed`) | done
 @webgl_extension{OVR,multiview2}            | |
 @webgl_extension{WEBGL,lose_context}        | |
 @webgl_extension{WEBGL,debug_renderer_info} | done
@@ -580,6 +579,7 @@ Extension                                   | Status
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
 @webgl_extension{WEBGL,multi_draw}          | done
 @webgl_extension{WEBGL,blend_equation_advanced_coherent} | done
+@webgl_extension{WEBGL,clip_cull_distance} \n (originally named `EXT_clip_cull_distance`) | done
 @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | done
 @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | done
 

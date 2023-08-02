@@ -118,7 +118,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -141,7 +142,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -164,7 +166,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -187,7 +190,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -210,7 +214,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -233,7 +238,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -256,7 +262,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -279,7 +286,8 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{APPLE,clip_distance} or
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
-             *      @webgl_extension{EXT,clip_cull_distance}
+             *      @webgl_extension{WEBGL,clip_cull_distance} (originally
+             *      named `EXT_clip_cull_distance`)
              * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -557,7 +565,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl30 Extension @gl_extension{EXT,draw_buffers2}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void enable(Feature feature, UnsignedInt drawBuffer);
         #endif
@@ -583,7 +592,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl30 Extension @gl_extension{EXT,draw_buffers2}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void disable(Feature feature, UnsignedInt drawBuffer);
         #endif
@@ -613,7 +623,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl30 Extension @gl_extension{EXT,draw_buffers2}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void setFeature(Feature feature, UnsignedInt drawBuffer, bool enabled);
         #endif
@@ -1003,8 +1014,9 @@ class MAGNUM_GL_EXPORT Renderer {
          * OpenGL calls. If neither OpenGL 3.0 nor
          * @gl_extension{APPLE,clip_distance} /
          * @gl_extension{EXT,clip_cull_distance} ES extension nor
-         * @webgl_extension{EXT,clip_cull_distance} WebGL extension is
-         * available, returns @cpp 0 @ce.
+         * @webgl_extension{WEBGL,clip_cull_distance} WebGL extension
+         * (originally named `EXT_clip_cull_distance`) is available, returns
+         * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_CLIP_DISTANCES}
          * @requires_webgl20 Not defined in WebGL 1.0 builds.
          */
@@ -1019,8 +1031,9 @@ class MAGNUM_GL_EXPORT Renderer {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither @gl_extension{ARB,cull_distance} (part of
          * OpenGL 4.5) nor @gl_extension{EXT,clip_cull_distance} ES /
-         * @webgl_extension{EXT,clip_cull_distance} WebGL extension is
-         * available, returns @cpp 0 @ce.
+         * @webgl_extension{WEBGL,clip_cull_distance} WebGL extension
+         * (originally named `EXT_clip_cull_distance`) is available, returns
+         * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_CULL_DISTANCES}
          * @requires_gles30 Not defined in OpenGL ES 2.0 builds.
          * @requires_webgl20 Not defined in WebGL 1.0 builds.
@@ -1034,8 +1047,9 @@ class MAGNUM_GL_EXPORT Renderer {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither @gl_extension{ARB,cull_distance} (part of
          * OpenGL 4.5) nor @gl_extension{EXT,clip_cull_distance} ES /
-         * @webgl_extension{EXT,clip_cull_distance} WebGL extension is
-         * available, returns @cpp 0 @ce.
+         * @webgl_extension{WEBGL,clip_cull_distance} WebGL extension
+         * (originally named `EXT_clip_cull_distance`) is available, returns
+         * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_COMBINED_CLIP_AND_CULL_DISTANCES}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_webgl20 Not defined in WebGL 1.0 builds.
@@ -1342,7 +1356,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl30 Extension @gl_extension{EXT,draw_buffers2}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void setColorMask(UnsignedInt drawBuffer, GLboolean allowRed, GLboolean allowGreen, GLboolean allowBlue, GLboolean allowAlpha);
         #endif
@@ -1777,7 +1792,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl40 Extension @gl_extension{ARB,draw_buffers_blend}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void setBlendEquation(UnsignedInt drawBuffer, BlendEquation equation);
         #endif
@@ -1806,7 +1822,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl40 Extension @gl_extension{ARB,draw_buffers_blend}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void setBlendEquation(UnsignedInt drawBuffer, BlendEquation rgb, BlendEquation alpha);
         #endif
@@ -1858,7 +1875,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl40 Extension @gl_extension{ARB,draw_buffers_blend}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void setBlendFunction(UnsignedInt drawBuffer, BlendFunction source, BlendFunction destination);
         #endif
@@ -1893,7 +1911,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gl40 Extension @gl_extension{ARB,draw_buffers_blend}
          * @requires_gles32 Extension @gl_extension{EXT,draw_buffers_indexed}
          * @requires_webgl_extension WebGL 2.0 and extension
-         *      @webgl_extension{EXT,draw_buffers_indexed}
+         *      @webgl_extension{OES,draw_buffers_indexed} (originally named
+         *      `EXT_draw_buffers_indexed`)
          */
         static void setBlendFunction(UnsignedInt drawBuffer, BlendFunction sourceRgb, BlendFunction destinationRgb, BlendFunction sourceAlpha, BlendFunction destinationAlpha);
 

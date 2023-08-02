@@ -294,11 +294,17 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_norm16{},
     #endif
     Extensions::KHR::parallel_shader_compile{},
+    #ifndef MAGNUM_TARGET_GLES2
+    Extensions::OES::draw_buffers_indexed{},
+    #endif
     Extensions::OES::texture_float_linear{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::OVR::multiview2{},
     #endif
     Extensions::WEBGL::blend_equation_advanced_coherent{},
+    #ifndef MAGNUM_TARGET_GLES2
+    Extensions::WEBGL::clip_cull_distance{},
+    #endif
     Extensions::WEBGL::compressed_texture_astc{},
     Extensions::WEBGL::compressed_texture_etc{},
     Extensions::WEBGL::compressed_texture_pvrtc{},

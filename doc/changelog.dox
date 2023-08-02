@@ -570,6 +570,11 @@ See also:
     @ref MAGNUM_GL_ABSTRACTSHADERPROGRAM_SUBCLASS_DISPATCH_IMPLEMENTATION()
     macros for easier and more robust implementation of method chaining in
     @ref GL::AbstractShaderProgram subclasses
+-   Recognizing @webgl_extension{OES,draw_buffers_indexed} and
+    @webgl_extension{WEBGL,clip_cull_distance} WebGL extensions that were
+    renamed from `EXT_draw_buffers_indexed` and `EXT_clip_cull_distance` in
+    March 2020 and January 2023. The old names are still recognized and present
+    in @ref GL::Extensions for compatibility with older browsers.
 
 @subsubsection changelog-latest-changes-math Math library
 

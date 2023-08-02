@@ -300,10 +300,14 @@ namespace ANGLE {
     _extension(12,EXT,texture_compression_rgtc,     GLES200,    None) // #38
     _extension(13,EXT,texture_compression_bptc,     GLES200,    None) // #39
     #ifndef MAGNUM_TARGET_GLES2
+    /* This one was renamed to WEBGL_clip_cull_distance in January 2023,
+       recognizing both for compatibility: https://github.com/KhronosGroup/WebGL/commit/c06fc8230ce4b1748be89ce3279cbe5348c9c9c9 */
     _extension(14,EXT,clip_cull_distance,           GLES300,    None) // #43
     _extension(15,EXT,texture_norm16,               GLES300,    None) // #44
     #endif
     #ifndef MAGNUM_TARGET_GLES2
+    /* This one was renamed to OES_draw_buffers_indexed in March 2020,
+       recognizing both for compatibility: https://github.com/KhronosGroup/WebGL/commit/00b799a56c90f94c1f4cc402f33a281ed9f43e31 */
     _extension(16,EXT,draw_buffers_indexed,         GLES300,    None) // #45
     #endif
 } namespace KHR {
@@ -320,6 +324,11 @@ namespace ANGLE {
     #ifdef MAGNUM_TARGET_GLES2
     _extension(26,OES,texture_half_float_linear,    GLES200, GLES300) // #21
     _extension(27,OES,fbo_render_mipmap,            GLES200, GLES300) // #28
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    /* This one was renamed from EXT_draw_buffers_indexed in March 2020,
+       recognizing both for compatibility: https://github.com/KhronosGroup/WebGL/commit/00b799a56c90f94c1f4cc402f33a281ed9f43e31 */
+    _extension(28,OES,draw_buffers_indexed,         GLES300,    None) // #45
     #endif
 } namespace OVR {
     #ifndef MAGNUM_TARGET_GLES2
@@ -346,12 +355,17 @@ namespace ANGLE {
     _extension(42,WEBGL,multi_draw,                 GLES200,    None) // #40
     _extension(43,WEBGL,blend_equation_advanced_coherent,GLES200,None) // #42
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(44,WEBGL,draw_instanced_base_vertex_base_instance,GLES300,None) // #46
-    _extension(45,WEBGL,multi_draw_instanced_base_vertex_base_instance,GLES300,None) // #47
+    /* This one was renamed from EXT_clip_cull_distance in January 2023,
+       recognizing both for compatibility: https://github.com/KhronosGroup/WebGL/commit/c06fc8230ce4b1748be89ce3279cbe5348c9c9c9 */
+    _extension(44,WEBGL,clip_cull_distance,         GLES300,    None) // #43
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(45,WEBGL,draw_instanced_base_vertex_base_instance,GLES300,None) // #46
+    _extension(46,WEBGL,multi_draw_instanced_base_vertex_base_instance,GLES300,None) // #47
     #endif
 } namespace MAGNUM {
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(46,MAGNUM,shader_vertex_id,          GLES300, GLES300)
+    _extension(47,MAGNUM,shader_vertex_id,          GLES300, GLES300)
     #endif
 }
 #else
