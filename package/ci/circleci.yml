@@ -306,11 +306,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # In this case it gets stuck even with 20 jobs. Only on GCC, usually when
+    # In this case it gets stuck even with 16 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
-        count: 16
+        count: 8
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
@@ -368,11 +368,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
-    # In this case it gets stuck even with 20 jobs. Only on GCC, usually when
+    # In this case it gets stuck even with 16 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
-        count: 16
+        count: 8
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
@@ -394,11 +394,11 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
-    # In this case it gets stuck even with 20 jobs. Only on GCC, usually when
+    # In this case it gets stuck even with 16 jobs. Only on GCC, usually when
     # the huge TradeAbstractImporterTest / TradeMaterialDataTest get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
-        count: 16
+        count: 8
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
@@ -426,12 +426,12 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
-    # In this case it gets stuck even with 20 jobs, usually when the huge
+    # In this case it gets stuck even with 16 jobs, usually when the huge
     # TradeAbstractImporterTest / TradeMaterialDataTest / TradeSceneDataTest
     # get involved.
     # TODO: revisit when we get rid of more STL / deprecated includes
     - cap-ninja-jobs:
-        count: 16
+        count: 8
     - install-gcc-4_8
     - install-cmake:
         version: "3.5.2"
