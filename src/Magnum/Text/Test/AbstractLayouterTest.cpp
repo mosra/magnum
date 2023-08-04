@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/Text/AbstractFont.h"
@@ -34,10 +36,12 @@ struct AbstractLayouterTest: TestSuite::Tester {
     explicit AbstractLayouterTest();
 
     void renderGlyph();
+    void renderGlyphOutOfBounds();
 };
 
 AbstractLayouterTest::AbstractLayouterTest() {
-    addTests({&AbstractLayouterTest::renderGlyph});
+    addTests({&AbstractLayouterTest::renderGlyph,
+              &AbstractLayouterTest::renderGlyphOutOfBounds});
 }
 
 void AbstractLayouterTest::renderGlyph() {
@@ -76,6 +80,22 @@ void AbstractLayouterTest::renderGlyph() {
     CORRADE_COMPARE(textureCoords, Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}));
     CORRADE_COMPARE(cursorPosition, Vector2(7.0f, -1.0f));
     CORRADE_COMPARE(rectangle, Range2D({2.0f, 0.5f}, {6.1f, 3.0f}));
+}
+
+void AbstractLayouterTest::renderGlyphOutOfBounds() {
+    struct Layouter: AbstractLayouter {
+        explicit Layouter(): AbstractLayouter{3} {}
+
+        std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override { return {}; }
+    } layouter;
+
+    Range2D rectangle;
+    Vector2 cursorPosition;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    layouter.renderGlyph(3, cursorPosition, rectangle);
+    CORRADE_COMPARE(out.str(), "Text::AbstractLayouter::renderGlyph(): index 3 out of range for 3 glyphs\n");
 }
 
 }}}}

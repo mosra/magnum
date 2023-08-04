@@ -309,7 +309,7 @@ AbstractLayouter::AbstractLayouter(UnsignedInt glyphCount): _glyphCount(glyphCou
 AbstractLayouter::~AbstractLayouter() = default;
 
 std::pair<Range2D, Range2D> AbstractLayouter::renderGlyph(const UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle) {
-    CORRADE_ASSERT(i < glyphCount(), "Text::AbstractLayouter::renderGlyph(): glyph index out of bounds", {});
+    CORRADE_ASSERT(i < glyphCount(), "Text::AbstractLayouter::renderGlyph(): index" << i << "out of range for" << glyphCount() << "glyphs", {});
 
     /* Render the glyph */
     Range2D quadPosition, textureCoordinates;
