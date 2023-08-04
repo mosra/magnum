@@ -23,8 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <tuple>
-
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 
@@ -41,7 +39,7 @@ GlyphCacheGLTest::GlyphCacheGLTest() {
 }
 
 void GlyphCacheGLTest::initialize() {
-    Text::GlyphCache cache({1024, 2048});
+    GlyphCache cache{{1024, 2048}};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES

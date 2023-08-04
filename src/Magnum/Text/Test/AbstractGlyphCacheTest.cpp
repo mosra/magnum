@@ -71,13 +71,13 @@ struct DummyGlyphCache: AbstractGlyphCache {
 };
 
 void AbstractGlyphCacheTest::initialize() {
-    DummyGlyphCache cache({1024, 2048});
+    DummyGlyphCache cache{{1024, 2048}};
 
     CORRADE_COMPARE(cache.textureSize(), (Vector2i{1024, 2048}));
 }
 
 void AbstractGlyphCacheTest::access() {
-    DummyGlyphCache cache(Vector2i(236));
+    DummyGlyphCache cache{Vector2i(236)};
     Vector2i position;
     Range2Di rectangle;
 
@@ -108,14 +108,14 @@ void AbstractGlyphCacheTest::access() {
 }
 
 void AbstractGlyphCacheTest::reserve() {
-    DummyGlyphCache cache(Vector2i(236));
+    DummyGlyphCache cache{Vector2i(236)};
 
     /* Verify that this works for "empty" cache */
     CORRADE_VERIFY(!cache.reserve({{5, 3}}).empty());
 }
 
 void AbstractGlyphCacheTest::setImage() {
-    struct MyGlyphCache: AbstractGlyphCache {
+    struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -150,7 +150,7 @@ void AbstractGlyphCacheTest::setImageOutOfBounds() {
 }
 
 void AbstractGlyphCacheTest::image() {
-    struct MyGlyphCache: AbstractGlyphCache {
+    struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ImageDownload; }
@@ -166,7 +166,7 @@ void AbstractGlyphCacheTest::image() {
 void AbstractGlyphCacheTest::imageNotSupported() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    struct MyGlyphCache: AbstractGlyphCache {
+    struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
@@ -182,7 +182,7 @@ void AbstractGlyphCacheTest::imageNotSupported() {
 void AbstractGlyphCacheTest::imageNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    struct MyGlyphCache: AbstractGlyphCache {
+    struct: AbstractGlyphCache {
         using AbstractGlyphCache::AbstractGlyphCache;
 
         GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ImageDownload; }

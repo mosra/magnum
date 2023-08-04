@@ -47,49 +47,42 @@ struct AbstractFontConverterTest: TestSuite::Tester {
 
     void convertGlyphs();
 
+    void thingNotSupported();
+
     void exportFontToSingleData();
-    void exportFontToSingleDataNotSupported();
     void exportFontToSingleDataNotImplemented();
     void exportFontToSingleDataNotSingleFile();
     void exportFontToData();
-    void exportFontToDataNotSupported();
     void exportFontToDataNotImplemented();
     void exportFontToDataThroughSingleData();
     void exportFontToDataThroughSingleDataFailed();
     void exportFontToFile();
-    void exportFontToFileNotSupported();
     void exportFontToFileNotImplemented();
     void exportFontToFileThroughData();
     void exportFontToFileThroughDataFailed();
     void exportFontToFileThroughDataNotWritable();
 
     void exportGlyphCacheToSingleData();
-    void exportGlyphCacheToSingleDataNotSupported();
     void exportGlyphCacheToSingleDataNotImplemented();
     void exportGlyphCacheToSingleDataNotSingleFile();
     void exportGlyphCacheToData();
-    void exportGlyphCacheToDataNotSupported();
     void exportGlyphCacheToDataNotImplemented();
     void exportGlyphCacheToDataThroughSingleData();
     void exportGlyphCacheToDataThroughSingleDataFailed();
     void exportGlyphCacheToFile();
-    void exportGlyphCacheToFileNotSupported();
     void exportGlyphCacheToFileNotImplemented();
     void exportGlyphCacheToFileThroughData();
     void exportGlyphCacheToFileThroughDataFailed();
     void exportGlyphCacheToFileThroughDataNotWritable();
 
     void importGlyphCacheFromSingleData();
-    void importGlyphCacheFromSingleDataNotSupported();
     void importGlyphCacheFromSingleDataNotImplemented();
     void importGlyphCacheFromSingleDataNotSingleFile();
     void importGlyphCacheFromData();
     void importGlyphCacheFromDataNoData();
-    void importGlyphCacheFromDataNotSupported();
     void importGlyphCacheFromDataNotImplemented();
     void importGlyphCacheFromDataAsSingleData();
     void importGlyphCacheFromFile();
-    void importGlyphCacheFromFileNotSupported();
     void importGlyphCacheFromFileNotImplemented();
     void importGlyphCacheFromFileAsSingleData();
     void importGlyphCacheFromFileAsSingleDataNotFound();
@@ -103,49 +96,42 @@ struct AbstractFontConverterTest: TestSuite::Tester {
 AbstractFontConverterTest::AbstractFontConverterTest() {
     addTests({&AbstractFontConverterTest::convertGlyphs,
 
+              &AbstractFontConverterTest::thingNotSupported,
+
               &AbstractFontConverterTest::exportFontToSingleData,
-              &AbstractFontConverterTest::exportFontToSingleDataNotSupported,
               &AbstractFontConverterTest::exportFontToSingleDataNotImplemented,
               &AbstractFontConverterTest::exportFontToSingleDataNotSingleFile,
               &AbstractFontConverterTest::exportFontToData,
-              &AbstractFontConverterTest::exportFontToDataNotSupported,
               &AbstractFontConverterTest::exportFontToDataNotImplemented,
               &AbstractFontConverterTest::exportFontToDataThroughSingleData,
               &AbstractFontConverterTest::exportFontToDataThroughSingleDataFailed,
               &AbstractFontConverterTest::exportFontToFile,
-              &AbstractFontConverterTest::exportFontToFileNotSupported,
               &AbstractFontConverterTest::exportFontToFileNotImplemented,
               &AbstractFontConverterTest::exportFontToFileThroughData,
               &AbstractFontConverterTest::exportFontToFileThroughDataFailed,
               &AbstractFontConverterTest::exportFontToFileThroughDataNotWritable,
 
               &AbstractFontConverterTest::exportGlyphCacheToSingleData,
-              &AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSupported,
               &AbstractFontConverterTest::exportGlyphCacheToSingleDataNotImplemented,
               &AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSingleFile,
               &AbstractFontConverterTest::exportGlyphCacheToData,
-              &AbstractFontConverterTest::exportGlyphCacheToDataNotSupported,
               &AbstractFontConverterTest::exportGlyphCacheToDataNotImplemented,
               &AbstractFontConverterTest::exportGlyphCacheToDataThroughSingleData,
               &AbstractFontConverterTest::exportGlyphCacheToDataThroughSingleDataFailed,
               &AbstractFontConverterTest::exportGlyphCacheToFile,
-              &AbstractFontConverterTest::exportGlyphCacheToFileNotSupported,
               &AbstractFontConverterTest::exportGlyphCacheToFileNotImplemented,
               &AbstractFontConverterTest::exportGlyphCacheToFileThroughData,
               &AbstractFontConverterTest::exportGlyphCacheToFileThroughDataFailed,
               &AbstractFontConverterTest::exportGlyphCacheToFileThroughDataNotWritable,
 
               &AbstractFontConverterTest::importGlyphCacheFromSingleData,
-              &AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSupported,
               &AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented,
               &AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSingleFile,
               &AbstractFontConverterTest::importGlyphCacheFromData,
               &AbstractFontConverterTest::importGlyphCacheFromDataNoData,
-              &AbstractFontConverterTest::importGlyphCacheFromDataNotSupported,
               &AbstractFontConverterTest::importGlyphCacheFromDataNotImplemented,
               &AbstractFontConverterTest::importGlyphCacheFromDataAsSingleData,
               &AbstractFontConverterTest::importGlyphCacheFromFile,
-              &AbstractFontConverterTest::importGlyphCacheFromFileNotSupported,
               &AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented,
               &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleData,
               &AbstractFontConverterTest::importGlyphCacheFromFileAsSingleDataNotFound,
@@ -200,6 +186,37 @@ void AbstractFontConverterTest::convertGlyphs() {
     CORRADE_COMPARE(characters, U" 01Cab");
 }
 
+void AbstractFontConverterTest::thingNotSupported() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct: AbstractFontConverter {
+        FontConverterFeatures doFeatures() const override { return {}; }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.exportFontToSingleData(dummyFont, dummyGlyphCache, {});
+    converter.exportFontToData(dummyFont, dummyGlyphCache, "font.out", {});
+    converter.exportFontToFile(dummyFont, dummyGlyphCache, "file.out", {});
+    converter.exportGlyphCacheToSingleData(dummyGlyphCache);
+    converter.exportGlyphCacheToData(dummyGlyphCache, "cache.out");
+    converter.exportGlyphCacheToFile(dummyGlyphCache, "cache.out");
+    converter.importGlyphCacheFromSingleData({});
+    converter.importGlyphCacheFromData({{}});
+    converter.importGlyphCacheFromFile({});
+    CORRADE_COMPARE_AS(out.str(),
+        "Text::AbstractFontConverter::exportFontToSingleData(): feature not supported\n"
+        "Text::AbstractFontConverter::exportFontToData(): feature not supported\n"
+        "Text::AbstractFontConverter::exportFontToFile(): feature not supported\n"
+        "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): feature not supported\n"
+        "Text::AbstractFontConverter::exportGlyphCacheToData(): feature not supported\n"
+        "Text::AbstractFontConverter::exportGlyphCacheToFile(): feature not supported\n"
+        "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature not supported\n"
+        "Text::AbstractFontConverter::importGlyphCacheFromData(): feature not supported\n"
+        "Text::AbstractFontConverter::importGlyphCacheFromFile(): feature not supported\n",
+        TestSuite::Compare::String);
+}
+
 void AbstractFontConverterTest::exportFontToSingleData() {
     struct: AbstractFontConverter {
         FontConverterFeatures doFeatures() const override {
@@ -214,21 +231,6 @@ void AbstractFontConverterTest::exportFontToSingleData() {
     Containers::Array<char> out = converter.exportFontToSingleData(dummyFont, dummyGlyphCache, "euhh");
     CORRADE_COMPARE_AS(out, Containers::arrayView({'\xee', '\x03'}),
         TestSuite::Compare::Container);
-}
-
-void AbstractFontConverterTest::exportFontToSingleDataNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ExportFont;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.exportFontToSingleData(dummyFont, dummyGlyphCache, {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToSingleData(): feature not supported\n");
 }
 
 void AbstractFontConverterTest::exportFontToSingleDataNotImplemented() {
@@ -286,21 +288,6 @@ void AbstractFontConverterTest::exportFontToData() {
     CORRADE_COMPARE(ret[1].first, "font.out.dat");
     CORRADE_COMPARE_AS(ret[1].second, Containers::arrayView({'\xee'}),
         TestSuite::Compare::Container);
-}
-
-void AbstractFontConverterTest::exportFontToDataNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ExportFont;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.exportFontToData(dummyFont, dummyGlyphCache, "font.out", {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToData(): feature not supported\n");
 }
 
 void AbstractFontConverterTest::exportFontToDataNotImplemented() {
@@ -383,21 +370,6 @@ void AbstractFontConverterTest::exportFontToFile() {
         TestSuite::Compare::FileToString);
     CORRADE_COMPARE_AS(filename2,
         "\xfe\x02", TestSuite::Compare::FileToString);
-}
-
-void AbstractFontConverterTest::exportFontToFileNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ExportGlyphCache;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.exportFontToFile(dummyFont, dummyGlyphCache, "file.out", {});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportFontToFile(): feature not supported\n");
 }
 
 void AbstractFontConverterTest::exportFontToFileNotImplemented() {
@@ -506,21 +478,6 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
         TestSuite::Compare::Container);
 }
 
-void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ExportGlyphCache;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.exportGlyphCacheToSingleData(dummyGlyphCache);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): feature not supported\n");
-}
-
 void AbstractFontConverterTest::exportGlyphCacheToSingleDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -575,21 +532,6 @@ void AbstractFontConverterTest::exportGlyphCacheToData() {
     CORRADE_COMPARE(ret[1].first, "cache.out.dat");
     CORRADE_COMPARE_AS(ret[1].second, Containers::arrayView({'\xfe', '\xed'}),
         TestSuite::Compare::Container);
-}
-
-void AbstractFontConverterTest::exportGlyphCacheToDataNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ExportGlyphCache;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.exportGlyphCacheToData(dummyGlyphCache, "cache.out");
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToData(): feature not supported\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToDataNotImplemented() {
@@ -673,21 +615,6 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
         TestSuite::Compare::FileToString);
     CORRADE_COMPARE_AS(filename2,
         "\xfe\xed", TestSuite::Compare::FileToString);
-}
-
-void AbstractFontConverterTest::exportGlyphCacheToFileNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ExportFont;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.exportGlyphCacheToFile(dummyGlyphCache, "cache.out");
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::exportGlyphCacheToFile(): feature not supported\n");
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFileNotImplemented() {
@@ -795,21 +722,6 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
 }
 
-void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ImportGlyphCache;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.importGlyphCacheFromSingleData({});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature not supported\n");
-}
-
 void AbstractFontConverterTest::importGlyphCacheFromSingleDataNotImplemented() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -857,21 +769,6 @@ void AbstractFontConverterTest::importGlyphCacheFromData() {
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromData({{}, {{}, data}});
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
-}
-
-void AbstractFontConverterTest::importGlyphCacheFromDataNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ImportGlyphCache;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.importGlyphCacheFromData({{}});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromData(): feature not supported\n");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromDataNoData() {
@@ -944,21 +841,6 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
     Containers::Pointer<AbstractGlyphCache> cache = converter.importGlyphCacheFromFile(Utility::Path::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
-}
-
-void AbstractFontConverterTest::importGlyphCacheFromFileNotSupported() {
-    CORRADE_SKIP_IF_NO_ASSERT();
-
-    struct: AbstractFontConverter {
-        FontConverterFeatures doFeatures() const override {
-            return FontConverterFeature::ExportGlyphCache;
-        }
-    } converter;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    converter.importGlyphCacheFromFile({});
-    CORRADE_COMPARE(out.str(), "Text::AbstractFontConverter::importGlyphCacheFromFile(): feature not supported\n");
 }
 
 void AbstractFontConverterTest::importGlyphCacheFromFileNotImplemented() {

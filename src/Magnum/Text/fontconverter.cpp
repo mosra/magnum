@@ -162,21 +162,21 @@ int FontConverter::exec() {
         Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
 
     /* Load font */
-    PluginManager::Manager<Text::AbstractFont> fontManager{
+    PluginManager::Manager<AbstractFont> fontManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Text::AbstractFont::pluginSearchPaths().back()).second())};
-    Containers::Pointer<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFont::pluginSearchPaths().back()).second())};
+    Containers::Pointer<AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
     /* Register the image converter manager for potential dependencies
        (MagnumFontConverter needs TgaImageConverter, for example) */
-    PluginManager::Manager<Text::AbstractFontConverter> converterManager{
+    PluginManager::Manager<AbstractFontConverter> converterManager{
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Text::AbstractFontConverter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFontConverter::pluginSearchPaths().back()).second())};
     converterManager.registerExternalManager(imageConverterManager);
 
     /* Load font converter */
-    Containers::Pointer<Text::AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+    Containers::Pointer<AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 
     /* Open font */
@@ -186,11 +186,11 @@ int FontConverter::exec() {
     }
 
     /* Create distance field glyph cache if radius is specified */
-    Containers::Pointer<Text::GlyphCache> cache;
+    Containers::Pointer<GlyphCache> cache;
     if(!args.value<Vector2i>("output-size").isZero()) {
         Debug() << "Populating distance field glyph cache...";
 
-        cache.reset(new Text::DistanceFieldGlyphCache(
+        cache.reset(new DistanceFieldGlyphCache(
             args.value<Vector2i>("atlas-size"),
             args.value<Vector2i>("output-size"),
             args.value<Int>("radius")));
@@ -199,7 +199,7 @@ int FontConverter::exec() {
     } else {
         Debug() << "Zero-size distance field output specified, populating normal glyph cache...";
 
-        cache.reset(new Text::GlyphCache(args.value<Vector2i>("atlas-size")));
+        cache.reset(new GlyphCache(args.value<Vector2i>("atlas-size")));
     }
 
     /* Fill the cache */

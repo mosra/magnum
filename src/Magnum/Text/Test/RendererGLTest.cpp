@@ -54,7 +54,7 @@ RendererGLTest::RendererGLTest() {
               &RendererGLTest::multiline});
 }
 
-class TestLayouter: public Text::AbstractLayouter {
+class TestLayouter: public AbstractLayouter {
     public:
         explicit TestLayouter(Float size, std::size_t glyphCount): AbstractLayouter(glyphCount), _size(size) {}
 
@@ -70,7 +70,7 @@ class TestLayouter: public Text::AbstractLayouter {
         Float _size;
 };
 
-class TestFont: public Text::AbstractFont {
+class TestFont: public AbstractFont {
     FontFeatures doFeatures() const override { return FontFeature::OpenData; }
 
     bool doIsOpened() const override { return true; }
@@ -94,7 +94,7 @@ void RendererGLTest::renderData() {
     std::vector<Vector2> textureCoordinates;
     std::vector<UnsignedInt> indices;
     Range2D bounds;
-    std::tie(positions, textureCoordinates, indices, bounds) = Text::AbstractRenderer::render(font, nullGlyphCache, 0.25f, "abc", Alignment::MiddleRightIntegral);
+    std::tie(positions, textureCoordinates, indices, bounds) = AbstractRenderer::render(font, nullGlyphCache, 0.25f, "abc", Alignment::MiddleRightIntegral);
 
     /* Three glyphs, three quads -> 12 vertices, 18 indices */
     CORRADE_COMPARE(positions.size(), 12);
@@ -177,7 +177,7 @@ void RendererGLTest::renderMesh() {
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array},
         indexBuffer{GL::Buffer::TargetHint::ElementArray};
     Range2D bounds;
-    std::tie(mesh, bounds) = Text::Renderer3D::render(font, nullGlyphCache,
+    std::tie(mesh, bounds) = Renderer3D::render(font, nullGlyphCache,
         0.25f, "abc", vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw, Alignment::TopCenter);
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -229,7 +229,7 @@ void RendererGLTest::renderMeshIndexType() {
        texture coordinates, each float is four bytes; six indices per glyph. */
 
     /* 8-bit indices (exactly 256 vertices) */
-    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
+    std::tie(mesh, std::ignore) = Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesByte = indexBuffer.data();
@@ -243,7 +243,7 @@ void RendererGLTest::renderMeshIndexType() {
         }), TestSuite::Compare::Container);
 
     /* 16-bit indices (260 vertices) */
-    std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
+    std::tie(mesh, std::ignore) = Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesShort = indexBuffer.data();
@@ -271,7 +271,7 @@ void RendererGLTest::mutableText() {
     #endif
 
     TestFont font;
-    Text::Renderer2D renderer(font, nullGlyphCache, 0.25f);
+    Renderer2D renderer(font, nullGlyphCache, 0.25f);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
     CORRADE_COMPARE(renderer.fontSize(), 0.25f);
@@ -326,7 +326,7 @@ void RendererGLTest::mutableText() {
 }
 
 void RendererGLTest::multiline() {
-    class Layouter: public Text::AbstractLayouter {
+    class Layouter: public AbstractLayouter {
         public:
             explicit Layouter(UnsignedInt glyphCount): AbstractLayouter(glyphCount) {}
 
@@ -336,7 +336,7 @@ void RendererGLTest::multiline() {
             }
     };
 
-    class Font: public Text::AbstractFont {
+    class Font: public AbstractFont {
         public:
             explicit Font(): _opened(false) {}
 
@@ -366,7 +366,7 @@ void RendererGLTest::multiline() {
     Range2D rectangle;
     std::vector<UnsignedInt> indices;
     std::vector<Vector2> positions, textureCoordinates;
-    std::tie(positions, textureCoordinates, indices, rectangle) = Text::Renderer2D::render(font,
+    std::tie(positions, textureCoordinates, indices, rectangle) = Renderer2D::render(font,
         nullGlyphCache, 2.0f, "abcd\nef\n\nghi", Alignment::MiddleCenter);
 
     /* We're rendering text at 2.0f size and the font is scaled to 0.3f, so the

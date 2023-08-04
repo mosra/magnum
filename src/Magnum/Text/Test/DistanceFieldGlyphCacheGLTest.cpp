@@ -39,7 +39,7 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
 }
 
 void DistanceFieldGlyphCacheGLTest::initialize() {
-    Text::DistanceFieldGlyphCache cache({1024, 2048}, {256, 256}, 16);
+    DistanceFieldGlyphCache cache{{1024, 2048}, {256, 256}, 16};
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES

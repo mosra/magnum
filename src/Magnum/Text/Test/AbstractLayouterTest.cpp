@@ -41,16 +41,14 @@ AbstractLayouterTest::AbstractLayouterTest() {
 }
 
 void AbstractLayouterTest::renderGlyph() {
-    class Layouter: public AbstractLayouter {
-        public:
-            explicit Layouter(): AbstractLayouter(3) {}
+    struct Layouter: AbstractLayouter {
+        explicit Layouter(): AbstractLayouter{3} {}
 
-        private:
-            std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
-                return std::make_tuple(Range2D({1.0f, 0.5f}, {1.1f, 1.0f}),
-                                       Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}),
-                                       Vector2(2.0f, -1.0f));
-            }
+        std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
+            return std::make_tuple(Range2D({1.0f, 0.5f}, {1.1f, 1.0f}),
+                                   Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}),
+                                   Vector2(2.0f, -1.0f));
+        }
     };
 
     /* Rectangle of zero size shouldn't be merged, but replaced */
