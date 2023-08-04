@@ -709,14 +709,27 @@ duplicates from all meshes before saving them to the output:
 
 @section Trade-AbstractSceneConverter-data-dependency Data dependency
 
-The instances returned from various functions *by design* have no dependency on
-the converter instance and neither on the dynamic plugin module. In other
-words, you don't need to keep the converter instance (or the plugin manager
-instance) around in order to have the `*Data` instances valid. Moreover, all
-@ref Corrade::Containers::Array instances returned through @ref MeshData and
-others are only allowed to have default deleters --- this is to avoid potential
-dangling function pointer calls when destructing such instances after the
-plugin module has been unloaded.
+The @ref MeshData instances returned from various functions *by design* have no
+dependency on the converter instance and neither on the dynamic plugin module.
+In other words, you don't need to keep the converter instance (or the plugin
+manager instance) around in order to have the @ref MeshData instances valid.
+Moreover, all @relativeref{Corrade,Containers::Array} instances returned either
+directly or through @ref MeshData are only allowed to have default deleters ---
+this is to avoid potential dangling function pointer calls when destructing
+such instances after the plugin module has been unloaded.
+
+In comparison, the @ref AbstractImporter instances returned from @ref end()
+have a code dependency on the dynamic plugin module --- since their
+implementation is in the plugin module itself, the plugin can't be unloaded
+until the returned instance is destroyed. They don't have a data dependency on
+the converter instance however, so they can outlive it.
+
+Some converter implementations may point @ref MeshData::importerState() to some
+internal state in the converter instance, but in that case the relation is
+* *weak* --- these will be valid only as long as the particular converter
+documents, usually either until the next conversion is performed or until the
+converter is destroyed. After that, the state pointers become dangling, and
+that's fine as long as you don't access them.
 
 @section Trade-AbstractSceneConverter-subclassing Subclassing
 

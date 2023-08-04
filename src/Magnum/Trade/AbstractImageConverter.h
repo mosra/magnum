@@ -569,15 +569,21 @@ details and a usage example.
 
 @section Trade-AbstractImageConverter-data-dependency Data dependency
 
-The instances returned from various functions *by design* have no dependency on
-the converter instance and neither on the dynamic plugin module. In other
-words, you don't need to keep the converter instance (or the plugin manager
-instance) around in order to have the `*Data` instances valid. Moreover, all
-returned @relativeref{Corrade,Containers::Array} instances and
-@relativeref{Corrade,Containers::Array} instances returned through
-@ref ImageData are only allowed to have default deleters --- this is to avoid
-potential dangling function pointer calls when destructing such instances after
-the plugin module has been unloaded.
+The @ref ImageData instances returned from various functions *by design* have
+no dependency on the converter instance and neither on the dynamic plugin
+module. In other words, you don't need to keep the converter instance (or the
+plugin manager instance) around in order to have the @ref ImageData instances
+valid. Moreover, all returned @relativeref{Corrade,Containers::Array} instances
+returned either directly or through @ref ImageData are only allowed to have
+default deleters --- this is to avoid potential dangling function pointer calls
+when destructing such instances after the plugin module has been unloaded.
+
+Some converter implementations may point @ref ImageData::importerState() to
+some internal state in the converter instance, but in that case the relation is
+* *weak* --- these will be valid only as long as the particular converter
+documents, usually either until the next conversion is performed or until the
+converter is destroyed. After that, the state pointers become dangling, and
+that's fine as long as you don't access them.
 
 @section Trade-AbstractImageConverter-subclassing Subclassing
 

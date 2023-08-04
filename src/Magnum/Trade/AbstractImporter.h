@@ -410,8 +410,8 @@ You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
 -   The @ref doOpenData(), @ref doOpenFile() and @ref doOpenState() functions
-    are called after the previous file was closed, function @ref doClose() is
-    called only if there is any file opened.
+    are called after the previous file was closed, @ref doClose() is called
+    only if there is any file opened.
 -   The @ref doOpenData() function is called only if
     @ref ImporterFeature::OpenData is supported.
 -   The @ref doOpenState() function is called only if
@@ -725,11 +725,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Close currently opened file
          *
-         * On particular implementations an explicit call to this function may
-         * result in freed memory. This call is also done automatically when
-         * the importer gets destructed or when another file is opened. If no
-         * file is opened, does nothing. After this function is called,
-         * @ref isOpened() is guaranteed to return @cpp false @ce.
+         * On certain implementations an explicit call to this function when
+         * the file is no longer needed but the importer is going to be reused
+         * further may result in freed memory. This call is also done
+         * automatically when the importer gets destructed or when another file
+         * is opened. If no file is opened, does nothing. After this function
+         * is called, @ref isOpened() is guaranteed to return @cpp false @ce.
          */
         void close();
 
