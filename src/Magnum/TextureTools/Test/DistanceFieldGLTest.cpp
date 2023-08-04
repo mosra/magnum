@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/Utility/Path.h>
@@ -78,12 +79,22 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
         Containers::String _testDir;
 };
 
+const struct {
+    const char* name;
+    Vector2i size;
+    Vector2i offset;
+} TestData[]{
+    {"", {64, 64}, {}},
+    {"with offset", {128, 96}, {64, 32}},
+};
+
 #ifdef MAGNUM_TARGET_GLES
 using namespace Containers::Literals; /* for SwiftShader detection */
 #endif
 
 DistanceFieldGLTest::DistanceFieldGLTest() {
-    addTests({&DistanceFieldGLTest::test});
+    addInstancedTests({&DistanceFieldGLTest::test},
+        Containers::arraySize(TestData));
 
     #ifndef MAGNUM_TARGET_WEBGL
     addBenchmarks({&DistanceFieldGLTest::benchmark}, 5, BenchmarkType::GpuTime);
@@ -114,6 +125,9 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
 }
 
 void DistanceFieldGLTest::test() {
+    auto&& data = TestData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
@@ -167,7 +181,7 @@ void DistanceFieldGLTest::test() {
     GL::Texture2D output;
     output.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
-        .setStorage(1, outputFormat, Vector2i{64});
+        .setStorage(1, outputFormat, data.size);
 
     TextureTools::DistanceField distanceField{32};
     CORRADE_COMPARE(distanceField.radius(), 32);
@@ -177,7 +191,8 @@ void DistanceFieldGLTest::test() {
     std::ostringstream out;
     {
         Error redirectError{&out};
-        distanceField(input, output, {{}, Vector2i{64}}
+        distanceField(input, output,
+            Range2Di::fromSize(data.offset, Vector2i{64})
             #ifdef MAGNUM_TARGET_GLES
             , inputImage->size()
             #endif
@@ -209,7 +224,7 @@ void DistanceFieldGLTest::test() {
     actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
     #endif
 
-    DebugTools::textureSubImage(output, 0, {{}, Vector2i{64}}, *actualOutputImage);
+    DebugTools::textureSubImage(output, 0, Range2Di::fromSize(data.offset, Vector2i{64}), *actualOutputImage);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -217,28 +232,17 @@ void DistanceFieldGLTest::test() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
-    /** @todo Do this via some TextureTools::pixelFormatTransform() */
-    if(actualOutputImage->format() == PixelFormat::RGBA8Unorm) {
-        /* Shrink the data */
-        Containers::ArrayView<const Color4ub> in = Containers::arrayCast<const Color4ub>(actualOutputImage->data());
-        Containers::ArrayView<UnsignedByte> out = Containers::arrayCast<UnsignedByte>(actualOutputImage->data());
-        for(std::size_t i = 0; i != in.size(); ++i) {
-            out[i] = in[i].r();
-        }
+    /* Use just the first channel if the format is RGBA */
+    Containers::StridedArrayView2D<UnsignedByte> pixels;
+    if(actualOutputImage->format() == PixelFormat::RGBA8Unorm)
+        pixels = actualOutputImage->pixels<Color4ub>().slice(&Color4ub::r);
+    else
+        pixels = actualOutputImage->pixels<UnsignedByte>();
 
-        actualOutputImage = Image2D{PixelFormat::R8Unorm, actualOutputImage->size(), actualOutputImage->release()};
-    }
-
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* In some cases actualOutputImage might have GL-specific format,
-       reinterpret as R8Unorm for the comparison to work */
-    if(actualOutputImage->format() == pixelFormatWrap(GL::PixelFormat::Red)) {
-        const Vector2i imageSize = actualOutputImage->size();
-        actualOutputImage = Image2D{actualOutputImage->storage(), PixelFormat::R8Unorm, imageSize, actualOutputImage->release()};
-    }
-    #endif
-
-    CORRADE_COMPARE_WITH(*actualOutputImage,
+    CORRADE_EXPECT_FAIL_IF(!data.offset.isZero(),
+        "Currently broken if a non-zero offset is used.");
+    CORRADE_COMPARE_WITH(
+        pixels,
         Utility::Path::join(_testDir, "output.tga"),
         /* Some mobile GPUs have slight (off-by-one) rounding errors compared
            to the ground truth, but it's just a very small amount of pixels
