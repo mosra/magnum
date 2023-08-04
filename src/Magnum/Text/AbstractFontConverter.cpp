@@ -104,7 +104,14 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
     CORRADE_ASSERT(features() >= (FontConverterFeature::ExportFont|FontConverterFeature::ConvertData),
         "Text::AbstractFontConverter::exportFontToData(): feature not supported", {});
 
-    return doExportFontToData(font, cache, filename, uniqueUnicode(characters));
+    std::vector<std::pair<std::string, Containers::Array<char>>> out = doExportFontToData(font, cache, filename, uniqueUnicode(characters));
+    #ifndef CORRADE_NO_ASSERT
+    for(const auto& i: out)
+        CORRADE_ASSERT(!i.second.deleter(),
+            "Text::AbstractFontConverter::exportFontToData(): implementation is not allowed to use a custom Array deleter", {});
+    #endif
+
+    return out;
 }
 
 std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
@@ -123,7 +130,10 @@ Containers::Array<char> AbstractFontConverter::exportFontToSingleData(AbstractFo
     CORRADE_ASSERT(!(features() & FontConverterFeature::MultiFile),
         "Text::AbstractFontConverter::exportFontToSingleData(): the format is not single-file", nullptr);
 
-    return doExportFontToSingleData(font, cache, uniqueUnicode(characters));
+    Containers::Array<char> out = doExportFontToSingleData(font, cache, uniqueUnicode(characters));
+    CORRADE_ASSERT(!out.deleter(),
+        "Text::AbstractFontConverter::exportFontToSingleData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
 }
 
 Containers::Array<char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, AbstractGlyphCache&, const std::u32string&) const {
@@ -157,7 +167,14 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
     CORRADE_ASSERT(features() >= (FontConverterFeature::ExportGlyphCache|FontConverterFeature::ConvertData),
         "Text::AbstractFontConverter::exportGlyphCacheToData(): feature not supported", {});
 
-    return doExportGlyphCacheToData(cache, filename);
+    std::vector<std::pair<std::string, Containers::Array<char>>> out = doExportGlyphCacheToData(cache, filename);
+    #ifndef CORRADE_NO_ASSERT
+    for(const auto& i: out)
+        CORRADE_ASSERT(!i.second.deleter(),
+            "Text::AbstractFontConverter::exportGlyphCacheToData(): implementation is not allowed to use a custom Array deleter", {});
+    #endif
+
+    return out;
 }
 
 std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportGlyphCacheToData(AbstractGlyphCache& cache, const std::string& filename) const {
@@ -176,7 +193,10 @@ Containers::Array<char> AbstractFontConverter::exportGlyphCacheToSingleData(Abst
     CORRADE_ASSERT(!(features() & FontConverterFeature::MultiFile),
         "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): the format is not single-file", nullptr);
 
-    return doExportGlyphCacheToSingleData(cache);
+    Containers::Array<char> out = doExportGlyphCacheToSingleData(cache);
+    CORRADE_ASSERT(!out.deleter(),
+        "Text::AbstractFontConverter::exportGlyphCacheToSingleData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
 }
 
 Containers::Array<char> AbstractFontConverter::doExportGlyphCacheToSingleData(AbstractGlyphCache&) const {
