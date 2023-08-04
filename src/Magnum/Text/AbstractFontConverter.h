@@ -118,13 +118,10 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontConverterFeatures value);
 /**
 @brief Base for font converter plugins
 
-Provides functionality for converting arbitrary font to different format. See
-@ref plugins for more information and the list of
+Provides functionality for converting an arbitrary font to different format.
+See @ref plugins for more information and the list of
 @m_class{m-doc} [derived classes](#derived-classes) for available font
 converter plugins.
-
-You can use the @ref magnum-fontconverter "magnum-fontconverter" utility to do
-font conversion on command-line.
 
 @m_class{m-note m-success}
 
@@ -133,31 +130,53 @@ font conversion on command-line.
     exposes functionality of all font converter plugins through a command line
     interface.
 
+@section Text-AbstractFontConverter-data-dependency Data dependency
+
+The @ref AbstractGlyphCache instances returned from various functions
+* *by design* have no dependency on the converter instance and neither on the
+dynamic plugin module. In other words, you don't need to keep the converter
+instance (or the plugin manager instance) around in order to have the
+@ref AbstractGlyphCache instances valid. Moreover, all returned
+@relativeref{Corrade,Containers::Array} instances are only allowed to have
+default deleters --- this is to avoid potential dangling function pointer calls
+when destructing such instances after the plugin module has been unloaded.
+
 @section Text-AbstractFontConverter-subclassing Subclassing
 
-Plugin implements @ref doFeatures() and one or more of `exportTo*()` /
-`importFrom*()` functions based on what features are supported. Characters
-passed to font exporting functions are converted to list of unique UTF-32
-characters.
+The plugin needs to implement @ref doFeatures() function and one or more of
+@ref doExportFontToData() / @ref doExportFontToSingleData() /
+@ref doExportFontToFile(), @ref doExportGlyphCacheToData() /
+@ref doExportGlyphCacheToSingleData() / @ref doExportGlyphCacheToFile() or
+@ref doImportGlyphCacheFromData() / @ref doImportGlyphCacheFromSingleData() /
+@ref doImportGlyphCacheFromFile() functions based on what features are
+supported. Characters passed to font exporting functions are converted to list
+of unique UTF-32 characters.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions `doExportFontTo*()` are called only if
-    @ref FontConverterFeature::ExportFont is supported, functions
-    `doExportGlyphCacheTo*()` are called only if
+-   The `doExportFontTo*()` functions are called only if
+    @ref FontConverterFeature::ExportFont is supported, the
+    `doExportGlyphCacheTo*()` functions are called only if
     @ref FontConverterFeature::ExportGlyphCache is supported.
--   Functions `doImportGlyphCacheFrom*()` are called only if
+-   The `doImportGlyphCacheFrom*()` functions are called only if
     @ref FontConverterFeature::ImportGlyphCache is supported.
--   Functions `doExport*To*Data()` and `doImport*From*Data()` are called only
-    if @ref FontConverterFeature::ConvertData is supported.
--   Function `doImport*FromData()` is called only if there is at least one data
-    array passed.
+-   The `doExport*To*Data()` and `doImport*From*Data()` functions are called
+    only if @ref FontConverterFeature::ConvertData is supported.
+-   The `doImport*FromData()` function is called only if there is at least one
+    data array passed.
 
-@attention @ref Corrade::Containers::Array instances returned from the plugin
-    should *not* use anything else than the default deleter, otherwise this can
-    cause dangling function pointer call on array destruction if the plugin
-    gets unloaded before the array is destroyed.
+<b></b>
+
+@m_class{m-block m-warning}
+
+@par Dangling function pointers on plugin unload
+    As @ref Text-AbstractFontConverter-data-dependency "mentioned above",
+    @relativeref{Corrade::Containers,Array} instances returned from plugin
+    implementations are not allowed to use anything else than the default
+    deleter, otherwise this could cause dangling function pointer call on array
+    destruction if the plugin gets unloaded before the array is destroyed. This
+    is asserted by the base implementation on return.
 */
 class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPlugin {
     public:

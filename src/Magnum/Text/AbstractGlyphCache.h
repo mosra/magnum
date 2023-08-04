@@ -93,7 +93,7 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         /** @brief Features supported by this glyph cache implementation */
         GlyphCacheFeatures features() const { return doFeatures(); }
 
-        /** Glyph cache texture size */
+        /** @brief Glyph cache texture size */
         Vector2i textureSize() const { return _size; }
 
         /** @brief Glyph padding */
@@ -148,7 +148,7 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
         std::vector<Range2Di> reserve(const std::vector<Vector2i>& sizes);
 
         /**
-         * @brief Insert glyph to cache
+         * @brief Insert a glyph to the cache
          * @param glyph         Glyph ID
          * @param position      Position relative to point on baseline
          * @param rectangle     Region in texture atlas
@@ -159,8 +159,8 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          *
          * Glyph parameters are expected to be without padding.
          *
-         * See also @ref setImage() to upload glyph image.
-         * @see @ref padding()
+         * Use @ref setImage() to upload an image corresponding to the glyphs.
+         * @see @ref padding(), @ref AbstractFont::fillGlyphCache()
          */
         void insert(UnsignedInt glyph, const Vector2i& position, const Range2Di& rectangle);
 
@@ -168,9 +168,9 @@ class MAGNUM_TEXT_EXPORT AbstractGlyphCache {
          * @brief Set cache image
          *
          * Uploads image for one or more glyphs to given offset in cache
-         * texture. Calls @ref doSetImage(). The @p offset and
-         * @ref ImageView::size() are expected tro be in bounds for
-         * @ref textureSize().
+         * texture. The @p offset and @ref ImageView::size() are expected to be
+         * in bounds for @ref textureSize().
+         * @see @ref AbstractFont::fillGlyphCache()
          */
         void setImage(const Vector2i& offset, const ImageView2D& image);
 

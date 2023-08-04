@@ -36,15 +36,15 @@
 
 namespace Magnum { namespace Text {
 
-DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, const UnsignedInt radius):
+DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& sourceSize, const Vector2i& size, const UnsignedInt radius):
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    GlyphCache(GL::TextureFormat::R8, originalSize, size, Vector2i(radius)),
+    GlyphCache(GL::TextureFormat::R8, sourceSize, size, Vector2i(radius)),
     #elif !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
     GlyphCache(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>() ?
-        GL::TextureFormat::R8 : GL::TextureFormat::RGB8, originalSize, size, Vector2i(radius)),
+        GL::TextureFormat::R8 : GL::TextureFormat::RGB8, sourceSize, size, Vector2i(radius)),
     #else
-    GlyphCache(GL::TextureFormat::RGB, originalSize, size, Vector2i(radius)),
+    GlyphCache(GL::TextureFormat::RGB, sourceSize, size, Vector2i(radius)),
     #endif
     _size{size}, _distanceField{radius}
 {

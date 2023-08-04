@@ -40,18 +40,18 @@ namespace Magnum { namespace Text {
 /**
 @brief Glyph cache
 
-Contains font glyphs prerendered into texture atlas.
+Contains font glyphs rendered into a texture atlas.
 
 @section Text-GlyphCache-usage Usage
 
-Create GlyphCache object with sufficient size and then call
+Create the @ref GlyphCache object with sufficient size and then call
 @ref AbstractFont::createGlyphCache() to fill it with glyphs.
 
 @snippet MagnumText.cpp GlyphCache-usage
 
-See @ref Renderer for information about text rendering.
+See the @ref Renderer class for information about text rendering.
 
-This class supports the @ref GlyphCacheFeature::ImageDownload (and thus calling
+This class supports @ref GlyphCacheFeature::ImageDownload (and thus calling
 @ref image()) only on desktop OpenGL, due to using @ref GL::Texture::image(),
 which is not available on @ref MAGNUM_TARGET_GLES "OpenGL ES" platforms.
 
@@ -68,9 +68,9 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
         /**
          * @brief Constructor
          * @param internalFormat    Internal texture format
-         * @param originalSize      Unscaled glyph cache texture size
-         * @param size              Actual glyph cache texture size
-         * @param padding           Padding around every glyph
+         * @param originalSize      Unscaled glyph cache texture size in pixels
+         * @param size              Actual glyph cache texture size in pixels
+         * @param padding           Padding around every glyph in pixels
          *
          * All glyphs parameters are saved relative to @p originalSize,
          * although the actual glyph cache texture has @p size. Glyph
@@ -81,16 +81,18 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
         /**
          * @brief Constructor
          *
-         * Same as calling the above with @p originalSize and @p size the same.
+         * Same as calling the above with @p originalSize and @p size being set
+         * to the same value.
          */
         explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = {});
 
         /**
          * @brief Constructor
          *
-         * Sets internal texture format to red channel only. On desktop OpenGL
-         * requires @gl_extension{ARB,texture_rg} (also part of OpenGL ES 3.0 and
-         * WebGL 2), on ES2 unconditionally uses @ref GL::TextureFormat::Luminance.
+         * Sets the internal texture format to single-channel. On OpenGL ES
+         * 3.0+ and WebGL 2 uses @ref GL::TextureFormat::R8. On desktop OpenGL
+         * requires @gl_extension{ARB,texture_rg} (also part of OpenGL 3.0). On
+         * ES2 and WebGL 1 unconditionally uses @ref GL::TextureFormat::Luminance.
          * This is done for consistency with @ref GL::pixelFormat(), which
          * unconditionally returns @ref GL::PixelFormat::Luminance for
          * @ref PixelFormat::R8Unorm. See
@@ -102,7 +104,8 @@ class MAGNUM_TEXT_EXPORT GlyphCache: public AbstractGlyphCache {
         /**
          * @brief Constructor
          *
-         * Same as calling the above with @p originalSize and @p size the same.
+         * Same as calling the above with @p originalSize and @p size being set
+         * to the same value.
          */
         explicit GlyphCache(const Vector2i& size, const Vector2i& padding = {});
 

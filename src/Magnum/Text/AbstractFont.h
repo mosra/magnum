@@ -73,8 +73,7 @@ enum class FontFeature: UnsignedByte {
     #endif
 
     /**
-     * The font contains prepared glyph cache.
-     *
+     * The font contains a prepared glyph cache.
      * @see @ref AbstractFont::fillGlyphCache(),
      *      @ref AbstractFont::createGlyphCache()
      */
@@ -100,14 +99,20 @@ MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontFeatures value);
 /**
 @brief Base for font plugins
 
-Provides interface for opening fonts, filling glyph cache and layouting the
+Provides interface for opening fonts, filling a glyph cache and layouting the
 glyphs.
 
 @section Text-AbstractFont-usage Usage
 
-Fonts are most commonly implemented as plugins. For example, loading a font
-from the filesystem using the @ref StbTrueTypeFont plugin and prerendering all
-needed glyphs can be done like this, completely with all error handling:
+Fonts are most commonly implemented as plugins, which means the concrete
+font implementation is loaded and instantiated through a @relativeref{Corrade,PluginManager::Manager}. A font is opened using either
+@ref openFile() or @ref openData() together with specifying the size at which
+glyphs will be rasterized. Then it stays open until the font is destroyed,
+@ref close() or another font is opened.
+
+In the following example a font is loaded from the filesystem using the
+@ref StbTrueTypeFont plugin, prerendering all needed glyphs, completely with
+all error handling:
 
 @snippet MagnumText.cpp AbstractFont-usage
 
@@ -116,6 +121,28 @@ of @m_class{m-doc} [derived classes](#derived-classes) for available font
 plugins. See @ref GlyphCache for more information about glyph caches and
 @ref Renderer for information about actual text rendering.
 
+@subsection Text-AbstractFont-usage-font-size Font size
+
+Font libraries specify font size in *points*, where 1 pt = ~1.333 px at 96 DPI,
+so in the above snippet a 12 pt font corresponds to 16 px on a 96 DPI display.
+The font size corresponds to the height of the [EM quad](https://en.wikipedia.org/wiki/Em_(typography))
+which is defined as the distance between ascent and descent.
+
+Upon opening the font, the size in points is exposed in @ref size(). Derived
+properties are specified *in pixels* in @ref lineHeight(), @ref ascent() and
+@ref descent().
+
+The font size used when opening the font affects how large the glyphs will be
+when rendered into the @ref GlyphCache. Actual text rendering with @ref Renderer
+however uses its own font size, and the rendered size is then additionally
+depending on the actual projection used. This decoupling of font sizes is
+useful for example in case of @ref DistanceFieldGlyphCache, where a single
+prerendered glyph size can be used to render arbitrarily large font sizes
+without becoming blurry or jaggy. When not using a distance field glyph cache,
+it's usually desirable to have the font size and the actual rendered size
+match. See @ref Text-Renderer-usage-font-size "the Renderer documentation" for
+further information about picking font sizes.
+
 @subsection Text-AbstractFont-usage-callbacks Loading data from memory, using file callbacks
 
 Besides loading data directly from the filesystem using @ref openFile() like
@@ -123,18 +150,19 @@ shown above, it's possible to use @ref openData() to import data from memory.
 Note that the particular importer implementation must support
 @ref FontFeature::OpenData for this method to work.
 
+@snippet MagnumText.cpp AbstractFont-usage-data
+
 Some font formats consist of more than one file and in that case you may want
 to intercept those references and load them in a custom way as well. For font
 plugins that advertise support for this with @ref FontFeature::FileCallback
 this is done by specifying a file loading callback using @ref setFileCallback().
 The callback gets a filename, @ref InputFileCallbackPolicy and an user
 pointer as parameters; returns a non-owning view on the loaded data or a
-@ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the file
-loading failed. For example, loading a memory-mapped font could look like
-below. Note that the file loading callback affects @ref openFile() as
-well --- you don't have to load the top-level file manually and pass it to
-@ref openData(), any font plugin supporting the callback feature handles that
-correctly.
+@relativeref{Corrade,Containers::NullOpt} to indicate the file loading failed.
+For example, loading a memory-mapped font could look like below. Note that the
+file loading callback affects @ref openFile() as well --- you don't have to
+load the top-level file manually and pass it to @ref openData(), any font
+plugin supporting the callback feature handles that correctly.
 
 @snippet MagnumText.cpp AbstractFont-usage-callbacks
 
@@ -149,19 +177,35 @@ The input file callback signature is the same for @ref Text::AbstractFont,
 @ref ShaderTools::AbstractConverter and @ref Trade::AbstractImporter to allow
 code reuse.
 
+@section Text-AbstractFont-data-dependency Data dependency
+
+The @ref AbstractLayouter instances returned from @ref layout() have a code and
+data dependency on the dynamic plugin module --- since their implementation is
+in the plugin module itself, the plugin can't be unloaded until the returned
+instance is destroyed.
+
 @section Text-AbstractFont-subclassing Subclassing
 
-The plugin implements @ref doFeatures(), @ref doClose(), @ref doLayout(),
-either @ref doCreateGlyphCache() or @ref doFillGlyphCache() and one or more of
-`doOpen*()` functions. See also @ref AbstractLayouter for more information.
+The plugin needs to implement the @ref doFeatures(), @ref doClose(),
+@ref doLayout() functions, either @ref doCreateGlyphCache() or
+@ref doFillGlyphCache() and one or more of `doOpen*()` functions. See also
+@ref AbstractLayouter for more information.
+
+In order to support @ref FontFeature::FileCallback, the font needs to properly
+use the callbacks to both load the top-level file in @ref doOpenFile() and also
+load any external files when needed. The @ref doOpenFile() can delegate back
+into the base implementation, but it should remember at least the base file
+path to pass correct paths to subsequent file callbacks. The
+@ref doSetFileCallback() can be overridden in case it's desired to respond to
+file loading callback setup, but doesn't have to be.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions @ref doOpenData() and @ref doOpenFile() are called after the
-    previous file was closed, function @ref doClose() is called only if there
-    is any file opened.
--   Function @ref doOpenData() is called only if @ref FontFeature::OpenData is
+-   The @ref doOpenData() and @ref doOpenFile() functions are called after the
+    previous file was closed, @ref doClose() is called only if there is any
+    file opened.
+-   The @ref doOpenData() is called only if @ref FontFeature::OpenData is
     supported.
 -   The @ref doSetFileCallback() function is called only if
     @ref FontFeature::FileCallback is supported and there is no file opened.
@@ -316,10 +360,10 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Open raw data
          * @param data          File data
-         * @param size          Font size
+         * @param size          Font size in points
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Available only if @ref FontFeature::OpenData is supported.
+         * raw data. Available only if @ref FontFeature::OpenData is supported.
          * On failure prints a message to @relativeref{Magnum,Error} and
          * returns @cpp false @ce.
          * @see @ref features(), @ref openFile()
@@ -343,50 +387,70 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Open a file
          * @param filename      Font file
-         * @param size          Font size
+         * @param size          Size to open the font in, in points
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. On failure prints a message to @relativeref{Magnum,Error} and
-         * returns @cpp false @ce.
+         * returns @cpp false @ce. If file loading callbacks are set via
+         * @ref setFileCallback() and @ref FontFeature::OpenData is supported,
+         * this function uses the callback to load the file and passes the
+         * memory view to @ref openData() instead. See @ref setFileCallback()
+         * for more information.
          */
         bool openFile(const std::string& filename, Float size);
 
-        /** @brief Close currently opened file */
+        /**
+         * @brief Close currently opened file
+         *
+         * On certain implementations an explicit call to this function when
+         * the file is no longer needed but the font instance is going to be
+         * reused further may result in freed memory. This call is also done
+         * automatically when the font instance gets destructed or when another
+         * file is opened. If no file is opened, does nothing. After this
+         * function is called, @ref isOpened() is guaranteed to return
+         * @cpp false @ce.
+         */
         void close();
 
         /**
-         * @brief Font size
+         * @brief Font size in points
          *
-         * Returns scale in which @ref lineHeight(), @ref ascent(),
-         * @ref descent() and @ref glyphAdvance() is returned. Expects that a
-         * font is opened.
+         * Font size is defined as the distance between @ref ascent() and
+         * @ref descent(), thus the value of @cpp (ascent - descent)*0.75f @ce
+         * (i.e., converted from pixels) is equal to @ref size().
+         * @see @ref lineHeight(), @ref glyphAdvance()
          */
         Float size() const;
 
         /**
-         * @brief Font ascent
+         * @brief Font ascent in pixels
          *
-         * Distance from baseline to top, scaled to font size. Positive value.
-         * Expects that a font is opened.
-         * @see @ref size(), @ref descent(), @ref lineHeight()
+         * Distance from baseline to top, positive value. Font size is defined
+         * as the distance between @ref ascent() and @ref descent(), thus the
+         * value of @cpp (ascent - descent)*0.75f @ce (i.e., converted to
+         * points) is equal to @ref size(). Expects that a font is opened.
+         * @see @ref lineHeight(), @ref glyphAdvance()
          */
         Float ascent() const;
 
         /**
-         * @brief Font descent
+         * @brief Font descent in pixels
          *
-         * Distance from baseline to bottom, scalled to font size. Negative
-         * value. Expects that a font is opened.
-         * @see @ref size(), @ref ascent(), @ref lineHeight()
+         * Distance from baseline to bottom, negative value. Font size is defined
+         * as the distance between @ref ascent() and @ref descent(), thus the
+         * value of @cpp (ascent - descent)*0.75f @ce (i.e., converted to
+         * points) is equal to @ref size(). Expects that a font is opened.
+         * @see @ref lineHeight(), @ref glyphAdvance()
          */
         Float descent() const;
 
         /**
-         * @brief Line height
+         * @brief Line height in pixels
          *
-         * Returns line height scaled to font size. Expects that a font is
-         * opened.
-         * @see @ref size(), @ref ascent(), @ref descent()
+         * Distance between baselines in consecutive text lines that
+         * corresponds to @ref ascent() and @ref descent(). Expects that a font
+         * is opened.
+         * @see @ref size(), @ref glyphAdvance()
          */
         Float lineHeight() const;
 
@@ -401,11 +465,12 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         UnsignedInt glyphId(char32_t character);
 
         /**
-         * @brief Glyph advance
+         * @brief Glyph advance in pixels
          * @param glyph     Glyph ID
          *
-         * Returns glyph advance scaled to font size. Expects that a font is
-         * opened.
+         * Distance the cursor for the next glyph that follows @p glyph.
+         * Doesn't consider kerning or any other advanced shaping features.
+         * Expects that a font is opened.
          * @note This function is meant to be used only for font observations
          *      and conversions. In performance-critical code the @ref layout()
          *      function should be used instead.
@@ -438,7 +503,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Layout the text using font's own layouter
          * @param cache     Glyph cache
-         * @param size      Font size
+         * @param size      Size to layout the text in, in pooints
          * @param text      Text to layout
          *
          * Note that the layouters support rendering of single-line text only.
@@ -462,25 +527,25 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
             #endif
 
             /**
-             * Font size
+             * Font size in points
              * @see @ref size()
              */
             Float size;
 
             /**
-             * Font ascent
+             * Font ascent in pixels
              * @see @ref ascent()
              */
             Float ascent;
 
             /**
-             * Font descent
+             * Font descent in pixels
              * @see @ref descent()
              */
             Float descent;
 
             /**
-             * Line height
+             * Line height in pixels
              * @see @ref lineHeight()
              */
             Float lineHeight;
@@ -543,8 +608,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for @ref fillGlyphCache()
          *
-         * The string is converted from UTF-8 to UTF-32, unique characters are
-         * *not* removed.
+         * The string is converted from UTF-8 to UTF-32, duplicate characters
+         * are *not* removed.
          */
         virtual void doFillGlyphCache(AbstractGlyphCache& cache, const std::u32string& characters);
 
@@ -574,9 +639,11 @@ Returned by @ref AbstractFont::layout().
 
 @section Text-AbstractLayouter-subclassing Subclassing
 
-Plugin creates private subclass (no need to expose it to end users) and
-implements @ref doRenderGlyph(). Bounds checking on @p i is done automatically
-in the wrapping @ref renderGlyph() function.
+The @ref AbstractFont plugin creates a local @ref AbstractLayouter subclass and
+implements @ref doRenderGlyph(). You don't need to do most of the redundant
+sanity checks, these things are checked by the implementation:
+
+-   The @ref doRenderGlyph() is called only if `i` is from valid range
 */
 class MAGNUM_TEXT_EXPORT AbstractLayouter {
     public:
@@ -599,13 +666,14 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
 
         /**
          * @brief Render a glyph
-         * @param i                 Glyph index
-         * @param cursorPosition    Cursor position
-         * @param rectangle         Bounding rectangle
+         * @param[in]     i                 Glyph index
+         * @param[in,out] cursorPosition    Cursor position
+         * @param[in,out] rectangle         Bounding rectangle
          *
-         * The function returns pair of quad position and texture coordinates,
-         * advances @p cursorPosition to next character and updates @p rectangle
-         * with extended bounds.
+         * The function returns a pair of quad position and texture
+         * coordinates, advances @p cursorPosition to next character and
+         * updates @p rectangle with extended bounds. Expects that @p i is less
+         * than @ref glyphCount().
          */
         std::pair<Range2D, Range2D> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle);
 
@@ -616,23 +684,16 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
          */
         explicit AbstractLayouter(UnsignedInt glyphCount);
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Implementation for @ref renderGlyph()
          * @param i                 Glyph index
          *
-         * Return quad position (relative to current cursor position), texture
-         * coordinates and advance to next glyph.
+         * Returns quad position (relative to current cursor position), texture
+         * coordinates and advance to the next glyph.
          */
         virtual std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) = 0;
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    private:
-    #endif
         UnsignedInt _glyphCount;
 };
 

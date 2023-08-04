@@ -79,6 +79,12 @@ CORRADE_PLUGIN_REGISTER(MyFontConverter, MyNamespace::MyFontConverter,
     MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE)
 /* [MAGNUM_TEXT_ABSTRACTFONTCONVERTER_PLUGIN_INTERFACE] */
 
+namespace {
+    Vector2i windowSize() { return {}; }
+    Vector2i framebufferSize() { return {}; }
+    Vector2 dpiScaling() { return {}; }
+}
+
 int main() {
 
 {
@@ -86,14 +92,26 @@ int main() {
 PluginManager::Manager<Text::AbstractFont> manager;
 Containers::Pointer<Text::AbstractFont> font =
     manager.loadAndInstantiate("StbTrueTypeFont");
-if(!font || !font->openFile("font.ttf", 16.0f))
+if(!font->openFile("font.ttf", 12.0f))
     Fatal{} << "Can't open font.ttf with StbTrueTypeFont";
 
-Text::GlyphCache cache{Vector2i{512}};
+Text::GlyphCache cache{Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
 /* [AbstractFont-usage] */
+}
+
+{
+PluginManager::Manager<Text::AbstractFont> manager;
+Containers::Pointer<Text::AbstractFont> font =
+    manager.loadAndInstantiate("StbTrueTypeFont");
+/* [AbstractFont-usage-data] */
+Utility::Resource rs{"data"};
+Containers::ArrayView<const char> data = rs.getRaw("font.ttf");
+if(!font->openData(data, 12.0f))
+    Fatal{} << "Can't open font data with StbTrueTypeFont";
+/* [AbstractFont-usage-data] */
 }
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
@@ -171,8 +189,10 @@ font->setFileCallback([](const std::string& filename,
    not more! */
 PluginManager::Manager<Text::AbstractFont> manager;
 /* [DistanceFieldGlyphCache-usage] */
-Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
-Text::DistanceFieldGlyphCache cache{Vector2i{2048}, Vector2i{384}, 16};
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+font->openFile("font.ttf", 96.0f);
+
+Text::DistanceFieldGlyphCache cache{Vector2i{1024}, Vector2i{128}, 12};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
@@ -185,8 +205,10 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
    not more! */
 PluginManager::Manager<Text::AbstractFont> manager;
 /* [GlyphCache-usage] */
-Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
-Text::GlyphCache cache{Vector2i{512}};
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
+font->openFile("font.ttf", 12.0f);
+
+Text::GlyphCache cache{Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
@@ -194,17 +216,19 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 }
 
 {
-Matrix3 projectionMatrix;
 /* -Wnonnull in GCC 11+  "helpfully" says "this is null" if I don't initialize
    the font pointer. I don't care, I just want you to check compilation errors,
    not more! */
 PluginManager::Manager<Text::AbstractFont> manager;
 /* [Renderer-usage1] */
 /* Font instance, received from a plugin manager */
-Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate("SomethingWhatever"));
+Containers::Pointer<Text::AbstractFont> font = DOXYGEN_ELLIPSIS(manager.loadAndInstantiate(""));
 
-/* Configured glyph cache */
-Text::GlyphCache cache{Vector2i{512}};
+/* Open a 12 pt font */
+font->openFile("font.ttf", 12.0f);
+
+/* Populate a glyph cache */
+Text::GlyphCache cache{Vector2i{128}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                             "0123456789?!:;,. ");
@@ -213,13 +237,18 @@ Shaders::VectorGL2D shader;
 GL::Buffer vertexBuffer, indexBuffer;
 GL::Mesh mesh;
 
-/* Render the text, centered */
-std::tie(mesh, std::ignore) = Text::Renderer2D::render(*font, cache, 0.15f,
+/* Render a 12 pt text, centered */
+std::tie(mesh, std::ignore) = Text::Renderer2D::render(*font, cache, 12.0f,
     "Hello World!", vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw,
     Text::Alignment::LineCenter);
 
+/* Projection matrix is matching application window size to have the size match
+   12 pt in other applications, assuming a 96 DPI display and no UI scaling. */
+Matrix3 projectionMatrix = Matrix3::projection(Vector2{windowSize()});
+
 /* Draw the text on the screen */
-shader.setTransformationProjectionMatrix(projectionMatrix)
+shader
+    .setTransformationProjectionMatrix(projectionMatrix)
     .setColor(0xffffff_rgbf)
     .bindVectorTexture(cache.texture())
     .draw(mesh);
@@ -227,7 +256,7 @@ shader.setTransformationProjectionMatrix(projectionMatrix)
 
 /* [Renderer-usage2] */
 /* Initialize the renderer and reserve memory for enough glyphs */
-Text::Renderer2D renderer{*font, cache, 0.15f, Text::Alignment::LineCenter};
+Text::Renderer2D renderer{*font, cache, 12.0f, Text::Alignment::LineCenter};
 renderer.reserve(32, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
 
 /* Update the text occasionally */
@@ -239,6 +268,18 @@ shader.setTransformationProjectionMatrix(projectionMatrix)
     .bindVectorTexture(cache.texture())
     .draw(renderer.mesh());
 /* [Renderer-usage2] */
+}
+
+{
+/* [Renderer-dpi-interface-size] */
+Vector2 interfaceSize = Vector2{windowSize()}/dpiScaling();
+/* [Renderer-dpi-interface-size] */
+/* [Renderer-dpi-size-multiplier] */
+Float sizeMultiplier =
+    (Vector2{framebufferSize()}*dpiScaling()/Vector2{windowSize()}).max();
+/* [Renderer-dpi-size-multiplier] */
+static_cast<void>(interfaceSize);
+static_cast<void>(sizeMultiplier);
 }
 
 }

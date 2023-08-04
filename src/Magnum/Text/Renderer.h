@@ -53,7 +53,8 @@ namespace Magnum { namespace Text {
 /**
 @brief Base for text renderers
 
-Not meant to be used directly, see @ref Renderer for more information.
+Not meant to be used directly, see the @ref Renderer class for more
+information.
 @see @ref Renderer2D, @ref Renderer3D
 */
 class MAGNUM_TEXT_EXPORT AbstractRenderer {
@@ -62,7 +63,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
          * @brief Render text
          * @param font          Font
          * @param cache         Glyph cache
-         * @param size          Font size
+         * @param size          Font size in points
          * @param text          Text to render
          * @param alignment     Text alignment
          *
@@ -79,7 +80,7 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
         UnsignedInt capacity() const { return _capacity; }
 
         /**
-         * @brief Font size
+         * @brief Font size in points
          * @m_since_latest
          */
         Float fontSize() const { return _fontSize; }
@@ -198,6 +199,73 @@ mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 
 @snippet MagnumText.cpp Renderer-usage2
+
+@subsection Text-Renderer-usage-font-size Font size
+
+As mentioned in @ref Text-AbstractFont-usage-font-size "AbstractFont class documentation",
+the size at which the font is loaded is decoupled from the size at which a
+concrete text is rendered. In particular, with a concrete projection matrix,
+the size you pass to either @ref render() or to the @ref Renderer() constructor
+will always result in the same size of the rendered text, independently of the
+size the font was loaded in. Size of the loaded font is the size at which the
+glyphs get prerendered into the glyph cache, affecting visual quality.
+
+When rendering the text, there are two common approaches --- either setting up
+the size to match a global user interface scale, or having the text size
+proportional to the window size. The first approach results in e.g. a 12 pt
+font matching a 12 pt font in other applications, and is what's shown in the
+above snippets. The most straightforward way to achieve that is to set up the
+projection matrix size to match actual window pixels, such as @ref Platform::Sdl2Application::windowSize() "Platform::*Application::windowSize()".
+If using the regular @ref GlyphCache, for best visual quality it should be
+created with the @ref AbstractFont loaded at the same size as the text to be
+rendered, although often a double supersampling achieves a crisper result.
+I.e., loading the font with 24 pt, but rendering with 12 pt. See below for
+@ref Text-Renderer-usage-font-size-dpi "additional considerations for proper DPI awareness".
+
+The second approach, with text size being relative to the window size, is for
+cases where the text is meant to match surrounding art, such as in a game menu.
+In this case the projection size is usually something arbitrary that doesn't
+match window pixels, and the text point size then has to be relative to that.
+For this use case a @ref DistanceFieldGlyphCache is the better match, as it can
+provide text at different sizes with minimal quality loss. See its
+documentation for details about picking the right font size and other
+parameters for best results.
+
+@subsection Text-Renderer-usage-font-size-dpi DPI awareness
+
+To achieve crisp rendering and/or text size matching other applications on
+HiDPI displays, additional steps need to be taken. There are two separate
+concepts for DPI-aware rendering:
+
+-   Interface size --- size at which the interface elements are positioned on
+    the screen. Often, for simplicity, the interface is using some "virtual
+    units", so a 12 pt font is still a 12 pt font independently of how the
+    interface is scaled compared to actual display properties (for example by
+    setting a global 150% scale in the desktop environment, or by zooming a
+    browser window). The size used by the @ref Renderer should match these
+    virtual units.
+-   Framebuffer size --- how many pixels is actually there. If a 192 DPI
+    display has a 200% interface scale, a 12 pt font would be 32 pixels. But if
+    it only has a 150% scale, all interface elements will be smaller, and a 12
+    pt font would be only 24 pixels. The size used by the @ref AbstractFont and
+    @ref GlyphCache should be chosen with respect to the actual physical
+    pixels.
+
+When using for example @ref Platform::Sdl2Application or other `*Application`
+implementations, you usually have three values at your disposal ---
+@ref Platform::Sdl2Application::windowSize() "windowSize()",
+@ref Platform::Sdl2Application::framebufferSize() "framebufferSize()" and
+@ref Platform::Sdl2Application::dpiScaling() "dpiScaling()". Their relation is
+documented thoroughly in @ref Platform-Sdl2Application-dpi, for this particular
+case a scaled interface size, used instead of window size for the projection,
+would be calculated like this:
+
+@snippet MagnumText.cpp Renderer-dpi-interface-size
+
+And a multiplier for the @ref AbstractFont and @ref GlyphCache font size like
+this. The @ref Renderer keeps using the size without this multiplier.
+
+@snippet MagnumText.cpp Renderer-dpi-size-multiplier
 
 @section Text-Renderer-required-opengl-functionality Required OpenGL functionality
 

@@ -40,14 +40,31 @@ namespace Magnum { namespace Text {
 /**
 @brief Glyph cache with distance field rendering
 
-Unlike original @ref GlyphCache converts each binary image to distance field.
-It is not possible to use non-binary colors with this cache, internal texture
-format is red channel only.
+Unlike the base @ref GlyphCache, this class converts each binary image to a
+distance field. It's not possible to use non-binary colors with this cache as
+the internal texture format is single-channel.
 
 @section Text-DistanceFieldGlyphCache-usage Usage
 
-Usage is similar to @ref GlyphCache, additionally you need to specify size of
-resulting distance field texture.
+In order to create a distance field glyph cache, the font has to be loaded at a
+size significantly larger than what the resulting text will be. The distance
+field conversion process then converts the input to a fraction of its size
+again, transferring the the extra spatial resolution to distance values. The
+distance values are then used to render an arbitrarily sized text without it
+being jaggy at small sizes and blurry when large.
+
+The process requires three input parameters, size of the source image, size of
+the resulting glyph cache image and a radius for the distance field creation.
+The ratio between the input and output image size is usually four or eight
+times, and the size of the font should match the larger size. So, for example,
+if a @cpp {128, 128} @ce @ref GlyphCache was filled with a 12 pt font, a
+@cpp {1024, 1024} @ce source image for the distance field should use a 96 pt
+font. The radius should then be chosen so it's at least one or two pixels in
+the scaled-down result, so in this case at least 8. Values less than that will
+result in aliasing artifacts. Very high radius values are needed only if
+outlining, thinning, thickening or shadow effects will be used when rendering,
+using them leads to precision loss when the distance field is stored in 8-bit
+channels.
 
 @snippet MagnumText.cpp DistanceFieldGlyphCache-usage
 
@@ -61,20 +78,19 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
     public:
         /**
          * @brief Constructor
-         * @param originalSize      Unscaled glyph cache texture size
-         * @param size              Actual glyph cache texture size
+         * @param sourceSize        Size of the source image
+         * @param size              Resulting distance field texture size
          * @param radius            Distance field computation radius
          *
          * See @ref TextureTools::DistanceField for more information about the
-         * parameters. Sets internal texture format to red channel only. On
-         * desktop OpenGL requires @gl_extension{ARB,texture_rg} (also part of
-         * OpenGL ES 3.0), in ES2 uses @gl_extension{EXT,texture_rg} if
-         * available or @ref GL::TextureFormat::RGB as fallback.
-         * @todo Is Luminance format renderable anywhere? Also would it be
-         *      possible to convert the RGB texture to Luminance after it has
-         *      been rendered when blitting is not supported to save memory?
+         * parameters. Sets the internal texture format to single-channel.
+         * On OpenGL ES 3.0+ and WebGL 2 uses @ref GL::TextureFormat::R8. On
+         * desktop OpenGL requires @gl_extension{ARB,texture_rg} (part of
+         * OpenGL 3.0), on ES2 uses @gl_extension{EXT,texture_rg} if available
+         * or @ref GL::TextureFormat::RGB as fallback, on WebGL 1 uses
+         * @ref GL::TextureFormat::RGB always.
          */
-        explicit DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, UnsignedInt radius);
+        explicit DistanceFieldGlyphCache(const Vector2i& sourceSize, const Vector2i& size, UnsignedInt radius);
 
         /**
          * @brief Distance field texture size
