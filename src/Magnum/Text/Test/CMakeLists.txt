@@ -30,27 +30,72 @@ set(CMAKE_FOLDER "Magnum/Text/Test")
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(TEXT_TEST_DIR ".")
     set(TEXT_TEST_OUTPUT_DIR "./write")
+    set(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR ".")
 else()
     set(TEXT_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(TEXT_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    set(TEXTURETOOLS_DISTANCEFIELDGLTEST_DIR ${PROJECT_SOURCE_DIR}/src/Magnum/TextureTools/Test/DistanceFieldGLTestFiles)
 endif()
 
+if(MAGNUM_TARGET_GL AND MAGNUM_BUILD_GL_TESTS)
+    if(NOT MAGNUM_BUILD_PLUGINS_STATIC)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+            set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+        endif()
+        if(MAGNUM_WITH_TGAIMPORTER)
+            set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+        endif()
+    endif()
+endif()
+
+# First replace ${} variables, then $<> generator expressions
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+    INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp
     LIBRARIES Magnum MagnumTextTestLib
     FILES data.bin)
-target_include_directories(TextAbstractFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(TextAbstractFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp
     LIBRARIES Magnum MagnumTextTestLib
     FILES data.bin)
-target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 corrade_add_test(TextAbstractGlyphCacheTest AbstractGlyphCacheTest.cpp LIBRARIES MagnumTextTestLib)
-corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumText)
+corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumTextTestLib)
 
 if(MAGNUM_TARGET_GL AND MAGNUM_BUILD_GL_TESTS)
-    corrade_add_test(TextDistanceFieldGlyphCacheGLTest DistanceFieldGlyphCacheGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
-    corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
+    corrade_add_test(TextDistanceFieldGlyphCacheGLTest DistanceFieldGlyphCacheGLTest.cpp
+        LIBRARIES
+            MagnumTextTestLib
+            MagnumOpenGLTester
+            MagnumDebugTools
+        FILES
+            ${PROJECT_SOURCE_DIR}/src/Magnum/TextureTools/Test/DistanceFieldGLTestFiles/input.tga
+            ${PROJECT_SOURCE_DIR}/src/Magnum/TextureTools/Test/DistanceFieldGLTestFiles/output.tga)
+    target_include_directories(TextDistanceFieldGlyphCacheGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(MAGNUM_BUILD_PLUGINS_STATIC)
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(TextDistanceFieldGlyphCacheGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(MAGNUM_WITH_TGAIMPORTER)
+            target_link_libraries(TextDistanceFieldGlyphCacheGLTest PRIVATE TgaImporter)
+        endif()
+    else()
+        # So the plugins get properly built when building the test
+        if(MAGNUM_WITH_ANYIMAGEIMPORTER)
+            add_dependencies(TextDistanceFieldGlyphCacheGLTest AnyImageImporter)
+        endif()
+        if(MAGNUM_WITH_TGAIMPORTER)
+            add_dependencies(TextDistanceFieldGlyphCacheGLTest TgaImporter)
+        endif()
+    endif()
+
+    corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp
+        LIBRARIES
+            MagnumText
+            MagnumOpenGLTester
+            MagnumDebugTools)
     corrade_add_test(TextRendererGLTest RendererGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
 endif()

@@ -25,8 +25,10 @@
 
 #include <sstream>
 #include <tuple>
+#include <Corrade/Containers/StringStl.h> /**< @todo drop once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/TestSuite/Compare/String.h>
+#include <Corrade/Utility/DebugStl.h> /**< @todo drop once Debug is stream-free */
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -138,15 +140,21 @@ void AbstractGlyphCacheTest::setImageOutOfBounds() {
 
     DummyGlyphCache cache{{100, 200}};
 
+    /* This is fine */
+    cache.setImage({80, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
+
     std::ostringstream out;
     Error redirectError{&out};
-    cache.setImage({80, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
     cache.setImage({81, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
+    cache.setImage({80, 176}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
+    cache.setImage({-1, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
     cache.setImage({80, -1}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
-
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE_AS(out.str(),
         "Text::AbstractGlyphCache::setImage(): Range({81, 175}, {101, 200}) out of bounds for texture size Vector(100, 200)\n"
-        "Text::AbstractGlyphCache::setImage(): Range({80, -1}, {100, 24}) out of bounds for texture size Vector(100, 200)\n");
+        "Text::AbstractGlyphCache::setImage(): Range({80, 176}, {100, 201}) out of bounds for texture size Vector(100, 200)\n"
+        "Text::AbstractGlyphCache::setImage(): Range({-1, 175}, {19, 200}) out of bounds for texture size Vector(100, 200)\n"
+        "Text::AbstractGlyphCache::setImage(): Range({80, -1}, {100, 24}) out of bounds for texture size Vector(100, 200)\n",
+        TestSuite::Compare::String);
 }
 
 void AbstractGlyphCacheTest::image() {

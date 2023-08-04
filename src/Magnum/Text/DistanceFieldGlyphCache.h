@@ -77,17 +77,28 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         explicit DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, UnsignedInt radius);
 
         /**
+         * @brief Distance field texture size
+         *
+         * Compared to @ref textureSize(), which is the size of the source
+         * image, this function returns size of the resulting distance field
+         * texture.
+         */
+        Vector2i distanceFieldTextureSize() const { return _size; }
+
+        /**
          * @brief Set a distance field cache image
          *
-         * Uploads already computed distance field image to given offset in
-         * distance field texture.
+         * Compared to @ref setImage() uploads an already computed distance
+         * field image to given offset in the distance field texture. The
+         * @p offset and @ref ImageView::size() are expected to be in bounds
+         * for @ref distanceFieldTextureSize().
          */
         void setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image);
 
     private:
         void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
 
-        Vector2 _scale;
+        Vector2i _size;
         TextureTools::DistanceField _distanceField;
 };
 

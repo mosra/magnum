@@ -83,6 +83,8 @@ void AbstractLayouterTest::renderGlyph() {
 }
 
 void AbstractLayouterTest::renderGlyphOutOfBounds() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
     struct Layouter: AbstractLayouter {
         explicit Layouter(): AbstractLayouter{3} {}
 

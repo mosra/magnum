@@ -46,7 +46,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     #else
     GlyphCache(GL::TextureFormat::RGB, originalSize, size, Vector2i(radius)),
     #endif
-    _scale{Vector2(size)/Vector2(originalSize)}, _distanceField{radius}
+    _size{size}, _distanceField{radius}
 {
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
@@ -91,10 +91,14 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
     #endif
 
     /* Create distance field from input texture */
-    _distanceField(input, texture(), Range2Di::fromSize(offset*_scale, image.size()*_scale), image.size());
+    const Vector2 scale = Vector2{_size}/Vector2{textureSize()};
+    _distanceField(input, texture(), Range2Di::fromSize(offset*scale, image.size()*scale), image.size());
 }
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
+    CORRADE_ASSERT((offset >= Vector2i{} && offset + image.size() <= _size).all(),
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage():" << Range2Di::fromSize(offset, image.size()) << "out of bounds for texture size" << _size, );
+
     #ifndef CORRADE_NO_ASSERT
     const GL::PixelFormat format = GL::pixelFormat(image.format());
     #endif
