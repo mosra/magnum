@@ -8,7 +8,7 @@ url="https://magnum.graphics"
 license=('MIT')
 depends=('corrade' 'openal')
 makedepends=('cmake' 'ninja')
-options=('!strip')
+options=('!strip' '!buildflags')
 provides=('magnum-git')
 
 _rootdir=$startdir/../../
