@@ -28,8 +28,14 @@ build() {
 
     cd "$_rootdir/build-android-arm64"
 
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output; Clang unfortunately doesn't
+    # have any env var to temporarily disable colors. The inverse, i.e.
+    # preserving colors when Ninja outputs to a pipe can be done with
+    # CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DMAGNUM_WITH_VK=ON \
         -DMAGNUM_WITH_ANYAUDIOIMPORTER=OFF \
         -DMAGNUM_WITH_ANYIMAGECONVERTER=ON \

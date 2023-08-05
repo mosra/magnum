@@ -22,10 +22,16 @@ build() {
     newcxxflags=$(echo $CXXFLAGS | sed s/-O.//g | sed s/-D_FORTIFY_SOURCE=.//g)
     export CXXFLAGS="$newcxxflags"
 
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output, alternatively you can set the
+    # GCC_COLORS= (empty) env variable to temporarily disable colors. The
+    # inverse, i.e. preserving colors when Ninja outputs to a pipe can be done
+    # with CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_CXX_FLAGS="--coverage" \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DMAGNUM_WITH_AUDIO=ON \
         -DMAGNUM_WITH_VK=ON \
         -DMAGNUM_WITH_GLFWAPPLICATION=ON \

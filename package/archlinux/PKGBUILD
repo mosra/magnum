@@ -19,12 +19,19 @@ build() {
     cd "$_rootdir/build"
 
     # RelWithDebInfo is enabled but not built -- it's meant for profiling from
-    # within the build dir
+    # within the build dir.
+    #
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output, alternatively you can set the
+    # GCC_COLORS= (empty) env variable to temporarily disable colors. The
+    # inverse, i.e. preserving colors when Ninja outputs to a pipe can be done
+    # with CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_CONFIGURATION_TYPES="Debug;Release;RelWithDebInfo" \
         -DCMAKE_CROSS_CONFIGS=all \
         -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -g -DNDEBUG -fno-omit-frame-pointer" \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DMAGNUM_WITH_AUDIO=ON \
         -DMAGNUM_WITH_VK=ON \
         -DMAGNUM_WITH_GLFWAPPLICATION=ON \

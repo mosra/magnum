@@ -17,9 +17,15 @@ build() {
     mkdir -p "$_rootdir/build-es2"
     cd "$_rootdir/build-es2"
 
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output, alternatively you can set the
+    # GCC_COLORS= (empty) env variable to temporarily disable colors. The
+    # inverse, i.e. preserving colors when Ninja outputs to a pipe can be done
+    # with CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DMAGNUM_TARGET_GLES=ON \
         -DMAGNUM_TARGET_GLES2=ON \
         -DMAGNUM_WITH_AUDIO=ON \

@@ -26,9 +26,16 @@ build() {
 
     # Put tests into a separate target as they take ages to build. They're
     # built only inside check() so `makepkg --nocheck` will skip building them.
+    #
+    # Colored output is enabled implicitly. If Ninja detects it's outputting to
+    # a pipe, it strips it away from the output; Clang unfortunately doesn't
+    # have any env var to temporarily disable colors. The inverse, i.e.
+    # preserving colors when Ninja outputs to a pipe can be done with
+    # CLICOLOR_FORCE=1: https://github.com/ninja-build/ninja/issues/2196
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+        -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
         -DMAGNUM_TARGET_GLES2=OFF \
         -DMAGNUM_WITH_AUDIO=ON \
