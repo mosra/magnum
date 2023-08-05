@@ -244,7 +244,9 @@ int main(int argc, char** argv) {
         .addBooleanOption("validate").setHelp("validate", "validate input")
         .addBooleanOption("link").setHelp("link", "link multiple input files together")
         .addArrayOption('C', "converter").setHelp("converter", "shader converter plugin(s)")
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        #endif
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print SPIR-V module info and exit")
         .addBooleanOption('q', "quiet").setHelp("quiet", "quiet output from converter plugin(s)")
@@ -364,8 +366,11 @@ see documentation of a particular converter for more information.)")
 
     /* Set up a converter manager */
     PluginManager::Manager<ShaderTools::AbstractConverter> converterManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(ShaderTools::AbstractConverter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(ShaderTools::AbstractConverter::pluginSearchPaths().back()).second())
+        #endif
+    };
 
     /* Data passed from one converter to another in case there's more than one */
     Containers::Array<char> data;

@@ -112,6 +112,9 @@ if(MAGNUM_WITH_FONTCONVERTER)
     if(NOT MAGNUM_TARGET_GL)
         message(SEND_ERROR "magnum-fontconverter is available only if MAGNUM_TARGET_GL is enabled")
     endif()
+    if(CORRADE_TARGET_EMSCRIPTEN)
+        message(SEND_ERROR "The magnum-fontconverter utility isn't available on Emscripten due to lack of GPU access from Node.js. Set MAGNUM_WITH_FONTCONVERTER to OFF to skip building it.")
+    endif()
 
     find_package(Corrade REQUIRED Main)
 

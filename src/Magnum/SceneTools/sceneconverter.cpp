@@ -418,7 +418,9 @@ int main(int argc, char** argv) {
         .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)", "PLUGIN")
         .addArrayOption('P', "image-converter").setHelp("image-converter", "converter plugin(s) to apply to each image in the scene", "PLUGIN")
         .addArrayOption('M', "mesh-converter").setHelp("mesh-converter", "converter plugin(s) to apply to each mesh in the scene", "PLUGIN")
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        #endif
         .addArrayOption("prefer").setHelp("prefer", "prefer particular plugins for given alias(es)", "alias:plugin1,plugin2,…")
         .addArrayOption("set").setHelp("set", "set global plugin(s) options", "plugin:key=val,key2=val2,…")
         #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
@@ -572,20 +574,29 @@ well, the IDs reference attributes of the first mesh.)")
 
     /* Importer manager */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())
+        #endif
+    };
 
     /* Image converter manager for potential dependencies. Needs to be
        constructed before the scene converter manager for proper destruction
        order. */
     PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())
+        #endif
+    };
 
     /* Scene converter manager, register the image converter manager with it */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractSceneConverter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractSceneConverter::pluginSearchPaths().back()).second())
+        #endif
+    };
     converterManager.registerExternalManager(imageConverterManager);
 
     /* Set preferred plugins */

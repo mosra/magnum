@@ -89,7 +89,10 @@ install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL
 
 if(MAGNUM_WITH_DISTANCEFIELDCONVERTER)
     if(NOT MAGNUM_TARGET_GL)
-        message(SEND_ERROR "magnum-distancefieldconverter is available only if MAGNUM_TARGET_GL is enabled")
+        message(SEND_ERROR "The magnum-distancefieldconverter utility is available only if MAGNUM_TARGET_GL is enabled")
+    endif()
+    if(CORRADE_TARGET_EMSCRIPTEN)
+        message(SEND_ERROR "The magnum-distancefieldconverter utility isn't available on Emscripten due to lack of GPU access from Node.js. Set MAGNUM_WITH_DISTANCEFIELDCONVERTER to OFF to skip building it.")
     endif()
 
     find_package(Corrade REQUIRED Main)

@@ -140,7 +140,9 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .addArgument("output").setHelp("output", "output filename prefix")
         .addNamedArgument("font").setHelp("font", "font plugin")
         .addNamedArgument("converter").setHelp("converter", "font converter plugin")
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        #endif
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                  "0123456789?!:;,. ").setHelp("characters", "characters to include in the output")
@@ -158,21 +160,30 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
 int FontConverter::exec() {
     /* Font converter dependencies */
     PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())
+        #endif
+    };
 
     /* Load font */
     PluginManager::Manager<AbstractFont> fontManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFont::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFont::pluginSearchPaths().back()).second())
+        #endif
+    };
     Containers::Pointer<AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
     /* Register the image converter manager for potential dependencies
        (MagnumFontConverter needs TgaImageConverter, for example) */
     PluginManager::Manager<AbstractFontConverter> converterManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFontConverter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(AbstractFontConverter::pluginSearchPaths().back()).second())
+        #endif
+    };
     converterManager.registerExternalManager(imageConverterManager);
 
     /* Load font converter */

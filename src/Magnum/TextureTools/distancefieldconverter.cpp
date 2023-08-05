@@ -144,7 +144,9 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        #endif
         .addNamedArgument("output-size").setHelp("output-size", "size of output image", "\"X Y\"")
         .addNamedArgument("radius").setHelp("radius", "distance field computation radius", "N")
         .addSkippedPrefix("magnum", "engine-specific options")
@@ -157,15 +159,21 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
 int DistanceFieldConverter::exec() {
     /* Load importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImporter::pluginSearchPaths().back()).second())
+        #endif
+    };
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) return 1;
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         args.value("plugin-dir").empty() ? Containers::String{} :
-        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())};
+        Utility::Path::join(args.value("plugin-dir"), Utility::Path::split(Trade::AbstractImageConverter::pluginSearchPaths().back()).second())
+        #endif
+    };
     Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 
