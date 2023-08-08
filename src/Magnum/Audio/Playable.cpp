@@ -55,11 +55,11 @@ template<UnsignedInt dimensions> void Playable<dimensions>::clean(const MatrixTy
     /** @todo velocity */
 }
 
-template<UnsignedInt dimensions> PlayableGroup<dimensions>* Playable<dimensions>::playables()  {
+template<UnsignedInt dimensions> PlayableGroup<dimensions>* Playable<dimensions>::playables() {
     return static_cast<PlayableGroup<dimensions>*>(this->group());
 }
 
-template<UnsignedInt dimensions> const PlayableGroup<dimensions>* Playable<dimensions>::playables()  const {
+template<UnsignedInt dimensions> const PlayableGroup<dimensions>* Playable<dimensions>::playables() const {
     return static_cast<const PlayableGroup<dimensions>*>(this->group());
 }
 
