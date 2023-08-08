@@ -199,8 +199,9 @@ void ContextALTest::isExtensionUnsupported() {
 }
 
 void ContextALTest::isExtensionDisabled() {
-    /* Yes, FFS. this is a weird-ass name */
-    const char* argv[] = { "", "--magnum-disable-extensions", "ALC_ENUMERATION_EXT" };
+    /* Yes, FFS. this is a weird-ass name. Also adding an unknown extension
+       name that should be ignored. */
+    const char* argv[] = { "", "--magnum-disable-extensions", "ALC_ENUMERATION_EXT AL_THIS_IS_NO_EXTENSION" };
     /* MSVC 2015 and 2017 needs the int cast otherwise C2398 */
     Context context{int(Containers::arraySize(argv)), argv};
     CORRADE_VERIFY(!context.isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
