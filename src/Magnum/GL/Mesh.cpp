@@ -998,8 +998,7 @@ void Mesh::bindVAOImplementationVAO(const GLuint id) {
 }
 
 void Mesh::bindVAO() {
-    GLuint& current = Context::current().state().mesh.currentVAO;
-    if(current != _id) {
+    if(Context::current().state().mesh.currentVAO != _id) {
         /* Binding the VAO finally creates it */
         _flags |= ObjectFlag::Created;
         bindVAOImplementationVAO(_id);
