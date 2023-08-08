@@ -39,6 +39,7 @@ struct ContextALTest: TestSuite::Tester {
 
     void constructDefault();
     void constructConfiguration();
+    void constructDeviceNotFound();
     void constructMove();
 
     void quietLog();
@@ -56,6 +57,7 @@ ContextALTest::ContextALTest():
 {
     addTests({&ContextALTest::constructDefault,
               &ContextALTest::constructConfiguration,
+              &ContextALTest::constructDeviceNotFound,
               &ContextALTest::constructMove});
 
     addInstancedTests({&ContextALTest::quietLog}, 2);
@@ -125,6 +127,19 @@ void ContextALTest::constructConfiguration() {
         } else {
             CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Disabled);
         }
+    }
+
+    CORRADE_VERIFY(!Context::hasCurrent());
+}
+
+void ContextALTest::constructDeviceNotFound() {
+    CORRADE_VERIFY(!Context::hasCurrent());
+
+    {
+        Context context{NoCreate, arguments().first, arguments().second};
+        CORRADE_VERIFY(!context.tryCreate(Context::Configuration{}
+            .setDeviceSpecifier("hello this definitely doesn't exist")));
+        CORRADE_VERIFY(!Context::hasCurrent());
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
