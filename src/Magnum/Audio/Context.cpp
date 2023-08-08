@@ -340,6 +340,12 @@ std::vector<std::string> Context::extensionStrings() const {
     return extensions;
 }
 
+Int Context::frequency() const {
+    Int count;
+    alcGetIntegerv(_device, ALC_FREQUENCY, 1, &count);
+    return count;
+}
+
 bool Context::isHrtfEnabled() const {
     Int enabled;
     alcGetIntegerv(_device, ALC_HRTF_SOFT, 1, &enabled);
@@ -358,6 +364,24 @@ Context::HrtfStatus Context::hrtfStatus() const {
 std::string Context::hrtfSpecifierString() const {
     /* Returns a string on ALC_SOFT_HRTF, nullptr on ALC_SOFTX_HRTF */
     return Utility::String::fromArray(alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT));
+}
+
+Int Context::monoSourceCount() const {
+    Int count;
+    alcGetIntegerv(_device, ALC_MONO_SOURCES, 1, &count);
+    return count;
+}
+
+Int Context::stereoSourceCount() const {
+    Int count;
+    alcGetIntegerv(_device, ALC_STEREO_SOURCES, 1, &count);
+    return count;
+}
+
+Int Context::refreshRate() const {
+    Int count;
+    alcGetIntegerv(_device, ALC_REFRESH, 1, &count);
+    return count;
 }
 
 std::string Context::deviceSpecifierString() const {

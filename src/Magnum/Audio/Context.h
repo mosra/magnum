@@ -266,6 +266,14 @@ class MAGNUM_AUDIO_EXPORT Context {
         bool tryCreate(const Configuration& configuration);
 
         /**
+         * @brief Sampling rate in Hz
+         * @m_since_latest
+         *
+         * @see @ref Configuration::setFrequency()
+         */
+        Int frequency() const;
+
+        /**
          * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
          *
          * HRFTs may not be enabled/disabled in a running context. Instead
@@ -295,6 +303,30 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @requires_al_extension @alc_extension{SOFT,HRTF}
          */
         std::string hrtfSpecifierString() const;
+
+        /**
+         * @brief Count of supported mono sources
+         * @m_since_latest
+         *
+         * @see @ref Configuration::setMonoSourceCount()
+         */
+        Int monoSourceCount() const;
+
+        /**
+         * @brief Count of supported stereo sources
+         * @m_since_latest
+         *
+         * @see @ref Configuration::setStereoSourceCount()
+         */
+        Int stereoSourceCount() const;
+
+        /**
+         * @brief Refresh rate in Hz
+         * @m_since_latest
+         *
+         * @see @ref Configuration::setRefreshRate()
+         */
+        Int refreshRate() const;
 
         /**
          * @brief Device specifier string
@@ -459,7 +491,8 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @return Reference to self (for method chaining)
          *
          * If set to @cpp -1 @ce (the default), system OpenAL configuration is
-         * used.
+         * used. Use @see @ref Context::frequency() to query the actual used
+         * sampling rate on a created context.
          */
         Configuration& setFrequency(Int hz) {
             _frequency = hz;
@@ -474,7 +507,9 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @return Reference to self (for method chaining)
          *
          * If set to @ref Hrtf::Default (the default), system OpenAL
-         * configuration is used.
+         * configuration is used. Use @ref Context::isHrtfEnabled(),
+         * @ref Context::hrtfStatus() and @ref Context::hrtfSpecifierString()
+         * to query the actual used HRTF configuration on a created context.
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
          *      @alc_extension{SOFT,HRTF}, otherwise the setting will be simply
          *      ignored
@@ -492,7 +527,8 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @return Reference to self (for method chaining)
          *
          * If set to @cpp -1 @ce (the default), no hint will be given to
-         * OpenAL.
+         * OpenAL. Use @see @ref Context::monoSourceCount() to query the actual
+         * supported mono source count on a created context.
          */
         Configuration& setMonoSourceCount(Int count) {
             _monoSources = count;
@@ -507,7 +543,8 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @return Reference to self (for method chaining)
          *
          * If set to @cpp -1 @ce (the default), no hint will be given to
-         * OpenAL.
+         * OpenAL. Use @see @ref Context::stereoSourceCount() to query the
+         * actual supported stereo source count on a created context.
          */
         Configuration& setStereoSourceCount(Int count) {
             _stereoSources = count;

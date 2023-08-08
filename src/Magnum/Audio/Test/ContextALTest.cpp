@@ -27,6 +27,7 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/Audio/Extensions.h"
 #include "Magnum/Audio/Context.h"
@@ -36,7 +37,8 @@ namespace Magnum { namespace Audio { namespace Test { namespace {
 struct ContextALTest: TestSuite::Tester {
     explicit ContextALTest();
 
-    void construct();
+    void constructDefault();
+    void constructConfiguration();
     void constructMove();
 
     void quietLog();
@@ -52,7 +54,8 @@ ContextALTest::ContextALTest():
     TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}
         .setSkippedArgumentPrefixes({"magnum"})}
 {
-    addTests({&ContextALTest::construct,
+    addTests({&ContextALTest::constructDefault,
+              &ContextALTest::constructConfiguration,
               &ContextALTest::constructMove});
 
     addInstancedTests({&ContextALTest::quietLog}, 2);
@@ -64,13 +67,64 @@ ContextALTest::ContextALTest():
               &ContextALTest::isExtensionDisabled});
 }
 
-void ContextALTest::construct() {
+void ContextALTest::constructDefault() {
     CORRADE_VERIFY(!Context::hasCurrent());
 
     {
         Context context{arguments().first, arguments().second};
         CORRADE_VERIFY(Context::hasCurrent());
         CORRADE_COMPARE(&Context::current(), &context);
+
+        /* Verify the queries make sense */
+        CORRADE_COMPARE_AS(context.frequency(), 10000,
+            TestSuite::Compare::Greater);
+        CORRADE_COMPARE_AS(context.monoSourceCount(), 2,
+            TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(context.stereoSourceCount(), 1,
+            TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(context.refreshRate(), 10,
+            TestSuite::Compare::Greater);
+    }
+
+    CORRADE_VERIFY(!Context::hasCurrent());
+}
+
+void ContextALTest::constructConfiguration() {
+    CORRADE_VERIFY(!Context::hasCurrent());
+
+    {
+        Context context{
+            Context::Configuration{}
+                .setFrequency(22050)
+                .setHrtf(Context::Configuration::Hrtf::Enabled)
+                .setMonoSourceCount(5)
+                .setStereoSourceCount(4)
+                .setRefreshRate(25),
+            arguments().first, arguments().second
+        };
+        CORRADE_VERIFY(Context::hasCurrent());
+        CORRADE_COMPARE(&Context::current(), &context);
+
+        /* Verify the queries make sense. All of these are just hints so the
+           actual value used could be higher. */
+        CORRADE_COMPARE_AS(context.frequency(), 22050,
+            TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE_AS(context.monoSourceCount(), 5,
+            TestSuite::Compare::GreaterOrEqual);
+        CORRADE_COMPARE(context.stereoSourceCount(), 4);
+        CORRADE_COMPARE_AS(context.refreshRate(), 25,
+            TestSuite::Compare::GreaterOrEqual);
+
+        /* HRTF gets enabled only if the extension is supported */
+        if(context.isExtensionSupported<Extensions::ALC::SOFT::HRTF>()) {
+            CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
+            CORRADE_VERIFY(!context.hrtfSpecifierString().empty());
+        } else if(context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
+            CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Enabled);
+            CORRADE_VERIFY(context.hrtfSpecifierString().empty());
+        } else {
+            CORRADE_COMPARE(context.hrtfStatus(), Context::HrtfStatus::Disabled);
+        }
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
@@ -79,10 +133,12 @@ void ContextALTest::construct() {
 void ContextALTest::constructMove() {
     Context context;
     CORRADE_COMPARE(&Context::current(), &context);
+    Int frequency = context.frequency();
 
     {
         Context second{std::move(context)};
         CORRADE_COMPARE(&Context::current(), &second);
+        CORRADE_COMPARE(second.frequency(), frequency);
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
