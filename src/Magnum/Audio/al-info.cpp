@@ -84,20 +84,23 @@ above to it via GET parameters. See the relevant section of the
   |   Information about Magnum engine OpenAL capabilities   |
   +---------------------------------------------------------+
 
-Audio Renderer: OpenAL Soft by OpenAL Community
-OpenAL version: 1.1 ALSOFT 1.17.2
+Audio renderer: OpenAL Soft by OpenAL Community
+OpenAL version: 1.1 ALSOFT 1.23.1
 Available devices:
     OpenAL Soft
 Current device: OpenAL Soft
+
+Frequency: 44100 Hz
+HRTF: Audio::Context::HrtfStatus::Disabled
+Mono source count: 255
+Stereo source count: 1
+Refresh rate: 50 Hz
+
 Vendor extension support:
-    AL_EXT_FLOAT32                                                SUPPORTED
-    AL_EXT_DOUBLE                                                 SUPPORTED
-    AL_EXT_ALAW                                                   SUPPORTED
-    AL_EXT_MULAW                                                  SUPPORTED
-    AL_EXT_MCFORMATS                                              SUPPORTED
     ALC_ENUMERATION_EXT                                           SUPPORTED
     ALC_SOFTX_HRTF                                                   -
     ALC_SOFT_HRTF                                                 SUPPORTED
+    AL_EXT_ALAW                                                   SUPPORTED
     ...
 @endcode
 
@@ -124,7 +127,18 @@ int main(const int argc, const char* const* const argv) {
     Debug() << "Available devices:";
     for(const auto& device: Audio::Context::deviceSpecifierStrings())
         Debug() << "   " << device;
-    Debug() << "Current device:" << c.deviceSpecifierString();
+    Debug() << "Current device:" << c.deviceSpecifierString() << Debug::newline;
+
+    Debug{} << "Frequency:" << c.frequency() << "Hz";
+    {
+        Debug d;
+        d << "HRTF:" << c.hrtfStatus();
+        if(c.isHrtfEnabled())
+            d << Debug::nospace << "," << c.hrtfSpecifierString();
+    }
+    Debug{} << "Mono source count:" << c.monoSourceCount();
+    Debug{} << "Stereo source count:" << c.stereoSourceCount();
+    Debug{} << "Refresh rate:" << c.refreshRate() << "Hz" << Debug::newline;
 
     if(args.isSet("extension-strings")) {
         Debug() << "Extension strings:";
