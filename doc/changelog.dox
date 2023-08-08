@@ -487,6 +487,16 @@ See also:
     type-erased interpolator pointer without having to cast to a concrete
     @ref Animation::TrackView type
 
+@subsubsection changelog-latest-changes-audio Audio library
+
+-   All configurable OpenAL context properties are now exposed via
+    @ref Audio::Context::frequency(),
+    @relativeref{Audio::Context,monoSourceCount()},
+    @relativeref{Audio::Context,stereoSourceCount()} and
+    @relativeref{Audio::Context,refreshRate()} getters. These are now also
+    listed in the @ref magnum-al-info "magnum-al-info" utility, along with a
+    possibility to override them there.
+
 @subsubsection changelog-latest-changes-debugtools DebugTools library
 
 -   @ref DebugTools::bufferData() and @ref DebugTools::bufferSubData() now
