@@ -79,6 +79,7 @@ void PlayableALTest::group() {
     CORRADE_COMPARE(playable.source().gain(), 0.5f);
 
     playable.setGain(0.5f);
+    CORRADE_COMPARE(playable.gain(), 0.5f);
     CORRADE_COMPARE(playable.source().gain(), 0.25f);
 
     group.play();
