@@ -78,14 +78,21 @@ void ContextALTest::constructDefault() {
         CORRADE_COMPARE(&Context::current(), &context);
 
         /* Verify the queries make sense */
-        CORRADE_COMPARE_AS(context.frequency(), 10000,
-            TestSuite::Compare::Greater);
-        CORRADE_COMPARE_AS(context.monoSourceCount(), 2,
-            TestSuite::Compare::GreaterOrEqual);
-        CORRADE_COMPARE_AS(context.stereoSourceCount(), 1,
-            TestSuite::Compare::GreaterOrEqual);
-        CORRADE_COMPARE_AS(context.refreshRate(), 10,
-            TestSuite::Compare::Greater);
+        #ifdef CORRADE_TARGET_APPLE
+        if(context.vendorString() == "Apple Computer Inc.")
+            CORRADE_WARN("Apple's OpenAL implementation returns bogus values. Sometimes. With a random value every call. Skipping the context properties comparison.");
+        else
+        #endif
+        {
+            CORRADE_COMPARE_AS(context.frequency(), 10000,
+                TestSuite::Compare::Greater);
+            CORRADE_COMPARE_AS(context.monoSourceCount(), 2,
+                TestSuite::Compare::GreaterOrEqual);
+            CORRADE_COMPARE_AS(context.stereoSourceCount(), 1,
+                TestSuite::Compare::GreaterOrEqual);
+            CORRADE_COMPARE_AS(context.refreshRate(), 10,
+                TestSuite::Compare::Greater);
+        }
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
@@ -109,13 +116,20 @@ void ContextALTest::constructConfiguration() {
 
         /* Verify the queries make sense. All of these are just hints so the
            actual value used could be higher. */
-        CORRADE_COMPARE_AS(context.frequency(), 22050,
-            TestSuite::Compare::GreaterOrEqual);
-        CORRADE_COMPARE_AS(context.monoSourceCount(), 5,
-            TestSuite::Compare::GreaterOrEqual);
-        CORRADE_COMPARE(context.stereoSourceCount(), 4);
-        CORRADE_COMPARE_AS(context.refreshRate(), 25,
-            TestSuite::Compare::GreaterOrEqual);
+        #ifdef CORRADE_TARGET_APPLE
+        if(context.vendorString() == "Apple Computer Inc.")
+            CORRADE_WARN("Apple's OpenAL implementation returns bogus values. Sometimes. With a random value every call. Skipping the context properties comparison.");
+        else
+        #endif
+        {
+            CORRADE_COMPARE_AS(context.frequency(), 22050,
+                TestSuite::Compare::GreaterOrEqual);
+            CORRADE_COMPARE_AS(context.monoSourceCount(), 5,
+                TestSuite::Compare::GreaterOrEqual);
+            CORRADE_COMPARE(context.stereoSourceCount(), 4);
+            CORRADE_COMPARE_AS(context.refreshRate(), 25,
+                TestSuite::Compare::GreaterOrEqual);
+        }
 
         /* HRTF gets enabled only if the extension is supported */
         if(context.isExtensionSupported<Extensions::ALC::SOFT::HRTF>()) {
@@ -137,9 +151,15 @@ void ContextALTest::constructDeviceNotFound() {
 
     {
         Context context{NoCreate, arguments().first, arguments().second};
-        CORRADE_VERIFY(!context.tryCreate(Context::Configuration{}
-            .setDeviceSpecifier("hello this definitely doesn't exist")));
-        CORRADE_VERIFY(!Context::hasCurrent());
+        {
+            #ifdef CORRADE_TARGET_APPLE
+            CORRADE_EXPECT_FAIL_IF(context.vendorString() == "Apple Computer Inc.",
+                "Apple's OpenAL implementation doesn't fail if invalid device specifier is set.");
+            #endif
+            CORRADE_VERIFY(!context.tryCreate(Context::Configuration{}
+                .setDeviceSpecifier("hello this definitely doesn't exist")));
+            CORRADE_VERIFY(!Context::hasCurrent());
+        }
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
@@ -153,7 +173,14 @@ void ContextALTest::constructMove() {
     {
         Context second{std::move(context)};
         CORRADE_COMPARE(&Context::current(), &second);
-        CORRADE_COMPARE(second.frequency(), frequency);
+        #ifdef CORRADE_TARGET_APPLE
+        if(context.vendorString() == "Apple Computer Inc.")
+            CORRADE_WARN("Apple's OpenAL implementation returns bogus values. Sometimes. With a random value every call. Skipping the context properties comparison.");
+        else
+        #endif
+        {
+            CORRADE_COMPARE(second.frequency(), frequency);
+        }
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
