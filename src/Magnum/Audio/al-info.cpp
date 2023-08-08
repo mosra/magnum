@@ -57,6 +57,8 @@ information.
 
 @code{.sh}
 magnum-al-info [--magnum-...] [-h|--help] [-s|--short] [--extension-strings]
+    [--frequency Hz] [--hrtf true|false] [--mono-source-count N]
+    [--stereo-source-count N] [--refresh-rate Hz]
 @endcode
 
 Arguments:
@@ -65,6 +67,13 @@ Arguments:
 -   `-s`, `--short` --- display just essential info and exit
 -   `--extension-strings` --- list all extension strings provided by the driver
     (implies `--short`)
+-   `--frequency Hz` --- override OpenAL context frequency (default: `-1`)
+-   `--hrtf true|false` --- override OpenAL HRTF configuration
+-   `--mono-source-count N` --- override OpenAL mono source count (default:
+    `-1`)
+-   `--stereo-source-count N` --- override OpenAL stereo source count (default:
+    `-1`)
+-   `--refresh-rate Hz` --- override OpenAL refresh rate (default: `-1`)
 -   `--magnum-...` --- engine-specific options (see
     @ref Audio-Context-command-line for details)
 
@@ -114,6 +123,11 @@ int main(const int argc, const char* const* const argv) {
     Utility::Arguments args;
     args.addBooleanOption('s', "short").setHelp("short", "display just essential info and exit")
         .addBooleanOption("extension-strings").setHelp("extension-strings", "list all extension strings provided by the driver (implies --short)")
+        .addOption("frequency", "-1").setHelp("frequency", "override OpenAL context frequency", "Hz")
+        .addOption("hrtf", "").setHelp("hrtf", "override OpenAL HRTF configuration", "true|false")
+        .addOption("mono-source-count", "-1").setHelp("mono-source-count", "override OpenAL mono source count", "N")
+        .addOption("stereo-source-count", "-1").setHelp("stereo-source-count", "override OpenAL stereo source count", "N")
+        .addOption("refresh-rate", "-1").setHelp("refresh-rate", "override OpenAL refresh rate", "Hz")
         .addSkippedPrefix("magnum", "engine-specific options")
         .parse(argc, argv);
 
@@ -123,7 +137,18 @@ int main(const int argc, const char* const* const argv) {
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 
-    Audio::Context c{argc, argv};
+    Audio::Context::Configuration configuration;
+    configuration
+        .setFrequency(args.value<Int>("frequency"))
+        .setMonoSourceCount(args.value<Int>("mono-source-count"))
+        .setStereoSourceCount(args.value<Int>("stereo-source-count"))
+        .setRefreshRate(args.value<Int>("refresh-rate"));
+    if(!args.value("hrtf").empty())
+        configuration.setHrtf(args.value<bool>("hrtf") ?
+            Audio::Context::Configuration::Hrtf::Enabled :
+            Audio::Context::Configuration::Hrtf::Disabled);
+
+    Audio::Context c{configuration, argc, argv};
     Debug() << "Available devices:";
     for(const auto& device: Audio::Context::deviceSpecifierStrings())
         Debug() << "   " << device;
