@@ -95,7 +95,7 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
                Similarly warn if an attribute has a location conflicting with
                another one (such as ObjectId and Bitangent). */
             if(boundAttributes[attribute.location()] != ~UnsignedInt{}) {
-                Warning{} << "MeshTools::compile(): ignoring" << meshData.attributeName(i) << meshData.attributeId(i) << "as its biding slot is already occupied by" << meshData.attributeName(boundAttributes[attribute.location()]) << meshData.attributeId(boundAttributes[attribute.location()]);
+                Warning{} << "MeshTools::compile(): ignoring" << meshData.attributeName(i) << meshData.attributeId(i) << "as its binding slot is already occupied by" << meshData.attributeName(boundAttributes[attribute.location()]) << meshData.attributeId(boundAttributes[attribute.location()]);
                 return;
             }
 

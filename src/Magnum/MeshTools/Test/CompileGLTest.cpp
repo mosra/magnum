@@ -364,7 +364,7 @@ const struct {
             VertexFormat::Vector2, 2*sizeof(Vector2),
             9, ConflictingAttributesDataStride},
     }}, Flag::TextureCoordinates2D, 0, "textured2D.tga",
-        "ignoring Trade::MeshAttribute::TextureCoordinates 1 as its biding slot is already occupied by Trade::MeshAttribute::TextureCoordinates 0"},
+        "ignoring Trade::MeshAttribute::TextureCoordinates 1 as its binding slot is already occupied by Trade::MeshAttribute::TextureCoordinates 0"},
     #ifndef MAGNUM_TARGET_GLES2
     {"bitangents + object ID", {InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent,
@@ -374,7 +374,7 @@ const struct {
             VertexFormat::UnsignedInt, 3*sizeof(Vector2),
             9, ConflictingAttributesDataStride},
     }}, Flag::ObjectId, 0, "flat2D.tga",
-        "ignoring Trade::MeshAttribute::ObjectId 0 as its biding slot is already occupied by Trade::MeshAttribute::Bitangent 0"},
+        "ignoring Trade::MeshAttribute::ObjectId 0 as its binding slot is already occupied by Trade::MeshAttribute::Bitangent 0"},
     {"object ID + bitangents", {InPlaceInit, {
         Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
             VertexFormat::UnsignedInt, 3*sizeof(Vector2),
@@ -383,7 +383,7 @@ const struct {
             VertexFormat::Vector3, 3*sizeof(Vector2) + sizeof(UnsignedInt),
             9, ConflictingAttributesDataStride},
     }}, Flag::ObjectId, 26234, "flat2D.tga",
-        "ignoring Trade::MeshAttribute::Bitangent 0 as its biding slot is already occupied by Trade::MeshAttribute::ObjectId 0"},
+        "ignoring Trade::MeshAttribute::Bitangent 0 as its binding slot is already occupied by Trade::MeshAttribute::ObjectId 0"},
     #endif
     /* Conflicting skinning attributes tested directly in skinning() */
     /** @todo test also a conflict with instanced transformation + secondary
