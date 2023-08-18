@@ -57,7 +57,7 @@ void CombineIndexedArraysTest::wrongIndexCount() {
     Error redirectError{&ss};
     std::vector<UnsignedInt> a{0, 1, 0};
     std::vector<UnsignedInt> b{3, 4};
-    std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({a, b});
+    std::vector<UnsignedInt> result = combineIndexArrays({a, b});
 
     CORRADE_COMPARE(ss.str(), "MeshTools::combineIndexArrays(): the arrays don't have the same size\n");
 }
@@ -67,7 +67,7 @@ void CombineIndexedArraysTest::indexArrays() {
     std::vector<UnsignedInt> b{3, 4, 3};
     std::vector<UnsignedInt> c{6, 7, 6};
 
-    std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({a, b, c});
+    std::vector<UnsignedInt> result = combineIndexArrays({a, b, c});
     CORRADE_COMPARE(result, (std::vector<UnsignedInt>{0, 1, 0}));
     CORRADE_COMPARE(a, (std::vector<UnsignedInt>{0, 1}));
     CORRADE_COMPARE(b, (std::vector<UnsignedInt>{3, 4}));
@@ -82,7 +82,7 @@ void CombineIndexedArraysTest::indexedArrays() {
     std::vector<UnsignedInt> array2{ 0, 1, 2, 3, 4 };
     std::vector<UnsignedInt> array3{ 0, 1, 2, 3, 4, 5, 6, 7 };
 
-    std::vector<UnsignedInt> result = MeshTools::combineIndexedArrays(
+    std::vector<UnsignedInt> result = combineIndexedArrays(
         std::make_pair(std::cref(a), std::ref(array1)),
         std::make_pair(std::cref(b), std::ref(array2)),
         std::make_pair(std::cref(c), std::ref(array3)));

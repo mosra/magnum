@@ -73,7 +73,7 @@ void BoundingVolumeTest::range() {
        that the input and output are forwarded correctly */
     constexpr Float cylinderLength = 7.0f;
     const Trade::MeshData cylinderMesh = Primitives::capsule3DSolid(3, 1, 12, cylinderLength*0.5f);
-    const Range3D box = MeshTools::boundingRange(
+    const Range3D box = boundingRange(
         cylinderMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
 
     CORRADE_COMPARE(box.center(), Vector3{});
@@ -83,7 +83,7 @@ void BoundingVolumeTest::range() {
 void BoundingVolumeTest::rangeNaN() {
     /* NaNs are skipped (unless it's all NaNs), matching minmax() behaviour */
     {
-        const Range3D box = MeshTools::boundingRange(Containers::stridedArrayView({
+        const Range3D box = boundingRange(Containers::stridedArrayView({
                 Vector3{Constants::nan()},
                 Vector3{1.0f, 1.0f, 1.0f},
                 Vector3{Constants::nan()},
@@ -93,7 +93,7 @@ void BoundingVolumeTest::rangeNaN() {
         CORRADE_COMPARE(box.min(), (Vector3{1.0f, 1.0f, 1.0f}));
         CORRADE_COMPARE(box.max(), (Vector3{2.0f, 2.0f, 2.0f}));
     } {
-        const Range3D box = MeshTools::boundingRange(Containers::stridedArrayView({
+        const Range3D box = boundingRange(Containers::stridedArrayView({
                 Vector3{Constants::nan()},
                 Vector3{Constants::nan()}
             }));
@@ -107,7 +107,7 @@ void BoundingVolumeTest::sphereBouncingBubble() {
        all identical positions */
     {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::StridedArrayView1D<const Vector3>{});
+            boundingSphereBouncingBubble(Containers::StridedArrayView1D<const Vector3>{});
         CORRADE_COMPARE(sphere.first(), (Vector3{}));
         CORRADE_COMPARE(sphere.second(), Math::TypeTraits<Float>::epsilon());
 
@@ -115,14 +115,14 @@ void BoundingVolumeTest::sphereBouncingBubble() {
        the algorithm */
     } {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+            boundingSphereBouncingBubble(Containers::stridedArrayView({
                 Vector3{1.0f, 2.0f, 3.0f}
             }));
         CORRADE_COMPARE(sphere.first(), (Vector3{1.0f, 2.0f, 3.0f}));
         CORRADE_COMPARE(sphere.second(), Math::TypeTraits<Float>::epsilon());
     } {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+            boundingSphereBouncingBubble(Containers::stridedArrayView({
                 Vector3{3.0f, 1.0f, 2.0f},
                 Vector3{3.0f, 1.0f, 2.0f},
                 Vector3{3.0f, 1.0f, 2.0f}
@@ -133,7 +133,7 @@ void BoundingVolumeTest::sphereBouncingBubble() {
     /* Simple cases */
     } {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+            boundingSphereBouncingBubble(Containers::stridedArrayView({
                 Vector3{1.0f, 1.0f, 1.0f},
                 Vector3{2.0f, 2.0f, 2.0f}
             }));
@@ -141,7 +141,7 @@ void BoundingVolumeTest::sphereBouncingBubble() {
         CORRADE_COMPARE(sphere.second(), Vector3{0.5f}.length());
     } {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+            boundingSphereBouncingBubble(Containers::stridedArrayView({
                 Vector3{2.0f, 0.0f, 0.0f},
                 Vector3{-2.0f, 0.0f, 0.0f},
                 Vector3{0.0f, 2.0f, 0.0f},
@@ -154,7 +154,7 @@ void BoundingVolumeTest::sphereBouncingBubble() {
     } {
         const Trade::MeshData sphereMesh = Primitives::icosphereSolid(1);
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(sphereMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
+            boundingSphereBouncingBubble(sphereMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
         /* No error */
         CORRADE_COMPARE(sphere.first(), (Vector3{0.0f, 0.0f, 0.0f}));
         CORRADE_COMPARE(sphere.second(), 1.0f);
@@ -162,9 +162,9 @@ void BoundingVolumeTest::sphereBouncingBubble() {
         Trade::MeshData sphereMesh = Primitives::icosphereSolid(1);
         constexpr Vector3 translation{1.0f, 2.0f, 3.0f};
         constexpr Vector3 scale{0.5f, 1.2f, 2.8f};
-        MeshTools::transform3DInPlace(sphereMesh, Matrix4::translation(translation)*Matrix4::scaling(scale));
+        transform3DInPlace(sphereMesh, Matrix4::translation(translation)*Matrix4::scaling(scale));
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(sphereMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
+            boundingSphereBouncingBubble(sphereMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
         /* Noticeable error */
         constexpr Float Delta = 0.04f;
         CORRADE_COMPARE_WITH(sphere.first(), translation, TestSuite::Compare::around(Vector3{Delta}));
@@ -173,12 +173,12 @@ void BoundingVolumeTest::sphereBouncingBubble() {
 
     /* Cube -- translated and scaled */
     } {
-        Trade::MeshData cubeMesh = MeshTools::copy(Primitives::cubeSolid());
+        Trade::MeshData cubeMesh = copy(Primitives::cubeSolid());
         constexpr Vector3 translation{1.0f, 2.0f, 3.0f};
         constexpr Float scale = 13.2f;
-        MeshTools::transform3DInPlace(cubeMesh, Matrix4::translation(translation)*Matrix4::scaling(Vector3{scale}));
+        transform3DInPlace(cubeMesh, Matrix4::translation(translation)*Matrix4::scaling(Vector3{scale}));
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(cubeMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
+            boundingSphereBouncingBubble(cubeMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
         /* Noticeable error */
         constexpr Float Delta = 0.04f;
         CORRADE_COMPARE_WITH(sphere.first(), translation, TestSuite::Compare::around(Vector3{Delta}));
@@ -191,11 +191,11 @@ void BoundingVolumeTest::sphereBouncingBubble() {
 
     for(Deg degrees = 0.0_degf; degrees < 360.0_degf; degrees += 60.0_degf) {
         CORRADE_ITERATION(degrees);
-        Trade::MeshData cubeMesh = MeshTools::copy(Primitives::cubeSolid());
+        Trade::MeshData cubeMesh = copy(Primitives::cubeSolid());
         constexpr Vector3 translation{1.0f, 2.0f, 3.0f};
-        MeshTools::transform3DInPlace(cubeMesh, Matrix4::rotationY(degrees)*Matrix4::translation(translation));
+        transform3DInPlace(cubeMesh, Matrix4::rotationY(degrees)*Matrix4::translation(translation));
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(cubeMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
+            boundingSphereBouncingBubble(cubeMesh.attribute<Vector3>(Trade::MeshAttribute::Position));
         CORRADE_COMPARE(sphere.second(), Constants::sqrt3());
     }
 }
@@ -204,7 +204,7 @@ void BoundingVolumeTest::sphereBouncingBubbleNaN() {
     /* NaN is ignored except for the first position element */
     {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+            boundingSphereBouncingBubble(Containers::stridedArrayView({
                 Vector3{1.0f, 1.0f, 1.0f},
                 Vector3{Constants::nan()},
                 Vector3{2.0f, 2.0f, 2.0f},
@@ -215,7 +215,7 @@ void BoundingVolumeTest::sphereBouncingBubbleNaN() {
 
     } {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(Containers::stridedArrayView({
+            boundingSphereBouncingBubble(Containers::stridedArrayView({
                 Vector3{Constants::nan()},
                 Vector3{1.0f, 1.0f, 1.0f},
                 Vector3{2.0f, 2.0f, 2.0f}
@@ -238,7 +238,7 @@ void BoundingVolumeTest::benchmarkRange() {
 
     Float r = 0.0f;
     CORRADE_BENCHMARK(50) {
-        const Range3D box = MeshTools::boundingRange(points);
+        const Range3D box = boundingRange(points);
         r += box.size().x();
     }
 
@@ -254,7 +254,7 @@ void BoundingVolumeTest::benchmarkSphereBouncingBubble() {
     Float r = 0.0f;
     CORRADE_BENCHMARK(50) {
         const Containers::Pair<Vector3, Float> sphere =
-            MeshTools::boundingSphereBouncingBubble(points);
+            boundingSphereBouncingBubble(points);
         r += sphere.second();
     }
 

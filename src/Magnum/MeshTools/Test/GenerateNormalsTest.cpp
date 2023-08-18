@@ -131,7 +131,7 @@ void GenerateNormalsTest::flatDeprecated() {
     std::vector<UnsignedInt> indices;
     std::vector<Vector3> normals;
     CORRADE_IGNORE_DEPRECATED_PUSH
-    std::tie(indices, normals) = MeshTools::generateFlatNormals({
+    std::tie(indices, normals) = generateFlatNormals({
         0, 1, 2,
         1, 2, 3
     }, {

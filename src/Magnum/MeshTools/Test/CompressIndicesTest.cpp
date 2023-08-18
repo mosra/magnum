@@ -242,7 +242,7 @@ void CompressIndicesTest::compressDeprecated() {
     MeshIndexType type;
     UnsignedInt start, end;
     CORRADE_IGNORE_DEPRECATED_PUSH
-    std::tie(data, type, start, end) = MeshTools::compressIndices(
+    std::tie(data, type, start, end) = compressIndices(
         std::vector<UnsignedInt>{1, 256, 0, 5});
     CORRADE_IGNORE_DEPRECATED_POP
 
@@ -347,8 +347,8 @@ void CompressIndicesTest::compressMeshDataNonIndexed() {
     /* Test both r-value and l-value overload */
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::compressIndices(mesh);
-    MeshTools::compressIndices(std::move(mesh));
+    compressIndices(mesh);
+    compressIndices(std::move(mesh));
     CORRADE_COMPARE(out.str(),
         "MeshTools::compressIndices(): mesh data not indexed\n"
         "MeshTools::compressIndices(): mesh data not indexed\n");
@@ -363,8 +363,8 @@ void CompressIndicesTest::compressMeshDataImplementationSpecificIndexType() {
     /* Test both r-value and l-value overload */
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::compressIndices(mesh);
-    MeshTools::compressIndices(std::move(mesh));
+    compressIndices(mesh);
+    compressIndices(std::move(mesh));
     CORRADE_COMPARE(out.str(),
         "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n"
         "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n");
@@ -379,7 +379,7 @@ void CompressIndicesTest::compressMeshDataImplementationSpecificAtLeastIndexType
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::compressIndices(mesh, meshIndexTypeWrap(0xcaca));
+    compressIndices(mesh, meshIndexTypeWrap(0xcaca));
     CORRADE_COMPARE(out.str(),
         "MeshTools::compressIndices(): can't compress to an implementation-specific index type 0xcaca\n");
 }
@@ -389,13 +389,13 @@ void CompressIndicesTest::compressAsShort() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     CORRADE_IGNORE_DEPRECATED_PUSH
-    CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),
+    CORRADE_COMPARE_AS(compressIndicesAs<UnsignedShort>({123, 456}),
         Containers::arrayView<UnsignedShort>({123, 456}),
         TestSuite::Compare::Container);
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::compressIndicesAs<UnsignedShort>({65536});
+    compressIndicesAs<UnsignedShort>({65536});
     CORRADE_COMPARE(out.str(), "MeshTools::compressIndicesAs(): type too small to represent value 65536\n");
     CORRADE_IGNORE_DEPRECATED_POP
 }

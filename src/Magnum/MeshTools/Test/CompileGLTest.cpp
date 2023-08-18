@@ -1581,9 +1581,9 @@ void CompileGLTest::morphTargetAttributes() {
     std::ostringstream out;
     Warning redirectError{&out};
     if(instanceData.flags)
-        MeshTools::compile(data, instanceData.flags);
+        compile(data, instanceData.flags);
     else
-        MeshTools::compile(data);
+        compile(data);
     CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
         "MeshTools::compile(): ignoring 2 morph target attributes\n");
 }
@@ -1600,9 +1600,9 @@ void CompileGLTest::customAttribute() {
     std::ostringstream out;
     Warning redirectError{&out};
     if(instanceData.flags)
-        MeshTools::compile(data, instanceData.flags);
+        compile(data, instanceData.flags);
     else
-        MeshTools::compile(data);
+        compile(data);
     CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
         "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::Custom(115)\n");
 }
@@ -1622,9 +1622,9 @@ void CompileGLTest::unsupportedAttribute() {
     std::ostringstream out;
     Warning redirectError{&out};
     if(instanceData.flags)
-        MeshTools::compile(data, instanceData.flags);
+        compile(data, instanceData.flags);
     else
-        MeshTools::compile(data);
+        compile(data);
     /* Warns always, regardless of the flag */
     CORRADE_COMPARE(out.str(), "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::ObjectId\n");
     #endif
@@ -1664,9 +1664,9 @@ void CompileGLTest::implementationSpecificAttributeFormat() {
     std::ostringstream out;
     Warning redirectError{&out};
     if(instanceData.flags)
-        MeshTools::compile(data, instanceData.flags);
+        compile(data, instanceData.flags);
     else
-        MeshTools::compile(data);
+        compile(data);
     CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
         "MeshTools::compile(): ignoring attribute Trade::MeshAttribute::Position with an implementation-specific format 0xdead\n");
 }
@@ -1678,7 +1678,7 @@ void CompileGLTest::generateNormalsNoPosition() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::compile(data, CompileFlag::GenerateFlatNormals);
+    compile(data, CompileFlag::GenerateFlatNormals);
     CORRADE_COMPARE(out.str(),
         "MeshTools::compile(): the mesh has no positions, can't generate normals\n");
 }
@@ -1693,7 +1693,7 @@ void CompileGLTest::generateNormals2DPosition() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::compile(data, CompileFlag::GenerateFlatNormals);
+    compile(data, CompileFlag::GenerateFlatNormals);
     CORRADE_COMPARE(out.str(),
         "MeshTools::compile(): can't generate normals for VertexFormat::Vector2 positions\n");
 }
@@ -1710,7 +1710,7 @@ void CompileGLTest::generateNormalsNoFloats() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::compile(data, CompileFlag::GenerateFlatNormals);
+    compile(data, CompileFlag::GenerateFlatNormals);
     CORRADE_COMPARE(out.str(),
         "MeshTools::compile(): can't generate normals into VertexFormat::Vector3h\n");
 }

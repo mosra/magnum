@@ -360,7 +360,7 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
 
     /* Interleave positions and put them in with ownership transfer, use the
        ref for the rest */
-    Containers::Array<char> data = MeshTools::interleave(
+    Containers::Array<char> data = interleave(
         meshData.positions(0),
         stride - sizeof(Shaders::Generic2D::Position::Type));
     mesh.addVertexBuffer(std::move(vertexBuffer), 0,
@@ -369,7 +369,7 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
 
     /* Add also texture coordinates, if present */
     if(meshData.hasTextureCoords2D()) {
-        MeshTools::interleaveInto(data,
+        interleaveInto(data,
             textureCoordsOffset,
             meshData.textureCoords2D(0),
             stride - textureCoordsOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
@@ -381,7 +381,7 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
 
     /* Add also colors, if present */
     if(meshData.hasColors()) {
-        MeshTools::interleaveInto(data,
+        interleaveInto(data,
             colorsOffset,
             meshData.colors(0),
             stride - colorsOffset - sizeof(Shaders::Generic3D::Color4::Type));
@@ -399,7 +399,7 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
         Containers::Array<char> indexData;
         MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
-        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
+        std::tie(indexData, indexType, indexStart, indexEnd) = compressIndices(meshData.indices());
 
         GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
         indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
@@ -501,7 +501,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
 
     /* Interleave positions and put them in with ownership transfer, use the
        ref for the rest */
-    Containers::Array<char> data = MeshTools::interleave(
+    Containers::Array<char> data = interleave(
         positions,
         stride - sizeof(Shaders::Generic3D::Position::Type));
     mesh.addVertexBuffer(std::move(vertexBuffer), 0,
@@ -510,7 +510,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
 
     /* Add also normals, if present */
     if(normals) {
-        MeshTools::interleaveInto(data,
+        interleaveInto(data,
             normalOffset,
             normals,
             stride - normalOffset - sizeof(Shaders::Generic3D::Normal::Type));
@@ -522,7 +522,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
 
     /* Add also texture coordinates, if present */
     if(textureCoords2D) {
-        MeshTools::interleaveInto(data,
+        interleaveInto(data,
             textureCoordsOffset,
             textureCoords2D,
             stride - textureCoordsOffset - sizeof(Shaders::Generic3D::TextureCoordinates::Type));
@@ -534,7 +534,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
 
     /* Add also colors, if present */
     if(colors) {
-        MeshTools::interleaveInto(data,
+        interleaveInto(data,
             colorsOffset,
             colors,
             stride - colorsOffset - sizeof(Shaders::Generic3D::Color4::Type));
@@ -553,7 +553,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
         Containers::Array<char> indexData;
         MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
-        std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
+        std::tie(indexData, indexType, indexStart, indexEnd) = compressIndices(meshData.indices());
 
         GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
         indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);

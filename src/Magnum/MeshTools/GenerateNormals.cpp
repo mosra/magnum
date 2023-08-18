@@ -83,7 +83,7 @@ std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(co
 
     /* Remove duplicate normals and return */
     CORRADE_IGNORE_DEPRECATED_PUSH
-    normalIndices = MeshTools::duplicate(normalIndices, MeshTools::removeDuplicates(normals));
+    normalIndices = duplicate(normalIndices, removeDuplicates(normals));
     CORRADE_IGNORE_DEPRECATED_POP
     return {std::move(normalIndices), std::move(normals)};
 }

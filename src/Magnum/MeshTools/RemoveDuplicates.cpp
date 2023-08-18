@@ -429,7 +429,7 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
     /* Because the interleaved mesh was forced to be repacked, the vertex data
        should span the whole stride -- this is relied on in the attribute
        rerouting loop below */
-    const Containers::StridedArrayView2D<char> vertexData = MeshTools::interleavedMutableData(ownedInterleaved);
+    const Containers::StridedArrayView2D<char> vertexData = interleavedMutableData(ownedInterleaved);
     CORRADE_INTERNAL_ASSERT(vertexData.size()[1] == std::size_t(ownedInterleaved.attributeStride(0)));
 
     UnsignedInt uniqueVertexCount;
@@ -474,7 +474,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, const Float f
     /* Turn the passed data into an owned mutable instance we can operate on.
        There's a chance the original data are already like this, in which case
        this will be just a passthrough. */
-    Trade::MeshData owned = MeshTools::copy(std::move(mesh));
+    Trade::MeshData owned = copy(std::move(mesh));
 
     /* Allocate an interleaved index array for all vertices times all
        attributes */

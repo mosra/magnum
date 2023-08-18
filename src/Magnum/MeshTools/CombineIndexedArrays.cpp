@@ -59,7 +59,7 @@ std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> interleaveAndCombi
     /* Combine them */
     std::vector<UnsignedInt> combinedIndices;
     CORRADE_IGNORE_DEPRECATED_PUSH
-    std::tie(combinedIndices, interleavedArrays) = MeshTools::combineIndexArrays(interleavedArrays, stride);
+    std::tie(combinedIndices, interleavedArrays) = combineIndexArrays(interleavedArrays, stride);
     CORRADE_IGNORE_DEPRECATED_POP
     return {combinedIndices, interleavedArrays};
 }
