@@ -15,10 +15,10 @@ executors:
   ubuntu-18_04:
     docker:
     - image: ubuntu:bionic-20220427
-  # Anything below 11.7 is deprecated as of June 6th 2022
-  xcode-11_7:
+  # Anything below 12.5.1 is deprecated as of August 2023
+  xcode-12_5:
     macos:
-      xcode: 11.7.0
+      xcode: 12.5.1
   emscripten1:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
@@ -505,7 +505,7 @@ jobs:
         script: unix-desktop.sh
 
   macos-gl:
-    executor: xcode-11_7
+    executor: xcode-12_5
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -518,7 +518,7 @@ jobs:
     - lcov
 
   macos-gles3:
-    executor: xcode-11_7
+    executor: xcode-12_5
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -535,7 +535,7 @@ jobs:
     - lcov
 
   macos-vulkan:
-    executor: xcode-11_7
+    executor: xcode-12_5
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
@@ -551,7 +551,7 @@ jobs:
     - lcov
 
   macos-static:
-    executor: xcode-11_7
+    executor: xcode-12_5
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
@@ -633,7 +633,7 @@ jobs:
         script: android-x86-vulkan.sh
 
   ios-gles3:
-    executor: xcode-11_7
+    executor: xcode-12_5
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "OFF"
