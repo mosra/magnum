@@ -471,10 +471,12 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, const Float f
         "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an attributeless mesh",
         (Trade::MeshData{MeshPrimitive::Points, 0}));
 
-    /* Turn the passed data into an owned mutable instance we can operate on.
-       There's a chance the original data are already like this, in which case
-       this will be just a passthrough. */
-    Trade::MeshData owned = copy(std::move(mesh));
+    /* Turn the passed data into an owned mutable instance we can operate on */
+    /** @todo even though the output is always copied as a result of merging
+        the index arrays, it might still be useful to provide a MeshData&&
+        overload that doesn't perform this initial copy and operates on the
+        original in-place to save some memory */
+    Trade::MeshData owned = copy(mesh);
 
     /* Allocate an interleaved index array for all vertices times all
        attributes */
