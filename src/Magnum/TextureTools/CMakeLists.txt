@@ -129,6 +129,13 @@ if(MAGNUM_BUILD_TESTS)
     add_library(MagnumTextureToolsTestLib ${SHARED_OR_STATIC} ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         ${MagnumTextureTools_GracefulAssert_SRCS})
     set_target_properties(MagnumTextureToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    if(CMAKE_GENERATOR STREQUAL Xcode)
+        # Xcode's "new build system" doesn't like when the same (generated)
+        # source file is used by two different targets (MagnumTextureTools and
+        # MagnumTextureToolsTestLib) that don't have any other dependency
+        # between them. WTF.
+        add_dependencies(MagnumTextureToolsTestLib MagnumTextureTools)
+    endif()
     target_compile_definitions(MagnumTextureToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumTextureTools_EXPORTS")
     if(MAGNUM_BUILD_STATIC_PIC)
