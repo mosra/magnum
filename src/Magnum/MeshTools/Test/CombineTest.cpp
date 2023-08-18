@@ -39,25 +39,25 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct CombineTest: TestSuite::Tester {
     explicit CombineTest();
 
-    void combineIndexedAttributes();
-    void combineIndexedAttributesIndicesOnly();
-    void combineIndexedAttributesSingleMesh();
+    void indexedAttributes();
+    void indexedAttributesIndicesOnly();
+    void indexedAttributesSingleMesh();
 
-    void combineIndexedAttributesNoMeshes();
-    void combineIndexedAttributesNotIndexed();
-    void combineIndexedAttributesDifferentPrimitive();
-    void combineIndexedAttributesDifferentIndexCount();
-    void combineIndexedAttributesImplementationSpecificIndexType();
-    void combineIndexedAttributesImplementationSpecificVertexFormat();
+    void indexedAttributesNoMeshes();
+    void indexedAttributesNotIndexed();
+    void indexedAttributesDifferentPrimitive();
+    void indexedAttributesDifferentIndexCount();
+    void indexedAttributesImplementationSpecificIndexType();
+    void indexedAttributesImplementationSpecificVertexFormat();
 
-    void combineFaceAttributes();
-    void combineFaceAttributesMeshNotIndexed();
-    void combineFaceAttributesUnexpectedPrimitive();
-    void combineFaceAttributesUnexpectedFaceCount();
-    void combineFaceAttributesFacesNotInterleaved();
-    void combineFaceAttributesFaceAttributeOffsetOnly();
-    void combineFaceAttributesImplementationSpecificIndexType();
-    void combineFaceAttributesImplementationSpecificVertexFormat();
+    void faceAttributes();
+    void faceAttributesMeshNotIndexed();
+    void faceAttributesUnexpectedPrimitive();
+    void faceAttributesUnexpectedFaceCount();
+    void faceAttributesFacesNotInterleaved();
+    void faceAttributesFaceAttributeOffsetOnly();
+    void faceAttributesImplementationSpecificIndexType();
+    void faceAttributesImplementationSpecificVertexFormat();
 };
 
 constexpr struct {
@@ -69,30 +69,30 @@ constexpr struct {
 };
 
 CombineTest::CombineTest() {
-    addTests({&CombineTest::combineIndexedAttributes,
-              &CombineTest::combineIndexedAttributesIndicesOnly,
-              &CombineTest::combineIndexedAttributesSingleMesh,
+    addTests({&CombineTest::indexedAttributes,
+              &CombineTest::indexedAttributesIndicesOnly,
+              &CombineTest::indexedAttributesSingleMesh,
 
-              &CombineTest::combineIndexedAttributesNoMeshes,
-              &CombineTest::combineIndexedAttributesNotIndexed,
-              &CombineTest::combineIndexedAttributesDifferentPrimitive,
-              &CombineTest::combineIndexedAttributesDifferentIndexCount,
-              &CombineTest::combineIndexedAttributesImplementationSpecificIndexType,
-              &CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat});
+              &CombineTest::indexedAttributesNoMeshes,
+              &CombineTest::indexedAttributesNotIndexed,
+              &CombineTest::indexedAttributesDifferentPrimitive,
+              &CombineTest::indexedAttributesDifferentIndexCount,
+              &CombineTest::indexedAttributesImplementationSpecificIndexType,
+              &CombineTest::indexedAttributesImplementationSpecificVertexFormat});
 
-    addInstancedTests({&CombineTest::combineFaceAttributes},
+    addInstancedTests({&CombineTest::faceAttributes},
         Containers::arraySize(CombineFaceAttributesData));
 
-    addTests({&CombineTest::combineFaceAttributesMeshNotIndexed,
-              &CombineTest::combineFaceAttributesUnexpectedPrimitive,
-              &CombineTest::combineFaceAttributesUnexpectedFaceCount,
-              &CombineTest::combineFaceAttributesFacesNotInterleaved,
-              &CombineTest::combineFaceAttributesFaceAttributeOffsetOnly,
-              &CombineTest::combineFaceAttributesImplementationSpecificIndexType,
-              &CombineTest::combineFaceAttributesImplementationSpecificVertexFormat});
+    addTests({&CombineTest::faceAttributesMeshNotIndexed,
+              &CombineTest::faceAttributesUnexpectedPrimitive,
+              &CombineTest::faceAttributesUnexpectedFaceCount,
+              &CombineTest::faceAttributesFacesNotInterleaved,
+              &CombineTest::faceAttributesFaceAttributeOffsetOnly,
+              &CombineTest::faceAttributesImplementationSpecificIndexType,
+              &CombineTest::faceAttributesImplementationSpecificVertexFormat});
 }
 
-void CombineTest::combineIndexedAttributes() {
+void CombineTest::indexedAttributes() {
     const UnsignedInt indicesA[]{2, 1, 2, 0};
     const Int dataA[]{2, 1, 0};
     const UnsignedByte indicesB[]{3, 4, 3, 2};
@@ -143,7 +143,7 @@ void CombineTest::combineIndexedAttributes() {
         TestSuite::Compare::Container);
 }
 
-void CombineTest::combineIndexedAttributesIndicesOnly() {
+void CombineTest::indexedAttributesIndicesOnly() {
     const UnsignedInt indicesA[]{2, 1, 2};
     const UnsignedShort indicesB[]{3, 4, 3};
     const UnsignedByte indicesC[]{7, 6, 7};
@@ -165,7 +165,7 @@ void CombineTest::combineIndexedAttributesIndicesOnly() {
     CORRADE_COMPARE(result.vertexCount(), 2);
 }
 
-void CombineTest::combineIndexedAttributesSingleMesh() {
+void CombineTest::indexedAttributesSingleMesh() {
     const UnsignedInt indices[]{2, 1, 2, 0, 5, 7};
     const Float data[]{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f};
     Trade::MeshData a{MeshPrimitive::LineLoop,
@@ -187,7 +187,7 @@ void CombineTest::combineIndexedAttributesSingleMesh() {
         TestSuite::Compare::Container);
 }
 
-void CombineTest::combineIndexedAttributesNoMeshes() {
+void CombineTest::indexedAttributesNoMeshes() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
@@ -196,7 +196,7 @@ void CombineTest::combineIndexedAttributesNoMeshes() {
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): no meshes passed\n");
 }
 
-void CombineTest::combineIndexedAttributesNotIndexed() {
+void CombineTest::indexedAttributesNotIndexed() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort indices[5]{};
@@ -212,7 +212,7 @@ void CombineTest::combineIndexedAttributesNotIndexed() {
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 2 is not indexed\n");
 }
 
-void CombineTest::combineIndexedAttributesDifferentPrimitive() {
+void CombineTest::indexedAttributesDifferentPrimitive() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort indices[5]{};
@@ -227,7 +227,7 @@ void CombineTest::combineIndexedAttributesDifferentPrimitive() {
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 1 is MeshPrimitive::Points but expected MeshPrimitive::Lines\n");
 }
 
-void CombineTest::combineIndexedAttributesDifferentIndexCount() {
+void CombineTest::indexedAttributesDifferentIndexCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedShort indices[5]{};
@@ -245,7 +245,7 @@ void CombineTest::combineIndexedAttributesDifferentIndexCount() {
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 2 has 4 indices but expected 5\n");
 }
 
-void CombineTest::combineIndexedAttributesImplementationSpecificIndexType() {
+void CombineTest::indexedAttributesImplementationSpecificIndexType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::Points,
@@ -265,7 +265,7 @@ void CombineTest::combineIndexedAttributesImplementationSpecificIndexType() {
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 1 has an implementation-specific index type 0xcaca\n");
 }
 
-void CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat() {
+void CombineTest::indexedAttributesImplementationSpecificVertexFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData a{MeshPrimitive::Points,
@@ -288,7 +288,7 @@ void CombineTest::combineIndexedAttributesImplementationSpecificVertexFormat() {
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): attribute 2 of mesh 1 has an implementation-specific format 0xcaca\n");
 }
 
-void CombineTest::combineFaceAttributes() {
+void CombineTest::faceAttributes() {
     auto&& data = CombineFaceAttributesData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -409,7 +409,7 @@ void CombineTest::combineFaceAttributes() {
         }), TestSuite::Compare::Container);
 }
 
-void CombineTest::combineFaceAttributesMeshNotIndexed() {
+void CombineTest::faceAttributesMeshNotIndexed() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const Trade::MeshData mesh{MeshPrimitive::Triangles, 3};
@@ -422,7 +422,7 @@ void CombineTest::combineFaceAttributesMeshNotIndexed() {
         "MeshTools::combineFaceAttributes(): vertex mesh is not indexed\n");
 }
 
-void CombineTest::combineFaceAttributesUnexpectedPrimitive() {
+void CombineTest::faceAttributesUnexpectedPrimitive() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedInt indices[] { 0, 0, 0 };
@@ -442,7 +442,7 @@ void CombineTest::combineFaceAttributesUnexpectedPrimitive() {
         "MeshTools::combineFaceAttributes(): expected a MeshPrimitive::Triangles mesh and a MeshPrimitive::Faces mesh but got MeshPrimitive::Lines and MeshPrimitive::Faces\n");
 }
 
-void CombineTest::combineFaceAttributesUnexpectedFaceCount() {
+void CombineTest::faceAttributesUnexpectedFaceCount() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     const UnsignedInt indices[] { 0, 0, 0 };
@@ -457,7 +457,7 @@ void CombineTest::combineFaceAttributesUnexpectedFaceCount() {
         "MeshTools::combineFaceAttributes(): expected 1 face entries for 3 indices but got 2\n");
 }
 
-void CombineTest::combineFaceAttributesImplementationSpecificIndexType() {
+void CombineTest::faceAttributesImplementationSpecificIndexType() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData triangles{MeshPrimitive::Triangles,
@@ -491,7 +491,7 @@ void CombineTest::combineFaceAttributesImplementationSpecificIndexType() {
         "MeshTools::combineFaceAttributes(): vertex mesh has an implementation-specific index type 0xcaca\n");
 }
 
-void CombineTest::combineFaceAttributesImplementationSpecificVertexFormat() {
+void CombineTest::faceAttributesImplementationSpecificVertexFormat() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Trade::MeshData triangles{MeshPrimitive::Triangles,
@@ -531,7 +531,7 @@ void CombineTest::combineFaceAttributesImplementationSpecificVertexFormat() {
         "MeshTools::combineFaceAttributes(): attribute 2 of mesh 0 has an implementation-specific format 0xcaca\n");
 }
 
-void CombineTest::combineFaceAttributesFacesNotInterleaved() {
+void CombineTest::faceAttributesFacesNotInterleaved() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     using namespace Math::Literals;
@@ -561,7 +561,7 @@ void CombineTest::combineFaceAttributesFacesNotInterleaved() {
         "MeshTools::combineFaceAttributes(): face attributes are not interleaved\n");
 }
 
-void CombineTest::combineFaceAttributesFaceAttributeOffsetOnly() {
+void CombineTest::faceAttributesFaceAttributeOffsetOnly() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
