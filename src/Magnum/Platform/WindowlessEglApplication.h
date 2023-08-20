@@ -163,9 +163,10 @@ class WindowlessEglContext {
         bool _sharedContext = false;
         #endif
         #ifdef CORRADE_TARGET_WINDOWS
-        /* It's a HWND, which is HANDLE, which is PVOID, which is void*. FFS
-           Windows you're really mad with the typedefs. */
-        void* _window{};
+        /* This used to be a void* "to not have to include <windows.h>", but
+           since EGL/eglplatform.h already does that, there's no reason not to
+           use it. void* was also apparently incorrect. */
+        HWND _window{};
         #endif
         EGLDisplay _display{};
         EGLContext _context{};
