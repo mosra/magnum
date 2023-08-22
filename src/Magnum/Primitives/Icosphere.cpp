@@ -84,7 +84,12 @@ constexpr struct VertexSolidStrip {
 }
 
 Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
-    const std::size_t indexCount = Containers::arraySize(Indices)*(1 << subdivisions*2);
+    /* The size_t cast is needed in order to make MSVC stop complaining that
+       "warning C4334: '<<': result of 32-bit shift implicitly converted to 64
+       bits (was 64-bit shift intended?)". There's an implicit conversion
+       happening *after* the shift, yes, but how on earth does that imply that
+       a 64-bit shift was intended?! */
+    const std::size_t indexCount = Containers::arraySize(Indices)*(std::size_t{1} << subdivisions*2);
     const std::size_t vertexCount = Containers::arraySize(Vertices) + ((indexCount - Containers::arraySize(Indices))/3);
 
     Containers::Array<char> indexData{indexCount*sizeof(UnsignedInt)};
@@ -107,7 +112,12 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
             positions[i] = Vertices[i].position;
 
         for(std::size_t i = 0; i != subdivisions; ++i) {
-            const std::size_t iterationIndexCount = Containers::arraySize(Indices)*(1 << (i + 1)*2);
+            /* The size_t cast is needed in order to make MSVC stop complaining
+               that "warning C4334: '<<': result of 32-bit shift implicitly
+               converted to 64 bits (was 64-bit shift intended?)". There's an
+               implicit conversion happening *after* the shift, yes, but how on
+               earth does that imply that a 64-bit shift was intended?! */
+            const std::size_t iterationIndexCount = Containers::arraySize(Indices)*(std::size_t{1} << (i + 1)*2);
             const std::size_t iterationVertexCount = Containers::arraySize(Vertices) + ((iterationIndexCount - Containers::arraySize(Indices))/3);
             MeshTools::subdivideInPlace(indices.prefix(iterationIndexCount), positions.prefix(iterationVertexCount), [](const Vector3& a, const Vector3& b) {
                 return (a+b).normalized();
