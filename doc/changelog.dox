@@ -160,6 +160,7 @@ See also:
     @ref GL::TextureFormat values available also on OpenGL ES 2.0 and WebGL.
     The values were already present in WebGL 2.0 builds by accident before,
     without documenting corresponding extension requirements.
+-   Recognizing the @gl_extension{NV,geometry_shader_passthrough} extension
 -   Added a @ref GL::AbstractTexture::target() getter to simplify interaction
     with raw GL code
 -   Exposed @gl_extension{ARB,buffer_storage} as

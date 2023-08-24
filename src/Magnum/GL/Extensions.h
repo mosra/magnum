@@ -264,8 +264,9 @@ namespace AMD {
     _extension(176,NV,depth_buffer_float,               GL210,  None) // #334
     _extension(177,NV,conditional_render,               GL210, GL300) // #346
     /* NV_draw_texture not supported */                               // #430
-    _extension(178,NV,sample_locations,                 GL210,  None) // #472
-    _extension(179,NV,fragment_shader_barycentric,      GL450,  None) // #526
+    _extension(178,NV,geometry_shader_passthrough,      GL330,  None) // #470
+    _extension(179,NV,sample_locations,                 GL210,  None) // #472
+    _extension(180,NV,fragment_shader_barycentric,      GL450,  None) // #526
 } namespace OVR {
     _extension(185,OVR,multiview,                       GL300,  None) // #478
     _extension(186,OVR,multiview2,                      GL300,  None) // #479
@@ -532,10 +533,13 @@ namespace ANDROID {
     #ifndef MAGNUM_TARGET_GLES2
     _extension(115,NV,shader_noperspective_interpolation, GLES300, None) // #201
     #endif
-    _extension(116,NV,sample_locations,             GLES200,    None) // #235
-    _extension(117,NV,polygon_mode,                 GLES200,    None) // #238
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(118,NV,fragment_shader_barycentric,  GLES320,    None) // #316
+    _extension(116,NV,geometry_shader_passthrough,  GLES300,    None) // #233
+    #endif
+    _extension(117,NV,sample_locations,             GLES200,    None) // #235
+    _extension(118,NV,polygon_mode,                 GLES200,    None) // #238
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(119,NV,fragment_shader_barycentric,  GLES320,    None) // #316
     #endif
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2

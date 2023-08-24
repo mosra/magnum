@@ -112,6 +112,7 @@ constexpr Extension ExtensionList[]{
     Extensions::KHR::texture_compression_astc_sliced_3d{},
     Extensions::NV::depth_buffer_float{},
     Extensions::NV::fragment_shader_barycentric{},
+    Extensions::NV::geometry_shader_passthrough{},
     Extensions::NV::sample_locations{},
     Extensions::OVR::multiview{},
     Extensions::OVR::multiview2{}
@@ -414,6 +415,9 @@ constexpr Extension ExtensionList[]{
     Extensions::KHR::texture_compression_astc_sliced_3d{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::NV::fragment_shader_barycentric{},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    Extensions::NV::geometry_shader_passthrough{},
     #endif
     Extensions::NV::polygon_mode{},
     Extensions::NV::read_buffer_front{},
