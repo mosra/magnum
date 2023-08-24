@@ -112,6 +112,9 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void uniformScalingPartNotUniform();
     void normalMatrixPart();
     void vectorParts();
+    void orthographicProjectionParts();
+    void perspectiveProjectionParts();
+    void perspectiveProjectionInfiniteFarParts();
     void invertedRigid();
     void invertedRigidNotRigid();
     void transform();
@@ -183,6 +186,9 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::uniformScalingPartNotUniform,
               &Matrix4Test::normalMatrixPart,
               &Matrix4Test::vectorParts,
+              &Matrix4Test::orthographicProjectionParts,
+              &Matrix4Test::perspectiveProjectionParts,
+              &Matrix4Test::perspectiveProjectionInfiniteFarParts,
               &Matrix4Test::invertedRigid,
               &Matrix4Test::invertedRigidNotRigid,
               &Matrix4Test::transform,
@@ -1016,6 +1022,24 @@ void Matrix4Test::vectorParts() {
     CORRADE_COMPARE(up, Vector3::yAxis(12.0f));
     CORRADE_COMPARE(backward, Vector3::zAxis(35.0f));
     CORRADE_COMPARE(translation, Vector3(-5.0f, 12.0f, 0.5f));
+}
+
+void Matrix4Test::orthographicProjectionParts() {
+    Matrix4 projection = Matrix4::orthographicProjection({5.0f, 4.0f}, 1.0f, 9.0f);
+    CORRADE_COMPARE(projection.orthographicProjectionNear(), 1.0f);
+    CORRADE_COMPARE(projection.orthographicProjectionFar(), 9.0f);
+}
+
+void Matrix4Test::perspectiveProjectionParts() {
+    Matrix4 projection = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100.0f);
+    CORRADE_COMPARE(projection.perspectiveProjectionNear(), 32.0f);
+    CORRADE_COMPARE(projection.perspectiveProjectionFar(), 100.0f);
+}
+
+void Matrix4Test::perspectiveProjectionInfiniteFarParts() {
+    Matrix4 projection = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, Constants::inf());
+    CORRADE_COMPARE(projection.perspectiveProjectionNear(), 32.0f);
+    CORRADE_COMPARE(projection.perspectiveProjectionFar(), Constants::inf());
 }
 
 void Matrix4Test::invertedRigid() {

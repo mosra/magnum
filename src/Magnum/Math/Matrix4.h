@@ -336,7 +336,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * If you need an off-center projection (as with the classic
          * @m_class{m-doc-external} [glOrtho()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml)
          * function), use @ref orthographicProjection(const Vector2<T>&, const Vector2<T>&, T, T).
-         * @see @ref perspectiveProjection(), @ref Matrix3::projection()
+         * @see @ref perspectiveProjection(),
+         *      @ref orthographicProjectionNear() const,
+         *      @ref orthographicProjectionFar() const,
+         *      @ref Matrix3::projection()
          */
         static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
 
@@ -365,6 +368,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @ref orthographicProjection(const Vector2<T>&, T, T).
          *
          * @see @ref perspectiveProjection(),
+         *      @ref orthographicProjectionNear() const,
+         *      @ref orthographicProjectionFar() const,
          *      @ref Matrix3::projection(const Vector2<T>&, const Vector2<T>&)
          * @m_keywords{glOrtho()}
          */
@@ -398,8 +403,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
          * instead.
          * @see @ref perspectiveProjection(Rad<T>, T, T, T),
-         *      @ref orthographicProjection(), @ref Matrix3::projection(),
-         *      @ref Constants::inf()
+         *      @ref orthographicProjection(),
+         *      @ref perspectiveProjectionNear() const,
+         *      @ref perspectiveProjectionFar() const,
+         *      @ref Matrix3::projection(), @ref Constants::inf()
          */
         static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
@@ -443,8 +450,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * If you need an off-center projection (as with the classic
          * @m_class{m-doc-external} [glFrustum()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glFrustum.xml)
          * function), use @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T).
-         * @see @ref orthographicProjection(), @ref Matrix3::projection(),
-         *      @ref Constants::inf()
+         * @see @ref orthographicProjection(),
+         *      @ref perspectiveProjectionNear() const,
+         *      @ref perspectiveProjectionFar() const,
+         *      @ref Matrix3::projection(), @ref Constants::inf()
          * @m_keywords{gluPerspective()}
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
@@ -486,6 +495,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
          *      @ref orthographicProjection(const Vector2<T>&, const Vector2<T>&, T, T),
+         *      @ref perspectiveProjectionNear() const,
+         *      @ref perspectiveProjectionFar() const,
          *      @ref Matrix3::projection(), @ref Constants::inf()
          * @m_keywords{glFrustum()}
          */
@@ -1031,6 +1042,96 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          */
         Vector3<T>& translation() { return (*this)[3].xyz(); }
         constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */
+
+        /**
+         * @brief Distance to near plane of an orthographic projection matrix
+         * @m_since_latest
+         *
+         * Assuming a matrix @f$ \boldsymbol{A} @f$ constructed with
+         * @ref orthographicProjection(), returns the distance to its near
+         * plane: @f[
+         *      \frac{\boldsymbol{A}_{3,2} + 1}{\boldsymbol{A}_{2,2}} =
+         *      \frac{\frac{n + f}{n - f} + 1}{\frac{2}{n - f}} =
+         *      \frac{\frac{n + f + n - f}{n - f}}{\frac{2}{n - f}} =
+         *      \frac{2n}{2} = n
+         * @f]
+         * @see @ref orthographicProjectionFar() const,
+         *      @ref perspectiveProjectionNear() const
+         */
+        Float orthographicProjectionNear() const {
+            return ((*this)[3][2] + T(1))/(*this)[2][2];
+        }
+
+        /**
+         * @brief Distance to far plane of an orthographic projection matrix
+         * @m_since_latest
+         *
+         * Assuming a matrix @f$ \boldsymbol{A} @f$ constructed with
+         * @ref orthographicProjection(), returns the distance to its far
+         * plane: @f[
+         *      \frac{\boldsymbol{A}_{3,2} - 1}{\boldsymbol{A}_{2,2}} =
+         *      \frac{\frac{n + f}{n - f} - 1}{\frac{2}{n - f}} =
+         *      \frac{\frac{n + f - n + f}{n - f}}{\frac{2}{n - f}} =
+         *      \frac{2f}{2} = f
+         * @f]
+         * @see @ref orthographicProjectionNear() const,
+         *      @ref perspectiveProjectionFar() const
+         */
+        Float orthographicProjectionFar() const {
+            return ((*this)[3][2] - T(1))/(*this)[2][2];
+        }
+
+        /**
+         * @brief Distance to near plane of a perspective projection matrix
+         * @m_since_latest
+         *
+         * Assuming a matrix @f$ \boldsymbol{A} @f$ constructed with
+         * @ref perspectiveProjection(), returns the distance to its near
+         * plane: @f[
+         *      \frac{\boldsymbol{A}_{3,2}}{\boldsymbol{A}_{2,2} - 1} =
+         *      \frac{\frac{2nf}{n - f}}{\frac{n + f}{n - f} - 1} =
+         *      \frac{\frac{2nf}{n - f}}{\frac{n + f - n + f}{n - f}} =
+         *      \frac{2nf}{2f} = n
+         * @f]
+         *
+         * The same equation works for a perspective projection with an
+         * infinite far plane: @f[
+         *      \frac{\boldsymbol{A}_{3,2}}{\boldsymbol{A}_{2,2} - 1} =
+         *      \frac{-2n}{-1 - 1} =
+         *      \frac{-2n}{-2} = n
+         * @f]
+         * @see @ref perspectiveProjectionFar() const,
+         *      @ref orthographicProjectionNear() const
+         */
+        Float perspectiveProjectionNear() const {
+            return (*this)[3][2]/((*this)[2][2] - T(1));
+        }
+
+        /**
+         * @brief Distance to far plane of a perspective projection matrix
+         * @m_since_latest
+         *
+         * Assuming a matrix @f$ \boldsymbol{A} @f$ constructed with
+         * @ref perspectiveProjection() with a positive far value, returns the
+         * distance to its far plane: @f[
+         *      \left\lvert \frac{\boldsymbol{A}_{3,2}}{\boldsymbol{A}_{2,2} + 1}\right\rvert =
+         *      \left\lvert \frac{\frac{2nf}{n - f}}{\frac{n + f}{n - f} + 1}\right\rvert =
+         *      \left\lvert \frac{\frac{2nf}{n - f}}{\frac{n + f + n - f}{n - f}}\right\rvert =
+         *      \left\lvert \frac{2nf}{2n} \right\rvert = f
+         * @f]
+         *
+         * The same equation works for a perspective projection with an
+         * infinite far plane: @f[
+         *      \left\lvert \frac{\boldsymbol{A}_{3,2}}{\boldsymbol{A}_{2,2} + 1} \right\rvert =
+         *      \left\lvert \frac{-2n}{-1 + 1} \right\rvert =
+         *      \left\lvert \frac{-2n}{0} \right\rvert = \infty
+         * @f]
+         * @see @ref perspectiveProjectionNear() const,
+         *      @ref orthographicProjectionFar() const
+         */
+        Float perspectiveProjectionFar() const {
+            return std::abs((*this)[3][2]/((*this)[2][2] + T(1)));
+        }
 
         /**
          * @brief Inverted rigid transformation matrix
