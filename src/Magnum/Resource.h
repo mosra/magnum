@@ -271,7 +271,7 @@ template<class T, class U> Resource<T, U>::Resource(Resource<T, U>&& other) noex
 }
 
 template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(Resource<T, U>&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_manager, other._manager);
     swap(_key, other._key);
     swap(_lastCheck, other._lastCheck);
