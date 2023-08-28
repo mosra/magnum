@@ -1606,9 +1606,9 @@ namespace Implementation {
 
 }}
 
+#if !defined(CORRADE_NO_TWEAKABLE) && (defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN))
 namespace Corrade { namespace Utility {
 
-#if !defined(CORRADE_NO_TWEAKABLE) && (defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN))
 /**
 @tweakableliteral{Magnum::Math::Color3}
 
@@ -1672,8 +1672,8 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::Flo
     /** @brief Parse the value */
     static Containers::Pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> parse(Containers::StringView value);
 };
-#endif
 
 }}
+#endif
 
 #endif

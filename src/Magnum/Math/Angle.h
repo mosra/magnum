@@ -254,9 +254,9 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 
 }}
 
+#if !defined(CORRADE_NO_TWEAKABLE) && (defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN))
 namespace Corrade { namespace Utility {
 
-#if !defined(CORRADE_NO_TWEAKABLE) && (defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN))
 /**
 @tweakableliteral{Magnum::Math::Deg}
 
@@ -328,8 +328,8 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Double
 /* Needed to parse e.g. -1.0_rad, which is the base class type */
 template<> struct TweakableParser<Magnum::Math::Unit<Magnum::Math::Rad, Magnum::Double>>: TweakableParser<Magnum::Math::Rad<Magnum::Double>> {};
 #endif
-#endif
 
 }}
+#endif
 
 #endif
