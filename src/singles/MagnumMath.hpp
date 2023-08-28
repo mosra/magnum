@@ -63,22 +63,12 @@
 */
 
 #include "base.h"
-/* Put the contents of Corrade/Utility/StlMath.h here so it doesn't get
-   reordered */
-#pragma ACME enable Corrade_Utility_StlMath_h
 // {{includes}}
-#include <ciso646>
-#ifdef _GLIBCXX_USE_STD_SPEC_FUNCS
-#undef _GLIBCXX_USE_STD_SPEC_FUNCS
-#define _GLIBCXX_USE_STD_SPEC_FUNCS 0
-#endif
-// {{includes}}
-#include <cmath>
 #if (!defined(CORRADE_ASSERT) || !defined(CORRADE_CONSTEXPR_ASSERT) || !defined(CORRADE_INTERNAL_ASSERT_OUTPUT) || !defined(CORRADE_INTERNAL_ASSERT_UNREACHABLE)) && !defined(NDEBUG)
 #include <cassert>
 #endif
 
-/* Combined copyrights because the rool isn't able to merge those on its own:
+/* Combined copyrights because the tool isn't able to merge those on its own:
 
     Copyright © 2016, 2018, 2020 Jonathan Hale <squareys@googlemail.com>
 
@@ -88,23 +78,30 @@
 #pragma ACME path ../../../magnum-integration/src
 #pragma ACME revision magnum-integration/src echo "$(git describe --long --match 'v*') ($(date -d @$(git log -1 --format=%at) +%Y-%m-%d))"
 
-/* Disable asserts that are not used. CORRADE_ASSERT, CORRADE_CONSTEXPR_ASSERT,
-   CORRADE_INTERNAL_ASSERT_OUTPUT and CORRADE_INTERNAL_ASSERT_UNREACHABLE are
-   used, wrapping the #include <cassert> above. When enabling additional
-   asserts, be sure to update them above as well. */
-#pragma ACME enable CORRADE_ASSUME
+/* Disable asserts that are not used. CORRADE_DEBUG_ASSERT,
+   CORRADE_CONSTEXPR_DEBUG_ASSERT, CORRADE_INTERNAL_DEBUG_ASSERT_OUTPUT and
+   CORRADE_INTERNAL_DEBUG_ASSERT_UNREACHABLE are used, wrapping the #include
+   <cassert> above. When enabling additional asserts, be sure to update them
+   above as well-- without the _DEBUG variants, as they just delegate to the
+   non-debug version of the macro. */
 #pragma ACME enable CORRADE_ASSERT_OUTPUT
+#pragma ACME enable CORRADE_DEBUG_ASSERT_OUTPUT
+#pragma ACME enable CORRADE_INTERNAL_ASSERT_EXPRESSION
+#pragma ACME enable CORRADE_INTERNAL_DEBUG_ASSERT_EXPRESSION
 #pragma ACME enable CORRADE_ASSERT_UNREACHABLE
+#pragma ACME enable CORRADE_DEBUG_ASSERT_UNREACHABLE
 #pragma ACME enable CORRADE_INTERNAL_ASSERT
+#pragma ACME enable CORRADE_INTERNAL_DEBUG_ASSERT
 #pragma ACME enable CORRADE_INTERNAL_CONSTEXPR_ASSERT
+#pragma ACME enable CORRADE_INTERNAL_CONSTEXPR_DEBUG_ASSERT
 
 /* We don't need everything from configure.h here */
 #pragma ACME enable Corrade_configure_h
 #pragma ACME enable Magnum_configure_h
-#if defined(_MSC_VER) && _MSC_VER <= 1920
+#if defined(_MSC_VER) && _MSC_VER < 1920
 #define CORRADE_MSVC2017_COMPATIBILITY
 #endif
-#if defined(_MSC_VER) && _MSC_VER <= 1910
+#if defined(_MSC_VER) && _MSC_VER < 1910
 #define CORRADE_MSVC2015_COMPATIBILITY
 #endif
 #ifdef _WIN32
@@ -120,7 +117,21 @@
 /* CORRADE_TARGET_LIBSTDCXX needed for CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED,
    and because it's so complex to check for it I can as well pull in the whole
    thing */
+#pragma ACME enable Corrade_configure_h
+#ifdef _MSC_VER
+#ifdef _MSVC_LANG
+#define CORRADE_CXX_STANDARD _MSVC_LANG
+#else
+#define CORRADE_CXX_STANDARD 201103L
+#endif
+#else
+#define CORRADE_CXX_STANDARD __cplusplus
+#endif
+#if CORRADE_CXX_STANDARD >= 202002
+#include <version>
+#else
 #include <ciso646>
+#endif
 #ifdef _LIBCPP_VERSION
 #define CORRADE_TARGET_LIBCXX
 #elif defined(_CPPLIB_VER)
@@ -145,17 +156,22 @@
 /* Otherwise no idea. */
 #endif
 
-#ifdef _MSC_VER
-#define CORRADE_TARGET_MSVC
+#ifdef __GNUC__
+#define CORRADE_TARGET_GCC
+#endif
+#ifdef __clang__
+#define CORRADE_TARGET_CLANG
 #endif
 #if defined(__clang__) && defined(_MSC_VER)
 #define CORRADE_TARGET_CLANG_CL
 #endif
+#ifdef _MSC_VER
+#define CORRADE_TARGET_MSVC
+#endif
 /* Needed by TypeTraits::equal() */
-#if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && !__LP64__) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __LDBL_DIG__ == __DBL_DIG__)
+#if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && !__LP64__) || defined(CORRADE_TARGET_EMSCRIPTEN) || (defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS) && defined(CORRADE_TARGET_ARM))
 #define CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 #endif
-/* CORRADE_TARGET_SSE2 or CORRADE_TARGET_BIG_ENDIAN not used anywhere yet */
 
 /* Our own subset of visibility macros */
 #pragma ACME enable Magnum_visibility_h
@@ -164,12 +180,33 @@
 #define MAGNUM_EXPORT
 #endif
 
-/* Our own subset of Containers.h and Magnum.h */
+/* A semi-verbatim copy of Utility/StlMath.h because otherwise the includes
+   don't stay in the correct place. */
+#ifndef Corrade_Utility_StlMath_h
+#define Corrade_Utility_StlMath_h
+#ifdef _GLIBCXX_USE_STD_SPEC_FUNCS
+#undef _GLIBCXX_USE_STD_SPEC_FUNCS
+#define _GLIBCXX_USE_STD_SPEC_FUNCS 0
+#endif
+#include <cmath>
+#endif
+#pragma ACME enable Corrade_Utility_StlMath_h
+/* Our own subset of Containers.h and Magnum.h, need just CORRADE_HAS_TYPE from
+   Utility/TypeTraits.h */
 #pragma ACME enable Corrade_Containers_Containers_h
+#pragma ACME enable Corrade_Utility_TypeTraits_h
 #pragma ACME enable Magnum_Magnum_h
 #include "Magnum/Math/Math.h"
 #ifndef MagnumMath_hpp
 #define MagnumMath_hpp
+
+#define CORRADE_HAS_TYPE(className, ...)                                    \
+template<class U> class className {                                         \
+    template<class T> static char get(T&&, __VA_ARGS__* = nullptr);         \
+    static short get(...);                                                  \
+    public:                                                                 \
+        enum: bool { value = sizeof(get(std::declval<U>())) == sizeof(char) }; \
+}
 
 namespace Magnum {
 
@@ -252,6 +289,9 @@ typedef Math::Rad<Float> Rad;
 typedef Math::Range1D<Float> Range1D;
 typedef Math::Range2D<Float> Range2D;
 typedef Math::Range3D<Float> Range3D;
+typedef Math::Range1D<UnsignedInt> Range1Dui;
+typedef Math::Range2D<UnsignedInt> Range2Dui;
+typedef Math::Range3D<UnsignedInt> Range3Dui;
 typedef Math::Range1D<Int> Range1Di;
 typedef Math::Range2D<Int> Range2Di;
 typedef Math::Range3D<Int> Range3Di;
@@ -270,6 +310,11 @@ typedef Math::Matrix3x4<Half> Matrix3x4h;
 typedef Math::Matrix4x2<Half> Matrix4x2h;
 typedef Math::Matrix4x3<Half> Matrix4x3h;
 typedef Math::Matrix4x4<Half> Matrix4x4h;
+typedef Math::Deg<Half> Degh;
+typedef Math::Rad<Half> Radh;
+typedef Math::Range1D<Half> Range1Dh;
+typedef Math::Range2D<Half> Range2Dh;
+typedef Math::Range3D<Half> Range3Dh;
 typedef Math::Vector2<Double> Vector2d;
 typedef Math::Vector3<Double> Vector3d;
 typedef Math::Vector4<Double> Vector4d;
@@ -284,10 +329,10 @@ typedef Math::Matrix2x4<Double> Matrix2x4d;
 typedef Math::Matrix4x2<Double> Matrix4x2d;
 typedef Math::Matrix3x4<Double> Matrix3x4d;
 typedef Math::Matrix4x3<Double> Matrix4x3d;
-typedef Math::QuadraticBezier2D<Float> QuadraticBezier2Dd;
-typedef Math::QuadraticBezier3D<Float> QuadraticBezier3Dd;
-typedef Math::CubicBezier2D<Float> CubicBezier2Dd;
-typedef Math::CubicBezier3D<Float> CubicBezier3Dd;
+typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
+typedef Math::QuadraticBezier3D<Double> QuadraticBezier3Dd;
+typedef Math::CubicBezier2D<Double> CubicBezier2Dd;
+typedef Math::CubicBezier3D<Double> CubicBezier3Dd;
 typedef Math::CubicHermite1D<Double> CubicHermite1Dd;
 typedef Math::CubicHermite2D<Double> CubicHermite2Dd;
 typedef Math::CubicHermite3D<Double> CubicHermite3Dd;
@@ -311,7 +356,9 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/BitVector.h"
 #include "Magnum/Math/Color.h"
+// TODO: ColorBatch (separate library because of StridedArrayView)
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -321,14 +368,14 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Functions.h"
-// TODO: FunctionsBatch (separate library because of StridedArrayView dep?)
+// TODO: FunctionsBatch (separate library because of StridedArrayView)
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Intersection.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Packing.h"
-// TODO: PackingBatch (separate library because of StridedArrayView dep?)
+// TODO: PackingBatch (separate library because of StridedArrayView)
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/RectangularMatrix.h"
@@ -355,6 +402,7 @@ typedef Math::Frustum<Double> Frustumd;
 #ifdef MAGNUM_MATH_EIGEN_INTEGRATION
 // {{includes}}
 #include "Magnum/EigenIntegration/Integration.h"
+// TODO: DynamicMatrixIntegration (separate library because of StridedArrayView)
 #include "Magnum/EigenIntegration/GeometryIntegration.h"
 #endif
 #ifdef MAGNUM_MATH_IMPLEMENTATION
