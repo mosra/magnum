@@ -945,6 +945,7 @@ template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(con
     return vector + _scalar*t + Math::cross(_vector, t);
 }
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<class T> struct StrictWeakOrdering<Quaternion<T>> {
@@ -960,6 +961,7 @@ template<class T> struct StrictWeakOrdering<Quaternion<T>> {
 };
 
 }
+#endif
 
 }}
 

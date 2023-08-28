@@ -824,6 +824,7 @@ template<UnsignedInt dimensions, class T> inline bool Range<dimensions, T>::oper
         TypeTraits<VectorType>::equals(_max, other._max);
 }
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<UnsignedInt dimensions, class T> struct StrictWeakOrdering<Range<dimensions, T>> {
@@ -838,6 +839,7 @@ template<UnsignedInt dimensions, class T> struct StrictWeakOrdering<Range<dimens
 };
 
 }
+#endif
 
 }}
 

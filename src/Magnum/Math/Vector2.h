@@ -238,8 +238,9 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(2, Vector2)
 namespace Implementation {
     template<std::size_t, class> struct TypeForSize;
     template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
-
+    #ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
     template<class T> struct StrictWeakOrdering<Vector2<T>>: StrictWeakOrdering<Vector<2, T>> {};
+    #endif
 }
 
 }}

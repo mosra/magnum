@@ -95,6 +95,10 @@
 #pragma ACME enable CORRADE_INTERNAL_CONSTEXPR_ASSERT
 #pragma ACME enable CORRADE_INTERNAL_CONSTEXPR_DEBUG_ASSERT
 
+/* Disable strict weak ordering helpers as they're non-essential. The
+   StrictWeakOrdering.h header isn't included either. */
+#pragma ACME enable MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
+
 /* We don't need everything from configure.h here */
 #pragma ACME enable Corrade_configure_h
 #pragma ACME enable Magnum_configure_h
@@ -379,7 +383,6 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/RectangularMatrix.h"
-#include "Magnum/Math/StrictWeakOrdering.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Tags.h"
 #include "Magnum/Math/TypeTraits.h"

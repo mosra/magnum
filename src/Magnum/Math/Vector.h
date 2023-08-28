@@ -1585,6 +1585,7 @@ template<std::size_t size, class T> inline std::pair<T, T> Vector<size, T>::minm
     return {min, max};
 }
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<std::size_t size, class T> struct StrictWeakOrdering<Vector<size, T>> {
@@ -1601,6 +1602,7 @@ template<std::size_t size, class T> struct StrictWeakOrdering<Vector<size, T>> {
 };
 
 }
+#endif
 
 }}
 

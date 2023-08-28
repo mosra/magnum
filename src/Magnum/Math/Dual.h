@@ -422,6 +422,7 @@ template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Rad, T>>& a
 template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Deg, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
 #endif
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<class T> struct StrictWeakOrdering<Dual<T>> {
@@ -437,6 +438,7 @@ template<class T> struct StrictWeakOrdering<Dual<T>> {
 };
 
 }
+#endif
 
 }}
 

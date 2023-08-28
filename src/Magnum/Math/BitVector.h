@@ -417,6 +417,7 @@ template<std::size_t size> inline BitVector<size> BitVector<size>::operator~() c
     return out;
 }
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<std::size_t size> struct StrictWeakOrdering<BitVector<size>> {
@@ -438,6 +439,7 @@ template<std::size_t size> struct StrictWeakOrdering<BitVector<size>> {
 };
 
 }
+#endif
 
 }}
 

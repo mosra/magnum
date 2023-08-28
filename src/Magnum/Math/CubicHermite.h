@@ -558,6 +558,7 @@ template<class T> inline bool CubicHermite<T>::operator==(const CubicHermite<T>&
         TypeTraits<T>::equals(_outTangent, other._outTangent);
 }
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<class T> struct StrictWeakOrdering<CubicHermite<T>> {
@@ -576,6 +577,7 @@ template<class T> struct StrictWeakOrdering<CubicHermite<T>> {
 };
 
 }
+#endif
 
 }}
 

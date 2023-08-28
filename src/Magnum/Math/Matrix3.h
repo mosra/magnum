@@ -792,9 +792,11 @@ template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
     return from(inverseRotation, inverseRotation*-translation());
 }
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
     template<class T> struct StrictWeakOrdering<Matrix3<T>>: StrictWeakOrdering<RectangularMatrix<3, 3, T>> {};
 }
+#endif
 
 }}
 

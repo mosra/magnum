@@ -1599,9 +1599,10 @@ namespace Implementation {
     template<class T> struct TypeForSize<3, Color4<T>> { typedef Color3<T> Type; };
     template<class T> struct TypeForSize<4, Color3<T>> { typedef Color4<T> Type; };
     template<class T> struct TypeForSize<4, Color4<T>> { typedef Color4<T> Type; };
-
+    #ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
     template<class T> struct StrictWeakOrdering<Color3<T>>: StrictWeakOrdering<Vector<3, T>> {};
     template<class T> struct StrictWeakOrdering<Color4<T>>: StrictWeakOrdering<Vector<4, T>> {};
+    #endif
 }
 
 }}

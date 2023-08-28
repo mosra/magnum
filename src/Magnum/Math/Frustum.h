@@ -311,6 +311,7 @@ template<class T> template<class U> constexpr Frustum<T>::Frustum(const Frustum<
     Vector4<T>{other[4]},
     Vector4<T>{other[5]}} {}
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<class T> struct StrictWeakOrdering<Frustum<T>> {
@@ -328,6 +329,7 @@ template<class T> struct StrictWeakOrdering<Frustum<T>> {
 };
 
 }
+#endif
 
 }}
 

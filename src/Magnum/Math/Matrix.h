@@ -447,7 +447,9 @@ template<class T> struct MatrixDeterminant<1, T> {
     }
 };
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 template<std::size_t size, class T> struct StrictWeakOrdering<Matrix<size, T>>: StrictWeakOrdering<RectangularMatrix<size, size, T>> {};
+#endif
 
 }
 #endif

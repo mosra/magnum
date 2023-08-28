@@ -188,6 +188,7 @@ Prints the value with 4 significant digits.
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value);
 #endif
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<> struct StrictWeakOrdering<Half> {
@@ -198,6 +199,7 @@ template<> struct StrictWeakOrdering<Half> {
 };
 
 }
+#endif
 
 }}
 

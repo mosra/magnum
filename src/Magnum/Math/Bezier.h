@@ -324,6 +324,7 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 #endif
 #endif
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<UnsignedInt order, UnsignedInt dimensions, class T> struct StrictWeakOrdering<Bezier<order, dimensions, T>> {
@@ -341,6 +342,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> struct StrictWeakOr
 };
 
 }
+#endif
 
 }}
 

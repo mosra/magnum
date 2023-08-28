@@ -109,9 +109,11 @@ template<class T> using Range1D = Range<1, T>;
 template<class> class Range2D;
 template<class> class Range3D;
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
     template<class> struct StrictWeakOrdering;
 }
+#endif
 #endif
 
 }}

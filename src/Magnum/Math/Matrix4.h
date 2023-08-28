@@ -1357,9 +1357,11 @@ template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {
     return from(inverseRotation, inverseRotation*-translation());
 }
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
     template<class T> struct StrictWeakOrdering<Matrix4<T>>: StrictWeakOrdering<RectangularMatrix<4, 4, T>> {};
 }
+#endif
 
 }}
 

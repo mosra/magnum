@@ -873,6 +873,7 @@ template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...se
 }
 #endif
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
 
 template<std::size_t cols, std::size_t rows, class T> struct StrictWeakOrdering<RectangularMatrix<cols, rows, T>> {
@@ -890,6 +891,7 @@ template<std::size_t cols, std::size_t rows, class T> struct StrictWeakOrdering<
 };
 
 }
+#endif
 
 }}
 

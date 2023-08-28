@@ -421,9 +421,11 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 #endif
 #endif
 
+#ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING
 namespace Implementation {
     template<class T> struct StrictWeakOrdering<DualComplex<T>>: StrictWeakOrdering<Dual<Complex<T>>> {};
 }
+#endif
 
 }}
 
