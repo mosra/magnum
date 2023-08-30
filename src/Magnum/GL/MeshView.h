@@ -147,16 +147,17 @@ class MAGNUM_GL_EXPORT MeshView {
         }
 
         /**
-         * @brief Set index range
-         * @param first     First vertex
+         * @brief Set index offset
+         * @param offset    First index
          * @param start     Minimum array index contained in the buffer
          * @param end       Maximum array index contained in the buffer
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
          * The @p start and @p end parameters may help to improve memory access
          * performance, as only a portion of vertex buffer needs to be
          * acccessed. On OpenGL ES 2.0 this function behaves the same as
-         * @ref setIndexRange(Int), as index range functionality is not
+         * @ref setIndexOffset(Int), as index range functionality is not
          * available there. Ignored when calling
          * @ref AbstractShaderProgram::drawTransformFeedback().
          *
@@ -164,21 +165,41 @@ class MAGNUM_GL_EXPORT MeshView {
          * @see @ref setCount(), @ref mesh(), @ref Mesh::isIndexed()
          */
         /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
-        inline MeshView& setIndexRange(Int first, UnsignedInt start, UnsignedInt end);
+        inline MeshView& setIndexOffset(Int offset, UnsignedInt start, UnsignedInt end);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setIndexOffset(Int, UnsignedInt, UnsignedInt)
+         * @m_deprecated_since_latest Use @ref setIndexOffset(Int, UnsignedInt, UnsignedInt) instead.
+         */
+        CORRADE_DEPRECATED("use setIndexOffset() instead") MeshView& setIndexRange(Int offset, UnsignedInt start, UnsignedInt end) {
+            return setIndexOffset(offset, start, end);
+        }
+        #endif
 
         /**
-         * @brief Set index range
-         * @param first     First index
+         * @brief Set index offset
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
-         * Prefer to use @ref setIndexRange(Int, UnsignedInt, UnsignedInt) for
-         * better performance. Ignored when calling
-         * @ref AbstractShaderProgram::drawTransformFeedback().
+         * Prefer to use @ref setIndexOffset(Int, UnsignedInt, UnsignedInt) for
+         * potential better performance in certain drivers. Ignored when
+         * calling @ref AbstractShaderProgram::drawTransformFeedback().
          *
          * Expects that the original mesh is indexed.
          * @see @ref setCount(), @ref mesh(), @ref Mesh::isIndexed()
          */
-        MeshView& setIndexRange(Int first);
+        MeshView& setIndexOffset(Int offset);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setIndexOffset(Int)
+         * @m_deprecated_since_latest Use @ref setIndexOffset(Int) instead.
+         */
+        CORRADE_DEPRECATED("use setIndexOffset() instead") MeshView& setIndexRange(Int offset) {
+            return setIndexOffset(offset);
+        }
+        #endif
 
         /** @brief Instance count */
         Int instanceCount() const { return _instanceCount; }
@@ -283,8 +304,8 @@ class MAGNUM_GL_EXPORT MeshView {
 
 inline MeshView::MeshView(Mesh& original): _original{original} {}
 
-inline MeshView& MeshView::setIndexRange(Int first, UnsignedInt start, UnsignedInt end) {
-    setIndexRange(first);
+inline MeshView& MeshView::setIndexOffset(Int first, UnsignedInt start, UnsignedInt end) {
+    setIndexOffset(first);
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart = start;
     _indexEnd = end;

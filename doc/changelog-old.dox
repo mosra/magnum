@@ -143,7 +143,7 @@ Released 2018-05-01, tagged as
 
 @subsubsection changelog-2018-04-changes-gl GL library
 
--   The @ref GL::Mesh::indexTypeSize() and @ref GL::MeshView::setIndexRange()
+-   The @ref GL::Mesh::indexTypeSize() and @cpp GL::MeshView::setIndexRange() @ce
     now expect that the mesh is indexed (instead of silently not doing
     anything)
 
@@ -1152,7 +1152,7 @@ a high-level overview.
     instead
 -   Removed deprecated `Mesh*::set*{Range,Count}()` functions, use
     @ref GL::Mesh::setCount() "Mesh*::setCount()" and
-    @ref GL::MeshView::setIndexRange() "MeshView::setIndexRange()" instead
+    @cpp MeshView::setIndexRange() @ce instead
 -   Removed deprecated parameterless @cpp GL::Mesh::draw() @ce overload, use
     the one with explicit shader parameter instead
 -   Removed deprecated `Context::Flag::Robustness` enum value, use

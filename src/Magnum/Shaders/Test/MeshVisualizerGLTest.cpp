@@ -6693,13 +6693,13 @@ void MeshVisualizerGLTest::renderMulti2D() {
     if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
         square.setBaseVertex(circleData.vertexCount());
     else
-        square.setIndexRange(circleData.indexCount());
+        square.setIndexOffset(circleData.indexCount());
     GL::MeshView triangle{mesh};
     triangle.setCount(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader ?
         triangleData.vertexCount() : triangleData.indexCount());
     if(data.flags & MeshVisualizerGL2D::Flag::NoGeometryShader)
         triangle.setBaseVertex(circleData.vertexCount() + squareData.vertexCount());
-    else triangle.setIndexRange(circleData.indexCount() + squareData.indexCount());
+    else triangle.setIndexOffset(circleData.indexCount() + squareData.indexCount());
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.
@@ -7035,13 +7035,13 @@ void MeshVisualizerGLTest::renderMulti3D() {
     if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
         plane.setBaseVertex(sphereData.vertexCount());
     else
-        plane.setIndexRange(sphereData.indexCount());
+        plane.setIndexOffset(sphereData.indexCount());
     GL::MeshView cone{mesh};
     cone.setCount(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader ?
         coneData.vertexCount() : coneData.indexCount());
     if(data.flags & MeshVisualizerGL3D::Flag::NoGeometryShader)
         cone.setBaseVertex(sphereData.vertexCount() + planeData.vertexCount());
-    else cone.setIndexRange(sphereData.indexCount() + planeData.indexCount());
+    else cone.setIndexOffset(sphereData.indexCount() + planeData.indexCount());
 
     GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
         ProjectionUniform3D{}.setProjectionMatrix(

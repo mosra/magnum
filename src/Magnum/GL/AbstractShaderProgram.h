@@ -1301,7 +1301,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Everything set by @ref MeshView::setCount(),
          * @ref MeshView::setBaseInstance(), @ref MeshView::setBaseVertex(),
-         * @ref MeshView::setIndexRange() and @ref Mesh::setIndexBuffer() is
+         * @ref MeshView::setIndexOffset() and @ref Mesh::setIndexBuffer() is
          * ignored, the mesh is drawn as non-indexed and the vertex count is
          * taken from the @p xfb object. See
          * @ref drawTransformFeedback(Mesh&, TransformFeedback&, UnsignedInt)

@@ -1344,10 +1344,10 @@ void DistanceFieldVectorGLTest::renderMulti2D() {
     circle.setCount(circleData.indexCount());
     GL::MeshView square{mesh};
     square.setCount(squareData.indexCount())
-        .setIndexRange(circleData.indexCount());
+        .setIndexOffset(circleData.indexCount());
     GL::MeshView triangle{mesh};
     triangle.setCount(triangleData.indexCount())
-        .setIndexRange(circleData.indexCount() + squareData.indexCount());
+        .setIndexOffset(circleData.indexCount() + squareData.indexCount());
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.
@@ -1564,10 +1564,10 @@ void DistanceFieldVectorGLTest::renderMulti3D() {
     sphere.setCount(sphereData.indexCount());
     GL::MeshView plane{mesh};
     plane.setCount(planeData.indexCount())
-        .setIndexRange(sphereData.indexCount());
+        .setIndexOffset(sphereData.indexCount());
     GL::MeshView cone{mesh};
     cone.setCount(coneData.indexCount())
-        .setIndexRange(sphereData.indexCount() + planeData.indexCount());
+        .setIndexOffset(sphereData.indexCount() + planeData.indexCount());
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.

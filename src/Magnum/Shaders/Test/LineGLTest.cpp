@@ -2709,10 +2709,10 @@ void LineGLTest::renderMulti2D() {
     wave.setCount(30);
     GL::MeshView cross{lines};
     cross.setCount(12)
-        .setIndexRange(30);
+        .setIndexOffset(30);
     GL::MeshView point{lines};
     point.setCount(6)
-        .setIndexRange(42);
+        .setIndexOffset(42);
 
     LineGL2D shader{LineGL2D::Configuration{}
         .setFlags(LineGL2D::Flag::UniformBuffers|data.flags)
@@ -2940,10 +2940,10 @@ void LineGLTest::renderMulti3D() {
     wave.setCount(30);
     GL::MeshView cross{lines};
     cross.setCount(12)
-        .setIndexRange(30);
+        .setIndexOffset(30);
     GL::MeshView point{lines};
     point.setCount(6)
-        .setIndexRange(42);
+        .setIndexOffset(42);
 
     LineGL3D shader{LineGL3D::Configuration{}
         .setFlags(LineGL3D::Flag::UniformBuffers|data.flags)

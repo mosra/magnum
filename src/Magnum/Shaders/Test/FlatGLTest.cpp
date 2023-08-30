@@ -5069,10 +5069,10 @@ void FlatGLTest::renderMulti2D() {
     circle.setCount(circleData.indexCount());
     GL::MeshView square{mesh};
     square.setCount(squareData.indexCount())
-        .setIndexRange(circleData.indexCount());
+        .setIndexOffset(circleData.indexCount());
     GL::MeshView triangle{mesh};
     triangle.setCount(triangleData.indexCount())
-        .setIndexRange(circleData.indexCount() + squareData.indexCount());
+        .setIndexOffset(circleData.indexCount() + squareData.indexCount());
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.
@@ -5434,10 +5434,10 @@ void FlatGLTest::renderMulti3D() {
     sphere.setCount(sphereData.indexCount());
     GL::MeshView plane{mesh};
     plane.setCount(planeData.indexCount())
-        .setIndexRange(sphereData.indexCount());
+        .setIndexOffset(sphereData.indexCount());
     GL::MeshView cone{mesh};
     cone.setCount(coneData.indexCount())
-        .setIndexRange(sphereData.indexCount() + planeData.indexCount());
+        .setIndexOffset(sphereData.indexCount() + planeData.indexCount());
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.
@@ -5742,10 +5742,10 @@ void FlatGLTest::renderMultiSkinning2D() {
     square.setCount(6);
     GL::MeshView triangle1{mesh};
     triangle1.setCount(3)
-        .setIndexRange(6);
+        .setIndexOffset(6);
     GL::MeshView triangle2{mesh};
     triangle2.setCount(3)
-        .setIndexRange(9);
+        .setIndexOffset(9);
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.
@@ -5994,10 +5994,10 @@ void FlatGLTest::renderMultiSkinning3D() {
     square.setCount(6);
     GL::MeshView triangle1{mesh};
     triangle1.setCount(3)
-        .setIndexRange(6);
+        .setIndexOffset(6);
     GL::MeshView triangle2{mesh};
     triangle2.setCount(3)
-        .setIndexRange(9);
+        .setIndexOffset(9);
 
     /* Some drivers have uniform offset alignment as high as 256, which means
        the subsequent sets of uniforms have to be aligned to a multiply of it.

@@ -5481,10 +5481,10 @@ void PhongGLTest::renderMulti() {
     sphere.setCount(sphereData.indexCount());
     GL::MeshView plane{mesh};
     plane.setCount(planeData.indexCount())
-        .setIndexRange(sphereData.indexCount());
+        .setIndexOffset(sphereData.indexCount());
     GL::MeshView cone{mesh};
     cone.setCount(coneData.indexCount())
-        .setIndexRange(sphereData.indexCount() + planeData.indexCount());
+        .setIndexOffset(sphereData.indexCount() + planeData.indexCount());
 
     GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
         ProjectionUniform3D{}.setProjectionMatrix(
@@ -5830,10 +5830,10 @@ void PhongGLTest::renderMultiSkinning() {
     square.setCount(6);
     GL::MeshView triangle1{mesh};
     triangle1.setCount(3)
-        .setIndexRange(6);
+        .setIndexOffset(6);
     GL::MeshView triangle2{mesh};
     triangle2.setCount(3)
-        .setIndexRange(9);
+        .setIndexOffset(9);
 
     GL::Buffer projectionUniform{GL::Buffer::TargetHint::Uniform, {
         ProjectionUniform3D{}

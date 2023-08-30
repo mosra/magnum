@@ -1037,7 +1037,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *
          * Alternative to @ref setIndexBuffer(Buffer&, GLintptr, MeshIndexType, UnsignedInt, UnsignedInt)
          * with unspecified index limits, see its documentation for more
-         * information. Prefer to set index limits for better performance.
+         * information. Prefer to set index limits for better performance on
+         * certain drivers.
          */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type) {
             return setIndexBuffer(buffer, offset, type, 0, 0);

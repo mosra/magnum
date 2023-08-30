@@ -141,6 +141,8 @@ struct MeshGLTest: OpenGLTester {
     template<class T> void setIndexBufferTransferOwnership();
     template<class T> void setIndexBufferRangeTransferOwnership();
 
+    void setIndexOffsetNotIndexed();
+
     void unbindVAOWhenSettingIndexBufferData();
     void unbindIndexBufferWhenBindingVao();
     void resetIndexBufferBindingWhenBindingVao();
@@ -630,6 +632,8 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setIndexBufferTransferOwnership<Magnum::MeshIndexType>,
               &MeshGLTest::setIndexBufferRangeTransferOwnership<GL::MeshIndexType>,
               &MeshGLTest::setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>,
+
+              &MeshGLTest::setIndexOffsetNotIndexed,
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
               &MeshGLTest::unbindIndexBufferWhenBindingVao,
@@ -1133,7 +1137,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
         #endif
         ;
 
-    if(view.mesh().isIndexed()) view.setIndexRange(1);
+    if(view.mesh().isIndexed()) view.setIndexOffset(1);
 
     shader.draw(view);
 }
@@ -2674,6 +2678,18 @@ template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
     }
 
     CORRADE_VERIFY(!glIsBuffer(id));
+}
+
+void MeshGLTest::setIndexOffsetNotIndexed() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Mesh mesh;
+    MeshView view{mesh};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    view.setIndexOffset(3);
+    CORRADE_COMPARE(out.str(), "GL::MeshView::setIndexOffset(): mesh is not indexed\n");
 }
 
 void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
@@ -4368,16 +4384,16 @@ void MeshGLTest::multiDrawIndexedViews() {
 
     MeshView a{mesh}, b{mesh}, c{mesh}, d{mesh};
     a.setCount(data.counts[0])
-     .setIndexRange(data.indexOffsetsInBytes[0]/sizeof(UnsignedInt))
+     .setIndexOffset(data.indexOffsetsInBytes[0]/sizeof(UnsignedInt))
      .setBaseVertex(data.vertexOffsets[0]);
     b.setCount(data.counts[1])
-     .setIndexRange(data.indexOffsetsInBytes[1]/sizeof(UnsignedInt))
+     .setIndexOffset(data.indexOffsetsInBytes[1]/sizeof(UnsignedInt))
      .setBaseVertex(data.vertexOffsets[1]);
     c.setCount(data.counts[2])
-     .setIndexRange(data.indexOffsetsInBytes[2]/sizeof(UnsignedInt))
+     .setIndexOffset(data.indexOffsetsInBytes[2]/sizeof(UnsignedInt))
      .setBaseVertex(data.vertexOffsets[2]);
     d.setCount(data.counts[3])
-     .setIndexRange(data.indexOffsetsInBytes[3]/sizeof(UnsignedInt))
+     .setIndexOffset(data.indexOffsetsInBytes[3]/sizeof(UnsignedInt))
      .setBaseVertex(data.vertexOffsets[3]);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
