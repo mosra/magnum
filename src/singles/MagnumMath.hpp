@@ -28,6 +28,45 @@
     `#define MAGNUM_MATH_EIGEN_INTEGRATION` before including the file.
     Including it multiple times with different macros defined works as well.
 
+    v2020.06-2502-gfa079385b (2023-08-28)
+    -   New Range1Dui, Range2Dui, Range3Dui, Degh, Radh, Range1Dh, Range2Dh and
+        Range3Dh typedefs
+    -   New binomialCoefficient(), popcount() and fmod() APIs
+    -   Added r() and g() accessors to Vector2 and rg() to Vector3
+    -   New Color3::fromLinearRgbInt(), toLinearRgbInt() and
+        Color4::fromLinearRgbaInt(), toLinearRgbaInt() for converting a color
+        from/to a packed 24-/32-bit representation without a sRGB conversion;
+        integer-taking fromSrgb() and fromSrgbAlpha() is now renamed to
+        fromSrgbInt() and fromSrgbAlphaInt() for consistency
+    -   Added an off-center Matrix3::projection() and
+        Matrix4::orthographicProjection() overloads
+    -   New Matrix4::orthographicProjectionNear(), orthographicProjectionFar(),
+        perspectiveProjectionNear(), perspectiveProjectionFar() accessors
+    -   Added Quaternion::reflection() and reflectVector() APIs which perform
+        a reflection with a quaternion instead of a rotation
+    -   Ability to create a DualQuaternion from a rotation quaternion and a
+        translation vector
+    -   angle() for Quaternion is now called halfAngle() because that's what it
+        returns, angle() will be eventually reintroduced again but returning
+        the correct value
+    -   Convenience Distance::pointPoint() and pointPointSquared(),
+        Intersection::pointCircle() and pointSphere() APIs as a more
+        self-documenting way of using (a - b).length() or dot()
+    -   New Intersection::rayRange() API
+    -   Conversion between Eigen::AlignedBox and Range
+    -   Added unary operator+ to all math classes
+    -   Matrices can now created from matrices of different sizes with a custom
+        value on new diagonal elements
+    -   data() accessors of all classes now return sized array references
+        instead of pointers
+    -   Fixed Matrix4::normalMatrix() to behave correctly in presence of a
+        reflection
+    -   BoolVector is renamed to BitVector and has new set() and reset() APIs
+    -   64-bit integers and long doubles are no longer compiled away on
+        Emscripten
+    -   Fixed QuadraticBezier2Dd, QuadraticBezier3Dd, CubicBezier2Dd and
+        CubicBezier3Dd typedefs to be actually doubles
+    -   Compatibility with C++20 which removes the <ciso646> header
     v2020.06-0-gfac6f4da2 (2020-06-27)
     -   Various fixes for Clang-CL compatibility
     -   Expanding the APIs to work with Half and long double types
