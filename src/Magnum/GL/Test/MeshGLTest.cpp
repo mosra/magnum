@@ -141,7 +141,7 @@ struct MeshGLTest: OpenGLTester {
     template<class T> void setIndexBufferTransferOwnership();
     template<class T> void setIndexBufferRangeTransferOwnership();
 
-    void setIndexOffsetNotIndexed();
+    void indexTypeSetIndexOffsetNotIndexed();
 
     void unbindVAOWhenSettingIndexBufferData();
     void unbindIndexBufferWhenBindingVao();
@@ -633,7 +633,7 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setIndexBufferRangeTransferOwnership<GL::MeshIndexType>,
               &MeshGLTest::setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>,
 
-              &MeshGLTest::setIndexOffsetNotIndexed,
+              &MeshGLTest::indexTypeSetIndexOffsetNotIndexed,
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
               &MeshGLTest::unbindIndexBufferWhenBindingVao,
@@ -2677,7 +2677,7 @@ template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
     CORRADE_VERIFY(!glIsBuffer(id));
 }
 
-void MeshGLTest::setIndexOffsetNotIndexed() {
+void MeshGLTest::indexTypeSetIndexOffsetNotIndexed() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     Mesh mesh;
@@ -2685,8 +2685,11 @@ void MeshGLTest::setIndexOffsetNotIndexed() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    mesh.indexType();
     view.setIndexOffset(3);
-    CORRADE_COMPARE(out.str(), "GL::MeshView::setIndexOffset(): mesh is not indexed\n");
+    CORRADE_COMPARE(out.str(),
+        "GL::Mesh::indexType(): mesh is not indexed\n"
+        "GL::MeshView::setIndexOffset(): mesh is not indexed\n");
 }
 
 void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {

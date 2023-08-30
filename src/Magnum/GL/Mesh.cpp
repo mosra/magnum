@@ -360,13 +360,13 @@ Mesh& Mesh::setLabel(const Containers::StringView label) {
 #endif
 
 MeshIndexType Mesh::indexType() const {
-    CORRADE_ASSERT(_indexBuffer.id(), "Mesh::indexType(): mesh is not indexed", {});
+    CORRADE_ASSERT(_indexBuffer.id(), "GL::Mesh::indexType(): mesh is not indexed", {});
     return _indexType;
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt Mesh::indexTypeSize() const {
-    CORRADE_ASSERT(_indexBuffer.id(), "Mesh::indexTypeSize(): mesh is not indexed", {});
+    CORRADE_ASSERT(_indexBuffer.id(), "GL::Mesh::indexTypeSize(): mesh is not indexed", {});
 
     return meshIndexTypeSize(_indexType);
 }
