@@ -59,7 +59,7 @@ void MeshView::draw(AbstractShaderProgram&& shader, std::initializer_list<Contai
 MeshView& MeshView::setIndexOffset(Int offset) {
     CORRADE_ASSERT(_original.get()._indexBuffer.id(),
         "GL::MeshView::setIndexOffset(): mesh is not indexed", *this);
-    _indexOffset = _original.get()._indexOffset + offset*meshIndexTypeSize(_original.get().indexType());
+    _indexOffset = offset;
     return *this;
 }
 
@@ -110,13 +110,15 @@ void MeshView::multiDrawImplementationDefault(const Containers::Iterable<MeshVie
 
     /* The vertexOffsets array is used for non-indexed meshes or if the base
        vertex is specified for any of the meshes */
+    const UnsignedInt indexTypeSize = original._indexBuffer.id() ?
+        meshIndexTypeSize(original._indexType) : 0;
     bool useVertexOffsets = !original.isIndexed();
     for(std::size_t i = 0; i != meshes.size(); ++i) {
         CORRADE_ASSERT(meshes[i]._instanceCount == 1, "GL::AbstractShaderProgram::draw(): cannot multi-draw instanced meshes", );
 
         counts[i] = meshes[i]._count;
         vertexOffsets[i] = meshes[i]._baseVertex;
-        indexOffsets[i] = meshes[i]._indexOffset;
+        indexOffsets[i] = original._indexBufferOffset + indexTypeSize*meshes[i]._indexOffset;
         if(meshes[i]._baseVertex) useVertexOffsets = true;
     }
 

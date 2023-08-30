@@ -748,6 +748,51 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             return *this;
         }
 
+        /**
+         * @brief Index offset
+         * @m_since_latest
+         */
+        Int indexOffset() const { return _indexOffset; }
+
+        /**
+         * @brief Set index offset
+         * @param offset    First index
+         * @param start     Minimum array index contained in the buffer
+         * @param end       Maximum array index contained in the buffer
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * The offset gets multiplied by index type size and added to the base
+         * offset that was specified in @ref Mesh::setIndexBuffer(). The
+         * @p start and @p end parameters may help to improve memory access
+         * performance, as only a portion of vertex buffer needs to be
+         * acccessed. On OpenGL ES 2.0 this function behaves the same as
+         * @ref setIndexOffset(Int), as index range functionality is not
+         * available there. Ignored when calling
+         * @ref AbstractShaderProgram::drawTransformFeedback().
+         *
+         * Expects that the mesh is indexed.
+         * @see @ref setCount(), @ref isIndexed()
+         */
+        /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
+        inline Mesh& setIndexOffset(Int offset, UnsignedInt start, UnsignedInt end);
+
+        /**
+         * @brief Set index offset
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * The offset gets multiplied by index type size and added to the base
+         * offset that was specified in @ref Mesh::setIndexBuffer(). Prefer to
+         * use @ref setIndexOffset(Int, UnsignedInt, UnsignedInt) for potential
+         * better performance on certain drivers. Ignored when calling
+         * @ref AbstractShaderProgram::drawTransformFeedback().
+         *
+         * Expects that the mesh is indexed.
+         * @see @ref setCount(), @ref isIndexed()
+         */
+        Mesh& setIndexOffset(Int offset);
+
         /** @brief Instance count */
         Int instanceCount() const { return _instanceCount; }
 
@@ -1029,8 +1074,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * Ignored when calling @ref AbstractShaderProgram::drawTransformFeedback().
          * @see @ref maxElementIndex(), @ref maxElementsIndices(),
          *      @ref maxElementsVertices(), @ref setCount(), @ref isIndexed(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} or
-         *      @fn_gl_keyword{VertexArrayElementBuffer}
+         *      @ref setIndexOffset(), @fn_gl{BindVertexArray},
+         *      @fn_gl{BindBuffer} or @fn_gl_keyword{VertexArrayElementBuffer}
          */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end);
 
@@ -1387,7 +1432,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         UnsignedInt _baseInstance{};
         UnsignedInt _indexStart{}, _indexEnd{};
         #endif
-        GLintptr _indexOffset{};
+        GLintptr _indexBufferOffset{}, _indexOffset{};
         MeshIndexType _indexType{};
         Buffer _indexBuffer{NoCreate};
 
@@ -1402,6 +1447,18 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 
 /** @debugoperatorenum{MeshIndexType} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, MeshIndexType value);
+
+inline Mesh& Mesh::setIndexOffset(Int first, UnsignedInt start, UnsignedInt end) {
+    setIndexOffset(first);
+    #ifndef MAGNUM_TARGET_GLES2
+    _indexStart = start;
+    _indexEnd = end;
+    #else
+    static_cast<void>(start);
+    static_cast<void>(end);
+    #endif
+    return *this;
+}
 
 inline GLuint Mesh::release() {
     const GLuint id = _id;

@@ -166,6 +166,8 @@ See also:
 -   Exposed @gl_extension{ARB,buffer_storage} as
     @ref GL::Buffer::setStorage() together with additions to
     @ref GL::Buffer::MapFlag
+-   It's now possible to modify index offset via @ref GL::Mesh::setIndexOffset()
+    directly on the mesh itself instead of just through @ref GL::MeshView
 -   Exposed missing @ref GL::Renderer::Feature::SampleAlphaToCoverage,
     @relativeref{GL::Renderer,Feature::SampleAlphaToOne},
     @relativeref{GL::Renderer,Feature::SampleCoverage} and

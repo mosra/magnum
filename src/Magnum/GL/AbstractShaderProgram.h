@@ -1272,13 +1272,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * and that the output buffer(s) from @p xfb are used as vertex buffers
          * in the mesh. If its instance count is @cpp 0 @ce, no draw commands
          * are issued. Everything set by @ref Mesh::setCount(),
-         * @ref Mesh::setBaseInstance(), @ref Mesh::setBaseVertex() and
-         * @ref Mesh::setIndexBuffer() is ignored, the mesh is drawn as
-         * non-indexed and the vertex count is taken from the @p xfb object. If
-         * @p stream is @cpp 0 @ce, non-stream draw command is used. If
-         * @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0) is
-         * available, the associated vertex array object is bound instead of
-         * setting up the mesh from scratch.
+         * @ref Mesh::setBaseInstance(), @ref Mesh::setBaseVertex(),
+         * @ref Mesh::setIndexOffset() and @ref Mesh::setIndexBuffer() is
+         * ignored, the mesh is drawn as non-indexed and the vertex count is
+         * taken from the @p xfb object. If @p stream is @cpp 0 @ce, non-stream
+         * draw command is used. If @gl_extension{ARB,vertex_array_object}
+         * (part of OpenGL 3.0) is available, the associated vertex array
+         * object is bound instead of setting up the mesh from scratch.
          * @see @ref Mesh::setInstanceCount(), @ref draw(Mesh&),
          *      @ref drawTransformFeedback(MeshView&, TransformFeedback&, UnsignedInt),
          *      @fn_gl_keyword{UseProgram}, @fn_gl_keyword{EnableVertexAttribArray},

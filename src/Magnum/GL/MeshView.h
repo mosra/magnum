@@ -147,6 +147,12 @@ class MAGNUM_GL_EXPORT MeshView {
         }
 
         /**
+         * @brief Index offset
+         * @m_since_latest
+         */
+        Int indexOffset() const { return _indexOffset; }
+
+        /**
          * @brief Set index offset
          * @param offset    First index
          * @param start     Minimum array index contained in the buffer
@@ -154,7 +160,9 @@ class MAGNUM_GL_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
-         * The @p start and @p end parameters may help to improve memory access
+         * The offset gets multiplied by index type size and added to the base
+         * offset that was specified in @ref Mesh::setIndexBuffer(). The
+         * @p start and @p end parameters may help to improve memory access
          * performance, as only a portion of vertex buffer needs to be
          * acccessed. On OpenGL ES 2.0 this function behaves the same as
          * @ref setIndexOffset(Int), as index range functionality is not
@@ -182,9 +190,11 @@ class MAGNUM_GL_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
-         * Prefer to use @ref setIndexOffset(Int, UnsignedInt, UnsignedInt) for
-         * potential better performance in certain drivers. Ignored when
-         * calling @ref AbstractShaderProgram::drawTransformFeedback().
+         * The offset gets multiplied by index type size and added to the base
+         * offset that was specified in @ref Mesh::setIndexBuffer(). Prefer to
+         * use @ref setIndexOffset(Int, UnsignedInt, UnsignedInt) for potential
+         * better performance in certain drivers. Ignored when calling
+         * @ref AbstractShaderProgram::drawTransformFeedback().
          *
          * Expects that the original mesh is indexed.
          * @see @ref setCount(), @ref mesh(), @ref Mesh::isIndexed()

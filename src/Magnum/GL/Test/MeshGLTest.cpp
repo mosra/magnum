@@ -141,6 +141,8 @@ struct MeshGLTest: OpenGLTester {
     template<class T> void setIndexBufferTransferOwnership();
     template<class T> void setIndexBufferRangeTransferOwnership();
 
+    void setIndexOffset();
+
     void indexTypeSetIndexOffsetNotIndexed();
 
     void unbindVAOWhenSettingIndexBufferData();
@@ -633,6 +635,8 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setIndexBufferRangeTransferOwnership<GL::MeshIndexType>,
               &MeshGLTest::setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>,
 
+              &MeshGLTest::setIndexOffset,
+
               &MeshGLTest::indexTypeSetIndexOffsetNotIndexed,
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
@@ -964,6 +968,8 @@ struct DoubleShader: AbstractShaderProgram {
 };
 #endif
 
+/** @todo clean this up, it does too much implicitly and there's no way to
+    check just a subset, or the getters, or ... */
 struct Checker {
     Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh& mesh);
 
@@ -2677,6 +2683,48 @@ template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
     CORRADE_VERIFY(!glIsBuffer(id));
 }
 
+void MeshGLTest::setIndexOffset() {
+    /* Like setIndexBuffer(), but with a four-byte index type and the Checker
+       internals unwrapped to call setIndexOffset() on the Mesh directly
+       instead of the view */
+
+    Buffer vertices;
+    vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
+
+    constexpr UnsignedInt indexData[] = { 2, 267276, 2653, 282675, 0, 221987 };
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
+                         MultipleShader::Normal(), MultipleShader::TextureCoordinates())
+        .setIndexBuffer(indices, 4, MeshIndexType::UnsignedInt);
+
+    Renderbuffer renderbuffer;
+    renderbuffer.setStorage(
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        Vector2i(1));
+    Framebuffer framebuffer{{{}, Vector2i{1}}};
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
+
+    framebuffer.bind();
+    mesh.setPrimitive(MeshPrimitive::Points)
+        .setCount(1)
+        .setIndexOffset(3, 0, 1);
+    CORRADE_COMPARE(mesh.indexOffset(), 3);
+
+    MultipleShader{}.draw(mesh);
+
+    const auto value = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).pixels<Color4ub>()[0][0];
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(value, indexedResult);
+}
+
 void MeshGLTest::indexTypeSetIndexOffsetNotIndexed() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
@@ -2686,9 +2734,11 @@ void MeshGLTest::indexTypeSetIndexOffsetNotIndexed() {
     std::ostringstream out;
     Error redirectError{&out};
     mesh.indexType();
+    mesh.setIndexOffset(3);
     view.setIndexOffset(3);
     CORRADE_COMPARE(out.str(),
         "GL::Mesh::indexType(): mesh is not indexed\n"
+        "GL::Mesh::setIndexOffset(): mesh is not indexed\n"
         "GL::MeshView::setIndexOffset(): mesh is not indexed\n");
 }
 
