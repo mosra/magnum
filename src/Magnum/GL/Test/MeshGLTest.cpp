@@ -2524,7 +2524,6 @@ template<class T> void MeshGLTest::setIndexBuffer() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(mesh.indexType(), MeshIndexType::UnsignedByte);
-    CORRADE_COMPARE(mesh.indexTypeSize(), 1);
 
     const auto value = Checker(MultipleShader{},
         #ifndef MAGNUM_TARGET_GLES2
@@ -2556,7 +2555,6 @@ template<class T> void MeshGLTest::setIndexBufferRange() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(mesh.indexType(), GL::MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE(mesh.indexTypeSize(), 2);
 
     const auto value = Checker(MultipleShader{},
         #ifndef MAGNUM_TARGET_GLES2
@@ -2590,7 +2588,6 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(mesh.indexType(), GL::MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE(mesh.indexTypeSize(), 4);
 
     const auto value = Checker(MultipleShader{},
         #ifndef MAGNUM_TARGET_GLES2

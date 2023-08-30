@@ -272,7 +272,7 @@ Released 2018-05-01, tagged as
     function is deprecated, use @ref Magnum::MeshIndexType /
     @ref GL::MeshIndexType and @ref meshIndexTypeSize() instead
 -   The `GL::Mesh::indexSize()` function is deprecated, use
-    @ref GL::Mesh::indexTypeSize() instead
+    @cpp GL::Mesh::indexTypeSize() @ce instead
 -   The `Sampler` class and the `Sampler::Filter`, `Sampler::Mipmap`,
     `Sampler::Wrapping`, `Sampler::CompareMode`, `Sampler::CompareFunction` and
     `Sampler::DepthStencilMode` enums are deprecated, use @ref GL::Sampler,

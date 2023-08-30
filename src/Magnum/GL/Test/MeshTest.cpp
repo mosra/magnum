@@ -58,6 +58,9 @@ struct MeshTest: TestSuite::Tester {
     void mapIndexTypeImplementationSpecific();
     void mapIndexTypeInvalid();
 
+    void indexTypeSize();
+    void indexTypeSizeInvalid();
+
     void debugPrimitive();
     void debugIndexType();
 };
@@ -80,6 +83,9 @@ MeshTest::MeshTest() {
               &MeshTest::mapIndexType,
               &MeshTest::mapIndexTypeImplementationSpecific,
               &MeshTest::mapIndexTypeInvalid,
+
+              &MeshTest::indexTypeSize,
+              &MeshTest::indexTypeSizeInvalid,
 
               &MeshTest::debugPrimitive,
               &MeshTest::debugIndexType});
@@ -262,6 +268,24 @@ void MeshTest::mapIndexTypeInvalid() {
     CORRADE_COMPARE(out.str(),
         "GL::meshIndexType(): invalid type MeshIndexType(0x0)\n"
         "GL::meshIndexType(): invalid type MeshIndexType(0x12)\n");
+}
+
+void MeshTest::indexTypeSize() {
+    CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedByte), 1);
+    CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedShort), 2);
+    CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedInt), 4);
+}
+
+void MeshTest::indexTypeSizeInvalid() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    meshIndexTypeSize(MeshIndexType{});
+    meshIndexTypeSize(MeshIndexType(0xbadcafe));
+    CORRADE_COMPARE(out.str(),
+        "GL::meshIndexTypeSize(): invalid type GL::MeshIndexType(0x0)\n"
+        "GL::meshIndexTypeSize(): invalid type GL::MeshIndexType(0xbadcafe)\n");
 }
 
 void MeshTest::debugPrimitive() {

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::GL::Mesh, enum @ref Magnum::GL::MeshPrimitive, @ref Magnum::GL::MeshIndexType, function @ref Magnum::GL::meshPrimitive(), @ref Magnum::GL::meshIndexType()
+ * @brief Class @ref Magnum::GL::Mesh, enum @ref Magnum::GL::MeshPrimitive, @ref Magnum::GL::MeshIndexType, function @ref Magnum::GL::meshPrimitive(), @ref Magnum::GL::meshIndexType(), @ref Magnum::GL::meshIndexTypeSize()
  */
 
 #include <Corrade/Utility/ConfigurationValue.h>
@@ -220,6 +220,14 @@ cast to @ref MeshIndexType.
 @see @ref meshPrimitive(), @ref meshIndexTypeSize()
 */
 MAGNUM_GL_EXPORT MeshIndexType meshIndexType(Magnum::MeshIndexType type);
+
+/**
+@brief Size of given mesh index type
+@m_since_latest
+
+@see @ref Magnum::meshIndexTypeSize()
+*/
+MAGNUM_GL_EXPORT UnsignedInt meshIndexTypeSize(MeshIndexType type);
 
 namespace Implementation {
 
@@ -653,13 +661,16 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          */
         MeshIndexType indexType() const;
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Index type size
          *
          * Expects that the mesh is indexed.
-         * @see @ref isIndexed(), @ref meshIndexTypeSize(Magnum::MeshIndexType)
+         * @m_deprecated_since_latest Use @ref meshIndexTypeSize() on the value
+         *      returned from @ref indexType() instead.
          */
-        UnsignedInt indexTypeSize() const;
+        CORRADE_DEPRECATED("use meshIndexTypeSize() on indexType() instead") UnsignedInt indexTypeSize() const;
+        #endif
 
         /** @brief Primitive type */
         MeshPrimitive primitive() const { return _primitive; }

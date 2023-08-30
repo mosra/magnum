@@ -59,7 +59,7 @@ void MeshView::draw(AbstractShaderProgram&& shader, std::initializer_list<Contai
 MeshView& MeshView::setIndexOffset(Int offset) {
     CORRADE_ASSERT(_original.get()._indexBuffer.id(),
         "GL::MeshView::setIndexOffset(): mesh is not indexed", *this);
-    _indexOffset = _original.get()._indexOffset + offset*_original.get().indexTypeSize();
+    _indexOffset = _original.get()._indexOffset + offset*meshIndexTypeSize(_original.get().indexType());
     return *this;
 }
 

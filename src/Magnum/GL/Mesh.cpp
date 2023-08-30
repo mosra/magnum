@@ -107,6 +107,16 @@ MeshIndexType meshIndexType(const Magnum::MeshIndexType type) {
     return IndexTypeMapping[UnsignedInt(type) - 1];
 }
 
+UnsignedInt meshIndexTypeSize(const MeshIndexType type) {
+    switch(type) {
+        case MeshIndexType::UnsignedByte: return 1;
+        case MeshIndexType::UnsignedShort: return 2;
+        case MeshIndexType::UnsignedInt: return 4;
+    }
+
+    CORRADE_ASSERT_UNREACHABLE("GL::meshIndexTypeSize(): invalid type" << type, {});
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const MeshPrimitive value) {
     debug << "GL::MeshPrimitive" << Debug::nospace;
@@ -354,17 +364,13 @@ MeshIndexType Mesh::indexType() const {
     return _indexType;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt Mesh::indexTypeSize() const {
     CORRADE_ASSERT(_indexBuffer.id(), "Mesh::indexTypeSize(): mesh is not indexed", {});
 
-    switch(_indexType) {
-        case MeshIndexType::UnsignedByte: return 1;
-        case MeshIndexType::UnsignedShort: return 2;
-        case MeshIndexType::UnsignedInt: return 4;
-    }
-
-    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    return meshIndexTypeSize(_indexType);
 }
+#endif
 
 Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, const GLintptr offset, const GLsizei stride, const DynamicAttribute& attribute) {
     for(UnsignedInt i = 0; i != attribute.vectors(); ++i)
