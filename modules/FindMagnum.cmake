@@ -985,7 +985,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             endforeach()
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
-            set(_MAGNUM_${component}_OPTIONAL_DEPENDENCIES_TO_ADD )
+            set(_MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD )
             foreach(_dependency ${_MAGNUM_${_component}_DEPENDENCIES})
                 if(NOT _MAGNUM_${_component}_${_dependency}_DEPENDENCY_IS_OPTIONAL)
                     set_property(TARGET Magnum::${_component} APPEND PROPERTY
