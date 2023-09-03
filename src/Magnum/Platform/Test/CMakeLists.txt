@@ -55,12 +55,12 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
         "-s ASSERTIONS=2 -s SAFE_HEAP=1")
     add_custom_command(TARGET PlatformEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
-            ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
+            "${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js"
             $<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/EmscriptenApplicationTest.html
-            $<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>/PlatformEmscriptenApplicationTest.html)
+            "${CMAKE_CURRENT_SOURCE_DIR}/EmscriptenApplicationTest.html"
+            "$<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>/PlatformEmscriptenApplicationTest.html")
 
     add_executable(PlatformMultipleEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
     target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE
@@ -72,12 +72,12 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
     target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0x3bd267_rgbf)
     add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
-            ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
+            "${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js"
             $<TARGET_FILE_DIR:PlatformMultipleEmscriptenApplicationTest>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/MultipleEmscriptenApplicationTest.html
-            $<TARGET_FILE_DIR:PlatformMultipleEmscriptenApplicationTest>/PlatformMultipleEmscriptenApplicationTest.html)
+            "${CMAKE_CURRENT_SOURCE_DIR}/MultipleEmscriptenApplicationTest.html"
+            "$<TARGET_FILE_DIR:PlatformMultipleEmscriptenApplicationTest>/PlatformMultipleEmscriptenApplicationTest.html")
 endif()
 
 if(MAGNUM_WITH_GLFWAPPLICATION)
@@ -125,12 +125,12 @@ if(MAGNUM_WITH_SDL2APPLICATION)
     if(CORRADE_TARGET_EMSCRIPTEN)
         add_custom_command(TARGET PlatformSdl2ApplicationTest POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
-                ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
+                "${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css"
+                "${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js"
                 $<TARGET_FILE_DIR:PlatformSdl2ApplicationTest>
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${CMAKE_CURRENT_SOURCE_DIR}/Sdl2ApplicationTest.html
-                $<TARGET_FILE_DIR:PlatformSdl2ApplicationTest>/PlatformSdl2ApplicationTest.html)
+                "${CMAKE_CURRENT_SOURCE_DIR}/Sdl2ApplicationTest.html"
+                "$<TARGET_FILE_DIR:PlatformSdl2ApplicationTest>/PlatformSdl2ApplicationTest.html")
     elseif(CORRADE_TARGET_IOS OR CORRADE_TARGET_APPLE)
         # The plist is needed in order to mark the app as DPI-aware
         set_target_properties(PlatformSdl2ApplicationTest PROPERTIES
