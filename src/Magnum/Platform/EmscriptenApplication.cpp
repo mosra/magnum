@@ -486,11 +486,7 @@ void EmscriptenApplication::setContainerCssClass(const Containers::StringView cs
     EM_ASM_({
         /* Handle also the classic #container for backwards compatibility. We
            also need to preserve the mn-container otherwise next time we'd have
-           no way to look for it anymore.
-
-           Using UTF8ToString() instead of AsciiToString() as it has an
-           explicit size parameter and thus doesn't need a null-terminated
-           input, which would potentially require yet another allocation. */
+           no way to look for it anymore. */
         (Module['canvas'].closest('.mn-container') ||
          document.getElementById('container')).className = (['mn-container', UTF8ToString($0, $1)]).join(' ');
     }, cssClass.data(), cssClass.size());
@@ -745,7 +741,7 @@ void EmscriptenApplication::setCursor(Cursor cursor) {
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({Module['canvas'].style.cursor = AsciiToString($0);}, CursorMap[UnsignedInt(cursor)]);
+    EM_ASM_({Module['canvas'].style.cursor = UTF8ToString($0);}, CursorMap[UnsignedInt(cursor)]);
     #pragma GCC diagnostic pop
 }
 

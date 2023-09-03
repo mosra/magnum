@@ -945,6 +945,9 @@ See also:
     [mosra/toolchains#13](https://github.com/mosra/toolchains/issues/13),
     [mosra/toolchains#14](https://github.com/mosra/toolchains/pull/14) and
     [mosra/magnum#490](https://github.com/mosra/magnum/issues/490).
+-   @ref Platform::Sdl2Application and @ref Platform::EmscriptenApplication now
+    use `UTF8ToString` instead of `AsciiToString` as the latter is no longer
+    included by default on Emscripten 3.1.21+ (see [mosra/magnum#619](https://github.com/mosra/magnum/issues/619)).
 
 @subsection changelog-latest-bugfixes Bug fixes
 
