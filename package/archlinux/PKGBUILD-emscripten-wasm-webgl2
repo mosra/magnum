@@ -7,17 +7,22 @@ arch=('any')
 url="https://magnum.graphics"
 license=('MIT')
 depends=('emscripten-corrade')
-makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
+makedepends=('cmake' 'emscripten' 'corrade' 'ninja' 'rsync')
 options=('!strip' '!buildflags')
 
 _rootdir=$startdir/../../
 
 prepare() {
-    # This is needed in order to force emscripten to fill
-    # ~/.emscripten_cache/sysroot/ with potentially updated dependency headers
-    # and libs. See https://github.com/emscripten-core/emscripten/pull/13090
-    # for related discussion.
-    embuilder build sysroot --force
+    # This is needed in order to fill ~/.emscripten_cache/sysroot/ with
+    # up-to-date dependency headers and libs. There's
+    #   embuilder build sysroot --force
+    # as suggested in https://github.com/emscripten-core/emscripten/pull/13090
+    # that does the same in a builtin way, but it DELIBERATELY does not
+    # preserve timestamps in any way, forcing a full rebuild every time. Why?!
+    #   https://github.com/emscripten-core/emscripten/blob/0566a76b500bd2bbd535e108f657fce1db7f6f75/tools/shared.py#L687
+    # Could use cp -rp instead of rsync if the system include dir didn't have
+    # that stupid designed-to-fail version.h :(
+    rsync -rlt /usr/lib/emscripten/system/include/ --exclude=emscripten/version.h $(em-config CACHE)/sysroot/include/
 }
 
 build() {
