@@ -948,6 +948,9 @@ See also:
     [mosra/toolchains#13](https://github.com/mosra/toolchains/issues/13),
     [mosra/toolchains#14](https://github.com/mosra/toolchains/pull/14) and
     [mosra/magnum#490](https://github.com/mosra/magnum/issues/490).
+-   The Emscripten toolchain now looks for `lib*.a` files in addition to `*.bc`
+    for better compatibility with 3rd party toolchains and package managers
+    like Vcpkg (see [mosra/magnum#520](https://github.com/mosra/magnum/issues/520)).
 -   @ref Platform::Sdl2Application and @ref Platform::EmscriptenApplication now
     use `UTF8ToString` instead of `AsciiToString` as the latter is no longer
     included by default on Emscripten 3.1.21+ (see [mosra/magnum#619](https://github.com/mosra/magnum/issues/619)).
