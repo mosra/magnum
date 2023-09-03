@@ -55,8 +55,17 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
         # and the new Emscripten target behaviors
         "SHELL:-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0"
         # Enable memory runtime checks
-        "SHELL:-s ASSERTIONS=2"
         "SHELL:-s SAFE_HEAP=1")
+    # TODO Emscripten's own event handling generates float-to-int conversion
+    # errors with ASSERTIONS=2, using ASSERTIONS=1 until fixed:
+    #   https://github.com/emscripten-core/emscripten/issues/19655
+    # Those were added in 3.1.38:
+    #   https://github.com/emscripten-core/emscripten/pull/19251
+    if(EMSCRIPTEN_VERSION VERSION_LESS 3.1.38)
+        target_link_options(PlatformEmscriptenApplicationTest PRIVATE "SHELL:-s ASSERTIONS=2")
+    else()
+        target_link_options(PlatformEmscriptenApplicationTest PRIVATE "SHELL:-s ASSERTIONS=1")
+    endif()
     add_custom_command(TARGET PlatformEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css"
@@ -74,8 +83,17 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
         # and the new Emscripten target behaviors
         "SHELL:-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1"
         # Enable memory runtime checks
-        "SHELL:-s ASSERTIONS=2"
         "SHELL:-s SAFE_HEAP=1")
+    # TODO Emscripten's own event handling generates float-to-int conversion
+    # errors with ASSERTIONS=2, using ASSERTIONS=1 until fixed:
+    #   https://github.com/emscripten-core/emscripten/issues/19655
+    # Those were added in 3.1.38:
+    #   https://github.com/emscripten-core/emscripten/pull/19251
+    if(EMSCRIPTEN_VERSION VERSION_LESS 3.1.38)
+        target_link_options(PlatformMultipleEmscriptenApplicationTest PRIVATE "SHELL:-s ASSERTIONS=2")
+    else()
+        target_link_options(PlatformMultipleEmscriptenApplicationTest PRIVATE "SHELL:-s ASSERTIONS=1")
+    endif()
     target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0x3bd267_rgbf)
     add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
