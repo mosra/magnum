@@ -4752,6 +4752,8 @@ void MeshGLTest::multiDrawInstanced() {
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        /* https://github.com/KhronosGroup/WebGL/pull/3278 :( */
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported, but recent revisions of the extension don't support gl_BaseVertex / gl_BaseInstance anymore.");
         #endif
         #else
         CORRADE_FAIL("Can't do base instance here.");
@@ -4833,6 +4835,8 @@ void MeshGLTest::multiDrawInstancedSparseArrays() {
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        /* https://github.com/KhronosGroup/WebGL/pull/3278 :( */
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported, but recent revisions of the extension don't support gl_BaseVertex / gl_BaseInstance anymore.");
         #endif
         #else
         CORRADE_FAIL("Can't do base instance here.");
@@ -4933,6 +4937,8 @@ template<class T> void MeshGLTest::multiDrawInstancedIndexed() {
         #else
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        /* https://github.com/KhronosGroup/WebGL/pull/3278 :( */
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported, but recent revisions of the extension don't support gl_BaseVertex / gl_BaseInstance anymore.");
         #endif
         #else
         CORRADE_FAIL("Can't do base vertex or base instance here.");
@@ -5024,6 +5030,8 @@ template<class T> void MeshGLTest::multiDrawInstancedIndexedSparseArrays() {
         #else
         if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
             CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is not supported.");
+        /* https://github.com/KhronosGroup/WebGL/pull/3278 :( */
+        CORRADE_SKIP(GL::Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() << "is supported, but recent revisions of the extension don't support gl_BaseVertex / gl_BaseInstance anymore.");
         #endif
         #else
         CORRADE_FAIL("Can't do base vertex or base instance here.");
