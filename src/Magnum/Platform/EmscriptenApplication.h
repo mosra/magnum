@@ -906,7 +906,7 @@ class EmscriptenApplication {
         Vector2i _lastKnownCanvasSize, _previousMouseMovePosition{-1};
 
         Flags _flags;
-        Cursor _cursor;
+        Cursor _cursor = Cursor::Arrow;
 
         bool _deprecatedTargetBehavior{};
         Containers::String _canvasTarget;
