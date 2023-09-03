@@ -598,6 +598,8 @@ See also:
     renamed from `EXT_draw_buffers_indexed` and `EXT_clip_cull_distance` in
     March 2020 and January 2023. The old names are still recognized and present
     in @ref GL::Extensions for compatibility with older browsers.
+-   Re-enabled @fn_gl{DrawRangeElements} for WebGL 2, this time hopefully for
+    the last time (see [mosra/magnum#97](https://github.com/mosra/magnum/issues/97))
 
 @subsubsection changelog-latest-changes-math Math library
 
