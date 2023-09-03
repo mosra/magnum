@@ -932,6 +932,16 @@ See also:
 -   It's now possible to build dynamic libraries on Android and Emscripten with
     the usual options. Static libraries are still a default but it isn't
     enforced anymore. See [mosra/magnum#617](https://github.com/mosra/magnum/pull/617).
+-   The Emscripten toolchain now prefers include directory located in the
+    Emscripten cache, which as of Emscripten 3.0.4 contains the `version.h`
+    header. See also @ref platforms-html6-troubleshooting-including-files-from-emscripten-tree-not-supported
+    for troubleshooting info.
+-   The Emscripten toolchain now uses the `-flto` flag instead of `--llvm-lto`,
+    which was specific to the fastcomp backend that's removed as of Emscripten
+    2.0, and sets up correct `emar` to be used for LTO. See
+    [mosra/toolchains#13](https://github.com/mosra/toolchains/issues/13),
+    [mosra/toolchains#14](https://github.com/mosra/toolchains/pull/14) and
+    [mosra/magnum#490](https://github.com/mosra/magnum/issues/490).
 
 @subsection changelog-latest-bugfixes Bug fixes
 
