@@ -595,7 +595,7 @@ back to the browser.
 @section platforms-html5-code-size Compilation time / code size tradeoffs
 
 By default, the toolchain configures the compiler and linker to use `-O3` in
-`Release` builds, together with enabling `--llvm-lto 1` for the linker. When
+`Release` builds, together with enabling `-flto` for the linker. When
 deploying, ensure your `CMAKE_BUILD_TYPE` is set to `Release`, otherwise the
 generated file sizes will be huge due to the additional debug information and
 non-minified JS driver file. Also, unless you need compatibility with
@@ -625,8 +625,8 @@ down the build significantly or being very recent:
 
 On the other hand, if you need shorter compile times and don't care much about
 code size (for example when testing on the CIs), consider *removing* some of
-these flags --- especially removing `-O3` and `--llvm-lto` can result in
-significant compile speed gains.
+these flags --- especially removing `-O3` and `-flto` can result in significant
+compile speed gains.
 
 @subsection platforms-html5-code-size-server Server-side compression
 
@@ -733,11 +733,79 @@ em++ -s WASM=1 main.cpp
 After this step it might be also needed to purge all CMake build directories
 and set them up again to ensure no bad state got cached.
 
+@subsection platforms-html5-troubleshooting-system-include-conflcts Cursed errors deep inside standard headers
+
+If you encounter errors similar to the one below, the reason is often that a
+system-wide directory such as `/usr/include` got accidentally added to the
+include path. The compiler then ends up randomly pulling in mutually
+conflicting versions of the same header, causing all sorts of issues.
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+In file included from /some/path/.emscripten_cache/sysroot/include/c++/v1/utility:277:
+/some/path/.emscripten_cache/sysroot/include/c++/v1/cstdlib:90:5: error: <cstdlib> tried including <stdlib.h> but didn't find libc++'s <stdlib.h> header.           This usually means that your header search paths are not configured properly.           The header search paths should contain the C++ Standard Library headers before           any C Standard Library, and you are probably using compiler flags that make that           not be the case.
+   90 | #   error <cstdlib> tried including <stdlib.h> but didn't find libc++'s <stdlib.h> header. \
+      |     ^
+/some/path/.emscripten_cache/sysroot/include/c++/v1/cstdlib:132:9: error: target of using declaration conflicts with declaration already in scope
+  132 | using ::abs _LIBCPP_USING_IF_EXISTS;
+      |         ^
+/usr/include/stdlib.h:980:12: note: target of using declaration
+  980 | extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
+      |            ^
+/some/path/.emscripten_cache/sysroot/include/c++/v1/cmath:353:1: note: conflicting declaration
+  353 | using ::abs _LIBCPP_USING_IF_EXISTS;
+      | ^
+@endcode
+
+The solution is to check the compiler command line for system-wide include
+paths and then finding a dependency that might have been pulled from there. The
+`-- Found` entries in CMake configure log may hint at the problem, if not then
+look for the offending path in CMake cache. Packages found via CMake config
+files don't usually add their include paths to the cache, in that case look for
+`<Package>_DIR` that point directly to `/usr`, `/usr/lib/cmake` and such.
+
+This often happens with zlib, zstd and other common system libraries if an
+Emscripten-compiled version isn't found first.
+
+@subsection platforms-html6-troubleshooting-including-files-from-emscripten-tree-not-supported Including files directly from the emscripten source tree is not supported
+
+Emscripten 3.0.9 and newer don't allow to include files directly from the
+`system/include` directory from Emscripten installations, failing with an
+error similar to the following. Emscripten 3.0.4 to 3.0.8 may instead fail due
+to `version.h` not found, which is a consequence of the same problem.
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+In file included from /usr/lib/emscripten/system/include/emscripten/emscripten.h:29:
+/usr/lib/emscripten/system/include/emscripten/version.h:8:2: error: "Including files directly from the emscripten source tree is not supported.  Please use the cache/sysroot/include directory".
+    8 | #error "Including files directly from the emscripten source tree is not supported.  Please use the cache/sysroot/include directory".
+      |  ^
+@endcode
+
+The preferred way is to include files from the local Emscripten cache instead,
+where Emscripten copies them, along with generating a `version.h` header there.
+Magnum's Emscripten toolchain queries this location and adds it to the CMake
+find root path. However, library files from there (e.g., installed prebuilt
+dependencies) are *not* copied to the cache, so the system directory still has
+to be on the find root path as well.
+
+The cache is only updated when Emscripten itself feels like doing that, which
+doesn't include the case when the installed dependencies are updated or when
+a new library is installed there. This in turn may lead to either stale
+includes being used, or dependency includes being found in the system directory
+instead of the cache, leading to the above error. You need to explicitly run
+the following in order to refresh the copy of all includes in the cache:
+
+@code{.sh}
+embuilder build sysroot --force
+@endcode
+
 @subsection platforms-html5-troubleshooting-corrade-not-found CMake can't find CORRADE_INCLUDE_DIR, _CORRADE_CONFIGURE_FILE or _CORRADE_MODULE_DIR
 
-If you set `CMAKE_INSTALL_PREFIX` to a path contained in `EMSCRIPTEN_TOOLCHAIN_PATH` (which is specified in the toolchain file) and
-dependencies are installed there as well, things should "just work". In other
-cases you might end up with variants of the following error:
+If you have Corrade installed in a custom path, you might end up with variants
+of the following error:
 
 @code{.shell-session}
   Could NOT find Corrade (missing: _CORRADE_MODULE_DIR)
