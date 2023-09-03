@@ -620,8 +620,6 @@ down the build significantly or being very recent:
     (new since 1.38.27) --- note that, while this leads to significant size
     savings, it currently requires significant amount of work on the
     application side and Magnum was not yet tested with this option enabled
--   [`-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1`](https://github.com/emscripten-core/emscripten/pull/7977)
-    (new since 1.38.27) --- leads to minor code size savings as well
 
 On the other hand, if you need shorter compile times and don't care much about
 code size (for example when testing on the CIs), consider *removing* some of

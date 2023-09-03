@@ -30,6 +30,7 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/ScopeGuard.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
@@ -40,13 +41,6 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
-#endif
-
-/** @todo drop once we don't support < 1.38.27 anymore */
-#ifndef EMSCRIPTEN_EVENT_TARGET_DOCUMENT
-#define EMSCRIPTEN_EVENT_TARGET_DOCUMENT reinterpret_cast<const char*>(1)
-#define EMSCRIPTEN_EVENT_TARGET_WINDOW reinterpret_cast<const char*>(2)
-#define EMSCRIPTEN_EVENT_TARGET_SCREEN reinterpret_cast<const char*>(3)
 #endif
 
 namespace Magnum { namespace Platform {
@@ -190,7 +184,7 @@ namespace {
             ERROR - [JSC_LANGUAGE_FEATURE] This language feature is only
             supported for ECMASCRIPT6 mode or better: const declaration. */
         char* id = reinterpret_cast<char*>(EM_ASM_INT({
-            var id = Module['canvas'].id;
+            var id = '#' + Module['canvas'].id;
             var bytes = lengthBytesUTF8(id) + 1;
             var memory = _malloc(bytes);
             stringToUTF8(id, memory, bytes);
@@ -198,24 +192,6 @@ namespace {
         }));
         #pragma GCC diagnostic pop
         return Containers::String{id, [](char* data, std::size_t) { std::free(data); }};
-    }
-
-    bool checkForDeprecatedEmscriptenTargetBehavior() {
-        /* Emscripten 1.38.27 changed to generic CSS selectors from element IDs
-        depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1 being
-        set.
-        https://github.com/emscripten-core/emscripten/pull/7977
-        There is no simple way to check for compiler options so check
-        whether the new CSS selectors are being used. If so, it should find
-        canvas#[id] which is any canvas with the ID of Module.canvas.
-        The old target behavior will look for an element with id="canvas#[id]"
-        which could theoretically exist but that's highly unlikely. */
-        bool deprecated = true;
-        Vector2d tempSize;
-        if(emscripten_get_element_css_size(("canvas#" + canvasId()).data(), &tempSize.x(), &tempSize.y()) >= 0) {
-            deprecated = false;
-        }
-        return deprecated;
     }
 }
 
@@ -317,12 +293,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
 
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
-    _deprecatedTargetBehavior = checkForDeprecatedEmscriptenTargetBehavior();
-    if(_deprecatedTargetBehavior) {
-        Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): using old Emscripten target behavior";
-    }
-
-    _canvasTarget = (_deprecatedTargetBehavior ? canvasId() : "#"_s + canvasId());
+    _canvasTarget = canvasId();
 
     /* Get CSS canvas size and cache it. This is used later to detect canvas
        resizes in emscripten_set_resize_callback() and fire viewport events,
@@ -403,16 +374,9 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     _devicePixelRatio = Vector2{Float(emscripten_get_device_pixel_ratio())};
     Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _devicePixelRatio.x();
 
-    /* Find out which element target strings Emscripten expects. This depends on
-       the DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR compiler option.  */
-    _deprecatedTargetBehavior = checkForDeprecatedEmscriptenTargetBehavior();
-    if(_deprecatedTargetBehavior) {
-        Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): using old Emscripten target behavior";
-    }
-
     /* Get the canvas ID from Module.canvas, either set by EmscriptenApplication.js
        or overridden/manually set by the user. */
-    _canvasTarget = (_deprecatedTargetBehavior ? canvasId() : "#"_s + canvasId());
+    _canvasTarget = canvasId();
 
     /* Get CSS canvas size and cache it. This is used later to detect canvas
        resizes in emscripten_set_resize_callback() and fire viewport events,
@@ -534,7 +498,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        changes. Better than polling for this change in every frame like
        Sdl2Application does, but still not ideal. */
     if(resizable) {
-        const char* target = _deprecatedTargetBehavior ? "#window" : EMSCRIPTEN_EVENT_TARGET_WINDOW;
+        const char* target = EMSCRIPTEN_EVENT_TARGET_WINDOW;
         auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> Int {
             static_cast<EmscriptenApplication*>(userData)->handleCanvasResize(event);
             return false; /** @todo what does ignoring a resize event mean? */
@@ -559,9 +523,8 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     emscripten_set_mousemove_callback(_canvasTarget.data(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
-            /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is
-               not initialized, so we have to rely on the target being the
-               canvas. That's always true for mouse events. */
+            /* Relies on the target being the canvas, which should be always
+               true for mouse events */
             Vector2i position{Int(event->targetX), Int(event->targetY)};
             MouseMoveEvent e{*event,
                 /* Avoid bogus offset at first -- report 0 when the event is
@@ -586,22 +549,20 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        EMSCRIPTEN_EVENT_TARGET_DOCUMENT and EMSCRIPTEN_EVENT_TARGET_WINDOW.
        As the lookup happens with the passed parameter and arrays support
        element lookup via strings, we can unify the code by returning string of
-       1 or 2 if the target is document or window. This changed in Emscripten
-       1.38.27 depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
-       but we don't want to force this flag on the users so the behavior
-       handles both. */
+       1 or 2 if the target is document or window. */
     /* Note: can't use let or const, as that breaks closure compiler:
         ERROR - [JSC_LANGUAGE_FEATURE] This language feature is only
         supported for ECMASCRIPT6 mode or better: const declaration. */
-    const char* keyboardListeningElement = reinterpret_cast<const char*>(EM_ASM_INT({
+    char* const keyboardListeningElement = reinterpret_cast<char*>(EM_ASM_INT({
         var element = Module['keyboardListeningElement'] || document;
 
         if(element === document) return 1; /* EMSCRIPTEN_EVENT_TARGET_DOCUMENT */
         if(element === window) return 2; /* EMSCRIPTEN_EVENT_TARGET_WINDOW */
         if('id' in element) {
-            var bytes = lengthBytesUTF8(element.id) + 1;
+            var id = '#' + element.id;
+            var bytes = lengthBytesUTF8(id) + 1;
             var memory = _malloc(bytes);
-            stringToUTF8(element.id, memory, bytes);
+            stringToUTF8(id, memory, bytes);
             return memory;
         }
 
@@ -609,20 +570,18 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     }));
     #pragma GCC diagnostic pop
 
-    Containers::String keyboardListeningElementStorage;
-    if(keyboardListeningElement == EMSCRIPTEN_EVENT_TARGET_DOCUMENT) {
-        keyboardListeningElement = _deprecatedTargetBehavior ? "#document" : keyboardListeningElement;
-    } else if(keyboardListeningElement == EMSCRIPTEN_EVENT_TARGET_WINDOW) {
-        keyboardListeningElement = _deprecatedTargetBehavior ? "#window" : keyboardListeningElement;
-    } else if(keyboardListeningElement && !_deprecatedTargetBehavior) {
-        keyboardListeningElementStorage = "#"_s + Containers::StringView{keyboardListeningElement};
-        std::free(const_cast<char*>(keyboardListeningElement));
-        keyboardListeningElement = keyboardListeningElementStorage.data();
+    /* If the element is a heap-allocated string, ensure it gets properly freed
+       after */
+    Containers::ScopeGuard keyboardListeningElementStorage{NoCreate};
+    if(keyboardListeningElement &&
+       keyboardListeningElement != EMSCRIPTEN_EVENT_TARGET_DOCUMENT &&
+       keyboardListeningElement != EMSCRIPTEN_EVENT_TARGET_WINDOW)
+    {
+        keyboardListeningElementStorage = Containers::ScopeGuard{keyboardListeningElement, std::free};
     }
 
-    /* Happens only if keyboardListeningElement was set, but did not have an
-       `id` attribute. Instead it should be either null or undefined, a DOM
-       element, `window` or `document`. */
+    /* Happens only if keyboardListeningElement was set, but wasn't a document
+       or a window and did not have an `id` attribute. */
     CORRADE_ASSERT(keyboardListeningElement,
         "EmscriptenApplication::setupCallbacks(): invalid value for Module['keyboardListeningElement']", );
 
@@ -852,9 +811,8 @@ EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::but
 }
 
 Vector2i EmscriptenApplication::MouseEvent::position() const {
-    /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is not
-       initialized, so we have to rely on the target being the canvas. That's
-       always true for mouse events. */
+    /* Relies on the target being the canvas, which should be always true for
+       mouse events */
     return {Int(_event.targetX), Int(_event.targetY)};
 }
 
@@ -872,9 +830,8 @@ EmscriptenApplication::MouseMoveEvent::Buttons EmscriptenApplication::MouseMoveE
 }
 
 Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
-    /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is not
-       initialized, so we have to rely on the target being the canvas. That's
-       always true for mouse events. */
+    /* Relies on the target being the canvas, which should be always true for
+       mouse events */
     return {Int(_event.targetX), Int(_event.targetY)};
 }
 
@@ -901,9 +858,8 @@ Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
 }
 
 Vector2i EmscriptenApplication::MouseScrollEvent::position() const {
-    /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is not
-       initialized, so we have to rely on the target being the canvas. That's
-       always true for mouse events. */
+    /* Relies on the target being the canvas, which should be always true for
+       mouse events */
     return {Int(_event.mouse.targetX), Int(_event.mouse.targetY)};
 }
 

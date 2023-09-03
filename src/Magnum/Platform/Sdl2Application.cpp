@@ -414,13 +414,6 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
     /** @todo don't hardcode "#canvas" here, make it configurable from outside */
     {
         Vector2d canvasSize;
-        /* Emscripten 1.38.27 changed to generic CSS selectors from element
-           IDs depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
-           being set (which we can't detect at compile time). Fortunately,
-           using #canvas works the same way both in the previous versions and
-           the current one. Unfortunately, this is also the only value that
-           works the same way for both. Further details at
-           https://github.com/emscripten-core/emscripten/pull/7977 */
         emscripten_get_element_css_size("#canvas", &canvasSize.x(), &canvasSize.y());
         _lastKnownCanvasSize = Vector2i{canvasSize};
     }
@@ -650,13 +643,6 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     /** @todo don't hardcode "#canvas" here, make it configurable from outside */
     {
         Vector2d canvasSize;
-        /* Emscripten 1.38.27 changed to generic CSS selectors from element
-           IDs depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
-           being set (which we can't detect at compile time). Fortunately,
-           using #canvas works the same way both in the previous versions and
-           the current one. Unfortunately, this is also the only value that
-           works the same way for both. Further details at
-           https://github.com/emscripten-core/emscripten/pull/7977 */
         emscripten_get_element_css_size("#canvas", &canvasSize.x(), &canvasSize.y());
         _lastKnownCanvasSize = Vector2i{canvasSize};
     }
@@ -884,12 +870,9 @@ bool Sdl2Application::mainLoopIteration() {
        size here. But only if the window was requested to be resizable, to
        avoid resizing the canvas when the user doesn't want that. Related
        issue: https://github.com/kripken/emscripten/issues/1731 */
+    /** @todo don't hardcode "#canvas" here, make it configurable from outside */
     if(_flags & Flag::Resizable) {
         Vector2d canvasSize;
-        /* Emscripten 1.38.27 changed to generic CSS selectors from element
-           IDs depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
-           being set (which we can't detect at compile time). See above for the
-           reason why we hardcode #canvas here. */
         emscripten_get_element_css_size("#canvas", &canvasSize.x(), &canvasSize.y());
 
         const Vector2i canvasSizei{canvasSize};

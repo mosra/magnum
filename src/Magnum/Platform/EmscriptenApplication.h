@@ -908,7 +908,6 @@ class EmscriptenApplication {
         Flags _flags;
         Cursor _cursor = Cursor::Arrow;
 
-        bool _deprecatedTargetBehavior{};
         Containers::String _canvasTarget;
 
         #ifdef MAGNUM_TARGET_GL

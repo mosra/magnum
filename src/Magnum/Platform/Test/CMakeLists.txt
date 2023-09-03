@@ -50,11 +50,8 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
     add_executable(PlatformEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
     target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE
         MagnumEmscriptenApplication MagnumGL)
+    # Enable memory runtime checks
     target_link_options(PlatformEmscriptenApplicationTest PRIVATE
-        # Test that the canvas and keylistener can be found with both the old
-        # and the new Emscripten target behaviors
-        "SHELL:-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0"
-        # Enable memory runtime checks
         "SHELL:-s SAFE_HEAP=1")
     # TODO Emscripten's own event handling generates float-to-int conversion
     # errors with ASSERTIONS=2, using ASSERTIONS=1 until fixed:
@@ -78,11 +75,8 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
     add_executable(PlatformMultipleEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
     target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE
         MagnumEmscriptenApplication MagnumGL)
+    # Enable memory runtime checks
     target_link_options(PlatformMultipleEmscriptenApplicationTest PRIVATE
-        # Test that the canvas and keylistener can be found with both the old
-        # and the new Emscripten target behaviors
-        "SHELL:-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1"
-        # Enable memory runtime checks
         "SHELL:-s SAFE_HEAP=1")
     # TODO Emscripten's own event handling generates float-to-int conversion
     # errors with ASSERTIONS=2, using ASSERTIONS=1 until fixed:

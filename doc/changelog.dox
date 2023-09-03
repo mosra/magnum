@@ -48,6 +48,9 @@ See also:
 -   Minimal supported CMake version for Emscripten WebGL 2 compilation is now
     3.13, in order to be able to set linker options for enabling WebGL 2
     without having to pollute the global `CMAKE_EXE_LINKER_FLAGS` variable.
+-   Minimal supported Emscripten version is now 1.39.5 which implicitly sets
+    `-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1`, as the deprecated
+    code paths were removed.
 
 @subsection changelog-latest-new New features
 

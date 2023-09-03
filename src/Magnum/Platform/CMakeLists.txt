@@ -182,6 +182,16 @@ if(MAGNUM_WITH_ANDROIDAPPLICATION)
     add_library(Magnum::AndroidApplication ALIAS MagnumAndroidApplication)
 endif()
 
+if(CORRADE_TARGET_EMSCRIPTEN AND (MAGNUM_WITH_EMSCRIPTENAPPLICATION OR MAGNUM_WITH_SDL2APPLICATION))
+    # This could also set -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
+    # always and require only 1.38.27 (where this option got added), but that
+    # version is from February 2019 and I don't think anyone actively uses it
+    # anymore.
+    if(EMSCRIPTEN_VERSION VERSION_LESS 1.39.5)
+        message(SEND_ERROR "Emscripten 1.39.5+, which enables DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR by default, is required to build EmscriptenApplication and Sdl2Application. Found version ${EMSCRIPTEN_VERSION}.")
+    endif()
+endif()
+
 # Emscripten application
 if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
     if(NOT CORRADE_TARGET_EMSCRIPTEN)
