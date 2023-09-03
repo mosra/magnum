@@ -12,6 +12,14 @@ options=('!strip' '!buildflags')
 
 _rootdir=$startdir/../../
 
+prepare() {
+    # This is needed in order to force emscripten to fill
+    # ~/.emscripten_cache/sysroot/ with potentially updated dependency headers
+    # and libs. See https://github.com/emscripten-core/emscripten/pull/13090
+    # for related discussion.
+    embuilder build sysroot --force
+}
+
 build() {
     if [ ! -d "$_rootdir/build-emscripten-wasm-webgl2" ] ; then
         mkdir "$_rootdir/build-emscripten-wasm-webgl2"
