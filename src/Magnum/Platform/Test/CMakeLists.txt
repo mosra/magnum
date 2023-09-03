@@ -44,15 +44,19 @@ if(MAGNUM_WITH_ANDROIDAPPLICATION)
 endif()
 
 if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
+    if(CMAKE_VERSION VERSION_LESS 3.13)
+        message(FATAL_ERROR "CMake 3.13+ is required in order to specify Emscripten linker options")
+    endif()
     add_executable(PlatformEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
     target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE
-        MagnumEmscriptenApplication MagnumGL
+        MagnumEmscriptenApplication MagnumGL)
+    target_link_options(PlatformEmscriptenApplicationTest PRIVATE
         # Test that the canvas and keylistener can be found with both the old
         # and the new Emscripten target behaviors
-        # TODO: use target_link_options() once we can require CMake 3.13
-        "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0"
+        "SHELL:-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0"
         # Enable memory runtime checks
-        "-s ASSERTIONS=2 -s SAFE_HEAP=1")
+        "SHELL:-s ASSERTIONS=2"
+        "SHELL:-s SAFE_HEAP=1")
     add_custom_command(TARGET PlatformEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css"
@@ -64,11 +68,14 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
 
     add_executable(PlatformMultipleEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
     target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE
-        MagnumEmscriptenApplication MagnumGL
-        # TODO: use target_link_options() once we can require CMake 3.13
-        "-s MODULARIZE -s EXPORT_NAME=createModule"
-        "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1"
-        "-s ASSERTIONS=2 -s SAFE_HEAP=1")
+        MagnumEmscriptenApplication MagnumGL)
+    target_link_options(PlatformMultipleEmscriptenApplicationTest PRIVATE
+        # Test that the canvas and keylistener can be found with both the old
+        # and the new Emscripten target behaviors
+        "SHELL:-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1"
+        # Enable memory runtime checks
+        "SHELL:-s ASSERTIONS=2"
+        "SHELL:-s SAFE_HEAP=1")
     target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0x3bd267_rgbf)
     add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

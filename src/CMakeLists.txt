@@ -29,18 +29,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC
     string(REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
-# Emscripten needs special flag to use WebGL 2. If we are on CMake 3.13 and up,
-# `-s USE_WEBGL2=1` linker option is propagated from FindOpenGLES3.cmake
-# already. If not (and the GL library is used), we need to modify the global
-# CMAKE_EXE_LINKER_FLAGS.
-# TODO since 1.39.19 it's possible to use `-sUSE_WEBGL2=1`, which can be then
-#   passed via target_link_libraries() etc. without requiring CMake 3.13
-#   https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#13919-07072020
-#   -- change to that once we drop support for older Emscripten versions
-if(CORRADE_TARGET_EMSCRIPTEN AND CMAKE_VERSION VERSION_LESS 3.13 AND MAGNUM_WITH_GL AND NOT MAGNUM_TARGET_GLES2)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
-endif()
-
 # On Windows enable UNICODE/_UNICODE macros to avoid accidentally passing UTF-8
 # values to ANSI functions
 if(CORRADE_TARGET_WINDOWS)

@@ -894,6 +894,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(OpenGLES3 REQUIRED)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
+                if(CORRADE_TARGET_EMSCRIPTEN)
+                    if(CMAKE_VERSION VERSION_LESS 3.13)
+                        message(FATAL_ERROR "CMake 3.13+ is required in order to specify Emscripten linker options")
+                    endif()
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_OPTIONS "SHELL:-s USE_WEBGL2=1")
+                endif()
             endif()
 
         # MaterialTools library
@@ -1047,24 +1054,6 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         MAGNUM_EMSCRIPTENAPPLICATION_JS
         MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS
         MAGNUM_WEBAPPLICATION_CSS)
-
-    # If we are on CMake 3.13 and up, `-s USE_WEBGL2=1` linker option is
-    # propagated from FindOpenGLES3.cmake already. If not (and the GL library
-    # is used), we need to modify the global CMAKE_EXE_LINKER_FLAGS. Do it here
-    # instead of in FindOpenGLES3.cmake so it works also for CMake subprojects
-    # (in which case find_package(OpenGLES3) is called in (and so
-    # CMAKE_EXE_LINKER_FLAGS would be modified in) Magnum's root CMakeLists.txt
-    # and thus can't affect the variable in the outer project). CMake supports
-    # IN_LIST as an operator since 3.1 (Emscripten needs at least 3.7), but
-    # it's behind a policy, so enable that one as well.
-    cmake_policy(SET CMP0057 NEW)
-    # TODO since 1.39.19 it's possible to use `-sUSE_WEBGL2=1`, which can be
-    #   then passed via target_link_libraries() etc. without requiring CMake
-    #   3.13: https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md#13919-07072020
-    #   -- change to that once we drop support for older Emscripten versions
-    if(CMAKE_VERSION VERSION_LESS 3.13 AND GL IN_LIST Magnum_FIND_COMPONENTS AND NOT MAGNUM_TARGET_GLES2 AND NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-s USE_WEBGL2=1")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
-    endif()
 endif()
 
 # For CMake 3.16+ with REASON_FAILURE_MESSAGE, provide additional potentially
