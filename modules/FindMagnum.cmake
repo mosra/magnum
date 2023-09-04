@@ -913,13 +913,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(OpenGLES3 REQUIRED)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
-                if(CORRADE_TARGET_EMSCRIPTEN)
-                    if(CMAKE_VERSION VERSION_LESS 3.13)
-                        message(FATAL_ERROR "CMake 3.13+ is required in order to specify Emscripten linker options")
-                    endif()
-                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                        INTERFACE_LINK_OPTIONS "SHELL:-s USE_WEBGL2=1")
-                endif()
             endif()
 
         # MaterialTools library
