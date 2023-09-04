@@ -68,6 +68,14 @@
 #include <windows.h>
 #endif
 
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+/* Implemented in Platform.js.in */
+extern "C" {
+    void magnumPlatformSetContainerCssClass(const char* string, std::size_t size);
+    void magnumPlatformSetCursor(const char* string, std::size_t size);
+}
+#endif
+
 namespace Magnum { namespace Platform {
 
 using namespace Containers::Literals;
@@ -752,16 +760,7 @@ Vector2i Sdl2Application::framebufferSize() const {
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::setContainerCssClass(const Containers::StringView cssClass) {
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({
-        /* Handle also the classic #container for backwards compatibility. We
-           also need to preserve the mn-container otherwise next time we'd have
-           no way to look for it anymore. */
-        (Module['canvas'].closest('.mn-container') ||
-         document.getElementById('container')).className = (['mn-container', UTF8ToString($0, $1)]).join(' ');
-    }, cssClass.data(), cssClass.size());
-    #pragma GCC diagnostic pop
+    magnumPlatformSetContainerCssClass(cssClass.data(), cssClass.size());
 }
 #endif
 
@@ -1047,20 +1046,20 @@ constexpr SDL_SystemCursor CursorMap[] {
     SDL_SYSTEM_CURSOR_HAND
 };
 #else
-constexpr const char* CursorMap[] {
-    "default",
-    "text",
-    "wait",
-    "crosshair",
-    "progress",
-    "nwse-resize",
-    "nesw-resize",
-    "ew-resize",
-    "ns-resize",
-    "move",
-    "not-allowed",
-    "pointer",
-    "none"
+constexpr Containers::StringView CursorMap[] {
+    "default"_s,
+    "text"_s,
+    "wait"_s,
+    "crosshair"_s,
+    "progress"_s,
+    "nwse-resize"_s,
+    "nesw-resize"_s,
+    "ew-resize"_s,
+    "ns-resize"_s,
+    "move"_s,
+    "not-allowed"_s,
+    "pointer"_s,
+    "none"_s
     /* Hidden & locked not supported yet */
 };
 #endif
@@ -1099,10 +1098,8 @@ void Sdl2Application::setCursor(Cursor cursor) {
     CORRADE_ASSERT(_surface, "Platform::Sdl2Application::setCursor(): no window opened", );
     _cursor = cursor;
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({Module['canvas'].style.cursor = UTF8ToString($0);}, CursorMap[UnsignedInt(cursor)]);
-    #pragma GCC diagnostic pop
+    magnumPlatformSetCursor(CursorMap[UnsignedInt(cursor)].data(),
+                            CursorMap[UnsignedInt(cursor)].size());
     #endif
 }
 

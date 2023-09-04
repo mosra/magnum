@@ -1,0 +1,137 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020, 2021, 2022, 2023 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+/* JavaScript called by C++ code in EmscriptenApplication and Sdl2Application.
+   Doing it this way instead of having it inline with EM_ASM(), because this
+   provides an actually usable way of expressing  dependencies. With EM_ASM()
+   one would instead have to pass
+    -s EXPORTED_FUNCTIONS=[...]
+   to the linker, and OF COURSE there still isn't a way to combine multiple of
+   those together: https://github.com/emscripten-core/emscripten/issues/19058
+   Which would mean shifting the burden of specifying all possible exported
+   functions to the end user, which has no way to know if the list is correct
+   until the actual code needing given function gets called!
+
+   Note: can't use let or const, as that breaks closure compiler:
+    ERROR - [JSC_LANGUAGE_FEATURE] This language feature is only supported for
+    ECMASCRIPT6 mode or better: const declaration.
+
+   Also, lengthBytesUTF8, stringToUTF8 and UTF8ToString are only made library
+   functions as of https://github.com/emscripten-core/emscripten/pull/19097
+   (Emscripten 3.1.35), before that they cause an error if included in __deps.
+   There's (of course, what else to expect) no way to query Emscripten version
+   from within the JS library file, and there's also no useful change in the
+   predefined setting variables between 3.1.34 and 35 I could rely on. Well,
+   except for STRUCT_INFO, which got removed from settings_internal.js in 35,
+   but the dumb-as-a-rock preprocessor in src/parseTools.js doesn't even
+   recognize #ifndef, tells me to use #if if I attempt to use #ifdef, and then
+   while it does what's expected on 3.1.34, on 3.1.35 it fails on
+    ReferenceError: STRUCT_INFO is not defined
+   Ourageously stupid. All of this. So what I do instead is passing this file
+   through configure_file() and replacing MagnumPlatform_EMSCRIPTEN_3135_ONLY
+   with a // on older versions. */
+
+mergeInto(LibraryManager.library, {
+    /* Used by both EmscriptenApplication and Sdl2Application */
+    magnumPlatformSetContainerCssClass__deps: [
+        ${MagnumPlatform_EMSCRIPTEN_3135_ONLY} '$UTF8ToString'
+    ],
+    magnumPlatformSetContainerCssClass: function(string, size) {
+        /* Handle also the classic #container for backwards compatibility. We
+           also need to preserve the mn-container otherwise next time we'd have
+           no way to look for it anymore.
+
+           Using UTF8ToString() instead of AsciiToString() as it has an
+           explicit size parameter and thus doesn't need a null-terminated
+           input, which would potentially require yet another allocation.
+           UTF8ToString() is also used elsewhere while AsciiToString() isn't,
+           so even while AsciiToString() is significantly smaller it would
+           still cause the JS to get bigger compared to using UTF8ToString()
+           everywhere. */
+        (Module['canvas'].closest('.mn-container') ||
+         document.getElementById('container')).className = (['mn-container', UTF8ToString(string, size)]).join(' ');
+    },
+    magnumPlatformSetCursor__deps: [
+        ${MagnumPlatform_EMSCRIPTEN_3135_ONLY} '$UTF8ToString'
+    ],
+    magnumPlatformSetCursor: function(string, size) {
+        /* This could again use AsciiToString() but here we can pass explicit
+           size and avoid a length calculation */
+        Module['canvas'].style.cursor = UTF8ToString(string, size);
+    },
+
+    /* Used by EmscriptenApplication only */
+    magnumPlatformCanvasId__deps: ['malloc',
+        ${MagnumPlatform_EMSCRIPTEN_3135_ONLY} '$lengthBytesUTF8', '$stringToUTF8'
+    ],
+    magnumPlatformCanvasId: function() {
+        var id = '#' + Module['canvas'].id;
+        var bytes = lengthBytesUTF8(id) + 1;
+        var memory = _malloc(bytes);
+        stringToUTF8(id, memory, bytes);
+        return memory;
+    },
+    magnumPlatformSetWindowTitle__deps: [
+        ${MagnumPlatform_EMSCRIPTEN_3135_ONLY} '$UTF8ToString'
+    ],
+    magnumPlatformSetWindowTitle: function(string, size) {
+        document.title = UTF8ToString(string, size);
+    },
+    magnumPlatformKeyboardListeningElement__deps: ['malloc',
+        ${MagnumPlatform_EMSCRIPTEN_3135_ONLY} '$lengthBytesUTF8', '$stringToUTF8'
+    ],
+    magnumPlatformKeyboardListeningElement: function() {
+        var element = Module['keyboardListeningElement'] || document;
+
+        if(element === document) return 1; /* EMSCRIPTEN_EVENT_TARGET_DOCUMENT */
+        if(element === window) return 2; /* EMSCRIPTEN_EVENT_TARGET_WINDOW */
+        if('id' in element) {
+            var id = '#' + element.id;
+            /* This could theoretically also use just stringToAscii(), but
+               as stringToUTF8() is used elsewhere stringToAscii() would still
+               inflate the JS even though it's smaller. */
+            var bytes = lengthBytesUTF8(id) + 1;
+            var memory = _malloc(bytes);
+            stringToUTF8(id, memory, bytes);
+            return memory;
+        }
+
+        return 0;
+    },
+    magnumPlatformRequestAnimationFrame__deps: [
+        ${MagnumPlatform_EMSCRIPTEN_2010_ONLY} '$dynCall'
+    ],
+    magnumPlatformRequestAnimationFrame: function(callback, state) {
+        var drawEvent = function() {
+            var id = window.requestAnimationFrame(drawEvent);
+            if(!dynCall('ii', callback, [state]))
+                window.cancelAnimationFrame(id);
+        };
+        window.requestAnimationFrame(drawEvent);
+    },
+
+});
+
+// kate: hl javascript

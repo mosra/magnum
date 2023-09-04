@@ -203,6 +203,24 @@ if(CORRADE_TARGET_EMSCRIPTEN AND (MAGNUM_WITH_EMSCRIPTENAPPLICATION OR MAGNUM_WI
     if(EMSCRIPTEN_VERSION VERSION_LESS 1.39.5)
         message(SEND_ERROR "Emscripten 1.39.5+, which enables DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR by default, is required to build EmscriptenApplication and Sdl2Application. Found version ${EMSCRIPTEN_VERSION}.")
     endif()
+
+    # Patch the Platform.js file to contain only __deps that match given
+    # Emscripten version. No, there's no known better way. See the comment in
+    # the file itself for details.
+    if(EMSCRIPTEN_VERSION VERSION_LESS 3.1.35)
+        set(MagnumPlatform_EMSCRIPTEN_3135_ONLY "//") # Haha
+    else()
+        set(MagnumPlatform_EMSCRIPTEN_3135_ONLY "/* Emscripten 3.1.35+ */")
+    endif()
+    if(EMSCRIPTEN_VERSION VERSION_LESS 2.0.10)
+        set(MagnumPlatform_EMSCRIPTEN_2010_ONLY "//") # Haha
+    else()
+        set(MagnumPlatform_EMSCRIPTEN_2010_ONLY "/* Emscripten 2.0.10+ */")
+    endif()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Platform.js.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/Platform.js)
+
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Platform.js DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR} RENAME MagnumPlatform.js)
 endif()
 
 # Emscripten application
@@ -231,6 +249,14 @@ if(MAGNUM_WITH_EMSCRIPTENAPPLICATION)
         ${MagnumPlatform_COMPILE_DEFINITIONS})
     if(MAGNUM_TARGET_GL)
         target_link_libraries(MagnumEmscriptenApplication PUBLIC MagnumGL)
+    endif()
+    if(CORRADE_TARGET_EMSCRIPTEN)
+        # TODO switch to target_link_options() and SHELL: once we require CMake
+        #   3.13 unconditionally
+        target_link_libraries(MagnumEmscriptenApplication PUBLIC "--js-library ${CMAKE_CURRENT_BINARY_DIR}/Platform.js")
+        # TODO this adds the dependency only on 3.13+ and only for Make/Ninja,
+        #   any better option?
+        set_property(TARGET MagnumEmscriptenApplication APPEND PROPERTY INTERFACE_LINK_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Platform.js)
     endif()
 
     install(FILES ${MagnumEmscriptenApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -343,6 +369,14 @@ if(MAGNUM_WITH_SDL2APPLICATION)
         target_link_libraries(MagnumSdl2Application PUBLIC
             MagnumGL
             ${MagnumSomeContext_LIBRARY})
+    endif()
+    if(CORRADE_TARGET_EMSCRIPTEN)
+        # TODO switch to target_link_options() and SHELL: once we require CMake
+        #   3.13 unconditionally
+        target_link_libraries(MagnumSdl2Application PUBLIC "--js-library ${CMAKE_CURRENT_BINARY_DIR}/Platform.js")
+        # TODO this adds the dependency only on 3.13+ and only for Make/Ninja,
+        #   any better option?
+        set_property(TARGET MagnumSdl2Application APPEND PROPERTY INTERFACE_LINK_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Platform.js)
     endif()
 
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)

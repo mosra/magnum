@@ -162,6 +162,7 @@
 #  MAGNUM_*_LIBRARY             - Component libraries (w/o dependencies)
 #  MAGNUM_*_LIBRARY_DEBUG       - Debug version of given library, if found
 #  MAGNUM_*_LIBRARY_RELEASE     - Release version of given library, if found
+#  MAGNUM_PLATFORM_JS           - Path to MagnumPlatform.js file
 #  MAGNUM_BINARY_INSTALL_DIR    - Binary installation directory
 #  MAGNUM_LIBRARY_INSTALL_DIR   - Library installation directory
 #  MAGNUM_DATA_INSTALL_DIR      - Data installation directory
@@ -696,7 +697,17 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES android EGL::EGL)
 
-            # EmscriptenApplication has no additional dependencies
+            # Emscripten application dependencies
+            elseif(_component STREQUAL EmscriptenApplication)
+                # Emscripten has various stuff implemented in JS
+                if(CORRADE_TARGET_EMSCRIPTEN)
+                    find_file(MAGNUM_PLATFORM_JS MagnumPlatform.js
+                        PATH_SUFFIXES lib)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        # TODO switch to INTERFACE_LINK_OPTIONS and SHELL: once
+                        #   we require CMake 3.13 unconditionally
+                        INTERFACE_LINK_LIBRARIES "--js-library ${MAGNUM_PLATFORM_JS}")
+                endif()
 
             # GLFW application dependencies
             elseif(_component STREQUAL GlfwApplication)
@@ -752,6 +763,14 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 elseif(CORRADE_TARGET_UNIX)
                     set_property(TARGET Magnum::${_component} APPEND PROPERTY
                         INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+                # Emscripten has various stuff implemented in JS
+                elseif(CORRADE_TARGET_EMSCRIPTEN)
+                    find_file(MAGNUM_PLATFORM_JS MagnumPlatform.js
+                        PATH_SUFFIXES lib)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        # TODO switch to INTERFACE_LINK_OPTIONS and SHELL: once
+                        #   we require CMake 3.13 unconditionally
+                        INTERFACE_LINK_LIBRARIES "--js-library ${MAGNUM_PLATFORM_JS}")
                 endif()
 
                 # With GLVND (since CMake 3.11) we need to explicitly link to

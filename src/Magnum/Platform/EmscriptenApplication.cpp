@@ -43,6 +43,18 @@
 #include "Magnum/GL/Version.h"
 #endif
 
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+/* Implemented in Platform.js.in */
+extern "C" {
+    char* magnumPlatformCanvasId();
+    char* magnumPlatformKeyboardListeningElement();
+    void magnumPlatformSetWindowTitle(const char* string, std::size_t size);
+    void magnumPlatformSetContainerCssClass(const char* string, std::size_t size);
+    void magnumPlatformSetCursor(const char* string, std::size_t size);
+    void magnumPlatformRequestAnimationFrame(int(*callback)(void*), void* state);
+}
+#endif
+
 namespace Magnum { namespace Platform {
 
 using namespace Containers::Literals;
@@ -178,20 +190,7 @@ namespace {
     }
 
     Containers::String canvasId() {
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-        /* Note: can't use let or const, as that breaks closure compiler:
-            ERROR - [JSC_LANGUAGE_FEATURE] This language feature is only
-            supported for ECMASCRIPT6 mode or better: const declaration. */
-        char* id = reinterpret_cast<char*>(EM_ASM_INT({
-            var id = '#' + Module['canvas'].id;
-            var bytes = lengthBytesUTF8(id) + 1;
-            var memory = _malloc(bytes);
-            stringToUTF8(id, memory, bytes);
-            return memory;
-        }));
-        #pragma GCC diagnostic pop
-        return Containers::String{id, [](char* data, std::size_t) { std::free(data); }};
+        return Containers::String{magnumPlatformCanvasId(), [](char* data, std::size_t) { std::free(data); }};
     }
 }
 
@@ -434,23 +433,11 @@ Vector2i EmscriptenApplication::framebufferSize() const {
 #endif
 
 void EmscriptenApplication::setWindowTitle(const Containers::StringView title) {
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({document.title = UTF8ToString($0, $1);}, title.data(), title.size());
-    #pragma GCC diagnostic pop
+    magnumPlatformSetWindowTitle(title.data(), title.size());
 }
 
 void EmscriptenApplication::setContainerCssClass(const Containers::StringView cssClass) {
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({
-        /* Handle also the classic #container for backwards compatibility. We
-           also need to preserve the mn-container otherwise next time we'd have
-           no way to look for it anymore. */
-        (Module['canvas'].closest('.mn-container') ||
-         document.getElementById('container')).className = (['mn-container', UTF8ToString($0, $1)]).join(' ');
-    }, cssClass.data(), cssClass.size());
-    #pragma GCC diagnostic pop
+    magnumPlatformSetContainerCssClass(cssClass.data(), cssClass.size());
 
     /* Trigger a potential viewport event -- we don't poll the canvas size like
        Sdl2Application does, so it needs to be done explicitly */
@@ -539,32 +526,12 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             return e.isAccepted();
         }));
 
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
     /* document and window are 'specialEventTargets' in emscripten, matching
        EMSCRIPTEN_EVENT_TARGET_DOCUMENT and EMSCRIPTEN_EVENT_TARGET_WINDOW.
        As the lookup happens with the passed parameter and arrays support
        element lookup via strings, we can unify the code by returning string of
        1 or 2 if the target is document or window. */
-    /* Note: can't use let or const, as that breaks closure compiler:
-        ERROR - [JSC_LANGUAGE_FEATURE] This language feature is only
-        supported for ECMASCRIPT6 mode or better: const declaration. */
-    char* const keyboardListeningElement = reinterpret_cast<char*>(EM_ASM_INT({
-        var element = Module['keyboardListeningElement'] || document;
-
-        if(element === document) return 1; /* EMSCRIPTEN_EVENT_TARGET_DOCUMENT */
-        if(element === window) return 2; /* EMSCRIPTEN_EVENT_TARGET_WINDOW */
-        if('id' in element) {
-            var id = '#' + element.id;
-            var bytes = lengthBytesUTF8(id) + 1;
-            var memory = _malloc(bytes);
-            stringToUTF8(id, memory, bytes);
-            return memory;
-        }
-
-        return 0;
-    }));
-    #pragma GCC diagnostic pop
+    char* const keyboardListeningElement = magnumPlatformKeyboardListeningElement();
 
     /* If the element is a heap-allocated string, ensure it gets properly freed
        after */
@@ -650,43 +617,43 @@ void EmscriptenApplication::setupAnimationFrame(bool forceAnimationFrame) {
 
 namespace {
 
-constexpr const char* CursorMap[] {
-    "auto",
-    "default",
-    "none",
-    "context-menu",
-    "help",
-    "pointer",
-    "progress",
-    "wait",
-    "cell",
-    "crosshair",
-    "text",
-    "vertical-text",
-    "alias",
-    "copy",
-    "move",
-    "no-drop",
-    "not-allowed",
-    "grab",
-    "grabbing",
-    "all-scroll",
-    "col-resize",
-    "row-resize",
-    "n-resize",
-    "e-resize",
-    "s-resize",
-    "w-resize",
-    "ne-resize",
-    "nw-resize",
-    "se-resize",
-    "sw-resize",
-    "ew-resize",
-    "ns-resize",
-    "nesw-resize",
-    "nwse-resize",
-    "zoom-in",
-    "zoom-out"
+constexpr Containers::StringView CursorMap[]{
+    "auto"_s,
+    "default"_s,
+    "none"_s,
+    "context-menu"_s,
+    "help"_s,
+    "pointer"_s,
+    "progress"_s,
+    "wait"_s,
+    "cell"_s,
+    "crosshair"_s,
+    "text"_s,
+    "vertical-text"_s,
+    "alias"_s,
+    "copy"_s,
+    "move"_s,
+    "no-drop"_s,
+    "not-allowed"_s,
+    "grab"_s,
+    "grabbing"_s,
+    "all-scroll"_s,
+    "col-resize"_s,
+    "row-resize"_s,
+    "n-resize"_s,
+    "e-resize"_s,
+    "s-resize"_s,
+    "w-resize"_s,
+    "ne-resize"_s,
+    "nw-resize"_s,
+    "se-resize"_s,
+    "sw-resize"_s,
+    "ew-resize"_s,
+    "ns-resize"_s,
+    "nesw-resize"_s,
+    "nwse-resize"_s,
+    "zoom-in"_s,
+    "zoom-out"_s
 };
 
 }
@@ -694,10 +661,8 @@ constexpr const char* CursorMap[] {
 void EmscriptenApplication::setCursor(Cursor cursor) {
     _cursor = cursor;
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({Module['canvas'].style.cursor = UTF8ToString($0);}, CursorMap[UnsignedInt(cursor)]);
-    #pragma GCC diagnostic pop
+    magnumPlatformSetCursor(CursorMap[UnsignedInt(cursor)].data(),
+                            CursorMap[UnsignedInt(cursor)].size());
 }
 
 EmscriptenApplication::Cursor EmscriptenApplication::cursor() {
@@ -753,49 +718,7 @@ void EmscriptenApplication::redraw() {
 
     /* Start requestAnimationFrame loop */
     _flags |= Flag::LoopActive;
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM({
-        /* Animation frame callback */
-        var drawEvent = function() {
-            var id = window.requestAnimationFrame(drawEvent);
-
-            /* Call our callback via function pointer taking an int and
-               returning int as well. This used to be
-
-                if(!dynCall('ii', $0, [$1])) {
-
-               but since 2.0.10 the dynCall isn't exported by default anymore:
-                https://github.com/emscripten-core/emscripten/commit/496967e00735c1523299e116dc692572d3d6d082
-               and making it exported again doing so involves crazy shit with
-               CMake 3.13-only features and a ton of backslashes:
-
-                target_link_options(MagnumEmscriptenApplication INTERFACE
-                    "SHELL:-s \"DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=['\${xylophone}dynCall']\""
-                    "SHELL:-s \"EXPORTED_FUNCTIONS=['_main', 'dynCall']\"")
-
-               (the ${xylophone} is needed because CMake expands that to
-               `\$${xylophone}dynCall` for some reason, which then the shell
-               collapses to `$dynCall` (assuming a $xylophone env var doesn't
-               exist, which it shoulndn't, but also it's 2021 and so everything
-               is possible), and no amount of \\\\$$$ helps avoiding that
-               xylophone); but doing so means we forever hardcode what
-               functions are exported and thus whatever extra Emscripten needs
-               to export will be overridden by this, causing only pain and
-               misery.
-
-               So instead we rely on the implementation details of dynCall,
-               which are actually really simple:
-                https://github.com/emscripten-core/emscripten/blob/496967e00735c1523299e116dc692572d3d6d082/src/library.js#L3730-L3747
-               and PRAY it doesn't change again in the future. */
-            if(!wasmTable.get($0).apply(null, [$1])) {
-                window.cancelAnimationFrame(id);
-            }
-        };
-
-        window.requestAnimationFrame(drawEvent);
-    }, _callback, this);
-    #pragma GCC diagnostic pop
+    magnumPlatformRequestAnimationFrame(_callback, this);
 }
 
 void EmscriptenApplication::exit(int) {
