@@ -182,6 +182,19 @@ if(MAGNUM_WITH_ANDROIDAPPLICATION)
     add_library(Magnum::AndroidApplication ALIAS MagnumAndroidApplication)
 endif()
 
+# JavaScript and CSS stuff for Emscripten. Installed unconditionally so it can
+# be also used by people who hate the Application classes
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(MagnumEmscriptenApplication_FILES
+        EmscriptenApplication.js
+        WindowlessEmscriptenApplication.js
+        WebApplication.css)
+
+    list(APPEND MagnumPlatform_FILES ${MagnumEmscriptenApplication_FILES})
+    install(FILES ${MagnumEmscriptenApplication_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+endif()
+
+# Emscripten-specific nightmares for EmscriptenApplication and Sdl2Application
 if(CORRADE_TARGET_EMSCRIPTEN AND (MAGNUM_WITH_EMSCRIPTENAPPLICATION OR MAGNUM_WITH_SDL2APPLICATION))
     # This could also set -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
     # always and require only 1.38.27 (where this option got added), but that
@@ -358,18 +371,6 @@ if(MAGNUM_WITH_SDL2APPLICATION)
 
     # Magnum Sdl2Application target alias for superprojects
     add_library(Magnum::Sdl2Application ALIAS MagnumSdl2Application)
-endif()
-
-# JavaScript and CSS stuff for Emscripten. Installed unconditionally so it can
-# be also used by people who hate the Application classes
-if(CORRADE_TARGET_EMSCRIPTEN)
-    set(MagnumEmscriptenApplication_FILES
-        EmscriptenApplication.js
-        WindowlessEmscriptenApplication.js
-        WebApplication.css)
-
-    list(APPEND MagnumPlatform_FILES ${MagnumEmscriptenApplication_FILES})
-    install(FILES ${MagnumEmscriptenApplication_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
 # GLX application
