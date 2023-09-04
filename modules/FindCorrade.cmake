@@ -122,6 +122,7 @@
 #   automatically)
 #  CORRADE_TESTSUITE_XCTEST_RUNNER - Path to XCTestRunner.mm.in file
 #  CORRADE_TESTSUITE_ADB_RUNNER - Path to AdbRunner.sh file
+#  CORRADE_UTILITY_JS           - Path to CorradeUtility.js file
 #  CORRADE_PEDANTIC_COMPILER_OPTIONS - List of pedantic compiler options used
 #   for targets with :prop_tgt:`CORRADE_USE_PEDANTIC_FLAGS` enabled
 #  CORRADE_PEDANTIC_COMPILER_DEFINITIONS - List of pedantic compiler
@@ -558,6 +559,15 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             if(CORRADE_TARGET_ANDROID)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES "log")
+            endif()
+            # Emscripten has various stuff implemented in JS
+            if(CORRADE_TARGET_EMSCRIPTEN)
+                find_file(CORRADE_UTILITY_JS CorradeUtility.js
+                    PATH_SUFFIXES lib)
+                set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                    # TODO switch to INTERFACE_LINK_OPTIONS and SHELL: once we
+                    #   require CMake 3.13 unconditionally
+                    INTERFACE_LINK_LIBRARIES "--js-library ${CORRADE_UTILITY_JS}")
             endif()
         endif()
 
