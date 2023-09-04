@@ -646,6 +646,9 @@ void Context::setupDriverWorkarounds() {
        avoid having the workaround listed as used on older versions or other
        browsers */
     if(isExtensionSupported<Extensions::WEBGL::debug_renderer_info>()) {
+        /* Unlike other EM_ASM() macros, this one isn't put into a JS library
+           as it neither has any dependencies nor has code that may benefit
+           from settings-based preprocessing done for minification */
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
         const Int firefoxVersion = EM_ASM_INT({
