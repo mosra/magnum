@@ -285,6 +285,10 @@ See also:
     @ref Platform::WindowlessGlxApplication,
     @ref Platform::WindowlessWglApplication and
     @ref Platform::Sdl2Application
+-   New @ref Platform::EmscriptenApplication::GLConfiguration::Flag::PowerPreferenceLowPower
+    and @relativeref{Platform::EmscriptenApplication::GLConfiguration,Flag::PowerPreferenceHighPerformance}
+    flags allowing to pick either a low power, high performance or default
+    behavior (see [mosra/magnum#500](https://github.com/mosra/magnum/issues/500)).
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
@@ -1181,6 +1185,11 @@ See also:
     @ref MeshTools::reference() and @ref MeshTools::mutableReference() were
     moved there as well, with @cpp Magnum/MeshTools/Reference.h @ce being a
     deprecated alias now.
+-   @cpp Platform::EmscriptenApplication::GLConfiguration::Flag::PreferLowPowerToHighPerformance @ce
+    is deprecated as it didn't allow explicitly choosing between high
+    performance and a default, use @relativeref{Platform::EmscriptenApplication::GLConfiguration,Flag::PowerPreferenceLowPower}
+    or @relativeref{Platform::EmscriptenApplication::GLConfiguration,Flag::PowerPreferenceHighPerformance}
+    instead
 -   @cpp Shaders::DistanceFieldVector @ce, @cpp Shaders::Flat @ce,
     @cpp Shaders::Generic @ce, @cpp Shaders::MeshVisualizer2D @ce,
     @cpp Shaders::MeshVisualizer3D @ce, @cpp Shaders::Phong @ce,

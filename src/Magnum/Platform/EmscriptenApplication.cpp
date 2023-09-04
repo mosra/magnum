@@ -341,9 +341,12 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
         !!(glConfiguration.flags() & GLConfiguration::Flag::PremultipliedAlpha);
     attrs.preserveDrawingBuffer =
         !!(glConfiguration.flags() & GLConfiguration::Flag::PreserveDrawingBuffer);
-    attrs.powerPreference =
-        !!(glConfiguration.flags() & GLConfiguration::Flag::PreferLowPowerToHighPerformance)
-        ? EM_WEBGL_POWER_PREFERENCE_LOW_POWER : EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+    if(glConfiguration.flags() & GLConfiguration::Flag::PowerPreferenceLowPower)
+        attrs.powerPreference = EM_WEBGL_POWER_PREFERENCE_LOW_POWER;
+    else if(glConfiguration.flags() & GLConfiguration::Flag::PowerPreferenceHighPerformance)
+        attrs.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+    else
+        attrs.powerPreference = EM_WEBGL_POWER_PREFERENCE_DEFAULT;
     attrs.explicitSwapControl =
         !!(glConfiguration.flags() & GLConfiguration::Flag::ExplicitSwapControl);
     attrs.failIfMajorPerformanceCaveat =

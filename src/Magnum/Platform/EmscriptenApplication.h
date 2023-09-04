@@ -51,6 +51,7 @@
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
 /* Some APIs used to take or return a std::string before */
 #include <Corrade/Containers/StringStl.h>
 #endif
@@ -967,10 +968,30 @@ class EmscriptenApplication::GLConfiguration: public GL::Context::Configuration 
             PreserveDrawingBuffer = 1 << 1,
 
             /**
-             * Prefer low power to high performance. If set, the WebGL power
-             * preference will be set to reduce power consumption.
+             * Low power preference. Only at most one of
+             * @ref Flag::PowerPreferenceLowPower and
+             * @ref Flag::PowerPreferenceHighPerformance should be set. If
+             * neither is set, a default is used.
+             * @m_since_latest
              */
-            PreferLowPowerToHighPerformance = 1 << 2,
+            PowerPreferenceLowPower = 1 << 2,
+
+            /**
+             * High performace power preference. Only at most one of
+             * @ref Flag::PowerPreferenceLowPower and
+             * @ref Flag::PowerPreferenceHighPerformance should be set. If
+             * neither is set, a default is used.
+             * @m_since_latest
+             */
+            PowerPreferenceHighPerformance = 1 << 3,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Prefer low power to high performance
+             * @m_deprecated_since_latest Use @ref Flag::PowerPreferenceLowPower instead.
+             */
+            PreferLowPowerToHighPerformance CORRADE_DEPRECATED_ENUM("use Flag::PowerPreferenceLowPower instead") = PowerPreferenceLowPower,
+            #endif
 
             /**
              * Fail if major performance caveat. If set, requests context
@@ -978,32 +999,32 @@ class EmscriptenApplication::GLConfiguration: public GL::Context::Configuration 
              * context that does not give good hardware-accelerated
              * performance.
              */
-            FailIfMajorPerformanceCaveat = 1 << 3,
+            FailIfMajorPerformanceCaveat = 1 << 4,
 
             /**
              * Explicit swap control. For more details, see the
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.explicitSwapControl).
              */
-            ExplicitSwapControl = 1 << 4,
+            ExplicitSwapControl = 1 << 5,
 
             /**
              * Enable WebGL extensions by default. Enabled by default. For more
              * details, see @ref Platform-EmscriptenApplication-webgl and the
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault).
              */
-            EnableExtensionsByDefault = 1 << 5,
+            EnableExtensionsByDefault = 1 << 6,
 
             /**
              * Render via offscreen back buffer. For more details, see the
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer).
              */
-            RenderViaOffscreenBackBuffer = 1 << 6,
+            RenderViaOffscreenBackBuffer = 1 << 7,
 
             /**
              * Proxy content to main thread. For more details, see the
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread).
              */
-            ProxyContextToMainThread = 1 << 7,
+            ProxyContextToMainThread = 1 << 8,
 
             /**
              * @copydoc GL::Context::Configuration::Flag::QuietLog
