@@ -71,6 +71,14 @@ corrade_add_test(TradeAbstractSceneConverterTest AbstractSceneConverterTest.cpp
 target_include_directories(TradeAbstractSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
 corrade_add_test(TradeAnimationDataTest AnimationDataTest.cpp LIBRARIES MagnumTradeTestLib)
+# In Emscripten 3.1.27, the stack size was reduced from 5 MB (!) to 64 kB:
+#   https://github.com/emscripten-core/emscripten/pull/18191
+# One case in this test uses 65 kB of stack space, need to increase it a bit to
+# not make it crash.
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT EMSCRIPTEN_VERSION VERSION_LESS 3.1.27)
+    set_property(TARGET TradeAnimationDataTest APPEND_STRING PROPERTY LINK_FLAGS " -s STACK_SIZE=128kB")
+endif()
+
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeDataTest DataTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(TradeFlatMaterialDataTest FlatMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
@@ -129,12 +137,30 @@ endif()
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
+
 corrade_add_test(TradeMeshDataTest MeshDataTest.cpp LIBRARIES MagnumTradeTestLib)
+# In Emscripten 3.1.27, the stack size was reduced from 5 MB (!) to 64 kB:
+#   https://github.com/emscripten-core/emscripten/pull/18191
+# One case in this test uses 65 kB of stack space, need to increase it a bit to
+# not make it crash.
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT EMSCRIPTEN_VERSION VERSION_LESS 3.1.27)
+    set_property(TARGET TradeMeshDataTest APPEND_STRING PROPERTY LINK_FLAGS " -s STACK_SIZE=128kB")
+endif()
+
 corrade_add_test(TradePbrClearCoatMaterialDataTest PbrClearCoatMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePbrMetallicRoughnessMate___Test PbrMetallicRoughnessMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePbrSpecularGlossinessMat___Test PbrSpecularGlossinessMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradePhongMaterialDataTest PhongMaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
+
 corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES MagnumTradeTestLib)
+# In Emscripten 3.1.27, the stack size was reduced from 5 MB (!) to 64 kB:
+#   https://github.com/emscripten-core/emscripten/pull/18191
+# One case in this test uses 65 kB of stack space, need to increase it a bit to
+# not make it crash.
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT EMSCRIPTEN_VERSION VERSION_LESS 3.1.27)
+    set_property(TARGET TradeSceneDataTest APPEND_STRING PROPERTY LINK_FLAGS " -s STACK_SIZE=128kB")
+endif()
+
 corrade_add_test(TradeSkinDataTest SkinDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES MagnumTrade)
 

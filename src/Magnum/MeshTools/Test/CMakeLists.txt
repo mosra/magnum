@@ -41,7 +41,17 @@ corrade_add_test(MeshToolsGenerateLinesTest GenerateLinesTest.cpp
     LIBRARIES MagnumMeshToolsTestLib MagnumShaders)
 corrade_add_test(MeshToolsGenerateNormalsTest GenerateNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib MagnumPrimitives)
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp LIBRARIES MagnumMeshToolsTestLib)
+
 corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
+# In Emscripten 3.1.27, the stack size was reduced from 5 MB (!) to 64 kB:
+#   https://github.com/emscripten-core/emscripten/pull/18191
+# Two benchmarks in this test use 160 kB of stack space (array of 10000
+# Vector3i's and another 10000 ints), need to increase it a bit to not make it
+# crash.
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT EMSCRIPTEN_VERSION VERSION_LESS 3.1.27)
+    set_property(TARGET MeshToolsRemoveDuplicatesTest APPEND_STRING PROPERTY LINK_FLAGS " -s STACK_SIZE=256kB")
+endif()
+
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum MagnumPrimitives)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshToolsTestLib)
