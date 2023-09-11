@@ -182,9 +182,10 @@ is done implicitly:
 @snippet MagnumVk.cpp wrapping-optimizing-properties-device-single-expression
 
 However, if you instantiate @ref Vk::DeviceProperties and/or
-@ref Vk::DeviceCreateInfo separately, you have to @cpp std::move() @ce them to
-achieve the desired effect. An existing @ref Vk::ExtensionProperties instance
-can be also passed to @ref Vk::DeviceCreateInfo to allow reuse:
+@ref Vk::DeviceCreateInfo separately, you have to
+@m_class{m-doc-external} [std::move()](https://en.cppreference.com/w/cpp/utility/move)
+them to achieve the desired effect. An existing @ref Vk::ExtensionProperties
+instance can be also passed to @ref Vk::DeviceCreateInfo to allow reuse:
 
 @snippet MagnumVk.cpp wrapping-optimizing-properties-device-move
 

@@ -966,9 +966,9 @@ unless it doesn't affect public API at all.
         @ref Vk::RenderPassCreateInfo), all its setters should have @cpp & @ce
         and @cpp && @ce overloads so it can be set up completely and passed to
         its destination in a single expression without any explicit
-        @cpp std::move() @ce. The overloads can be tested for correctness
-        rather easily, see `RenderPassTest::subpassDescriptionRvalue()` for an
-        example.
+        @m_class{m-doc-external} [std::move()](https://en.cppreference.com/w/cpp/utility/move).
+        The overloads can be tested for correctness rather easily, see
+        `RenderPassTest::subpassDescriptionRvalue()` for an example.
 
 @section developers-vk-extension-dependent Checklist for Vulkan extension-dependent code paths
 

@@ -116,9 +116,10 @@ instead of vertices:
 
 To simplify resource management, it's possible to have the @ref Buffer
 instances owned by the @ref Mesh, as well as the @ref MeshLayout, either using
-@ref std::move() or by directly passing a r-value. If a single buffer is used
-for multiple bindings (for example as both a vertex and an index buffer),
-perform the move last:
+@m_class{m-doc-external} [std::move()](https://en.cppreference.com/w/cpp/utility/move)
+or by directly passing a r-value. If a single buffer is used for multiple
+bindings (for example as both a vertex and an index buffer), perform the move
+last:
 
 @snippet MagnumVk.cpp Mesh-populating-owned
 
