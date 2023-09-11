@@ -790,7 +790,7 @@ template<UnsignedInt dimensions, class T> inline bool intersects(const Range<dim
            (Vector<dimensions, T>{a.min()} < b.max()).all();
 }
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Range} */
 template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Range<dimensions, T>& value) {
     debug << "Range({" << Corrade::Utility::Debug::nospace << Vector<dimensions, T>{value.min()}[0];

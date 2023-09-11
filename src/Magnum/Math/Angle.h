@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::Deg, @ref Magnum::Math::Rad, literal @link Magnum::Math::Literals::operator""_degf() @endlink, @link Magnum::Math::Literals::operator""_radf() @endlink, @link Magnum::Math::Literals::operator""_deg() @endlink, @link Magnum::Math::Literals::operator""_rad() @endlink
  */
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 
@@ -228,7 +228,7 @@ constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Fl
 template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
 template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Rad} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Unit<Rad, T>& value) {
     if(debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed)

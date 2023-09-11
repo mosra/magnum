@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::Dual
  */
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 #include <Corrade/Utility/StlMath.h>
@@ -374,7 +374,7 @@ template<class T, class U, class V = typename std::enable_if<!Implementation::Is
     }
 #endif
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Dual} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Dual<T>& value) {
     return debug << "Dual(" << Corrade::Utility::Debug::nospace

@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::Half, literal @link Magnum::Math::Literals::operator""_h() @endlink
  */
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Utility.h>
 #endif
 
@@ -175,7 +175,7 @@ inline Half operator "" _h(long double value) { return Half(Float(value)); }
 
 }
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /**
 @debugoperator{Half}
 

@@ -685,7 +685,7 @@ template<std::size_t size, std::size_t cols, class T> inline RectangularMatrix<c
     return RectangularMatrix<1, size, T>(vector)*matrix;
 }
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{RectangularMatrix} */
 template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Magnum::Math::RectangularMatrix<cols, rows, T>& value) {
     /** @todo might make sense to propagate the flags also, for hex value

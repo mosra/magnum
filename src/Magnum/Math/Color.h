@@ -1341,7 +1341,7 @@ template<class T> struct ColorHsv {
     T value;
 };
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{ColorHsv} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const ColorHsv<T>& value) {
     return debug << "ColorHsv(" << Corrade::Utility::Debug::nospace << value.hue
@@ -1523,7 +1523,7 @@ inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
 
 }
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /**
 @debugoperator{Color3}
 

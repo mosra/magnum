@@ -31,7 +31,7 @@
  */
 
 #include <Corrade/configure.h>
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 
@@ -274,7 +274,7 @@ template<class T> class Frustum {
         Vector4<T> _data[6];
 };
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Frustum} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Frustum<T>& value) {
     debug << "Frustum({" << Corrade::Utility::Debug::nospace;

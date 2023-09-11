@@ -30,7 +30,7 @@
  * @brief Class @ref Magnum::Math::Quaternion, function @ref Magnum::Math::dot(), @ref Magnum::Math::halfAngle(), @ref Magnum::Math::lerp(), @ref Magnum::Math::slerp()
  */
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 #include <Corrade/Utility/DebugAssert.h>
@@ -788,7 +788,7 @@ template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& 
     return {scalar/quaternion.vector(), scalar/quaternion.scalar()};
 }
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Quaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Quaternion<T>& value) {
     return debug << "Quaternion({" << Corrade::Utility::Debug::nospace

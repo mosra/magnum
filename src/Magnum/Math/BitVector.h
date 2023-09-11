@@ -32,7 +32,7 @@
 
 #include <type_traits>
 #include <Corrade/Containers/sequenceHelpers.h>
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 
@@ -329,7 +329,7 @@ template<std::size_t size> class BitVector {
         UnsignedByte _data[DataSize];
 };
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /**
 @debugoperator{BitVector}
 @m_since_latest

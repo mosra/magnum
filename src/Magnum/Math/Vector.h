@@ -30,7 +30,7 @@
  */
 
 #include <utility> /* std::pair */
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 #include <Corrade/Utility/DebugAssert.h>
@@ -1247,7 +1247,7 @@ operator/(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
     return copy /= b;
 }
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Vector} */
 template<std::size_t size, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector<size, T>& value) {
     /** @todo might make sense to propagate the flags also, for hex value

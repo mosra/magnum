@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::Complex, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle()
  */
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 #include <Corrade/Utility/DebugAssert.h>
@@ -657,7 +657,7 @@ template<class T> inline Complex<T> Complex<T>::fromMatrix(const Matrix2x2<T>& m
     return Implementation::complexFromMatrix(matrix);
 }
 
-#ifndef CORRADE_NO_DEBUG
+#ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Complex} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Complex<T>& value) {
     return debug << "Complex(" << Corrade::Utility::Debug::nospace
