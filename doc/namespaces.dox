@@ -100,9 +100,11 @@ more information.
     [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp)
     library in the Magnum Singles repository for easier integration into your
     projects. See @ref singles for more information. Everything except contents
-    of the @ref Magnum/Math/FunctionsBatch.h and @ref Magnum/Math/Algorithms/Svd.h
-    headers is included. The library has a separate non-inline implementation
-    part, enable it *just once* like this:
+    of the @ref Magnum/Math/ColorBatch.h, @ref Magnum/Math/FunctionsBatch.h,
+    @ref Magnum/Math/PackingBatch.h and @ref Magnum/Math/Algorithms/Svd.h
+    headers and the @ref Magnum::Math::StrictWeakOrdering helper is included.
+    The library has a separate non-inline implementation part, enable it
+    * *just once* like this:
 @par
     @code{.cpp}
     #define MAGNUM_MATH_IMPLEMENTATION
@@ -111,8 +113,9 @@ more information.
 @par
     If you need the deinlined symbols to be exported from a shared library,
     @cpp #define MAGNUM_EXPORT @ce as appropriate. In addition, contents of the
-    @ref GlmIntegration and @ref EigenIntegration libraries are included as
-    well --- opt-in by specifying either
+    @ref GlmIntegration and @ref EigenIntegration libraries except for the
+    @ref Magnum/EigenIntegration/DynamicMatrixIntegration.h header are included
+    as well --- opt-in by specifying either
     @cpp #define MAGNUM_MATH_GLM_INTEGRATION @ce or
     @cpp #define MAGNUM_MATH_EIGEN_INTEGRATION @ce before including the file.
     Including it multiple times with different macros defined works as well.
