@@ -160,9 +160,9 @@ namespace Implementation {
        mean I'd need to include MaterialData here */
     template<class T> struct OptionalButAlsoPointer: Containers::Optional<T> {
         /*implicit*/ OptionalButAlsoPointer() = default;
-        /*implicit*/ OptionalButAlsoPointer(Containers::Optional<T>&& optional): Containers::Optional<T>{std::move(optional)} {}
+        /*implicit*/ OptionalButAlsoPointer(Containers::Optional<T>&& optional): Containers::Optional<T>{Utility::move(optional)} {}
         CORRADE_DEPRECATED("use Containers::Optional instead of Containers::Pointer for a MaterialData") /*implicit*/ operator Containers::Pointer<T>() && {
-            return Containers::Pointer<T>{new T{std::move(**this)}};
+            return Containers::Pointer<T>{new T{Utility::move(**this)}};
         }
     };
 }

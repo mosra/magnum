@@ -102,7 +102,7 @@ Trade::MaterialData filterAttributesLayersImplementation(const Trade::MaterialDa
     Containers::Array<Trade::MaterialAttributeData> attributes{patchedInputAttributesToKeep.count()};
     Utility::copyMasked(material.attributeData(), patchedInputAttributesToKeep, attributes);
 
-    return Trade::MaterialData{material.types() & typesToKeep, std::move(attributes), std::move(layers)};
+    return Trade::MaterialData{material.types() & typesToKeep, Utility::move(attributes), Utility::move(layers)};
 }
 
 }

@@ -120,14 +120,14 @@ void FramebufferVkTest::constructMove() {
     }, {256, 256}}};
     VkFramebuffer handle = a.handle();
 
-    Framebuffer b = std::move(a);
+    Framebuffer b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(b.size(), (Vector3i{256, 256, 1}));
 
     Framebuffer c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

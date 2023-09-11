@@ -102,7 +102,7 @@ std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char
 Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data) {
     Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesInto(data, indices);
-    return {std::move(indices), size};
+    return {Utility::move(indices), size};
 }
 
 std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
@@ -160,7 +160,7 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
 Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data) {
     Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesInPlaceInto(data, indices);
-    return {std::move(indices), size};
+    return {Utility::move(indices), size};
 }
 
 namespace {
@@ -353,7 +353,7 @@ template<class T> std::size_t removeDuplicatesFuzzyInPlaceIntoImplementation(con
 template<class T> Containers::Pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlaceImplementation(const Containers::StridedArrayView2D<T>& data, const T epsilon) {
     Containers::Array<UnsignedInt> indices{NoInit, data.size()[0]};
     const std::size_t size = removeDuplicatesFuzzyInPlaceIntoImplementation(data, indices, epsilon);
-    return {std::move(indices), size};
+    return {Utility::move(indices), size};
 }
 
 }
@@ -461,8 +461,8 @@ Trade::MeshData removeDuplicates(const Trade::MeshData& mesh) {
 
     Trade::MeshIndexData indices{indexType, indexData};
     return Trade::MeshData{ownedInterleaved.primitive(),
-        std::move(indexData), indices,
-        std::move(uniqueVertexData), std::move(attributeData),
+        Utility::move(indexData), indices,
+        Utility::move(uniqueVertexData), Utility::move(attributeData),
         uniqueVertexCount};
 }
 
@@ -586,7 +586,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& mesh, const Float f
     Trade::MeshData layout = interleavedLayout(owned, vertexCount);
     Trade::MeshIndexData indices{indexType, indexData};
     Trade::MeshData out{layout.primitive(),
-        std::move(indexData), indices,
+        Utility::move(indexData), indices,
         layout.releaseVertexData(), layout.releaseAttributeData(), vertexCount};
 
     /* Trim the views to only the unique combinations, duplicate the attributes

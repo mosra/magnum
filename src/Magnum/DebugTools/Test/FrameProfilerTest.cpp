@@ -698,7 +698,7 @@ void FrameProfilerTest::move() {
     }, 5);
 
     /* Move construction */
-    MyProfiler b{std::move(a)};
+    MyProfiler b{Utility::move(a)};
     a.j = 100; /* This shouldn't affect b's measurements anymore */
     b.beginFrame();
     b.endFrame();
@@ -747,8 +747,8 @@ void FrameProfilerTest::move() {
 
     /* Move assignment */
     CORRADE_COMPARE(c.j, 62);
-    c = std::move(b);
-    b.j = 62; /* std::move() didn't swap this one, so we do; this shouldn't
+    c = Utility::move(b);
+    b.j = 62; /* Utility::move() didn't swap this one, so we do; this shouldn't
                  affect c's measurements anymore */
     c.beginFrame();
     c.endFrame();
@@ -1099,7 +1099,7 @@ void FrameProfilerTest::gl() {
 
     /* Test that we use the right state pointers to survive a move */
     Containers::Pointer<FrameProfilerGL> profiler_{InPlaceInit, data.values, 4u};
-    FrameProfilerGL profiler = std::move(*profiler_);
+    FrameProfilerGL profiler = Utility::move(*profiler_);
     profiler_ = nullptr;
     CORRADE_COMPARE(profiler.values(), data.values);
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);

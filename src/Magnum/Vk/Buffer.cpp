@@ -77,7 +77,7 @@ Buffer::Buffer(Device& device, const BufferCreateInfo& info, const MemoryFlags m
 
 Buffer::Buffer(NoCreateT): _device{}, _handle{}, _dedicatedMemory{NoCreate} {}
 
-Buffer::Buffer(Buffer&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _dedicatedMemory{std::move(other._dedicatedMemory)} {
+Buffer::Buffer(Buffer&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _dedicatedMemory{Utility::move(other._dedicatedMemory)} {
     other._handle = {};
 }
 
@@ -87,7 +87,7 @@ Buffer::~Buffer() {
 }
 
 Buffer& Buffer::operator=(Buffer&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
@@ -115,7 +115,7 @@ void Buffer::bindMemory(Memory& memory, const UnsignedLong offset) {
 
 void Buffer::bindDedicatedMemory(Memory&& memory) {
     bindMemory(memory, 0);
-    _dedicatedMemory = std::move(memory);
+    _dedicatedMemory = Utility::move(memory);
 }
 
 bool Buffer::hasDedicatedMemory() const {

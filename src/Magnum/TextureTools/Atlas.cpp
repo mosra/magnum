@@ -137,7 +137,7 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
         --free;
     }
 
-    return {layer + 1, std::move(output)};
+    return {layer + 1, Utility::move(output)};
 }
 
 Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, const std::initializer_list<Vector2i> sizes) {

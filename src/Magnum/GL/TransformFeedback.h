@@ -32,7 +32,8 @@
  */
 #endif
 
-#include <utility> /* std::swap() */
+#include <initializer_list>
+#include <Corrade/Utility/Move.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -456,7 +457,7 @@ inline TransformFeedback::TransformFeedback(TransformFeedback&& other) noexcept:
 }
 
 inline TransformFeedback& TransformFeedback::operator=(TransformFeedback&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     swap(_flags, other._flags);
     return *this;

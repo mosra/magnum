@@ -429,7 +429,7 @@ ShadersGLBenchmark::ShadersGLBenchmark(): _framebuffer{{{}, RenderSize}} {
             Primitives::GridFlag::Tangents);
         Containers::Array<Color4> vertexColors{DirectInit, data.vertexCount(), 0xffffffff_rgbaf};
         Containers::Array<Vector3> bitangents{DirectInit, data.vertexCount(), Vector3{0.0f, 1.0f, 0.0f}};
-        Trade::MeshData dataWithVertexColors = MeshTools::interleave(std::move(data), {
+        Trade::MeshData dataWithVertexColors = MeshTools::interleave(Utility::move(data), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Color, arrayView(vertexColors)},
             Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent, arrayView(bitangents)}
         });

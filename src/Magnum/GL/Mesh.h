@@ -998,7 +998,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             #endif
         > inline Mesh& addVertexBuffer(Buffer&& buffer, GLintptr offset, const T&... attributes) {
             addVertexBuffer<T...>(buffer, offset, attributes...);
-            acquireVertexBuffer(std::move(buffer));
+            acquireVertexBuffer(Utility::move(buffer));
             return *this;
         }
 
@@ -1017,7 +1017,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             #endif
         > inline Mesh& addVertexBufferInstanced(Buffer&& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInstanced<T...>(buffer, divisor, offset, attributes...);
-            acquireVertexBuffer(std::move(buffer));
+            acquireVertexBuffer(Utility::move(buffer));
             return *this;
         }
 
@@ -1031,7 +1031,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          */
         Mesh& addVertexBuffer(Buffer&& buffer, GLintptr offset, GLsizei stride, const DynamicAttribute& attribute) {
             addVertexBuffer(buffer, offset, stride, attribute);
-            acquireVertexBuffer(std::move(buffer));
+            acquireVertexBuffer(Utility::move(buffer));
             return *this;
         }
 
@@ -1045,7 +1045,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          */
         Mesh& addVertexBufferInstanced(Buffer&& buffer, UnsignedInt divisor, GLintptr offset, GLsizei stride, const DynamicAttribute& attribute) {
             addVertexBufferInstanced(buffer, divisor, offset, stride, attribute);
-            acquireVertexBuffer(std::move(buffer));
+            acquireVertexBuffer(Utility::move(buffer));
             return *this;
         }
 
@@ -1130,7 +1130,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * index type.
          */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, Magnum::MeshIndexType type, UnsignedInt start, UnsignedInt end) {
-            return setIndexBuffer(std::move(buffer), offset, meshIndexType(type), start, end);
+            return setIndexBuffer(Utility::move(buffer), offset, meshIndexType(type), start, end);
         }
 
         /**
@@ -1141,7 +1141,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @ref GL-Mesh-buffer-ownership for more information.
          */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type) {
-            return setIndexBuffer(std::move(buffer), offset, type, 0, 0);
+            return setIndexBuffer(Utility::move(buffer), offset, type, 0, 0);
         }
 
         /** @overload
@@ -1153,7 +1153,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * index type.
          */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, Magnum::MeshIndexType type) {
-            return setIndexBuffer(std::move(buffer), offset, meshIndexType(type), 0, 0);
+            return setIndexBuffer(Utility::move(buffer), offset, meshIndexType(type), 0, 0);
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED

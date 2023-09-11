@@ -717,7 +717,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
            StringView overload. Sigh, C++. */
         template<class U, class = typename std::enable_if<std::is_same<U&&, Containers::String&&>::value>::type>
         Shader& addSource(U&& source) {
-            return addSourceInternal(std::move(source));
+            return addSourceInternal(Utility::move(source));
         }
         #endif
 

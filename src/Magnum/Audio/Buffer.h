@@ -232,7 +232,7 @@ inline Buffer::Buffer(Buffer&& other): _id(other._id) {
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     return *this;
 }

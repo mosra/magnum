@@ -109,12 +109,12 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     Context::current().state().texture.getCubeImage3DImplementation(*this, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data, image.storage());
-    image = Image3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data), ImageFlag3D::CubeMap};
+    image = Image3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, Utility::move(data), ImageFlag3D::CubeMap};
 }
 
 Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
     this->image(level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::image(const Int level, const MutableImageView3D& image) {
@@ -148,7 +148,7 @@ void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUs
 
 BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, const BufferUsage usage) {
     this->image(level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) {
@@ -180,12 +180,12 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     Context::current().state().texture.getCompressedCubeImage3DImplementation(*this, level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, data);
-    image = CompressedImage3D{image.storage(), CompressedPixelFormat(format), size, std::move(data), ImageFlag3D::CubeMap};
+    image = CompressedImage3D{image.storage(), CompressedPixelFormat(format), size, Utility::move(data), ImageFlag3D::CubeMap};
 }
 
 CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedImage3D&& image) {
     compressedImage(level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::compressedImage(const Int level, const MutableCompressedImageView3D& image) {
@@ -259,7 +259,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
 
 CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D&& image, const BufferUsage usage) {
     compressedImage(level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, Image2D& image) {
@@ -274,12 +274,12 @@ void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     Context::current().state().texture.getCubeImageImplementation(*this, coordinate, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data);
-    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data), ImageFlags2D{}};
+    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, Utility::move(data), ImageFlags2D{}};
 }
 
 Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, Image2D&& image) {
     this->image(coordinate, level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, const MutableImageView2D& image) {
@@ -311,7 +311,7 @@ void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, 
 
 BufferImage2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, BufferImage2D&& image, const BufferUsage usage) {
     this->image(coordinate, level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedImage2D& image) {
@@ -339,12 +339,12 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     Context::current().state().texture.getCompressedCubeImageImplementation(*this, coordinate, level, size, data.size(), data);
-    image = CompressedImage2D{image.storage(), CompressedPixelFormat(format), size, std::move(data), ImageFlags2D{}};
+    image = CompressedImage2D{image.storage(), CompressedPixelFormat(format), size, Utility::move(data), ImageFlags2D{}};
 }
 
 CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedImage2D&& image) {
     compressedImage(coordinate, level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, const MutableCompressedImageView2D& image) {
@@ -412,17 +412,17 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
 
 CompressedBufferImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedBufferImage2D&& image, const BufferUsage usage) {
     compressedImage(coordinate, level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 Image3D CubeMapTexture::subImage(const Int level, const Range3Di& range, Image3D&& image) {
     this->subImage(level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 BufferImage3D CubeMapTexture::subImage(const Int level, const Range3Di& range, BufferImage3D&& image, const BufferUsage usage) {
     this->subImage(level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D& image) {
@@ -453,12 +453,12 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
     /* Would be CubeMap if the whole image was queried, but then we'd have to
        query the size and compare, which is extra work. So it's Array
        instead. */
-    image = CompressedImage3D{CompressedPixelFormat(format), range.size(), std::move(data), ImageFlag3D::Array};
+    image = CompressedImage3D{CompressedPixelFormat(format), range.size(), Utility::move(data), ImageFlag3D::Array};
 }
 
 CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D&& image) {
     compressedSubImage(level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, const MutableCompressedImageView3D& image) {
@@ -526,7 +526,7 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
 
 CompressedBufferImage3D CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D&& image, const BufferUsage usage) {
     compressedSubImage(level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 #endif
 

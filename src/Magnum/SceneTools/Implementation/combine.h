@@ -388,7 +388,7 @@ inline Trade::SceneData combineFields(const Trade::SceneMappingType mappingType,
         }
     }
 
-    return Trade::SceneData{mappingType, mappingBound, std::move(outData), std::move(outFields)};
+    return Trade::SceneData{mappingType, mappingBound, Utility::move(outData), Utility::move(outFields)};
 }
 
 }}}

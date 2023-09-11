@@ -275,7 +275,7 @@ template<> MAGNUM_TRADE_EXPORT Containers::ArrayView<const void> MaterialAttribu
 }
 #endif
 
-MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* const importerState) noexcept: _data{std::move(attributeData)}, _layerOffsets{std::move(layerData)}, _types{types}, _attributeDataFlags{DataFlag::Owned|DataFlag::Mutable}, _layerDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* const importerState) noexcept: _data{Utility::move(attributeData)}, _layerOffsets{Utility::move(layerData)}, _types{types}, _attributeDataFlags{DataFlag::Owned|DataFlag::Mutable}, _layerDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor.
        Done before sorting so the index refers to the actual input index. */
@@ -1140,11 +1140,11 @@ Float MaterialData::alphaMask() const {
 }
 
 Containers::Array<UnsignedInt> MaterialData::releaseLayerData() {
-    return std::move(_layerOffsets);
+    return Utility::move(_layerOffsets);
 }
 
 Containers::Array<MaterialAttributeData> MaterialData::releaseAttributeData() {
-    return std::move(_data);
+    return Utility::move(_data);
 }
 
 Debug& operator<<(Debug& debug, const MaterialLayer value) {

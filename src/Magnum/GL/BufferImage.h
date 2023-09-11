@@ -174,7 +174,7 @@ template<UnsignedInt dimensions> class BufferImage {
          * Equivalent to calling @ref BufferImage(PixelStorage, PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
          * with default-constructed @ref PixelStorage.
          */
-        explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, type, size, std::move(buffer), dataSize} {}
+        explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, type, size, Utility::move(buffer), dataSize} {}
 
         /**
          * @brief Construct from existing buffer
@@ -200,7 +200,7 @@ template<UnsignedInt dimensions> class BufferImage {
          * Equivalent to calling @ref BufferImage(PixelStorage, Magnum::PixelFormat, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
          * with default-constructed @ref PixelStorage.
          */
-        explicit BufferImage(Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, size, std::move(buffer), dataSize} {}
+        explicit BufferImage(Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, size, Utility::move(buffer), dataSize} {}
 
         /**
          * @brief Construct an image placeholder
@@ -524,7 +524,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * Equivalent to calling @ref CompressedBufferImage(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, std::move(buffer), dataSize} {}
+        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, Utility::move(buffer), dataSize} {}
 
         /**
          * @brief Construct from existing buffer
@@ -550,7 +550,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * Equivalent to calling @ref CompressedBufferImage(CompressedPixelStorage, Magnum::CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit CompressedBufferImage(Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, std::move(buffer), dataSize} {}
+        explicit CompressedBufferImage(Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, Utility::move(buffer), dataSize} {}
 
         /**
          * @brief Construct an image placeholder

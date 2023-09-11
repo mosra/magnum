@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace Trade {
 
-template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(Containers::Array<UnsignedInt>&& jointData, Containers::Array<MatrixTypeFor<dimensions, Float>>&& inverseBindMatrixData, const void* const importerState) noexcept: _jointData{std::move(jointData)}, _inverseBindMatrixData{std::move(inverseBindMatrixData)}, _importerState{importerState} {
+template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(Containers::Array<UnsignedInt>&& jointData, Containers::Array<MatrixTypeFor<dimensions, Float>>&& inverseBindMatrixData, const void* const importerState) noexcept: _jointData{Utility::move(jointData)}, _inverseBindMatrixData{Utility::move(inverseBindMatrixData)}, _importerState{importerState} {
     CORRADE_ASSERT(_jointData.size() == _inverseBindMatrixData.size(),
         "Trade::SkinData: joint and inverse bind matrix arrays have different size, got" << _jointData.size() << "and" << _inverseBindMatrixData.size(), );
 }
@@ -48,11 +48,11 @@ template<UnsignedInt dimensions> SkinData<dimensions>::~SkinData() = default;
 template<UnsignedInt dimensions> SkinData<dimensions>& SkinData<dimensions>::operator=(SkinData<dimensions>&&) noexcept = default;
 
 template<UnsignedInt dimensions> Containers::Array<UnsignedInt> SkinData<dimensions>::releaseJointData() {
-    return std::move(_jointData);
+    return Utility::move(_jointData);
 }
 
 template<UnsignedInt dimensions> Containers::Array<MatrixTypeFor<dimensions, Float>> SkinData<dimensions>::releaseInverseBindMatrixData() {
-    return std::move(_inverseBindMatrixData);
+    return Utility::move(_inverseBindMatrixData);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

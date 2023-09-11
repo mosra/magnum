@@ -232,7 +232,7 @@ Containers::Triple<Containers::Array<Float>, Float, Float> calculateImageDelta(c
        left that could cause the comparison to fail. */
     const Float mean = Math::Algorithms::kahanSum(deltaData.begin(), deltaData.end())/deltaData.size();
 
-    return {std::move(deltaData), max, mean};
+    return {Utility::move(deltaData), max, mean};
 }
 
 namespace {
@@ -543,7 +543,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
     } else return TestSuite::ComparisonStatusFlags{};
 
     /* Otherwise save the deltas and fail */
-    _state->delta = std::move(deltaMaxMean.first());
+    _state->delta = Utility::move(deltaMaxMean.first());
     return flags;
 }
 

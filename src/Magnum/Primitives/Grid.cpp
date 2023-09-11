@@ -125,8 +125,8 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
     CORRADE_INTERNAL_ASSERT(attributeOffset == stride);
 
     return Trade::MeshData{MeshPrimitive::Triangles,
-        std::move(indexData), Trade::MeshIndexData{indices},
-        std::move(vertexData), std::move(attributes)};
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Utility::move(vertexData), Utility::move(attributes)};
 }
 
 namespace {
@@ -176,8 +176,8 @@ Trade::MeshData grid3DWireframe(const Vector2i& subdivisions) {
     }
 
     return Trade::MeshData{MeshPrimitive::Lines,
-        std::move(indexData), Trade::MeshIndexData{indices},
-        std::move(vertexData),
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Utility::move(vertexData),
         Trade::meshAttributeDataNonOwningArray(AttributeData3DWireframe),
         UnsignedInt(vertexCount.product())};
 }

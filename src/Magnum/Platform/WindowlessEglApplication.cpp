@@ -638,7 +638,7 @@ WindowlessEglContext::~WindowlessEglContext() {
 }
 
 WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     #ifndef MAGNUM_TARGET_WEBGL
     swap(other._sharedContext, _sharedContext);
     #endif
@@ -740,7 +740,7 @@ bool WindowlessEglApplication::tryCreateContext(const Configuration& configurati
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 
-    _glContext = std::move(glContext);
+    _glContext = Utility::move(glContext);
     return true;
 }
 

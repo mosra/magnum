@@ -35,6 +35,7 @@
 #include <cstdlib> /* std::div() */
 #include <type_traits>
 #include <utility>
+#include <Corrade/Utility/Move.h>
 #include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/visibility.h"
@@ -350,7 +351,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, std::pair<T
 
 /** @overload */
 template<std::size_t size, class T> inline std::pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
-    using std::swap;
+    using Corrade::Utility::swap;
     std::pair<Vector<size, T>, Vector<size, T>> out{a, b};
     for(std::size_t i = 0; i != size; ++i)
         if(out.first[i] > out.second[i]) swap(out.first[i], out.second[i]);

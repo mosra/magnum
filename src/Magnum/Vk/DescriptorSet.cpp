@@ -52,7 +52,7 @@ DescriptorSet::~DescriptorSet() {
 }
 
 DescriptorSet& DescriptorSet::operator=(DescriptorSet&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._pool, _pool);
     swap(other._handle, _handle);

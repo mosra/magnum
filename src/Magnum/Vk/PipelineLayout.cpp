@@ -63,7 +63,7 @@ PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(PipelineLayoutCreateInfo&& ot
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(other._info),
-    _data{std::move(other._data)}
+    _data{Utility::move(other._data)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -78,7 +78,7 @@ PipelineLayoutCreateInfo::PipelineLayoutCreateInfo(PipelineLayoutCreateInfo&& ot
 PipelineLayoutCreateInfo::~PipelineLayoutCreateInfo() = default;
 
 PipelineLayoutCreateInfo& PipelineLayoutCreateInfo::operator=(PipelineLayoutCreateInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._data, _data);
     return *this;
@@ -108,7 +108,7 @@ PipelineLayout::~PipelineLayout() {
 }
 
 PipelineLayout& PipelineLayout::operator=(PipelineLayout&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);

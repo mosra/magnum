@@ -328,7 +328,7 @@ void PipelineVkTest::constructMove() {
     };
     VkPipeline handle = a.handle();
 
-    Pipeline b = std::move(a);
+    Pipeline b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
@@ -336,7 +336,7 @@ void PipelineVkTest::constructMove() {
     CORRADE_COMPARE(b.dynamicRasterizationStates(), DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias);
 
     Pipeline c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

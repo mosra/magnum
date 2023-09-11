@@ -720,7 +720,7 @@ void ImageDataTest::constructMoveGeneric() {
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{PixelStorage{}.setAlignment(1),
         PixelFormat::RGBA32F, {1, 3}, Containers::Array<char>{data, 3*16}, ImageFlag2D::Array, &state};
-    ImageData2D b(std::move(a));
+    ImageData2D b(Utility::move(a));
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
@@ -739,7 +739,7 @@ void ImageDataTest::constructMoveGeneric() {
 
     auto data2 = new char[24];
     ImageData2D c{PixelFormat::R8I, {2, 6}, Containers::Array<char>{data2, 24}};
-    c = std::move(b);
+    c = Utility::move(b);
 
     CORRADE_COMPARE(b.data(), data2);
     CORRADE_COMPARE(b.size(), (Vector2i{2, 6}));
@@ -765,7 +765,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
     int state{}; /* GCC 11 complains that "maybe uninitialized" w/o the {} */
     ImageData2D a{PixelStorage{}.setAlignment(1),
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array, &state};
-    ImageData2D b(std::move(a));
+    ImageData2D b(Utility::move(a));
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
@@ -785,7 +785,7 @@ void ImageDataTest::constructMoveImplementationSpecific() {
     auto data2 = new char[12*4*2];
     ImageData2D c{PixelStorage{},
         1, 2, 8, {2, 6}, Containers::Array<char>{data2, 12*4*2}};
-    c = std::move(b);
+    c = Utility::move(b);
 
     CORRADE_COMPARE(b.data(), data2);
     CORRADE_COMPARE(b.size(), Vector2i(2, 6));
@@ -809,7 +809,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         CompressedPixelFormat::Bc3RGBAUnorm, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array, &state};
-    ImageData2D b{std::move(a)};
+    ImageData2D b{Utility::move(a)};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
@@ -826,7 +826,7 @@ void ImageDataTest::constructMoveCompressedGeneric() {
 
     auto data2 = new char[16];
     ImageData2D c{CompressedPixelFormat::Bc1RGBAUnorm, {8, 4}, Containers::Array<char>{data2, 16}};
-    c = std::move(b);
+    c = Utility::move(b);
 
     CORRADE_COMPARE(b.data(), data2);
     CORRADE_COMPARE(b.size(), (Vector2i{8, 4}));
@@ -848,7 +848,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array, &state};
-    ImageData2D b{std::move(a)};
+    ImageData2D b{Utility::move(a)};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
@@ -865,7 +865,7 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
 
     auto data2 = new char[16];
     ImageData2D c{CompressedPixelFormat::Bc2RGBAUnorm, {8, 4}, Containers::Array<char>{data2, 16}};
-    c = std::move(b);
+    c = Utility::move(b);
 
     CORRADE_COMPARE(b.data(), data2);
     CORRADE_COMPARE(b.size(), (Vector2i{8, 4}));
@@ -887,7 +887,7 @@ void ImageDataTest::constructMoveAttachState() {
     int stateOld{}, stateNew{};
     ImageData2D a{PixelStorage{}.setAlignment(1),
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, ImageFlag2D::Array, &stateOld};
-    ImageData2D b{std::move(a), &stateNew};
+    ImageData2D b{Utility::move(a), &stateNew};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});
@@ -912,7 +912,7 @@ void ImageDataTest::constructMoveCompressedAttachState() {
     ImageData2D a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, ImageFlag2D::Array, &stateOld};
-    ImageData2D b{std::move(a), &stateNew};
+    ImageData2D b{Utility::move(a), &stateNew};
 
     CORRADE_COMPARE(a.data(), static_cast<const void*>(nullptr));
     CORRADE_COMPARE(a.size(), Vector2i{});

@@ -70,7 +70,7 @@ Fence::~Fence() {
 }
 
 Fence& Fence::operator=(Fence&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);

@@ -2071,7 +2071,7 @@ void AbstractImporterTest::sceneDeprecatedFallback2D() {
     importerState[2] = {6, &c};
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data): _data{Utility::move(data)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -2105,7 +2105,7 @@ void AbstractImporterTest::sceneDeprecatedFallback2D() {
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneMappingType::UnsignedInt, 7, std::move(data), {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 7, Utility::move(data), {
         SceneFieldData{SceneField::Parent,
             transformations.slice(&Transform::object),
             transformations.slice(&Transform::parent)},
@@ -2343,7 +2343,7 @@ void AbstractImporterTest::sceneDeprecatedFallback3D() {
     importerState[2] = {6, &c};
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data): _data{Utility::move(data)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -2377,7 +2377,7 @@ void AbstractImporterTest::sceneDeprecatedFallback3D() {
 
         private:
             SceneData _data;
-    } importer{SceneData{SceneMappingType::UnsignedInt, 7, std::move(data), {
+    } importer{SceneData{SceneMappingType::UnsignedInt, 7, Utility::move(data), {
         SceneFieldData{SceneField::Parent,
             transformations.slice(&Transform::object),
             transformations.slice(&Transform::parent)},
@@ -2539,7 +2539,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackParentless2D() {
     Containers::StridedArrayView1D<Field> view = fields;
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data): _data{Utility::move(data)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -2614,7 +2614,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackParentless3D() {
     Containers::StridedArrayView1D<Field> view = fields;
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data): _data{Utility::move(data)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -2689,7 +2689,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless2D() {
     Containers::StridedArrayView1D<Field> view = fields;
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data): _data{Utility::move(data)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -2795,7 +2795,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackTransformless3D() {
     Containers::StridedArrayView1D<Field> view = fields;
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data): _data{std::move(data)} {}
+        explicit Importer(SceneData&& data): _data{Utility::move(data)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -2946,7 +2946,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         {30, 1, -1}
     }, meshesSecondary);
 
-    SceneData data{SceneMappingType::UnsignedInt, 32, std::move(dataData), {
+    SceneData data{SceneMappingType::UnsignedInt, 32, Utility::move(dataData), {
         SceneFieldData{SceneField::Parent, parents.slice(&Parent::object), parents.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshes.slice(&Mesh::object), meshes.slice(&Mesh::meshMaterial)},
@@ -2955,7 +2955,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
         /* Just to disambiguate this as a 2D scene */
         SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix3x3, nullptr},
     }};
-    SceneData dataSecondary{SceneMappingType::UnsignedInt, 31, std::move(dataDataSecondary), {
+    SceneData dataSecondary{SceneMappingType::UnsignedInt, 31, Utility::move(dataDataSecondary), {
         SceneFieldData{SceneField::Parent, parentsSecondary.slice(&Parent::object), parentsSecondary.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::meshMaterial)},
@@ -2964,7 +2964,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
     }};
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data, SceneData&& dataSecondary): _data{std::move(data)}, _dataSecondary{std::move(dataSecondary)} {}
+        explicit Importer(SceneData&& data, SceneData&& dataSecondary): _data{Utility::move(data)}, _dataSecondary{Utility::move(dataSecondary)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -3002,7 +3002,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects2D() {
 
         private:
             SceneData _data, _dataSecondary;
-    } importer{std::move(data), std::move(dataSecondary)};
+    } importer{Utility::move(data), Utility::move(dataSecondary)};
 
     CORRADE_COMPARE(importer.sceneCount(), 4);
 
@@ -3228,7 +3228,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         {30, 1, -1}
     }, meshesSecondary);
 
-    SceneData data{SceneMappingType::UnsignedInt, 32, std::move(dataData), {
+    SceneData data{SceneMappingType::UnsignedInt, 32, Utility::move(dataData), {
         SceneFieldData{SceneField::Parent, parents.slice(&Parent::object), parents.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshes.slice(&Mesh::object), meshes.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshes.slice(&Mesh::object), meshes.slice(&Mesh::meshMaterial)},
@@ -3237,7 +3237,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
         /* Just to disambiguate this as a 3D scene */
         SceneFieldData{SceneField::Transformation, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Matrix4x4, nullptr},
     }};
-    SceneData dataSecondary{SceneMappingType::UnsignedInt, 31, std::move(dataDataSecondary), {
+    SceneData dataSecondary{SceneMappingType::UnsignedInt, 31, Utility::move(dataDataSecondary), {
         SceneFieldData{SceneField::Parent, parentsSecondary.slice(&Parent::object), parentsSecondary.slice(&Parent::parent)},
         SceneFieldData{SceneField::Mesh, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::mesh)},
         SceneFieldData{SceneField::MeshMaterial, meshesSecondary.slice(&Mesh::object), meshesSecondary.slice(&Mesh::meshMaterial)},
@@ -3246,7 +3246,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
     }};
 
     struct Importer: AbstractImporter {
-        explicit Importer(SceneData&& data, SceneData&& dataSecondary): _data{std::move(data)}, _dataSecondary{std::move(dataSecondary)} {}
+        explicit Importer(SceneData&& data, SceneData&& dataSecondary): _data{Utility::move(data)}, _dataSecondary{Utility::move(dataSecondary)} {}
 
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -3284,7 +3284,7 @@ void AbstractImporterTest::sceneDeprecatedFallbackMultiFunctionObjects3D() {
 
         private:
             SceneData _data, _dataSecondary;
-    } importer{std::move(data), std::move(dataSecondary)};
+    } importer{Utility::move(data), Utility::move(dataSecondary)};
 
     CORRADE_COMPARE(importer.sceneCount(), 4);
 
@@ -4028,7 +4028,7 @@ void AbstractImporterTest::animationGrowableDeleters() {
         Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
             Containers::Array<char> data;
             Containers::arrayAppend<ArrayAllocator>(data, '\x37');
-            return AnimationData{std::move(data), {AnimationTrackData{}}};
+            return AnimationData{Utility::move(data), {AnimationTrackData{}}};
         }
     } importer;
 
@@ -5809,8 +5809,8 @@ void AbstractImporterTest::meshGrowableDeleters() {
             MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
 
             return MeshData{MeshPrimitive::Triangles,
-                std::move(indexData), indices,
-                Containers::arrayAllocatorCast<char, ArrayAllocator>(std::move(vertexData)), {positions}};
+                Utility::move(indexData), indices,
+                Containers::arrayAllocatorCast<char, ArrayAllocator>(Utility::move(vertexData)), {positions}};
         }
     } importer;
 
@@ -6453,7 +6453,7 @@ void AbstractImporterTest::materialDeprecatedFallback() {
            propagating such instance works as well (array deleters etc.) */
         Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
             CORRADE_IGNORE_DEPRECATED_PUSH
-            return Containers::Optional<MaterialData>{std::move(PhongMaterialData{{},
+            return Containers::Optional<MaterialData>{Utility::move(PhongMaterialData{{},
                 {}, {},
                 {}, {},
                 {}, {},
@@ -7094,7 +7094,7 @@ void AbstractImporterTest::image1DGrowableDeleter() {
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
             Containers::Array<char> data;
             Containers::arrayAppend<ArrayAllocator>(data, '\xff');
-            return ImageData1D{PixelFormat::RGBA8Unorm, {}, std::move(data)};
+            return ImageData1D{PixelFormat::RGBA8Unorm, {}, Utility::move(data)};
         }
     } importer;
 
@@ -7398,7 +7398,7 @@ void AbstractImporterTest::image2DGrowableDeleter() {
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
             Containers::Array<char> data;
             Containers::arrayAppend<ArrayAllocator>(data, '\xff');
-            return ImageData2D{PixelFormat::RGBA8Unorm, {}, std::move(data)};
+            return ImageData2D{PixelFormat::RGBA8Unorm, {}, Utility::move(data)};
         }
     } importer;
 
@@ -7702,7 +7702,7 @@ void AbstractImporterTest::image3DGrowableDeleter() {
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
             Containers::Array<char> data;
             Containers::arrayAppend<ArrayAllocator>(data, '\xff');
-            return ImageData3D{PixelFormat::RGBA8Unorm, {}, std::move(data)};
+            return ImageData3D{PixelFormat::RGBA8Unorm, {}, Utility::move(data)};
         }
     } importer;
 

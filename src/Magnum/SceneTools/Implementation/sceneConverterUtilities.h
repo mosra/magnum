@@ -288,7 +288,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             if(args.isSet("object-hierarchy") && scene->hasField(Trade::SceneField::Parent))
                 info.childrenDepthFirst = SceneTools::childrenDepthFirst(*scene);
 
-            arrayAppend(sceneInfos, std::move(info));
+            arrayAppend(sceneInfos, Utility::move(info));
         }
     }
 
@@ -327,7 +327,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                 animation->track(j).size());
         }
 
-        arrayAppend(animationInfos, std::move(info));
+        arrayAppend(animationInfos, Utility::move(info));
     }
 
     /* Skin properties */
@@ -350,7 +350,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             info.name = importer.skin2DName(i);
             info.jointCount = skin->joints().size();
 
-            arrayAppend(skinInfos, std::move(info));
+            arrayAppend(skinInfos, Utility::move(info));
         }
 
         for(UnsignedInt i = 0; i != importer.skin3DCount(); ++i) {
@@ -370,7 +370,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             info.name = importer.skin3DName(i);
             info.jointCount = skin->joints().size();
 
-            arrayAppend(skinInfos, std::move(info));
+            arrayAppend(skinInfos, Utility::move(info));
         }
     }
 
@@ -390,9 +390,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         LightInfo info{};
         info.light = i;
         info.name = importer.lightName(i);
-        info.data = *std::move(light);
+        info.data = *Utility::move(light);
 
-        arrayAppend(lightInfos, std::move(info));
+        arrayAppend(lightInfos, Utility::move(info));
     }
 
     /* Camera properties */
@@ -411,9 +411,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
         CameraInfo info{};
         info.camera = i;
         info.name = importer.cameraName(i);
-        info.data = *std::move(camera);
+        info.data = *Utility::move(camera);
 
-        arrayAppend(cameraInfos, std::move(info));
+        arrayAppend(cameraInfos, Utility::move(info));
     }
 
     /* Material properties, together with how much is each texture shared
@@ -454,9 +454,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             MaterialInfo info{};
             info.material = i;
             info.name = importer.materialName(i);
-            info.data = *std::move(material);
+            info.data = *Utility::move(material);
 
-            arrayAppend(materialInfos, std::move(info));
+            arrayAppend(materialInfos, Utility::move(info));
         }
     }
 
@@ -549,7 +549,7 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
                     bounds);
             }
 
-            arrayAppend(meshInfos, std::move(info));
+            arrayAppend(meshInfos, Utility::move(info));
         }
     }
 
@@ -597,9 +597,9 @@ bool printInfo(const Debug::Flags useColor, const bool useColor24, const Utility
             TextureInfo info{};
             info.texture = i;
             info.name = importer.textureName(i);
-            info.data = *std::move(texture);
+            info.data = *Utility::move(texture);
 
-            arrayAppend(textureInfos, std::move(info));
+            arrayAppend(textureInfos, Utility::move(info));
         }
     }
 

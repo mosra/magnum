@@ -174,7 +174,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
         mesh.releaseAttributeData();
     Containers::Array<Trade::MeshAttributeData> attributeData;
     if(!extraAttributeCount && !originalAttributeData.deleter())
-        attributeData = std::move(originalAttributeData);
+        attributeData = Utility::move(originalAttributeData);
     else {
         attributeData = Containers::Array<Trade::MeshAttributeData>{originalAttributeCount + extraAttributeCount};
         Utility::copy(originalAttributeData, attributeData.prefix(originalAttributeCount));
@@ -223,7 +223,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
 }
 
 Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(mesh), extra, flags);
+    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(Utility::move(mesh), extra, flags);
 
     /* If there are no attributes, bail -- return an empty mesh with desired
        vertex count but nothing else */
@@ -240,11 +240,11 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, const UnsignedInt vert
         attribute = Implementation::remapAttributeData(attribute, vertexCount, vertexData, vertexData);
     }
 
-    return Trade::MeshData{mesh.primitive(), std::move(vertexData), std::move(attributeData)};
+    return Trade::MeshData{mesh.primitive(), Utility::move(vertexData), Utility::move(attributeData)};
 }
 
 Trade::MeshData interleavedLayout(Trade::MeshData&& mesh, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleavedLayout(std::move(mesh), vertexCount, Containers::arrayView(extra), flags);
+    return interleavedLayout(Utility::move(mesh), vertexCount, Containers::arrayView(extra), flags);
 }
 
 Trade::MeshData interleavedLayout(const Trade::MeshData& mesh, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
@@ -321,8 +321,9 @@ Trade::MeshData interleave(Trade::MeshData&& mesh, const Containers::ArrayView<c
 
     /* Otherwise do it the hard way */
     } else {
-        /* Calculate the layout. Can't std::move() the data in to avoid copying
-           the attribute array as we need the original attributes below. */
+        /* Calculate the layout. Can't Utility::move() the data in to avoid
+           copying the attribute array as we need the original attributes
+           below. */
         Trade::MeshData layout = interleavedLayout(mesh, vertexCount, extra, flags);
         #ifdef CORRADE_GRACEFUL_ASSERT
         /* If interleavedLayout() gracefully asserted and returned no
@@ -367,12 +368,12 @@ Trade::MeshData interleave(Trade::MeshData&& mesh, const Containers::ArrayView<c
         attributeData = layout.releaseAttributeData();
     }
 
-    return Trade::MeshData{mesh.primitive(), std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData), vertexCount};
+    return Trade::MeshData{mesh.primitive(), Utility::move(indexData), indices,
+        Utility::move(vertexData), Utility::move(attributeData), vertexCount};
 }
 
 Trade::MeshData interleave(Trade::MeshData&& mesh, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleave(std::move(mesh), Containers::arrayView(extra), flags);
+    return interleave(Utility::move(mesh), Containers::arrayView(extra), flags);
 }
 
 Trade::MeshData interleave(const Trade::MeshData& mesh, const Containers::ArrayView<const Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
@@ -382,7 +383,7 @@ Trade::MeshData interleave(const Trade::MeshData& mesh, const Containers::ArrayV
 }
 
 Trade::MeshData interleave(const Trade::MeshData& mesh, const std::initializer_list<Trade::MeshAttributeData> extra, const InterleaveFlags flags) {
-    return interleave(std::move(mesh), Containers::arrayView(extra), flags);
+    return interleave(Utility::move(mesh), Containers::arrayView(extra), flags);
 }
 
 }}

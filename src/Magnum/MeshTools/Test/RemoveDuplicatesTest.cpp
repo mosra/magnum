@@ -942,7 +942,7 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy() {
 
     Trade::MeshData mesh{MeshPrimitive::Lines,
         {}, indexView, indices,
-        {}, vertexData, std::move(attributes)};
+        {}, vertexData, Utility::move(attributes)};
 
     Trade::MeshData unique = MeshTools::removeDuplicatesFuzzy(mesh,
         data.epsilon);

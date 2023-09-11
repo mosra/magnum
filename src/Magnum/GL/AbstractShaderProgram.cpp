@@ -316,7 +316,7 @@ AbstractShaderProgram::~AbstractShaderProgram() {
 }
 
 AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     return *this;
 }
@@ -360,7 +360,7 @@ Containers::Pair<bool, Containers::String> AbstractShaderProgram::validate() {
        compile() message trimming it doesn't make sense to add driver-specific
        workarounds for this, so just trim it always. */
     /** @todo this allocates a new string, revisit once String is capable of
-        trimming in-place, e.g. `std::move(message).trimmed()` would just
+        trimming in-place, e.g. `Utility::move(message).trimmed()` would just
         shift the data around */
     return {bool(success), message.trimmed()};
 }

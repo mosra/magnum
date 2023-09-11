@@ -106,7 +106,7 @@ Trade::MeshData combineIndexedImplementation(
 
     /* Combine the index buffer in */
     return Trade::MeshData{primitive,
-        std::move(indexData), Trade::MeshIndexData{indexDataI},
+        Utility::move(indexData), Trade::MeshIndexData{indexDataI},
         out.releaseVertexData(), out.releaseAttributeData(), vertexCount};
 }
 

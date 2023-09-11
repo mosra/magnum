@@ -92,7 +92,7 @@ void DescriptorPoolVkTest::setupVariableDescriptorCount() {
 
     /* Create the device only if not already, to avoid spamming the output */
     if(!_deviceVariableDescriptorCount.handle()) _deviceVariableDescriptorCount.create(instance(),
-        DeviceCreateInfo{std::move(properties)}
+        DeviceCreateInfo{Utility::move(properties)}
             .addQueues(QueueFlag::Graphics, {0.0f}, {_queue})
             .addEnabledExtensions<
                 /* Dependency of EXT_descriptor_indexing if 1.1 isn't
@@ -129,13 +129,13 @@ void DescriptorPoolVkTest::constructMove() {
     }}};
     VkDescriptorPool handle = a.handle();
 
-    DescriptorPool b = std::move(a);
+    DescriptorPool b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     DescriptorPool c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

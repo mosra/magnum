@@ -549,9 +549,9 @@ namespace Implementation {
        functionality seems silly. */
     template<class T> struct SceneConverterOptionalButAlsoArray: Containers::Optional<Containers::Array<T>> {
         /*implicit*/ SceneConverterOptionalButAlsoArray() = default;
-        /*implicit*/ SceneConverterOptionalButAlsoArray(Containers::Optional<Containers::Array<T>>&& optional): Containers::Optional<Containers::Array<T>>{std::move(optional)} {}
+        /*implicit*/ SceneConverterOptionalButAlsoArray(Containers::Optional<Containers::Array<T>>&& optional): Containers::Optional<Containers::Array<T>>{Utility::move(optional)} {}
         CORRADE_DEPRECATED("use Containers::Optional<Containers::Array<T>> instead") /*implicit*/ operator Containers::Array<T>() && {
-            return *this ? Containers::Array<T>{std::move(**this)} : nullptr;
+            return *this ? Containers::Array<T>{Utility::move(**this)} : nullptr;
         }
     };
 }

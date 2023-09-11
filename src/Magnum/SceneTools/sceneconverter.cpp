@@ -396,7 +396,7 @@ template<UnsignedInt dimensions> bool runImageConverters(PluginManager::Manager<
             of converting them (which needs AbstractImageConverter to be
             reworked around ImageData) */
         if(Containers::Optional<Trade::ImageData<dimensions>> converted = imageConverter->convert(*image)) {
-            image = std::move(converted);
+            image = Utility::move(converted);
         } else if(passthroughOnConversionFailure) {
             Warning{} << "Cannot process" << dimensions << Debug::nospace << "D image" << i << "with" << imageConverterName << Debug::nospace << ", passing the original through";
         } else {
@@ -813,7 +813,7 @@ well, the IDs reference attributes of the first mesh.)")
                     return 1;
                 }
 
-                arrayAppend(meshes, *std::move(meshToConcatenate));
+                arrayAppend(meshes, *Utility::move(meshToConcatenate));
             }
 
             /* If there's a scene, use it to flatten mesh hierarchy. If not,
@@ -845,7 +845,7 @@ well, the IDs reference attributes of the first mesh.)")
                             meshes[meshesMaterials[i].second().first()], transformations[i]));
                     }
                 }
-                meshes = std::move(flattenedMeshes);
+                meshes = Utility::move(flattenedMeshes);
             }
 
             {
@@ -883,7 +883,7 @@ well, the IDs reference attributes of the first mesh.)")
             const UnsignedInt vertexCount = mesh->vertexCount();
             mesh = Trade::MeshData{mesh->primitive(),
                 mesh->releaseIndexData(), indices,
-                mesh->releaseVertexData(), std::move(attributes),
+                mesh->releaseVertexData(), Utility::move(attributes),
                 vertexCount};
         }
 
@@ -892,7 +892,7 @@ well, the IDs reference attributes of the first mesh.)")
         /** @todo might be useful to have this split out of the file and tested
             directly if the complexity grows even further */
         struct SingleMeshImporter: Trade::AbstractImporter {
-            explicit SingleMeshImporter(Trade::MeshData&& mesh_, Containers::String&& name, Trade::AbstractImporter& original): mesh{std::move(mesh_)}, name{std::move(name)} {
+            explicit SingleMeshImporter(Trade::MeshData&& mesh_, Containers::String&& name, Trade::AbstractImporter& original): mesh{Utility::move(mesh_)}, name{Utility::move(name)} {
                 for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
                     const Trade::MeshAttribute attributeName = mesh.attributeName(i);
                     if(!isMeshAttributeCustom(attributeName)) continue;
@@ -934,8 +934,8 @@ well, the IDs reference attributes of the first mesh.)")
         /** @todo would it make sense for emplace() to first construct and only
             then delete so I wouldn't need to juggle the previous value
             manually? */
-        Containers::Pointer<Trade::AbstractImporter> previousImporter = std::move(importer);
-        importer.emplace<SingleMeshImporter>(*std::move(mesh),
+        Containers::Pointer<Trade::AbstractImporter> previousImporter = Utility::move(importer);
+        importer.emplace<SingleMeshImporter>(*Utility::move(mesh),
             /* Propagate the name only in case of a single mesh, for
                concatenation it wouldn't make sense */
             args.value<Containers::StringView>("mesh") ? previousImporter->meshName(args.value<UnsignedInt>("mesh")) : Containers::String{},
@@ -971,7 +971,7 @@ well, the IDs reference attributes of the first mesh.)")
             if(!runImageConverters(imageConverterManager, args, i, image))
                 return 1;
 
-            arrayAppend(images2D, *std::move(image));
+            arrayAppend(images2D, *Utility::move(image));
         }
 
         for(UnsignedInt i = 0; i != importer->image3DCount(); ++i) {
@@ -991,7 +991,7 @@ well, the IDs reference attributes of the first mesh.)")
             if(!runImageConverters(imageConverterManager, args, i, image))
                 return 1;
 
-            arrayAppend(images3D, *std::move(image));
+            arrayAppend(images3D, *Utility::move(image));
         }
     }
 
@@ -1030,10 +1030,10 @@ well, the IDs reference attributes of the first mesh.)")
                     and texcoords? ugh... */
                 if(fuzzy) {
                     Trade::Implementation::Duration d{conversionTime};
-                    mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicate-vertices-fuzzy"));
+                    mesh = MeshTools::removeDuplicatesFuzzy(*Utility::move(mesh), args.value<Float>("remove-duplicate-vertices-fuzzy"));
                 } else {
                     Trade::Implementation::Duration d{conversionTime};
-                    mesh = MeshTools::removeDuplicates(*std::move(mesh));
+                    mesh = MeshTools::removeDuplicates(*Utility::move(mesh));
                 }
 
                 if(args.isSet("verbose")) {
@@ -1080,7 +1080,7 @@ well, the IDs reference attributes of the first mesh.)")
                 /** @todo handle mesh levels here, once any plugin is capable
                     of converting them */
                 if(Containers::Optional<Trade::MeshData> converted = meshConverter->convert(*mesh)) {
-                    mesh = std::move(converted);
+                    mesh = Utility::move(converted);
                 } else if(passthroughOnConversionFailure) {
                     Warning{} << "Cannot process mesh" << i << "with" << meshConverterName << Debug::nospace << ", passing the original through";
                 } else {
@@ -1089,7 +1089,7 @@ well, the IDs reference attributes of the first mesh.)")
                 }
             }
 
-            arrayAppend(meshes, *std::move(mesh));
+            arrayAppend(meshes, *Utility::move(mesh));
         }
     }
 
@@ -1122,7 +1122,7 @@ well, the IDs reference attributes of the first mesh.)")
                 CORRADE_INTERNAL_ASSERT(material);
             }
 
-            arrayAppend(materials, *std::move(material));
+            arrayAppend(materials, *Utility::move(material));
         }
     }
 

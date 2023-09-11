@@ -1144,7 +1144,7 @@ void MaterialDataTest::constructDuplicateAttribute() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MaterialData data{{}, std::move(attributes), Containers::array<UnsignedInt>({1, 1, 6})};
+    MaterialData data{{}, Utility::move(attributes), Containers::array<UnsignedInt>({1, 1, 6})};
     /* Because with graceful asserts it doesn't exit on error, the assertion
        might get printed multiple times */
     CORRADE_COMPARE(Utility::String::partition(out.str(), '\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2");
@@ -1785,7 +1785,7 @@ void MaterialDataTest::constructMove() {
         1, 1, 3
     }, &state};
 
-    MaterialData b{std::move(a)};
+    MaterialData b{Utility::move(a)};
     CORRADE_COMPARE(b.attributeDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(b.layerDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(a.layerCount(), 1);
@@ -1799,7 +1799,7 @@ void MaterialDataTest::constructMove() {
     MaterialData c{MaterialTypes{}, {
         {MaterialAttribute::AlphaMask, 0.5f}
     }, {1}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b.attributeCount(), 1);
     CORRADE_COMPARE(b.layerCount(), 1);
     CORRADE_COMPARE(c.attributeDataFlags(), DataFlag::Owned|DataFlag::Mutable);
@@ -1851,13 +1851,13 @@ void MaterialDataTest::asRvalue() {
         2, 4
     }, &state};
 
-    auto phong = std::move(data).as<PhongMaterialData>();
+    auto phong = Utility::move(data).as<PhongMaterialData>();
     CORRADE_COMPARE(data.layerCount(), 1);
     CORRADE_COMPARE(phong.layerCount(), 2);
     CORRADE_COMPARE(phong.diffuseColor(), 0xccffbbff_rgbaf);
     CORRADE_COMPARE(phong.attribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
 
-    auto specularGlossiness = std::move(phong).as<PbrSpecularGlossinessMaterialData>();
+    auto specularGlossiness = Utility::move(phong).as<PbrSpecularGlossinessMaterialData>();
     CORRADE_COMPARE(phong.layerCount(), 1);
     CORRADE_COMPARE(specularGlossiness.layerCount(), 2);
     CORRADE_COMPARE(specularGlossiness.diffuseColor(), 0xccffbbff_rgbaf);

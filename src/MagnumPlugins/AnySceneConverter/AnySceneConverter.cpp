@@ -172,7 +172,7 @@ bool AnySceneConverter::doBeginFile(const Containers::StringView filename) {
     if(!converter->beginFile(filename)) return false;
 
     /* Success, save the instance */
-    _converter = std::move(converter);
+    _converter = Utility::move(converter);
     return true;
 }
 

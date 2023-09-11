@@ -29,7 +29,8 @@
  * @brief Class @ref Magnum::GL::AbstractTexture
  */
 
-#include <utility> /* std::swap() */
+#include <initializer_list>
+#include <Corrade/Utility/Move.h>
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/ImageFlags.h"
@@ -815,7 +816,7 @@ inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _targ
 }
 
 inline AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_target, other._target);
     swap(_id, other._id);
     swap(_flags, other._flags);

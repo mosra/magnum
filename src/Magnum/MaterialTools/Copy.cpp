@@ -61,7 +61,7 @@ Trade::MaterialData copy(Trade::MaterialData&& material) {
         Utility::copy(material.layerData(), layers);
     }
 
-    return Trade::MaterialData{material.types(), std::move(attributes), std::move(layers), material.importerState()};
+    return Trade::MaterialData{material.types(), Utility::move(attributes), Utility::move(layers), material.importerState()};
 }
 
 }}

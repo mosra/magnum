@@ -46,7 +46,7 @@ Trade::MeshData line2D(const Vector2& a, const Vector2& b) {
     positions[0] = a;
     positions[1] = b;
 
-    return Trade::MeshData{MeshPrimitive::Lines, std::move(vertexData),
+    return Trade::MeshData{MeshPrimitive::Lines, Utility::move(vertexData),
         Trade::meshAttributeDataNonOwningArray(Attributes2D)};
 }
 
@@ -65,7 +65,7 @@ Trade::MeshData line3D(const Vector3& a, const Vector3& b) {
     positions[0] = a;
     positions[1] = b;
 
-    return Trade::MeshData{MeshPrimitive::Lines, std::move(vertexData),
+    return Trade::MeshData{MeshPrimitive::Lines, Utility::move(vertexData),
         Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 

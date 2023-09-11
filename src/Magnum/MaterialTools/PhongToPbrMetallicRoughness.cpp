@@ -146,7 +146,7 @@ Containers::Optional<Trade::MaterialData> phongToPbrMetallicRoughness(const Trad
        correctly, so just unpack the Optional directly. */
     return *CORRADE_INTERNAL_ASSERT_EXPRESSION(merge(
         filterAttributes(material, attributesToKeep, ~Trade::MaterialType::Phong),
-        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, std::move(attributes)}));
+        Trade::MaterialData{Trade::MaterialType::PbrMetallicRoughness, Utility::move(attributes)}));
 }
 
 }}

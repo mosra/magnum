@@ -83,7 +83,7 @@ WindowlessCglContext::~WindowlessCglContext() {
 }
 
 WindowlessCglContext& WindowlessCglContext::operator=(WindowlessCglContext&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._pixelFormat, _pixelFormat);
     swap(other._context, _context);
     return *this;
@@ -134,7 +134,7 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration& configurati
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
-    _glContext = std::move(glContext);
+    _glContext = Utility::move(glContext);
     return true;
 }
 

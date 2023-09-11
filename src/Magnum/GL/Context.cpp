@@ -773,12 +773,12 @@ Context::Context(Context&& other) noexcept:
     _extensionStatus{other._extensionStatus},
     _extensionRequiredVersion{other._extensionRequiredVersion},
     #ifdef MAGNUM_BUILD_DEPRECATED
-    _supportedExtensions{std::move(other._supportedExtensions)},
+    _supportedExtensions{Utility::move(other._supportedExtensions)},
     #endif
     _state{other._state},
-    _detectedDrivers{std::move(other._detectedDrivers)},
-    _driverWorkarounds{std::move(other._driverWorkarounds)},
-    _disabledExtensions{std::move(other._disabledExtensions)},
+    _detectedDrivers{Utility::move(other._detectedDrivers)},
+    _driverWorkarounds{Utility::move(other._driverWorkarounds)},
+    _disabledExtensions{Utility::move(other._disabledExtensions)},
     _configurationFlags{other._configurationFlags}
 {
     if(currentContext == &other) currentContext = this;
@@ -1003,7 +1003,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     }
 
     Containers::Pair<Containers::ArrayTuple, Containers::Reference<Implementation::State>> state = Implementation::State::allocate(*this, output);
-    _stateData = std::move(state.first());
+    _stateData = Utility::move(state.first());
     _state = &*state.second();
 
     /* Print a list of used workarounds */

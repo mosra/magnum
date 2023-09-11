@@ -171,7 +171,7 @@ void CompileLinesGLTest::twoDimensions() {
     if(data.colors)
         arrayAppend(attributes, InPlaceInit, Trade::MeshAttribute::Color, vertices.slice(&Vertex::color));
 
-    GL::Mesh mesh = compileLines(generateLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, vertexData, std::move(attributes)}));
+    GL::Mesh mesh = compileLines(generateLines(Trade::MeshData{MeshPrimitive::LineLoop, {}, vertexData, Utility::move(attributes)}));
 
     Shaders::LineGL2D shader{Shaders::LineGL2D::Configuration{}
         .setFlags(data.colors ? Shaders::LineGL2D::Flag::VertexColor : Shaders::LineGL2D::Flags{})

@@ -2063,7 +2063,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @ref MaterialData(MaterialTypes, DataFlags, Containers::ArrayView<const MaterialAttributeData>, const void*)
          * constructor instead.
          */
-        explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, const void* importerState = nullptr) noexcept: MaterialData{types, std::move(attributeData), nullptr, importerState} {}
+        explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, const void* importerState = nullptr) noexcept: MaterialData{types, Utility::move(attributeData), nullptr, importerState} {}
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
@@ -2204,7 +2204,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * original instance then behaves the same as a moved-from instance.
          */
         template<class T> T as() && {
-            return T{std::move(const_cast<T&>(as<T>()))};
+            return T{Utility::move(const_cast<T&>(as<T>()))};
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED

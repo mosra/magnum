@@ -132,7 +132,7 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
        we can reuse the original array in its entirety */
     Containers::Array<Trade::MeshAttributeData> attributeData;
     if(!originalAttributeData.deleter() && (mesh.vertexDataFlags() & Trade::DataFlag::Owned)) {
-        attributeData = std::move(originalAttributeData);
+        attributeData = Utility::move(originalAttributeData);
 
     /* Otherwise we have to allocate a new one and re-route the attributes to
        a potentially different vertex array */
@@ -156,8 +156,8 @@ Trade::MeshData copy(Trade::MeshData&& mesh) {
     }
 
     return Trade::MeshData{mesh.primitive(),
-        std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData),
+        Utility::move(indexData), indices,
+        Utility::move(vertexData), Utility::move(attributeData),
         vertexCount};
 }
 
@@ -167,7 +167,7 @@ Trade::MeshData owned(const Trade::MeshData& mesh) {
 }
 
 Trade::MeshData owned(Trade::MeshData&& mesh) {
-    return copy(std::move(mesh));
+    return copy(Utility::move(mesh));
 }
 #endif
 

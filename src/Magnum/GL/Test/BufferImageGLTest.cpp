@@ -206,7 +206,7 @@ void BufferImageGLTest::constructBuffer() {
     const UnsignedInt id = buffer.id();
 
     BufferImage2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, std::move(buffer), sizeof(data)};
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Utility::move(buffer), sizeof(data)};
 
     #ifndef MAGNUM_TARGET_GLES
     const auto imageData = a.buffer().data();
@@ -236,7 +236,7 @@ void BufferImageGLTest::constructBufferGeneric() {
     const UnsignedInt id = buffer.id();
 
     BufferImage2D a{PixelStorage{}.setAlignment(1),
-        Magnum::PixelFormat::R8Unorm, {1, 3}, std::move(buffer), sizeof(data)};
+        Magnum::PixelFormat::R8Unorm, {1, 3}, Utility::move(buffer), sizeof(data)};
 
     #ifndef MAGNUM_TARGET_GLES
     const auto imageData = a.buffer().data();
@@ -270,7 +270,7 @@ void BufferImageGLTest::constructBufferCompressed() {
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         #endif
         CompressedPixelFormat::RGBAS3tcDxt1,
-        {4, 4}, std::move(buffer), sizeof(data)};
+        {4, 4}, Utility::move(buffer), sizeof(data)};
 
     #ifndef MAGNUM_TARGET_GLES
     const auto imageData = a.buffer().data();
@@ -305,7 +305,7 @@ void BufferImageGLTest::constructBufferCompressedGeneric() {
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         #endif
         Magnum::CompressedPixelFormat::Bc1RGBAUnorm,
-        {4, 4}, std::move(buffer), sizeof(data)};
+        {4, 4}, Utility::move(buffer), sizeof(data)};
 
     #ifndef MAGNUM_TARGET_GLES
     const auto imageData = a.buffer().data();
@@ -367,7 +367,7 @@ void BufferImageGLTest::constructMove() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    BufferImage2D b(std::move(a));
+    BufferImage2D b(Utility::move(a));
 
     CORRADE_COMPARE(a.buffer().id(), 0);
     CORRADE_COMPARE(a.size(), Vector2i());
@@ -383,7 +383,7 @@ void BufferImageGLTest::constructMove() {
     BufferImage2D c{PixelStorage{}.setAlignment(1),
         PixelFormat::RGBA, PixelType::UnsignedShort, {1, 2}, data2, BufferUsage::StaticDraw};
     const Int cId = c.buffer().id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -410,7 +410,7 @@ void BufferImageGLTest::constructMoveCompressed() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    CompressedBufferImage2D b{std::move(a)};
+    CompressedBufferImage2D b{Utility::move(a)};
 
     CORRADE_COMPARE(a.buffer().id(), 0);
     CORRADE_COMPARE(a.size(), Vector2i());
@@ -431,7 +431,7 @@ void BufferImageGLTest::constructMoveCompressed() {
         #endif
         CompressedPixelFormat::RGBAS3tcDxt1, {8, 4}, data2, BufferUsage::StaticDraw};
     const Int cId = c.buffer().id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

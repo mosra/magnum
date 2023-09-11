@@ -37,11 +37,11 @@ template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const Pixe
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, data, usage} {}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{std::move(buffer)}, _dataSize{dataSize} {
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Utility::move(buffer)}, _dataSize{dataSize} {
     CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= dataSize, "GL::BufferImage::BufferImage(): data too small, got" << dataSize << "but expected at least" << Magnum::Implementation::imageDataSize(*this) << "bytes", );
 }
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, std::move(buffer), dataSize} {}
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, Utility::move(buffer), dataSize} {}
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{0} {}
 
@@ -49,12 +49,12 @@ template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const Pixe
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(NoCreateT) noexcept: _format{PixelFormat::RGBA}, _type{PixelType::UnsignedByte}, _buffer{NoCreate}, _dataSize{} {}
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{Utility::move(other._storage)}, _format{Utility::move(other._format)}, _type{Utility::move(other._type)}, _size{Utility::move(other._size)}, _buffer{Utility::move(other._buffer)}, _dataSize{Utility::move(other._dataSize)} {
     other._size = {};
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_storage, other._storage);
     swap(_format, other._format);
     swap(_type, other._type);
@@ -96,21 +96,21 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBu
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage): CompressedBufferImage{storage, compressedPixelFormat(format), size, data, usage} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _size{size}, _buffer{std::move(buffer)}, _dataSize{dataSize} {}
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _size{size}, _buffer{Utility::move(buffer)}, _dataSize{dataSize} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: CompressedBufferImage{storage, compressedPixelFormat(format), size, std::move(buffer), dataSize} {}
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: CompressedBufferImage{storage, compressedPixelFormat(format), size, Utility::move(buffer), dataSize} {}
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage): _storage{storage}, _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {}
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(NoCreateT) noexcept: _format{}, _buffer{NoCreate}, _dataSize{} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _storage{Utility::move(other._storage)}, _format{Utility::move(other._format)}, _size{Utility::move(other._size)}, _buffer{Utility::move(other._buffer)}, _dataSize{Utility::move(other._dataSize)} {
     other._size = {};
     other._dataSize = {};
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>& CompressedBufferImage<dimensions>::operator=(CompressedBufferImage<dimensions>&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_storage, other._storage);
     swap(_format, other._format);
     swap(_size, other._size);
@@ -139,13 +139,13 @@ template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData
 template<UnsignedInt dimensions> Buffer BufferImage<dimensions>::release() {
     _size = {};
     _dataSize = {};
-    return std::move(_buffer);
+    return Utility::move(_buffer);
 }
 
 template<UnsignedInt dimensions> Buffer CompressedBufferImage<dimensions>::release() {
     _size = {};
     _dataSize = {};
-    return std::move(_buffer);
+    return Utility::move(_buffer);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

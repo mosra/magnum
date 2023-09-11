@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <utility>
+#include <utility> /* std::pair */
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"

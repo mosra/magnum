@@ -267,7 +267,7 @@ Trade::MeshData generateLines(const Trade::MeshData& lineMesh) {
 
     Trade::MeshIndexData indices{indexData};
     return Trade::MeshData{mesh.primitive(),
-        indexData ? Containers::arrayAllocatorCast<char>(std::move(indexData)) : Containers::Array<char>{}, indices,
+        indexData ? Containers::arrayAllocatorCast<char>(Utility::move(indexData)) : Containers::Array<char>{}, indices,
         mesh.releaseVertexData(), mesh.releaseAttributeData()};
 }
 

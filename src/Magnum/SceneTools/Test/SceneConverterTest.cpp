@@ -1358,7 +1358,7 @@ Containers::Pair<bool, Containers::String> call(const Containers::StringIterable
     const Containers::Optional<Containers::String> output = Utility::Path::readString(outputFilename);
     CORRADE_VERIFY(output);
 
-    return {success, std::move(*output)};
+    return {success, Utility::move(*output)};
 }
 #endif
 

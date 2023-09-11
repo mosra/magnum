@@ -60,13 +60,13 @@ void DescriptorSetVkTest::constructMove() {
     DescriptorSet a = pool.allocate(layout);
     VkDescriptorSet handle = a.handle();
 
-    DescriptorSet b = std::move(a);
+    DescriptorSet b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     DescriptorSet c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

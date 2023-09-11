@@ -754,7 +754,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Configuration
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag)
+    return CompileState{Utility::move(out), Utility::move(vert), Utility::move(frag)
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         , geom ? &*geom : nullptr
         #endif
@@ -780,7 +780,7 @@ MeshVisualizerGL2D::CompileState MeshVisualizerGL2D::compile(const Flags flags, 
 #endif
 #endif
 
-MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D{static_cast<MeshVisualizerGL2D&&>(std::move(state))} {
+MeshVisualizerGL2D::MeshVisualizerGL2D(CompileState&& state): MeshVisualizerGL2D{static_cast<MeshVisualizerGL2D&&>(Utility::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */
@@ -1315,7 +1315,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Configuration
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag)
+    return CompileState{Utility::move(out), Utility::move(vert), Utility::move(frag)
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         , geom ? &*geom : nullptr
         #endif
@@ -1341,7 +1341,7 @@ MeshVisualizerGL3D::CompileState MeshVisualizerGL3D::compile(const Flags flags, 
 #endif
 #endif
 
-MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(std::move(state))} {
+MeshVisualizerGL3D::MeshVisualizerGL3D(CompileState&& state): MeshVisualizerGL3D{static_cast<MeshVisualizerGL3D&&>(Utility::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */

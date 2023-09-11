@@ -104,14 +104,14 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char* const* const 
     if(!disabledLayers.isEmpty()) {
         if(!_state) _state.emplace();
 
-        _state->disabledLayersStorage = std::move(disabledLayers);
+        _state->disabledLayersStorage = Utility::move(disabledLayers);
         _state->disabledLayers = Containers::StringView{_state->disabledLayersStorage}.splitOnWhitespaceWithoutEmptyParts();
         std::sort(_state->disabledLayers.begin(), _state->disabledLayers.end());
     }
     if(!disabledExtensions.isEmpty()) {
         if(!_state) _state.emplace();
 
-        _state->disabledExtensionsStorage = std::move(disabledExtensions);
+        _state->disabledExtensionsStorage = Utility::move(disabledExtensions);
         _state->disabledExtensions = Containers::StringView{_state->disabledExtensionsStorage}.splitOnWhitespaceWithoutEmptyParts();
         std::sort(_state->disabledExtensions.begin(), _state->disabledExtensions.end());
     }

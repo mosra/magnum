@@ -155,8 +155,8 @@ void MagnumFontTest::fileCallbackImage() {
     Utility::Path::read(Utility::Path::join(MAGNUMFONT_TEST_DIR, "font.tga"));
     CORRADE_VERIFY(conf);
     CORRADE_VERIFY(tga);
-    files["not/a/path/font.conf"] = *std::move(conf);
-    files["not/a/path/font.tga"] = *std::move(tga);
+    files["not/a/path/font.conf"] = *Utility::move(conf);
+    files["not/a/path/font.tga"] = *Utility::move(tga);
     font->setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy,
         std::unordered_map<std::string, Containers::Array<char>>& files) {
             Debug{} << "Loading" << filename << "with" << policy;

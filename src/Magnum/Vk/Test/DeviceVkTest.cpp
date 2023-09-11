@@ -522,7 +522,7 @@ void DeviceVkTest::createInfoConstructMove() {
      .addEnabledExtensions<Extensions::KHR::get_memory_requirements2,
                            Extensions::KHR::bind_memory2>();
 
-    DeviceCreateInfo b{std::move(a)};
+    DeviceCreateInfo b{Utility::move(a)};
     CORRADE_COMPARE(a->enabledExtensionCount, 0);
     CORRADE_VERIFY(!a->ppEnabledExtensionNames);
     CORRADE_COMPARE(a->queueCreateInfoCount, 0);
@@ -535,7 +535,7 @@ void DeviceVkTest::createInfoConstructMove() {
     CORRADE_COMPARE(b->pQueueCreateInfos[0].pQueuePriorities[0], 0.35f);
 
     DeviceCreateInfo c{{}, {}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->enabledExtensionCount, 0);
     CORRADE_VERIFY(!b->ppEnabledExtensionNames);
     CORRADE_COMPARE(b->queueCreateInfoCount, 0);
@@ -730,7 +730,7 @@ void DeviceVkTest::constructTransferDeviceProperties() {
     DeviceProperties deviceProperties = pickDevice(instance());
     const void* vkProperties = &deviceProperties.properties();
     Queue queue{NoCreate};
-    Device device{instance(), DeviceCreateInfo{std::move(deviceProperties)}
+    Device device{instance(), DeviceCreateInfo{Utility::move(deviceProperties)}
         .addQueues(0, {0.0f}, {queue})
     };
 

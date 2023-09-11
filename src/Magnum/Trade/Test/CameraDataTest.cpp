@@ -137,7 +137,7 @@ void CameraDataTest::constructMove() {
     const int a{};
     CameraData data{CameraType::Perspective3D, 25.0_degf, 2.35f, 1.0f, 1000.0f, &a};
 
-    CameraData b{std::move(data)};
+    CameraData b{Utility::move(data)};
     CORRADE_COMPARE(b.type(), CameraType::Perspective3D);
     CORRADE_COMPARE(b.size(), (Vector2{0.443389f, 0.188676f}));
     CORRADE_COMPARE(b.fov(), 25.0_degf);
@@ -148,7 +148,7 @@ void CameraDataTest::constructMove() {
 
     const int c{};
     CameraData d{CameraType::Orthographic3D, {2.0f, 1.0f}, 0.5f, 10.0f, &c};
-    d = std::move(b);
+    d = Utility::move(b);
     CORRADE_COMPARE(b.type(), CameraType::Perspective3D);
     CORRADE_COMPARE(b.size(), (Vector2{0.443389f, 0.188676f}));
     CORRADE_COMPARE(b.fov(), 25.0_degf);

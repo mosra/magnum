@@ -434,7 +434,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructAsync(
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    DistanceFieldVectorGL<dimensions> shader{std::move(state)};
+    DistanceFieldVectorGL<dimensions> shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), DistanceFieldVectorGL2D::Flag::TextureTransformation);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
@@ -522,7 +522,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructUnifor
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    DistanceFieldVectorGL<dimensions> shader{std::move(state)};
+    DistanceFieldVectorGL<dimensions> shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), DistanceFieldVectorGL2D::Flag::UniformBuffers);
     CORRADE_COMPARE(shader.materialCount(), 16);
     CORRADE_COMPARE(shader.drawCount(), 48);
@@ -549,13 +549,13 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove()
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    DistanceFieldVectorGL<dimensions> b{std::move(a)};
+    DistanceFieldVectorGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!a.id());
 
     DistanceFieldVectorGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), DistanceFieldVectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!b.id());
@@ -579,7 +579,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMoveUn
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    DistanceFieldVectorGL<dimensions> b{std::move(a)};
+    DistanceFieldVectorGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(b.materialCount(), 2);
@@ -587,7 +587,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMoveUn
     CORRADE_VERIFY(!a.id());
 
     DistanceFieldVectorGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), DistanceFieldVectorGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(c.materialCount(), 2);

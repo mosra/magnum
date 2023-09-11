@@ -123,11 +123,11 @@ void MeshTest::constructMoveNoCreate() {
         Mesh a{NoCreate};
         CORRADE_COMPARE(a.id(), 0);
 
-        Mesh b{std::move(a)};
+        Mesh b{Utility::move(a)};
         CORRADE_COMPARE(b.id(), 0);
 
         Mesh c{NoCreate};
-        c = std::move(b);
+        c = Utility::move(b);
         CORRADE_COMPARE(c.id(), 0);
     }
 

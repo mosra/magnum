@@ -186,7 +186,7 @@ void AnyImageImporter::doOpenFile(const Containers::StringView filename) {
     if(!importer->openFile(filename)) return;
 
     /* Success, save the instance */
-    _in = std::move(importer);
+    _in = Utility::move(importer);
 }
 
 void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
@@ -313,7 +313,7 @@ void AnyImageImporter::doOpenData(Containers::Array<char>&& data, DataFlags) {
     if(!importer->openData(data)) return;
 
     /* Success, save the instance */
-    _in = std::move(importer);
+    _in = Utility::move(importer);
 }
 
 UnsignedInt AnyImageImporter::doImage1DCount() const { return _in->image1DCount(); }

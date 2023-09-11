@@ -256,7 +256,7 @@ void ShaderTest::createInfoConstructMove() {
 
         /* Besides the deleter, the original code pointer and size should also
            be cleared because it will inevitably become dangling */
-        ShaderCreateInfo b = std::move(a);
+        ShaderCreateInfo b = Utility::move(a);
         CORRADE_VERIFY(!a->pCode);
         CORRADE_COMPARE(a->codeSize, 0);
         CORRADE_COMPARE(b->pCode, data);
@@ -266,7 +266,7 @@ void ShaderTest::createInfoConstructMove() {
         ShaderCreateInfo c{NoInit};
         c->pCode = &data[1];
         c->codeSize = 2;
-        c = std::move(b);
+        c = Utility::move(b);
         /* It just swaps, so the moved-from instance doesn't have the code
            pointer cleared */
         CORRADE_COMPARE(b->pCode, &data[1]);

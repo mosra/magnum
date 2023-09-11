@@ -75,42 +75,42 @@ CubeMapTextureArray CubeMapTextureArray::view(CubeMapTexture& original, const Te
 #ifndef MAGNUM_TARGET_GLES
 Image3D CubeMapTextureArray::image(const Int level, Image3D&& image) {
     this->image(level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 BufferImage3D CubeMapTextureArray::image(const Int level, BufferImage3D&& image, const BufferUsage usage) {
     this->image(level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedImage3D CubeMapTextureArray::compressedImage(const Int level, CompressedImage3D&& image) {
     compressedImage(level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedBufferImage3D CubeMapTextureArray::compressedImage(const Int level, CompressedBufferImage3D&& image, const BufferUsage usage) {
     compressedImage(level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 Image3D CubeMapTextureArray::subImage(const Int level, const Range3Di& range, Image3D&& image) {
     this->subImage(level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 BufferImage3D CubeMapTextureArray::subImage(const Int level, const Range3Di& range, BufferImage3D&& image, const BufferUsage usage) {
     this->subImage(level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedImage3D CubeMapTextureArray::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D&& image) {
     compressedSubImage(level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedBufferImage3D CubeMapTextureArray::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D&& image, const BufferUsage usage) {
     compressedSubImage(level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 #endif
 

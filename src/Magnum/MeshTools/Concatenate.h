@@ -125,7 +125,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
         Containers::arrayResize<Allocator>(indexData, NoInit, indexVertexCount.first()*sizeof(UnsignedInt));
     }
 
-    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(std::move(destination), {}, flags);
+    Containers::Array<Trade::MeshAttributeData> attributeData = Implementation::interleavedLayout(Utility::move(destination), {}, flags);
     Containers::Array<char> vertexData;
     if(!attributeData.isEmpty() && indexVertexCount.second()) {
         const UnsignedInt attributeStride = attributeData[0].stride();
@@ -139,7 +139,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
         Containers::arrayResize<Allocator>(vertexData, ValueInit, attributeStride*std::size_t(indexVertexCount.second()));
     }
 
-    destination = Implementation::concatenate(std::move(indexData), indexVertexCount.second(), std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenateInto():");
+    destination = Implementation::concatenate(Utility::move(indexData), indexVertexCount.second(), Utility::move(vertexData), Utility::move(attributeData), meshes, "MeshTools::concatenateInto():");
 }
 
 }}

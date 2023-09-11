@@ -1969,7 +1969,7 @@ void MeshVisualizerGLTest::constructAsync2D() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL2D shader{std::move(state)};
+    MeshVisualizerGL2D shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
@@ -1994,7 +1994,7 @@ void MeshVisualizerGLTest::constructAsync3D() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL3D shader{std::move(state)};
+    MeshVisualizerGL3D shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
@@ -2228,7 +2228,7 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync2D() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL2D shader{std::move(state)};
+    MeshVisualizerGL2D shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(),  MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(shader.materialCount(), 8);
     CORRADE_COMPARE(shader.drawCount(), 48);
@@ -2267,7 +2267,7 @@ void MeshVisualizerGLTest::constructUniformBuffersAsync3D() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    MeshVisualizerGL3D shader{std::move(state)};
+    MeshVisualizerGL3D shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(state.materialCount(), 6);
     CORRADE_COMPARE(state.drawCount(), 24);
@@ -2297,13 +2297,13 @@ void MeshVisualizerGLTest::constructMove2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    MeshVisualizerGL2D b{std::move(a)};
+    MeshVisualizerGL2D b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!a.id());
 
     MeshVisualizerGL2D c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
@@ -2320,13 +2320,13 @@ void MeshVisualizerGLTest::constructMove3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    MeshVisualizerGL3D b{std::move(a)};
+    MeshVisualizerGL3D b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!a.id());
 
     MeshVisualizerGL3D c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
@@ -2351,7 +2351,7 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    MeshVisualizerGL2D b{std::move(a)};
+    MeshVisualizerGL2D b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(b.materialCount(), 2);
@@ -2362,7 +2362,7 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers2D() {
     CORRADE_VERIFY(!a.id());
 
     MeshVisualizerGL2D c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), MeshVisualizerGL2D::Flag::UniformBuffers|MeshVisualizerGL2D::Flag::Wireframe|MeshVisualizerGL2D::Flag::NoGeometryShader);
     CORRADE_COMPARE(c.materialCount(), 2);
@@ -2391,7 +2391,7 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    MeshVisualizerGL3D b{std::move(a)};
+    MeshVisualizerGL3D b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(b.materialCount(), 2);
@@ -2402,7 +2402,7 @@ void MeshVisualizerGLTest::constructMoveUniformBuffers3D() {
     CORRADE_VERIFY(!a.id());
 
     MeshVisualizerGL3D c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), MeshVisualizerGL3D::Flag::UniformBuffers|MeshVisualizerGL3D::Flag::Wireframe|MeshVisualizerGL3D::Flag::NoGeometryShader);
     CORRADE_COMPARE(c.materialCount(), 2);
@@ -4305,7 +4305,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderWirefra
 
             GL::Buffer vertexId;
             vertexId.setData(vertexIndex);
-            circle.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
+            circle.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
         }
     } else circle = MeshTools::compile(circleData);
 
@@ -4457,7 +4457,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderWirefra
 
             GL::Buffer vertexId;
             vertexId.setData(vertexIndex);
-            sphere.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
+            sphere.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
         }
     } else sphere = MeshTools::compile(sphereData);
 
@@ -5697,7 +5697,7 @@ template<MeshVisualizerGL2D::Flag flag> void MeshVisualizerGLTest::renderInstanc
 
             GL::Buffer vertexId;
             vertexId.setData(vertexIndex);
-            circle.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
+            circle.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL2D::VertexIndex{});
         }
     } else circle = MeshTools::compile(circleData);
 
@@ -5991,7 +5991,7 @@ template<MeshVisualizerGL3D::Flag flag> void MeshVisualizerGLTest::renderInstanc
 
             GL::Buffer vertexId;
             vertexId.setData(vertexIndex);
-            sphere.addVertexBuffer(std::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
+            sphere.addVertexBuffer(Utility::move(vertexId), 0, MeshVisualizerGL3D::VertexIndex{});
         }
     } else sphere = MeshTools::compile(sphereData);
 

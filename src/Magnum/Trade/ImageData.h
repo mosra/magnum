@@ -172,7 +172,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -223,7 +223,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{format, size, std::move(data), {}, importerState} {}
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{format, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -296,14 +296,14 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, std::move(data), {}, importerState} {}
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, Utility::move(data), {}, importerState} {}
 
         /**
          * @overload
          * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, PixelFormat, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, std::move(data), {}, importerState} {}
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, pixelSize, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -374,7 +374,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        template<class T, class U> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, size, std::move(data), {}, importerState} {}
+        template<class T, class U> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, formatExtra, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -428,7 +428,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -477,7 +477,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -528,7 +528,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{format, size, std::move(data), {}, importerState} {}
+        explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{format, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -582,7 +582,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_deprecated_since_latest Use @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>, const void*)
          *      instead.
          */
-        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, std::move(data), {}, importerState} {}
+        template<class T> explicit CORRADE_DEPRECATED("use a constructor with an extra ImageFlags argument instead") ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: ImageData{storage, format, size, Utility::move(data), {}, importerState} {}
         #endif
 
         /**
@@ -941,7 +941,7 @@ typedef ImageData<2> ImageData2D;
 /** @brief Three-dimensional image data */
 typedef ImageData<3> ImageData3D;
 
-template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelFormatSizeAdl(format, formatExtra), size, std::move(data), flags, importerState} {
+template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelFormatSizeAdl(format, formatExtra), size, Utility::move(data), flags, importerState} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
@@ -951,7 +951,7 @@ template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelFormatSizeAdl(format), size, std::move(data), flags, importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelFormatSizeAdl(format), size, Utility::move(data), flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
@@ -961,7 +961,7 @@ template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageD
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, std::move(data), flags, importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, Utility::move(data), flags, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }

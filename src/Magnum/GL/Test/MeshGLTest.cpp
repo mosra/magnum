@@ -813,7 +813,7 @@ void MeshGLTest::constructMove() {
     }
 
     /* Move construct */
-    Mesh b(std::move(a));
+    Mesh b(Utility::move(a));
 
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
@@ -822,7 +822,7 @@ void MeshGLTest::constructMove() {
     Mesh c;
     c.addVertexBuffer(buffer2, 4, Attribute<1, Float>{});
     const Int cId = c.id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -840,7 +840,7 @@ void MeshGLTest::constructMove() {
 
     /* Move assign to a NoCreate instance */
     Mesh d{NoCreate};
-    d = std::move(c);
+    d = Utility::move(c);
 
     CORRADE_COMPARE(c.id(), 0);
     CORRADE_COMPARE(d.id(), id);
@@ -2318,7 +2318,7 @@ void MeshGLTest::addVertexBufferTransferOwnwership() {
 
     {
         Mesh mesh;
-        mesh.addVertexBuffer(std::move(buffer), 0, Attribute<0, Float>{});
+        mesh.addVertexBuffer(Utility::move(buffer), 0, Attribute<0, Float>{});
         CORRADE_VERIFY(!buffer.id());
         CORRADE_VERIFY(glIsBuffer(id));
     }
@@ -2360,7 +2360,7 @@ void MeshGLTest::addVertexBufferInstancedTransferOwnwership() {
 
     {
         Mesh mesh;
-        mesh.addVertexBufferInstanced(std::move(buffer), 1, 0, Attribute<0, Float>{});
+        mesh.addVertexBufferInstanced(Utility::move(buffer), 1, 0, Attribute<0, Float>{});
         CORRADE_VERIFY(!buffer.id());
         CORRADE_VERIFY(glIsBuffer(id));
     }
@@ -2390,7 +2390,7 @@ void MeshGLTest::addVertexBufferDynamicTransferOwnwership() {
 
     {
         Mesh mesh;
-        mesh.addVertexBuffer(std::move(buffer), 0, 4, DynamicAttribute{
+        mesh.addVertexBuffer(Utility::move(buffer), 0, 4, DynamicAttribute{
             DynamicAttribute::Kind::GenericNormalized, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Float});
@@ -2438,7 +2438,7 @@ void MeshGLTest::addVertexBufferInstancedDynamicTransferOwnwership() {
 
     {
         Mesh mesh;
-        mesh.addVertexBufferInstanced(std::move(buffer), 1, 0, 4, DynamicAttribute{
+        mesh.addVertexBufferInstanced(Utility::move(buffer), 1, 0, 4, DynamicAttribute{
             DynamicAttribute::Kind::GenericNormalized, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Float});
@@ -2645,7 +2645,7 @@ template<class T> void MeshGLTest::setIndexBufferTransferOwnership() {
     {
 
         Mesh mesh;
-        mesh.setIndexBuffer(std::move(buffer), 0, T::UnsignedShort);
+        mesh.setIndexBuffer(Utility::move(buffer), 0, T::UnsignedShort);
         CORRADE_VERIFY(!buffer.id());
         CORRADE_VERIFY(glIsBuffer(id));
     }
@@ -2675,7 +2675,7 @@ template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
 
     {
         Mesh mesh;
-        mesh.setIndexBuffer(std::move(buffer), 0, T::UnsignedShort, 0, 1);
+        mesh.setIndexBuffer(Utility::move(buffer), 0, T::UnsignedShort, 0, 1);
         CORRADE_VERIFY(!buffer.id());
         CORRADE_VERIFY(glIsBuffer(id));
     }

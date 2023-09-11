@@ -66,14 +66,14 @@ void MemoryVkTest::constructMove() {
     Memory a{device(), MemoryAllocateInfo{1024*1024, device().properties().pickMemory(MemoryFlag::DeviceLocal)}};
     VkDeviceMemory handle = a.handle();
 
-    Memory b = std::move(a);
+    Memory b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(b.size(), 1024*1024);
 
     Memory c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

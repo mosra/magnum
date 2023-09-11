@@ -140,7 +140,7 @@ void FramebufferTest::createInfoConstructMove() {
 
     FramebufferCreateInfo a{renderPass, {view}, {256, 512}};
 
-    FramebufferCreateInfo b = std::move(a);
+    FramebufferCreateInfo b = Utility::move(a);
     CORRADE_COMPARE(a->attachmentCount, 0);
     CORRADE_VERIFY(!a->pAttachments);
     CORRADE_COMPARE(b->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef)));
@@ -149,7 +149,7 @@ void FramebufferTest::createInfoConstructMove() {
     CORRADE_COMPARE(b->pAttachments[0], reinterpret_cast<VkImageView>(reinterpret_cast<void*>(0xcafe)));
 
     FramebufferCreateInfo c{VkFramebufferCreateInfo{}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->attachmentCount, 0);
     CORRADE_VERIFY(!b->pAttachments);
     CORRADE_COMPARE(c->renderPass, reinterpret_cast<VkRenderPass>(reinterpret_cast<void*>(0xdeadbeef)));

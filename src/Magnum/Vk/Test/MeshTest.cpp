@@ -157,12 +157,12 @@ void MeshTest::constructMove() {
     Mesh a{MeshLayout{MeshPrimitive::Triangles}};
     a.setCount(15);
 
-    Mesh b = std::move(a);
+    Mesh b = Utility::move(a);
     CORRADE_COMPARE(b.layout().vkPipelineInputAssemblyStateCreateInfo().topology, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
     CORRADE_COMPARE(b.count(), 15);
 
     Mesh c{MeshLayout{MeshPrimitive::Points}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.layout().vkPipelineInputAssemblyStateCreateInfo().topology, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
     CORRADE_COMPARE(c.count(), 15);
 }
@@ -219,8 +219,8 @@ void MeshTest::addVertexBufferOwned() {
     Device device{NoCreate};
     Buffer a = Buffer::wrap(device, reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead)));
     Buffer b = Buffer::wrap(device, reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xbeef)));
-    mesh.addVertexBuffer(5, std::move(a), 15)
-        .addVertexBuffer(1, std::move(b), 37);
+    mesh.addVertexBuffer(5, Utility::move(a), 15)
+        .addVertexBuffer(1, Utility::move(b), 37);
     CORRADE_VERIFY(!a.handle());
     CORRADE_VERIFY(!b.handle());
 
@@ -277,7 +277,7 @@ template<class T> void MeshTest::setIndexBufferOwned() {
     Buffer a = Buffer::wrap(device, reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead)));
 
     Mesh mesh{MeshLayout{MeshPrimitive::Triangles}};
-    mesh.setIndexBuffer(std::move(a), 15, T::UnsignedByte);
+    mesh.setIndexBuffer(Utility::move(a), 15, T::UnsignedByte);
     CORRADE_VERIFY(!a.handle());
     CORRADE_VERIFY(mesh.isIndexed());
     CORRADE_COMPARE(mesh.indexBuffer(), reinterpret_cast<VkBuffer>(reinterpret_cast<void*>(0xdead)));

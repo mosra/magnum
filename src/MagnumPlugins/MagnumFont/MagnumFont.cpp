@@ -115,7 +115,7 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
     if(!_opened->image) return {};
 
     /* Everything okay, save the data internally */
-    _opened->conf = std::move(conf);
+    _opened->conf = Utility::move(conf);
 
     /* Glyph advances */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
@@ -180,12 +180,12 @@ Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCa
         glyphs.push_back(it == _opened->glyphId.end() ? 0 : it->second);
     }
 
-    return Containers::Pointer<MagnumFontLayouter>(new MagnumFontLayouter(_opened->glyphAdvance, cache, this->size(), size, std::move(glyphs)));
+    return Containers::Pointer<MagnumFontLayouter>(new MagnumFontLayouter(_opened->glyphAdvance, cache, this->size(), size, Utility::move(glyphs)));
 }
 
 namespace {
 
-MagnumFontLayouter::MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, std::vector<UnsignedInt>&& glyphs): AbstractLayouter(glyphs.size()), glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize), glyphs(std::move(glyphs)) {}
+MagnumFontLayouter::MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, std::vector<UnsignedInt>&& glyphs): AbstractLayouter(glyphs.size()), glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize), glyphs(Utility::move(glyphs)) {}
 
 std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */

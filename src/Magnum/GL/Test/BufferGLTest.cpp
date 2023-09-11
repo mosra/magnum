@@ -161,14 +161,14 @@ void BufferGLTest::constructMove() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    Buffer b(std::move(a));
+    Buffer b(Utility::move(a));
 
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
 
     Buffer c;
     const Int cId = c.id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);

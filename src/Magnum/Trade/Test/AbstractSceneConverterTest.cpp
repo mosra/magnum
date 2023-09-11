@@ -1307,8 +1307,8 @@ void AbstractSceneConverterTest::convertMeshGrowableDeleters() {
             MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
 
             return MeshData{MeshPrimitive::Triangles,
-                std::move(indexData), indices,
-                Containers::arrayAllocatorCast<char, ArrayAllocator>(std::move(vertexData)), {positions}};
+                Utility::move(indexData), indices,
+                Containers::arrayAllocatorCast<char, ArrayAllocator>(Utility::move(vertexData)), {positions}};
         }
 
         char indexData[1];
@@ -1390,7 +1390,7 @@ void AbstractSceneConverterTest::convertMeshInPlace() {
         bool doConvertInPlace(MeshData& mesh) override {
             auto indices = mesh.mutableIndices<UnsignedInt>();
             for(std::size_t i = 0; i != indices.size()/2; ++i)
-                std::swap(indices[i], indices[indices.size() - i -1]);
+                Utility::swap(indices[i], indices[indices.size() - i -1]);
             return true;
         }
     } converter;
@@ -1601,7 +1601,7 @@ void AbstractSceneConverterTest::convertMeshToDataGrowableDeleter() {
             Containers::arrayAppend<ArrayAllocator>(out, {'h', 'e', 'l', 'l', 'o'});
 
             /* GCC 4.8 needs extra help here */
-            return Containers::optional(std::move(out));
+            return Containers::optional(Utility::move(out));
         }
     } converter;
 

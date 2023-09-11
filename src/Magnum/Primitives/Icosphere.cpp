@@ -138,8 +138,8 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
     for(std::size_t i = 0; i != positions.size(); ++i)
         normals[i] = positions[i];
 
-    return Trade::MeshData{MeshPrimitive::Triangles, std::move(indexData),
-        Trade::MeshIndexData{indices}, std::move(vertexData),
+    return Trade::MeshData{MeshPrimitive::Triangles, Utility::move(indexData),
+        Trade::MeshIndexData{indices}, Utility::move(vertexData),
         {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
          Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals}}};
 }

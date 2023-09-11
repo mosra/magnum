@@ -376,7 +376,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructAsync() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VertexColorGL<dimensions> shader{std::move(state)};
+    VertexColorGL<dimensions> shader{Utility::move(state)};
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_VERIFY(shader.id());
     {
@@ -460,7 +460,7 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructUniformBuffers
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VertexColorGL<dimensions> shader{std::move(state)};
+    VertexColorGL<dimensions> shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), VertexColorGL2D::Flag::UniformBuffers);
     CORRADE_COMPARE(shader.drawCount(), 63);
     CORRADE_VERIFY(shader.isLinkFinished());
@@ -485,12 +485,12 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructMove() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    VertexColorGL<dimensions> b{std::move(a)};
+    VertexColorGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_VERIFY(!a.id());
 
     VertexColorGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_VERIFY(!b.id());
 }
@@ -512,14 +512,14 @@ template<UnsignedInt dimensions> void VertexColorGLTest::constructMoveUniformBuf
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    VertexColorGL<dimensions> b{std::move(a)};
+    VertexColorGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), VertexColorGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(b.drawCount(), 5);
     CORRADE_VERIFY(!a.id());
 
     VertexColorGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), VertexColorGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(c.drawCount(), 5);

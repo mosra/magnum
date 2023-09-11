@@ -71,13 +71,13 @@ void CommandPoolVkTest::constructMove() {
         CommandPoolCreateInfo::Flag::Transient}};
     VkCommandPool handle = a.handle();
 
-    CommandPool b = std::move(a);
+    CommandPool b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     CommandPool c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

@@ -82,7 +82,7 @@ void AbstractQueryGLTest::constructMove() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    SampleQuery b(std::move(a));
+    SampleQuery b(Utility::move(a));
 
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
@@ -93,7 +93,7 @@ void AbstractQueryGLTest::constructMove() {
     SampleQuery c{SampleQuery::Target::AnySamplesPassed};
     #endif
     const Int cId = c.id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);

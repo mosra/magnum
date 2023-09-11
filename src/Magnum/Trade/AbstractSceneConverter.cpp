@@ -309,7 +309,7 @@ AbstractSceneConverter::convertToData(const MeshData& mesh) {
 
         /* GCC 4.8 needs an explicit conversion here */
         #ifdef MAGNUM_BUILD_DEPRECATED
-        return Implementation::SceneConverterOptionalButAlsoArray<char>{std::move(out)};
+        return Implementation::SceneConverterOptionalButAlsoArray<char>{Utility::move(out)};
         #else
         return out;
         #endif
@@ -423,7 +423,7 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::end() {
         }
 
         struct SingleMeshImporter: AbstractImporter {
-            explicit SingleMeshImporter(Containers::Optional<Trade::MeshData>&& mesh) noexcept: _mesh{std::move(mesh)} {}
+            explicit SingleMeshImporter(Containers::Optional<Trade::MeshData>&& mesh) noexcept: _mesh{Utility::move(mesh)} {}
 
             ImporterFeatures doFeatures() const override { return {}; }
             bool doIsOpened() const override { return _opened; }
@@ -445,7 +445,7 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::end() {
                     return {};
                 }
 
-                Containers::Optional<Trade::MeshData> out = std::move(_mesh);
+                Containers::Optional<Trade::MeshData> out = Utility::move(_mesh);
                 _mesh = {};
                 return out;
             }
@@ -455,7 +455,7 @@ Containers::Pointer<AbstractImporter> AbstractSceneConverter::end() {
                 Containers::Optional<Trade::MeshData> _mesh;
         };
 
-        return Containers::Pointer<AbstractImporter>(new SingleMeshImporter{std::move(_state->converted.mesh)});
+        return Containers::Pointer<AbstractImporter>(new SingleMeshImporter{Utility::move(_state->converted.mesh)});
 
     } else if(features() & SceneConverterFeature::ConvertMultiple) {
         return doEnd();
@@ -515,7 +515,7 @@ Containers::Optional<Containers::Array<char>> AbstractSceneConverter::endData() 
         /* No deleter validity checks here, those were performed in
            convertToData(const MeshData&) already */
 
-        return std::move(_state->converted.meshToData);
+        return Utility::move(_state->converted.meshToData);
 
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -1348,7 +1348,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     }
                 }
 
-                arrayAppend(levels, *std::move(mesh));
+                arrayAppend(levels, *Utility::move(mesh));
             }
 
             const Containers::String name = contents & SceneContent::Names ? importer.meshName(i) : Containers::String{};
@@ -1401,7 +1401,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     return false;
                 }
 
-                arrayAppend(levels, *std::move(image));
+                arrayAppend(levels, *Utility::move(image));
             }
 
             const Containers::String name = contents & SceneContent::Names ? importer.image1DName(i) : Containers::String{};
@@ -1454,7 +1454,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     return false;
                 }
 
-                arrayAppend(levels, *std::move(image));
+                arrayAppend(levels, *Utility::move(image));
             }
 
             const Containers::String name = contents & SceneContent::Names ? importer.image2DName(i) : Containers::String{};
@@ -1507,7 +1507,7 @@ bool AbstractSceneConverter::addImporterContentsInternal(AbstractImporter& impor
                     return false;
                 }
 
-                arrayAppend(levels, *std::move(image));
+                arrayAppend(levels, *Utility::move(image));
             }
 
             const Containers::String name = contents & SceneContent::Names ? importer.image3DName(i) : Containers::String{};

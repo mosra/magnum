@@ -48,7 +48,7 @@ Trade::SceneData filterFields(const Trade::SceneData& scene, const Containers::B
     Utility::copyMasked(scene.fieldData(), fieldsToKeep, filtered);
 
     return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
-        {}, scene.data(), std::move(filtered)};
+        {}, scene.data(), Utility::move(filtered)};
 }
 
 Trade::SceneData filterOnlyFields(const Trade::SceneData& scene, const Containers::ArrayView<const Trade::SceneField> fields) {

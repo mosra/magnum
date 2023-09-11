@@ -173,7 +173,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
     rectangle = rectangle.translated(Vector2::yAxis(alignmentOffsetY));
     for(auto& v: vertices) v.position.y() += alignmentOffsetY;
 
-    return std::make_tuple(std::move(vertices), rectangle);
+    return std::make_tuple(Utility::move(vertices), rectangle);
 }
 
 std::pair<Containers::Array<char>, MeshIndexType> renderIndicesInternal(const UnsignedInt glyphCount) {
@@ -196,7 +196,7 @@ std::pair<Containers::Array<char>, MeshIndexType> renderIndicesInternal(const Un
         createIndices<UnsignedInt>(indices, glyphCount);
     }
 
-    return {std::move(indices), indexType};
+    return {Utility::move(indices), indexType};
 }
 
 std::tuple<GL::Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
@@ -222,7 +222,7 @@ std::tuple<GL::Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCach
         .setCount(indexCount)
         .setIndexBuffer(indexBuffer, 0, indexType, 0, vertices.size());
 
-    return std::make_tuple(std::move(mesh), rectangle);
+    return std::make_tuple(Utility::move(mesh), rectangle);
 }
 
 }
@@ -247,7 +247,7 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     std::vector<UnsignedInt> indices(glyphCount*6);
     createIndices<UnsignedInt>(indices.data(), glyphCount);
 
-    return std::make_tuple(std::move(positions), std::move(textureCoordinates), std::move(indices), rectangle);
+    return std::make_tuple(Utility::move(positions), Utility::move(textureCoordinates), Utility::move(indices), rectangle);
 }
 
 template<UnsignedInt dimensions> std::tuple<GL::Mesh, Range2D> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {

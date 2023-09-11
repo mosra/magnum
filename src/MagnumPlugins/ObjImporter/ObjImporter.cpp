@@ -104,7 +104,7 @@ void ObjImporter::doOpenFile(const Containers::StringView filename) {
     }
 
     _file.reset(new File);
-    _file->in = std::move(in);
+    _file->in = Utility::move(in);
     parseMeshNames();
 }
 
@@ -156,7 +156,7 @@ void ObjImporter::parseMeshNames() {
                 /* Update its name and add it to name map */
                 if(!name.empty())
                     _file->meshesForName.emplace(name, _file->meshes.size() - 1);
-                _file->meshNames.back() = std::move(name);
+                _file->meshNames.back() = Utility::move(name);
 
                 /* Update its begin offset to be more precise */
                 std::get<0>(_file->meshes.back()) = _file->in->tellg();
@@ -170,7 +170,7 @@ void ObjImporter::parseMeshNames() {
                    updated later. */
                 if(!name.empty())
                     _file->meshesForName.emplace(name, _file->meshes.size());
-                _file->meshNames.emplace_back(std::move(name));
+                _file->meshNames.emplace_back(Utility::move(name));
                 _file->meshes.emplace_back(_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
             }
 
@@ -482,8 +482,8 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
     CORRADE_INTERNAL_ASSERT(offset == stride && attributeIndex == attributeCount);
 
     return MeshData{*primitive,
-        std::move(indexData), Trade::MeshIndexData{indexDataI},
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(indexData), Trade::MeshIndexData{indexDataI},
+        Utility::move(vertexData), Utility::move(attributeData)};
 }
 
 }}

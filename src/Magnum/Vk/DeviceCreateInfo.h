@@ -123,7 +123,7 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
         explicit DeviceCreateInfo(DeviceProperties&& deviceProperties, const ExtensionProperties* extensionProperties, Flags flags = {});
 
         /** @overload */
-        explicit DeviceCreateInfo(DeviceProperties&& deviceProperties, Flags flags = {}): DeviceCreateInfo{std::move(deviceProperties), nullptr, flags} {}
+        explicit DeviceCreateInfo(DeviceProperties&& deviceProperties, Flags flags = {}): DeviceCreateInfo{Utility::move(deviceProperties), nullptr, flags} {}
 
         /**
          * @brief Construct without initializing the contents
@@ -209,7 +209,7 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
         /** @overload */
         template<class ...E> DeviceCreateInfo&& addEnabledExtensions() && {
             addEnabledExtensions<E...>();
-            return std::move(*this);
+            return Utility::move(*this);
         }
 
         /**

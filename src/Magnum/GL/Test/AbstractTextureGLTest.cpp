@@ -105,14 +105,14 @@ void AbstractTextureGLTest::constructMove() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    Texture2D b(std::move(a));
+    Texture2D b(Utility::move(a));
 
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
 
     Texture2D c;
     const Int cId = c.id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);

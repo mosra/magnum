@@ -152,7 +152,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
        we'll use them to filter the ones added by the app */
     Containers::String disabledExtensions = args.value<Containers::String>("disable-extensions");
     if(!disabledExtensions.isEmpty()) {
-        _state->disabledExtensionsStorage = std::move(disabledExtensions);
+        _state->disabledExtensionsStorage = Utility::move(disabledExtensions);
         _state->disabledExtensions = Containers::StringView{_state->disabledExtensionsStorage}.splitOnWhitespaceWithoutEmptyParts();
         std::sort(_state->disabledExtensions.begin(), _state->disabledExtensions.end());
     }
@@ -253,7 +253,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
 }
 
 DeviceCreateInfo::DeviceCreateInfo(DeviceProperties&& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): DeviceCreateInfo{deviceProperties, extensionProperties, flags} {
-    _state->properties = std::move(deviceProperties);
+    _state->properties = Utility::move(deviceProperties);
 }
 
 DeviceCreateInfo::DeviceCreateInfo(NoInitT) noexcept {}
@@ -268,7 +268,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceCreateInfo&& other) noexcept:
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(other._info),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -283,7 +283,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceCreateInfo&& other) noexcept:
 DeviceCreateInfo::~DeviceCreateInfo() = default;
 
 DeviceCreateInfo& DeviceCreateInfo::operator=(DeviceCreateInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._physicalDevice, _physicalDevice);
     swap(other._info, _info);
     swap(other._state, other._state);
@@ -323,7 +323,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Strin
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::StringIterable& extensions) && {
-    return std::move(addEnabledExtensions(extensions));
+    return Utility::move(addEnabledExtensions(extensions));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) & {
@@ -348,7 +348,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) && {
-    return std::move(addEnabledExtensions(extensions));
+    return Utility::move(addEnabledExtensions(extensions));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Extension> extensions) & {
@@ -356,7 +356,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Extension> extensions) && {
-    return std::move(addEnabledExtensions(extensions));
+    return Utility::move(addEnabledExtensions(extensions));
 }
 
 namespace {
@@ -564,7 +564,7 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& features) && {
-    return std::move(setEnabledFeatures(features));
+    return Utility::move(setEnabledFeatures(features));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
@@ -596,7 +596,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Co
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) && {
-    return std::move(addQueues(family, priorities, output));
+    return Utility::move(addQueues(family, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) & {
@@ -604,7 +604,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const st
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) && {
-    return std::move(addQueues(family, priorities, output));
+    return Utility::move(addQueues(family, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
@@ -612,7 +612,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const Cont
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const QueueFlags flags, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) && {
-    return std::move(addQueues(flags, priorities, output));
+    return Utility::move(addQueues(flags, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) & {
@@ -620,7 +620,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const std:
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const QueueFlags flags, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) && {
-    return std::move(addQueues(flags, priorities, output));
+    return Utility::move(addQueues(flags, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) & {
@@ -639,7 +639,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& inf
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) && {
-    return std::move(addQueues(info));
+    return Utility::move(addQueues(info));
 }
 
 namespace {
@@ -674,7 +674,7 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{NoCreat
 }
 
 Device::Device(Instance& instance, DeviceCreateInfo&& info): Device{NoCreate} {
-    create(instance, std::move(info));
+    create(instance, Utility::move(info));
 }
 
 Device::Device(NoCreateT): _handle{}, _functionPointers{} {}
@@ -689,7 +689,7 @@ void Device::create(Instance& instance, const DeviceCreateInfo& info) {
 }
 
 void Device::create(Instance& instance, DeviceCreateInfo&& info) {
-    if(tryCreate(instance, std::move(info)) != Result::Success) std::exit(1);
+    if(tryCreate(instance, Utility::move(info)) != Result::Success) std::exit(1);
 }
 
 Result Device::tryCreate(Instance& instance, const DeviceCreateInfo& info) {
@@ -697,7 +697,7 @@ Result Device::tryCreate(Instance& instance, const DeviceCreateInfo& info) {
 }
 
 Result Device::tryCreate(Instance& instance, DeviceCreateInfo&& info) {
-    return tryCreateInternal(instance, info, std::move(info._state->properties));
+    return tryCreateInternal(instance, info, Utility::move(info._state->properties));
 }
 
 Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& info, DeviceProperties&& properties) {
@@ -707,7 +707,7 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
         "Vk::Device::tryCreate(): needs at least one queue", {});
 
     _flags = HandleFlag::DestroyOnDestruction;
-    _properties.emplace(std::move(properties));
+    _properties.emplace(Utility::move(properties));
 
     /* The properties should always be a valid instance, either moved from
        outside or created again from VkPhysicalDevice, in case it couldn't be

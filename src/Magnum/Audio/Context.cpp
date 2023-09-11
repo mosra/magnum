@@ -315,7 +315,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     return true;
 }
 
-Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{std::move(other._extensionStatus)}, _supportedExtensions{std::move(other._supportedExtensions)} {
+Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{Utility::move(other._extensionStatus)}, _supportedExtensions{Utility::move(other._supportedExtensions)} {
     other._device = nullptr;
     other._context = nullptr;
     if(currentContext == &other) currentContext = this;
@@ -409,7 +409,7 @@ Context::Configuration& Context::Configuration::setDeviceSpecifier(const std::st
 }
 
 Context::Configuration& Context::Configuration::setDeviceSpecifier(std::string&& specifier) {
-    _deviceSpecifier = std::move(specifier);
+    _deviceSpecifier = Utility::move(specifier);
     return *this;
 }
 

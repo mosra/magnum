@@ -175,13 +175,13 @@ void ImageViewVkTest::constructMove() {
     ImageView a{device(), ImageViewCreateInfo2D{image}};
     VkImageView handle = a.handle();
 
-    ImageView b = std::move(a);
+    ImageView b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     ImageView c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

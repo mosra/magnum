@@ -430,7 +430,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructAsync() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VectorGL<dimensions> shader{std::move(state)};
+    VectorGL<dimensions> shader{Utility::move(state)};
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::TextureTransformation);
     CORRADE_VERIFY(shader.id());
@@ -518,7 +518,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructUniformBuffersAsync
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    VectorGL<dimensions> shader{std::move(state)};
+    VectorGL<dimensions> shader{Utility::move(state)};
     CORRADE_VERIFY(shader.isLinkFinished());
     CORRADE_COMPARE(shader.flags(), VectorGL2D::Flag::UniformBuffers|VectorGL2D::Flag::TextureTransformation);
     CORRADE_COMPARE(shader.materialCount(), 15);
@@ -545,13 +545,13 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    VectorGL<dimensions> b{std::move(a)};
+    VectorGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!a.id());
 
     VectorGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), VectorGL<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!b.id());
@@ -575,7 +575,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers(
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    VectorGL<dimensions> b{std::move(a)};
+    VectorGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), VectorGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(b.materialCount(), 2);
@@ -583,7 +583,7 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMoveUniformBuffers(
     CORRADE_VERIFY(!a.id());
 
     VectorGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), VectorGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(c.materialCount(), 2);

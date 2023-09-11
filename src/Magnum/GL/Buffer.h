@@ -32,10 +32,10 @@
  */
 
 #include <cstddef>
-#include <utility> /* std::swap() */
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Move.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -1489,7 +1489,7 @@ inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{othe
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     swap(_targetHint, other._targetHint);
     swap(_flags, other._flags);

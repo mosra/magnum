@@ -170,7 +170,7 @@ Containers::Pair<Containers::ArrayTuple, Containers::Reference<State>> State::al
     for(const char* extension: extensions)
         if(extension) Debug(out) << "   " << extension;
 
-    return {std::move(data), state};
+    return {Utility::move(data), state};
 }
 
 }}}

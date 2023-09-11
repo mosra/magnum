@@ -171,7 +171,7 @@ void ContextALTest::constructMove() {
     Int frequency = context.frequency();
 
     {
-        Context second{std::move(context)};
+        Context second{Utility::move(context)};
         CORRADE_COMPARE(&Context::current(), &second);
         #ifdef CORRADE_TARGET_APPLE
         if(context.vendorString() == "Apple Computer Inc.")

@@ -679,7 +679,7 @@ template<class T> void CompileGLTest::twoDimensions() {
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
         {}, indexData, indices,
-        {}, vertexData, std::move(attributeData)};
+        {}, vertexData, Utility::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
     if(data.flags & Flag::NonIndexed) {
@@ -698,7 +698,7 @@ template<class T> void CompileGLTest::twoDimensions() {
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
     #endif
-    GL::Mesh mesh = compile(T{std::move(meshData)});
+    GL::Mesh mesh = compile(T{Utility::move(meshData)});
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
@@ -900,7 +900,7 @@ template<class T> void CompileGLTest::threeDimensions() {
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
         {}, indexData, indices,
-        {}, vertexData, std::move(attributeData)};
+        {}, vertexData, Utility::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
     if(data.flags & Flag::NonIndexed) {
@@ -924,7 +924,7 @@ template<class T> void CompileGLTest::threeDimensions() {
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
     #endif
-    GL::Mesh mesh = compile(T{std::move(meshData)}, flags);
+    GL::Mesh mesh = compile(T{Utility::move(meshData)}, flags);
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
@@ -1343,7 +1343,7 @@ void CompileGLTest::skinning() {
         vertices.slice(&Vertex::position));
     arrayAppend(attributeData, data.attributes);
 
-    Trade::MeshData meshData{MeshPrimitive::TriangleStrip, {}, vertexData, std::move(attributeData)};
+    Trade::MeshData meshData{MeshPrimitive::TriangleStrip, {}, vertexData, Utility::move(attributeData)};
 
     Containers::Pair<UnsignedInt, UnsignedInt> jointCount = compiledPerVertexJointCount(meshData);
     CORRADE_COMPARE(jointCount.first(), data.expectedJointCount);
@@ -1490,7 +1490,7 @@ void CompileGLTest::conflictingAttributes() {
 
     Trade::MeshData meshData{MeshPrimitive::Triangles,
         {}, indexData, Trade::MeshIndexData{indexData},
-        {}, vertexData, std::move(attributeData)};
+        {}, vertexData, Utility::move(attributeData)};
 
     GL::Mesh mesh{NoCreate};
 
@@ -1774,11 +1774,11 @@ void CompileGLTest::externalBuffers() {
 
     GL::Mesh mesh{NoCreate};
     if(data.moveIndices && data.moveVertices)
-        mesh = compile(meshData, std::move(indices), std::move(vertices));
+        mesh = compile(meshData, Utility::move(indices), Utility::move(vertices));
     else if(data.moveIndices && !data.moveVertices)
-        mesh = compile(meshData, std::move(indices), vertices);
+        mesh = compile(meshData, Utility::move(indices), vertices);
     else if(!data.moveIndices && data.moveVertices)
-        mesh = compile(meshData, indices, std::move(vertices));
+        mesh = compile(meshData, indices, Utility::move(vertices));
     else
         mesh = compile(meshData, indices, vertices);
 

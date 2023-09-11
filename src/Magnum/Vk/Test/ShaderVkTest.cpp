@@ -77,13 +77,13 @@ void ShaderVkTest::constructMove() {
     Shader a{device(), ShaderCreateInfo{*data}};
     VkShaderModule handle = a.handle();
 
-    Shader b = std::move(a);
+    Shader b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     Shader c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

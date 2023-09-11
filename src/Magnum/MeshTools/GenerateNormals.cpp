@@ -85,7 +85,7 @@ std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(co
     CORRADE_IGNORE_DEPRECATED_PUSH
     normalIndices = duplicate(normalIndices, removeDuplicates(normals));
     CORRADE_IGNORE_DEPRECATED_POP
-    return {std::move(normalIndices), std::move(normals)};
+    return {Utility::move(normalIndices), Utility::move(normals)};
 }
 #endif
 

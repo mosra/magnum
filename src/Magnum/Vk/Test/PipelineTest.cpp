@@ -312,7 +312,7 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
     (*a).setViewport(Range3D{})
         .setDynamicStates(DynamicRasterizationState::CullMode);
 
-    Containers::Pointer<RasterizationPipelineCreateInfo> b{InPlaceInit, std::move(*a)};
+    Containers::Pointer<RasterizationPipelineCreateInfo> b{InPlaceInit, Utility::move(*a)};
     CORRADE_COMPARE((**a).stageCount, 0);
     CORRADE_VERIFY(!(**a).pStages);
     CORRADE_VERIFY(!(**a).pVertexInputState);
@@ -347,7 +347,7 @@ void PipelineTest::rasterizationCreateInfoConstructMove() {
     CORRADE_COMPARE((**b).pDynamicState->sType, VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO);
 
     Containers::Pointer<RasterizationPipelineCreateInfo> c{InPlaceInit, VkGraphicsPipelineCreateInfo{}};
-    *c = std::move(*b);
+    *c = Utility::move(*b);
     CORRADE_COMPARE((**b).stageCount, 0);
     CORRADE_VERIFY(!(**b).pStages);
     CORRADE_VERIFY(!(**b).pVertexInputState);
@@ -410,7 +410,7 @@ void PipelineTest::rasterizationCreateInfoConstructMoveExternalPointers() {
     a->pDynamicState = &dynamic;
 
     /* The external pointers should stay external, not rerouted to internal */
-    RasterizationPipelineCreateInfo b = std::move(a);
+    RasterizationPipelineCreateInfo b = Utility::move(a);
     CORRADE_COMPARE(b->pViewportState, &viewport);
     CORRADE_COMPARE(b->pRasterizationState, &rasterization);
     CORRADE_COMPARE(b->pMultisampleState, &multisample);
@@ -419,7 +419,7 @@ void PipelineTest::rasterizationCreateInfoConstructMoveExternalPointers() {
     CORRADE_COMPARE(b->pDynamicState, &dynamic);
 
     RasterizationPipelineCreateInfo c{VkGraphicsPipelineCreateInfo{}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c->pViewportState, &viewport);
     CORRADE_COMPARE(c->pRasterizationState, &rasterization);
     CORRADE_COMPARE(c->pMultisampleState, &multisample);

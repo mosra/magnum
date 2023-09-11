@@ -505,7 +505,7 @@ see documentation of a particular converter for more information.)")
             }
 
             if(Containers::Optional<Containers::Array<char>> out = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0))) {
-                data = *std::move(out);
+                data = *Utility::move(out);
             } else {
                 Error{} << "Cannot convert" << args.arrayValue<Containers::StringView>("input", 0);
                 return 20; /* same code as the same message below */
@@ -589,7 +589,7 @@ see documentation of a particular converter for more information.)")
                 /* Linking */
                 if(args.isSet("link")) {
                     if(Containers::Optional<Containers::Array<char>> out = converter->linkFilesToData(linkInputs)) {
-                        data = *std::move(out);
+                        data = *Utility::move(out);
                     } else {
                         Error{} << "Cannot link" << args.arrayValue<Containers::StringView>("input", 0) << "and others to" << args.value<Containers::StringView>("output");
                         return 19;
@@ -598,7 +598,7 @@ see documentation of a particular converter for more information.)")
                 /* Converting */
                 } else {
                     if(Containers::Optional<Containers::Array<char>> out = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0))) {
-                        data = *std::move(out);
+                        data = *Utility::move(out);
                     } else {
                         Error{} << "Cannot convert" << args.arrayValue<Containers::StringView>("input", 0);
                         return 20;
@@ -615,7 +615,7 @@ see documentation of a particular converter for more information.)")
 
                 /* Subsequent operations are always a conversion, not link */
                 if(Containers::Optional<Containers::Array<char>> out = converter->convertDataToData(ShaderTools::Stage::Unspecified, data)) {
-                    data = *std::move(out);
+                    data = *Utility::move(out);
                 } else {
                     Error{} << "Cannot convert shader data";
                     return 21;

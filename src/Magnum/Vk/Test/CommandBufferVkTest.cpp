@@ -75,13 +75,13 @@ void CommandBufferVkTest::constructMove() {
     CommandBuffer a = pool.allocate();
     VkCommandBuffer handle = a.handle();
 
-    CommandBuffer b = std::move(a);
+    CommandBuffer b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     CommandBuffer c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

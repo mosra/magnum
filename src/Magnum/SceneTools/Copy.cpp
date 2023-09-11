@@ -60,7 +60,7 @@ Trade::SceneData copy(Trade::SceneData&& scene) {
        the original array in its entirety */
     Containers::Array<Trade::SceneFieldData> fieldData;
     if(!originalFieldData.deleter() && (scene.dataFlags() & Trade::DataFlag::Owned)) {
-        fieldData = std::move(originalFieldData);
+        fieldData = Utility::move(originalFieldData);
 
     /* Otherwise we have to allocate a new one and re-route the fields to a
        potentially different data array */
@@ -135,7 +135,7 @@ Trade::SceneData copy(Trade::SceneData&& scene) {
     }
 
     return Trade::SceneData{scene.mappingType(), scene.mappingBound(),
-        std::move(data), std::move(fieldData), scene.importerState()};
+        Utility::move(data), Utility::move(fieldData), scene.importerState()};
 }
 
 }}

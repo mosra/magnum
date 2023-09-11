@@ -62,7 +62,7 @@ void GLShaderWrapperGLTest::construct() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(id > 0);
 
-        Implementation::GLShaderWrapper shader{std::move(glShader)};
+        Implementation::GLShaderWrapper shader{Utility::move(glShader)};
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(shader.id, id);
         CORRADE_COMPARE(shader.type, GL_FRAGMENT_SHADER);
@@ -80,13 +80,13 @@ void GLShaderWrapperGLTest::constructMove() {
         GL::Version::GLES300,
         #endif
         GL::Shader::Type::Fragment};
-    Implementation::GLShaderWrapper a{std::move(glShaderA)};
+    Implementation::GLShaderWrapper a{Utility::move(glShaderA)};
 
     GLuint id = a.id;
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    Implementation::GLShaderWrapper b{std::move(a)};
+    Implementation::GLShaderWrapper b{Utility::move(a)};
     CORRADE_VERIFY(!a.id);
     CORRADE_COMPARE(b.id, id);
     CORRADE_COMPARE(b.type, GL_FRAGMENT_SHADER);
@@ -98,10 +98,10 @@ void GLShaderWrapperGLTest::constructMove() {
         GL::Version::GLES200,
         #endif
         GL::Shader::Type::Vertex};
-    Implementation::GLShaderWrapper c{std::move(glShaderB)};
+    Implementation::GLShaderWrapper c{Utility::move(glShaderB)};
 
     GLuint cId = c.id;
-    c = std::move(b);
+    c = Utility::move(b);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id, cId);
@@ -121,7 +121,7 @@ void GLShaderWrapperGLTest::convert() {
             GL::Version::GLES300,
             #endif
             GL::Shader::Type::Fragment};
-        Implementation::GLShaderWrapper shader{std::move(glShader)};
+        Implementation::GLShaderWrapper shader{Utility::move(glShader)};
 
         GLuint id = shader.id;
         MAGNUM_VERIFY_NO_GL_ERROR();
@@ -148,13 +148,13 @@ void GLShaderWrapperGLTest::convertRvalue() {
             GL::Version::GLES300,
             #endif
             GL::Shader::Type::Fragment};
-        Implementation::GLShaderWrapper shader{std::move(glShader)};
+        Implementation::GLShaderWrapper shader{Utility::move(glShader)};
 
         GLuint id = shader.id;
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(id > 0);
 
-        GL::Shader glShader2 = std::move(shader);
+        GL::Shader glShader2 = Utility::move(shader);
         MAGNUM_VERIFY_NO_GL_ERROR();
 
         MAGNUM_VERIFY_NO_GL_ERROR();

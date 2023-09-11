@@ -272,8 +272,8 @@ Trade::MeshData Spheroid::finalize() {
     CORRADE_INTERNAL_ASSERT(attributeOffset == _attributeCount);
 
     return Trade::MeshData{MeshPrimitive::Triangles,
-        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(std::move(_indexData)),
-        indices, std::move(_vertexData), std::move(attributes)};
+        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(Utility::move(_indexData)),
+        indices, Utility::move(_vertexData), Utility::move(attributes)};
 }
 
 }}}

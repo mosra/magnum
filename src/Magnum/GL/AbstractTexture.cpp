@@ -1742,7 +1742,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(const GLint level, 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     Context::current().state().texture.getImageImplementation(*this, level, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data);
-    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data), flags};
+    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, Utility::move(data), flags};
 }
 
 template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, Image<1>&, ImageFlags1D);
@@ -1810,7 +1810,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     Context::current().state().texture.getCompressedImageImplementation(*this, level, data.size(), data);
-    image = CompressedImage<dimensions>{image.storage(), CompressedPixelFormat(format), size, std::move(data), flags};
+    image = CompressedImage<dimensions>{image.storage(), CompressedPixelFormat(format), size, Utility::move(data), flags};
 }
 
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, CompressedImage<1>&, ImageFlags1D);
@@ -1894,7 +1894,7 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     if(data.size() < dataSize)
         data = Containers::Array<char>{dataSize};
 
-    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data), flags};
+    image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, Utility::move(data), flags};
     subImage(level, range, BasicMutableImageView<dimensions>(image));
 }
 
@@ -1985,7 +1985,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer.applyPixelStoragePack(image.storage());
     glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), data.size(), data);
-    image = CompressedImage<dimensions>{CompressedPixelFormat(format), size, std::move(data), flags};
+    image = CompressedImage<dimensions>{CompressedPixelFormat(format), size, Utility::move(data), flags};
 }
 
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, CompressedImage<1>&, ImageFlags1D);

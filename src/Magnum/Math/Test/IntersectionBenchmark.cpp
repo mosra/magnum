@@ -25,7 +25,6 @@
 */
 
 #include <random>
-#include <utility>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Angle.h"

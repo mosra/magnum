@@ -236,7 +236,7 @@ void ImageVkTest::constructMove() {
     VkImage handle = a.handle();
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
 
-    Image b = std::move(a);
+    Image b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_VERIFY(!a.hasDedicatedMemory());
     CORRADE_COMPARE(b.handle(), handle);
@@ -246,7 +246,7 @@ void ImageVkTest::constructMove() {
     CORRADE_COMPARE(b.dedicatedMemory().handle(), memoryHandle);
 
     Image c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_VERIFY(!b.hasDedicatedMemory());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
@@ -331,7 +331,7 @@ void ImageVkTest::bindDedicatedMemory() {
     VkDeviceMemory handle = memory.handle();
     CORRADE_VERIFY(handle);
 
-    image.bindDedicatedMemory(std::move(memory));
+    image.bindDedicatedMemory(Utility::move(memory));
     CORRADE_VERIFY(image.hasDedicatedMemory());
     CORRADE_COMPARE(image.dedicatedMemory().handle(), handle);
 }

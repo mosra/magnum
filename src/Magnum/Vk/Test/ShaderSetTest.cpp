@@ -154,7 +154,7 @@ void ShaderSetTest::constructMove() {
         /* This specialization info points elsewhere */
         CORRADE_COMPARE(a.stages()[1].pSpecializationInfo, &externalSpecializationInfo2);
 
-        ShaderSet b = std::move(a);
+        ShaderSet b = Utility::move(a);
         CORRADE_VERIFY(a.stages().isEmpty());
         CORRADE_COMPARE(b.stages().size(), 2);
         CORRADE_COMPARE(b.stages()[0].pName, "main"_s);
@@ -176,7 +176,7 @@ void ShaderSetTest::constructMove() {
         /* This specialization info should not be redirected anywhere */
         CORRADE_COMPARE(b.stages()[1].pSpecializationInfo, &externalSpecializationInfo2);
 
-        c = std::move(b);
+        c = Utility::move(b);
         CORRADE_COMPARE(b.stages().size(), 2);
         CORRADE_COMPARE(b.stages()[0].pName, "mine"_s);
         /* The two classes got swapped, so the original C content should now
@@ -345,7 +345,7 @@ void ShaderSetTest::addShaderOwnershipTransfer() {
     auto shader = Shader::wrap(device, reinterpret_cast<VkShaderModule>(reinterpret_cast<void*>(0xdeadbeef)));
 
     ShaderSet set;
-    set.addShader(ShaderStage::RayAnyHit, std::move(shader), "main"_s, {
+    set.addShader(ShaderStage::RayAnyHit, Utility::move(shader), "main"_s, {
         {13, 1227}
     });
 

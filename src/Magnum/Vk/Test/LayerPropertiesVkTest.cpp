@@ -60,11 +60,11 @@ void LayerPropertiesVkTest::constructMove() {
     const UnsignedInt count = a.count();
     if(!count) CORRADE_SKIP("No extensions reported, can't test");
 
-    LayerProperties b = std::move(a);
+    LayerProperties b = Utility::move(a);
     CORRADE_COMPARE(b.count(), count);
 
     LayerProperties c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.count(), count);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<LayerProperties>::value);

@@ -51,7 +51,7 @@ GL::Mesh fullScreenTriangle(const GL::Version version) {
         };
         GL::Buffer buffer{GL::Buffer::TargetHint::Array};
         buffer.setData(triangle, GL::BufferUsage::StaticDraw);
-        mesh.addVertexBuffer(std::move(buffer), 0, GL::Attribute<0, Vector2>{});
+        mesh.addVertexBuffer(Utility::move(buffer), 0, GL::Attribute<0, Vector2>{});
     }
 
     #ifdef MAGNUM_TARGET_GLES2

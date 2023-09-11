@@ -626,14 +626,14 @@ void RenderPassTest::subpassDescriptionConstructMove() {
     CORRADE_COMPARE(a->inputAttachmentCount, 2);
     CORRADE_COMPARE(a->pInputAttachments[1].attachment, 35);
 
-    SubpassDescription b = std::move(a);
+    SubpassDescription b = Utility::move(a);
     CORRADE_COMPARE(a->inputAttachmentCount, 0);
     CORRADE_VERIFY(!a->pInputAttachments);
     CORRADE_COMPARE(b->inputAttachmentCount, 2);
     CORRADE_COMPARE(b->pInputAttachments[1].attachment, 35);
 
     SubpassDescription c;
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->inputAttachmentCount, 0);
     CORRADE_VERIFY(!b->pInputAttachments);
     CORRADE_COMPARE(c->inputAttachmentCount, 2);
@@ -1037,14 +1037,14 @@ void RenderPassTest::createInfoConstructMove() {
     CORRADE_COMPARE(a->attachmentCount, 2);
     CORRADE_COMPARE(a->pAttachments[1].format, VK_FORMAT_R8G8B8_SNORM);
 
-    RenderPassCreateInfo b = std::move(a);
+    RenderPassCreateInfo b = Utility::move(a);
     CORRADE_COMPARE(a->attachmentCount, 0);
     CORRADE_VERIFY(!a->pAttachments);
     CORRADE_COMPARE(b->attachmentCount, 2);
     CORRADE_COMPARE(b->pAttachments[1].format, VK_FORMAT_R8G8B8_SNORM);
 
     RenderPassCreateInfo c;
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->attachmentCount, 0);
     CORRADE_VERIFY(!b->pAttachments);
     CORRADE_COMPARE(c->attachmentCount, 2);
@@ -1208,14 +1208,14 @@ void RenderPassTest::beginInfoConstructMove() {
     CORRADE_COMPARE(a->clearValueCount, 6);
     CORRADE_COMPARE(Color4{a->pClearValues[5].color}, (Color4{0.5f, 0.6f, 0.7f, 0.8f}));
 
-    RenderPassBeginInfo b = std::move(a);
+    RenderPassBeginInfo b = Utility::move(a);
     CORRADE_COMPARE(a->clearValueCount, 0);
     CORRADE_VERIFY(!a->pClearValues);
     CORRADE_COMPARE(b->clearValueCount, 6);
     CORRADE_COMPARE(Color4{b->pClearValues[5].color}, (Color4{0.5f, 0.6f, 0.7f, 0.8f}));
 
     RenderPassBeginInfo c{VkRenderPassBeginInfo{}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->clearValueCount, 0);
     CORRADE_VERIFY(!b->pClearValues);
     CORRADE_COMPARE(c->clearValueCount, 6);

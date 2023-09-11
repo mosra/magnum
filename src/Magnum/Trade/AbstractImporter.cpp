@@ -269,7 +269,7 @@ void AbstractImporter::doOpenFile(const Containers::StringView filename) {
             return;
         }
 
-        doOpenData(*std::move(data), DataFlag::Owned|DataFlag::Mutable);
+        doOpenData(*Utility::move(data), DataFlag::Owned|DataFlag::Mutable);
     }
 }
 
@@ -753,12 +753,12 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
 
     if(!mesh.isEmpty()) {
         return Containers::pointer(flags & ObjectFlag2D::HasTranslationRotationScaling ?
-            new MeshObjectData2D{std::move(children),
+            new MeshObjectData2D{Utility::move(children),
                 trs->first(), trs->second(), trs->third(),
                 mesh.front().first(), mesh.front().second(),
                 skin.isEmpty() ? -1  : Int(skin.front()),
                 importerState ? *importerState : nullptr} :
-            new MeshObjectData2D{std::move(children),
+            new MeshObjectData2D{Utility::move(children),
                 *transformation,
                 mesh.front().first(), mesh.front().second(),
                 skin ? Int(*skin) : -1,
@@ -776,11 +776,11 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(const UnsignedInt
     }
 
     return Containers::pointer(flags & ObjectFlag2D::HasTranslationRotationScaling ?
-        new ObjectData2D{std::move(children),
+        new ObjectData2D{Utility::move(children),
             trs->first(), trs->second(), trs->third(),
             instanceType, instance,
             importerState ? *importerState : nullptr} :
-        new ObjectData2D{std::move(children),
+        new ObjectData2D{Utility::move(children),
             *transformation,
             instanceType, instance,
             importerState ? *importerState : nullptr});
@@ -932,12 +932,12 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
 
     if(!mesh.isEmpty()) {
         return Containers::pointer(flags & ObjectFlag3D::HasTranslationRotationScaling ?
-            new MeshObjectData3D{std::move(children),
+            new MeshObjectData3D{Utility::move(children),
                 trs->first(), trs->second(), trs->third(),
                 mesh.front().first(), mesh.front().second(),
                 skin.isEmpty() ? -1  : Int(skin.front()),
                 importerState ? *importerState : nullptr} :
-            new MeshObjectData3D{std::move(children),
+            new MeshObjectData3D{Utility::move(children),
                 *transformation,
                 mesh.front().first(), mesh.front().second(),
                 skin ? Int(*skin) : -1,
@@ -958,11 +958,11 @@ Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(const UnsignedInt
     }
 
     return Containers::pointer(flags & ObjectFlag3D::HasTranslationRotationScaling ?
-        new ObjectData3D{std::move(children),
+        new ObjectData3D{Utility::move(children),
             trs->first(), trs->second(), trs->third(),
             instanceType, instance,
             importerState ? *importerState : nullptr} :
-        new ObjectData3D{std::move(children),
+        new ObjectData3D{Utility::move(children),
             *transformation,
             instanceType, instance,
             importerState ? *importerState : nullptr});
@@ -1318,7 +1318,7 @@ AbstractImporter::material(const UnsignedInt id) {
 
     /* GCC 4.8 and clang-cl needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::OptionalButAlsoPointer<MaterialData>{std::move(material)};
+    return Implementation::OptionalButAlsoPointer<MaterialData>{Utility::move(material)};
     #else
     return material;
     #endif

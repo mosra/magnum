@@ -306,7 +306,7 @@ void ContextTest::configurationConstructMove() {
      #endif
      .addDisabledExtensions<Extensions::EXT::texture_filter_anisotropic>();
 
-    Context::Configuration b = std::move(a);
+    Context::Configuration b = Utility::move(a);
     CORRADE_COMPARE(UnsignedLong(b.flags()), UnsignedLong(Context::Configuration::Flag::VerboseLog));
     CORRADE_VERIFY(a.disabledWorkarounds().isEmpty());
     CORRADE_VERIFY(a.disabledExtensions().isEmpty());
@@ -330,7 +330,7 @@ void ContextTest::configurationConstructMove() {
      #endif
      ;
 
-    c = std::move(b);
+    c = Utility::move(b);
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(b.disabledWorkarounds().size(), 2);
     #endif

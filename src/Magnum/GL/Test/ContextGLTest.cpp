@@ -319,7 +319,7 @@ void ContextGLTest::constructMove() {
 
     /* Move and create. This should take into account all parameters passed
        from above and combine them with what arrived through Configuration. */
-    Platform::GLContext b = std::move(a);
+    Platform::GLContext b = Utility::move(a);
 
     /* The context is still not created here either */
     CORRADE_VERIFY(!Context::hasCurrent());
@@ -365,7 +365,7 @@ void ContextGLTest::constructMove() {
 
     /* Now move the created context and verify the remaining state gets
        transferred as well */
-    Platform::GLContext c = std::move(b);
+    Platform::GLContext c = Utility::move(b);
     #ifndef MAGNUM_TARGET_GLES
     /* This is an internal undocumented API but shh */
     CORRADE_COMPARE(c.isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl"), data.workaroundDisabled);

@@ -78,7 +78,7 @@ DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(DescriptorPoolCreateInfo&& ot
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(other._info),
-    _data{std::move(other._data)}
+    _data{Utility::move(other._data)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -91,7 +91,7 @@ DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(DescriptorPoolCreateInfo&& ot
 DescriptorPoolCreateInfo::~DescriptorPoolCreateInfo() = default;
 
 DescriptorPoolCreateInfo& DescriptorPoolCreateInfo::operator=(DescriptorPoolCreateInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._data, _data);
     return *this;
@@ -121,7 +121,7 @@ DescriptorPool::~DescriptorPool() {
 }
 
 DescriptorPool& DescriptorPool::operator=(DescriptorPool&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
@@ -158,20 +158,20 @@ Containers::Pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const V
        contemporary drivers in early 2021 do this, there's nothing I can do
        otherwise. */
     const Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).AllocateDescriptorSets(*_device, &info, &set._handle), Result::ErrorOutOfPoolMemory, Result::ErrorFragmentedPool);
-    return {result, std::move(set)};
+    return {result, Utility::move(set)};
 }
 
 DescriptorSet DescriptorPool::allocate(const VkDescriptorSetLayout layout) {
     Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout);
     CORRADE_ASSERT(out.first() == Result::Success,
-        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first(), std::move(out.second()));
-    return std::move(out.second());
+        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first(), Utility::move(out.second()));
+    return Utility::move(out.second());
 }
 
 Containers::Optional<DescriptorSet> DescriptorPool::tryAllocate(const VkDescriptorSetLayout layout) {
     Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout);
     if(out.first() != Result::Success) return {};
-    return std::move(out.second());
+    return Utility::move(out.second());
 }
 
 Containers::Pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
@@ -194,20 +194,20 @@ Containers::Pair<Result, DescriptorSet> DescriptorPool::allocateInternal(const V
     /* See the not about VK_ERROR_OUT_OF_POOL_MEMORY and VK_KHR_maintenance1
        in the other allocateInternal() implementation above. */
     const Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR((**_device).AllocateDescriptorSets(*_device, &info, &set._handle), Result::ErrorOutOfPoolMemory, Result::ErrorFragmentedPool);
-    return {result, std::move(set)};
+    return {result, Utility::move(set)};
 }
 
 DescriptorSet DescriptorPool::allocate(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
     Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout, variableDescriptorCount);
     CORRADE_ASSERT(out.first() == Result::Success,
-        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first(), std::move(out.second()));
-    return std::move(out.second());
+        "Vk::DescriptorPool::allocate(): allocation failed with" << out.first(), Utility::move(out.second()));
+    return Utility::move(out.second());
 }
 
 Containers::Optional<DescriptorSet> DescriptorPool::tryAllocate(const VkDescriptorSetLayout layout, const UnsignedInt variableDescriptorCount) {
     Containers::Pair<Result, DescriptorSet> out = allocateInternal(layout, variableDescriptorCount);
     if(out.first() != Result::Success) return {};
-    return std::move(out.second());
+    return Utility::move(out.second());
 }
 
 void DescriptorPool::reset() {

@@ -51,7 +51,7 @@ Queue::Queue(Queue&& other) noexcept: _device{other._device}, _handle{other._han
 Queue::~Queue() = default;
 
 Queue& Queue::operator=(Queue&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     return *this;
@@ -113,7 +113,7 @@ SubmitInfo::SubmitInfo(SubmitInfo&& other) noexcept:
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(other._info),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -131,7 +131,7 @@ SubmitInfo::SubmitInfo(SubmitInfo&& other) noexcept:
 SubmitInfo::~SubmitInfo() = default;
 
 SubmitInfo& SubmitInfo::operator=(SubmitInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._state, _state);
     return *this;

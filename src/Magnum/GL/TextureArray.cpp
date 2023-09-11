@@ -114,42 +114,42 @@ template<> template<> MAGNUM_GL_EXPORT Texture2DArray Texture2DArray::view(CubeM
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> Image<dimensions+1> TextureArray<dimensions>::image(const Int level, Image<dimensions+1>&& image) {
     this->image(level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions+1> TextureArray<dimensions>::image(const Int level, BufferImage<dimensions+1>&& image, const BufferUsage usage) {
     this->image(level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 template<UnsignedInt dimensions> CompressedImage<dimensions+1> TextureArray<dimensions>::compressedImage(const Int level, CompressedImage<dimensions+1>&& image) {
     compressedImage(level, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions+1> TextureArray<dimensions>::compressedImage(const Int level, CompressedBufferImage<dimensions+1>&& image, const BufferUsage usage) {
     compressedImage(level, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 template<UnsignedInt dimensions> Image<dimensions+1> TextureArray<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>&& image) {
     this->subImage(level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions+1> TextureArray<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>&& image, const BufferUsage usage) {
     this->subImage(level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 template<UnsignedInt dimensions> CompressedImage<dimensions+1> TextureArray<dimensions>::compressedSubImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>&& image) {
     compressedSubImage(level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions+1> TextureArray<dimensions>::compressedSubImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedBufferImage<dimensions+1>&& image, const BufferUsage usage) {
     compressedSubImage(level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 #endif
 

@@ -165,7 +165,7 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
             };
             GL::Buffer buffer{GL::Buffer::TargetHint::Array};
             buffer.setData(triangle, GL::BufferUsage::StaticDraw);
-            mesh.addVertexBuffer(std::move(buffer), 0, GL::Attribute<0, Vector2>{});
+            mesh.addVertexBuffer(Utility::move(buffer), 0, GL::Attribute<0, Vector2>{});
         }
 
         shader.draw(mesh);
@@ -186,7 +186,7 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
 
 Image2D textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, Image2D&& image) {
     textureSubImage(texture, level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -205,7 +205,7 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
 
 GL::BufferImage2D textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, GL::BufferImage2D&& image, const GL::BufferUsage usage) {
     textureSubImage(texture, level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 #endif
 
@@ -217,7 +217,7 @@ void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate co
 
 Image2D textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D&& image) {
     textureSubImage(texture, coordinate, level, range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -229,7 +229,7 @@ void textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate co
 
 GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, const GL::CubeMapCoordinate coordinate, const Int level, const Range2Di& range, GL::BufferImage2D&& image, const GL::BufferUsage usage) {
     textureSubImage(texture, coordinate, level, range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 #endif
 

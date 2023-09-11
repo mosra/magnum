@@ -29,7 +29,7 @@
  * @brief Enum @ref Magnum::GL::Version, function @ref Magnum::GL::version(), @ref Magnum::GL::isVersionES()
  */
 
-#include <utility>
+#include <utility> /* std::pair */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/visibility.h"

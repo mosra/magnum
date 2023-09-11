@@ -54,7 +54,7 @@ GL::Mesh compileLines(const Trade::MeshData& mesh) {
     /* Upload the buffers, bind the line-specific attributes manually */
     GL::Buffer indices{GL::Buffer::TargetHint::ElementArray, mesh.indexData()};
     GL::Buffer vertices{GL::Buffer::TargetHint::Array, mesh.vertexData()};
-    GL::Mesh out = compile(mesh, std::move(indices), vertices);
+    GL::Mesh out = compile(mesh, Utility::move(indices), vertices);
 
     /* Warn about attributes that are conflicting with line-specific attributes
        and thus will get overwritten */
@@ -79,7 +79,7 @@ GL::Mesh compileLines(const Trade::MeshData& mesh) {
         mesh.attributeOffset(Implementation::LineMeshAttributeNextPosition),
         mesh.attributeStride(Implementation::LineMeshAttributeNextPosition),
         GL::DynamicAttribute{Shaders::LineGL3D::NextPosition{}, mesh.attributeFormat(Implementation::LineMeshAttributeNextPosition)});
-    out.addVertexBuffer(std::move(vertices),
+    out.addVertexBuffer(Utility::move(vertices),
         mesh.attributeOffset(Implementation::LineMeshAttributeAnnotation),
         mesh.attributeStride(Implementation::LineMeshAttributeAnnotation),
         GL::DynamicAttribute{Shaders::LineGL3D::Annotation{}, mesh.attributeFormat(Implementation::LineMeshAttributeAnnotation)});

@@ -86,7 +86,7 @@ Returns transformed vectors instead of modifying them in-place. See
 @see @ref transform2D(), @ref transform3D(), @ref transformTextureCoordinates2D()
 */
 template<class T, class U> U transformVectors(const T& transformation, U vectors) {
-    U result(std::move(vectors));
+    U result(Utility::move(vectors));
     transformVectorsInPlace(transformation, result);
     return result;
 }
@@ -139,7 +139,7 @@ Returns transformed points instead of modifying them in-place. See
 @see @ref transform2D(), @ref transform3D(), @ref transformTextureCoordinates2D()
 */
 template<class T, class U> U transformPoints(const T& transformation, U vectors) {
-    U result(std::move(vectors));
+    U result(Utility::move(vectors));
     transformPointsInPlace(transformation, result);
     return result;
 }

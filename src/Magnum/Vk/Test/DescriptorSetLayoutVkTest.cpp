@@ -97,13 +97,13 @@ void DescriptorSetLayoutVkTest::constructMove() {
     }};
     VkDescriptorSetLayout handle = a.handle();
 
-    DescriptorSetLayout b = std::move(a);
+    DescriptorSetLayout b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     DescriptorSetLayout c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

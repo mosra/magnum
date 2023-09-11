@@ -307,7 +307,7 @@ Containers::Optional<Containers::Array<char>> TgaImageConverter::doConvertToData
     if(rle) arrayShrink(data);
 
     /* GCC 4.8 needs extra help here */
-    return Containers::optional(std::move(data));
+    return Containers::optional(Utility::move(data));
 }
 
 }}

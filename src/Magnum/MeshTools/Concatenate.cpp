@@ -82,9 +82,9 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
     Trade::MeshData out{meshes.front().primitive(),
         /* If the index array is empty, we're creating a non-indexed mesh (not
            an indexed mesh with zero indices) */
-        std::move(indexData), indices.isEmpty() ?
+        Utility::move(indexData), indices.isEmpty() ?
             Trade::MeshIndexData{} : Trade::MeshIndexData{indices},
-        std::move(vertexData), std::move(attributeData), vertexCount};
+        Utility::move(vertexData), Utility::move(attributeData), vertexCount};
 
     /* Go through all meshes and put all attributes and index arrays
        together */
@@ -203,7 +203,7 @@ Trade::MeshData concatenate(const Containers::Iterable<const Trade::MeshData>& m
         indexVertexCount.first()*sizeof(UnsignedInt)};
     Containers::Array<char> vertexData{ValueInit,
         attributeData.isEmpty() ? 0 : (attributeData[0].stride()*indexVertexCount.second())};
-    return Implementation::concatenate(std::move(indexData), indexVertexCount.second(), std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
+    return Implementation::concatenate(Utility::move(indexData), indexVertexCount.second(), Utility::move(vertexData), Utility::move(attributeData), meshes, "MeshTools::concatenate():");
 }
 
 }}

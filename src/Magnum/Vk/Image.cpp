@@ -150,7 +150,7 @@ Image::Image(Device& device, const ImageCreateInfo& info, const MemoryFlags memo
 
 Image::Image(NoCreateT): _device{}, _handle{}, _format{}, _dedicatedMemory{NoCreate} {}
 
-Image::Image(Image&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _format{other._format}, _dedicatedMemory{std::move(other._dedicatedMemory)} {
+Image::Image(Image&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _format{other._format}, _dedicatedMemory{Utility::move(other._dedicatedMemory)} {
     other._handle = {};
 }
 
@@ -160,7 +160,7 @@ Image::~Image() {
 }
 
 Image& Image::operator=(Image&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
@@ -189,7 +189,7 @@ void Image::bindMemory(Memory& memory, const UnsignedLong offset) {
 
 void Image::bindDedicatedMemory(Memory&& memory) {
     bindMemory(memory, 0);
-    _dedicatedMemory = std::move(memory);
+    _dedicatedMemory = Utility::move(memory);
 }
 
 bool Image::hasDedicatedMemory() const {

@@ -1252,7 +1252,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructAsync() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    FlatGL<dimensions> shader{std::move(state)};
+    FlatGL<dimensions> shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::Textured|FlatGL2D::Flag::TextureTransformation);
 
     CORRADE_VERIFY(shader.id());
@@ -1354,7 +1354,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructUniformBuffersAsync()
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    FlatGL<dimensions> shader{std::move(state)};
+    FlatGL<dimensions> shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), FlatGL2D::Flag::UniformBuffers|FlatGL2D::Flag::AlphaMask);
     CORRADE_COMPARE(shader.materialCount(), 5);
     CORRADE_COMPARE(shader.drawCount(), 36);
@@ -1387,13 +1387,13 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    FlatGL<dimensions> b{std::move(a)};
+    FlatGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), FlatGL<dimensions>::Flag::Textured);
     CORRADE_VERIFY(!a.id());
 
     FlatGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), FlatGL<dimensions>::Flag::Textured);
     CORRADE_VERIFY(!b.id());
@@ -1420,7 +1420,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    FlatGL<dimensions> b{std::move(a)};
+    FlatGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), FlatGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(b.materialCount(), 2);
@@ -1431,7 +1431,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMoveUniformBuffers() 
     CORRADE_VERIFY(!a.id());
 
     FlatGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), FlatGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(c.materialCount(), 2);

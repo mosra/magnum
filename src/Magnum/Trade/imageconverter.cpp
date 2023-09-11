@@ -374,7 +374,7 @@ template<UnsignedInt dimensions> bool convertImages(Trade::AbstractImageConverte
     for(Trade::ImageData<dimensions>& image: images) {
         Containers::Optional<Trade::ImageData<dimensions>> output = converter.convert(image);
         if(!output) return false;
-        image = *std::move(output);
+        image = *Utility::move(output);
     }
 
     return true;
@@ -613,7 +613,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 /* Fake a mutable array with a non-owning deleter to have the
                    same type as from Path::read(). The actual memory is owned
                    by the `mapped` array. */
-                mapped.back() = *std::move(mappedMaybe);
+                mapped.back() = *Utility::move(mappedMaybe);
                 data = Containers::Array<char>{const_cast<char*>(mapped.back().data()), mapped.back().size(), [](char*, std::size_t){}};
             } else
             #endif
@@ -625,7 +625,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                     return 3;
                 }
 
-                data = *std::move(dataMaybe);
+                data = *Utility::move(dataMaybe);
             }
 
             auto side = Int(std::sqrt(data.size()/pixelSize));
@@ -645,7 +645,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                 return 0;
             }
 
-            arrayAppend(images2D, InPlaceInit, format, Vector2i{side}, std::move(data));
+            arrayAppend(images2D, InPlaceInit, format, Vector2i{side}, Utility::move(data));
 
         /* Otherwise load it using an importer plugin */
         } else {
@@ -671,7 +671,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                     return 3;
                 }
 
-                mapped.back() = *std::move(mappedMaybe);
+                mapped.back() = *Utility::move(mappedMaybe);
             } else
             #endif
             {
@@ -747,7 +747,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                         /* The --layer option is only for 2D/3D, not checking
                            any bounds here. If the option is present, the
                            extraction code below will fail. */
-                        arrayAppend(images1D, std::move(*image1D));
+                        arrayAppend(images1D, Utility::move(*image1D));
                         imported = true;
                     }
                 }
@@ -788,7 +788,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                             return 1;
                         }
 
-                        arrayAppend(images2D, std::move(*image2D));
+                        arrayAppend(images2D, Utility::move(*image2D));
                         imported = true;
                     }
                 }
@@ -829,7 +829,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                             return 1;
                         }
 
-                        arrayAppend(images3D, std::move(*image3D));
+                        arrayAppend(images3D, Utility::move(*image3D));
                         imported = true;
                     }
                 }
@@ -958,7 +958,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                         images2D[i].pixelSize(), images2D[i].size().x(),
                         Containers::Array<char>{NoInit, std::size_t(images2D[i].size().x()*images2D[i].pixelSize())}};
                     Utility::copy(images2D[i].pixels()[layer], copy.mutablePixels());
-                    arrayAppend(outputImages1D, std::move(copy));
+                    arrayAppend(outputImages1D, Utility::move(copy));
                 }
 
             } else {
@@ -988,7 +988,7 @@ no -C / --converter is specified, AnyImageConverter is used.)")
                         images3D[i].pixelSize(), images3D[i].size().xy(),
                         Containers::Array<char>{NoInit, std::size_t(images3D[i].size().xy().product()*images3D[i].pixelSize())}};
                     Utility::copy(images3D[i].pixels()[layer], copy.mutablePixels());
-                    arrayAppend(outputImages2D, std::move(copy));
+                    arrayAppend(outputImages2D, Utility::move(copy));
                 }
 
             } else {
@@ -1005,15 +1005,15 @@ no -C / --converter is specified, AnyImageConverter is used.)")
         if(dimensions == 1) {
             if(!checkCommonFormatFlags(args, images1D)) return 1;
             outputDimensions = 1;
-            outputImages1D = std::move(images1D);
+            outputImages1D = Utility::move(images1D);
         } else if(dimensions == 2) {
             if(!checkCommonFormatFlags(args, images2D)) return 1;
             outputDimensions = 2;
-            outputImages2D = std::move(images2D);
+            outputImages2D = Utility::move(images2D);
         } else if(dimensions == 3) {
             if(!checkCommonFormatFlags(args, images3D)) return 1;
             outputDimensions = 3;
-            outputImages3D = std::move(images3D);
+            outputImages3D = Utility::move(images3D);
         } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
     }
 

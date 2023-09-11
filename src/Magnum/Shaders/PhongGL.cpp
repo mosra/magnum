@@ -407,7 +407,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
     }
     #ifndef MAGNUM_TARGET_GLES
     if(!(configuration.flags() >= Flag::UniformBuffers) && configuration.lightCount())
-        frag.addSource(std::move(lightInitializer));
+        frag.addSource(Utility::move(lightInitializer));
     #endif
     frag.addSource(rs.getString("generic.glsl"_s))
         .addSource(rs.getString("Phong.frag"_s))
@@ -471,7 +471,7 @@ PhongGL::CompileState PhongGL::compile(const Configuration& configuration) {
 
     out.submitLink();
 
-    return CompileState{std::move(out), std::move(vert), std::move(frag)
+    return CompileState{Utility::move(out), Utility::move(vert), Utility::move(frag)
         #if !defined(MAGNUM_TARGET_GLES) || (!defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         , version
         #endif
@@ -500,7 +500,7 @@ PhongGL::CompileState PhongGL::compile(const Flags flags, const UnsignedInt ligh
 #endif
 #endif
 
-PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(std::move(state))} {
+PhongGL::PhongGL(CompileState&& state): PhongGL{static_cast<PhongGL&&>(Utility::move(state))} {
     #ifdef CORRADE_GRACEFUL_ASSERT
     /* When graceful assertions fire from within compile(), we get a NoCreate'd
        CompileState. Exiting makes it possible to test the assert. */

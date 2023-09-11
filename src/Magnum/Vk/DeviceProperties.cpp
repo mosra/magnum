@@ -606,7 +606,7 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
             return {};
         }
 
-        return std::move(devices.front());
+        return Utility::move(devices.front());
     }
 
     /* Pick by ID */
@@ -619,7 +619,7 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
             return {};
         }
 
-        return std::move(devices[id]);
+        return Utility::move(devices[id]);
     }
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance);
@@ -640,7 +640,7 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
     }
 
     for(DeviceProperties& device: devices)
-        if(device.type() == type) return std::move(device);
+        if(device.type() == type) return Utility::move(device);
 
     Error{} << "Vk::tryPickDevice(): no" << type << "found among" << devices.size() << "Vulkan devices";
     return {};
@@ -648,7 +648,7 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
 
 DeviceProperties pickDevice(Instance& instance) {
     Containers::Optional<DeviceProperties> device = tryPickDevice(instance);
-    if(device) return *std::move(device);
+    if(device) return *Utility::move(device);
     std::exit(1); /* LCOV_EXCL_LINE */
 }
 

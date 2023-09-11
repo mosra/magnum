@@ -650,8 +650,8 @@ Trade::MeshData generateIndices(Trade::MeshData&& mesh) {
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};
-    return Trade::MeshData{primitive, std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData), vertexCount};
+    return Trade::MeshData{primitive, Utility::move(indexData), indices,
+        Utility::move(vertexData), Utility::move(attributeData), vertexCount};
 }
 
 Trade::MeshData generateIndices(const Trade::MeshData& mesh) {

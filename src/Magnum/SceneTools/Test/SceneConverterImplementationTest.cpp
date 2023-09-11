@@ -278,7 +278,7 @@ void SceneConverterImplementationTest::infoScenesObjects() {
                 Utility::copy({2, -1, 1, 2, 5}, parents);
                 Utility::copy({2, 0, 2, 1}, meshMapping);
                 /* No need to fill the other data, zero-init is fine */
-                return Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 6, std::move(data), {
+                return Trade::SceneData{Trade::SceneMappingType::UnsignedInt, 6, Utility::move(data), {
                     Trade::SceneFieldData{_omitParent ? Trade::sceneFieldCustom(0) : Trade::SceneField::Parent, parentMapping, parents},
                     Trade::SceneFieldData{Trade::SceneField::Mesh, meshMapping, meshes, Trade::SceneFieldFlag::OrderedMapping},
                 }};
@@ -359,7 +359,7 @@ void SceneConverterImplementationTest::infoAnimations() {
                     {ValueInit, 3, visibility},
                 };
                 Utility::copy({0.5f, 1.0f, 1.25f}, time);
-                return Trade::AnimationData{std::move(data), {
+                return Trade::AnimationData{Utility::move(data), {
                     Trade::AnimationTrackData{Trade::AnimationTrackTarget::Translation2D, 17, time, translation, Animation::Interpolation::Linear, Animation::Extrapolation::DefaultConstructed, Animation::Extrapolation::Constant},
                     Trade::AnimationTrackData{Trade::AnimationTrackTarget::Rotation2D, 17, time, rotation, Animation::Interpolation::Constant, Animation::Extrapolation::Extrapolated},
                     Trade::AnimationTrackData{Trade::animationTrackTargetCustom(333), 666, time, visibility, Animation::Interpolation::Constant, Animation::Extrapolation::Constant},
@@ -710,7 +710,7 @@ void SceneConverterImplementationTest::infoMeshes() {
                     {NoInit, 250, positions},
                     {NoInit, 250, tangents},
                 };
-                return Trade::MeshData{MeshPrimitive::Triangles, std::move(data), {
+                return Trade::MeshData{MeshPrimitive::Triangles, Utility::move(data), {
                     Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
                     Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, tangents},
                 }};
@@ -726,7 +726,7 @@ void SceneConverterImplementationTest::infoMeshes() {
                     {NoInit, 135, triangleCount},
                     {NoInit, 135, vertexCount},
                 };
-                return Trade::MeshData{MeshPrimitive::Meshlets, std::move(data), {
+                return Trade::MeshData{MeshPrimitive::Meshlets, Utility::move(data), {
                     Trade::MeshAttributeData{Trade::meshAttributeCustom(25), vertices},
                     Trade::MeshAttributeData{Trade::meshAttributeCustom(26), indices},
                     Trade::MeshAttributeData{Trade::meshAttributeCustom(37), triangleCount},

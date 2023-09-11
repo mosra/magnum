@@ -289,15 +289,15 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive),
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart(other._indexStart), _indexEnd(other._indexEnd),
     #endif
-    _indexBufferOffset(other._indexBufferOffset), _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer{std::move(other._indexBuffer)}
+    _indexBufferOffset(other._indexBufferOffset), _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer{Utility::move(other._indexBuffer)}
 {
     if(_constructed || other._constructed)
-        Context::current().state().mesh.moveConstructImplementation(*this, std::move(other));
+        Context::current().state().mesh.moveConstructImplementation(*this, Utility::move(other));
     other._id = 0;
 }
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     swap(_flags, other._flags);
     swap(_primitive, other._primitive);
@@ -318,7 +318,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     swap(_indexBuffer, other._indexBuffer);
 
     if(_constructed || other._constructed)
-        Context::current().state().mesh.moveAssignImplementation(*this, std::move(other));
+        Context::current().state().mesh.moveAssignImplementation(*this, Utility::move(other));
 
     return *this;
 }
@@ -406,7 +406,7 @@ Mesh& Mesh::setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type,
        tracker to _indexBuffer.id(). */
     Context::current().state().mesh.bindIndexBufferImplementation(*this, buffer);
 
-    _indexBuffer = std::move(buffer);
+    _indexBuffer = Utility::move(buffer);
     _indexBufferOffset = offset;
     _indexType = type;
     #ifndef MAGNUM_TARGET_GLES2
@@ -1070,12 +1070,12 @@ void Mesh::createImplementationVAODSA(Mesh& self, const bool createObject) {
 #endif
 
 void Mesh::moveConstructImplementationDefault(Mesh& self, Mesh&& other) {
-    new(&self._attributes) std::vector<AttributeLayout>{std::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
+    new(&self._attributes) std::vector<AttributeLayout>{Utility::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
     self._constructed = true;
 }
 
 void Mesh::moveConstructImplementationVAO(Mesh& self, Mesh&& other) {
-    new(&self._attributes) std::vector<Buffer>{std::move(*reinterpret_cast<std::vector<Buffer>*>(&other._attributes))};
+    new(&self._attributes) std::vector<Buffer>{Utility::move(*reinterpret_cast<std::vector<Buffer>*>(&other._attributes))};
     self._constructed = true;
 }
 
@@ -1087,27 +1087,27 @@ void Mesh::moveConstructImplementationVAO(Mesh& self, Mesh&& other) {
 
 void Mesh::moveAssignImplementationDefault(Mesh& self, Mesh&& other) {
     if(self._constructed && other._constructed)
-        std::swap(*reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes),
+        Utility::swap(*reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes),
             *reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes));
     else if(self._constructed && !other._constructed) {
         other._constructed = true;
-        new(&other._attributes) std::vector<AttributeLayout>{std::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes))};
+        new(&other._attributes) std::vector<AttributeLayout>{Utility::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes))};
     } else if(!self._constructed && other._constructed) {
         self._constructed = true;
-        new(&self._attributes) std::vector<AttributeLayout>{std::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
+        new(&self._attributes) std::vector<AttributeLayout>{Utility::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
     }
 }
 
 void Mesh::moveAssignImplementationVAO(Mesh& self, Mesh&& other) {
     if(self._constructed && other._constructed)
-        std::swap(*reinterpret_cast<std::vector<Buffer>*>(&self._attributes),
+        Utility::swap(*reinterpret_cast<std::vector<Buffer>*>(&self._attributes),
             *reinterpret_cast<std::vector<Buffer>*>(&other._attributes));
     else if(self._constructed && !other._constructed) {
         other._constructed = true;
-        new(&other._attributes) std::vector<Buffer>{std::move(*reinterpret_cast<std::vector<Buffer>*>(&self._attributes))};
+        new(&other._attributes) std::vector<Buffer>{Utility::move(*reinterpret_cast<std::vector<Buffer>*>(&self._attributes))};
     } else if(!self._constructed && other._constructed) {
         self._constructed = true;
-        new(&self._attributes) std::vector<Buffer>{std::move(*reinterpret_cast<std::vector<Buffer>*>(&other._attributes))};
+        new(&self._attributes) std::vector<Buffer>{Utility::move(*reinterpret_cast<std::vector<Buffer>*>(&other._attributes))};
     }
 }
 
@@ -1134,7 +1134,7 @@ void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location,
 void Mesh::attributePointerInternal(AttributeLayout&& attribute) {
     CORRADE_ASSERT(attribute.buffer.id(),
         "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed", );
-    Context::current().state().mesh.attributePointerImplementation(*this, std::move(attribute));
+    Context::current().state().mesh.attributePointerImplementation(*this, Utility::move(attribute));
 }
 
 void Mesh::attributePointerImplementationDefault(Mesh& self, AttributeLayout&& attribute) {
@@ -1143,7 +1143,7 @@ void Mesh::attributePointerImplementationDefault(Mesh& self, AttributeLayout&& a
         "GL::Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
 
-    reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes)->push_back(std::move(attribute));
+    reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes)->push_back(Utility::move(attribute));
 }
 
 void Mesh::attributePointerImplementationVAO(Mesh& self, AttributeLayout&& attribute) {
@@ -1186,9 +1186,9 @@ void Mesh::attributePointerImplementationVAODSAIntelWindows(Mesh& self, Attribut
     /* See the "intel-windows-broken-dsa-integer-vertex-attributes" workaround
        for more information. */
     if(attribute.kind == DynamicAttribute::Kind::Integral)
-        return attributePointerImplementationVAO(self, std::move(attribute));
+        return attributePointerImplementationVAO(self, Utility::move(attribute));
     else
-        return attributePointerImplementationVAODSA(self, std::move(attribute));
+        return attributePointerImplementationVAODSA(self, Utility::move(attribute));
 }
 #endif
 #endif
@@ -1198,11 +1198,11 @@ void Mesh::attributePointerImplementationVAODSAIntelWindows(Mesh& self, Attribut
    these two */
 void Mesh::attributePointerImplementationDefaultAngleAlwaysInstanced(Mesh& self, AttributeLayout&& attribute) {
     if(attribute.divisor) self._instanced = true;
-    return attributePointerImplementationDefault(self, std::move(attribute));
+    return attributePointerImplementationDefault(self, Utility::move(attribute));
 }
 void Mesh::attributePointerImplementationVAOAngleAlwaysInstanced(Mesh& self, AttributeLayout&& attribute) {
     if(attribute.divisor) self._instanced = true;
-    return attributePointerImplementationVAO(self, std::move(attribute));
+    return attributePointerImplementationVAO(self, Utility::move(attribute));
 }
 #endif
 
@@ -1255,7 +1255,7 @@ void Mesh::vertexAttribDivisorImplementationNV(Mesh&, const GLuint index, const 
 #endif
 
 void Mesh::acquireVertexBuffer(Buffer&& buffer) {
-    Context::current().state().mesh.acquireVertexBufferImplementation(*this, std::move(buffer));
+    Context::current().state().mesh.acquireVertexBufferImplementation(*this, Utility::move(buffer));
 }
 
 void Mesh::acquireVertexBufferImplementationDefault(Mesh& self, Buffer&& buffer) {
@@ -1263,14 +1263,14 @@ void Mesh::acquireVertexBufferImplementationDefault(Mesh& self, Buffer&& buffer)
     auto& attributes = *reinterpret_cast<std::vector<AttributeLayout>*>(&self._attributes);
     CORRADE_INTERNAL_ASSERT(!attributes.empty() && attributes.back().buffer.id() == buffer.id() && buffer.id());
     attributes.back().buffer.release(); /* so we swap back a zero ID */
-    attributes.back().buffer = std::move(buffer);
+    attributes.back().buffer = Utility::move(buffer);
 }
 
 void Mesh::acquireVertexBufferImplementationVAO(Mesh& self, Buffer&& buffer) {
     CORRADE_INTERNAL_ASSERT(buffer.id());
     /* With VAOs we are not maintaining the attribute list, so just store the
        buffer directly */
-    reinterpret_cast<std::vector<Buffer>*>(&self._attributes)->emplace_back(std::move(buffer));
+    reinterpret_cast<std::vector<Buffer>*>(&self._attributes)->emplace_back(Utility::move(buffer));
 }
 
 void Mesh::bindIndexBufferImplementationDefault(Mesh&, Buffer&) {}

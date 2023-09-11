@@ -62,7 +62,7 @@ FrameProfiler::Measurement::Measurement(const Containers::StringView name, const
 FrameProfiler::FrameProfiler() noexcept = default;
 
 FrameProfiler::FrameProfiler(Containers::Array<Measurement>&& measurements, UnsignedInt maxFrameCount) noexcept {
-    setup(std::move(measurements), maxFrameCount);
+    setup(Utility::move(measurements), maxFrameCount);
 }
 
 FrameProfiler::FrameProfiler(const std::initializer_list<Measurement> measurements, const UnsignedInt maxFrameCount): FrameProfiler{Containers::array(measurements), maxFrameCount} {}
@@ -74,8 +74,8 @@ FrameProfiler::FrameProfiler(FrameProfiler&& other) noexcept:
     #endif
     _maxFrameCount{other._maxFrameCount},
     _measuredFrameCount{other._measuredFrameCount},
-    _measurements{std::move(other._measurements)},
-    _data{std::move(other._data)}
+    _measurements{Utility::move(other._measurements)},
+    _data{Utility::move(other._data)}
 {
     /* For all state pointers that point to &other patch them to point to this
        instead, to account for 90% of use cases of derived classes */
@@ -84,7 +84,7 @@ FrameProfiler::FrameProfiler(FrameProfiler&& other) noexcept:
 }
 
 FrameProfiler& FrameProfiler::operator=(FrameProfiler&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_enabled, other._enabled);
     #ifndef CORRADE_NO_ASSERT
     swap(_beginFrameCalled, other._beginFrameCalled);
@@ -111,7 +111,7 @@ void FrameProfiler::setup(Containers::Array<Measurement>&& measurements, const U
     CORRADE_ASSERT(maxFrameCount >= 1, "DebugTools::FrameProfiler::setup(): max frame count can't be zero", );
 
     _maxFrameCount = maxFrameCount;
-    _measurements = std::move(measurements);
+    _measurements = Utility::move(measurements);
     arrayReserve(_data, maxFrameCount*_measurements.size());
 
     #ifndef CORRADE_NO_ASSERT
@@ -573,7 +573,7 @@ void FrameProfilerGL::setup(const Values values, const UnsignedInt maxFrameCount
         _state->primitiveClipRatioIndex = index++;
     }
     #endif
-    setup(std::move(measurements), maxFrameCount);
+    setup(Utility::move(measurements), maxFrameCount);
 }
 
 auto FrameProfilerGL::values() const -> Values {

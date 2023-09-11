@@ -69,7 +69,7 @@ Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2
         vertices[i].color = Math::lerp(colorA, colorB, t);
     }
 
-    return Trade::MeshData{MeshPrimitive::TriangleStrip, std::move(vertexData),
+    return Trade::MeshData{MeshPrimitive::TriangleStrip, Utility::move(vertexData),
         Trade::meshAttributeDataNonOwningArray(Attributes2D)};
 }
 
@@ -126,7 +126,7 @@ Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3
         vertices[i].color = Math::lerp(colorA, colorB, t);
     }
 
-    return Trade::MeshData{MeshPrimitive::TriangleStrip, std::move(vertexData),
+    return Trade::MeshData{MeshPrimitive::TriangleStrip, Utility::move(vertexData),
         Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 

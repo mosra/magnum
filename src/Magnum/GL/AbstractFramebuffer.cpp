@@ -376,13 +376,13 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
         data = Containers::Array<char>{dataSize};
 
     /* Replace the storage, proxy to the function taking a view */
-    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), std::move(data), ImageFlags2D{}};
+    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), Utility::move(data), ImageFlags2D{}};
     read(rectangle, MutableImageView2D(image));
 }
 
 Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {
     read(rectangle, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -403,7 +403,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, 
 
 BufferImage2D AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage) {
     read(rectangle, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 #endif
 

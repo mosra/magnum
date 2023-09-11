@@ -148,8 +148,8 @@ Trade::MeshData WireframeSpheroid::finalize() {
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position, Containers::arrayView(_vertexData)};
     const UnsignedInt vertexCount = _vertexData.size();
     return Trade::MeshData{MeshPrimitive::Lines,
-        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(std::move(_indexData)), indices,
-        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(std::move(_vertexData)),
+        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(Utility::move(_indexData)), indices,
+        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(Utility::move(_vertexData)),
         Trade::meshAttributeDataNonOwningArray(AttributeData), vertexCount};
 }
 

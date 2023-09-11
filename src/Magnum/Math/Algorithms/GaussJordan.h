@@ -62,7 +62,7 @@ template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTra
                 rowMax = row2;
 
         /* Swap the rows */
-        using std::swap;
+        using Corrade::Utility::swap;
         swap(a[row], a[rowMax]);
         swap(t[row], t[rowMax]);
 

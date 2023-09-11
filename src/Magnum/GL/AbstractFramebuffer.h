@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::GL::AbstractFramebuffer, enum @ref Magnum::GL::FramebufferClear, @ref Magnum::GL::FramebufferBlit, @ref Magnum::GL::FramebufferBlitFilter, @ref Magnum::GL::FramebufferTarget, enum set @ref Magnum::GL::FramebufferClearMask
  */
 
-#include <utility> /* std::swap() */
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Move.h>
 
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -764,7 +764,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         }
         AbstractFramebuffer& operator=(const AbstractFramebuffer&) = delete;
         AbstractFramebuffer& operator=(AbstractFramebuffer&& other) noexcept {
-            using std::swap;
+            using Utility::swap;
             swap(_id, other._id);
             swap(_viewport, other._viewport);
             swap(_flags, other._flags);

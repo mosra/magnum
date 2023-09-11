@@ -114,7 +114,7 @@ Containers::Optional<Trade::MaterialData> merge(const Trade::MaterialData& first
 
     CORRADE_INTERNAL_ASSERT(layer == layers.size());
 
-    return Trade::MaterialData{first.types()|second.types(), std::move(attributes), std::move(layers)};
+    return Trade::MaterialData{first.types()|second.types(), Utility::move(attributes), Utility::move(layers)};
 }
 
 }}

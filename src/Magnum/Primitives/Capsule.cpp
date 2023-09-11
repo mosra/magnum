@@ -102,8 +102,8 @@ Trade::MeshData capsule2DWireframe(const UnsignedInt hemisphereRings, const Unsi
     Trade::MeshIndexData indices{indexData};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position, Containers::arrayView(vertexData)};
     return Trade::MeshData{MeshPrimitive::Lines,
-        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(std::move(indexData)), indices,
-        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(std::move(vertexData)), {positions}};
+        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(Utility::move(indexData)), indices,
+        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(Utility::move(vertexData)), {positions}};
 }
 
 Trade::MeshData capsule3DSolid(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength, const CapsuleFlags flags) {

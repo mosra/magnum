@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::GL::Renderbuffer
  */
 
-#include <utility> /* std::swap() */
+#include <Corrade/Utility/Move.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -280,7 +280,7 @@ inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id{other._id}
 }
 
 inline Renderbuffer& Renderbuffer::operator=(Renderbuffer&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     swap(_flags, other._flags);
     return *this;

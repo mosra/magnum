@@ -336,7 +336,7 @@ AbstractImageConverter::convertToData(const ImageView1D& image) {
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -369,7 +369,7 @@ AbstractImageConverter::convertToData(const ImageView2D& image) {
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -385,7 +385,7 @@ Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertT
 #ifdef MAGNUM_BUILD_DEPRECATED
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& image) {
     Containers::Optional<Containers::Array<char>> out = convertToData(image);
-    return out ? *std::move(out) : nullptr;
+    return out ? *Utility::move(out) : nullptr;
 }
 #endif
 
@@ -409,7 +409,7 @@ AbstractImageConverter::convertToData(const ImageView3D& image) {
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -442,7 +442,7 @@ AbstractImageConverter::convertToData(const CompressedImageView1D& image) {
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -475,7 +475,7 @@ AbstractImageConverter::convertToData(const CompressedImageView2D& image) {
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -491,7 +491,7 @@ Containers::Optional<Containers::Array<char>> AbstractImageConverter::doConvertT
 #ifdef MAGNUM_BUILD_DEPRECATED
 Containers::Array<char> AbstractImageConverter::exportToData(const CompressedImageView2D& image) {
     Containers::Optional<Containers::Array<char>> out = convertToData(image);
-    return out ? *std::move(out) : nullptr;
+    return out ? *Utility::move(out) : nullptr;
 }
 #endif
 
@@ -515,7 +515,7 @@ AbstractImageConverter::convertToData(const CompressedImageView3D& image) {
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -549,7 +549,7 @@ AbstractImageConverter::convertToData(const ImageData2D& image) {
 #ifdef MAGNUM_BUILD_DEPRECATED
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageData2D& image) {
     Containers::Optional<Containers::Array<char>> out = convertToData(image);
-    return out ? *std::move(out) : nullptr;
+    return out ? *Utility::move(out) : nullptr;
 }
 #endif
 
@@ -647,7 +647,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageVie
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -686,7 +686,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageVie
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -725,7 +725,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const ImageVie
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -764,7 +764,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const Compress
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -803,7 +803,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const Compress
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -842,7 +842,7 @@ AbstractImageConverter::convertToData(const Containers::ArrayView<const Compress
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::ImageConverterOptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::ImageConverterOptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif

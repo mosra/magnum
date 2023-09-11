@@ -761,7 +761,7 @@ Shader::Shader(Shader&& other) noexcept: _type{other._type}, _id{other._id}, _fl
     _offsetLineByOneOnOldGlsl{other._flags},
     #endif
     _fileIndexOffset{other._fileIndexOffset},
-    _sources{std::move(other._sources)}
+    _sources{Utility::move(other._sources)}
 {
     other._id = 0;
 }
@@ -774,7 +774,7 @@ Shader::~Shader() {
 }
 
 Shader& Shader::operator=(Shader&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_type, other._type);
     swap(_id, other._id);
     swap(_flags, other._flags);
@@ -837,14 +837,14 @@ Shader& Shader::addSourceInternal(Containers::String&& source) {
             (_sources.size() + 1 - _fileIndexOffset)/2));
         else arrayAppend(_sources, Containers::String::nullTerminatedGlobalView(""_s));
 
-        Context::current().state().shader.addSourceImplementation(*this, std::move(source));
+        Context::current().state().shader.addSourceImplementation(*this, Utility::move(source));
     }
 
     return *this;
 }
 
 void Shader::addSourceImplementationDefault(Shader& self, Containers::String&& source) {
-    arrayAppend(self._sources, std::move(source));
+    arrayAppend(self._sources, Utility::move(source));
 }
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
@@ -856,14 +856,14 @@ void Shader::addSourceImplementationEmscriptenPthread(Shader& self, Containers::
     if(!source.isSmall() && !source.deleter())
         source = Containers::String{source};
     for(char& c: source) if(c < 0) c = ' ';
-    arrayAppend(self._sources, std::move(source));
+    arrayAppend(self._sources, Utility::move(source));
 }
 #endif
 
 Shader& Shader::addFile(const Containers::StringView filename) {
     Containers::Optional<Containers::String> string = Utility::Path::readString(filename);
     CORRADE_ASSERT(string, "GL::Shader::addFile(): can't read" << filename, *this);
-    addSource(*std::move(string));
+    addSource(*Utility::move(string));
     return *this;
 }
 

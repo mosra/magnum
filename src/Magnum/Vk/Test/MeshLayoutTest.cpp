@@ -228,7 +228,7 @@ void MeshLayoutTest::constructMove() {
     a.addInstancedBinding(3, 5, 555)
         .addAttribute(15, 23, VertexFormat::UnsignedShort, 11);
 
-    MeshLayout b = std::move(a);
+    MeshLayout b = Utility::move(a);
     CORRADE_VERIFY(!a.vkPipelineVertexInputStateCreateInfo().pNext);
     CORRADE_COMPARE(a.vkPipelineVertexInputStateCreateInfo().vertexBindingDescriptionCount, 0);
     CORRADE_VERIFY(!a.vkPipelineVertexInputStateCreateInfo().pVertexBindingDescriptions);
@@ -244,7 +244,7 @@ void MeshLayoutTest::constructMove() {
     CORRADE_COMPARE(b.vkPipelineVertexInputStateCreateInfo().pVertexAttributeDescriptions[0].format, VK_FORMAT_R16_UINT);
 
     MeshLayout c{{}, {}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.vkPipelineVertexInputStateCreateInfo().pNext);
     CORRADE_COMPARE(b.vkPipelineVertexInputStateCreateInfo().vertexBindingDescriptionCount, 0);
     CORRADE_VERIFY(!b.vkPipelineVertexInputStateCreateInfo().pVertexBindingDescriptions);

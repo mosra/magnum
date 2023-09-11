@@ -95,7 +95,7 @@ void AnyImporter::doOpenFile(const std::string& filename) {
     if(!importer->openFile(filename)) return;
 
     /* Success, save the instance */
-    _in = std::move(importer);
+    _in = Utility::move(importer);
 }
 
 BufferFormat AnyImporter::doFormat() const { return _in->format(); }

@@ -137,7 +137,7 @@ Trade::MeshData planeSolid(const PlaneFlags flags) {
     }
 
     return Trade::MeshData{MeshPrimitive::TriangleStrip,
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(vertexData), Utility::move(attributeData)};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

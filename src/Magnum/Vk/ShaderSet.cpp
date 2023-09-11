@@ -43,7 +43,7 @@ struct ShaderSet::State {
 
 ShaderSet::ShaderSet(): _stages{}, _specializations{}, _stageCount{} {}
 
-ShaderSet::ShaderSet(ShaderSet&& other) noexcept: _stageCount{other._stageCount}, _state{std::move(other._state)} {
+ShaderSet::ShaderSet(ShaderSet&& other) noexcept: _stageCount{other._stageCount}, _state{Utility::move(other._state)} {
     /* C++, WHY THE FUCK can't you copy C arrays, why do I have to do that for
        you?! */
     Utility::copy(other._stages, _stages);
@@ -66,7 +66,7 @@ ShaderSet::ShaderSet(ShaderSet&& other) noexcept: _stageCount{other._stageCount}
 ShaderSet::~ShaderSet() = default;
 
 ShaderSet& ShaderSet::operator=(ShaderSet&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._stages, _stages);
     swap(other._specializations, _specializations);
     swap(other._stageCount, _stageCount);
@@ -160,11 +160,11 @@ ShaderSet& ShaderSet::addShader(const ShaderStage stage, const VkShaderModule sh
 
 ShaderSet& ShaderSet::addShader(const ShaderStage stage, Shader&& shader, const Containers::StringView entrypoint, const Containers::ArrayView<const ShaderSpecialization> specializations) {
     if(!_state) _state.emplace();
-    return addShader(stage, arrayAppend(_state->ownedShaders, std::move(shader)), entrypoint, specializations);
+    return addShader(stage, arrayAppend(_state->ownedShaders, Utility::move(shader)), entrypoint, specializations);
 }
 
 ShaderSet& ShaderSet::addShader(const ShaderStage stage, Shader&& shader, const Containers::StringView entrypoint, const std::initializer_list<ShaderSpecialization> specializations) {
-    return addShader(stage, std::move(shader), entrypoint, Containers::arrayView(specializations));
+    return addShader(stage, Utility::move(shader), entrypoint, Containers::arrayView(specializations));
 }
 
 Containers::ArrayView<VkPipelineShaderStageCreateInfo> ShaderSet::stages() {

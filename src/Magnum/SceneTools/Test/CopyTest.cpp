@@ -229,7 +229,7 @@ void CopyTest::rvalueDataFieldsOwned() {
     const Trade::SceneFieldData* originalFields = fields;
 
     Trade::SceneData copy = SceneTools::copy(Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 12,
-        std::move(data), std::move(fields)});
+        Utility::move(data), Utility::move(fields)});
 
     CORRADE_COMPARE(copy.mappingType(), Trade::SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(copy.mappingBound(), 12);
@@ -267,7 +267,7 @@ void CopyTest::rvalueDataOwned() {
     };
 
     Trade::SceneData copy = SceneTools::copy(Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 12,
-        std::move(data), Trade::sceneFieldDataNonOwningArray(fields)});
+        Utility::move(data), Trade::sceneFieldDataNonOwningArray(fields)});
 
     CORRADE_COMPARE(copy.mappingType(), Trade::SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(copy.mappingBound(), 12);
@@ -304,7 +304,7 @@ void CopyTest::rvalueFieldsOwned() {
     const Trade::SceneFieldData* originalFields = fields;
 
     Trade::SceneData copy = SceneTools::copy(Trade::SceneData{Trade::SceneMappingType::UnsignedShort, 12,
-        Trade::DataFlag::ExternallyOwned, data, std::move(fields)});
+        Trade::DataFlag::ExternallyOwned, data, Utility::move(fields)});
 
     CORRADE_COMPARE(copy.mappingType(), Trade::SceneMappingType::UnsignedShort);
     CORRADE_COMPARE(copy.mappingBound(), 12);

@@ -76,7 +76,7 @@ FramebufferCreateInfo::FramebufferCreateInfo(FramebufferCreateInfo&& other) noex
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(other._info),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     other._info.attachmentCount = 0;
@@ -86,7 +86,7 @@ FramebufferCreateInfo::FramebufferCreateInfo(FramebufferCreateInfo&& other) noex
 FramebufferCreateInfo::~FramebufferCreateInfo() = default;
 
 FramebufferCreateInfo& FramebufferCreateInfo::operator=(FramebufferCreateInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._state, _state);
     return *this;
@@ -129,7 +129,7 @@ Framebuffer::~Framebuffer() {
 }
 
 Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);

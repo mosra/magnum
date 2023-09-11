@@ -74,7 +74,7 @@ ShaderCreateInfo::~ShaderCreateInfo() {
 }
 
 ShaderCreateInfo& ShaderCreateInfo::operator=(ShaderCreateInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._originalDeleter, _originalDeleter);
     swap(other._deleter, _deleter);
@@ -105,7 +105,7 @@ Shader::~Shader() {
 }
 
 Shader& Shader::operator=(Shader&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);

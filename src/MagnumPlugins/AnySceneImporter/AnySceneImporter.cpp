@@ -177,7 +177,7 @@ void AnySceneImporter::doOpenFile(const Containers::StringView filename) {
     if(!importer->openFile(filename)) return;
 
     /* Success, save the instance */
-    _in = std::move(importer);
+    _in = Utility::move(importer);
 }
 
 UnsignedInt AnySceneImporter::doAnimationCount() const { return _in->animationCount(); }

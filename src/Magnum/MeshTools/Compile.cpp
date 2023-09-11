@@ -113,7 +113,7 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
 
             /* For the first attribute move the buffer in, for all others use
                the reference */
-            if(vertices.id()) mesh.addVertexBuffer(std::move(vertices),
+            if(vertices.id()) mesh.addVertexBuffer(Utility::move(vertices),
                 meshData.attributeOffset(i) + offset, stride, attribute);
             else mesh.addVertexBuffer(verticesRef, meshData.attributeOffset(i) + offset,
                 stride, attribute);
@@ -244,7 +244,7 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
         CORRADE_ASSERT(isMeshIndexTypeImplementationSpecific(meshData.indexType()) || Short(meshIndexTypeSize(meshData.indexType())) == meshData.indexStride(),
             "MeshTools::compile():" << meshData.indexType() << "with stride of" << meshData.indexStride() << "bytes isn't supported by OpenGL", GL::Mesh{});
 
-        mesh.setIndexBuffer(std::move(indices), meshData.indexOffset(), meshData.indexType())
+        mesh.setIndexBuffer(Utility::move(indices), meshData.indexOffset(), meshData.indexType())
             .setCount(meshData.indexCount());
     } else mesh.setCount(meshData.vertexCount());
 
@@ -261,13 +261,13 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, const CompileFlags fla
     GL::Buffer vertices{GL::Buffer::TargetHint::Array};
     vertices.setData(meshData.vertexData());
 
-    return compileInternal(meshData, std::move(indices), std::move(vertices), flags);
+    return compileInternal(meshData, Utility::move(indices), Utility::move(vertices), flags);
 }
 
 }
 
 GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer&& indices, GL::Buffer&& vertices) {
-    return compileInternal(mesh, std::move(indices), std::move(vertices), {});
+    return compileInternal(mesh, Utility::move(indices), Utility::move(vertices), {});
 }
 
 GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer& vertices) {
@@ -275,11 +275,11 @@ GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer& v
 }
 
 GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer& indices, GL::Buffer&& vertices) {
-    return compileInternal(mesh, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), std::move(vertices), CompileFlag::NoWarnOnCustomAttributes);
+    return compileInternal(mesh, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), Utility::move(vertices), CompileFlag::NoWarnOnCustomAttributes);
 }
 
 GL::Mesh compile(const Trade::MeshData& mesh, GL::Buffer&& indices, GL::Buffer& vertices) {
-    return compileInternal(mesh, std::move(indices), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
+    return compileInternal(mesh, Utility::move(indices), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
 }
 
 GL::Mesh compile(const Trade::MeshData& mesh) {
@@ -363,7 +363,7 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
     Containers::Array<char> data = interleave(
         meshData.positions(0),
         stride - sizeof(Shaders::Generic2D::Position::Type));
-    mesh.addVertexBuffer(std::move(vertexBuffer), 0,
+    mesh.addVertexBuffer(Utility::move(vertexBuffer), 0,
         Shaders::Generic2D::Position(),
         stride - sizeof(Shaders::Generic2D::Position::Type));
 
@@ -404,7 +404,7 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
         GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
         indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
         mesh.setCount(meshData.indices().size())
-            .setIndexBuffer(std::move(indexBuffer), 0, indexType, indexStart, indexEnd);
+            .setIndexBuffer(Utility::move(indexBuffer), 0, indexType, indexStart, indexEnd);
 
     /* Else set vertex count */
     } else mesh.setCount(meshData.positions(0).size());
@@ -504,7 +504,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     Containers::Array<char> data = interleave(
         positions,
         stride - sizeof(Shaders::Generic3D::Position::Type));
-    mesh.addVertexBuffer(std::move(vertexBuffer), 0,
+    mesh.addVertexBuffer(Utility::move(vertexBuffer), 0,
         Shaders::Generic3D::Position(),
         stride - sizeof(Shaders::Generic3D::Position::Type));
 
@@ -558,7 +558,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
         GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
         indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
         mesh.setCount(meshData.indices().size())
-            .setIndexBuffer(std::move(indexBuffer), 0, indexType, indexStart, indexEnd);
+            .setIndexBuffer(Utility::move(indexBuffer), 0, indexType, indexStart, indexEnd);
 
     /* Else set vertex count */
     } else mesh.setCount(positions.size());

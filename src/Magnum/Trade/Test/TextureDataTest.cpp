@@ -85,7 +85,7 @@ void TextureDataTest::constructMove() {
         42,
         &a};
 
-    TextureData b{std::move(data)};
+    TextureData b{Utility::move(data)};
 
     CORRADE_COMPARE(b.type(), TextureType::CubeMap);
     CORRADE_COMPARE(b.minificationFilter(), SamplerFilter::Linear);
@@ -103,7 +103,7 @@ void TextureDataTest::constructMove() {
         SamplerWrapping::ClampToEdge,
         13,
         &c};
-    d = std::move(b);
+    d = Utility::move(b);
 
     CORRADE_COMPARE(d.type(), TextureType::CubeMap);
     CORRADE_COMPARE(d.minificationFilter(), SamplerFilter::Linear);

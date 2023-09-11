@@ -2517,7 +2517,7 @@ void SceneDataTest::construct() {
     SceneFieldData radiuses{sceneFieldCustom(37),
         materialMeshRadiusMappingData,
         Containers::arrayCast<2, Float>(radiusFieldData), SceneFieldFlag::OrderedMapping};
-    SceneData scene{SceneMappingType::UnsignedShort, 8, std::move(data), {
+    SceneData scene{SceneMappingType::UnsignedShort, 8, Utility::move(data), {
         transformations, parents, meshes, radiuses
     }, &importerState};
 
@@ -3203,7 +3203,7 @@ template<class T> void SceneDataTest::constructString() {
        to test storing negative string data offset */
     CORRADE_VERIFY(fileTagStringData.data() < fileTagData.data());
 
-    SceneData scene{SceneMappingType::UnsignedShort, 4, std::move(data), {
+    SceneData scene{SceneMappingType::UnsignedShort, 4, Utility::move(data), {
         /* Has a negative stride */
         SceneFieldData{nameField, nameData.slice(&Name::object).template flipped<0>(),
             nameKeyValueStringData.data(), StringFieldTraits<T>::offsetType(),
@@ -3394,7 +3394,7 @@ void SceneDataTest::constructSpecialStrides() {
     SceneFieldData flippedFieldOffsetOnly{sceneFieldCustom(41),
         4, SceneMappingType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2,
         SceneFieldType::UnsignedShort, std::size_t(static_cast<char*>(nonBroadcastedData.flipped<0>().data()) - data.data()), -2};
-    SceneData scene{SceneMappingType::UnsignedShort, 8, std::move(data), {
+    SceneData scene{SceneMappingType::UnsignedShort, 8, Utility::move(data), {
         broadcastedMapping, broadcastedField, flippedField, flippedFieldOffsetOnly
     }};
 
@@ -3662,7 +3662,7 @@ void SceneDataTest::constructMappingDataNotContained() {
     std::ostringstream out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned data */
-    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
+    SceneData{SceneMappingType::UnsignedShort, 5, Utility::move(sameDataButMovable), {
         /* This is here to test that not just the first field gets checked and
            that the message shows proper ID */
         SceneFieldData{SceneField::Light, dataIn, dataIn},
@@ -3717,7 +3717,7 @@ void SceneDataTest::constructFieldDataNotContained() {
     std::ostringstream out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned data */
-    SceneData{SceneMappingType::UnsignedShort, 5, std::move(sameDataButMovable), {
+    SceneData{SceneMappingType::UnsignedShort, 5, Utility::move(sameDataButMovable), {
         /* This is here to test that not just the first attribute gets checked
            and that the message shows proper ID */
         SceneFieldData{SceneField::Light, dataIn, dataIn},
@@ -3782,7 +3782,7 @@ void SceneDataTest::constructBitFieldDataNotContained() {
     std::ostringstream out;
     Error redirectError{&out};
     /* Basic "obviously wrong" case with owned data */
-    SceneData{SceneMappingType::UnsignedByte, 10, std::move(sameDataButMovable), {
+    SceneData{SceneMappingType::UnsignedByte, 10, Utility::move(sameDataButMovable), {
         /* This is here to test that not just the first attribute gets checked
            and that the message shows proper ID */
         SceneFieldData{SceneField::Light, mappingData, mappingData},
@@ -4214,9 +4214,9 @@ void SceneDataTest::constructMove() {
 
     int importerState;
     SceneFieldData meshes{SceneField::Mesh, stridedArrayView(meshData).slice(&Mesh::object), stridedArrayView(meshData).slice(&Mesh::mesh)};
-    SceneData a{SceneMappingType::UnsignedShort, 15, std::move(data), {meshes}, &importerState};
+    SceneData a{SceneMappingType::UnsignedShort, 15, Utility::move(data), {meshes}, &importerState};
 
-    SceneData b{std::move(a)};
+    SceneData b{Utility::move(a)};
     CORRADE_COMPARE(b.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(b.mappingBound(), 15);
     CORRADE_COMPARE(b.mappingType(), SceneMappingType::UnsignedShort);
@@ -4231,7 +4231,7 @@ void SceneDataTest::constructMove() {
     CORRADE_COMPARE(b.field<UnsignedInt>(0)[2], 2);
 
     SceneData c{SceneMappingType::UnsignedByte, 76, nullptr, {}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(c.mappingBound(), 15);
     CORRADE_COMPARE(c.mappingType(), SceneMappingType::UnsignedShort);
@@ -4717,7 +4717,7 @@ template<class T> void SceneDataTest::transformations2DAsArray() {
        for those and error/warn on those, they get just ignored. */
     components[1] = {2, {3.5f, -1.0f}, {1.0f, 1.5f}};
 
-    SceneData scene{SceneMappingType::UnsignedInt, 6, std::move(data), {
+    SceneData scene{SceneMappingType::UnsignedInt, 6, Utility::move(data), {
         /* To verify it isn't just picking the first ever field */
         SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
         SceneFieldData{SceneField::Transformation,
@@ -5313,7 +5313,7 @@ template<class T> void SceneDataTest::transformations3DAsArray() {
        for those and error/warn on those, they get just ignored. */
     components[1] = {2, {3.5f, -1.0f, 2.2f}, {1.0f, 1.5f, 1.0f}};
 
-    SceneData scene{SceneMappingType::UnsignedInt, 6, std::move(data), {
+    SceneData scene{SceneMappingType::UnsignedInt, 6, Utility::move(data), {
         /* To verify it isn't just picking the first ever field */
         SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedInt, nullptr, SceneFieldType::Int, nullptr},
         SceneFieldData{SceneField::Transformation,
@@ -7530,7 +7530,7 @@ void SceneDataTest::childrenDeprecated() {
     if(data.is3D)
         arrayAppend(fieldData, SceneFieldData{SceneField::Translation, SceneMappingType::UnsignedByte, nullptr, SceneFieldType::Vector3, nullptr});
 
-    SceneData scene{SceneMappingType::UnsignedByte, 25, {}, fields, std::move(fieldData)};
+    SceneData scene{SceneMappingType::UnsignedByte, 25, {}, fields, Utility::move(fieldData)};
 
     if(!data.skipParent) {
         CORRADE_IGNORE_DEPRECATED_PUSH
@@ -7644,7 +7644,7 @@ void SceneDataTest::releaseFieldData() {
     });
     SceneFieldData* originalFields = fields;
 
-    SceneData scene{SceneMappingType::UnsignedByte, 50, std::move(data), std::move(fields)};
+    SceneData scene{SceneMappingType::UnsignedByte, 50, Utility::move(data), Utility::move(fields)};
 
     Containers::Array<SceneFieldData> released = scene.releaseFieldData();
     CORRADE_COMPARE(released.data(), originalFields);
@@ -7670,7 +7670,7 @@ void SceneDataTest::releaseData() {
     Containers::Array<char> data{NoInit, 3*sizeof(Field)};
     Containers::StridedArrayView1D<Field> view = Containers::arrayCast<Field>(data);
 
-    SceneData scene{SceneMappingType::UnsignedByte, 50, std::move(data), {
+    SceneData scene{SceneMappingType::UnsignedByte, 50, Utility::move(data), {
         SceneFieldData{SceneField::Parent, SceneMappingType::UnsignedByte, nullptr, SceneFieldType::Int, nullptr},
         SceneFieldData{SceneField::Mesh, view.slice(&Field::object), view.slice(&Field::mesh)}
     }};

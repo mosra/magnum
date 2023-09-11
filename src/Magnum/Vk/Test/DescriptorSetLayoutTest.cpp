@@ -160,7 +160,7 @@ void DescriptorSetLayoutTest::bindingConstructMove() {
     CORRADE_VERIFY(a->pImmutableSamplers);
     CORRADE_COMPARE(a->pImmutableSamplers[1], reinterpret_cast<VkSampler>(reinterpret_cast<void*>(0xbeef)));
 
-    DescriptorSetLayoutBinding b = std::move(a);
+    DescriptorSetLayoutBinding b = Utility::move(a);
     CORRADE_VERIFY(!a->pImmutableSamplers);
     CORRADE_COMPARE(b->descriptorCount, 3);
     CORRADE_VERIFY(b->pImmutableSamplers);
@@ -168,7 +168,7 @@ void DescriptorSetLayoutTest::bindingConstructMove() {
     CORRADE_COMPARE(b.flags(), VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT);
 
     DescriptorSetLayoutBinding c{3, {}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b->pImmutableSamplers);
     CORRADE_COMPARE(c->descriptorCount, 3);
     CORRADE_VERIFY(c->pImmutableSamplers);
@@ -286,7 +286,7 @@ void DescriptorSetLayoutTest::createInfoConstructMove() {
     CORRADE_VERIFY(a->pBindings);
     CORRADE_VERIFY(a->pNext);
 
-    DescriptorSetLayoutCreateInfo b = std::move(a);
+    DescriptorSetLayoutCreateInfo b = Utility::move(a);
     CORRADE_COMPARE(a->bindingCount, 0);
     CORRADE_VERIFY(!a->pBindings);
     CORRADE_VERIFY(!a->pNext);
@@ -297,7 +297,7 @@ void DescriptorSetLayoutTest::createInfoConstructMove() {
     CORRADE_COMPARE(static_cast<const VkDescriptorSetLayoutBindingFlagsCreateInfo*>(b->pNext)->pBindingFlags[1], VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT);
 
     DescriptorSetLayoutCreateInfo c{VkDescriptorSetLayoutCreateInfo{}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->bindingCount, 0);
     CORRADE_VERIFY(!b->pBindings);
     CORRADE_VERIFY(!b->pNext);

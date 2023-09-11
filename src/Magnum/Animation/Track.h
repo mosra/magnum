@@ -161,7 +161,7 @@ template<class K, class V, class R
          * @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Extrapolation, Extrapolation)
          * for an alternative.
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _interpolation{Interpolation::Custom}, _before{before}, _after{after} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{Utility::move(data)}, _interpolator{interpolator}, _interpolation{Interpolation::Custom}, _before{before}, _after{after} {}
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolator, before, after} {}
@@ -170,7 +170,7 @@ template<class K, class V, class R
          * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolator, extrapolation, extrapolation} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{Utility::move(data), interpolator, extrapolation, extrapolation} {}
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolator, extrapolation, extrapolation} {}
@@ -189,7 +189,7 @@ template<class K, class V, class R
          * supply their own interpolator function to @ref at() or
          * @ref atStrict().
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _interpolation{interpolation}, _before{before}, _after{after} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{Utility::move(data)}, _interpolator{interpolator}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, interpolator, before, after} {}
@@ -198,7 +198,7 @@ template<class K, class V, class R
          * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolation, interpolator, extrapolation, extrapolation} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{Utility::move(data), interpolation, interpolator, extrapolation, extrapolation} {}
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, interpolator, extrapolation} {}
@@ -216,7 +216,7 @@ template<class K, class V, class R
          * @p interpolation using @ref interpolatorFor(). See its documentation
          * for more information.
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolatorFor<V, R>(interpolation)}, _interpolation{interpolation}, _before{before}, _after{after} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: _data{Utility::move(data)}, _interpolator{interpolatorFor<V, R>(interpolation)}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, before, after} {}
@@ -225,7 +225,7 @@ template<class K, class V, class R
          * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolation, extrapolation, extrapolation} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{Utility::move(data), interpolation, extrapolation, extrapolation} {}
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{InPlaceInit, data}, interpolation, extrapolation, extrapolation} {}

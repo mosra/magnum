@@ -101,7 +101,7 @@ void BufferVkTest::constructMove() {
     VkBuffer handle = a.handle();
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
 
-    Buffer b = std::move(a);
+    Buffer b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_VERIFY(!a.hasDedicatedMemory());
     CORRADE_COMPARE(b.handle(), handle);
@@ -110,7 +110,7 @@ void BufferVkTest::constructMove() {
     CORRADE_COMPARE(b.dedicatedMemory().handle(), memoryHandle);
 
     Buffer c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_VERIFY(!b.hasDedicatedMemory());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
@@ -174,7 +174,7 @@ void BufferVkTest::bindDedicatedMemory() {
     VkDeviceMemory handle = memory.handle();
     CORRADE_VERIFY(handle);
 
-    buffer.bindDedicatedMemory(std::move(memory));
+    buffer.bindDedicatedMemory(Utility::move(memory));
     CORRADE_VERIFY(buffer.hasDedicatedMemory());
     CORRADE_COMPARE(buffer.dedicatedMemory().handle(), handle);
 }

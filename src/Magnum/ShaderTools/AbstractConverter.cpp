@@ -277,7 +277,7 @@ AbstractConverter::convertDataToData(const Stage stage, const Containers::ArrayV
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::OptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -425,7 +425,7 @@ AbstractConverter::convertFileToData(const Stage stage, const Containers::String
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::OptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -469,7 +469,7 @@ AbstractConverter::linkDataToData(const Containers::ArrayView<const Containers::
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::OptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -617,7 +617,7 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const Cont
                 return {};
             }
 
-            fileData[i] = *std::move(data);
+            fileData[i] = *Utility::move(data);
         }
 
         /** @todo merge the allocations once we have an ArrayTuple (actually,
@@ -683,7 +683,7 @@ AbstractConverter::linkFilesToData(const Containers::ArrayView<const Containers:
 
     /* GCC 4.8 needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
-    return Implementation::OptionalButAlsoArray<char>{std::move(out)};
+    return Implementation::OptionalButAlsoArray<char>{Utility::move(out)};
     #else
     return out;
     #endif
@@ -714,7 +714,7 @@ Containers::Optional<Containers::Array<char>> AbstractConverter::doLinkFilesToDa
                 return {};
             }
 
-            fileData[i] = *std::move(data);
+            fileData[i] = *Utility::move(data);
         }
 
         /** @todo merge the allocations once we have an ArrayTuple */

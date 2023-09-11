@@ -181,12 +181,12 @@ void DevicePropertiesVkTest::constructMove() {
     VkPhysicalDevice handle = devices[0].handle();
     Containers::StringView name = devices[0].name();
 
-    DeviceProperties a = std::move(devices[0]);
+    DeviceProperties a = Utility::move(devices[0]);
     CORRADE_COMPARE(a.handle(), handle);
     CORRADE_COMPARE(a.name(), name);
 
     DeviceProperties b = DeviceProperties::wrap(instance(), nullptr);
-    b = std::move(a);
+    b = Utility::move(a);
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.name(), name);
 
@@ -374,11 +374,11 @@ void DevicePropertiesVkTest::extensionConstructMove() {
     const UnsignedInt count = a.count();
     if(!count) CORRADE_SKIP("No extensions reported, can't test");
 
-    ExtensionProperties b = std::move(a);
+    ExtensionProperties b = Utility::move(a);
     CORRADE_COMPARE(b.count(), count);
 
     ExtensionProperties c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.count(), count);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<ExtensionProperties>::value);

@@ -786,7 +786,7 @@ Containers::Array<SceneFieldData> sceneFieldDataNonOwningArray(const Containers:
     return Containers::Array<SceneFieldData>{const_cast<SceneFieldData*>(view.data()), view.size(), Implementation::nonOwnedArrayDeleter};
 }
 
-SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mappingBound, Containers::Array<char>&& data, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _mappingType{mappingType}, _dimensions{}, _mappingBound{mappingBound}, _importerState{importerState}, _fields{std::move(fields)}, _data{std::move(data)} {
+SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mappingBound, Containers::Array<char>&& data, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _mappingType{mappingType}, _dimensions{}, _mappingBound{mappingBound}, _importerState{importerState}, _fields{Utility::move(fields)}, _data{Utility::move(data)} {
     /* Check that mapping type is large enough */
     CORRADE_ASSERT(
         (mappingType == SceneMappingType::UnsignedByte && mappingBound <= 0xffull) ||
@@ -1012,9 +1012,9 @@ SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mapp
         "Trade::SceneData: a skin field requires some transformation field to be present in order to disambiguate between 2D and 3D", );
 }
 
-SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mappingBound, Containers::Array<char>&& data, const std::initializer_list<SceneFieldData> fields, const void* const importerState): SceneData{mappingType, mappingBound, std::move(data), Implementation::initializerListToArrayWithDefaultDeleter(fields), importerState} {}
+SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mappingBound, Containers::Array<char>&& data, const std::initializer_list<SceneFieldData> fields, const void* const importerState): SceneData{mappingType, mappingBound, Utility::move(data), Implementation::initializerListToArrayWithDefaultDeleter(fields), importerState} {}
 
-SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mappingBound, const DataFlags dataFlags, const Containers::ArrayView<const void> data, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: SceneData{mappingType, mappingBound, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, std::move(fields), importerState} {
+SceneData::SceneData(const SceneMappingType mappingType, const UnsignedLong mappingBound, const DataFlags dataFlags, const Containers::ArrayView<const void> data, Containers::Array<SceneFieldData>&& fields, const void* const importerState) noexcept: SceneData{mappingType, mappingBound, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, Utility::move(fields), importerState} {
     CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
         "Trade::SceneData: can't construct with non-owned data but" << dataFlags, );
     _dataFlags = dataFlags;
@@ -2904,13 +2904,13 @@ std::vector<UnsignedInt> SceneData::children3D() const {
 #endif
 
 Containers::Array<SceneFieldData> SceneData::releaseFieldData() {
-    Containers::Array<SceneFieldData> out = std::move(_fields);
+    Containers::Array<SceneFieldData> out = Utility::move(_fields);
     _fields = {};
     return out;
 }
 
 Containers::Array<char> SceneData::releaseData() {
-    Containers::Array<char> out = std::move(_data);
+    Containers::Array<char> out = Utility::move(_data);
     _data = {};
     return out;
 }

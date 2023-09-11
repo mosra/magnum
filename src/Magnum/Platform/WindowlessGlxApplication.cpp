@@ -293,7 +293,7 @@ WindowlessGlxContext::~WindowlessGlxContext() {
 }
 
 WindowlessGlxContext& WindowlessGlxContext::operator=(WindowlessGlxContext&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._display, _display);
     swap(other._pbuffer, _pbuffer);
     swap(other._context, _context);
@@ -346,7 +346,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration& configurati
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
-    _glContext = std::move(glContext);
+    _glContext = Utility::move(glContext);
     return true;
 }
 

@@ -132,8 +132,8 @@ void FilterTest::attributes() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
-        std::move(indexData), Trade::MeshIndexData{data.indexType, indices},
-        std::move(vertexData), {
+        Utility::move(indexData), Trade::MeshIndexData{data.indexType, indices},
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertices.slice(&Vertex::tangent)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)},
@@ -179,7 +179,7 @@ void FilterTest::attributesNoIndexData() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(vertexData), {
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
         }};
 
@@ -229,8 +229,8 @@ void FilterTest::onlyAttributes() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
-        std::move(indexData), Trade::MeshIndexData{data.indexType, indices},
-        std::move(vertexData), {
+        Utility::move(indexData), Trade::MeshIndexData{data.indexType, indices},
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertices.slice(&Vertex::tangent)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)},
@@ -281,7 +281,7 @@ void FilterTest::onlyAttributesNoIndexData() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(vertexData), {
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
         }};
 
@@ -310,7 +310,7 @@ void FilterTest::onlyAttributesNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        std::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
 
     Trade::MeshData filtered = filterOnlyAttributes(mesh, {
         Trade::MeshAttribute::Position
@@ -342,8 +342,8 @@ void FilterTest::onlyAttributeIds() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
-        std::move(indexData), Trade::MeshIndexData{data.indexType, indices},
-        std::move(vertexData), {
+        Utility::move(indexData), Trade::MeshIndexData{data.indexType, indices},
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertices.slice(&Vertex::tangent)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)},
@@ -411,7 +411,7 @@ void FilterTest::onlyAttributeIdsNoIndexData() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(vertexData), {
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
         }};
 
@@ -442,7 +442,7 @@ void FilterTest::onlyAttributeIdsNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        std::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
 
     CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterOnlyAttributes(mesh, std::initializer_list<UnsignedInt>{});
@@ -474,8 +474,8 @@ void FilterTest::exceptAttributes() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
-        std::move(indexData), Trade::MeshIndexData{data.indexType, indices},
-        std::move(vertexData), {
+        Utility::move(indexData), Trade::MeshIndexData{data.indexType, indices},
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertices.slice(&Vertex::tangent)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)},
@@ -524,7 +524,7 @@ void FilterTest::exceptAttributesNoIndexData() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(vertexData), {
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
         }};
@@ -554,7 +554,7 @@ void FilterTest::exceptAttributesNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        std::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
 
     Trade::MeshData filtered = filterExceptAttributes(mesh, {
         Trade::MeshAttribute::Position
@@ -586,8 +586,8 @@ void FilterTest::exceptAttributeIds() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleStrip,
-        std::move(indexData), Trade::MeshIndexData{data.indexType, indices},
-        std::move(vertexData), {
+        Utility::move(indexData), Trade::MeshIndexData{data.indexType, indices},
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, vertices.slice(&Vertex::tangent)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)},
@@ -655,7 +655,7 @@ void FilterTest::exceptAttributeIdsNoIndexData() {
     Containers::StridedArrayView1D<Vertex> vertices = Containers::arrayCast<Vertex>(vertexData);
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(vertexData), {
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, vertices.slice(&Vertex::position)},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, vertices.slice(&Vertex::textureCoordinates1)}
         }};
@@ -687,7 +687,7 @@ void FilterTest::exceptAttributeIdsNoAttributeData() {
     Containers::StridedArrayView1D<UnsignedShort> indices = Containers::arrayCast<UnsignedShort>(indexData);
 
     Trade::MeshData mesh{MeshPrimitive::Points,
-        std::move(indexData), Trade::MeshIndexData{indices}, 15};
+        Utility::move(indexData), Trade::MeshIndexData{indices}, 15};
 
     CORRADE_IGNORE_DEPRECATED_PUSH
     Trade::MeshData filtered = filterExceptAttributes(mesh, std::initializer_list<UnsignedInt>{});

@@ -75,11 +75,11 @@ void ExtensionPropertiesVkTest::constructMove() {
     const UnsignedInt count = a.count();
     if(!count) CORRADE_SKIP("No extensions reported, can't test");
 
-    InstanceExtensionProperties b = std::move(a);
+    InstanceExtensionProperties b = Utility::move(a);
     CORRADE_COMPARE(b.count(), count);
 
     InstanceExtensionProperties c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.count(), count);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<InstanceExtensionProperties>::value);

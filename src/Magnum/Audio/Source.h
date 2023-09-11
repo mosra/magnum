@@ -35,6 +35,7 @@
 #include <vector>
 
 #include <Corrade/Containers/Containers.h>
+#include <Corrade/Utility/Move.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/Audio.h"
@@ -779,7 +780,7 @@ inline Source::Source(Source&& other): _id(other._id) {
 }
 
 inline Source& Source::operator=(Source&& other) {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     return *this;
 }

@@ -153,7 +153,7 @@ template<UnsignedInt dimensions> class Image {
          * Equivalent to calling @ref Image(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        explicit Image(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: Image{{}, format, size, std::move(data), flags} {}
+        explicit Image(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: Image{{}, format, size, Utility::move(data), flags} {}
 
         /**
          * @brief Construct an image placeholder
@@ -276,7 +276,7 @@ template<UnsignedInt dimensions> class Image {
          * Equivalent to calling @ref Image(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        template<class T, class U> explicit Image(T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: Image{{}, format, formatExtra, size, std::move(data), flags} {}
+        template<class T, class U> explicit Image(T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: Image{{}, format, formatExtra, size, Utility::move(data), flags} {}
 
         /**
          * @brief Construct an image with implementation-specific pixel format
@@ -288,7 +288,7 @@ template<UnsignedInt dimensions> class Image {
          * Equivalent to calling @ref Image(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
          * with default-constructed @ref PixelStorage.
          */
-        template<class T> explicit Image(T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: Image{{}, format, size, std::move(data), flags} {}
+        template<class T> explicit Image(T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: Image{{}, format, size, Utility::move(data), flags} {}
 
         /**
          * @brief Construct an image placeholder with implementation-specific pixel format
@@ -588,7 +588,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * Equivalent to calling @ref CompressedImage(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit CompressedImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: CompressedImage{{}, format, size, std::move(data), flags} {}
+        explicit CompressedImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: CompressedImage{{}, format, size, Utility::move(data), flags} {}
 
         /**
          * @brief Construct a compressed image with implementation-specific format
@@ -616,7 +616,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * Equivalent to calling @ref CompressedImage(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, ImageFlags<dimensions>)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        template<class T> explicit CompressedImage(T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: CompressedImage{{}, format, size, std::move(data), flags} {}
+        template<class T> explicit CompressedImage(T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, ImageFlags<dimensions> flags = {}) noexcept: CompressedImage{{}, format, size, Utility::move(data), flags} {}
 
         /**
          * @brief Construct an image placeholder
@@ -771,12 +771,12 @@ typedef CompressedImage<2> CompressedImage2D;
 /** @brief Three-dimensional compressed image */
 typedef CompressedImage<3> CompressedImage3D;
 
-template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size, std::move(data), flags} {
+template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelFormatSizeAdl(format, formatExtra), size, Utility::move(data), flags} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> inline  Image<dimensions>::Image(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: Image{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size, std::move(data), flags} {
+template<UnsignedInt dimensions> template<class T> inline  Image<dimensions>::Image(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: Image{storage, UnsignedInt(format), {}, Implementation::pixelFormatSizeAdl(format), size, Utility::move(data), flags} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
@@ -791,7 +791,7 @@ template<UnsignedInt dimensions> template<class T> inline Image<dimensions>::Ima
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T> inline CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: CompressedImage{storage, UnsignedInt(format), size, std::move(data), flags} {
+template<UnsignedInt dimensions> template<class T> inline CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const ImageFlags<dimensions> flags) noexcept: CompressedImage{storage, UnsignedInt(format), size, Utility::move(data), flags} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }

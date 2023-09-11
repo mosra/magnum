@@ -39,7 +39,7 @@ namespace {
 template<class T> inline void flipFaceWindingInPlaceImplementation(const Containers::StridedArrayView1D<T>& indices) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::flipNormals(): index count is not divisible by 3!", );
 
-    using std::swap;
+    using Utility::swap;
     for(std::size_t i = 0; i != indices.size(); i += 3)
         swap(indices[i+1], indices[i+2]);
 }

@@ -606,7 +606,7 @@ template<UnsignedInt dimensions> void LineGLTest::constructAsync() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    LineGL<dimensions> shader{std::move(state)};
+    LineGL<dimensions> shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), LineGL2D::Flag::VertexColor);
     CORRADE_COMPARE(shader.capStyle(), LineCapStyle::Butt);
     CORRADE_COMPARE(shader.joinStyle(), LineJoinStyle::Bevel);
@@ -708,7 +708,7 @@ template<UnsignedInt dimensions> void LineGLTest::constructUniformBuffersAsync()
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    LineGL<dimensions> shader{std::move(state)};
+    LineGL<dimensions> shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), LineGL2D::Flag::UniformBuffers|LineGL2D::Flag::VertexColor);
     CORRADE_COMPARE(shader.capStyle(), LineCapStyle::Butt);
     CORRADE_COMPARE(shader.joinStyle(), LineJoinStyle::Bevel);
@@ -740,13 +740,13 @@ template<UnsignedInt dimensions> void LineGLTest::constructMove() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    LineGL<dimensions> b{std::move(a)};
+    LineGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), LineGL<dimensions>::Flag::VertexColor);
     CORRADE_VERIFY(!a.id());
 
     LineGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), LineGL<dimensions>::Flag::VertexColor);
     CORRADE_VERIFY(!b.id());
@@ -769,7 +769,7 @@ template<UnsignedInt dimensions> void LineGLTest::constructMoveUniformBuffers() 
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    LineGL<dimensions> b{std::move(a)};
+    LineGL<dimensions> b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), LineGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(b.materialCount(), 2);
@@ -777,7 +777,7 @@ template<UnsignedInt dimensions> void LineGLTest::constructMoveUniformBuffers() 
     CORRADE_VERIFY(!a.id());
 
     LineGL<dimensions> c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), LineGL<dimensions>::Flag::UniformBuffers);
     CORRADE_COMPARE(c.materialCount(), 2);

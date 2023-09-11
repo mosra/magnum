@@ -213,7 +213,7 @@ SubpassDescription::SubpassDescription(SubpassDescription&& other) noexcept:
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _description(other._description),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -230,7 +230,7 @@ SubpassDescription::SubpassDescription(SubpassDescription&& other) noexcept:
 }
 
 SubpassDescription& SubpassDescription::operator=(SubpassDescription&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._description, _description);
     swap(other._state, _state);
     return *this;
@@ -267,7 +267,7 @@ SubpassDescription& SubpassDescription::setInputAttachments(Containers::ArrayVie
 }
 
 SubpassDescription&& SubpassDescription::setInputAttachments(Containers::ArrayView<const AttachmentReference> attachments) && {
-    return std::move(setInputAttachments(attachments));
+    return Utility::move(setInputAttachments(attachments));
 }
 
 SubpassDescription& SubpassDescription::setInputAttachments(std::initializer_list<AttachmentReference> attachments) & {
@@ -275,7 +275,7 @@ SubpassDescription& SubpassDescription::setInputAttachments(std::initializer_lis
 }
 
 SubpassDescription&& SubpassDescription::setInputAttachments(std::initializer_list<AttachmentReference> attachments) && {
-    return std::move(setInputAttachments(attachments));
+    return Utility::move(setInputAttachments(attachments));
 }
 
 template<class T> void SubpassDescription::setColorAttachmentsInternal(Containers::ArrayView<const T> attachments, Containers::ArrayView<const T> resolveAttachments) {
@@ -325,7 +325,7 @@ SubpassDescription& SubpassDescription::setColorAttachments(Containers::ArrayVie
 }
 
 SubpassDescription&& SubpassDescription::setColorAttachments(Containers::ArrayView<const AttachmentReference> attachments, Containers::ArrayView<const AttachmentReference> resolveAttachments) && {
-    return std::move(setColorAttachments(attachments, resolveAttachments));
+    return Utility::move(setColorAttachments(attachments, resolveAttachments));
 }
 
 SubpassDescription& SubpassDescription::setColorAttachments(Containers::ArrayView<const AttachmentReference> attachments) & {
@@ -333,7 +333,7 @@ SubpassDescription& SubpassDescription::setColorAttachments(Containers::ArrayVie
 }
 
 SubpassDescription&& SubpassDescription::setColorAttachments(Containers::ArrayView<const AttachmentReference> attachments) && {
-    return std::move(setColorAttachments(attachments));
+    return Utility::move(setColorAttachments(attachments));
 }
 
 SubpassDescription& SubpassDescription::setColorAttachments(std::initializer_list<AttachmentReference> attachments, std::initializer_list<AttachmentReference> resolveAttachments) & {
@@ -341,7 +341,7 @@ SubpassDescription& SubpassDescription::setColorAttachments(std::initializer_lis
 }
 
 SubpassDescription&& SubpassDescription::setColorAttachments(std::initializer_list<AttachmentReference> attachments, std::initializer_list<AttachmentReference> resolveAttachments) && {
-    return std::move(setColorAttachments(attachments, resolveAttachments));
+    return Utility::move(setColorAttachments(attachments, resolveAttachments));
 }
 
 SubpassDescription& SubpassDescription::setDepthStencilAttachment(AttachmentReference attachment) & {
@@ -354,30 +354,30 @@ SubpassDescription& SubpassDescription::setDepthStencilAttachment(AttachmentRefe
 }
 
 SubpassDescription&& SubpassDescription::setDepthStencilAttachment(AttachmentReference attachment) && {
-    return std::move(setDepthStencilAttachment(attachment));
+    return Utility::move(setDepthStencilAttachment(attachment));
 }
 
 SubpassDescription& SubpassDescription::setPreserveAttachments(Containers::Array<UnsignedInt>&& attachments) & {
     if(!_state) _state.emplace();
 
-    _state->preserveAttachments = std::move(attachments);
+    _state->preserveAttachments = Utility::move(attachments);
     _description.preserveAttachmentCount = _state->preserveAttachments.size();
     _description.pPreserveAttachments = _state->preserveAttachments;
     return *this;
 }
 
 SubpassDescription&& SubpassDescription::setPreserveAttachments(Containers::Array<UnsignedInt>&& attachments) && {
-    return std::move(setPreserveAttachments(std::move(attachments)));
+    return Utility::move(setPreserveAttachments(Utility::move(attachments)));
 }
 
 SubpassDescription& SubpassDescription::setPreserveAttachments(Containers::ArrayView<const UnsignedInt> attachments) & {
     Containers::Array<UnsignedInt> copy{NoInit, attachments.size()};
     Utility::copy(attachments, copy);
-    return setPreserveAttachments(std::move(copy));
+    return setPreserveAttachments(Utility::move(copy));
 }
 
 SubpassDescription&& SubpassDescription::setPreserveAttachments(Containers::ArrayView<const UnsignedInt> attachments) && {
-    return std::move(setPreserveAttachments(attachments));
+    return Utility::move(setPreserveAttachments(attachments));
 }
 
 SubpassDescription& SubpassDescription::setPreserveAttachments(std::initializer_list<UnsignedInt> attachments) & {
@@ -385,7 +385,7 @@ SubpassDescription& SubpassDescription::setPreserveAttachments(std::initializer_
 }
 
 SubpassDescription&& SubpassDescription::setPreserveAttachments(std::initializer_list<UnsignedInt> attachments) && {
-    return std::move(setPreserveAttachments(attachments));
+    return Utility::move(setPreserveAttachments(attachments));
 }
 
 namespace {
@@ -568,7 +568,7 @@ RenderPassCreateInfo::RenderPassCreateInfo(RenderPassCreateInfo&& other) noexcep
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(other._info),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -587,7 +587,7 @@ RenderPassCreateInfo::RenderPassCreateInfo(RenderPassCreateInfo&& other) noexcep
 RenderPassCreateInfo::~RenderPassCreateInfo() = default;
 
 RenderPassCreateInfo& RenderPassCreateInfo::operator=(RenderPassCreateInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._state, _state);
     return *this;
@@ -633,7 +633,7 @@ RenderPassCreateInfo& RenderPassCreateInfo::addSubpass(SubpassDescription&& subp
     /* Unfortunately here we can't use an ArrayTuple as it can't grow, and
        accepting an array view / initializer list would mean a deep copy, which
        is even less acceptable. So two separate allocations it is. */
-    arrayAppend(_state->subpasses, std::move(subpass));
+    arrayAppend(_state->subpasses, Utility::move(subpass));
     /* Can't use {} with GCC 4.8 here because it tries to initialize the
        first member instead of doing a copy */
     arrayAppend(_state->vkSubpasses2, VkSubpassDescription2(_state->subpasses.back()));
@@ -791,7 +791,7 @@ RenderPass::~RenderPass() {
 }
 
 RenderPass& RenderPass::operator=(RenderPass&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
@@ -843,7 +843,7 @@ RenderPassBeginInfo::RenderPassBeginInfo(RenderPassBeginInfo&& other) noexcept:
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(other._info),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -856,7 +856,7 @@ RenderPassBeginInfo::RenderPassBeginInfo(RenderPassBeginInfo&& other) noexcept:
 RenderPassBeginInfo::~RenderPassBeginInfo() = default;
 
 RenderPassBeginInfo& RenderPassBeginInfo::operator=(RenderPassBeginInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._state, _state);
     return *this;

@@ -409,7 +409,7 @@ void LightDataTest::constructMove() {
         15.0_degf, 35.0_degf,
         &state};
 
-    LightData b{std::move(a)};
+    LightData b{Utility::move(a)};
     CORRADE_COMPARE(b.type(), LightType::Spot);
     CORRADE_COMPARE(b.color(), 0xccff33_rgbf);
     CORRADE_COMPARE(b.intensity(), 0.8f);
@@ -420,7 +420,7 @@ void LightDataTest::constructMove() {
     CORRADE_COMPARE(b.importerState(), &state);
 
     LightData c{{}, {}, {}};
-    c = std::move(a);
+    c = Utility::move(a);
     CORRADE_COMPARE(c.type(), LightType::Spot);
     CORRADE_COMPARE(c.color(), 0xccff33_rgbf);
     CORRADE_COMPARE(c.intensity(), 0.8f);

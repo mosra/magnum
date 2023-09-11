@@ -491,7 +491,7 @@ void AnyImageImporterTest::propagateFileCallback() {
     importer->setFileCallback([](const std::string&, InputFileCallbackPolicy, Containers::Array<char>& storage) -> Containers::Optional<Containers::ArrayView<const char>> {
         Containers::Optional<Containers::Array<char>> data = Utility::Path::read(Utility::Path::join(ANYIMAGEIMPORTER_TEST_DIR, "rgb.tga"));
         CORRADE_VERIFY(data);
-        storage = *std::move(data);
+        storage = *Utility::move(data);
         return Containers::ArrayView<const char>{storage};
     }, storage);
 

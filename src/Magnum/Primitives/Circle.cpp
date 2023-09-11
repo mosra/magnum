@@ -84,7 +84,7 @@ Trade::MeshData circle2DSolid(const UnsignedInt segments, const Circle2DFlags fl
             textureCoords[i] = positions[i]*0.5f + Vector2{0.5f};
     }
 
-    return Trade::MeshData{MeshPrimitive::TriangleFan, std::move(vertexData), std::move(attributes), UnsignedInt(positions.size())};
+    return Trade::MeshData{MeshPrimitive::TriangleFan, Utility::move(vertexData), Utility::move(attributes), UnsignedInt(positions.size())};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -111,7 +111,7 @@ Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
         positions[i] = {sincos.second, sincos.first};
     }
 
-    return Trade::MeshData{MeshPrimitive::LineLoop, std::move(vertexData),
+    return Trade::MeshData{MeshPrimitive::LineLoop, Utility::move(vertexData),
         Trade::meshAttributeDataNonOwningArray(AttributeData2D), UnsignedInt(positions.size())};
 }
 
@@ -196,7 +196,7 @@ Trade::MeshData circle3DSolid(const UnsignedInt segments, const Circle3DFlags fl
     }
 
     return Trade::MeshData{MeshPrimitive::TriangleFan,
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(vertexData), Utility::move(attributeData)};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -232,7 +232,7 @@ Trade::MeshData circle3DWireframe(const UnsignedInt segments) {
         positions[i] = {sincos.second, sincos.first, 0.0f};
     }
 
-    return Trade::MeshData{MeshPrimitive::LineLoop, std::move(vertexData),
+    return Trade::MeshData{MeshPrimitive::LineLoop, Utility::move(vertexData),
         Trade::meshAttributeDataNonOwningArray(AttributeData3DWireframe), UnsignedInt(positions.size())};
 }
 

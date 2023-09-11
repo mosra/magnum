@@ -431,7 +431,7 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::c
     Trade::MeshData capsule = Primitives::capsule2DWireframe(8, 1, 0.75f);
     MeshTools::transformPointsInPlace(Matrix3::scaling(Vector2{0.75f}),
         capsule.mutableAttribute<Vector2>(Trade::MeshAttribute::Position));
-    return {std::move(capsule), "capsule2dwireframe.png"};
+    return {Utility::move(capsule), "capsule2dwireframe.png"};
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle2DWireframe() {
@@ -446,7 +446,7 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::l
     Trade::MeshData line = Primitives::line2D();
     MeshTools::transformPointsInPlace(Matrix3::translation(Vector2::xAxis(-1.0f))*Matrix3::scaling(Vector2::xScale(2.0f)),
         line.mutableAttribute<Vector2>(Trade::MeshAttribute::Position));
-    return {std::move(line), "line2d.png"};
+    return {Utility::move(line), "line2d.png"};
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::squareWireframe() {
@@ -457,7 +457,7 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::c
     Trade::MeshData capsule = Primitives::capsule3DWireframe(8, 1, 16, 1.0f);
     MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{0.75f}),
         capsule.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
-    return {std::move(capsule), "capsule3dwireframe.png"};
+    return {Utility::move(capsule), "capsule3dwireframe.png"};
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle3DWireframe() {
@@ -492,7 +492,7 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::l
     Trade::MeshData line = Primitives::line3D();
     MeshTools::transformPointsInPlace(Matrix4::translation(Vector3::xAxis(-1.0f))*Matrix4::scaling(Vector3::xScale(2.0f)),
         line.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
-    return {std::move(line), "line3d.png"};
+    return {Utility::move(line), "line3d.png"};
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::planeWireframe() {
@@ -515,7 +515,7 @@ Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::c
     Trade::MeshData capsule = Primitives::capsule3DSolid(4, 1, 12, 0.75f);
     MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{0.75f}),
         capsule.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
-    return {std::move(capsule), "capsule3dsolid.png"};
+    return {Utility::move(capsule), "capsule3dsolid.png"};
 }
 
 Containers::Pair<Trade::MeshData, Containers::StringView> PrimitiveVisualizer::circle3DSolid() {

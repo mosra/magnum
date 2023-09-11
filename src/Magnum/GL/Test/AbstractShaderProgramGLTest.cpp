@@ -251,14 +251,14 @@ void AbstractShaderProgramGLTest::constructMove() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    DummyShader b(std::move(a));
+    DummyShader b(Utility::move(a));
 
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
 
     DummyShader c;
     const Int cId = c.id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
@@ -1340,9 +1340,9 @@ void AbstractShaderProgramGLTest::subclassDraw() {
        type should still be ShaderSubclassDraw& even after all these. */
     ShaderSubclassDraw& out = shader
         .draw(mesh)
-        .draw(std::move(mesh))
+        .draw(Utility::move(mesh))
         .draw(meshView)
-        .draw(std::move(meshView))
+        .draw(Utility::move(meshView))
         .draw(mesh, counts, vertexOffsets, indexOffsets)
         #ifndef CORRADE_TARGET_32BIT
         .draw(mesh, counts, vertexOffsets, indexOffsetsLong)

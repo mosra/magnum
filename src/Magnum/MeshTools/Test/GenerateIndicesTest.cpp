@@ -1232,7 +1232,7 @@ void GenerateIndicesTest::generateIndicesMeshDataMove() {
     vertices[4].textureCoordinates = {0.6f, 0.4f};
 
     Trade::MeshData out = generateIndices(Trade::MeshData{
-        MeshPrimitive::TriangleFan, std::move(vertexData), {
+        MeshPrimitive::TriangleFan, Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position,
                 Containers::stridedArrayView(vertices,
                     &vertices[0].position, 5, sizeof(Vertex))},

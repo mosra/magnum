@@ -96,7 +96,7 @@ Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformatio
         positionAttributeId && mesh.attributeFormat(*positionAttributeId) == VertexFormat::Vector2
     ) {
         transform2DInPlace(mesh, transformation, id, morphTargetId);
-        return std::move(mesh);
+        return Utility::move(mesh);
     }
 
     /* Otherwise delegate to the function that does all the copying and format
@@ -106,7 +106,7 @@ Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformatio
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Trade::MeshData transform2D(Trade::MeshData&& mesh, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
-    return transform2D(std::move(mesh), transformation, id, -1, flags);
+    return transform2D(Utility::move(mesh), transformation, id, -1, flags);
 }
 #endif
 
@@ -242,7 +242,7 @@ Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformatio
        (!normalAttributeId || mesh.attributeFormat(*normalAttributeId) == VertexFormat::Vector3)
     ) {
         transform3DInPlace(mesh, transformation, id, morphTargetId);
-        return std::move(mesh);
+        return Utility::move(mesh);
     }
 
     /* Otherwise delegate to the function that does all the copying and format
@@ -252,7 +252,7 @@ Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformatio
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Trade::MeshData transform3D(Trade::MeshData&& mesh, const Matrix4& transformation, const UnsignedInt id, const InterleaveFlags flags) {
-    return transform3D(std::move(mesh), transformation, id, -1, flags);
+    return transform3D(Utility::move(mesh), transformation, id, -1, flags);
 }
 #endif
 
@@ -367,7 +367,7 @@ Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matr
         textureCoordinateAttributeId && mesh.attributeFormat(*textureCoordinateAttributeId) == VertexFormat::Vector2
     ) {
         transformTextureCoordinates2DInPlace(mesh, transformation, id, morphTargetId);
-        return std::move(mesh);
+        return Utility::move(mesh);
     }
 
     /* Otherwise delegate to the function that does all the copying and format
@@ -377,7 +377,7 @@ Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matr
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 Trade::MeshData transformTextureCoordinates2D(Trade::MeshData&& mesh, const Matrix3& transformation, const UnsignedInt id, const InterleaveFlags flags) {
-    return transformTextureCoordinates2D(std::move(mesh), transformation, id, -1, flags);
+    return transformTextureCoordinates2D(Utility::move(mesh), transformation, id, -1, flags);
 }
 #endif
 

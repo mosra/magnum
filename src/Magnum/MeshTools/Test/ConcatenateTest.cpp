@@ -485,8 +485,8 @@ void ConcatenateTest::concatenateInto() {
         VertexFormat::Vector3, nullptr};
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};
     Trade::MeshData dst{MeshPrimitive::Triangles,
-        std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(indexData), indices,
+        Utility::move(vertexData), Utility::move(attributeData)};
 
     const Vector2 positionsA[]{
         {-1.0f, -1.0f},
@@ -562,8 +562,8 @@ void ConcatenateTest::concatenateIntoNoIndexArray() {
         VertexFormat::Vector2, nullptr};
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};
     Trade::MeshData dst{MeshPrimitive::Triangles,
-        std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(indexData), indices,
+        Utility::move(vertexData), Utility::move(attributeData)};
     CORRADE_VERIFY(dst.isIndexed());
 
     const Vector2 positions[]{
@@ -605,7 +605,7 @@ void ConcatenateTest::concatenateIntoNonOwnedAttributeArray() {
             VertexFormat::Vector2, nullptr}
     };
     Trade::MeshData dst{MeshPrimitive::Triangles,
-        std::move(vertexData), Trade::meshAttributeDataNonOwningArray(attributeData)};
+        Utility::move(vertexData), Trade::meshAttributeDataNonOwningArray(attributeData)};
 
     const Vector2 positions[]{
         {-1.0f, -1.0f},

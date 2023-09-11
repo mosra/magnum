@@ -141,7 +141,7 @@ void DescriptorPoolTest::createInfoConstructMove() {
     CORRADE_COMPARE(a->poolSizeCount, 2);
     CORRADE_VERIFY(a->pPoolSizes);
 
-    DescriptorPoolCreateInfo b = std::move(a);
+    DescriptorPoolCreateInfo b = Utility::move(a);
     CORRADE_COMPARE(a->poolSizeCount, 0);
     CORRADE_VERIFY(!a->pPoolSizes);
     CORRADE_COMPARE(b->poolSizeCount, 2);
@@ -149,7 +149,7 @@ void DescriptorPoolTest::createInfoConstructMove() {
     CORRADE_COMPARE(b->pPoolSizes[1].type, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 
     DescriptorPoolCreateInfo c{VkDescriptorPoolCreateInfo{}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->poolSizeCount, 0);
     CORRADE_VERIFY(!b->pPoolSizes);
     CORRADE_COMPARE(c->poolSizeCount, 2);

@@ -62,13 +62,13 @@ void SamplerVkTest::constructMove() {
     Sampler a{device(), SamplerCreateInfo{}};
     VkSampler handle = a.handle();
 
-    Sampler b = std::move(a);
+    Sampler b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
     Sampler c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);

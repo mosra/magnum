@@ -310,7 +310,7 @@ void InterleaveTest::interleavedData() {
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
         reinterpret_cast<Vector3*>(vertexData.data() + 100 + 8), 3, 20};
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals}
     }};
@@ -342,7 +342,7 @@ void InterleaveTest::interleavedDataUnordered() {
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
         reinterpret_cast<Vector3*>(vertexData.data() + 100 + 8), 3, 20};
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals},
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}
     }};
@@ -365,7 +365,7 @@ void InterleaveTest::interleavedDataGaps() {
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
         reinterpret_cast<Vector3*>(vertexData.data() + 100 + 24), 3, 40};
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals}
     }};
@@ -388,7 +388,7 @@ void InterleaveTest::interleavedDataAliased() {
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
         reinterpret_cast<Vector3*>(vertexData.data() + 100), 3, 12};
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals}
     }};
@@ -408,7 +408,7 @@ void InterleaveTest::interleavedDataSingleAttribute() {
     Containers::Array<char> vertexData{3*8};
     auto positions = Containers::arrayCast<Vector2>(vertexData);
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}
     }};
     CORRADE_VERIFY(MeshTools::isInterleaved(data));
@@ -431,7 +431,7 @@ void InterleaveTest::interleavedDataArrayAttributes() {
     Containers::StridedArrayView1D<Vector2> positions{vertexData,
         reinterpret_cast<Vector2*>(vertexData.data() + 100 + 5), 3, 40};
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
             VertexFormat::Float, normals, 3},
         Trade::MeshAttributeData{Trade::meshAttributeCustom(43),
@@ -454,7 +454,7 @@ void InterleaveTest::interleavedDataZeroStride() {
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
         reinterpret_cast<Vector3*>(vertexData.data() + 100 + 8), 3, 0};
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals}
     }};
@@ -471,7 +471,7 @@ void InterleaveTest::interleavedDataNegativeStride() {
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
         reinterpret_cast<Vector3*>(vertexData.data() + 100 + 8), 3, 20};
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions.flipped<0>()},
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals.flipped<0>()}
     }};
@@ -535,7 +535,7 @@ void InterleaveTest::interleavedDataNotInterleaved() {
     auto positions = Containers::arrayCast<Vector2>(vertexData.exceptPrefix(100).prefix(3*8));
     auto normals = Containers::arrayCast<Vector3>(vertexData.exceptPrefix(100+3*8));
 
-    Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
+    Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals},
         Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}
     }};
@@ -703,7 +703,7 @@ void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
             Containers::StridedArrayView1D<char>{vertexData,
                 vertexData.data() + 100 + 8, 3, 8}};
 
-        Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {positions, normals}};
+        Trade::MeshData data{MeshPrimitive::Triangles, Utility::move(vertexData), {positions, normals}};
         CORRADE_VERIFY(!MeshTools::isInterleaved(data));
     }
 
@@ -747,7 +747,7 @@ void InterleaveTest::interleavedLayout() {
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
-        std::move(indexData), indices, std::move(vertexData),
+        Utility::move(indexData), indices, Utility::move(vertexData),
         /* Verify that interleavedLayout() won't attempt to modify the const
            array (see interleavedLayoutRvalue()) */
         Trade::meshAttributeDataNonOwningArray(attributeData)};
@@ -811,7 +811,7 @@ void InterleaveTest::interleavedLayoutExtra() {
         Containers::arrayCast<Vector3>(vertexData.exceptPrefix(3*8))};
 
     Trade::MeshData data{MeshPrimitive::Triangles,
-        std::move(vertexData), {positions, normals}};
+        Utility::move(vertexData), {positions, normals}};
     CORRADE_VERIFY(!MeshTools::isInterleaved(data));
 
     Trade::MeshData layout = MeshTools::interleavedLayout(data, 7, {
@@ -868,7 +868,7 @@ void InterleaveTest::interleavedLayoutExtraAliased() {
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
     Trade::MeshData data{MeshPrimitive::Triangles,
-        std::move(vertexData), {positions}};
+        Utility::move(vertexData), {positions}};
 
     Trade::MeshData layout = MeshTools::interleavedLayout(data, 100, {
         /* Normals at the same place as positions */
@@ -897,7 +897,7 @@ void InterleaveTest::interleavedLayoutExtraTooNegativePadding() {
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
     Trade::MeshData data{MeshPrimitive::Triangles,
-        std::move(vertexData), {positions}};
+        Utility::move(vertexData), {positions}};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -964,8 +964,8 @@ void InterleaveTest::interleavedLayoutAlreadyInterleaved() {
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
     Trade::MeshData mesh{MeshPrimitive::Triangles,
-        std::move(indexData), indices,
-        std::move(vertexData), {positions, normals}};
+        Utility::move(indexData), indices,
+        Utility::move(vertexData), {positions, normals}};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
     /* To catch when the default argument becomes different */
@@ -1014,8 +1014,8 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedAliased() {
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
     Trade::MeshData mesh{MeshPrimitive::Triangles,
-        std::move(indexData), indices,
-        std::move(vertexData), {positions, normals}};
+        Utility::move(indexData), indices,
+        Utility::move(vertexData), {positions, normals}};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
     /* To catch when the default argument becomes different */
@@ -1060,7 +1060,7 @@ void InterleaveTest::interleavedLayoutAlreadyInterleavedExtra() {
         Containers::StridedArrayView1D<Vector3>{vertexData, reinterpret_cast<Vector3*>(vertexData.data() + 100 + 10), 3, 24}};
 
     Trade::MeshData mesh{MeshPrimitive::Triangles,
-        std::move(vertexData), {positions, normals}};
+        Utility::move(vertexData), {positions, normals}};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
     std::initializer_list<Trade::MeshAttributeData> extra{
@@ -1140,14 +1140,14 @@ void InterleaveTest::interleavedLayoutRvalue() {
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
-        std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(indexData), indices,
+        Utility::move(vertexData), Utility::move(attributeData)};
     CORRADE_VERIFY(!MeshTools::isInterleaved(data));
 
     /* Check that the attribute data array gets reused when moving a rvalue.
        Explicitly passing an empty init list to verify the rvalue gets
        propagated correctly through all functions. */
-    Trade::MeshData layout = MeshTools::interleavedLayout(std::move(data), 10,
+    Trade::MeshData layout = MeshTools::interleavedLayout(Utility::move(data), 10,
         std::initializer_list<Trade::MeshAttributeData>{});
     CORRADE_VERIFY(layout.attributeData().data() == originalAttributeData);
 
@@ -1416,15 +1416,15 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {
     const Trade::MeshAttributeData* attributePointer = attributeData;
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(indexData), Trade::MeshIndexData{indexView},
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(indexData), Trade::MeshIndexData{indexView},
+        Utility::move(vertexData), Utility::move(attributeData)};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
     /* To catch when the default argument becomes different */
     Trade::MeshData interleaved = data.flags ?
-        MeshTools::interleave(std::move(mesh), {}, *data.flags) :
+        MeshTools::interleave(Utility::move(mesh), {}, *data.flags) :
         /* {} just to cover the initializer_list overload :P */
-        MeshTools::interleave(std::move(mesh), {});
+        MeshTools::interleave(Utility::move(mesh), {});
 
     CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
     CORRADE_COMPARE(interleaved.indexCount(), 2);
@@ -1465,14 +1465,14 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveIndices() {
     const Trade::MeshAttributeData* attributePointer = attributeData;
 
     Trade::MeshData mesh{MeshPrimitive::TriangleFan,
-        std::move(indexData), Trade::MeshIndexData{data.indexType,indices},
-        std::move(vertexData), std::move(attributeData)};
+        Utility::move(indexData), Trade::MeshIndexData{data.indexType,indices},
+        Utility::move(vertexData), Utility::move(attributeData)};
     CORRADE_VERIFY(MeshTools::isInterleaved(mesh));
 
     /* To catch when the default argument becomes different */
     Trade::MeshData interleaved = data.flags ?
-        MeshTools::interleave(std::move(mesh), {}, *data.flags) :
-        MeshTools::interleave(std::move(mesh));
+        MeshTools::interleave(Utility::move(mesh), {}, *data.flags) :
+        MeshTools::interleave(Utility::move(mesh));
 
     CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
     CORRADE_COMPARE(interleaved.indexType(), data.indexType);
@@ -1520,10 +1520,10 @@ void InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned() {
 
     Trade::MeshData data{MeshPrimitive::TriangleFan,
         {}, indexData, Trade::MeshIndexData{indexView},
-        {}, vertexData, std::move(attributeData)};
+        {}, vertexData, Utility::move(attributeData)};
     CORRADE_VERIFY(MeshTools::isInterleaved(data));
 
-    Trade::MeshData interleaved = MeshTools::interleave(std::move(data));
+    Trade::MeshData interleaved = MeshTools::interleave(Utility::move(data));
     CORRADE_VERIFY(MeshTools::isInterleaved(interleaved));
     CORRADE_COMPARE(interleaved.indexCount(), 2);
     CORRADE_COMPARE(interleaved.attributeCount(), 2);

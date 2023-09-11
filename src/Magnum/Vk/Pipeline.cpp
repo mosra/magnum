@@ -134,7 +134,7 @@ RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(RasterizationPi
     _depthStencilInfo(other._depthStencilInfo),
     _colorBlendInfo(other._colorBlendInfo),
     _dynamicInfo(other._dynamicInfo),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Reroute the pointers */
     if(_info.pViewportState == &other._viewportInfo)
@@ -170,7 +170,7 @@ RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(RasterizationPi
 RasterizationPipelineCreateInfo::~RasterizationPipelineCreateInfo() = default;
 
 RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::operator=(RasterizationPipelineCreateInfo&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._info, _info);
     swap(other._viewportInfo, _viewportInfo);
     swap(other._rasterizationInfo, _rasterizationInfo);
@@ -338,7 +338,7 @@ Pipeline::~Pipeline() {
 }
 
 Pipeline& Pipeline::operator=(Pipeline&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._bindPoint, _bindPoint);

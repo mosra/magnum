@@ -686,7 +686,7 @@ void AnimationDataTest::construct() {
     view[2] = {7.5f, {1.0f, 0.3f, 2.1f}, Quaternion{}};
 
     const int state = 5;
-    AnimationData data{std::move(buffer), {
+    AnimationData data{Utility::move(buffer), {
         AnimationTrackData{AnimationTrackTarget::Translation3D, 42,
             Animation::TrackView<const Float, const Vector3>{
                 {view, &view[0].time, view.size(), sizeof(Data)},
@@ -754,7 +754,7 @@ void AnimationDataTest::constructImplicitDuration() {
     view[3] = {7.0f, false};
 
     const int state = 5;
-    AnimationData data{std::move(buffer), {
+    AnimationData data{Utility::move(buffer), {
         AnimationTrackData{animationTrackTargetCustom(1), 0,
             Animation::TrackView<const Float, const bool>{
                 {view, &view[0].time, 2, sizeof(Data)},
@@ -946,7 +946,7 @@ void AnimationDataTest::constructMove() {
     view[2] = {7.5f, {1.0f, 0.3f, 2.1f}, Quaternion{}};
 
     const int state = 5;
-    AnimationData a{std::move(buffer), {
+    AnimationData a{Utility::move(buffer), {
         AnimationTrackData{AnimationTrackTarget::Translation3D, 42,
             Animation::TrackView<const Float, const Vector3>{
                 {view, &view[0].time, view.size(), sizeof(Data)},
@@ -961,7 +961,7 @@ void AnimationDataTest::constructMove() {
                 animationInterpolatorFor<Quaternion>(Animation::Interpolation::Linear)}}
         }, {-1.0f, 7.0f}, &state};
 
-    AnimationData b{std::move(a)};
+    AnimationData b{Utility::move(a)};
 
     CORRADE_COMPARE(b.duration(), (Range1D{-1.0f, 7.0f}));
     CORRADE_COMPARE(b.data().size(), sizeof(Data)*3);
@@ -994,7 +994,7 @@ void AnimationDataTest::constructMove() {
 
     int other;
     AnimationData c{nullptr, nullptr, &other};
-    c = std::move(b);
+    c = Utility::move(b);
 
     CORRADE_COMPARE(c.duration(), (Range1D{-1.0f, 7.0f}));
     CORRADE_COMPARE(c.data().size(), sizeof(Data)*3);
@@ -1066,7 +1066,7 @@ void AnimationDataTest::trackCustomResultType() {
     view[0] = {0.0f, {300, 100, 10}};
     view[1] = {5.0f, {30, 60, 100}};
 
-    AnimationData data{std::move(buffer), {
+    AnimationData data{Utility::move(buffer), {
         AnimationTrackData{AnimationTrackTarget::Scaling3D, 0,
             Animation::TrackView<const Float, const Vector3i, Vector3>{
                 {view, &view[0].time, view.size(), sizeof(Data)},

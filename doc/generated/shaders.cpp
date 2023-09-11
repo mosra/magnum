@@ -326,7 +326,7 @@ Containers::StringView ShaderVisualizer::vertexColor() {
     Trade::MeshData sphere = Primitives::uvSphereSolid(32, 64);
 
     /* Add a color attribute */
-    Trade::MeshData sphereWithColors = MeshTools::interleave(std::move(sphere), {
+    Trade::MeshData sphereWithColors = MeshTools::interleave(Utility::move(sphere), {
         Trade::MeshAttributeData{Trade::MeshAttribute::Color, VertexFormat::Vector3, nullptr}
     });
 

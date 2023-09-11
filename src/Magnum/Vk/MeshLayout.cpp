@@ -100,7 +100,7 @@ MeshLayout::MeshLayout(MeshLayout&& other) noexcept:
        member instead of doing a copy */
     _vertexInfo(other._vertexInfo),
     _assemblyInfo(other._assemblyInfo),
-    _state{std::move(other._state)}
+    _state{Utility::move(other._state)}
 {
     /* Ensure the previous instance doesn't reference state that's now ours */
     /** @todo this is now more like a destructible move, do it more selectively
@@ -116,7 +116,7 @@ MeshLayout::MeshLayout(MeshLayout&& other) noexcept:
 MeshLayout::~MeshLayout() = default;
 
 MeshLayout& MeshLayout::operator=(MeshLayout&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(other._vertexInfo, _vertexInfo);
     swap(other._assemblyInfo, _assemblyInfo);
     swap(other._state, _state);
@@ -192,7 +192,7 @@ MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt 
 }
 
 MeshLayout&& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt stride) && {
-    return std::move(addBinding(binding, stride));
+    return Utility::move(addBinding(binding, stride));
 }
 
 MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const UnsignedInt stride, const UnsignedInt divisor) & {
@@ -227,7 +227,7 @@ MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const Uns
 }
 
 MeshLayout&& MeshLayout::addInstancedBinding(const UnsignedInt binding, const UnsignedInt stride, const UnsignedInt divisor) && {
-    return std::move(addInstancedBinding(binding, stride, divisor));
+    return Utility::move(addInstancedBinding(binding, stride, divisor));
 }
 
 MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const VertexFormat format, const UnsignedInt offset) & {
@@ -250,7 +250,7 @@ MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedI
 }
 
 MeshLayout&& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const VertexFormat format, const UnsignedInt offset) && {
-    return std::move(addAttribute(location, binding, format, offset));
+    return Utility::move(addAttribute(location, binding, format, offset));
 }
 
 MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const Magnum::VertexFormat format, const UnsignedInt offset) & {
@@ -258,7 +258,7 @@ MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedI
 }
 
 MeshLayout&& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const Magnum::VertexFormat format, const UnsignedInt offset) && {
-    return std::move(addAttribute(location, binding, format, offset));
+    return Utility::move(addAttribute(location, binding, format, offset));
 }
 
 Debug& operator<<(Debug& debug, const MeshPrimitive value) {

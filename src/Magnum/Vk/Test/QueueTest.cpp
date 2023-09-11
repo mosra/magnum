@@ -84,12 +84,12 @@ void QueueTest::constructMove() {
     VkQueue handle = a.handle();
     CORRADE_VERIFY(a.handle());
 
-    Queue b = std::move(a);
+    Queue b = Utility::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
 
     Queue c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(c.handle(), handle);
 
@@ -160,7 +160,7 @@ void QueueTest::submitInfoConstructMove() {
     SubmitInfo a;
     a.setCommandBuffers({{}, reinterpret_cast<VkCommandBuffer>(reinterpret_cast<void*>(0xcafecafe))});
 
-    SubmitInfo b = std::move(a);
+    SubmitInfo b = Utility::move(a);
     CORRADE_COMPARE(a->commandBufferCount, 0);
     CORRADE_VERIFY(!a->pCommandBuffers);
     CORRADE_COMPARE(b->commandBufferCount, 2);
@@ -168,7 +168,7 @@ void QueueTest::submitInfoConstructMove() {
     CORRADE_COMPARE(b->pCommandBuffers[1], reinterpret_cast<VkCommandBuffer>(reinterpret_cast<void*>(0xcafecafe)));
 
     SubmitInfo c{VkSubmitInfo{}};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->commandBufferCount, 0);
     CORRADE_VERIFY(!b->pCommandBuffers);
     CORRADE_COMPARE(c->commandBufferCount, 2);

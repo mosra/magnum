@@ -109,7 +109,7 @@ void PipelineLayoutTest::createInfoConstructMove() {
     CORRADE_COMPARE(a->setLayoutCount, 2);
     CORRADE_VERIFY(a->pSetLayouts);
 
-    PipelineLayoutCreateInfo b = std::move(a);
+    PipelineLayoutCreateInfo b = Utility::move(a);
     CORRADE_COMPARE(a->setLayoutCount, 0);
     CORRADE_VERIFY(!a->pSetLayouts);
     CORRADE_COMPARE(b->setLayoutCount, 2);
@@ -117,7 +117,7 @@ void PipelineLayoutTest::createInfoConstructMove() {
     CORRADE_COMPARE(b->pSetLayouts[1], reinterpret_cast<VkDescriptorSetLayout>(reinterpret_cast<void*>(0xbeef)));
 
     PipelineLayoutCreateInfo c;
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(b->setLayoutCount, 0);
     CORRADE_VERIFY(!b->pSetLayouts);
     CORRADE_COMPARE(c->setLayoutCount, 2);

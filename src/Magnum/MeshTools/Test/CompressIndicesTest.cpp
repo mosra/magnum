@@ -318,7 +318,7 @@ void CompressIndicesTest::compressMeshDataMove() {
     UnsignedInt indices[] = {102, 101, 100, 101, 102};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
         {}, indices, Trade::MeshIndexData{indices},
-        std::move(vertexData), {
+        Utility::move(vertexData), {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position, positionView},
             Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normalView}
         }};
@@ -326,7 +326,7 @@ void CompressIndicesTest::compressMeshDataMove() {
     CORRADE_COMPARE(data.attributeOffset(0), 0);
     CORRADE_COMPARE(data.attributeOffset(1), 103*sizeof(Vector2));
 
-    Trade::MeshData compressed = compressIndices(std::move(data));
+    Trade::MeshData compressed = compressIndices(Utility::move(data));
     CORRADE_COMPARE(compressed.indexCount(), 5);
     CORRADE_COMPARE(compressed.indexType(), MeshIndexType::UnsignedShort);
     CORRADE_COMPARE_AS(compressed.indices<UnsignedShort>(),
@@ -348,7 +348,7 @@ void CompressIndicesTest::compressMeshDataNonIndexed() {
     std::ostringstream out;
     Error redirectError{&out};
     compressIndices(mesh);
-    compressIndices(std::move(mesh));
+    compressIndices(Utility::move(mesh));
     CORRADE_COMPARE(out.str(),
         "MeshTools::compressIndices(): mesh data not indexed\n"
         "MeshTools::compressIndices(): mesh data not indexed\n");
@@ -364,7 +364,7 @@ void CompressIndicesTest::compressMeshDataImplementationSpecificIndexType() {
     std::ostringstream out;
     Error redirectError{&out};
     compressIndices(mesh);
-    compressIndices(std::move(mesh));
+    compressIndices(Utility::move(mesh));
     CORRADE_COMPARE(out.str(),
         "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n"
         "MeshTools::compressIndices(): mesh has an implementation-specific index type 0xcaca\n");

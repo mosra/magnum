@@ -281,7 +281,7 @@ void PlayerTest::constructMove() {
     CORRADE_COMPARE(a.track(0).keys().data(), Track.keys().data());
     CORRADE_COMPARE(a.track(1).keys().data(), track2.keys().data());
 
-    Player<Float> b{std::move(a)};
+    Player<Float> b{Utility::move(a)};
     CORRADE_COMPARE(b.duration(), (Range1D{0.5f, 4.0f}));
     CORRADE_COMPARE(b.playCount(), 37);
     CORRADE_COMPARE(b.state(), State::Playing);
@@ -292,7 +292,7 @@ void PlayerTest::constructMove() {
 
     Player<Float> c;
     c.setDuration({1.2f, 1.3f});
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.duration(), (Range1D{0.5f, 4.0f}));
     CORRADE_COMPARE(c.playCount(), 37);
     CORRADE_COMPARE(c.state(), State::Playing);

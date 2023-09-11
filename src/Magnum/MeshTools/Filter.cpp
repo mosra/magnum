@@ -62,7 +62,7 @@ Trade::MeshData filterAttributes(const Trade::MeshData& mesh, const Containers::
 
     return Trade::MeshData{mesh.primitive(),
         {}, mesh.indexData(), indices,
-        {}, mesh.vertexData(), std::move(filtered),
+        {}, mesh.vertexData(), Utility::move(filtered),
         mesh.vertexCount()};
 }
 

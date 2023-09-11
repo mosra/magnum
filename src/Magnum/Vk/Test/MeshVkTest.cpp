@@ -196,7 +196,7 @@ void MeshVkTest::setupRobustness2() {
         return;
 
     /* Create the device only if not already, to avoid spamming the output */
-    if(!_deviceRobustness2.handle()) _deviceRobustness2.create(instance(), DeviceCreateInfo{std::move(properties)}
+    if(!_deviceRobustness2.handle()) _deviceRobustness2.create(instance(), DeviceCreateInfo{Utility::move(properties)}
         .addQueues(QueueFlag::Graphics, {0.0f}, {_queue})
         .addEnabledExtensions<Extensions::EXT::robustness2>()
         .setEnabledFeatures(DeviceFeature::NullDescriptor)
@@ -213,7 +213,7 @@ void MeshVkTest::setupExtendedDynamicState() {
         return;
 
     /* Create the device only if not already, to avoid spamming the output */
-    if(!_deviceExtendedDynamicState.handle()) _deviceExtendedDynamicState.create(instance(), DeviceCreateInfo{std::move(properties)}
+    if(!_deviceExtendedDynamicState.handle()) _deviceExtendedDynamicState.create(instance(), DeviceCreateInfo{Utility::move(properties)}
         .addQueues(QueueFlag::Graphics, {0.0f}, {_queue})
         .addEnabledExtensions<Extensions::EXT::extended_dynamic_state>()
         .setEnabledFeatures(DeviceFeature::ExtendedDynamicState)
@@ -265,7 +265,7 @@ void MeshVkTest::cmdDraw() {
         Utility::copy(
             Containers::stridedArrayView(QuadData).slice(&Quad::position),
             Containers::arrayCast<Vector3>(Containers::arrayView(buffer.dedicatedMemory().map())));
-        mesh.addVertexBuffer(0, std::move(buffer), 0)
+        mesh.addVertexBuffer(0, Utility::move(buffer), 0)
             .setCount(4);
     }
 
@@ -332,7 +332,7 @@ void MeshVkTest::cmdDrawIndexed() {
         Utility::copy(Containers::arrayCast<const char>(QuadIndexData),
             Containers::stridedArrayView(data).exceptPrefix(32 + 12*4));
         mesh.addVertexBuffer(0, buffer, 32)
-            .setIndexBuffer(std::move(buffer), 32 + 12*4, MeshIndexType::UnsignedShort)
+            .setIndexBuffer(Utility::move(buffer), 32 + 12*4, MeshIndexType::UnsignedShort)
             .setCount(6);
     }
 
@@ -394,7 +394,7 @@ void MeshVkTest::cmdDrawTwoAttributes() {
         /** @todo ffs fucking casts!!! */
         Utility::copy(Containers::arrayCast<const char>(QuadData),
             Containers::stridedArrayView(buffer.dedicatedMemory().map()));
-        mesh.addVertexBuffer(0, std::move(buffer), 0)
+        mesh.addVertexBuffer(0, Utility::move(buffer), 0)
             .setCount(4);
     }
 
@@ -465,8 +465,8 @@ void MeshVkTest::cmdDrawTwoAttributesTwoBindings() {
             Containers::arrayCast<Vector3>(Containers::arrayView(positions.dedicatedMemory().map())));
         Utility::copy(Containers::stridedArrayView(QuadData).slice(&Quad::color),
             Containers::arrayCast<Vector3>(Containers::arrayView(colors.dedicatedMemory().map())));
-        mesh.addVertexBuffer(0, std::move(positions), 0)
-            .addVertexBuffer(1, std::move(colors), 0)
+        mesh.addVertexBuffer(0, Utility::move(positions), 0)
+            .addVertexBuffer(1, Utility::move(colors), 0)
             .setCount(4);
     }
 
@@ -534,7 +534,7 @@ void MeshVkTest::cmdDrawNullBindingRobustness2() {
         /** @todo ffs fucking casts!!! */
         Utility::copy(Containers::stridedArrayView(QuadData).slice(&Quad::position),
             Containers::arrayCast<Vector3>(Containers::arrayView(positions.dedicatedMemory().map())));
-        mesh.addVertexBuffer(0, std::move(positions), 0)
+        mesh.addVertexBuffer(0, Utility::move(positions), 0)
             .setCount(4);
     }
 
@@ -694,7 +694,7 @@ void MeshVkTest::cmdDrawDynamicPrimitive() {
         Utility::copy(
             Containers::stridedArrayView(QuadData).slice(&Quad::position),
             Containers::arrayCast<Vector3>(Containers::arrayView(buffer.dedicatedMemory().map())));
-        mesh.addVertexBuffer(0, std::move(buffer), 0)
+        mesh.addVertexBuffer(0, Utility::move(buffer), 0)
             .setCount(4);
     }
 
@@ -769,7 +769,7 @@ void MeshVkTest::cmdDrawDynamicStride() {
         Utility::copy(
             Containers::stridedArrayView(QuadData).slice(&Quad::position),
             Containers::arrayCast<Vector3>(Containers::arrayView(buffer.dedicatedMemory().map())));
-        mesh.addVertexBuffer(0, std::move(buffer), 0)
+        mesh.addVertexBuffer(0, Utility::move(buffer), 0)
             .setCount(4);
     }
 
@@ -843,7 +843,7 @@ void MeshVkTest::cmdDrawDynamicStrideInsufficientImplementation() {
         Utility::copy(
             Containers::stridedArrayView(QuadData).slice(&Quad::position),
             Containers::arrayCast<Vector3>(Containers::arrayView(buffer.dedicatedMemory().map())));
-        mesh.addVertexBuffer(0, std::move(buffer), 0)
+        mesh.addVertexBuffer(0, Utility::move(buffer), 0)
             .setCount(4);
     }
 

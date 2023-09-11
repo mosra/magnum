@@ -317,8 +317,8 @@ void CopyTest::copyRvalueIndicesVerticesAttributesOwned() {
     const Trade::MeshAttributeData* originalAttributes = attributes;
 
     Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles,
-        std::move(indexData), Trade::MeshIndexData{indices},
-        std::move(vertexData), std::move(attributes)});
+        Utility::move(indexData), Trade::MeshIndexData{indices},
+        Utility::move(vertexData), Utility::move(attributes)});
     CORRADE_VERIFY(copy.isIndexed());
     CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(copy.indexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
@@ -354,7 +354,7 @@ void CopyTest::copyRvalueAttributesOwned() {
         Containers::arrayView(positions)};
     const Trade::MeshAttributeData* originalAttributes = attributes;
 
-    Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles, {}, positions, std::move(attributes)});
+    Trade::MeshData copy = MeshTools::copy(Trade::MeshData{MeshPrimitive::Triangles, {}, positions, Utility::move(attributes)});
     CORRADE_COMPARE(copy.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
     CORRADE_COMPARE(copy.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);

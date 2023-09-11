@@ -1625,7 +1625,7 @@ void PhongGLTest::constructAsync() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    PhongGL shader{std::move(state)};
+    PhongGL shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), PhongGL::Flag::SpecularTexture|PhongGL::Flag::InstancedTextureOffset);
     CORRADE_COMPARE(shader.lightCount(), 3);
     CORRADE_COMPARE(shader.perDrawLightCount(), 2);
@@ -1733,7 +1733,7 @@ void PhongGLTest::constructUniformBuffersAsync() {
     while(!state.isLinkFinished())
         Utility::System::sleep(100);
 
-    PhongGL shader{std::move(state)};
+    PhongGL shader{Utility::move(state)};
     CORRADE_COMPARE(shader.flags(), PhongGL::Flag::UniformBuffers|PhongGL::Flag::LightCulling);
     CORRADE_COMPARE(shader.lightCount(), 2);
     CORRADE_COMPARE(shader.perDrawLightCount(), 1);
@@ -1766,7 +1766,7 @@ void PhongGLTest::constructMove() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    PhongGL b{std::move(a)};
+    PhongGL b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), PhongGL::Flag::AlphaMask);
     CORRADE_COMPARE(b.lightCount(), 3);
@@ -1774,7 +1774,7 @@ void PhongGLTest::constructMove() {
     CORRADE_VERIFY(!a.id());
 
     PhongGL c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), PhongGL::Flag::AlphaMask);
     CORRADE_COMPARE(c.lightCount(), 3);
@@ -1802,7 +1802,7 @@ void PhongGLTest::constructMoveUniformBuffers() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    PhongGL b{std::move(a)};
+    PhongGL b{Utility::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), PhongGL::Flag::UniformBuffers);
     CORRADE_COMPARE(b.lightCount(), 5);
@@ -1815,7 +1815,7 @@ void PhongGLTest::constructMoveUniformBuffers() {
     CORRADE_VERIFY(!a.id());
 
     PhongGL c{NoCreate};
-    c = std::move(b);
+    c = Utility::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), PhongGL::Flag::UniformBuffers);
     CORRADE_COMPARE(c.lightCount(), 5);
@@ -3114,7 +3114,7 @@ template<PhongGL::Flag flag> void PhongGLTest::renderTexturedNormal() {
     tangents.setData(Containers::Array<TangentBitangent>{DirectInit, 4, tangentBitangent});
     plane.addVertexBuffer(tangents, 0, sizeof(TangentBitangent),
         GL::DynamicAttribute{Shaders::PhongGL::Tangent4{data.tangentComponents}});
-    plane.addVertexBuffer(std::move(tangents), sizeof(Vector4),
+    plane.addVertexBuffer(Utility::move(tangents), sizeof(Vector4),
         sizeof(TangentBitangent),
         GL::DynamicAttribute{Shaders::PhongGL::Bitangent{}});
 

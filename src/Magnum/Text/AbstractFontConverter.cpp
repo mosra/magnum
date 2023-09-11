@@ -120,7 +120,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     Containers::Array<char> result = doExportFontToSingleData(font, cache, characters);
-    if(result) out.emplace_back(filename, std::move(result));
+    if(result) out.emplace_back(filename, Utility::move(result));
     return out;
 }
 
@@ -183,7 +183,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     Containers::Array<char> result = doExportGlyphCacheToSingleData(cache);
-    if(result) out.emplace_back(filename, std::move(result));
+    if(result) out.emplace_back(filename, Utility::move(result));
     return out;
 }
 

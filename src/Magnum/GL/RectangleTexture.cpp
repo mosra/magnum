@@ -65,42 +65,42 @@ RectangleTexture RectangleTexture::view(RectangleTexture& original, const Textur
 
 Image2D RectangleTexture::image(Image2D&& image) {
     this->image(image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 BufferImage2D RectangleTexture::image(BufferImage2D&& image, const BufferUsage usage) {
     this->image(image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedImage2D RectangleTexture::compressedImage(CompressedImage2D&& image) {
     compressedImage(image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedBufferImage2D RectangleTexture::compressedImage(CompressedBufferImage2D&& image, const BufferUsage usage) {
     compressedImage(image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 Image2D RectangleTexture::subImage(const Range2Di& range, Image2D&& image) {
     this->subImage(range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 BufferImage2D RectangleTexture::subImage(const Range2Di& range, BufferImage2D&& image, const BufferUsage usage) {
     this->subImage(range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedImage2D RectangleTexture::compressedSubImage(const Range2Di& range, CompressedImage2D&& image) {
     compressedSubImage(range, image);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 CompressedBufferImage2D RectangleTexture::compressedSubImage(const Range2Di& range, CompressedBufferImage2D&& image, const BufferUsage usage) {
     compressedSubImage(range, image, usage);
-    return std::move(image);
+    return Utility::move(image);
 }
 
 RectangleTexture& RectangleTexture::setLabel(Containers::StringView label) {

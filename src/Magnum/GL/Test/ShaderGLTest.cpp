@@ -157,7 +157,7 @@ void ShaderGLTest::constructMove() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
-    Shader b(std::move(a));
+    Shader b(Utility::move(a));
 
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
@@ -177,7 +177,7 @@ void ShaderGLTest::constructMove() {
     Shader c(Version::GLES200, Shader::Type::Vertex);
     #endif
     const Int cId = c.id();
-    c = std::move(b);
+    c = Utility::move(b);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);

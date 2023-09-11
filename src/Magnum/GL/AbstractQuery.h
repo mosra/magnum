@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::GL::AbstractQuery
  */
 
-#include <utility> /* std::swap() */
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Move.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
@@ -205,7 +205,7 @@ inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._
 }
 
 inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
-    using std::swap;
+    using Utility::swap;
     swap(_id, other._id);
     swap(_target, other._target);
     swap(_flags, other._flags);

@@ -88,7 +88,7 @@ struct Mesh::State {
 
 Mesh::Mesh(const MeshLayout& layout): Mesh{MeshLayout{layout.vkPipelineVertexInputStateCreateInfo(), layout.vkPipelineInputAssemblyStateCreateInfo()}} {}
 
-Mesh::Mesh(MeshLayout&& layout): _layout{std::move(layout)} {
+Mesh::Mesh(MeshLayout&& layout): _layout{Utility::move(layout)} {
     /* Since we know the count of buffer bindings, we can directly allocate
        all needed memory upfront */
     if(const UnsignedInt count = _layout.vkPipelineVertexInputStateCreateInfo().vertexBindingDescriptionCount) {
@@ -144,7 +144,7 @@ Mesh& Mesh::addVertexBuffer(const UnsignedInt binding, Buffer&& buffer, const Un
     #ifdef CORRADE_GRACEFUL_ASSERT
     if(index == ~std::size_t{}) return *this;
     #endif
-    _state->ownedVertexBuffers[index] = std::move(buffer);
+    _state->ownedVertexBuffers[index] = Utility::move(buffer);
     return *this;
 }
 
@@ -165,12 +165,12 @@ Mesh& Mesh::setIndexBuffer(const VkBuffer buffer, const UnsignedLong offset, con
 
 Mesh& Mesh::setIndexBuffer(Buffer&& buffer, const UnsignedLong offset, const MeshIndexType indexType) {
     setIndexBuffer(buffer, offset, indexType);
-    _state->ownedIndexBuffer = std::move(buffer);
+    _state->ownedIndexBuffer = Utility::move(buffer);
     return *this;
 }
 
 Mesh& Mesh::setIndexBuffer(Buffer&& buffer, const UnsignedLong offset, const Magnum::MeshIndexType indexType) {
-    return setIndexBuffer(std::move(buffer), offset, meshIndexType(indexType));
+    return setIndexBuffer(Utility::move(buffer), offset, meshIndexType(indexType));
 }
 
 Containers::ArrayView<const VkBuffer> Mesh::vertexBuffers() {
