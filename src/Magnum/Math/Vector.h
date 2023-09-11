@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::Vector, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle()
  */
 
-#include <utility>
+#include <utility> /* std::pair */
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif

@@ -31,7 +31,7 @@
  */
 
 #include <climits>
-#include <utility>
+#include <utility> /* std::pair */
 
 #include <Corrade/Containers/ArrayView.h>
 

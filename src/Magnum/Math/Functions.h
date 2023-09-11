@@ -34,7 +34,7 @@
 
 #include <cstdlib> /* std::div() */
 #include <type_traits>
-#include <utility>
+#include <utility> /* std::pair */
 #include <Corrade/Utility/Move.h>
 #include <Corrade/Utility/StlMath.h>
 

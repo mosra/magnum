@@ -30,7 +30,7 @@
  */
 
 #include <cstddef>
-#include <utility>
+#include <utility> /* std::pair */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector3.h"

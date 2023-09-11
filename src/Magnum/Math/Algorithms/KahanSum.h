@@ -29,7 +29,7 @@
  * @brief Function @ref Magnum::Math::Algorithms::kahanSum()
  */
 
-#include <utility>
+#include <utility> /* std::declval :( */
 
 namespace Magnum { namespace Math { namespace Algorithms {
 
