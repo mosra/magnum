@@ -115,7 +115,7 @@
 
 /* We're taking stuff from integration as well */
 #pragma ACME path ../../../magnum-integration/src
-#pragma ACME revision magnum-integration/src echo "$(git describe --long --match 'v*') ($(date -d @$(git log -1 --format=%at) +%Y-%m-%d))"
+#pragma ACME revision magnum-integration/src echo "$(git describe --long --match 'v*' --abbrev=4) ($(date -d @$(git log -1 --format=%at) +%Y-%m-%d))"
 
 /* CORRADE_DEBUG_ASSERT, CORRADE_CONSTEXPR_DEBUG_ASSERT,
    CORRADE_INTERNAL_DEBUG_ASSERT_OUTPUT and
