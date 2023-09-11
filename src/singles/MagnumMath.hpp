@@ -117,22 +117,21 @@
 #pragma ACME path ../../../magnum-integration/src
 #pragma ACME revision magnum-integration/src echo "$(git describe --long --match 'v*') ($(date -d @$(git log -1 --format=%at) +%Y-%m-%d))"
 
-/* Disable asserts that are not used. CORRADE_DEBUG_ASSERT,
-   CORRADE_CONSTEXPR_DEBUG_ASSERT, CORRADE_INTERNAL_DEBUG_ASSERT_OUTPUT and
+/* CORRADE_DEBUG_ASSERT, CORRADE_CONSTEXPR_DEBUG_ASSERT,
+   CORRADE_INTERNAL_DEBUG_ASSERT_OUTPUT and
    CORRADE_INTERNAL_DEBUG_ASSERT_UNREACHABLE are used, wrapping the #include
    <cassert> above. When enabling additional asserts, be sure to update them
    above as well-- without the _DEBUG variants, as they just delegate to the
    non-debug version of the macro. */
-#pragma ACME enable CORRADE_ASSERT_OUTPUT
-#pragma ACME enable CORRADE_DEBUG_ASSERT_OUTPUT
-#pragma ACME enable CORRADE_INTERNAL_ASSERT_EXPRESSION
-#pragma ACME enable CORRADE_INTERNAL_DEBUG_ASSERT_EXPRESSION
-#pragma ACME enable CORRADE_ASSERT_UNREACHABLE
-#pragma ACME enable CORRADE_DEBUG_ASSERT_UNREACHABLE
-#pragma ACME enable CORRADE_INTERNAL_ASSERT
-#pragma ACME enable CORRADE_INTERNAL_DEBUG_ASSERT
-#pragma ACME enable CORRADE_INTERNAL_CONSTEXPR_ASSERT
-#pragma ACME enable CORRADE_INTERNAL_CONSTEXPR_DEBUG_ASSERT
+#include "singles/assert.h"
+#pragma ACME forget CORRADE_ASSERT
+#pragma ACME forget CORRADE_DEBUG_ASSERT
+#pragma ACME forget CORRADE_CONSTEXPR_ASSERT
+#pragma ACME forget CORRADE_CONSTEXPR_DEBUG_ASSERT
+#pragma ACME forget CORRADE_INTERNAL_ASSERT_OUTPUT
+#pragma ACME forget CORRADE_INTERNAL_DEBUG_ASSERT_OUTPUT
+#pragma ACME forget CORRADE_INTERNAL_ASSERT_UNREACHABLE
+#pragma ACME forget CORRADE_INTERNAL_DEBUG_ASSERT_UNREACHABLE
 
 /* Disable strict weak ordering helpers as they're non-essential. The
    StrictWeakOrdering.h header isn't included either. */
