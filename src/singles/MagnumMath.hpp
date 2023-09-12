@@ -28,6 +28,8 @@
     `#define MAGNUM_MATH_EIGEN_INTEGRATION` before including the file.
     Including it multiple times with different macros defined works as well.
 
+    v2020.06-2544-g3e435 (2023-09-11)
+    -   Fixes to the Utility::swap() helper to avoid ambiguity with std::swap()
     v2020.06-2502-gfa079385b (2023-08-28)
     -   New Range1Dui, Range2Dui, Range3Dui, Degh, Radh, Range1Dh, Range2Dh and
         Range3Dh typedefs
