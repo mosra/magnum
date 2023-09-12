@@ -33,6 +33,11 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Trade/visibility.h"
 
+#ifdef CORRADE_TARGET_WINDOWS /* I so HATE windef.h */
+#undef near
+#undef far
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**

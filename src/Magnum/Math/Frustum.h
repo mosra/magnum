@@ -42,6 +42,11 @@
 #include <Corrade/Containers/ArrayView.h> /** @todo remove when planes() is gone */
 #endif
 
+#ifdef CORRADE_TARGET_WINDOWS /* I so HATE windef.h */
+#undef near
+#undef far
+#endif
+
 namespace Magnum { namespace Math {
 
 namespace Implementation {
