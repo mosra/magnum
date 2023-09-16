@@ -305,11 +305,12 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
 
     _canvasTarget = canvasId();
 
-    /* Get CSS canvas size and cache it. This is used later to detect canvas
-       resizes in emscripten_set_resize_callback() and fire viewport events,
-       because browsers are only required to fire resize events on the window
-       and not on particular DOM elements. */
+    /* Get CSS canvas size and device pixel ratio and cache it. This is used
+       later to detect canvas resizes in emscripten_set_resize_callback() and
+       fire viewport events, because browsers are only required to fire resize
+       events on the window and not on particular DOM elements. */
     _lastKnownCanvasSize = windowSize();
+    _lastKnownDevicePixelRatio = devicePixelRatio();
 
     /* By default Emscripten creates a 300x150 canvas. That's so freaking
        random I'm getting mad. Use the real (CSS pixels) canvas size instead,
@@ -330,9 +331,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
        ratio together with DPI scaling (which is 1.0 by default) defines
        framebuffer size. See class docs for why it's done like that. */
     _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2 devicePixelRatio = this->devicePixelRatio();
-    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << devicePixelRatio.x();
-    const Vector2i scaledCanvasSize = canvasSize*dpiScaling(configuration)*devicePixelRatio;
+    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _lastKnownDevicePixelRatio.x();
+    const Vector2i scaledCanvasSize = canvasSize*dpiScaling(configuration)*_lastKnownDevicePixelRatio;
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
     setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
@@ -384,11 +384,12 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
        or overridden/manually set by the user. */
     _canvasTarget = canvasId();
 
-    /* Get CSS canvas size and cache it. This is used later to detect canvas
-       resizes in emscripten_set_resize_callback() and fire viewport events,
-       because browsers are only required to fire resize events on the window
-       and not on particular DOM elements. */
+    /* Get CSS canvas size and device pixel ratio and cache it. This is used
+       later to detect canvas resizes in emscripten_set_resize_callback() and
+       fire viewport events, because browsers are only required to fire resize
+       events on the window and not on particular DOM elements. */
     _lastKnownCanvasSize = windowSize();
+    _lastKnownDevicePixelRatio = devicePixelRatio();
 
     /* By default Emscripten creates a 300x150 canvas. That's so freaking
        random I'm getting mad. Use the real (CSS pixels) canvas size instead,
@@ -409,9 +410,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
        ratio together with DPI scaling (which is 1.0 by default) defines
        framebuffer size. See class docs for why it's done like that. */
     _configurationDpiScaling = configuration.dpiScaling();
-    const Vector2 devicePixelRatio = this->devicePixelRatio();
-    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << devicePixelRatio.x();
-    const Vector2i scaledCanvasSize = canvasSize*dpiScaling(configuration)*devicePixelRatio;
+    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _lastKnownDevicePixelRatio.x();
+    const Vector2i scaledCanvasSize = canvasSize*dpiScaling(configuration)*_lastKnownDevicePixelRatio;
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
     /* Create WebGL context */
@@ -477,10 +477,11 @@ void EmscriptenApplication::swapBuffers() {
    setContainerCssClass() */
 void EmscriptenApplication::handleCanvasResize(const EmscriptenUiEvent* event) {
     const Vector2i canvasSize{windowSize()};
-    if(canvasSize != _lastKnownCanvasSize) {
+    const Vector2 devicePixelRatio = this->devicePixelRatio();
+    if(canvasSize != _lastKnownCanvasSize || devicePixelRatio != _lastKnownDevicePixelRatio) {
         _lastKnownCanvasSize = canvasSize;
+        _lastKnownDevicePixelRatio = devicePixelRatio;
         const Vector2 dpiScaling = this->dpiScaling();
-        const Vector2 devicePixelRatio = this->devicePixelRatio();
         const Vector2i size = canvasSize*dpiScaling*devicePixelRatio;
         emscripten_set_canvas_element_size(_canvasTarget.data(), size.x(), size.y());
         ViewportEvent e{event, canvasSize,

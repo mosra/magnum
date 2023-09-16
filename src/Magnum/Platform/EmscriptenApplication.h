@@ -898,6 +898,7 @@ class EmscriptenApplication {
         void setupAnimationFrame(bool ForceAnimationFrame);
 
         Vector2i _lastKnownCanvasSize, _previousMouseMovePosition{-1};
+        Vector2 _lastKnownDevicePixelRatio;
 
         Flags _flags;
         Cursor _cursor = Cursor::Arrow;
