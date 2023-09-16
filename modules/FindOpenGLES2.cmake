@@ -64,7 +64,7 @@ if(NOT TARGET OpenGLES2::OpenGLES2)
     # Work around BUGGY framework support on macOS. Do this also in case of
     # Emscripten, since there we don't have a location either.
     # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-    if((CORRADE_TARGET_APPLE AND ${OPENGLES2_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
+    if((CORRADE_TARGET_APPLE AND OPENGLES2_LIBRARY MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
         add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
         set_property(TARGET OpenGLES2::OpenGLES2 APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES ${OPENGLES2_LIBRARY})
