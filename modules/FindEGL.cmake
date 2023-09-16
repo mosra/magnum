@@ -38,10 +38,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Under Emscripten, GL is linked implicitly. With MINIMAL_RUNTIME you need to
-# specify -lGL. Simply set the library name to that.
+# Under Emscripten, EGL is linked implicitly. With MINIMAL_RUNTIME you need to
+# specify -lEGL. Simply set the library name to that.
 if(CORRADE_TARGET_EMSCRIPTEN)
-    set(EGL_LIBRARY GL CACHE STRING "Path to a library." FORCE)
+    set(EGL_LIBRARY EGL CACHE STRING "Path to a library." FORCE)
 else()
     find_library(EGL_LIBRARY NAMES
         EGL
