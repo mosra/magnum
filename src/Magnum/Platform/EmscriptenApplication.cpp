@@ -59,6 +59,13 @@ namespace Magnum { namespace Platform {
 
 using namespace Containers::Literals;
 
+enum class EmscriptenApplication::Flag: UnsignedByte {
+    Redraw = 1 << 0,
+    TextInputActive = 1 << 1,
+    ExitRequested = 1 << 2,
+    LoopActive = 1 << 3
+};
+
 namespace {
     typedef EmscriptenApplication::KeyEvent::Key Key;
 
@@ -673,6 +680,10 @@ void EmscriptenApplication::setCursor(Cursor cursor) {
 
 EmscriptenApplication::Cursor EmscriptenApplication::cursor() {
     return _cursor;
+}
+
+bool EmscriptenApplication::isTextInputActive() const {
+    return !!(_flags & Flag::TextInputActive);
 }
 
 void EmscriptenApplication::startTextInput() {

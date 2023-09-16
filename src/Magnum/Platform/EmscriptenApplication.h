@@ -840,9 +840,7 @@ class EmscriptenApplication {
          *      closing on-screen keyboard.
          * @see @ref startTextInput(), @ref stopTextInput()
          */
-        bool isTextInputActive() const {
-            return !!(_flags & Flag::TextInputActive);
-        }
+        bool isTextInputActive() const;
 
         /**
          * @brief Start text input
@@ -888,14 +886,8 @@ class EmscriptenApplication {
          */
 
     private:
-        enum class Flag: UnsignedByte {
-            Redraw = 1 << 0,
-            TextInputActive = 1 << 1,
-            ExitRequested = 1 << 2,
-            LoopActive = 1 << 3
-        };
+        enum class Flag: UnsignedByte;
         typedef Containers::EnumSet<Flag> Flags;
-
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         void handleCanvasResize(const EmscriptenUiEvent* event);
