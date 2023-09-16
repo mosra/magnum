@@ -216,8 +216,6 @@ void Sdl2Application::create(const Configuration& configuration, const GLConfigu
 #endif
 
 Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
-    std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
-
     /* Print a helpful warning in case some extra steps are needed for HiDPI
        support */
     #ifdef CORRADE_TARGET_APPLE
@@ -226,8 +224,15 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
         _flags |= Flag::HiDpiWarningPrinted;
     }
     #elif defined(CORRADE_TARGET_WINDOWS)
-    /* Handled below, warning printed only when using virtual DPI scaling */
+    /* Handled in dpiScalingInternal(), warning printed only when using virtual
+       DPI scaling (and thus not setting the HiDpiWarningPrinted flag) */
     #endif
+
+    return dpiScalingInternal(configuration.dpiScalingPolicy(), configuration.dpiScaling());
+}
+
+Vector2 Sdl2Application::dpiScalingInternal(const Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const {
+    std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
     /* Use values from the configuration only if not overridden on command line
        to something non-default. In any case explicit scaling has a precedence
@@ -238,11 +243,11 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
         return _commandLineDpiScaling;
     } else if(_commandLineDpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default) {
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
-    } else if(!configuration.dpiScaling().isZero()) {
-        Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << configuration.dpiScaling();
-        return configuration.dpiScaling();
+    } else if(!configurationDpiScaling.isZero()) {
+        Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << configurationDpiScaling;
+        return configurationDpiScaling;
     } else {
-        dpiScalingPolicy = configuration.dpiScalingPolicy();
+        dpiScalingPolicy = configurationDpiScalingPolicy;
     }
 
     /* There's no choice on Apple, it's all controlled by the plist file. So
@@ -395,9 +400,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Scale window based on DPI */
-    _dpiScaling = dpiScaling(configuration);
-    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
+    /* Save DPI scaling values from configuration for future use, scale window
+       based on those */
+    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
 
     /* Create window */
     if(!(_window = SDL_CreateWindow(
@@ -440,8 +447,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         windowSize = _lastKnownCanvasSize;
         Debug{_verboseLog ? Debug::output() : nullptr} << "Platform::Sdl2Application::tryCreate(): autodetected canvas size" << windowSize;
     }
-    _dpiScaling = dpiScaling(configuration);
-    const Vector2i scaledWindowSize = windowSize*_dpiScaling;
+    /* Save DPI scaling values from configuration for future use, scale window
+       based on those */
+    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2i scaledWindowSize = windowSize*dpiScaling(configuration);
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
     if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
@@ -483,9 +493,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Scale window based on DPI */
-    _dpiScaling = dpiScaling(configuration);
-    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
+    /* Save DPI scaling values from configuration for future use, scale window
+       based on those */
+    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2i scaledWindowSize = configuration.size()*dpiScaling(configuration);
 
     /* Request debug context if GpuValidation is enabled either via the
        configuration or via command-line */
@@ -668,8 +680,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         windowSize = _lastKnownCanvasSize;
         Debug{_verboseLog ? Debug::output() : nullptr} << "Platform::Sdl2Application::tryCreate(): autodetected canvas size" << windowSize;
     }
-    _dpiScaling = dpiScaling(configuration);
-    const Vector2i scaledWindowSize = windowSize*_dpiScaling;
+    /* Save DPI scaling values from configuration for future use, scale window
+       based on those */
+    _configurationDpiScalingPolicy = configuration.dpiScalingPolicy();
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2i scaledWindowSize = windowSize*dpiScaling();
 
     Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
     if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
@@ -724,21 +739,21 @@ Vector2i Sdl2Application::windowSize() const {
 void Sdl2Application::setWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::setWindowSize(): no window opened", );
 
-    const Vector2i newSize = _dpiScaling*size;
+    const Vector2i newSize = dpiScaling()*size;
     SDL_SetWindowSize(_window, newSize.x(), newSize.y());
 }
 
 void Sdl2Application::setMinWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMinWindowSize(): no window opened", );
 
-    const Vector2i newSize = _dpiScaling*size;
+    const Vector2i newSize = dpiScaling()*size;
     SDL_SetWindowMinimumSize(_window, newSize.x(), newSize.y());
 }
 
 void Sdl2Application::setMaxWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMaxWindowSize(): no window opened", );
 
-    const Vector2i newSize = _dpiScaling*size;
+    const Vector2i newSize = dpiScaling()*size;
     SDL_SetWindowMaximumSize(_window, newSize.x(), newSize.y());
 }
 #endif
@@ -756,6 +771,10 @@ Vector2i Sdl2Application::framebufferSize() const {
     return size;
 }
 #endif
+
+Vector2 Sdl2Application::dpiScaling() const {
+    return dpiScalingInternal(_configurationDpiScalingPolicy, _configurationDpiScaling);
+}
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::setContainerCssClass(const Containers::StringView cssClass) {
@@ -876,13 +895,13 @@ bool Sdl2Application::mainLoopIteration() {
         const Vector2i canvasSizei{canvasSize};
         if(canvasSizei != _lastKnownCanvasSize) {
             _lastKnownCanvasSize = canvasSizei;
-            const Vector2i size = _dpiScaling*canvasSizei;
+            const Vector2i size = dpiScaling()*canvasSizei;
             emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
             ViewportEvent e{
                 #ifdef MAGNUM_TARGET_GL
                 size,
                 #endif
-                size, _dpiScaling};
+                size, dpiScaling()};
             viewportEvent(e);
             _flags |= Flag::Redraw;
         }
@@ -912,7 +931,7 @@ bool Sdl2Application::mainLoopIteration() {
                             #ifdef MAGNUM_TARGET_GL
                             framebufferSize(),
                             #endif
-                            _dpiScaling};
+                            dpiScaling()};
                         /** @todo handle also WM_DPICHANGED events when a window is moved between displays with different DPI */
                         viewportEvent(e);
                         _flags |= Flag::Redraw;

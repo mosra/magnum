@@ -460,7 +460,7 @@ class GlfwApplication {
          * for more information.
          * @see @ref framebufferSize()
          */
-        Vector2 dpiScaling() const { return _dpiScaling; }
+        Vector2 dpiScaling() const;
 
         /**
          * @brief DPI scaling for given configuration
@@ -747,6 +747,8 @@ class GlfwApplication {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        Vector2 dpiScalingInternal(Implementation::GlfwDpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const;
+
         void setupCallbacks();
 
         /* Corresponds to size of the Cursor enum, the two Hidden cursors are
@@ -760,12 +762,12 @@ class GlfwApplication {
         ]{};
         Cursor _cursor = Cursor::Arrow;
 
-        /* These are saved from command-line arguments */
+        /* These are saved from command-line arguments, and from configuration
+           to be reused in dpiScaling() and viewportEvent() later */
         bool _verboseLog{};
-        Implementation::GlfwDpiScalingPolicy _commandLineDpiScalingPolicy{};
-        Vector2 _commandLineDpiScaling;
+        Implementation::GlfwDpiScalingPolicy _commandLineDpiScalingPolicy{}, _configurationDpiScalingPolicy{};
+        Vector2 _commandLineDpiScaling, _configurationDpiScaling;
 
-        Vector2 _dpiScaling;
         GLFWwindow* _window{nullptr};
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL

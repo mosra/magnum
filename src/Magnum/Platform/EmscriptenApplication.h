@@ -497,7 +497,7 @@ class EmscriptenApplication {
          * more information.
          * @see @ref framebufferSize(), @ref devicePixelRatio()
          */
-        Vector2 dpiScaling() const { return _dpiScaling; }
+        Vector2 dpiScaling() const;
 
         /**
          * @brief DPI scaling for given configuration
@@ -518,7 +518,7 @@ class EmscriptenApplication {
          * and @ref framebufferSize() values.
          * @see @ref dpiScaling()
          */
-        Vector2 devicePixelRatio() const { return _devicePixelRatio; }
+        Vector2 devicePixelRatio() const;
 
         /**
          * @brief Set window title
@@ -890,12 +890,13 @@ class EmscriptenApplication {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        Vector2 dpiScalingInternal(const Vector2& configurationDpiScaling) const;
+
         void handleCanvasResize(const EmscriptenUiEvent* event);
         /* Sorry, but can't use Configuration::WindowFlags here :( */
         void setupCallbacks(bool resizable);
         void setupAnimationFrame(bool ForceAnimationFrame);
 
-        Vector2 _devicePixelRatio, _dpiScaling;
         Vector2i _lastKnownCanvasSize, _previousMouseMovePosition{-1};
 
         Flags _flags;
@@ -911,9 +912,10 @@ class EmscriptenApplication {
         Containers::Optional<Platform::GLContext> _context;
         #endif
 
-        /* These are saved from command-line arguments */
+        /* These are saved from command-line arguments, and from configuration
+           to be reused in dpiScaling() and viewportEvent() later */
         bool _verboseLog{};
-        Vector2 _commandLineDpiScaling;
+        Vector2 _commandLineDpiScaling, _configurationDpiScaling;
 
         /* Animation frame callback */
         int (*_callback)(void*);

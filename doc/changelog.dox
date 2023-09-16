@@ -711,6 +711,16 @@ See also:
 -   @ref Platform::GlfwApplication now overrides GLFW's default behavior that
     changes current working directory to `Resources/` in the app bundle on
     Apple platforms.
+-   @ref Platform::EmscriptenApplication, @ref Platform::GlfwApplication and
+    @ref Platform::Sdl2Application now explicitly query DPI scaling values each
+    time they're accessed, either directly or via the viewport event, instead
+    of always returning the initially queried / calculated value. This makes
+    the behavior consistent with framebuffer and window sizes that are also
+    queried every time, and fixes a case where changing global UI scaling
+    would trigger a viewport event but the event would still have the previous
+    UI scale. However note that this does not yet properly handle DPI change
+    events themselves, which happen for example when moving windows across
+    displays with different DPI.
 
 @subsubsection changelog-latest-changes-scenegraph SceneGraph library
 

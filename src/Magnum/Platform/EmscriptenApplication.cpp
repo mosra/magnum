@@ -268,6 +268,10 @@ void EmscriptenApplication::create(const Configuration& configuration, const GLC
 #endif
 
 Vector2 EmscriptenApplication::dpiScaling(const Configuration& configuration) const {
+    return dpiScalingInternal(configuration.dpiScaling());
+}
+
+Vector2 EmscriptenApplication::dpiScalingInternal(const Vector2& configurationDpiScaling) const {
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
     /* Use values from the configuration only if not overridden on command line.
@@ -275,9 +279,9 @@ Vector2 EmscriptenApplication::dpiScaling(const Configuration& configuration) co
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::EmscriptenApplication: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
-    } else if(!configuration.dpiScaling().isZero()) {
-        Debug{verbose} << "Platform::EmscriptenApplication: app-defined DPI scaling" << configuration.dpiScaling();
-        return configuration.dpiScaling();
+    } else if(!configurationDpiScaling.isZero()) {
+        Debug{verbose} << "Platform::EmscriptenApplication: app-defined DPI scaling" << configurationDpiScaling;
+        return configurationDpiScaling;
     }
 
     /* Unlike Sdl2Application, not taking device pixel ratio into account
@@ -298,12 +302,6 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     #endif
 
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
-
-    /* Fetch device pixel ratio. Together with DPI scaling (which is 1.0 by
-       default) this will define framebuffer size. See class docs for why is it
-       done like that. */
-    _devicePixelRatio = Vector2{Float(emscripten_get_device_pixel_ratio())};
-    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _devicePixelRatio.x();
 
     _canvasTarget = canvasId();
 
@@ -327,8 +325,14 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
         canvasSize = _lastKnownCanvasSize;
         Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): autodetected canvas size" << canvasSize;
     }
-    _dpiScaling = dpiScaling(configuration);
-    const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_devicePixelRatio;
+
+    /* Save DPI scaling value from configuration for future use. Device pixel
+       ratio together with DPI scaling (which is 1.0 by default) defines
+       framebuffer size. See class docs for why it's done like that. */
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2 devicePixelRatio = this->devicePixelRatio();
+    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << devicePixelRatio.x();
+    const Vector2i scaledCanvasSize = canvasSize*dpiScaling(configuration)*devicePixelRatio;
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
     setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
@@ -376,12 +380,6 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
 
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
-    /* Fetch device pixel ratio. Together with DPI scaling (which is 1.0 by
-       default) this will define framebuffer size. See class docs for why is it
-       done like that. */
-    _devicePixelRatio = Vector2{Float(emscripten_get_device_pixel_ratio())};
-    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _devicePixelRatio.x();
-
     /* Get the canvas ID from Module.canvas, either set by EmscriptenApplication.js
        or overridden/manually set by the user. */
     _canvasTarget = canvasId();
@@ -406,8 +404,14 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
         canvasSize = _lastKnownCanvasSize;
         Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): autodetected canvas size" << canvasSize;
     }
-    _dpiScaling = dpiScaling(configuration);
-    const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_devicePixelRatio;
+
+    /* Save DPI scaling value from configuration for future use. Device pixel
+       ratio together with DPI scaling (which is 1.0 by default) defines
+       framebuffer size. See class docs for why it's done like that. */
+    _configurationDpiScaling = configuration.dpiScaling();
+    const Vector2 devicePixelRatio = this->devicePixelRatio();
+    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << devicePixelRatio.x();
+    const Vector2i scaledCanvasSize = canvasSize*dpiScaling(configuration)*devicePixelRatio;
     emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
     /* Create WebGL context */
@@ -445,6 +449,14 @@ Vector2i EmscriptenApplication::framebufferSize() const {
 }
 #endif
 
+Vector2 EmscriptenApplication::dpiScaling() const {
+    return dpiScalingInternal(_configurationDpiScaling);
+}
+
+Vector2 EmscriptenApplication::devicePixelRatio() const {
+    return Vector2{Float(emscripten_get_device_pixel_ratio())};
+}
+
 void EmscriptenApplication::setWindowTitle(const Containers::StringView title) {
     magnumPlatformSetWindowTitle(title.data(), title.size());
 }
@@ -467,13 +479,15 @@ void EmscriptenApplication::handleCanvasResize(const EmscriptenUiEvent* event) {
     const Vector2i canvasSize{windowSize()};
     if(canvasSize != _lastKnownCanvasSize) {
         _lastKnownCanvasSize = canvasSize;
-        const Vector2i size = canvasSize*_dpiScaling*_devicePixelRatio;
+        const Vector2 dpiScaling = this->dpiScaling();
+        const Vector2 devicePixelRatio = this->devicePixelRatio();
+        const Vector2i size = canvasSize*dpiScaling*devicePixelRatio;
         emscripten_set_canvas_element_size(_canvasTarget.data(), size.x(), size.y());
         ViewportEvent e{event, canvasSize,
             #ifdef MAGNUM_TARGET_GL
             framebufferSize(),
             #endif
-            _dpiScaling, _devicePixelRatio};
+            dpiScaling, devicePixelRatio};
         viewportEvent(e);
 
         /* Can't say just _flags | Flag::Redraw because in case the

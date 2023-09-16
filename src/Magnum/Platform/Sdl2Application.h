@@ -805,7 +805,7 @@ class Sdl2Application {
          * for more information.
          * @see @ref framebufferSize()
          */
-        Vector2 dpiScaling() const { return _dpiScaling; }
+        Vector2 dpiScaling() const;
 
         /**
          * @brief DPI scaling for given configuration
@@ -1240,18 +1240,19 @@ class Sdl2Application {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        Vector2 dpiScalingInternal(Implementation::Sdl2DpiScalingPolicy configurationDpiScalingPolicy, const Vector2& configurationDpiScaling) const;
+
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Cursor* _cursors[12]{};
         #else
         Cursor _cursor;
         #endif
 
-        /* These are saved from command-line arguments */
+        /* These are saved from command-line arguments, and from configuration
+           to be reused in dpiScaling() and viewportEvent() later */
         bool _verboseLog{};
-        Implementation::Sdl2DpiScalingPolicy _commandLineDpiScalingPolicy{};
-        Vector2 _commandLineDpiScaling;
-
-        Vector2 _dpiScaling;
+        Implementation::Sdl2DpiScalingPolicy _commandLineDpiScalingPolicy{}, _configurationDpiScalingPolicy{};
+        Vector2 _commandLineDpiScaling, _configurationDpiScaling;
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window{};
