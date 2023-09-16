@@ -32,6 +32,7 @@
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/ConfigurationValue.h"
 
 /* The __EMSCRIPTEN_major__ etc macros used to be passed implicitly, version
    3.1.4 moved them to a version header and version 3.1.23 dropped the
@@ -161,7 +162,8 @@ struct EmscriptenApplicationTest: Platform::Application {
 
 EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     Utility::Arguments args;
-    args.addSkippedPrefix("magnum", "engine-specific options")
+    args.addOption("dpi-scaling").setHelp("dpi-scaling", "DPI scaled passed via Configuration instead of --magnum-dpi-scaling, to test app overrides")
+        .addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
         .parse(arguments.argc, arguments.argv);
@@ -180,6 +182,8 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
 
     Configuration conf;
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);
+    if(!args.value("dpi-scaling").empty())
+        conf.setSize({640, 480}, args.value<Vector2>("dpi-scaling"));
     GLConfiguration glConf;
     if(args.isSet("quiet"))
         glConf.addFlags(GLConfiguration::Flag::QuietLog);
