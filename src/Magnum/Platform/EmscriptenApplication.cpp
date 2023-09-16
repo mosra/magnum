@@ -292,6 +292,12 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
 
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
+    /* Fetch device pixel ratio. Together with DPI scaling (which is 1.0 by
+       default) this will define framebuffer size. See class docs for why is it
+       done like that. */
+    _devicePixelRatio = Vector2{Float(emscripten_get_device_pixel_ratio())};
+    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _devicePixelRatio.x();
+
     _canvasTarget = canvasId();
 
     /* Get CSS canvas size and cache it. This is used later to detect canvas
