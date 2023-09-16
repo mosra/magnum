@@ -231,7 +231,7 @@ Since the importers deal with untrusted external data, it's needed to perform
 explicit error handling on the application side. There are two cases where it
 can fail --- during opening, in which case the function returns @cpp false @ce,
 and during the actual data import, in which case you get an empty @relativeref{Corrade,Containers::Optional}. In both cases the actual failure
-reason is printed to the error output. Everything else (IDs out of bounds,
+reason is printed to the error output. Everything else (IDs out of range,
 calling functions without a file open, accessing an empty optional, ...) is
 treated as a programmer error and will produce the usual assertions.
 
@@ -1897,7 +1897,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @cpp -1 @ce. This function isn't
          * expected to fail --- if an import error occus (for example because
-         * the default scene index is out of bounds), it should be handled
+         * the default scene index is out of range), it should be handled
          * already during file opening.
          */
         virtual Int doDefaultScene() const;

@@ -264,7 +264,7 @@ UnsignedLong FrameProfiler::measurementData(const UnsignedInt id, const Unsigned
     CORRADE_ASSERT(id < _measurements.size(),
         "DebugTools::FrameProfiler::measurementData(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     CORRADE_ASSERT(frame < _maxFrameCount,
-        "DebugTools::FrameProfiler::measurementData(): frame" << frame << "out of bounds for max" << _maxFrameCount << "frames", {});
+        "DebugTools::FrameProfiler::measurementData(): frame" << frame << "out of range for max" << _maxFrameCount << "frames", {});
     CORRADE_ASSERT(_measuredFrameCount >= Math::max(_measurements[id]._delay, 1u) && frame <= _measuredFrameCount - Math::max(_measurements[id]._delay, 1u),
         "DebugTools::FrameProfiler::measurementData(): frame" << frame << "of measurement" << id << "not available yet (delay" << Math::max(_measurements[id]._delay, 1u) << Debug::nospace << "," << _measuredFrameCount << "frames measured so far)", {});
 

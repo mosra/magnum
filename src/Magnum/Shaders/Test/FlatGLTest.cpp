@@ -1747,7 +1747,7 @@ template<UnsignedInt dimensions> void FlatGLTest::setWrongJointCountOrId() {
         .setJointMatrix(5, MatrixTypeFor<dimensions, Float>{});
     CORRADE_COMPARE(out.str(),
         "Shaders::FlatGL::setJointMatrices(): expected at most 5 items but got 6\n"
-        "Shaders::FlatGL::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
+        "Shaders::FlatGL::setJointMatrix(): joint ID 5 is out of range for 5 joints\n");
 }
 #endif
 
@@ -1771,7 +1771,7 @@ template<UnsignedInt dimensions> void FlatGLTest::setWrongDrawOffset() {
     Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
-        "Shaders::FlatGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+        "Shaders::FlatGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif
 

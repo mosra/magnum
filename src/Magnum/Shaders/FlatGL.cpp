@@ -614,7 +614,7 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setJoin
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::FlatGL::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(id < _jointCount,
-        "Shaders::FlatGL::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+        "Shaders::FlatGL::setJointMatrix(): joint ID" << id << "is out of range for" << _jointCount << "joints", *this);
     setUniform(_jointMatricesUniform + id, matrix);
     return *this;
 }
@@ -633,10 +633,10 @@ template<UnsignedInt dimensions> FlatGL<dimensions>& FlatGL<dimensions>::setDraw
         "Shaders::FlatGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
-        "Shaders::FlatGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::FlatGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #else
     CORRADE_ASSERT(offset < _drawCount,
-        "Shaders::FlatGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::FlatGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #endif
     if(_drawCount > 1
         #ifndef MAGNUM_TARGET_WEBGL

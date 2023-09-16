@@ -364,10 +364,10 @@ template<UnsignedInt dimensions> VectorGL<dimensions>& VectorGL<dimensions>::set
         "Shaders::VectorGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
-        "Shaders::VectorGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::VectorGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #else
     CORRADE_ASSERT(offset < _drawCount,
-        "Shaders::VectorGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::VectorGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #endif
     if(_drawCount > 1
         #ifndef MAGNUM_TARGET_WEBGL

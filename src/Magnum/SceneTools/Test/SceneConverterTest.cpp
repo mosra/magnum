@@ -1308,7 +1308,7 @@ const struct {
         nullptr,
         "Trade::AbstractSceneConverter::addSupportedImporterContents(): ignoring 1 3D images not supported by the converter\n"
         /* Another way this could fail is that the texture is now referencing a
-           3D image out of bounds (because adding it failed above) */
+           3D image out of range (because adding it failed above) */
         "Trade::GltfSceneConverter::add(): 2D array textures require experimentalKhrTextureKtx to be enabled\n"
         "Cannot add material dependencies\n"},
     {"can't add processed material", {InPlaceInit, {

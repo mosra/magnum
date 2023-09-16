@@ -966,7 +966,7 @@ template<UnsignedInt dimensions> void LineGLTest::setWrongDrawOffset() {
     Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
-        "Shaders::LineGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+        "Shaders::LineGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 
 constexpr Vector2i RenderSizeLarge{128, 128};

@@ -398,10 +398,10 @@ template<UnsignedInt dimensions> LineGL<dimensions>& LineGL<dimensions>::setDraw
         "Shaders::LineGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
-        "Shaders::LineGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::LineGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #else
     CORRADE_ASSERT(offset < _drawCount,
-        "Shaders::LineGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::LineGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #endif
     if(_drawCount > 1
         #ifndef MAGNUM_TARGET_WEBGL

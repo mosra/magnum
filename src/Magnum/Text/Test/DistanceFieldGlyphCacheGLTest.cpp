@@ -54,7 +54,7 @@ struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
     void setImage();
 
     void setDistanceFieldImage();
-    void setDistanceFieldImageOutOfBounds();
+    void setDistanceFieldImageOutOfRange();
 
     PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 };
@@ -79,7 +79,7 @@ DistanceFieldGlyphCacheGLTest::DistanceFieldGlyphCacheGLTest() {
         Containers::arraySize(SetImageData));
 
     addTests({&DistanceFieldGlyphCacheGLTest::setDistanceFieldImage,
-              &DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfBounds});
+              &DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfRange});
 
     /* Load the plugin directly from the build tree. Otherwise it's either
        static and already loaded or not present in the build tree */
@@ -197,7 +197,7 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImage() {
     #endif
 }
 
-void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfBounds() {
+void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     DistanceFieldGlyphCache cache{{200, 300}, {100, 200}, 4};
@@ -215,10 +215,10 @@ void DistanceFieldGlyphCacheGLTest::setDistanceFieldImageOutOfBounds() {
     cache.setDistanceFieldImage({-1, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
     cache.setDistanceFieldImage({80, -1}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
     CORRADE_COMPARE_AS(out.str(),
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({81, 175}, {101, 200}) out of bounds for texture size Vector(100, 200)\n"
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({80, 176}, {100, 201}) out of bounds for texture size Vector(100, 200)\n"
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({-1, 175}, {19, 200}) out of bounds for texture size Vector(100, 200)\n"
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({80, -1}, {100, 24}) out of bounds for texture size Vector(100, 200)\n",
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({81, 175}, {101, 200}) out of range for texture size Vector(100, 200)\n"
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({80, 176}, {100, 201}) out of range for texture size Vector(100, 200)\n"
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({-1, 175}, {19, 200}) out of range for texture size Vector(100, 200)\n"
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): Range({80, -1}, {100, 24}) out of range for texture size Vector(100, 200)\n",
         TestSuite::Compare::String);
 }
 

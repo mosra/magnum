@@ -734,7 +734,7 @@ template<UnsignedInt dimensions> void VectorGLTest::setWrongDrawOffset() {
     Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
-        "Shaders::VectorGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+        "Shaders::VectorGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif
 

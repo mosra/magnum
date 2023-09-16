@@ -53,7 +53,7 @@ struct FilterTest: TestSuite::Tester {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     void onlyAttributeIds();
-    void onlyAttributeIdsOutOfBounds();
+    void onlyAttributeIdsOutOfRange();
     void onlyAttributeIdsNoIndexData();
     void onlyAttributeIdsNoAttributeData();
     #endif
@@ -64,7 +64,7 @@ struct FilterTest: TestSuite::Tester {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     void exceptAttributeIds();
-    void exceptAttributeIdsOutOfBounds();
+    void exceptAttributeIdsOutOfRange();
     void exceptAttributeIdsNoIndexData();
     void exceptAttributeIdsNoAttributeData();
     #endif
@@ -95,7 +95,7 @@ FilterTest::FilterTest() {
     addInstancedTests({&FilterTest::onlyAttributeIds},
         Containers::arraySize(ImplementationSpecificIndexTypeData));
 
-    addTests({&FilterTest::onlyAttributeIdsOutOfBounds,
+    addTests({&FilterTest::onlyAttributeIdsOutOfRange,
               &FilterTest::onlyAttributeIdsNoIndexData,
               &FilterTest::onlyAttributeIdsNoAttributeData});
     #endif
@@ -110,7 +110,7 @@ FilterTest::FilterTest() {
     addInstancedTests({&FilterTest::exceptAttributeIds},
         Containers::arraySize(ImplementationSpecificIndexTypeData));
 
-    addTests({&FilterTest::exceptAttributeIdsOutOfBounds,
+    addTests({&FilterTest::exceptAttributeIdsOutOfRange,
               &FilterTest::exceptAttributeIdsNoIndexData,
               &FilterTest::exceptAttributeIdsNoAttributeData});
     #endif
@@ -383,7 +383,7 @@ void FilterTest::onlyAttributeIds() {
     CORRADE_VERIFY(!attributeData.deleter());
 }
 
-void FilterTest::onlyAttributeIdsOutOfBounds() {
+void FilterTest::onlyAttributeIdsOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */
@@ -627,7 +627,7 @@ void FilterTest::exceptAttributeIds() {
     CORRADE_VERIFY(!attributeData.deleter());
 }
 
-void FilterTest::exceptAttributeIdsOutOfBounds() {
+void FilterTest::exceptAttributeIdsOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     /* GCC 4.8 dies if I try to initialize this with a {}. I won't, then. */

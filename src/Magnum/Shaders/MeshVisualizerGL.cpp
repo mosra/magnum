@@ -457,10 +457,10 @@ MeshVisualizerGLBase& MeshVisualizerGLBase::setDrawOffset(const UnsignedInt offs
         "Shaders::MeshVisualizerGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(_flags >= FlagBase::ShaderStorageBuffers || offset < _drawCount,
-        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #else
     CORRADE_ASSERT(offset < _drawCount,
-        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #endif
     if(_drawCount > 1
         #ifndef MAGNUM_TARGET_WEBGL
@@ -1002,7 +1002,7 @@ MeshVisualizerGL2D& MeshVisualizerGL2D::setJointMatrix(const UnsignedInt id, con
     CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
         "Shaders::MeshVisualizerGL2D::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(id < _jointCount,
-        "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+        "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID" << id << "is out of range for" << _jointCount << "joints", *this);
     setUniform(_jointMatricesUniform + id, matrix);
     return *this;
 }
@@ -1654,7 +1654,7 @@ MeshVisualizerGL3D& MeshVisualizerGL3D::setJointMatrix(const UnsignedInt id, con
     CORRADE_ASSERT(!(flags() >= Flag::UniformBuffers),
         "Shaders::MeshVisualizerGL3D::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(id < _jointCount,
-        "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+        "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID" << id << "is out of range for" << _jointCount << "joints", *this);
     setUniform(_jointMatricesUniform + id, matrix);
     return *this;
 }

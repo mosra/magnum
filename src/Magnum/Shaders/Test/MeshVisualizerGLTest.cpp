@@ -3078,7 +3078,7 @@ void MeshVisualizerGLTest::setWrongJointCountOrId2D() {
         .setJointMatrix(5, Matrix3{});
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL2D::setJointMatrices(): expected at most 5 items but got 6\n"
-        "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
+        "Shaders::MeshVisualizerGL2D::setJointMatrix(): joint ID 5 is out of range for 5 joints\n");
 }
 
 void MeshVisualizerGLTest::setWrongJointCountOrId3D() {
@@ -3103,7 +3103,7 @@ void MeshVisualizerGLTest::setWrongJointCountOrId3D() {
         .setJointMatrix(5, Matrix4{});
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizerGL3D::setJointMatrices(): expected at most 5 items but got 6\n"
-        "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
+        "Shaders::MeshVisualizerGL3D::setJointMatrix(): joint ID 5 is out of range for 5 joints\n");
 }
 #endif
 
@@ -3125,7 +3125,7 @@ void MeshVisualizerGLTest::setWrongDrawOffset2D() {
     Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 
 void MeshVisualizerGLTest::setWrongDrawOffset3D() {
@@ -3145,7 +3145,7 @@ void MeshVisualizerGLTest::setWrongDrawOffset3D() {
     Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+        "Shaders::MeshVisualizerGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif
 

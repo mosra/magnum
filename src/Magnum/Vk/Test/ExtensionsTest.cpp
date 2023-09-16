@@ -94,7 +94,7 @@ void ExtensionsTest::isExtension() {
     {
         /* Not really a problem right now, but once people hit this we might
            want to guard against this (especially because the Index might be
-           out of bounds) */
+           out of range) */
         struct GLExtension {
             enum: std::size_t { Index };
         };

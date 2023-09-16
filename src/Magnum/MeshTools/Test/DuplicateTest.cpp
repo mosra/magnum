@@ -41,7 +41,7 @@ struct DuplicateTest: TestSuite::Tester {
     explicit DuplicateTest();
 
     void duplicate();
-    void duplicateOutOfBounds();
+    void duplicateOutOfRange();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void duplicateStl();
     #endif
@@ -71,7 +71,7 @@ struct DuplicateTest: TestSuite::Tester {
 
 DuplicateTest::DuplicateTest() {
     addTests({&DuplicateTest::duplicate,
-              &DuplicateTest::duplicateOutOfBounds,
+              &DuplicateTest::duplicateOutOfRange,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &DuplicateTest::duplicateStl,
               #endif
@@ -114,7 +114,7 @@ void DuplicateTest::duplicate() {
         TestSuite::Compare::Container);
 }
 
-void DuplicateTest::duplicateOutOfBounds() {
+void DuplicateTest::duplicateOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     constexpr UnsignedByte indices[]{1, 1, 0, 4, 2, 2};
@@ -125,7 +125,7 @@ void DuplicateTest::duplicateOutOfBounds() {
 
     MeshTools::duplicate<UnsignedByte, Int>(indices, data);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::duplicateInto(): index 4 out of bounds for 4 elements\n");
+        "MeshTools::duplicateInto(): index 4 out of range for 4 elements\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

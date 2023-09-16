@@ -615,7 +615,7 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
         Containers::Array<DeviceProperties> devices{NoInit, id + 1};
         const UnsignedInt count = Implementation::enumerateDevicesInto(instance, devices);
         if(id >= count) {
-            Error{} << "Vk::tryPickDevice(): index" << id << "out of bounds for" << count << "Vulkan devices";
+            Error{} << "Vk::tryPickDevice(): index" << id << "out of range for" << count << "Vulkan devices";
             return {};
         }
 

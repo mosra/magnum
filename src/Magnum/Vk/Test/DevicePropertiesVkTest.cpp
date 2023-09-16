@@ -102,8 +102,8 @@ const struct {
 } PickDeviceErrorData[] {
     {"nothing for type found", Containers::array({"", "--magnum-device", "virtual"}),
         "Vk::tryPickDevice(): no Vk::DeviceType::VirtualGpu found among {} Vulkan devices\n"},
-    {"index out of bounds", Containers::array({"", "--magnum-device", "666"}),
-        "Vk::tryPickDevice(): index 666 out of bounds for {} Vulkan devices\n"},
+    {"index out of range", Containers::array({"", "--magnum-device", "666"}),
+        "Vk::tryPickDevice(): index 666 out of range for {} Vulkan devices\n"},
     {"unknown type", Containers::array({"", "--magnum-device", "FAST"}),
         "Vk::tryPickDevice(): unknown Vulkan device type FAST\n"}
 };

@@ -76,7 +76,7 @@ struct GenerateIndicesTest: TestSuite::Tester {
     template<class T> void generateQuadIndices();
     template<class T> void generateQuadIndicesInto();
     void generateQuadIndicesWrongIndexCount();
-    void generateQuadIndicesIndexOutOfBounds();
+    void generateQuadIndicesIndexOutOfRange();
     void generateQuadIndicesIntoWrongSize();
 
     void generateIndicesMeshData();
@@ -266,7 +266,7 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::generateQuadIndicesInto<UnsignedShort>,
               &GenerateIndicesTest::generateQuadIndicesInto<UnsignedByte>,
               &GenerateIndicesTest::generateQuadIndicesWrongIndexCount,
-              &GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds,
+              &GenerateIndicesTest::generateQuadIndicesIndexOutOfRange,
               &GenerateIndicesTest::generateQuadIndicesIntoWrongSize});
 
     addInstancedTests({&GenerateIndicesTest::generateIndicesMeshData,
@@ -1031,7 +1031,7 @@ void GenerateIndicesTest::generateQuadIndicesWrongIndexCount() {
         "MeshTools::generateQuadIndicesInto(): quad index count 13 not divisible by 4\n");
 }
 
-void GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds() {
+void GenerateIndicesTest::generateQuadIndicesIndexOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     UnsignedInt quads[]{5, 4, 6, 7};
@@ -1041,7 +1041,7 @@ void GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds() {
     Error redirectError{&out};
     MeshTools::generateQuadIndices(positions, quads);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::generateQuadIndicesInto(): index 7 out of bounds for 7 elements\n");
+        "MeshTools::generateQuadIndicesInto(): index 7 out of range for 7 elements\n");
 }
 
 void GenerateIndicesTest::generateQuadIndicesIntoWrongSize() {

@@ -59,7 +59,7 @@ void AbstractGlyphCache::insert(const UnsignedInt glyph, const Vector2i& positio
 
 void AbstractGlyphCache::setImage(const Vector2i& offset, const ImageView2D& image) {
     CORRADE_ASSERT((offset >= Vector2i{} && offset + image.size() <= _size).all(),
-        "Text::AbstractGlyphCache::setImage():" << Range2Di::fromSize(offset, image.size()) << "out of bounds for texture size" << _size, );
+        "Text::AbstractGlyphCache::setImage():" << Range2Di::fromSize(offset, image.size()) << "out of range for texture size" << _size, );
 
     doSetImage(offset, image);
 }

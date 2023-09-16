@@ -294,7 +294,7 @@ const struct {
         {5, 5, 5, 5, 5}, 3, 0, 3},
     {"implicit, not found", SceneFieldFlag::ImplicitMapping,
         /* Is there but the assumption is that the ID matches the offset, which
-           is out of bounds */
+           is out of range */
         {5, 5, 5, 5, 5}, 5, 0, Containers::NullOpt},
     {"implicit, offset", SceneFieldFlag::ImplicitMapping,
         /* Not there but the assumption is that the ID matches the offset;
@@ -304,7 +304,7 @@ const struct {
         /* Cerifying that the offset is properly accounted for -- it's never
            found if offset > id */
         {5, 5, 5, 5, 5}, 3, 4, Containers::NullOpt},
-    {"implicit, offset, not found, out of bounds", SceneFieldFlag::ImplicitMapping,
+    {"implicit, offset, not found, out of range", SceneFieldFlag::ImplicitMapping,
         {5, 5, 5, 5, 5}, 5, 4, Containers::NullOpt}
 };
 
@@ -4336,10 +4336,10 @@ void SceneDataTest::findFieldObjectOffsetInvalidOffset() {
     scene.fieldObjectOffset(0, 1, 4);
     scene.fieldObjectOffset(SceneField::Mesh, 1, 4);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::findFieldObjectOffset(): offset 4 out of bounds for a field of size 3\n"
-        "Trade::SceneData::findFieldObjectOffset(): offset 4 out of bounds for a field of size 3\n"
-        "Trade::SceneData::fieldObjectOffset(): offset 4 out of bounds for a field of size 3\n"
-        "Trade::SceneData::fieldObjectOffset(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::findFieldObjectOffset(): offset 4 out of range for a field of size 3\n"
+        "Trade::SceneData::findFieldObjectOffset(): offset 4 out of range for a field of size 3\n"
+        "Trade::SceneData::fieldObjectOffset(): offset 4 out of range for a field of size 3\n"
+        "Trade::SceneData::fieldObjectOffset(): offset 4 out of range for a field of size 3\n");
 }
 
 void SceneDataTest::fieldObjectOffsetNotFound() {
@@ -4542,8 +4542,8 @@ void SceneDataTest::mappingIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::mappingInto(): expected a view with 3 elements but got 2\n"
         "Trade::SceneData::mappingInto(): expected a view with 3 elements but got 2\n"
-        "Trade::SceneData::mappingInto(): offset 4 out of bounds for a field of size 3\n"
-        "Trade::SceneData::mappingInto(): offset 4 out of bounds for a field of size 3\n");
+        "Trade::SceneData::mappingInto(): offset 4 out of range for a field of size 3\n"
+        "Trade::SceneData::mappingInto(): offset 4 out of range for a field of size 3\n");
 }
 
 template<class T> void SceneDataTest::parentsAsArray() {
@@ -4661,7 +4661,7 @@ void SceneDataTest::parentsIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::parentsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::parentsInto(): expected field destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::parentsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::parentsInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::parentsInto(): mapping and field destination views have different size, 3 vs 2\n");
 }
 
@@ -5215,7 +5215,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::transformations2DInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::transformations2DInto(): expected field destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::transformations2DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::transformations2DInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::transformations2DInto(): mapping and field destination views have different size, 3 vs 2\n");
 }
 
@@ -5259,7 +5259,7 @@ void SceneDataTest::transformations2DIntoArrayInvalidSizeOrOffsetTRS() {
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected translation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected rotation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): expected scaling destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::translationsRotationsScalings2DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::translationsRotationsScalings2DInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): mapping and translation destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): mapping and rotation destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings2DInto(): mapping and scaling destination views have different size, 3 vs 2\n"
@@ -5811,7 +5811,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::transformations3DInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::transformations3DInto(): expected field destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::transformations3DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::transformations3DInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::transformations3DInto(): mapping and field destination views have different size, 3 vs 2\n");
 }
 
@@ -5855,7 +5855,7 @@ void SceneDataTest::transformations3DIntoArrayInvalidSizeOrOffsetTRS() {
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected translation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected rotation destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): expected scaling destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::translationsRotationsScalings3DInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::translationsRotationsScalings3DInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): mapping and translation destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): mapping and rotation destination views have different size, 3 vs 2\n"
         "Trade::SceneData::translationsRotationsScalings3DInto(): mapping and scaling destination views have different size, 3 vs 2\n"
@@ -6024,7 +6024,7 @@ void SceneDataTest::meshesMaterialsIntoArrayInvalidSizeOrOffset() {
         "Trade::SceneData::meshesMaterialsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::meshesMaterialsInto(): expected mesh destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::meshesMaterialsInto(): expected mesh material destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::meshesMaterialsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::meshesMaterialsInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::meshesMaterialsInto(): mapping and mesh destination views have different size, 3 vs 2\n"
         "Trade::SceneData::meshesMaterialsInto(): mapping and mesh material destination views have different size, 3 vs 2\n"
         "Trade::SceneData::meshesMaterialsInto(): mesh and mesh material destination views have different size, 3 vs 2\n");
@@ -6145,7 +6145,7 @@ void SceneDataTest::lightsIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::lightsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::lightsInto(): expected field destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::lightsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::lightsInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::lightsInto(): mapping and field destination views have different size, 3 vs 2\n");
 }
 
@@ -6264,7 +6264,7 @@ void SceneDataTest::camerasIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::camerasInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::camerasInto(): expected field destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::camerasInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::camerasInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::camerasInto(): mapping and field destination views have different size, 3 vs 2\n");
 }
 
@@ -6390,7 +6390,7 @@ void SceneDataTest::skinsIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::skinsInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::skinsInto(): expected field destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::skinsInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::skinsInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::skinsInto(): mapping and field destination views have different size, 3 vs 2\n");
 }
 
@@ -6513,7 +6513,7 @@ void SceneDataTest::importerStateIntoArrayInvalidSizeOrOffset() {
     CORRADE_COMPARE(out.str(),
         "Trade::SceneData::importerStateInto(): expected mapping destination view either empty or with 3 elements but got 2\n"
         "Trade::SceneData::importerStateInto(): expected field destination view either empty or with 3 elements but got 2\n"
-        "Trade::SceneData::importerStateInto(): offset 4 out of bounds for a field of size 3\n"
+        "Trade::SceneData::importerStateInto(): offset 4 out of range for a field of size 3\n"
         "Trade::SceneData::importerStateInto(): mapping and field destination views have different size, 3 vs 2\n");
 }
 
@@ -7610,23 +7610,23 @@ void SceneDataTest::findFieldObjectOffsetInvalidObject() {
     scene.camerasFor(7);
     scene.skinsFor(7);
     CORRADE_COMPARE(out.str(),
-        "Trade::SceneData::findFieldObjectOffset(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::findFieldObjectOffset(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::fieldObjectOffset(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::fieldObjectOffset(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::hasFieldObject(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::hasFieldObject(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::parentFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::childrenFor(): object -2 out of bounds for 7 objects\n"
-        "Trade::SceneData::childrenFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::transformation2DFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::translationRotationScaling2DFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::transformation3DFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::translationRotationScaling3DFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::meshesMaterialsFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::lightsFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::camerasFor(): object 7 out of bounds for 7 objects\n"
-        "Trade::SceneData::skinsFor(): object 7 out of bounds for 7 objects\n");
+        "Trade::SceneData::findFieldObjectOffset(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::findFieldObjectOffset(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::fieldObjectOffset(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::fieldObjectOffset(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::hasFieldObject(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::hasFieldObject(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::parentFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::childrenFor(): object -2 out of range for 7 objects\n"
+        "Trade::SceneData::childrenFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::transformation2DFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::translationRotationScaling2DFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::transformation3DFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::translationRotationScaling3DFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::meshesMaterialsFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::lightsFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::camerasFor(): object 7 out of range for 7 objects\n"
+        "Trade::SceneData::skinsFor(): object 7 out of range for 7 objects\n");
 }
 
 void SceneDataTest::releaseFieldData() {

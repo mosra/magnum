@@ -97,7 +97,7 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
     CORRADE_ASSERT((offset >= Vector2i{} && offset + image.size() <= _size).all(),
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage():" << Range2Di::fromSize(offset, image.size()) << "out of bounds for texture size" << _size, );
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage():" << Range2Di::fromSize(offset, image.size()) << "out of range for texture size" << _size, );
 
     #ifndef CORRADE_NO_ASSERT
     const GL::PixelFormat format = GL::pixelFormat(image.format());

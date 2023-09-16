@@ -155,7 +155,7 @@ const struct {
     {"before", 1},
     {"at", 2},
     {"after", 3},
-    {"out of bounds", 405780454}
+    {"out of range", 405780454}
 };
 
 InterpolationTest::InterpolationTest() {

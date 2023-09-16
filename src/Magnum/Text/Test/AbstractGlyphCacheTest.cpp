@@ -45,7 +45,7 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
     void reserve();
 
     void setImage();
-    void setImageOutOfBounds();
+    void setImageOutOfRange();
 
     void image();
     void imageNotSupported();
@@ -58,7 +58,7 @@ AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
               &AbstractGlyphCacheTest::reserve,
 
               &AbstractGlyphCacheTest::setImage,
-              &AbstractGlyphCacheTest::setImageOutOfBounds,
+              &AbstractGlyphCacheTest::setImageOutOfRange,
 
               &AbstractGlyphCacheTest::image,
               &AbstractGlyphCacheTest::imageNotSupported,
@@ -135,7 +135,7 @@ void AbstractGlyphCacheTest::setImage() {
     CORRADE_COMPARE(cache.imageSize, (Vector2i{20, 25}));
 }
 
-void AbstractGlyphCacheTest::setImageOutOfBounds() {
+void AbstractGlyphCacheTest::setImageOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     DummyGlyphCache cache{{100, 200}};
@@ -150,10 +150,10 @@ void AbstractGlyphCacheTest::setImageOutOfBounds() {
     cache.setImage({-1, 175}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
     cache.setImage({80, -1}, ImageView2D{PixelFormat::R8Unorm, {20, 25}});
     CORRADE_COMPARE_AS(out.str(),
-        "Text::AbstractGlyphCache::setImage(): Range({81, 175}, {101, 200}) out of bounds for texture size Vector(100, 200)\n"
-        "Text::AbstractGlyphCache::setImage(): Range({80, 176}, {100, 201}) out of bounds for texture size Vector(100, 200)\n"
-        "Text::AbstractGlyphCache::setImage(): Range({-1, 175}, {19, 200}) out of bounds for texture size Vector(100, 200)\n"
-        "Text::AbstractGlyphCache::setImage(): Range({80, -1}, {100, 24}) out of bounds for texture size Vector(100, 200)\n",
+        "Text::AbstractGlyphCache::setImage(): Range({81, 175}, {101, 200}) out of range for texture size Vector(100, 200)\n"
+        "Text::AbstractGlyphCache::setImage(): Range({80, 176}, {100, 201}) out of range for texture size Vector(100, 200)\n"
+        "Text::AbstractGlyphCache::setImage(): Range({-1, 175}, {19, 200}) out of range for texture size Vector(100, 200)\n"
+        "Text::AbstractGlyphCache::setImage(): Range({80, -1}, {100, 24}) out of range for texture size Vector(100, 200)\n",
         TestSuite::Compare::String);
 }
 

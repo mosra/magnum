@@ -99,7 +99,7 @@ struct MaterialDataTest: TestSuite::Tester {
 
     void constructLayers();
     void constructLayersNotMonotonic();
-    void constructLayersOffsetOutOfBounds();
+    void constructLayersOffsetOutOfRange();
     void constructLayersLastOffsetTooShort();
 
     void constructNonOwned();
@@ -108,7 +108,7 @@ struct MaterialDataTest: TestSuite::Tester {
     void constructNonOwnedNotSorted();
     void constructNonOwnedDuplicateAttribute();
     void constructNonOwnedLayersNotMonotonic();
-    void constructNonOwnedLayersOffsetOutOfBounds();
+    void constructNonOwnedLayersOffsetOutOfRange();
     void constructNonOwnedLayersLastOffsetTooShort();
     void constructNonOwnedAttributeFlagOwned();
     void constructNonOwnedLayerFlagOwned();
@@ -126,7 +126,7 @@ struct MaterialDataTest: TestSuite::Tester {
     void accessTextureSwizzle();
     void accessMutable();
     void accessOptional();
-    void accessOutOfBounds();
+    void accessOutOfRange();
     void accessNotFound();
     void accessInvalidAttributeName();
     void accessWrongType();
@@ -150,11 +150,11 @@ struct MaterialDataTest: TestSuite::Tester {
     void accessLayerIndexOptional();
     void accessLayerNameOptional();
     void accessLayerStringOptional();
-    void accessLayerOutOfBounds();
+    void accessLayerOutOfRange();
     void accessLayerNotFound();
     void accessInvalidLayerName();
-    void accessOutOfBoundsInLayerIndex();
-    void accessOutOfBoundsInLayerString();
+    void accessOutOfRangeInLayerIndex();
+    void accessOutOfRangeInLayerString();
     void accessNotFoundInLayerIndex();
     void accessNotFoundInLayerString();
     void accessMutableNotAllowed();
@@ -268,7 +268,7 @@ MaterialDataTest::MaterialDataTest() {
 
               &MaterialDataTest::constructLayers,
               &MaterialDataTest::constructLayersNotMonotonic,
-              &MaterialDataTest::constructLayersOffsetOutOfBounds,
+              &MaterialDataTest::constructLayersOffsetOutOfRange,
               &MaterialDataTest::constructLayersLastOffsetTooShort,
 
               &MaterialDataTest::constructNonOwned,
@@ -277,7 +277,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructNonOwnedNotSorted,
               &MaterialDataTest::constructNonOwnedDuplicateAttribute,
               &MaterialDataTest::constructNonOwnedLayersNotMonotonic,
-              &MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds,
+              &MaterialDataTest::constructNonOwnedLayersOffsetOutOfRange,
               &MaterialDataTest::constructNonOwnedLayersLastOffsetTooShort,
               &MaterialDataTest::constructNonOwnedAttributeFlagOwned,
               &MaterialDataTest::constructNonOwnedLayerFlagOwned,
@@ -295,7 +295,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessTextureSwizzle,
               &MaterialDataTest::accessMutable,
               &MaterialDataTest::accessOptional,
-              &MaterialDataTest::accessOutOfBounds,
+              &MaterialDataTest::accessOutOfRange,
               &MaterialDataTest::accessNotFound,
               &MaterialDataTest::accessInvalidAttributeName,
               &MaterialDataTest::accessWrongType,
@@ -319,11 +319,11 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessLayerIndexOptional,
               &MaterialDataTest::accessLayerNameOptional,
               &MaterialDataTest::accessLayerStringOptional,
-              &MaterialDataTest::accessLayerOutOfBounds,
+              &MaterialDataTest::accessLayerOutOfRange,
               &MaterialDataTest::accessLayerNotFound,
               &MaterialDataTest::accessInvalidLayerName,
-              &MaterialDataTest::accessOutOfBoundsInLayerIndex,
-              &MaterialDataTest::accessOutOfBoundsInLayerString,
+              &MaterialDataTest::accessOutOfRangeInLayerIndex,
+              &MaterialDataTest::accessOutOfRangeInLayerString,
               &MaterialDataTest::accessNotFoundInLayerIndex,
               &MaterialDataTest::accessNotFoundInLayerString,
               &MaterialDataTest::accessMutableNotAllowed,
@@ -1500,7 +1500,7 @@ void MaterialDataTest::constructLayersNotMonotonic() {
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
 }
 
-void MaterialDataTest::constructLayersOffsetOutOfBounds() {
+void MaterialDataTest::constructLayersOffsetOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     std::ostringstream out;
@@ -1695,7 +1695,7 @@ void MaterialDataTest::constructNonOwnedLayersNotMonotonic() {
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
 }
 
-void MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds() {
+void MaterialDataTest::constructNonOwnedLayersOffsetOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialAttributeData attributes[]{
@@ -2007,7 +2007,7 @@ void MaterialDataTest::accessOptional() {
     CORRADE_COMPARE(data.attributeOr(MaterialAttribute::DiffuseTexture, 5u), 5);
 }
 
-void MaterialDataTest::accessOutOfBounds() {
+void MaterialDataTest::accessOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
@@ -2621,7 +2621,7 @@ void MaterialDataTest::accessLayerStringOptional() {
     CORRADE_COMPARE(data.attributeOr("ClearCoat", MaterialAttribute::DiffuseTexture, 5u), 5);
 }
 
-void MaterialDataTest::accessLayerOutOfBounds() {
+void MaterialDataTest::accessLayerOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
@@ -2899,7 +2899,7 @@ void MaterialDataTest::accessInvalidLayerName() {
         "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialLayer(0xfefe)\n");
 }
 
-void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
+void MaterialDataTest::accessOutOfRangeInLayerIndex() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {
@@ -2930,7 +2930,7 @@ void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
         "Trade::MaterialData::mutableAttribute(): index 2 out of range for 2 attributes in layer 1\n");
 }
 
-void MaterialDataTest::accessOutOfBoundsInLayerString() {
+void MaterialDataTest::accessOutOfRangeInLayerString() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     MaterialData data{{}, {

@@ -54,8 +54,8 @@ struct FrameProfilerTest: TestSuite::Tester {
     void delayZero();
     void delayTooLittleFrames();
     void startStopFrameUnexpected();
-    void measurementOutOfBounds();
-    void frameOutOfBounds();
+    void measurementOutOfRange();
+    void frameOutOfRange();
     void dataNotAvailableYet();
     void meanNotAvailableYet();
 
@@ -128,8 +128,8 @@ FrameProfilerTest::FrameProfilerTest() {
               &FrameProfilerTest::delayZero,
               &FrameProfilerTest::delayTooLittleFrames,
               &FrameProfilerTest::startStopFrameUnexpected,
-              &FrameProfilerTest::measurementOutOfBounds,
-              &FrameProfilerTest::frameOutOfBounds,
+              &FrameProfilerTest::measurementOutOfRange,
+              &FrameProfilerTest::frameOutOfRange,
               &FrameProfilerTest::dataNotAvailableYet,
               &FrameProfilerTest::meanNotAvailableYet,
 
@@ -828,7 +828,7 @@ void FrameProfilerTest::startStopFrameUnexpected() {
         "DebugTools::FrameProfiler::beginFrame(): expected end of frame\n");
 }
 
-void FrameProfilerTest::measurementOutOfBounds() {
+void FrameProfilerTest::measurementOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfiler profiler{{
@@ -853,7 +853,7 @@ void FrameProfilerTest::measurementOutOfBounds() {
         "DebugTools::FrameProfiler::measurementMean(): index 2 out of range for 2 measurements\n");
 }
 
-void FrameProfilerTest::frameOutOfBounds() {
+void FrameProfilerTest::frameOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     FrameProfiler profiler{{
@@ -873,7 +873,7 @@ void FrameProfilerTest::frameOutOfBounds() {
     Error redirectError{&out};
     profiler.measurementData(0, 3);
     CORRADE_COMPARE(out.str(),
-        "DebugTools::FrameProfiler::measurementData(): frame 3 out of bounds for max 3 frames\n");
+        "DebugTools::FrameProfiler::measurementData(): frame 3 out of range for max 3 frames\n");
 }
 
 void FrameProfilerTest::dataNotAvailableYet() {

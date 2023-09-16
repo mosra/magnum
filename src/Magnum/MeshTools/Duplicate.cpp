@@ -48,7 +48,7 @@ template<class T> inline void duplicateIntoImplementation(const Containers::Stri
     const std::size_t size = data.size()[1];
     for(std::size_t i = 0; i != indices.size(); ++i) {
         const std::size_t index = indices[i];
-        CORRADE_ASSERT(index < data.size()[0], "MeshTools::duplicateInto(): index" << index << "out of bounds for" << data.size()[0] << "elements", );
+        CORRADE_ASSERT(index < data.size()[0], "MeshTools::duplicateInto(): index" << index << "out of range for" << data.size()[0] << "elements", );
         std::memcpy(out[i].data(), data[index].data(), size);
     }
 }

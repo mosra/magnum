@@ -158,7 +158,7 @@ const struct {
         0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         19, 0, 0, 0, 0, 0, 0, 0,
         'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
-    }}, "TGA 2 extension offset 19 out of bounds for 44 bytes and a 26-byte file footer"},
+    }}, "TGA 2 extension offset 19 out of range for 44 bytes and a 26-byte file footer"},
     {"TGA 2 developer area offset overlaps with file header", {InPlaceInit, {
         0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         0, 0, 0, 0, 17, 0, 0, 0,
@@ -168,7 +168,7 @@ const struct {
         0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         0, 0, 0, 0, 19, 0, 0, 0,
         'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'
-    }}, "TGA 2 developer area offset 19 out of bounds for 44 bytes and a 26-byte file footer"},
+    }}, "TGA 2 developer area offset 19 out of range for 44 bytes and a 26-byte file footer"},
     {"TGA 2 developer area offset overlaps with extension area", {InPlaceInit, {
         0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         '\xdd', '\xee', '\xee',

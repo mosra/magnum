@@ -1229,13 +1229,13 @@ std::size_t SceneData::findFieldObjectOffsetInternal(const SceneFieldData& field
 
 Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const UnsignedInt fieldId, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::findFieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::findFieldObjectOffset(): object" << object << "out of range for" << _mappingBound << "objects", {});
     CORRADE_ASSERT(fieldId < _fields.size(),
         "Trade::SceneData::findFieldObjectOffset(): index" << fieldId << "out of range for" << _fields.size() << "fields", {});
 
     const SceneFieldData& field = _fields[fieldId];
     CORRADE_ASSERT(offset <= field._size,
-        "Trade::SceneData::findFieldObjectOffset(): offset" << offset << "out of bounds for a field of size" << field._size, {});
+        "Trade::SceneData::findFieldObjectOffset(): offset" << offset << "out of range for a field of size" << field._size, {});
 
     const std::size_t found = findFieldObjectOffsetInternal(field, object, offset);
     return found == field._size ? Containers::Optional<std::size_t>{} : found;
@@ -1243,7 +1243,7 @@ Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const Unsigne
 
 Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const SceneField fieldName, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::findFieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::findFieldObjectOffset(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(fieldName);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
@@ -1251,7 +1251,7 @@ Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const SceneFi
 
     const SceneFieldData& field = _fields[fieldId];
     CORRADE_ASSERT(offset <= field._size,
-        "Trade::SceneData::findFieldObjectOffset(): offset" << offset << "out of bounds for a field of size" << field._size, {});
+        "Trade::SceneData::findFieldObjectOffset(): offset" << offset << "out of range for a field of size" << field._size, {});
 
     const std::size_t found = findFieldObjectOffsetInternal(field, object, offset);
     return found == field._size ? Containers::Optional<std::size_t>{} : found;
@@ -1259,13 +1259,13 @@ Containers::Optional<std::size_t> SceneData::findFieldObjectOffset(const SceneFi
 
 std::size_t SceneData::fieldObjectOffset(const UnsignedInt fieldId, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::fieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::fieldObjectOffset(): object" << object << "out of range for" << _mappingBound << "objects", {});
     CORRADE_ASSERT(fieldId < _fields.size(),
         "Trade::SceneData::fieldObjectOffset(): index" << fieldId << "out of range for" << _fields.size() << "fields", {});
 
     const SceneFieldData& field = _fields[fieldId];
     CORRADE_ASSERT(offset <= field._size,
-        "Trade::SceneData::fieldObjectOffset(): offset" << offset << "out of bounds for a field of size" << field._size, {});
+        "Trade::SceneData::fieldObjectOffset(): offset" << offset << "out of range for a field of size" << field._size, {});
 
     const std::size_t found = findFieldObjectOffsetInternal(field, object, offset);
     CORRADE_ASSERT(found != field._size,
@@ -1275,7 +1275,7 @@ std::size_t SceneData::fieldObjectOffset(const UnsignedInt fieldId, const Unsign
 
 std::size_t SceneData::fieldObjectOffset(const SceneField fieldName, const UnsignedLong object, const std::size_t offset) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::fieldObjectOffset(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::fieldObjectOffset(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(fieldName);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
@@ -1283,7 +1283,7 @@ std::size_t SceneData::fieldObjectOffset(const SceneField fieldName, const Unsig
 
     const SceneFieldData& field = _fields[fieldId];
     CORRADE_ASSERT(offset <= field._size,
-        "Trade::SceneData::fieldObjectOffset(): offset" << offset << "out of bounds for a field of size" << field._size, {});
+        "Trade::SceneData::fieldObjectOffset(): offset" << offset << "out of range for a field of size" << field._size, {});
 
     const std::size_t found = findFieldObjectOffsetInternal(field, object, offset);
     CORRADE_ASSERT(found != field._size,
@@ -1293,7 +1293,7 @@ std::size_t SceneData::fieldObjectOffset(const SceneField fieldName, const Unsig
 
 bool SceneData::hasFieldObject(const UnsignedInt fieldId, const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::hasFieldObject(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::hasFieldObject(): object" << object << "out of range for" << _mappingBound << "objects", {});
     CORRADE_ASSERT(fieldId < _fields.size(),
         "Trade::SceneData::hasFieldObject(): index" << fieldId << "out of range for" << _fields.size() << "fields", {});
 
@@ -1303,7 +1303,7 @@ bool SceneData::hasFieldObject(const UnsignedInt fieldId, const UnsignedLong obj
 
 bool SceneData::hasFieldObject(const SceneField fieldName, const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::hasFieldObject(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::hasFieldObject(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(fieldName);
     CORRADE_ASSERT(fieldId != ~UnsignedInt{},
@@ -1668,7 +1668,7 @@ std::size_t SceneData::mappingInto(const UnsignedInt fieldId, const std::size_t 
     CORRADE_ASSERT(fieldId < _fields.size(),
         "Trade::SceneData::mappingInto(): index" << fieldId << "out of range for" << _fields.size() << "fields", {});
     CORRADE_ASSERT(offset <= _fields[fieldId]._size,
-        "Trade::SceneData::mappingInto(): offset" << offset << "out of bounds for a field of size" << _fields[fieldId]._size, {});
+        "Trade::SceneData::mappingInto(): offset" << offset << "out of range for a field of size" << _fields[fieldId]._size, {});
     const std::size_t size = Math::min(destination.size(), std::size_t(_fields[fieldId]._size) - offset);
     mappingIntoInternal(fieldId, offset, destination.prefix(size));
     return size;
@@ -1744,7 +1744,7 @@ std::size_t SceneData::parentsInto(const std::size_t offset, const Containers::S
         "Trade::SceneData::parentsInto(): field not found", {});
     const std::size_t fieldSize = _fields[fieldId]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::parentsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::parentsInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::parentsInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
@@ -1960,7 +1960,7 @@ std::size_t SceneData::transformations2DInto(const std::size_t offset, const Con
         "Trade::SceneData::transformations2DInto(): no transformation-related field found", {});
     const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::transformations2DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::transformations2DInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::transformations2DInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
@@ -2070,7 +2070,7 @@ std::size_t SceneData::translationsRotationsScalings2DInto(const std::size_t off
         "Trade::SceneData::translationsRotationsScalings2DInto(): no transformation-related field found", {});
     const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::translationsRotationsScalings2DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::translationsRotationsScalings2DInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !translationDestination || mappingDestination.size() == translationDestination.size(),
         "Trade::SceneData::translationsRotationsScalings2DInto(): mapping and translation destination views have different size," << mappingDestination.size() << "vs" << translationDestination.size(), {});
     CORRADE_ASSERT(!mappingDestination != !rotationDestination || mappingDestination.size() == rotationDestination.size(),
@@ -2206,7 +2206,7 @@ std::size_t SceneData::transformations3DInto(const std::size_t offset, const Con
         "Trade::SceneData::transformations3DInto(): no transformation-related field found", {});
     const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::transformations3DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::transformations3DInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::transformations3DInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
@@ -2316,7 +2316,7 @@ std::size_t SceneData::translationsRotationsScalings3DInto(const std::size_t off
         "Trade::SceneData::translationsRotationsScalings3DInto(): no transformation-related field found", {});
     const std::size_t fieldSize = _fields[fieldWithObjectMapping]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::translationsRotationsScalings3DInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::translationsRotationsScalings3DInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !translationDestination || mappingDestination.size() == translationDestination.size(),
         "Trade::SceneData::translationsRotationsScalings3DInto(): mapping and translation destination views have different size," << mappingDestination.size() << "vs" << translationDestination.size(), {});
     CORRADE_ASSERT(!mappingDestination != !rotationDestination || mappingDestination.size() == rotationDestination.size(),
@@ -2437,7 +2437,7 @@ std::size_t SceneData::meshesMaterialsInto(const std::size_t offset, const Conta
         "Trade::SceneData::meshesMaterialsInto(): field" << SceneField::Mesh << "not found", {});
     const std::size_t fieldSize = _fields[fieldId]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::meshesMaterialsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::meshesMaterialsInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !meshDestination || mappingDestination.size() == meshDestination.size(),
         "Trade::SceneData::meshesMaterialsInto(): mapping and mesh destination views have different size," << mappingDestination.size() << "vs" << meshDestination.size(), {});
     CORRADE_ASSERT(!mappingDestination != !meshMaterialDestination || mappingDestination.size() == meshMaterialDestination.size(),
@@ -2486,7 +2486,7 @@ std::size_t SceneData::lightsInto(const std::size_t offset, const Containers::St
         "Trade::SceneData::lightsInto(): field not found", {});
     const std::size_t fieldSize = _fields[fieldId]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::lightsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::lightsInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::lightsInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
@@ -2522,7 +2522,7 @@ std::size_t SceneData::camerasInto(const std::size_t offset, const Containers::S
         "Trade::SceneData::camerasInto(): field not found", {});
     const std::size_t fieldSize = _fields[fieldId]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::camerasInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::camerasInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::camerasInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
@@ -2558,7 +2558,7 @@ std::size_t SceneData::skinsInto(const std::size_t offset, const Containers::Str
         "Trade::SceneData::skinsInto(): field not found", {});
     const std::size_t fieldSize = _fields[fieldId]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::skinsInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::skinsInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::skinsInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
@@ -2604,7 +2604,7 @@ std::size_t SceneData::importerStateInto(const std::size_t offset, const Contain
         "Trade::SceneData::importerStateInto(): field not found", {});
     const std::size_t fieldSize = _fields[fieldId]._size;
     CORRADE_ASSERT(offset <= fieldSize,
-        "Trade::SceneData::importerStateInto(): offset" << offset << "out of bounds for a field of size" << fieldSize, {});
+        "Trade::SceneData::importerStateInto(): offset" << offset << "out of range for a field of size" << fieldSize, {});
     CORRADE_ASSERT(!mappingDestination != !fieldDestination|| mappingDestination.size() == fieldDestination.size(),
         "Trade::SceneData::importerStateInto(): mapping and field destination views have different size," << mappingDestination.size() << "vs" << fieldDestination.size(), {});
     const std::size_t size = Math::min(Math::max(mappingDestination.size(), fieldDestination.size()), fieldSize - offset);
@@ -2636,7 +2636,7 @@ Containers::Array<Containers::Pair<UnsignedInt, const void*>> SceneData::importe
 
 Containers::Optional<Long> SceneData::parentFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::parentFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::parentFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Parent);
     if(fieldId == ~UnsignedInt{}) return {};
@@ -2652,7 +2652,7 @@ Containers::Optional<Long> SceneData::parentFor(const UnsignedLong object) const
 
 Containers::Array<UnsignedLong> SceneData::childrenFor(const Long object) const {
     CORRADE_ASSERT(object >= -1 && object < Long(_mappingBound),
-        "Trade::SceneData::childrenFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::childrenFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt parentFieldId = findFieldIdInternal(SceneField::Parent);
     if(parentFieldId == ~UnsignedInt{}) return {};
@@ -2682,7 +2682,7 @@ Containers::Array<UnsignedLong> SceneData::childrenFor(const Long object) const 
 
 Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::transformation2DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::transformation2DFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
@@ -2703,7 +2703,7 @@ Containers::Optional<Matrix3> SceneData::transformation2DFor(const UnsignedLong 
 
 Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::translationRotationScaling2DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::translationRotationScaling2DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::translationRotationScaling2DFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
@@ -2726,7 +2726,7 @@ Containers::Optional<Containers::Triple<Vector2, Complex, Vector2>> SceneData::t
 
 Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::transformation3DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::transformation3DFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     UnsignedInt transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTransformationFields(transformationFieldId, translationFieldId, rotationFieldId, scalingFieldId);
@@ -2747,7 +2747,7 @@ Containers::Optional<Matrix4> SceneData::transformation3DFor(const UnsignedLong 
 
 Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData::translationRotationScaling3DFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::translationRotationScaling3DFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::translationRotationScaling3DFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     UnsignedInt translationFieldId, rotationFieldId, scalingFieldId;
     const UnsignedInt fieldWithObjectMapping = findTranslationRotationScalingFields(translationFieldId, rotationFieldId, scalingFieldId);
@@ -2770,7 +2770,7 @@ Containers::Optional<Containers::Triple<Vector3, Quaternion, Vector3>> SceneData
 
 Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterialsFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::meshesMaterialsFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::meshesMaterialsFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt meshFieldId = findFieldIdInternal(SceneField::Mesh);
     if(meshFieldId == ~UnsignedInt{}) return {};
@@ -2794,7 +2794,7 @@ Containers::Array<Containers::Pair<UnsignedInt, Int>> SceneData::meshesMaterials
 
 Containers::Array<UnsignedInt> SceneData::lightsFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::lightsFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::lightsFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Light);
     if(fieldId == ~UnsignedInt{}) return {};
@@ -2817,7 +2817,7 @@ Containers::Array<UnsignedInt> SceneData::lightsFor(const UnsignedLong object) c
 
 Containers::Array<UnsignedInt> SceneData::camerasFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::camerasFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::camerasFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Camera);
     if(fieldId == ~UnsignedInt{}) return {};
@@ -2840,7 +2840,7 @@ Containers::Array<UnsignedInt> SceneData::camerasFor(const UnsignedLong object) 
 
 Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::skinsFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::skinsFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::Skin);
     if(fieldId == ~UnsignedInt{}) return {};
@@ -2863,7 +2863,7 @@ Containers::Array<UnsignedInt> SceneData::skinsFor(const UnsignedLong object) co
 
 Containers::Optional<const void*> SceneData::importerStateFor(const UnsignedLong object) const {
     CORRADE_ASSERT(object < _mappingBound,
-        "Trade::SceneData::importerStateFor(): object" << object << "out of bounds for" << _mappingBound << "objects", {});
+        "Trade::SceneData::importerStateFor(): object" << object << "out of range for" << _mappingBound << "objects", {});
 
     const UnsignedInt fieldId = findFieldIdInternal(SceneField::ImporterState);
     if(fieldId == ~UnsignedInt{}) return {};

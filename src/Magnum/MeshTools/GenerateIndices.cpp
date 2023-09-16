@@ -489,7 +489,7 @@ template<class T> inline void generateQuadIndicesIntoImplementation(const Contai
         auto get = [&](UnsignedInt j) -> const Vector3& {
             UnsignedInt index = quads[4*i + j];
             CORRADE_ASSERT(index < positions.size(),
-                "MeshTools::generateQuadIndicesInto(): index" << index << "out of bounds for" << positions.size() << "elements", positions[0]);
+                "MeshTools::generateQuadIndicesInto(): index" << index << "out of range for" << positions.size() << "elements", positions[0]);
             return positions[index];
         };
         const Vector3& a = get(0);

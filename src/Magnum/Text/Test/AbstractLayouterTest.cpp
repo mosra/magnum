@@ -36,12 +36,12 @@ struct AbstractLayouterTest: TestSuite::Tester {
     explicit AbstractLayouterTest();
 
     void renderGlyph();
-    void renderGlyphOutOfBounds();
+    void renderGlyphOutOfRange();
 };
 
 AbstractLayouterTest::AbstractLayouterTest() {
     addTests({&AbstractLayouterTest::renderGlyph,
-              &AbstractLayouterTest::renderGlyphOutOfBounds});
+              &AbstractLayouterTest::renderGlyphOutOfRange});
 }
 
 void AbstractLayouterTest::renderGlyph() {
@@ -82,7 +82,7 @@ void AbstractLayouterTest::renderGlyph() {
     CORRADE_COMPARE(rectangle, Range2D({2.0f, 0.5f}, {6.1f, 3.0f}));
 }
 
-void AbstractLayouterTest::renderGlyphOutOfBounds() {
+void AbstractLayouterTest::renderGlyphOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     struct Layouter: AbstractLayouter {

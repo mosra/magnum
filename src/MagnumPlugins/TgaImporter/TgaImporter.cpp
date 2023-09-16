@@ -154,7 +154,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
                 return {};
             }
             if(extensionOffset > _in.size() - sizeof(Implementation::TgaFooter)) {
-                Error{} << "Trade::TgaImporter::image2D(): TGA 2 extension offset" << extensionOffset << "out of bounds for" << _in.size() << "bytes and a" << sizeof(Implementation::TgaFooter) << Debug::nospace << "-byte file footer";
+                Error{} << "Trade::TgaImporter::image2D(): TGA 2 extension offset" << extensionOffset << "out of range for" << _in.size() << "bytes and a" << sizeof(Implementation::TgaFooter) << Debug::nospace << "-byte file footer";
                 return {};
             }
 
@@ -168,7 +168,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
                 return {};
             }
             if(developerAreaOffset > _in.size() - sizeof(Implementation::TgaFooter)) {
-                Error{} << "Trade::TgaImporter::image2D(): TGA 2 developer area offset" << developerAreaOffset << "out of bounds for" << _in.size() << "bytes and a" << sizeof(Implementation::TgaFooter) << Debug::nospace << "-byte file footer";
+                Error{} << "Trade::TgaImporter::image2D(): TGA 2 developer area offset" << developerAreaOffset << "out of range for" << _in.size() << "bytes and a" << sizeof(Implementation::TgaFooter) << Debug::nospace << "-byte file footer";
                 return {};
             }
 

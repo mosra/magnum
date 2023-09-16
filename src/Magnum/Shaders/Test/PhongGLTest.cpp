@@ -2189,9 +2189,9 @@ void PhongGLTest::setWrongLightCountOrId() {
         "Shaders::PhongGL::setLightColors(): expected 5 items but got 1\n"
         "Shaders::PhongGL::setLightPositions(): expected 5 items but got 1\n"
         "Shaders::PhongGL::setLightRanges(): expected 5 items but got 1\n"
-        "Shaders::PhongGL::setLightColor(): light ID 5 is out of bounds for 5 lights\n"
-        "Shaders::PhongGL::setLightPosition(): light ID 5 is out of bounds for 5 lights\n"
-        "Shaders::PhongGL::setLightRange(): light ID 5 is out of bounds for 5 lights\n");
+        "Shaders::PhongGL::setLightColor(): light ID 5 is out of range for 5 lights\n"
+        "Shaders::PhongGL::setLightPosition(): light ID 5 is out of range for 5 lights\n"
+        "Shaders::PhongGL::setLightRange(): light ID 5 is out of range for 5 lights\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -2209,7 +2209,7 @@ void PhongGLTest::setWrongJointCountOrId() {
         .setJointMatrix(5, Matrix4{});
     CORRADE_COMPARE(out.str(),
         "Shaders::PhongGL::setJointMatrices(): expected at most 5 items but got 6\n"
-        "Shaders::PhongGL::setJointMatrix(): joint ID 5 is out of bounds for 5 joints\n");
+        "Shaders::PhongGL::setJointMatrix(): joint ID 5 is out of range for 5 joints\n");
 }
 #endif
 
@@ -2232,7 +2232,7 @@ void PhongGLTest::setWrongDrawOffset() {
     Error redirectError{&out};
     shader.setDrawOffset(5);
     CORRADE_COMPARE(out.str(),
-        "Shaders::PhongGL::setDrawOffset(): draw offset 5 is out of bounds for 5 draws\n");
+        "Shaders::PhongGL::setDrawOffset(): draw offset 5 is out of range for 5 draws\n");
 }
 #endif
 

@@ -61,7 +61,7 @@ struct GenerateNormalsTest: TestSuite::Tester {
     void smoothZeroAreaTriangle();
     void smoothNanPosition();
     void smoothWrongCount();
-    void smoothOutOfBounds();
+    void smoothOutOfRange();
     void smoothIntoWrongSize();
 
     template<class T> void smoothErased();
@@ -89,7 +89,7 @@ GenerateNormalsTest::GenerateNormalsTest() {
               &GenerateNormalsTest::smoothZeroAreaTriangle,
               &GenerateNormalsTest::smoothNanPosition,
               &GenerateNormalsTest::smoothWrongCount,
-              &GenerateNormalsTest::smoothOutOfBounds,
+              &GenerateNormalsTest::smoothOutOfRange,
               &GenerateNormalsTest::smoothIntoWrongSize,
 
               &GenerateNormalsTest::smoothErased<UnsignedByte>,
@@ -402,7 +402,7 @@ void GenerateNormalsTest::smoothWrongCount() {
     CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): index count not divisible by 3\n");
 }
 
-void GenerateNormalsTest::smoothOutOfBounds() {
+void GenerateNormalsTest::smoothOutOfRange() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
     std::stringstream out;
@@ -411,7 +411,7 @@ void GenerateNormalsTest::smoothOutOfBounds() {
     const Vector3 positions[2];
     const UnsignedInt indices[] { 0, 1, 2 };
     generateSmoothNormals(indices, positions);
-    CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): index 2 out of bounds for 2 elements\n");
+    CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): index 2 out of range for 2 elements\n");
 }
 
 void GenerateNormalsTest::smoothIntoWrongSize() {

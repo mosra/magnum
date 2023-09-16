@@ -840,7 +840,7 @@ PhongGL& PhongGL::setLightPosition(const UnsignedInt id, const Vector4& position
         "Shaders::PhongGL::setLightPosition(): the shader was created with uniform buffers enabled", *this);
     #endif
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::PhongGL::setLightPosition(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightPosition(): light ID" << id << "is out of range for" << _lightCount << "lights", *this);
     setUniform(_lightPositionsUniform + id, position);
     return *this;
 }
@@ -893,7 +893,7 @@ PhongGL& PhongGL::setLightColor(const UnsignedInt id, const Magnum::Color3& colo
         "Shaders::PhongGL::setLightColor(): the shader was created with uniform buffers enabled", *this);
     #endif
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::PhongGL::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightColor(): light ID" << id << "is out of range for" << _lightCount << "lights", *this);
     setUniform(_lightColorsUniform + id, color);
     return *this;
 }
@@ -932,7 +932,7 @@ PhongGL& PhongGL::setLightSpecularColor(const UnsignedInt id, const Magnum::Colo
         "Shaders::PhongGL::setLightSpecularColor(): the shader was created with uniform buffers enabled", *this);
     #endif
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::PhongGL::setLightSpecularColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightSpecularColor(): light ID" << id << "is out of range for" << _lightCount << "lights", *this);
     CORRADE_ASSERT(!(_flags >= Flag::NoSpecular),
         "Shaders::PhongGL::setLightSpecularColor(): the shader was created with specular disabled", *this);
     setUniform(_lightSpecularColorsUniform + id, color);
@@ -960,7 +960,7 @@ PhongGL& PhongGL::setLightRange(const UnsignedInt id, const Float range) {
         "Shaders::PhongGL::setLightRange(): the shader was created with uniform buffers enabled", *this);
     #endif
     CORRADE_ASSERT(id < _lightCount,
-        "Shaders::PhongGL::setLightRange(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+        "Shaders::PhongGL::setLightRange(): light ID" << id << "is out of range for" << _lightCount << "lights", *this);
     setUniform(_lightRangesUniform + id, range);
     return *this;
 }
@@ -983,7 +983,7 @@ PhongGL& PhongGL::setJointMatrix(const UnsignedInt id, const Matrix4& matrix) {
     CORRADE_ASSERT(!(_flags >= Flag::UniformBuffers),
         "Shaders::PhongGL::setJointMatrix(): the shader was created with uniform buffers enabled", *this);
     CORRADE_ASSERT(id < _jointCount,
-        "Shaders::PhongGL::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+        "Shaders::PhongGL::setJointMatrix(): joint ID" << id << "is out of range for" << _jointCount << "joints", *this);
     setUniform(_jointMatricesUniform + id, matrix);
     return *this;
 }
@@ -1002,10 +1002,10 @@ PhongGL& PhongGL::setDrawOffset(const UnsignedInt offset) {
         "Shaders::PhongGL::setDrawOffset(): the shader was not created with uniform buffers enabled", *this);
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(_flags >= Flag::ShaderStorageBuffers || offset < _drawCount,
-        "Shaders::PhongGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::PhongGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #else
     CORRADE_ASSERT(offset < _drawCount,
-        "Shaders::PhongGL::setDrawOffset(): draw offset" << offset << "is out of bounds for" << _drawCount << "draws", *this);
+        "Shaders::PhongGL::setDrawOffset(): draw offset" << offset << "is out of range for" << _drawCount << "draws", *this);
     #endif
     if(_drawCount > 1
         #ifndef MAGNUM_TARGET_WEBGL
