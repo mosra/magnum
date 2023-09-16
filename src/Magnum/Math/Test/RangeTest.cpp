@@ -26,7 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_NO_STD_IS_TRIVIALLY_TRAITS */
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
@@ -362,7 +362,7 @@ void RangeTest::constructCopy() {
     CORRADE_COMPARE(e, Range2Di({3, 5}, {23, 78}));
     CORRADE_COMPARE(f, Range3Di({3, 5, -7}, {23, 78, 2}));
 
-    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Range1Di>::value);
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Range2Di>::value);
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Range3Di>::value);

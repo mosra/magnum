@@ -26,7 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_NO_STD_IS_TRIVIALLY_TRAITS */
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -292,12 +292,12 @@ void MatrixTest::constructCopy() {
                                  Vector4(1.0f,  2.0f, 3.0f, -1.0f),
                                  Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
 
-    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix4x4>::value);
-    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix4x4>::value);
-    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Matrix4x4>::value);
     CORRADE_VERIFY(std::is_trivially_copy_assignable<Matrix4x4>::value);
     #endif
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix4x4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix4x4>::value);
 }
 
 void MatrixTest::convert() {

@@ -34,7 +34,7 @@
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
-#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_NO_STD_IS_TRIVIALLY_TRAITS */
 
 #include "Magnum/Math/Angle.h"
 
@@ -270,7 +270,7 @@ void AngleTest::constructCopy() {
     constexpr Radd d(b);
     CORRADE_COMPARE(d, b);
 
-    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Deg>::value);
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Rad>::value);
     CORRADE_VERIFY(std::is_trivially_copy_assignable<Deg>::value);

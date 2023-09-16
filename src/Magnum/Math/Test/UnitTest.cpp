@@ -25,7 +25,7 @@
 
 #include <new>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_NO_STD_IS_TRIVIALLY_TRAITS */
 
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Unit.h"
@@ -133,7 +133,7 @@ void UnitTest::constructCopy() {
     constexpr Sec b{a};
     CORRADE_COMPARE(b, a);
 
-    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Sec>::value);
     CORRADE_VERIFY(std::is_trivially_copy_assignable<Sec>::value);
     #endif

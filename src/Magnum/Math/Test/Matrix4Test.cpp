@@ -27,7 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_NO_STD_IS_TRIVIALLY_TRAITS */
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -354,7 +354,7 @@ void Matrix4Test::constructCopy() {
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
 
-    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
     CORRADE_VERIFY(std::is_trivially_copy_constructible<Matrix4>::value);
     CORRADE_VERIFY(std::is_trivially_copy_assignable<Matrix4>::value);
     #endif

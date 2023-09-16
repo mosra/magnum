@@ -26,7 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/TypeTraits.h> /* CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED */
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_NO_STD_IS_TRIVIALLY_TRAITS */
 
 #include "Magnum/Math/BitVector.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -180,7 +180,7 @@ void BitVectorTest::constructCopy() {
     constexpr BitVector19 b(a);
     CORRADE_COMPARE(b, BitVector19(0xa5, 0x5f, 0x07));
 
-    #ifdef CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED
+    #ifndef CORRADE_NO_STD_IS_TRIVIALLY_TRAITS
     CORRADE_VERIFY(std::is_trivially_copy_constructible<BitVector19>::value);
     CORRADE_VERIFY(std::is_trivially_copy_assignable<BitVector19>::value);
     #endif
