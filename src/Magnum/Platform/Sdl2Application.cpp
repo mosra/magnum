@@ -482,7 +482,6 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, glConfiguration.isSrgbCapable());
     #endif
 
-    /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Scale window based on DPI */
     _dpiScaling = dpiScaling(configuration);
