@@ -158,48 +158,6 @@
 #define CORRADE_TARGET_ANDROID
 #endif
 
-/* CORRADE_TARGET_LIBSTDCXX needed for CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED,
-   and because it's so complex to check for it I can as well pull in the whole
-   thing */
-#pragma ACME enable Corrade_configure_h
-#ifdef _MSC_VER
-#ifdef _MSVC_LANG
-#define CORRADE_CXX_STANDARD _MSVC_LANG
-#else
-#define CORRADE_CXX_STANDARD 201103L
-#endif
-#else
-#define CORRADE_CXX_STANDARD __cplusplus
-#endif
-#if CORRADE_CXX_STANDARD >= 202002
-#include <version>
-#else
-#include <ciso646>
-#endif
-#ifdef _LIBCPP_VERSION
-#define CORRADE_TARGET_LIBCXX
-#elif defined(_CPPLIB_VER)
-#define CORRADE_TARGET_DINKUMWARE
-#elif defined(__GLIBCXX__)
-#define CORRADE_TARGET_LIBSTDCXX
-/* GCC's <ciso646> provides the __GLIBCXX__ macro only since 6.1, so on older
-   versions we'll try to get it from bits/c++config.h */
-#elif defined(__has_include)
-    #if __has_include(<bits/c++config.h>)
-        #include <bits/c++config.h>
-        #ifdef __GLIBCXX__
-        #define CORRADE_TARGET_LIBSTDCXX
-        #endif
-    #endif
-/* GCC < 5.0 doesn't have __has_include, so on these versions we'll just assume
-   it's libstdc++ as I don't think those versions are used with anything else
-   nowadays anyway. Clang reports itself as GCC 4.4, so exclude that one. */
-#elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
-#define CORRADE_TARGET_LIBSTDCXX
-#else
-/* Otherwise no idea. */
-#endif
-
 #ifdef __GNUC__
 #define CORRADE_TARGET_GCC
 #endif
