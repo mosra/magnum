@@ -1672,7 +1672,7 @@ class MAGNUM_SHADERS_EXPORT PhongGL: public GL::AbstractShaderProgram {
          * @requires_webgl20 Skinning requires integer support in shaders,
          *      which is not available in WebGL 1.0.
          */
-        PhongGL& setJointMatrices(const Containers::ArrayView<const Matrix4> matrices);
+        PhongGL& setJointMatrices(Containers::ArrayView<const Matrix4> matrices);
 
         /**
          * @overload

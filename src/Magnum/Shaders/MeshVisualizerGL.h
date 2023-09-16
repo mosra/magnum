@@ -947,7 +947,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerGL2D: public Implementation::MeshVisua
          * @requires_webgl20 Skinning requires integer support in shaders,
          *      which is not available in WebGL 1.0.
          */
-        MeshVisualizerGL2D& setJointMatrices(const Containers::ArrayView<const Matrix3> matrices);
+        MeshVisualizerGL2D& setJointMatrices(Containers::ArrayView<const Matrix3> matrices);
 
         /**
          * @overload

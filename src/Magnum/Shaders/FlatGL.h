@@ -1064,7 +1064,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT FlatGL: public GL::
          * @requires_webgl20 Skinning requires integer support in shaders,
          *      which is not available in WebGL 1.0.
          */
-        FlatGL<dimensions>& setJointMatrices(const Containers::ArrayView<const MatrixTypeFor<dimensions, Float>> matrices);
+        FlatGL<dimensions>& setJointMatrices(Containers::ArrayView<const MatrixTypeFor<dimensions, Float>> matrices);
 
         /**
          * @overload
