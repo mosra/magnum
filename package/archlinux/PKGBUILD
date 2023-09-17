@@ -32,7 +32,8 @@ build() {
     cmake .. \
         -DCMAKE_CONFIGURATION_TYPES="Debug;Release;RelWithDebInfo" \
         -DCMAKE_CROSS_CONFIGS=all \
-        -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -g -DNDEBUG -fno-omit-frame-pointer" \
+        -DCMAKE_CXX_FLAGS_DEBUG="-g -gz=zstd" \
+        -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -g -DNDEBUG -fno-omit-frame-pointer -gz=zstd" \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_COLOR_DIAGNOSTICS=ON \
         -DMAGNUM_WITH_AUDIO=ON \
