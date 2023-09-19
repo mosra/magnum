@@ -25,7 +25,6 @@
 
 #include <new>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/TypeTraits.h> /* CORRADE_NO_STD_IS_TRIVIALLY_TRAITS */
 
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Unit.h"
