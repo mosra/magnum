@@ -30,7 +30,7 @@
  * @m_since_latest
  */
 
-#include <Corrade/Utility/TypeTraits.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_HAS_TYPE() */
 
 namespace Magnum { namespace Vk {
 

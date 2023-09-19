@@ -33,7 +33,7 @@
 #include <Corrade/Utility/Debug.h>
 #endif
 #include <Corrade/Utility/StlMath.h>
-#include <Corrade/Utility/TypeTraits.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_HAS_TYPE() */
 
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/Tags.h"

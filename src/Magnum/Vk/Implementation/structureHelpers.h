@@ -27,7 +27,7 @@
 
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/TypeTraits.h>
+#include <Corrade/Utility/TypeTraits.h> /* CORRADE_HAS_TYPE() */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/Vulkan.h"
