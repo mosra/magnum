@@ -116,23 +116,6 @@ auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Metri
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float size) {
-    close();
-
-    setFileCallback([](const std::string& file, InputFileCallbackPolicy, const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) -> Containers::Optional<Containers::ArrayView<const char>> {
-        for(auto&& i: data) if(i.first == file) return i.second;
-        return {};
-    }, data);
-
-    return !data.empty() && openData(data.front().second, size);
-}
-
-bool AbstractFont::openSingleData(const Containers::ArrayView<const char> data, const Float size) {
-    return openData(data, size);
-}
-#endif
-
 bool AbstractFont::openFile(const std::string& filename, const Float size) {
     close();
     Metrics metrics;

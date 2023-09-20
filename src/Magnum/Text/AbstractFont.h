@@ -30,7 +30,6 @@
  */
 
 #include <string>
-#include <vector>
 #include <tuple>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
@@ -61,16 +60,6 @@ enum class FontFeature: UnsignedByte {
      * @m_since{2019,10}
      */
     FileCallback = 1 << 1,
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /**
-     * The format is multi-file, thus @ref AbstractFont::openSingleData()
-     * convenience function cannot be used.
-     * @m_deprecated_since{2019,10} Obsolete, use file callbacks
-     *      instead.
-     */
-    MultiFile CORRADE_DEPRECATED_ENUM("obsolete, use file callbacks instead") = FileCallback,
-    #endif
 
     /**
      * The font contains a prepared glyph cache.
@@ -369,20 +358,6 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const void> data, Float size);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief openData(Containers::ArrayView<const void>, Float)
-         * @m_deprecated_since{2019,10} Use @ref openFile() with
-         *      @ref setFileCallback() for opening multi-file fonts instead.
-         */
-        CORRADE_DEPRECATED("use openFile() with setFileCallback() for opening multi-file fonts instead") bool openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
-
-        /** @brief @copybrief openData(Containers::ArrayView<const void>, Float)
-         * @m_deprecated_since{2019,10} Use @ref openData(Containers::ArrayView<const void>, Float)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use openData(Containers::ArrayView<const void>, Float) instead") bool openSingleData(Containers::ArrayView<const char> data, Float size);
-        #endif
 
         /**
          * @brief Open a file

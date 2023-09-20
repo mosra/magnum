@@ -54,11 +54,6 @@ struct AbstractFontTest: TestSuite::Tester {
     void openDataNotSupported();
     void openDataNotImplemented();
 
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void openSingleDataDeprecated();
-    void openMultiDataDeprecated();
-    #endif
-
     void setFileCallback();
     void setFileCallbackTemplate();
     void setFileCallbackTemplateNull();
@@ -110,11 +105,6 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::openFileNotImplemented,
               &AbstractFontTest::openDataNotSupported,
               &AbstractFontTest::openDataNotImplemented,
-
-              #ifdef MAGNUM_BUILD_DEPRECATED
-              &AbstractFontTest::openSingleDataDeprecated,
-              &AbstractFontTest::openMultiDataDeprecated,
-              #endif
 
               &AbstractFontTest::setFileCallback,
               &AbstractFontTest::setFileCallbackTemplate,
@@ -323,77 +313,6 @@ void AbstractFontTest::openDataNotImplemented() {
     font.openData(nullptr, 34.0f);
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::openData(): feature advertised but not implemented\n");
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void AbstractFontTest::openSingleDataDeprecated() {
-    struct: AbstractFont {
-        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
-        bool doIsOpened() const override { return _opened; }
-        void doClose() override {}
-
-        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
-            _opened = (data.size() == 1 && data[0] == '\xa5');
-            return {size, 1.0f, 2.0f, 3.0f};
-        }
-
-        UnsignedInt doGlyphId(char32_t) override { return {}; }
-        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
-            return nullptr;
-        }
-
-        bool _opened = false;
-    } font;
-
-    CORRADE_VERIFY(!font.isOpened());
-    const char a5 = '\xa5';
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    font.openSingleData({&a5, 1}, 13.0f);
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_VERIFY(font.isOpened());
-    CORRADE_COMPARE(font.size(), 13.0f);
-    CORRADE_COMPARE(font.ascent(), 1.0f);
-    CORRADE_COMPARE(font.descent(), 2.0f);
-    CORRADE_COMPARE(font.lineHeight(), 3.0f);
-}
-
-void AbstractFontTest::openMultiDataDeprecated() {
-    struct: AbstractFont {
-        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
-        bool doIsOpened() const override { return _opened; }
-        void doClose() override {}
-
-        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
-            if(!fileCallback()) return {};
-            Containers::Optional<Containers::ArrayView<const char>> dataExt = fileCallback()("data.ext", InputFileCallbackPolicy::LoadPermanent, fileCallbackUserData());
-            _opened = (data.size() == 1 && data[0] == '\xa5' && dataExt &&
-                       dataExt->size() == 2 && (*dataExt)[1] == '\xee');
-            return {size, 1.0f, 2.0f, 3.0f};
-        }
-
-        UnsignedInt doGlyphId(char32_t) override { return {}; }
-        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
-            return nullptr;
-        }
-
-        bool _opened = false;
-    } font;
-
-    CORRADE_VERIFY(!font.isOpened());
-    const char a5 = '\xa5';
-    const char ee[] = { '\xff', '\xee' };
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    font.openData({{"data.bin", {&a5, 1}},
-                   {"data.ext", ee}}, 13.0f);
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_VERIFY(font.isOpened());
-    CORRADE_COMPARE(font.size(), 13.0f);
-    CORRADE_COMPARE(font.ascent(), 1.0f);
-    CORRADE_COMPARE(font.descent(), 2.0f);
-    CORRADE_COMPARE(font.lineHeight(), 3.0f);
-}
-#endif
 
 void AbstractFontTest::setFileCallback() {
     struct: AbstractFont {
