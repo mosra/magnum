@@ -110,13 +110,13 @@ struct DualQuaternionTest: TestSuite::Tester {
     void debug();
 };
 
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
+using Magnum::Deg;
+using Magnum::Rad;
 typedef Math::Dual<Float> Dual;
-typedef Math::Matrix4<Float> Matrix4;
-typedef Math::DualQuaternion<Float> DualQuaternion;
-typedef Math::Quaternion<Float> Quaternion;
-typedef Math::Vector3<Float> Vector3;
+using Magnum::Matrix4;
+using Magnum::DualQuaternion;
+using Magnum::Quaternion;
+using Magnum::Vector3;
 
 using namespace Literals;
 

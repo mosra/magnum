@@ -104,13 +104,13 @@ struct Matrix3Test: TestSuite::Tester {
     void debug();
 };
 
-typedef Math::Deg<Float> Deg;
-typedef Math::Matrix2x2<Float> Matrix2x2;
-typedef Math::Matrix2x4<Float> Matrix2x4;
-typedef Math::Matrix3<Float> Matrix3;
+using Magnum::Deg;
+using Magnum::Matrix2x2;
+using Magnum::Matrix2x4;
+using Magnum::Matrix3;
 typedef Math::Matrix3<Int> Matrix3i;
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
+using Magnum::Vector2;
+using Magnum::Vector3;
 typedef Math::Vector<4, Float> Vector4; /* to avoid having to include Vector4 */
 
 Matrix3Test::Matrix3Test() {

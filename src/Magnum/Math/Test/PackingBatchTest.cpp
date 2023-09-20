@@ -155,17 +155,10 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::assertionsCast<Double, Double>});
 }
 
-typedef Math::Constants<Float> Constants;
-typedef Math::Vector2<UnsignedByte> Vector2ub;
-typedef Math::Vector2<UnsignedShort> Vector2us;
-typedef Math::Vector2<Byte> Vector2b;
-typedef Math::Vector2<Short> Vector2s;
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector2<UnsignedInt> Vector2ui;
-typedef Math::Vector2<Int> Vector2i;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector4<UnsignedShort> Vector4us;
-typedef Math::Vector4<Float> Vector4;
+using Magnum::Constants;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Vector4;
 
 void PackingBatchTest::unpackUnsignedByte() {
     /* Test data adapted from PackingTest */

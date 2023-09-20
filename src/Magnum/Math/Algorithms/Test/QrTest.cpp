@@ -41,9 +41,9 @@ struct QrTest: TestSuite::Tester {
 
 using namespace Math::Literals;
 
-typedef Matrix3x3<Float> Matrix3x3;
-typedef Vector3<Float> Vector3;
-typedef Matrix4<Float> Matrix4;
+using Magnum::Matrix3x3;
+using Magnum::Vector3;
+using Magnum::Matrix4;
 
 QrTest::QrTest() {
     addTests({&QrTest::test,

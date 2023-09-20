@@ -50,10 +50,10 @@ struct DistanceTest: TestSuite::Tester {
     void pointPlaneNormalizedNotNormalized();
 };
 
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Constants<Float> Constants;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Vector4;
+using Magnum::Constants;
 
 DistanceTest::DistanceTest() {
     addTests({&DistanceTest::pointPoint2D,

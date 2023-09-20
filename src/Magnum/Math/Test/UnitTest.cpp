@@ -67,7 +67,7 @@ UnitTest::UnitTest() {
 template<class> struct Sec_;
 typedef Unit<Sec_, Float> Sec;
 typedef Unit<Sec_, Int> Seci;
-typedef Constants<Float> Constants;
+using Magnum::Constants;
 
 inline Debug& operator<<(Debug& debug, Sec value) {
     return debug << Float(value);

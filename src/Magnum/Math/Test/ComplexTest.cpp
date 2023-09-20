@@ -159,12 +159,12 @@ ComplexTest::ComplexTest() {
               &ComplexTest::debug});
 }
 
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
-typedef Math::Complex<Float> Complex;
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Matrix3<Float> Matrix3;
-typedef Math::Matrix2x2<Float> Matrix2x2;
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Complex;
+using Magnum::Vector2;
+using Magnum::Matrix3;
+using Magnum::Matrix2x2;
 
 using namespace Math::Literals;
 

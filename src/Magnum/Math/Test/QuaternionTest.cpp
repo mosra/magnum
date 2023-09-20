@@ -129,13 +129,13 @@ struct QuaternionTest: TestSuite::Tester {
     void debug();
 };
 
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
-typedef Math::Matrix<3, Float> Matrix3x3;
-typedef Math::Matrix4<Float> Matrix4;
-typedef Math::Quaternion<Float> Quaternion;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector4<Float> Vector4;
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Matrix3x3;
+using Magnum::Matrix4;
+using Magnum::Quaternion;
+using Magnum::Vector3;
+using Magnum::Vector4;
 
 using namespace Math::Literals;
 

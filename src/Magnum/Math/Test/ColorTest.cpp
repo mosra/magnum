@@ -155,25 +155,16 @@ struct ColorTest: TestSuite::Tester {
     #endif
 };
 
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector3<UnsignedByte> Vector3ub;
-typedef Math::Vector3<UnsignedShort> Vector3us;
-typedef Math::Color3<Float> Color3;
-typedef Math::Color3<UnsignedByte> Color3ub;
-typedef Math::Color3<UnsignedShort> Color3us;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Color3;
 
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Vector4<UnsignedByte> Vector4ub;
-typedef Math::Vector4<Half> Vector4h;
-typedef Math::Color4<Float> Color4;
-typedef Math::Color4<Half> Color4h;
-typedef Math::Color4<UnsignedByte> Color4ub;
-typedef Math::Color4<UnsignedShort> Color4us;
+using Magnum::Vector4;
+using Magnum::Color4;
 
-typedef Math::ColorHsv<Float> ColorHsv;
+using Magnum::ColorHsv;
 
-typedef Math::Deg<Float> Deg;
+using Magnum::Deg;
 
 using namespace Literals;
 

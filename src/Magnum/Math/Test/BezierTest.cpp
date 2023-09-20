@@ -56,13 +56,11 @@ template<> struct BezierConverter<2, 2, Float, QBezier2D> {
 
 namespace Test { namespace {
 
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector2<Double> Vector2d;
+using Magnum::Vector2;
 typedef Math::Bezier<1, 2, Float> LinearBezier2D;
-typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
-typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
-typedef Math::CubicBezier2D<Float> CubicBezier2D;
-typedef Math::CubicHermite2D<Float> CubicHermite2D;
+using Magnum::QuadraticBezier2D;
+using Magnum::CubicBezier2D;
+using Magnum::CubicHermite2D;
 
 struct BezierTest: TestSuite::Tester {
     explicit BezierTest();

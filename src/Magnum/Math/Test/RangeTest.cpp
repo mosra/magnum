@@ -146,14 +146,9 @@ struct RangeTest: TestSuite::Tester {
     void debug();
 };
 
-typedef Math::Range1D<Float> Range1D;
-typedef Math::Range2D<Float> Range2D;
-typedef Math::Range3D<Float> Range3D;
-typedef Math::Range1D<Int> Range1Di;
-typedef Math::Range2D<Int> Range2Di;
-typedef Math::Range3D<Int> Range3Di;
-typedef Vector2<Int> Vector2i;
-typedef Vector3<Int> Vector3i;
+using Magnum::Range1D;
+using Magnum::Range2D;
+using Magnum::Range3D;
 
 RangeTest::RangeTest() {
     addTests({&RangeTest::construct,

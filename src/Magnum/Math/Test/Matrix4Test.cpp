@@ -124,17 +124,17 @@ struct Matrix4Test: TestSuite::Tester {
     void debug();
 };
 
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
-typedef Math::Matrix2x2<Float> Matrix2x2;
-typedef Math::Matrix2x3<Float> Matrix2x3;
-typedef Math::Matrix3x3<Float> Matrix3x3;
-typedef Math::Matrix4<Float> Matrix4;
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Matrix2x2;
+using Magnum::Matrix2x3;
+using Magnum::Matrix3x3;
+using Magnum::Matrix4;
 typedef Math::Matrix4<Int> Matrix4i;
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Constants<Float> Constants;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Vector4;
+using Magnum::Constants;
 
 Matrix4Test::Matrix4Test() {
     addTests({&Matrix4Test::construct,

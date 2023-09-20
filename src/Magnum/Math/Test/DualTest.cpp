@@ -69,11 +69,11 @@ struct DualTest: TestSuite::Tester {
 };
 
 typedef Math::Dual<Float> Dual;
-typedef Math::Vector2<Float> Vector2;
+using Magnum::Vector2;
 typedef Math::Dual<Vector2> DualVector2;
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
-typedef Math::Constants<Float> Constants;
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Constants;
 
 using namespace Literals;
 

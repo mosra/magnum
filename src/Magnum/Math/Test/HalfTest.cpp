@@ -76,7 +76,7 @@ struct HalfTest: TestSuite::Tester {
     #endif
 };
 
-typedef Math::Constants<Float> Constants;
+using Magnum::Constants;
 
 using namespace Literals;
 

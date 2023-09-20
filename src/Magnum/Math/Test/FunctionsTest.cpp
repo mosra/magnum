@@ -90,15 +90,12 @@ struct FunctionsTest: TestSuite::Tester {
 
 using namespace Literals;
 
-typedef Math::Constants<Float> Constants;
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Vector3<UnsignedByte> Vector3ub;
-typedef Math::Vector3<Byte> Vector3b;
-typedef Math::Vector3<Int> Vector3i;
+using Magnum::Constants;
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Vector4;
 
 FunctionsTest::FunctionsTest() {
     addRepeatedTests<FunctionsTest>({

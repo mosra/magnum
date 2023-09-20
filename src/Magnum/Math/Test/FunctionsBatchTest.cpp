@@ -51,10 +51,9 @@ struct FunctionsBatchTest: TestSuite::Tester {
 
 using namespace Literals;
 
-typedef Math::Constants<Float> Constants;
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Int> Vector3i;
-typedef Math::Vector3<Float> Vector3;
+using Magnum::Constants;
+using Magnum::Vector2;
+using Magnum::Vector3;
 
 FunctionsBatchTest::FunctionsBatchTest() {
     addTests({&FunctionsBatchTest::isInf,

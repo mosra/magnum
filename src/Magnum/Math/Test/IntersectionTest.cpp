@@ -59,17 +59,14 @@ struct IntersectionTest: TestSuite::Tester {
     void aabbCone();
 };
 
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector3<Double> Vector3d;
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Matrix4<Float> Matrix4;
-typedef Math::Matrix4<Double> Matrix4d;
-typedef Math::Frustum<Float> Frustum;
-typedef Math::Constants<Float> Constants;
-typedef Math::Range3D<Float> Range3D;
-typedef Math::Rad<Float> Rad;
-typedef Math::Rad<Double> Radd;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Vector4;
+using Magnum::Matrix4;
+using Magnum::Frustum;
+using Magnum::Constants;
+using Magnum::Range3D;
+using Magnum::Rad;
 
 IntersectionTest::IntersectionTest() {
     addTests({&IntersectionTest::pointCircle,

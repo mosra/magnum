@@ -120,8 +120,8 @@ struct VectorTest: TestSuite::Tester {
     void debugPacked();
 };
 
-typedef Math::Constants<Float> Constants;
-typedef Math::Rad<Float> Rad;
+using Magnum::Constants;
+using Magnum::Rad;
 typedef Vector<2, Float> Vector2;
 typedef Vector<2, Half> Vector2h;
 typedef Vector<3, Float> Vector3;

@@ -84,7 +84,7 @@ ConfigurationValueTest::ConfigurationValueTest() {
 }
 
 void ConfigurationValueTest::deg() {
-    typedef Math::Deg<Float> Deg;
+    using Magnum::Deg;
 
     Utility::Configuration c;
 
@@ -97,7 +97,7 @@ void ConfigurationValueTest::deg() {
 }
 
 void ConfigurationValueTest::rad() {
-    typedef Math::Rad<Float> Rad;
+    using Magnum::Rad;
 
     Utility::Configuration c;
 
@@ -131,7 +131,7 @@ void ConfigurationValueTest::vector() {
 }
 
 void ConfigurationValueTest::vector2() {
-    typedef Math::Vector2<Float> Vector2;
+    using Magnum::Vector2;
 
     Utility::Configuration c;
 
@@ -144,7 +144,7 @@ void ConfigurationValueTest::vector2() {
 }
 
 void ConfigurationValueTest::vector3() {
-    typedef Math::Vector3<Float> Vector3;
+    using Magnum::Vector3;
 
     Utility::Configuration c;
 
@@ -157,7 +157,7 @@ void ConfigurationValueTest::vector3() {
 }
 
 void ConfigurationValueTest::vector4() {
-    typedef Math::Vector4<Float> Vector4;
+    using Magnum::Vector4;
 
     Utility::Configuration c;
 
@@ -170,8 +170,8 @@ void ConfigurationValueTest::vector4() {
 }
 
 void ConfigurationValueTest::color() {
-    typedef Math::Color3<Float> Color3;
-    typedef Math::Color4<Float> Color4;
+    using Magnum::Color3;
+    using Magnum::Color4;
 
     Utility::Configuration c;
 
@@ -191,8 +191,8 @@ void ConfigurationValueTest::color() {
 }
 
 void ConfigurationValueTest::rectangularMatrix() {
-    typedef Math::Vector4<Float> Vector4;
-    typedef Math::Matrix3x4<Float> Matrix3x4;
+    using Magnum::Vector4;
+    using Magnum::Matrix3x4;
 
     Matrix3x4 m(Vector4(3.0f,  5.0f, 8.0f,   4.0f),
                 Vector4(4.0f,  4.0f, 7.0f, 3.125f),
@@ -221,8 +221,8 @@ void ConfigurationValueTest::rectangularMatrix() {
 }
 
 void ConfigurationValueTest::matrix() {
-    typedef Math::Vector4<Float> Vector4;
-    typedef Math::Matrix4x4<Float> Matrix4x4;
+    using Magnum::Vector4;
+    using Magnum::Matrix4x4;
 
     Utility::Configuration c;
 
@@ -238,7 +238,7 @@ void ConfigurationValueTest::matrix() {
 }
 
 void ConfigurationValueTest::matrix3() {
-    typedef Math::Matrix3<Float> Matrix3;
+    using Magnum::Matrix3;
 
     Utility::Configuration c;
 
@@ -253,7 +253,7 @@ void ConfigurationValueTest::matrix3() {
 }
 
 void ConfigurationValueTest::matrix4() {
-    typedef Math::Matrix4<Float> Matrix4;
+    using Magnum::Matrix4;
 
     Utility::Configuration c;
 
@@ -269,7 +269,7 @@ void ConfigurationValueTest::matrix4() {
 }
 
 void ConfigurationValueTest::complex() {
-    typedef Math::Complex<Float> Complex;
+    using Magnum::Complex;
 
     Utility::Configuration c;
 
@@ -290,7 +290,7 @@ void ConfigurationValueTest::complex() {
 }
 
 void ConfigurationValueTest::dualComplex() {
-    typedef Math::DualComplex<Float> DualComplex;
+    using Magnum::DualComplex;
 
     Utility::Configuration c;
 
@@ -311,7 +311,7 @@ void ConfigurationValueTest::dualComplex() {
 }
 
 void ConfigurationValueTest::quaternion() {
-    typedef Math::Quaternion<Float> Quaternion;
+    using Magnum::Quaternion;
 
     Utility::Configuration c;
 
@@ -332,7 +332,7 @@ void ConfigurationValueTest::quaternion() {
 }
 
 void ConfigurationValueTest::dualQuaternion() {
-    typedef Math::DualQuaternion<Float> DualQuaternion;
+    using Magnum::DualQuaternion;
 
     Utility::Configuration c;
 
@@ -353,7 +353,7 @@ void ConfigurationValueTest::dualQuaternion() {
 }
 
 void ConfigurationValueTest::range() {
-    typedef Math::Range2D<Float> Range2D;
+    using Magnum::Range2D;
 
     Utility::Configuration c;
 
@@ -366,8 +366,8 @@ void ConfigurationValueTest::range() {
 }
 
 void ConfigurationValueTest::bezier() {
-    typedef Math::Vector2<Float> Vector2;
-    typedef Math::CubicBezier2D<Float> CubicBezier2D;
+    using Magnum::Vector2;
+    using Magnum::CubicBezier2D;
 
     Utility::Configuration c;
 

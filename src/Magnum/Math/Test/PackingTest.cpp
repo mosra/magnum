@@ -53,10 +53,8 @@ struct PackingTest: TestSuite::Tester {
 
 using namespace Literals;
 
-typedef Math::Rad<Float> Rad;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector3<UnsignedByte> Vector3ub;
-typedef Math::Vector3<Byte> Vector3b;
+using Magnum::Rad;
+using Magnum::Vector3;
 
 PackingTest::PackingTest() {
     addTests({&PackingTest::bitMax,

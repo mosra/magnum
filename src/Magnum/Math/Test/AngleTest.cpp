@@ -61,10 +61,10 @@ struct AngleTest: TestSuite::Tester {
     #endif
 };
 
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
-typedef Math::Deg<Double> Degd;
-typedef Math::Rad<Double> Radd;
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Degd;
+using Magnum::Radd;
 
 using namespace Literals;
 

@@ -97,9 +97,9 @@ template<class T> void SvdTest::test() {
 }
 
 void SvdTest::decomposeRotationScaling() {
-    typedef Math::Matrix4<Float> Matrix4;
-    typedef Math::Matrix3x3<Float> Matrix3x3;
-    typedef Math::Vector3<Float> Vector3;
+    using Magnum::Matrix4;
+    using Magnum::Matrix3x3;
+    using Magnum::Vector3;
 
     using namespace Math::Literals;
 
@@ -119,9 +119,9 @@ void SvdTest::decomposeRotationScaling() {
 }
 
 void SvdTest::decomposeRotationShear() {
-    typedef Math::Matrix4<Float> Matrix4;
-    typedef Math::Matrix3x3<Float> Matrix3x3;
-    typedef Math::Vector3<Float> Vector3;
+    using Magnum::Matrix4;
+    using Magnum::Matrix3x3;
+    using Magnum::Vector3;
 
     using namespace Math::Literals;
 

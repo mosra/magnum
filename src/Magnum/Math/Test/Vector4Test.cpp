@@ -79,10 +79,9 @@ struct Vector4Test: TestSuite::Tester {
     void debug();
 };
 
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Vector4<Int> Vector4i;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Vector2<Float> Vector2;
+using Magnum::Vector4;
+using Magnum::Vector3;
+using Magnum::Vector2;
 
 Vector4Test::Vector4Test() {
     addTests({&Vector4Test::construct,

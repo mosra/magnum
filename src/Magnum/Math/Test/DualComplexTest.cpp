@@ -103,13 +103,13 @@ struct DualComplexTest: TestSuite::Tester {
 
 using namespace Math::Literals;
 
-typedef Math::Deg<Float> Deg;
-typedef Math::Rad<Float> Rad;
-typedef Math::Complex<Float> Complex;
+using Magnum::Deg;
+using Magnum::Rad;
+using Magnum::Complex;
 typedef Math::Dual<Float> Dual;
-typedef Math::DualComplex<Float> DualComplex;
-typedef Math::Matrix3<Float> Matrix3;
-typedef Math::Vector2<Float> Vector2;
+using Magnum::DualComplex;
+using Magnum::Matrix3;
+using Magnum::Vector2;
 
 DualComplexTest::DualComplexTest() {
     addTests({&DualComplexTest::construct,

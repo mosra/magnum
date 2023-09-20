@@ -87,10 +87,9 @@ struct FrustumTest: TestSuite::Tester {
     void debug();
 };
 
-typedef Math::Vector4<Float> Vector4;
-typedef Math::Matrix4<Float> Matrix4;
-typedef Math::Frustum<Float> Frustum;
-typedef Math::Frustum<Double> Frustumd;
+using Magnum::Vector4;
+using Magnum::Matrix4;
+using Magnum::Frustum;
 
 FrustumTest::FrustumTest() {
     addTests({&FrustumTest::construct,

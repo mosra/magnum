@@ -209,15 +209,15 @@ CubicHermiteTest::CubicHermiteTest() {
 
 using namespace Math::Literals;
 
-typedef Math::Vector2<Float> Vector2;
-typedef Math::Vector3<Float> Vector3;
-typedef Math::Complex<Float> Complex;
-typedef Math::Quaternion<Float> Quaternion;
-typedef Math::CubicBezier2D<Float> CubicBezier2D;
-typedef Math::CubicHermite1D<Float> CubicHermite1D;
-typedef Math::CubicHermite2D<Float> CubicHermite2D;
-typedef Math::CubicHermiteComplex<Float> CubicHermiteComplex;
-typedef Math::CubicHermiteQuaternion<Float> CubicHermiteQuaternion;
+using Magnum::Vector2;
+using Magnum::Vector3;
+using Magnum::Complex;
+using Magnum::Quaternion;
+using Magnum::CubicBezier2D;
+using Magnum::CubicHermite1D;
+using Magnum::CubicHermite2D;
+using Magnum::CubicHermiteComplex;
+using Magnum::CubicHermiteQuaternion;
 
 void CubicHermiteTest::constructScalar() {
     constexpr CubicHermite1D a{2.0f, -2.0f, -0.5f};
