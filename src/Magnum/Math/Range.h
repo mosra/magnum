@@ -439,7 +439,6 @@ template<class T> class Range2D: public Range<2, T> {
 
         /**
          * @brief Construct range from external representation
-         * @todoc Remove workaround when Doxygen no longer chokes on that line
          */
         template<class U, class V =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
@@ -591,7 +590,6 @@ template<class T> class Range3D: public Range<3, T> {
 
         /**
          * @brief Construct range from external representation
-         * @todoc Remove workaround when Doxygen no longer chokes on that line
          */
         template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept: Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
 
