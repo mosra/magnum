@@ -23,8 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/TestSuite/Tester.h>
+
 #include "Magnum/Math/Tags.h"
-#include "Corrade/TestSuite/Tester.h"
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
