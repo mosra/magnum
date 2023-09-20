@@ -30,6 +30,10 @@
  * @brief Class @ref Magnum::Math::Bezier, alias @ref Magnum::Math::QuadraticBezier, @ref Magnum::Math::QuadraticBezier2D, @ref Magnum::Math::QuadraticBezier3D, @ref Magnum::Math::CubicBezier, @ref Magnum::Math::CubicBezier2D, @ref Magnum::Math::CubicBezier3D
  */
 
+/* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
+   all have it directly in <type_traits> because it just makes sense */
+#include <type_traits>
+
 #include "Magnum/Math/Vector.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED

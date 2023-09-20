@@ -29,6 +29,10 @@
  * @brief Class @ref Magnum::Math::Color3, @ref Magnum::Math::Color4, literal @link Magnum::Math::Literals::operator""_rgb() @endlink, @link Magnum::Math::Literals::operator""_rgba() @endlink, @link Magnum::Math::Literals::operator""_rgbf() @endlink, @link Magnum::Math::Literals::operator""_rgbaf() @endlink, @link Magnum::Math::Literals::operator""_srgb() @endlink, @link Magnum::Math::Literals::operator""_srgba() @endlink, @link Magnum::Math::Literals::operator""_srgbf() @endlink, @link Magnum::Math::Literals::operator""_srgbaf() @endlink
  */
 
+/* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
+   all have it directly in <type_traits> because it just makes sense */
+#include <type_traits>
+
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Packing.h"
 #include "Magnum/Math/Vector4.h"

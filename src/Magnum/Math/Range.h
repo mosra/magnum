@@ -29,6 +29,10 @@
  * @brief Class @ref Magnum::Math::Range, @ref Magnum::Math::Range2D, @ref Magnum::Math::Range3D, alias @ref Magnum::Math::Range1D
  */
 
+/* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
+   all have it directly in <type_traits> because it just makes sense */
+#include <type_traits>
+
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
 

@@ -30,6 +30,8 @@
  * @m_since_latest
  */
 
+/* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
+   all have it directly in <type_traits> because it just makes sense */
 #include <type_traits>
 #include <Corrade/Containers/sequenceHelpers.h>
 #ifndef CORRADE_SINGLES_NO_DEBUG

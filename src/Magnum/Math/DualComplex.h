@@ -30,6 +30,10 @@
  * @brief Class @ref Magnum::Math::DualComplex
  */
 
+/* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
+   all have it directly in <type_traits> because it just makes sense */
+#include <type_traits>
+
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Matrix3.h"

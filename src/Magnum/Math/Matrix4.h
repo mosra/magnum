@@ -29,6 +29,10 @@
  * @brief Class @ref Magnum::Math::Matrix4
  */
 
+/* std::declval() is said to be in <utility> but libstdc++, libc++ and MSVC STL
+   all have it directly in <type_traits> because it just makes sense */
+#include <type_traits>
+
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 
