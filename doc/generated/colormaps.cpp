@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Algorithms.h>
@@ -45,25 +46,25 @@ int main() {
     }
 
     for(auto& image: {
-        std::make_pair(DebugTools::ColorMap::turbo(), "colormap-turbo.png"),
-        std::make_pair(DebugTools::ColorMap::magma(), "colormap-magma.png"),
-        std::make_pair(DebugTools::ColorMap::plasma(), "colormap-plasma.png"),
-        std::make_pair(DebugTools::ColorMap::inferno(), "colormap-inferno.png"),
-        std::make_pair(DebugTools::ColorMap::viridis(), "colormap-viridis.png"),
-        std::make_pair(DebugTools::ColorMap::coolWarmSmooth(), "colormap-cool-warm-smooth.png"),
-        std::make_pair(DebugTools::ColorMap::coolWarmBent(), "colormap-cool-warm-bent.png")
+        Containers::pair(DebugTools::ColorMap::turbo(), "colormap-turbo.png"),
+        Containers::pair(DebugTools::ColorMap::magma(), "colormap-magma.png"),
+        Containers::pair(DebugTools::ColorMap::plasma(), "colormap-plasma.png"),
+        Containers::pair(DebugTools::ColorMap::inferno(), "colormap-inferno.png"),
+        Containers::pair(DebugTools::ColorMap::viridis(), "colormap-viridis.png"),
+        Containers::pair(DebugTools::ColorMap::coolWarmSmooth(), "colormap-cool-warm-smooth.png"),
+        Containers::pair(DebugTools::ColorMap::coolWarmBent(), "colormap-cool-warm-bent.png")
     }) {
         constexpr Vector2i OutputSize{256, 12};
-        CORRADE_INTERNAL_ASSERT(image.first.size() == std::size_t(OutputSize.x()));
+        CORRADE_INTERNAL_ASSERT(image.first().size() == std::size_t(OutputSize.x()));
 
         Containers::Array<Vector3ub> data{NoInit, std::size_t(OutputSize.product())};
-        Containers::StridedArrayView2D<const Vector3ub> src{image.first,
+        Containers::StridedArrayView2D<const Vector3ub> src{image.first(),
             {std::size_t(OutputSize.y()), std::size_t(OutputSize.x())}, {0, 3}};
         Containers::StridedArrayView2D<Vector3ub> dst{data,
             {std::size_t(OutputSize.y()), std::size_t(OutputSize.x())}};
         Utility::copy(src, dst);
 
-        if(!converter->convertToFile(ImageView2D{PixelFormat::RGB8Unorm, OutputSize, data}, image.second))
+        if(!converter->convertToFile(ImageView2D{PixelFormat::RGB8Unorm, OutputSize, data}, image.second()))
             return 2;
     }
 }
