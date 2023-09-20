@@ -29,7 +29,8 @@
  * @brief Function @ref Magnum::Math::Algorithms::svd()
  */
 
-#include <tuple>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Triple.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Matrix.h"
@@ -65,7 +66,7 @@ on given matrix where @p rows >= `cols`: @f[
 
 Returns first @p cols column vectors of @f$ \boldsymbol{U} @f$, diagonal of
 @f$ \boldsymbol{\Sigma} @f$ and non-transposed @f$ \boldsymbol{V} @f$. If the
-solution doesn't converge, returns zero matrices.
+solution doesn't converge, returns @ref Containers::NullOpt.
 
 Full @f$ \boldsymbol{U} @f$, @f$ \boldsymbol{\Sigma} @f$ matrices and original
 @f$ \boldsymbol{M} @f$ matrix can be reconstructed from the values as
@@ -81,7 +82,7 @@ for an example. Implementation based on *Golub, G. H.; Reinsch, C. (1970).
 @see @ref qr(), @ref Matrix3::rotationShear(), @ref Matrix4::rotationShear()
 */
 /* The matrix is passed by value because it is changed inside */
-template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatrix<cols, rows, T>, Vector<cols, T>, Matrix<cols, T>> svd(RectangularMatrix<cols, rows, T> m) {
+template<std::size_t cols, std::size_t rows, class T> Containers::Optional<Containers::Triple<RectangularMatrix<cols, rows, T>, Vector<cols, T>, Matrix<cols, T>>> svd(RectangularMatrix<cols, rows, T> m) {
     static_assert(rows >= cols, "Unsupported matrix aspect ratio");
     static_assert(T(1)+TypeTraits<T>::epsilon() > T(1), "Epsilon too small");
     constexpr T tol = Implementation::smallestDelta<T>()/TypeTraits<T>::epsilon();
@@ -255,8 +256,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
 
             /* Exceeded iteration count, done */
             } else if(iteration >= maxIterations-1) {
-                Error{} << "Magnum::Math::Algorithms::svd(): no convergence";
-                return std::make_tuple(RectangularMatrix<cols, rows, T>{}, Vector<cols, T>{}, Matrix<cols, T>{ZeroInit});
+                return {};
             }
 
             /* Shift from bottom 2x2 minor */
@@ -316,7 +316,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
         }
     }
 
-    return std::make_tuple(m, q, v);
+    return Containers::triple(m, q, v);
 }
 
 }}}

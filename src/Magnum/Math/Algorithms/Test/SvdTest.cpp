@@ -62,37 +62,35 @@ template<class T> void SvdTest::test() {
         Vector8<T>{T{ 7}, T{ 8}, T{  3}, T{ 4}, T{ 4}, T{-1}, T{ 1}, T{ 2}}};
     const Vector5<T> expected(std::sqrt(T{1248}), T{0}, T{20}, std::sqrt(T{384}), T{0});
 
-    Matrix5x8<T> u{Magnum::NoInit};
-    Vector5<T> w{Magnum::NoInit};
-    Matrix5<T> v{Magnum::NoInit};
-    std::tie(u, w, v) = Algorithms::svd(a);
+    Containers::Optional<Containers::Triple<Matrix5x8<T>, Vector5<T>, Matrix5<T>>> uwv = Algorithms::svd(a);
+    CORRADE_VERIFY(uwv);
 
     /* Test composition */
-    Matrix8<T> u2{u[0], u[1], u[2], u[3], u[4], Vector8<T>{}, Vector8<T>{}, Vector8<T>{}};
-    Matrix5x8<T> w2 = Matrix5x8<T>::fromDiagonal(w);
+    Matrix8<T> u2{uwv->first()[0], uwv->first()[1], uwv->first()[2], uwv->first()[3], uwv->first()[4], Vector8<T>{}, Vector8<T>{}, Vector8<T>{}};
+    Matrix5x8<T> w2 = Matrix5x8<T>::fromDiagonal(uwv->second());
     {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
-        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value) && u2*w2*v.transposed() != a,
+        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value) && u2*w2*uwv->third().transposed() != a,
             "Some strange problems with Double on recent Emscripten versions "
             "(1.36.5 worked fine, 1.37.1 works fine on larger optimization "
             "levels, not on -O1).");
         #endif
-        CORRADE_COMPARE(u2*w2*v.transposed(), a);
+        CORRADE_COMPARE(u2*w2*uwv->third().transposed(), a);
     }
 
     /* Test that V is unitary */
-    CORRADE_COMPARE(v*v.transposed(), Matrix5<T>{IdentityInit});
-    CORRADE_COMPARE(v.transposed()*v, Matrix5<T>{IdentityInit});
+    CORRADE_COMPARE(uwv->third()*uwv->third().transposed(), Matrix5<T>{IdentityInit});
+    CORRADE_COMPARE(uwv->third().transposed()*uwv->third(), Matrix5<T>{IdentityInit});
 
     /* Test W */
     {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
-        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value && w != expected),
+        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value && uwv->second() != expected),
             "Some strange problems with Double on recent Emscripten versions "
             "(1.36.5 worked fine, 1.37.1 worked fine on larger optimization "
             "levels, not on -O1, 1.37.5 works fine again).");
         #endif
-        CORRADE_COMPARE(w, expected);
+        CORRADE_COMPARE(uwv->second(), expected);
     }
 }
 
@@ -105,17 +103,14 @@ void SvdTest::decomposeRotationScaling() {
 
     Matrix4 a = Matrix4::rotationZ(35.0_degf)*Matrix4::scaling({1.5f, 2.0f, 1.0f});
 
-    Matrix3x3 u{Magnum::NoInit};
-    Vector3 w{Magnum::NoInit};
-    Matrix3x3 v{Magnum::NoInit};
-    std::tie(u, w, v) = Algorithms::svd(a.rotationScaling());
+    Containers::Triple<Matrix3x3, Vector3, Matrix3x3> uwv{*Algorithms::svd(a.rotationScaling())};
 
-    CORRADE_COMPARE(u*Matrix3x3::fromDiagonal(w)*v.transposed(), a.rotationScaling());
+    CORRADE_COMPARE(uwv.first()*Matrix3x3::fromDiagonal(uwv.second())*uwv.third().transposed(), a.rotationScaling());
 
     /* V contains flipped signs for the whole matrix, use it to fix the
        signs for U */
-    CORRADE_COMPARE(w, (Vector3{1.5f, 2.0f, 1.0f}));
-    CORRADE_COMPARE(Matrix4::from(u*v.transposed(), {}), Matrix4::rotationZ(35.0_degf));
+    CORRADE_COMPARE(uwv.second(), (Vector3{1.5f, 2.0f, 1.0f}));
+    CORRADE_COMPARE(Matrix4::from(uwv.first()*uwv.third().transposed(), {}), Matrix4::rotationZ(35.0_degf));
 }
 
 void SvdTest::decomposeRotationShear() {
@@ -128,17 +123,14 @@ void SvdTest::decomposeRotationShear() {
     /* Like above, but with order flipped, which results in a shear */
     Matrix4 a = Matrix4::scaling({1.5f, 2.0f, 1.0f})*Matrix4::rotationZ(35.0_degf);
 
-    Matrix3x3 u{Magnum::NoInit};
-    Vector3 w{Magnum::NoInit};
-    Matrix3x3 v{Magnum::NoInit};
-    std::tie(u, w, v) = Algorithms::svd(a.rotationScaling());
+    Containers::Triple<Matrix3x3, Vector3, Matrix3x3> uwv{*Algorithms::svd(a.rotationScaling())};
 
-    CORRADE_COMPARE(u*Matrix3x3::fromDiagonal(w)*v.transposed(), a.rotationScaling());
+    CORRADE_COMPARE(uwv.first()*Matrix3x3::fromDiagonal(uwv.second())*uwv.third().transposed(), a.rotationScaling());
 
     /* U contains a flipped sign for Z, use it to remove the sign from the
        transposed rotation matrix V */
-    CORRADE_COMPARE(w, (Vector3{1.5f, 2.0f, 1.0f}));
-    CORRADE_COMPARE(Matrix4::from(u*v.transposed(), {}), Matrix4::rotationZ(35.0_degf));
+    CORRADE_COMPARE(uwv.second(), (Vector3{1.5f, 2.0f, 1.0f}));
+    CORRADE_COMPARE(Matrix4::from(uwv.first()*uwv.third().transposed(), {}), Matrix4::rotationZ(35.0_degf));
 }
 
 }}}}}

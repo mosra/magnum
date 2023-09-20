@@ -393,7 +393,7 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
 #include "Magnum/Math/Algorithms/KahanSum.h"
 #include "Magnum/Math/Algorithms/Qr.h"
-//#include "Magnum/Math/Algorithms/Svd.h" // TODO: uses <tuple>
+//#include "Magnum/Math/Algorithms/Svd.h" // TODO needs Optional and Triple
 #ifdef MAGNUM_MATH_GLM_INTEGRATION
 // {{includes}}
 #include "Magnum/GlmIntegration/Integration.h"

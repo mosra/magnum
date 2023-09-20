@@ -62,11 +62,9 @@ enum: std::size_t { cols = 3, rows = 4 };
 /* [svd] */
 Math::RectangularMatrix<cols, rows, Double> m;
 
-Math::RectangularMatrix<cols, rows, Double> uPart;
-Math::Vector<cols, Double> wDiagonal;
-Math::Matrix<cols, Double> v;
-
-std::tie(uPart, wDiagonal, v) = Math::Algorithms::svd(m);
+auto svd = Math::Algorithms::svd(m);
+Math::RectangularMatrix<cols, rows, Double> uPart = svd->first();
+Math::Vector<cols, Double> wDiagonal = svd->second();
 
 // Extend U
 Math::Matrix<rows, Double> u{Math::ZeroInit};
