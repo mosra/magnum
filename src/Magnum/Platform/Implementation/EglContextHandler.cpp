@@ -25,7 +25,6 @@
 
 #include "EglContextHandler.h"
 
-#include <tuple>
 #include <EGL/eglext.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -112,13 +111,12 @@ void EglContextHandler::createContext(const AbstractXApplication::GLConfiguratio
        EGL_KHR_create_context. */
     /** @todo Test for presence of EGL_KHR_create_context extension */
     if(glConfiguration.version() != GL::Version::None) {
-        Int major, minor;
-        std::tie(major, minor) = version(glConfiguration.version());
+        const Containers::Pair<Int, Int> versionMajorMinor = version(glConfiguration.version());
 
         attributes[0] = EGL_CONTEXT_MAJOR_VERSION_KHR;
-        attributes[1] = major;
+        attributes[1] = versionMajorMinor.first();
         attributes[2] = EGL_CONTEXT_MINOR_VERSION_KHR;
-        attributes[3] = minor;
+        attributes[3] = versionMajorMinor.second();
 
         #ifndef MAGNUM_TARGET_GLES
         if(glConfiguration.version() >= GL::Version::GL310) {

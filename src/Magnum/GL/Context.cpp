@@ -920,9 +920,9 @@ bool Context::tryCreate(const Configuration& configuration) {
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        Error{} << "GL::Context: unsupported OpenGL version" << std::make_pair(majorVersion, minorVersion);
+        Error{} << "GL::Context: unsupported OpenGL version" << Containers::pair(majorVersion, minorVersion);
         #else
-        Error{} << "GL::Context: unsupported OpenGL ES version" << std::make_pair(majorVersion, minorVersion);
+        Error{} << "GL::Context: unsupported OpenGL ES version" << Containers::pair(majorVersion, minorVersion);
         #endif
 
         /* Reset the version so the context is not marked as successfully created */

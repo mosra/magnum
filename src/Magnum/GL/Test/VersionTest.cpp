@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -76,15 +77,15 @@ void VersionTest::fromNumber() {
 
 void VersionTest::toNumber() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(version(Version::GL430), std::make_pair(4, 3));
+    CORRADE_COMPARE(version(Version::GL430), Containers::pair(4, 3));
     #else
-    CORRADE_COMPARE(version(Version::GLES300), std::make_pair(3, 0));
+    CORRADE_COMPARE(version(Version::GLES300), Containers::pair(3, 0));
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void VersionTest::toNumberES() {
-    CORRADE_COMPARE(version(Version::GLES310), std::make_pair(3, 1));
+    CORRADE_COMPARE(version(Version::GLES310), Containers::pair(3, 1));
 }
 #endif
 

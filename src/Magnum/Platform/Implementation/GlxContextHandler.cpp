@@ -26,7 +26,6 @@
 #include "GlxContextHandler.h"
 
 #include <cstdlib>
-#include <tuple>
 #include <GL/glxext.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -86,13 +85,12 @@ void GlxContextHandler::createContext(const AbstractXApplication::GLConfiguratio
 
     /* Set context version, if requested */
     if(glConfiguration.version() != GL::Version::None) {
-        Int major, minor;
-        std::tie(major, minor) = version(glConfiguration.version());
+        const Containers::Pair<Int, Int> versionMajorMinor = version(glConfiguration.version());
 
         attributes[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
-        attributes[1] = major;
+        attributes[1] = versionMajorMinor.first();
         attributes[2] = GLX_CONTEXT_MINOR_VERSION_ARB;
-        attributes[3] = minor;
+        attributes[3] = versionMajorMinor.second();
 
         #ifndef MAGNUM_TARGET_GLES
         if(glConfiguration.version() >= GL::Version::GL310) {

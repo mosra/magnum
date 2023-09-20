@@ -38,9 +38,7 @@
 #ifdef CORRADE_TARGET_CLANG_CL
 #pragma clang diagnostic pop
 #endif
-#ifndef CORRADE_TARGET_EMSCRIPTEN
-#include <tuple>
-#else
+#ifdef CORRADE_TARGET_EMSCRIPTEN
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif
@@ -515,10 +513,9 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 
     /* Set context version, if user-specified */
     if(glConfiguration.version() != GL::Version::None) {
-        Int major, minor;
-        std::tie(major, minor) = version(glConfiguration.version());
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+        const Containers::Pair<Int, Int> versionMajorMinor = version(glConfiguration.version());
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, versionMajorMinor.first());
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, versionMajorMinor.second());
 
         #ifndef MAGNUM_TARGET_GLES
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, glConfiguration.version() >= GL::Version::GL310 ?

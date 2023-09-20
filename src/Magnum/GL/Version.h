@@ -29,10 +29,13 @@
  * @brief Enum @ref Magnum::GL::Version, function @ref Magnum::GL::version(), @ref Magnum::GL::isVersionES()
  */
 
-#include <utility> /* std::pair */
-
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* version() returned std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -135,14 +138,7 @@ constexpr Version version(Int major, Int minor) {
 
 @see @ref isVersionES()
 */
-inline std::pair<Int, Int> version(Version version) {
-    const Int v = Int(version)
-        #ifndef MAGNUM_TARGET_GLES
-        & ~Implementation::VersionESMask
-        #endif
-        ;
-    return {v/100, (v%100)/10};
-}
+MAGNUM_GL_EXPORT Containers::Pair<Int, Int> version(Version version);
 
 /**
 @brief Whether given version is OpenGL ES or WebGL

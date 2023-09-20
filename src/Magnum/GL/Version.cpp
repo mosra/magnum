@@ -25,9 +25,19 @@
 
 #include "Version.h"
 
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace GL {
+
+Containers::Pair<Int, Int> version(const Version version)  {
+    const Int v = Int(version)
+        #ifndef MAGNUM_TARGET_GLES
+        & ~Implementation::VersionESMask
+        #endif
+        ;
+    return {v/100, (v%100)/10};
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Version value) {

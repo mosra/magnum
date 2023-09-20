@@ -1467,6 +1467,8 @@ See also:
         @ref GL::Buffer::setLabel() "setLabel()" APIs now work with a
         @relativeref{Corrade,Containers::StringView} /
         @relativeref{Corrade,Containers::String} instead of a @ref std::string
+    -   @ref GL::version(Version) now returns a
+        @relativeref{Corrade,Containers::Pair} instead of a @ref std::pair
     -   @ref MeshTools::compressIndices(), @ref MeshTools::removeDuplicates()
         and related APIs now return a @relativeref{Corrade,Containers::Pair}
         instead of a @ref std::pair

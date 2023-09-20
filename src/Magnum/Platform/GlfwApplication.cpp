@@ -28,7 +28,6 @@
 
 #include "GlfwApplication.h"
 
-#include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Arguments.h>
@@ -463,10 +462,9 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
     /* Set context version, if requested */
     if(glConfiguration.version() != GL::Version::None) {
-        Int major, minor;
-        std::tie(major, minor) = version(glConfiguration.version());
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
+        const Containers::Pair<Int, Int> versionMajorMinor = version(glConfiguration.version());
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, versionMajorMinor.first());
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, versionMajorMinor.second());
         #ifndef MAGNUM_TARGET_GLES
         if(glConfiguration.version() >= GL::Version::GL320) {
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
