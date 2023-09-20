@@ -40,6 +40,7 @@
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
 #include <Corrade/Containers/ArrayViewStl.h>
 
 #include "Magnum/Math/Color.h"

@@ -1421,6 +1421,10 @@ See also:
         and @cpp Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) @ce
         constructors or directly the new @ref Trade::MaterialData class
 -   Removed APIs deprecated in 2019.10, in particular:
+    -   @cpp Math::Color3::Hsv @ce and @cpp Math::Color4::Hsv @ce
+        @ref std::tuple typedefs and @ref Math::Color3::fromHsv() /
+        @ref Math::Color4::fromHsv() overloads taking separate hue, saturation
+        and value arguments. Use the @ref Math::ColorHsv struct instead.
     -   @cpp Math::swizzle() @ce, use @ref Math::gather() instead
 -   All includes of @ref Corrade/Containers/PointerStl.h and
     @ref Corrade/Containers/ArrayViewStl.h that were added in 2019.01 for

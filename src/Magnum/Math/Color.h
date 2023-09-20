@@ -33,10 +33,6 @@
 #include "Magnum/Math/Packing.h"
 #include "Magnum/Math/Vector4.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple> /** @todo remove when Color[34]::Hsv is removed */
-#endif
-
 #if defined(CORRADE_MSVC2017_COMPATIBILITY) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
 /* Needed by the fullChannel() workaround */
 #include "Magnum/Math/Half.h"
@@ -315,13 +311,6 @@ template<class T> class Color3: public Vector3<T> {
          */
         typedef typename TypeTraits<T>::FloatingPointType FloatingPointType;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief ColorHsv
-         * @m_deprecated_since{2019,10} Use @ref ColorHsv instead.
-         */
-        typedef CORRADE_DEPRECATED("use ColorHsv instead") std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
-        #endif
-
         /**
          * @brief Red color
          *
@@ -403,16 +392,6 @@ template<class T> class Color3: public Vector3<T> {
         static Color3<T> fromHsv(const ColorHsv<FloatingPointType>& hsv) {
             return Implementation::fromHsv<T>(hsv);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief fromHsv(const ColorHsv<FloatingPointType>&)
-         * @m_deprecated_since{2019,10} Use @ref fromHsv(const ColorHsv<FloatingPointType>&)
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use fromHsv(const ColorHsv<FloatingPointType>&) instead") Color3<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
-            return fromHsv({hue, saturation, value});
-        }
-        #endif
 
         /**
          * @brief Create linear RGB color from sRGB representation
@@ -757,13 +736,6 @@ class Color4: public Vector4<T> {
         /** @copydoc Color3::FloatingPointType */
         typedef typename Color3<T>::FloatingPointType FloatingPointType;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief ColorHsv
-         * @m_deprecated_since{2019,10} Use @ref ColorHsv instead.
-         */
-        typedef CORRADE_DEPRECATED("use ColorHsv instead") std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
-        #endif
-
         /**
          * @brief Red color
          *
@@ -837,16 +809,6 @@ class Color4: public Vector4<T> {
         static Color4<T> fromHsv(const ColorHsv<FloatingPointType>& hsv, T a = Implementation::fullChannel<T>()) {
             return Color4<T>(Implementation::fromHsv<T>(hsv), a);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief fromHsv(const ColorHsv<FloatingPointType>&, T)
-         * @m_deprecated_since{2019,10} Use @ref fromHsv(const ColorHsv<FloatingPointType>&, T)
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use fromHsv(const ColorHsv<FloatingPointType>&, T) instead") Color4<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
-            return fromHsv({hue, saturation, value}, alpha);
-        }
-        #endif
 
         /**
          * @brief Create linear RGBA color from sRGB + alpha representation
@@ -1289,35 +1251,6 @@ template<class T> struct ColorHsv {
      * anything else.
      */
     template<class U> constexpr explicit ColorHsv(const ColorHsv<U>& other) noexcept: hue{other.hue}, saturation{T(other.saturation)}, value{T(other.value)} {}
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /**
-     * @brief Construct from @ref Color3::Hsv
-     * @m_deprecated_since{2019,10} Use @ref ColorHsv instead of
-     *      @ref Color3::Hsv
-     */
-    constexpr CORRADE_DEPRECATED("use ColorHsv instead of Color3::Hsv") /*implicit*/ ColorHsv(std::tuple<Deg<T>, T, T> hsv) noexcept:
-        hue{std::get<0>(hsv)}, saturation{std::get<1>(hsv)}, value{std::get<2>(hsv)} {}
-
-    /**
-     * @brief Convert to @ref Color3::Hsv
-     * @m_deprecated_since{2019,10} Use @ref ColorHsv instead of
-     *      @ref Color3::Hsv
-     */
-    constexpr CORRADE_DEPRECATED("use ColorHsv instead of Color3::Hsv") /*implicit*/ operator std::tuple<Deg<T>, T, T>() const {
-        return std::make_tuple(hue, saturation, value);
-    }
-
-    /** @overload */ /* for std::tie() */
-    CORRADE_DEPRECATED("use ColorHsv instead of Color3::Hsv") /*implicit*/ operator std::tuple<Deg<T>&, T&, T&>() {
-        return std::tuple<Deg<T>&, T&, T&>{hue, saturation, value};
-    }
-
-    /** @overload */ /* for std::tie() */
-    constexpr CORRADE_DEPRECATED("use ColorHsv instead of Color3::Hsv") /*implicit*/ operator std::tuple<const Deg<T>&, const T&, const T&>() const {
-        return std::tuple<const Deg<T>&, const T&, const T&>{hue, saturation, value};
-    }
-    #endif
 
     /** @brief Equality comparison */
     bool operator==(const ColorHsv<T>& other) const {
