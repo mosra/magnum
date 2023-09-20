@@ -47,7 +47,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct ColorBatchTest: Corrade::TestSuite::Tester {
+struct ColorBatchTest: TestSuite::Tester {
     explicit ColorBatchTest();
 
     void yFlip();
@@ -296,7 +296,7 @@ void ColorBatchTest::yFlip() {
     setTestCaseDescription(data.name);
 
     /* Copy to a mutable array first to operate in-place */
-    Containers::Array<char> blocks{Corrade::NoInit, data.input.size()};
+    Containers::Array<char> blocks{Magnum::NoInit, data.input.size()};
     Utility::copy(data.input, blocks);
     /* Using expanded() instead of the constructor as it catches issues where
        the size would be smaller than the actual data  */
@@ -323,22 +323,22 @@ void ColorBatchTest::yFlip() {
 
     if(decoded->format() == PixelFormat::RGBA8Unorm)
         CORRADE_COMPARE_WITH(decoded->pixels<Vector4ub>().flipped<0>(),
-            Corrade::Utility::Path::join(COLORBATCH_TEST_DIR, data.file),
+            Utility::Path::join(COLORBATCH_TEST_DIR, data.file),
             (DebugTools::CompareImageToFile{_importerManager, _converterManager}));
     else if(decoded->format() == PixelFormat::RG8Unorm)
         CORRADE_COMPARE_WITH(decoded->pixels<Vector2ub>().flipped<0>(),
-            Corrade::Utility::Path::join(COLORBATCH_TEST_DIR, data.file),
+            Utility::Path::join(COLORBATCH_TEST_DIR, data.file),
             (DebugTools::CompareImageToFile{_importerManager, _converterManager}));
     else if(decoded->format() == PixelFormat::R8Unorm)
         CORRADE_COMPARE_WITH(decoded->pixels<UnsignedByte>().flipped<0>(),
-            Corrade::Utility::Path::join(COLORBATCH_TEST_DIR, data.file),
+            Utility::Path::join(COLORBATCH_TEST_DIR, data.file),
             (DebugTools::CompareImageToFile{_importerManager, _converterManager}));
     else CORRADE_FAIL("Unexpected format" << decoded->format());
 }
 
 void ColorBatchTest::yFlip3D() {
     /* Copy to a mutable array first to operate in-place */
-    Containers::Array<char> blocks{Corrade::NoInit, Containers::arraySize(CheckerboardBC1)};
+    Containers::Array<char> blocks{Magnum::NoInit, Containers::arraySize(CheckerboardBC1)};
     Utility::copy(CheckerboardBC1, blocks);
 
     /* The 2D 4x6 blocks image is turned into 4 slices of 1x6 blocks each.

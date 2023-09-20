@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test { namespace {
 
-struct QrTest: Corrade::TestSuite::Tester {
+struct QrTest: TestSuite::Tester {
     explicit QrTest();
 
     void test();

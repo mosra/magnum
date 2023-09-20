@@ -34,7 +34,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct DualTest: Corrade::TestSuite::Tester {
+struct DualTest: TestSuite::Tester {
     explicit DualTest();
 
     void construct();
@@ -213,8 +213,8 @@ void DualTest::data() {
     CORRADE_COMPARE(a.data()[1], -3.5f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 2);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 2);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 2);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 2);
 }
 
 void DualTest::compare() {

@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct InterpolationBenchmark: Corrade::TestSuite::Tester {
+struct InterpolationBenchmark: TestSuite::Tester {
     explicit InterpolationBenchmark();
 
     void baseline();

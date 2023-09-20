@@ -65,7 +65,7 @@ template<> struct FrustumConverter<Float, Frstm> {
 
 namespace Test { namespace {
 
-struct FrustumTest: Corrade::TestSuite::Tester {
+struct FrustumTest: TestSuite::Tester {
     explicit FrustumTest();
 
     void construct();
@@ -303,9 +303,9 @@ void FrustumTest::convert() {
     #else
     constexpr Frstm d(b);
     #endif
-    CORRADE_COMPARE_AS(Corrade::Containers::arrayView(d.data),
-        Corrade::Containers::arrayView(a.data),
-        Corrade::TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(d.data),
+        Containers::arrayView(a.data),
+        TestSuite::Compare::Container);
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!std::is_convertible<Frstm, Frustum>::value);
@@ -348,8 +348,8 @@ void FrustumTest::data() {
     CORRADE_COMPARE(ca.data()[4], -1.0f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 24);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 24);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 24);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 24);
 }
 
 void FrustumTest::dataOutOfRange() {

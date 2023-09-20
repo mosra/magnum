@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct MatrixBenchmark: Corrade::TestSuite::Tester {
+struct MatrixBenchmark: TestSuite::Tester {
     explicit MatrixBenchmark();
 
     void multiply3();

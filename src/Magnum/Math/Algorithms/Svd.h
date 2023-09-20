@@ -255,7 +255,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
 
             /* Exceeded iteration count, done */
             } else if(iteration >= maxIterations-1) {
-                Corrade::Utility::Error() << "Magnum::Math::Algorithms::svd(): no convergence";
+                Error{} << "Magnum::Math::Algorithms::svd(): no convergence";
                 return std::make_tuple(RectangularMatrix<cols, rows, T>{}, Vector<cols, T>{}, Matrix<cols, T>{ZeroInit});
             }
 

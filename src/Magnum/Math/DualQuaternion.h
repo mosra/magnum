@@ -241,7 +241,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          */
         static DualQuaternion<T> fromMatrix(const Matrix4<T>& matrix) {
             CORRADE_DEBUG_ASSERT(matrix.isRigidTransformation(),
-                "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent a rigid transformation:" << Corrade::Utility::Debug::newline << matrix, {});
+                "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent a rigid transformation:" << Debug::newline << matrix, {});
 
             Quaternion<T> q = Implementation::quaternionFromMatrix(matrix.rotationScaling());
             return {q, Quaternion<T>(matrix.translation()/2)*q};
@@ -569,23 +569,23 @@ MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualQuaternion, Quaternion, T)
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{DualQuaternion} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualQuaternion<T>& value) {
-    return debug << "DualQuaternion({{" << Corrade::Utility::Debug::nospace
-        << value.real().vector().x() << Corrade::Utility::Debug::nospace << ","
-        << value.real().vector().y() << Corrade::Utility::Debug::nospace << ","
-        << value.real().vector().z() << Corrade::Utility::Debug::nospace << "},"
-        << value.real().scalar() << Corrade::Utility::Debug::nospace << "}, {{"
-        << Corrade::Utility::Debug::nospace
-        << value.dual().vector().x() << Corrade::Utility::Debug::nospace << ","
-        << value.dual().vector().y() << Corrade::Utility::Debug::nospace << ","
-        << value.dual().vector().z() << Corrade::Utility::Debug::nospace << "},"
-        << value.dual().scalar() << Corrade::Utility::Debug::nospace << "})";
+template<class T> Debug& operator<<(Debug& debug, const DualQuaternion<T>& value) {
+    return debug << "DualQuaternion({{" << Debug::nospace
+        << value.real().vector().x() << Debug::nospace << ","
+        << value.real().vector().y() << Debug::nospace << ","
+        << value.real().vector().z() << Debug::nospace << "},"
+        << value.real().scalar() << Debug::nospace << "}, {{"
+        << Debug::nospace
+        << value.dual().vector().x() << Debug::nospace << ","
+        << value.dual().vector().y() << Debug::nospace << ","
+        << value.dual().vector().z() << Debug::nospace << "},"
+        << value.dual().scalar() << Debug::nospace << "})";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const DualQuaternion<Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const DualQuaternion<Double>&);
 #endif
 #endif
 

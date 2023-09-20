@@ -376,10 +376,10 @@ template<class T, class U, class V = typename std::enable_if<!Implementation::Is
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Dual} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Dual<T>& value) {
-    return debug << "Dual(" << Corrade::Utility::Debug::nospace
-        << value.real() << Corrade::Utility::Debug::nospace << ","
-        << value.dual() << Corrade::Utility::Debug::nospace << ")";
+template<class T> Debug& operator<<(Debug& debug, const Dual<T>& value) {
+    return debug << "Dual(" << Debug::nospace
+        << value.real() << Debug::nospace << ","
+        << value.dual() << Debug::nospace << ")";
 }
 #endif
 

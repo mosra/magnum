@@ -25,11 +25,12 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/Math/Tags.h"
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct TagsTest: Corrade::TestSuite::Tester {
+struct TagsTest: TestSuite::Tester {
     explicit TagsTest();
 
     void noDefaultConstructor();

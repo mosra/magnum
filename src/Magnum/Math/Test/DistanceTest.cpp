@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct DistanceTest: Corrade::TestSuite::Tester {
+struct DistanceTest: TestSuite::Tester {
     explicit DistanceTest();
 
     void pointPoint2D();

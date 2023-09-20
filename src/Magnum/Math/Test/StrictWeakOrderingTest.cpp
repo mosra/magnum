@@ -37,7 +37,7 @@ namespace std {
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct StrictWeakOrderingTest: Corrade::TestSuite::Tester {
+struct StrictWeakOrderingTest: TestSuite::Tester {
     explicit StrictWeakOrderingTest();
 
     void base();

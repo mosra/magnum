@@ -244,7 +244,7 @@ the operations component-wise.
 @m_since{2019,10}
 
 @see @ref isNan(), @ref Constants::inf(),
-    @ref isInf(const Corrade::Containers::StridedArrayView1D<const T>&)
+    @ref isInf(const Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isInf(T value) {
     return std::isinf(UnderlyingTypeOf<T>(value));
@@ -267,7 +267,7 @@ template<std::size_t size, class T> inline BitVector<size> isInf(const Vector<si
 
 Equivalent to @cpp value != value @ce.
 @see @ref isInf(), @ref Constants::nan(),
-    @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
+    @ref isNan(const Containers::StridedArrayView1D<const T>&)
 */
 /* defined in Vector.h */
 template<class T> typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value);
@@ -288,8 +288,8 @@ template<std::size_t size, class T> inline BitVector<size> isNan(const Vector<si
 
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref max(), @ref minmax(), @ref clamp(),
-    @ref min(const Corrade::Containers::StridedArrayView1D<const T>&),
-    @ref Vector::min(), @ref Corrade::Utility::min()
+    @ref min(const Containers::StridedArrayView1D<const T>&),
+    @ref Vector::min(), @ref Utility::min()
 */
 /* defined in Vector.h */
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type min(T value, T min);
@@ -315,8 +315,8 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref min(), @ref minmax(), @ref clamp(),
-    @ref max(const Corrade::Containers::StridedArrayView1D<const T>&),
-    @ref Vector::max(), @ref Corrade::Utility::max()
+    @ref max(const Containers::StridedArrayView1D<const T>&),
+    @ref Vector::max(), @ref Utility::max()
 */
 /* defined in Vector.h */
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type max(T a, T b);
@@ -341,7 +341,7 @@ template<std::size_t size, class T> inline Vector<size, T> max(const Vector<size
 @brief Minimum and maximum of two values
 
 @see @ref min(), @ref max(), @ref clamp(),
-    @ref minmax(const Corrade::Containers::StridedArrayView1D<const T>&),
+    @ref minmax(const Containers::StridedArrayView1D<const T>&),
     @ref Vector::minmax(),
     @ref Range::Range(const std::pair<VectorType, VectorType>&)
 */
@@ -351,7 +351,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, std::pair<T
 
 /** @overload */
 template<std::size_t size, class T> inline std::pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
-    using Corrade::Utility::swap;
+    using Utility::swap;
     std::pair<Vector<size, T>, Vector<size, T>> out{a, b};
     for(std::size_t i = 0; i != size; ++i)
         if(out.first[i] > out.second[i]) swap(out.first[i], out.second[i]);

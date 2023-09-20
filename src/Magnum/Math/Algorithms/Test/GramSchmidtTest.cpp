@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test { namespace {
 
-struct GramSchmidtTest: Corrade::TestSuite::Tester {
+struct GramSchmidtTest: TestSuite::Tester {
     explicit GramSchmidtTest();
 
     void orthogonalize();

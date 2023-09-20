@@ -53,7 +53,7 @@ template<> struct ComplexConverter<Float, Cmpl> {
 
 namespace Test { namespace {
 
-struct ComplexTest: Corrade::TestSuite::Tester {
+struct ComplexTest: TestSuite::Tester {
     explicit ComplexTest();
 
     void construct();
@@ -305,8 +305,8 @@ void ComplexTest::data() {
     CORRADE_COMPARE(*ca.data(), 1.5f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 2);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 2);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 2);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 2);
 }
 
 void ComplexTest::compare() {

@@ -55,7 +55,7 @@ template<> struct RectangularMatrixConverter<2, 3, Float, Mat2x3> {
 
 namespace Test { namespace {
 
-struct RectangularMatrixTest: Corrade::TestSuite::Tester {
+struct RectangularMatrixTest: TestSuite::Tester {
     explicit RectangularMatrixTest();
 
     void construct();
@@ -438,8 +438,8 @@ void RectangularMatrixTest::data() {
     CORRADE_COMPARE(ca.data()[1], 5.0f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 12);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 12);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 12);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 12);
 }
 
 void RectangularMatrixTest::row() {

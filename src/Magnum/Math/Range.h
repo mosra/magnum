@@ -792,28 +792,28 @@ template<UnsignedInt dimensions, class T> inline bool intersects(const Range<dim
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Range} */
-template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Range<dimensions, T>& value) {
-    debug << "Range({" << Corrade::Utility::Debug::nospace << Vector<dimensions, T>{value.min()}[0];
+template<UnsignedInt dimensions, class T> Debug& operator<<(Debug& debug, const Range<dimensions, T>& value) {
+    debug << "Range({" << Debug::nospace << Vector<dimensions, T>{value.min()}[0];
     for(UnsignedInt i = 1; i != dimensions; ++i)
-        debug << Corrade::Utility::Debug::nospace << "," << Vector<dimensions, T>{value.min()}[i];
-    debug << Corrade::Utility::Debug::nospace << "}, {"
-          << Corrade::Utility::Debug::nospace << Vector<dimensions, T>{value.max()}[0];
+        debug << Debug::nospace << "," << Vector<dimensions, T>{value.min()}[i];
+    debug << Debug::nospace << "}, {"
+          << Debug::nospace << Vector<dimensions, T>{value.max()}[0];
     for(UnsignedInt i = 1; i != dimensions; ++i)
-        debug << Corrade::Utility::Debug::nospace << "," << Vector<dimensions, T>{value.max()}[i];
-    return debug << Corrade::Utility::Debug::nospace << "})";
+        debug << Debug::nospace << "," << Vector<dimensions, T>{value.max()}[i];
+    return debug << Debug::nospace << "})";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Int>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Int>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Int>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<1, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<2, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<3, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<1, Int>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<2, Int>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<3, Int>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<1, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<2, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Range<3, Double>&);
 #endif
 #endif
 

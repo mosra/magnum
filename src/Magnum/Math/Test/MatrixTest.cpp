@@ -57,7 +57,7 @@ template<> struct RectangularMatrixConverter<3, 3, float, Mat3> {
 
 namespace Test { namespace {
 
-struct MatrixTest: Corrade::TestSuite::Tester {
+struct MatrixTest: TestSuite::Tester {
     explicit MatrixTest();
 
     void construct();

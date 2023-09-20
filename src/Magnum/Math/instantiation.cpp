@@ -102,39 +102,39 @@ template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::DualQuat
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 2, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 2, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Double>&);
+template Debug& operator<<(Debug&, const Bezier<2, 2, Float>&);
+template Debug& operator<<(Debug&, const Bezier<2, 3, Float>&);
+template Debug& operator<<(Debug&, const Bezier<3, 2, Float>&);
+template Debug& operator<<(Debug&, const Bezier<3, 3, Float>&);
+template Debug& operator<<(Debug&, const Bezier<2, 2, Double>&);
+template Debug& operator<<(Debug&, const Bezier<2, 3, Double>&);
+template Debug& operator<<(Debug&, const Bezier<3, 2, Double>&);
+template Debug& operator<<(Debug&, const Bezier<3, 3, Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Float>>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Float>>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Double>>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Double>>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Float>>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Double>>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Float>>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Double>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Float>&);
+template Debug& operator<<(Debug&, const CubicHermite<Double>&);
+template Debug& operator<<(Debug&, const CubicHermite<Vector2<Float>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Vector3<Float>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Vector2<Double>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Vector3<Double>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Complex<Float>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Complex<Double>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Quaternion<Float>>&);
+template Debug& operator<<(Debug&, const CubicHermite<Quaternion<Double>>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
+template Debug& operator<<(Debug&, const Complex<Float>&);
+template Debug& operator<<(Debug&, const Complex<Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Double>&);
+template Debug& operator<<(Debug&, const DualComplex<Float>&);
+template Debug& operator<<(Debug&, const DualComplex<Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Double>&);
+template Debug& operator<<(Debug&, const DualQuaternion<Float>&);
+template Debug& operator<<(Debug&, const DualQuaternion<Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Double>&);
+template Debug& operator<<(Debug&, const Quaternion<Float>&);
+template Debug& operator<<(Debug&, const Quaternion<Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const ColorHsv<Float>&);
+template Debug& operator<<(Debug&, const ColorHsv<Float>&);
 
 /* Check proper size of GL types */
 static_assert(sizeof(Vector<2, Float>) == 8, "Improper size of 2-element Float vector");
@@ -170,56 +170,56 @@ static_assert(sizeof(RectangularMatrix<4, 2, Double>) == 64, "Improper size of 4
 static_assert(sizeof(RectangularMatrix<3, 4, Double>) == 96, "Improper size of 3x4 Double matrix");
 static_assert(sizeof(RectangularMatrix<4, 3, Double>) == 96, "Improper size of 4x3 Double matrix");
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<2, 2, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<3, 3, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<4, 4, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<2, 2, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<3, 3, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<4, 4, Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 2, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 4, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 2, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 4, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<2, 3, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<3, 2, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<2, 4, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<4, 2, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<3, 4, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<4, 3, Float>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<2, 3, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<3, 2, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<2, 4, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<4, 2, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<3, 4, Double>&);
+template Debug& operator<<(Debug&, const RectangularMatrix<4, 3, Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Double>&);
+template Debug& operator<<(Debug&, const Unit<Rad, Float>&);
+template Debug& operator<<(Debug&, const Unit<Deg, Float>&);
+template Debug& operator<<(Debug&, const Unit<Rad, Double>&);
+template Debug& operator<<(Debug&, const Unit<Deg, Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Int>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Int>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Int>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, UnsignedInt>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, UnsignedInt>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, UnsignedInt>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Double>&);
+template Debug& operator<<(Debug&, const Vector<2, Float>&);
+template Debug& operator<<(Debug&, const Vector<3, Float>&);
+template Debug& operator<<(Debug&, const Vector<4, Float>&);
+template Debug& operator<<(Debug&, const Vector<2, Int>&);
+template Debug& operator<<(Debug&, const Vector<3, Int>&);
+template Debug& operator<<(Debug&, const Vector<4, Int>&);
+template Debug& operator<<(Debug&, const Vector<2, UnsignedInt>&);
+template Debug& operator<<(Debug&, const Vector<3, UnsignedInt>&);
+template Debug& operator<<(Debug&, const Vector<4, UnsignedInt>&);
+template Debug& operator<<(Debug&, const Vector<2, Double>&);
+template Debug& operator<<(Debug&, const Vector<3, Double>&);
+template Debug& operator<<(Debug&, const Vector<4, Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Double>&);
+template Debug& operator<<(Debug&, const Frustum<Float>&);
+template Debug& operator<<(Debug&, const Frustum<Double>&);
 
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Float>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Int>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Int>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Int>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Double>&);
-template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Double>&);
+template Debug& operator<<(Debug&, const Range<1, Float>&);
+template Debug& operator<<(Debug&, const Range<2, Float>&);
+template Debug& operator<<(Debug&, const Range<3, Float>&);
+template Debug& operator<<(Debug&, const Range<1, Int>&);
+template Debug& operator<<(Debug&, const Range<2, Int>&);
+template Debug& operator<<(Debug&, const Range<3, Int>&);
+template Debug& operator<<(Debug&, const Range<1, Double>&);
+template Debug& operator<<(Debug&, const Range<2, Double>&);
+template Debug& operator<<(Debug&, const Range<3, Double>&);
 #endif
 
 }}

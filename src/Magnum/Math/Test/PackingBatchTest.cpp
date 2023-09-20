@@ -36,7 +36,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct PackingBatchTest: Corrade::TestSuite::Tester {
+struct PackingBatchTest: TestSuite::Tester {
     explicit PackingBatchTest();
 
     void unpackUnsignedByte();
@@ -184,15 +184,15 @@ void PackingBatchTest::unpackUnsignedByte() {
         {0.0f, 1.0f}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2ub> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Corrade::Containers::arrayCast<2, UnsignedByte>(src),
-               Corrade::Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2ub> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
+    unpackInto(Containers::arrayCast<2, UnsignedByte>(src),
+               Containers::arrayCast<2, Float>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::unpack<Vector2>(data[i].src), data[i].dst);
 }
 
@@ -213,15 +213,15 @@ void PackingBatchTest::unpackUnsignedShort() {
         {0.0f, 1.0f}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2us> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Corrade::Containers::arrayCast<2, UnsignedShort>(src),
-               Corrade::Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2us> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
+    unpackInto(Containers::arrayCast<2, UnsignedShort>(src),
+               Containers::arrayCast<2, Float>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::unpack<Vector2>(data[i].src), data[i].dst);
 }
 
@@ -242,15 +242,15 @@ void PackingBatchTest::unpackSignedByte() {
         {-1.0f, -1.0f}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2b> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Corrade::Containers::arrayCast<2, Byte>(src),
-               Corrade::Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2b> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
+    unpackInto(Containers::arrayCast<2, Byte>(src),
+               Containers::arrayCast<2, Float>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::unpack<Vector2>(data[i].src), data[i].dst);
 }
 
@@ -271,15 +271,15 @@ void PackingBatchTest::unpackSignedShort() {
         {-1.0f, -1.0f}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2s> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
-    unpackInto(Corrade::Containers::arrayCast<2, Short>(src),
-               Corrade::Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2s> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst, 3, sizeof(Data)};
+    unpackInto(Containers::arrayCast<2, Short>(src),
+               Containers::arrayCast<2, Float>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::unpack<Vector2>(data[i].src), data[i].dst);
 }
 
@@ -300,15 +300,15 @@ void PackingBatchTest::packUnsignedByte() {
         {255, 255}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2ub> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Corrade::Containers::arrayCast<2, Float>(src),
-             Corrade::Containers::arrayCast<2, UnsignedByte>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2ub> dst{data, &data[0].dst, 3, sizeof(Data)};
+    packInto(Containers::arrayCast<2, Float>(src),
+             Containers::arrayCast<2, UnsignedByte>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::pack<Vector2ub>(data[i].src), data[i].dst);
 }
 
@@ -329,15 +329,15 @@ void PackingBatchTest::packUnsignedShort() {
         {65535, 65535}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2us> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Corrade::Containers::arrayCast<2, Float>(src),
-             Corrade::Containers::arrayCast<2, UnsignedShort>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2us> dst{data, &data[0].dst, 3, sizeof(Data)};
+    packInto(Containers::arrayCast<2, Float>(src),
+             Containers::arrayCast<2, UnsignedShort>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::pack<Vector2us>(data[i].src), data[i].dst);
 }
 
@@ -358,15 +358,15 @@ void PackingBatchTest::packSignedByte() {
         {127, 127}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2b> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Corrade::Containers::arrayCast<2, Float>(src),
-             Corrade::Containers::arrayCast<2, Byte>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2b> dst{data, &data[0].dst, 3, sizeof(Data)};
+    packInto(Containers::arrayCast<2, Float>(src),
+             Containers::arrayCast<2, Byte>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::pack<Vector2b>(data[i].src), data[i].dst);
 }
 
@@ -387,15 +387,15 @@ void PackingBatchTest::packSignedShort() {
         {32767, 32767}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2s> dst{data, &data[0].dst, 3, sizeof(Data)};
-    packInto(Corrade::Containers::arrayCast<2, Float>(src),
-             Corrade::Containers::arrayCast<2, Short>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2s> dst{data, &data[0].dst, 3, sizeof(Data)};
+    packInto(Containers::arrayCast<2, Float>(src),
+             Containers::arrayCast<2, Short>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::pack<Vector2s>(data[i].src), data[i].dst);
 }
 
@@ -418,17 +418,17 @@ void PackingBatchTest::unpackHalf() {
         {-Constants::inf(), +Constants::inf()}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2us> src{data, &data[0].src,
-        Corrade::Containers::arraySize(data), sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst,
-        Corrade::Containers::arraySize(data), sizeof(Data)};
-    unpackHalfInto(Corrade::Containers::arrayCast<2, UnsignedShort>(src),
-                   Corrade::Containers::arrayCast<2, Float>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2us> src{data, &data[0].src,
+        Containers::arraySize(data), sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst,
+        Containers::arraySize(data), sizeof(Data)};
+    unpackHalfInto(Containers::arrayCast<2, UnsignedShort>(src),
+                   Containers::arrayCast<2, Float>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::unpackHalf(data[i].src), data[i].dst);
 }
 
@@ -451,17 +451,17 @@ void PackingBatchTest::packHalf() {
         {0xfc00, 0x7c00}
     };
 
-    Corrade::Containers::StridedArrayView1D<Vector2> src{data, &data[0].src,
-        Corrade::Containers::arraySize(data), sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Vector2us> dst{data, &data[0].dst,
-        Corrade::Containers::arraySize(data), sizeof(Data)};
-    packHalfInto(Corrade::Containers::arrayCast<2, Float>(src),
-                 Corrade::Containers::arrayCast<2, UnsignedShort>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Vector2> src{data, &data[0].src,
+        Containers::arraySize(data), sizeof(Data)};
+    Containers::StridedArrayView1D<Vector2us> dst{data, &data[0].dst,
+        Containers::arraySize(data), sizeof(Data)};
+    packHalfInto(Containers::arrayCast<2, Float>(src),
+                 Containers::arrayCast<2, UnsignedShort>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expected),
+        TestSuite::Compare::Container);
 
     /* Ensure the results are consistent with non-batch APIs */
-    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
         CORRADE_COMPARE(Math::packHalf(data[i].src), data[i].dst);
 }
 
@@ -491,18 +491,18 @@ template<class FloatingPoint, class Integral> void PackingBatchTest::castUnsigne
         {13, 255}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, Integral>(src),
-             Corrade::Containers::arrayCast<2, FloatingPoint>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedFloatingPoint),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Containers::arrayCast<2, Integral>(src),
+             Containers::arrayCast<2, FloatingPoint>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedFloatingPoint),
+        TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, FloatingPoint>(dst),
-             Corrade::Containers::arrayCast<2, Integral>(src));
-    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedIntegral),
-        Corrade::TestSuite::Compare::Container);
+    castInto(Containers::arrayCast<2, FloatingPoint>(dst),
+             Containers::arrayCast<2, Integral>(src));
+    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedIntegral),
+        TestSuite::Compare::Container);
 }
 
 template<class FloatingPoint, class Integral> void PackingBatchTest::castSignedFloatingPoint() {
@@ -531,18 +531,18 @@ template<class FloatingPoint, class Integral> void PackingBatchTest::castSignedF
         {13, 127}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, Integral>(src),
-             Corrade::Containers::arrayCast<2, FloatingPoint>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedFloatingPoint),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Math::Vector2<Integral>> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Math::Vector2<FloatingPoint>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Containers::arrayCast<2, Integral>(src),
+             Containers::arrayCast<2, FloatingPoint>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedFloatingPoint),
+        TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, FloatingPoint>(dst),
-             Corrade::Containers::arrayCast<2, Integral>(src));
-    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedIntegral),
-        Corrade::TestSuite::Compare::Container);
+    castInto(Containers::arrayCast<2, FloatingPoint>(dst),
+             Containers::arrayCast<2, Integral>(src));
+    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedIntegral),
+        TestSuite::Compare::Container);
 }
 
 template<class T, class U> void PackingBatchTest::castUnsignedInteger() {
@@ -569,18 +569,18 @@ template<class T, class U> void PackingBatchTest::castUnsignedInteger() {
         {13, 255}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, T>(src),
-             Corrade::Containers::arrayCast<2, U>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedTargetType),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Containers::arrayCast<2, T>(src),
+             Containers::arrayCast<2, U>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedTargetType),
+        TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, U>(dst),
-             Corrade::Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
-        Corrade::TestSuite::Compare::Container);
+    castInto(Containers::arrayCast<2, U>(dst),
+             Containers::arrayCast<2, T>(src));
+    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedOriginalType),
+        TestSuite::Compare::Container);
 }
 
 template<class T, class U> void PackingBatchTest::castSignedInteger() {
@@ -607,18 +607,18 @@ template<class T, class U> void PackingBatchTest::castSignedInteger() {
         {13, 127}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, T>(src),
-             Corrade::Containers::arrayCast<2, U>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedTargetType),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Containers::arrayCast<2, T>(src),
+             Containers::arrayCast<2, U>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedTargetType),
+        TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, U>(dst),
-             Corrade::Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
-        Corrade::TestSuite::Compare::Container);
+    castInto(Containers::arrayCast<2, U>(dst),
+             Containers::arrayCast<2, T>(src));
+    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedOriginalType),
+        TestSuite::Compare::Container);
 }
 
 template<class T, class U> void PackingBatchTest::castFloatDouble() {
@@ -643,18 +643,18 @@ template<class T, class U> void PackingBatchTest::castFloatDouble() {
         {T(13.0), T(127.5)}
     };
 
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
-    Corrade::Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
-    castInto(Corrade::Containers::arrayCast<2, T>(src),
-             Corrade::Containers::arrayCast<2, U>(dst));
-    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedTargetType),
-        Corrade::TestSuite::Compare::Container);
+    Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
+    Containers::StridedArrayView1D<Math::Vector2<U>> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Containers::arrayCast<2, T>(src),
+             Containers::arrayCast<2, U>(dst));
+    CORRADE_COMPARE_AS(dst, Containers::stridedArrayView(expectedTargetType),
+        TestSuite::Compare::Container);
 
     /* Test the other way around as well */
-    castInto(Corrade::Containers::arrayCast<2, U>(dst),
-             Corrade::Containers::arrayCast<2, T>(src));
-    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
-        Corrade::TestSuite::Compare::Container);
+    castInto(Containers::arrayCast<2, U>(dst),
+             Containers::arrayCast<2, T>(src));
+    CORRADE_COMPARE_AS(src, Containers::stridedArrayView(expectedOriginalType),
+        TestSuite::Compare::Container);
 }
 
 template<class T> void PackingBatchTest::assertionsPackUnpack() {
@@ -667,18 +667,18 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
     Vector3 resultWrongVectorSize[2]{};
     Vector4 resultNonContiguous[2]{};
 
-    auto src = Corrade::Containers::arrayCast<2, T>(
-        Corrade::Containers::arrayView(data));
-    auto srcNonContiguous = Corrade::Containers::arrayCast<2, T>(
-        Corrade::Containers::arrayView(dataNonContiguous)).every({1, 2});
-    auto dst = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(result));
-    auto dstWrongCount = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(resultWrongCount));
-    auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(resultWrongVectorSize));
-    auto dstNotContiguous = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(resultNonContiguous)).every({1, 2});
+    auto src = Containers::arrayCast<2, T>(
+        Containers::arrayView(data));
+    auto srcNonContiguous = Containers::arrayCast<2, T>(
+        Containers::arrayView(dataNonContiguous)).every({1, 2});
+    auto dst = Containers::arrayCast<2, Float>(
+        Containers::arrayView(result));
+    auto dstWrongCount = Containers::arrayCast<2, Float>(
+        Containers::arrayView(resultWrongCount));
+    auto dstWrongVectorSize = Containers::arrayCast<2, Float>(
+        Containers::arrayView(resultWrongVectorSize));
+    auto dstNotContiguous = Containers::arrayCast<2, Float>(
+        Containers::arrayView(resultNonContiguous)).every({1, 2});
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -711,18 +711,18 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
     Vector3 resultWrongVectorSize[2]{};
     Vector4 resultNonContiguous[2]{};
 
-    auto src = Corrade::Containers::arrayCast<2, UnsignedShort>(
-        Corrade::Containers::arrayView(data));
-    auto srcNonContiguous = Corrade::Containers::arrayCast<2, UnsignedShort>(
-        Corrade::Containers::arrayView(dataNonContiguous)).every({1, 2});
-    auto dst = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(result));
-    auto dstWrongCount = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(resultWrongCount));
-    auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(resultWrongVectorSize));
-    auto dstNotContiguous = Corrade::Containers::arrayCast<2, Float>(
-        Corrade::Containers::arrayView(resultNonContiguous)).every({1, 2});
+    auto src = Containers::arrayCast<2, UnsignedShort>(
+        Containers::arrayView(data));
+    auto srcNonContiguous = Containers::arrayCast<2, UnsignedShort>(
+        Containers::arrayView(dataNonContiguous)).every({1, 2});
+    auto dst = Containers::arrayCast<2, Float>(
+        Containers::arrayView(result));
+    auto dstWrongCount = Containers::arrayCast<2, Float>(
+        Containers::arrayView(resultWrongCount));
+    auto dstWrongVectorSize = Containers::arrayCast<2, Float>(
+        Containers::arrayView(resultWrongVectorSize));
+    auto dstNotContiguous = Containers::arrayCast<2, Float>(
+        Containers::arrayView(resultNonContiguous)).every({1, 2});
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -755,14 +755,14 @@ template<class U, class T> void PackingBatchTest::assertionsCast() {
     Math::Vector3<U> resultWrongVectorSize[2]{};
     Math::Vector4<U> resultNonContiguous[2]{};
 
-    auto src = Corrade::Containers::arrayCast<2, T>(
-        Corrade::Containers::arrayView(data));
-    auto dstWrongCount = Corrade::Containers::arrayCast<2, U>(
-        Corrade::Containers::arrayView(resultWrongCount));
-    auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, U>(
-        Corrade::Containers::arrayView(resultWrongVectorSize));
-    auto dstNotContiguous = Corrade::Containers::arrayCast<2, U>(
-        Corrade::Containers::arrayView(resultNonContiguous)).every({1, 2});
+    auto src = Containers::arrayCast<2, T>(
+        Containers::arrayView(data));
+    auto dstWrongCount = Containers::arrayCast<2, U>(
+        Containers::arrayView(resultWrongCount));
+    auto dstWrongVectorSize = Containers::arrayCast<2, U>(
+        Containers::arrayView(resultWrongVectorSize));
+    auto dstNotContiguous = Containers::arrayCast<2, U>(
+        Containers::arrayView(resultNonContiguous)).every({1, 2});
 
     std::ostringstream out;
     Error redirectError{&out};

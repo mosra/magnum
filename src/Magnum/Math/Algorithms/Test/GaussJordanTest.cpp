@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test { namespace {
 
-struct GaussJordanTest: Corrade::TestSuite::Tester {
+struct GaussJordanTest: TestSuite::Tester {
     explicit GaussJordanTest();
 
     void test();

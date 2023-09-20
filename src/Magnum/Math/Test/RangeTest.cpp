@@ -96,7 +96,7 @@ template<> struct RangeConverter<3, Float, Box> {
 
 namespace Test { namespace {
 
-struct RangeTest: Corrade::TestSuite::Tester {
+struct RangeTest: TestSuite::Tester {
     explicit RangeTest();
 
     void construct();
@@ -460,12 +460,12 @@ void RangeTest::data() {
     CORRADE_COMPARE(ccube.data()[2], -17);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(line.data()), 2);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(cline.data()), 2);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(rect.data()), 4);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(crect.data()), 4);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(cube.data()), 6);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ccube.data()), 6);
+    CORRADE_COMPARE(Containers::arraySize(line.data()), 2);
+    CORRADE_COMPARE(Containers::arraySize(cline.data()), 2);
+    CORRADE_COMPARE(Containers::arraySize(rect.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(crect.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(cube.data()), 6);
+    CORRADE_COMPARE(Containers::arraySize(ccube.data()), 6);
 }
 
 void RangeTest::access() {

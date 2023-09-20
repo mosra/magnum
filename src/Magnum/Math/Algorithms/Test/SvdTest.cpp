@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test { namespace {
 
-struct SvdTest: Corrade::TestSuite::Tester {
+struct SvdTest: TestSuite::Tester {
     explicit SvdTest();
 
     template<class T> void test();

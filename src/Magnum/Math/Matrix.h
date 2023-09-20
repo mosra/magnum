@@ -63,7 +63,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          *
          * Equivalent to @ref Matrix(IdentityInitT, T).
          */
-        constexpr /*implicit*/ Matrix() noexcept: RectangularMatrix<size, size, T>{typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, Vector<size, T>(T(1))} {}
+        constexpr /*implicit*/ Matrix() noexcept: RectangularMatrix<size, size, T>{typename Containers::Implementation::GenerateSequence<size>::Type{}, Vector<size, T>(T(1))} {}
 
         /**
          * @brief Construct an identity matrix
@@ -275,7 +275,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          */
         Matrix<size, T> invertedOrthogonal() const {
             CORRADE_DEBUG_ASSERT(isOrthogonal(),
-                "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal:" << Corrade::Utility::Debug::Debug::newline << *this, {});
+                "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal:" << Debug::Debug::newline << *this, {});
             return RectangularMatrix<size, size, T>::transposed();
         }
 

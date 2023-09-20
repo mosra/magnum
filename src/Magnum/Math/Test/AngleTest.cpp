@@ -39,7 +39,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct AngleTest: Corrade::TestSuite::Tester {
+struct AngleTest: TestSuite::Tester {
     explicit AngleTest();
 
     void construct();
@@ -84,16 +84,16 @@ constexpr struct {
 constexpr struct {
     const char* name;
     const char* data;
-    Corrade::Utility::TweakableState state;
+    Utility::TweakableState state;
     const char* error;
 } TweakableErrorData[] {
-    {"empty", "", Corrade::Utility::TweakableState::Recompile,
+    {"empty", "", Utility::TweakableState::Recompile,
         "Utility::TweakableParser:  is not an angle literal\n"},
-    {"integral", "42_{}", Corrade::Utility::TweakableState::Recompile,
+    {"integral", "42_{}", Utility::TweakableState::Recompile,
         "Utility::TweakableParser: 42_{} is not an angle literal\n"},
-    {"garbage after", "42.b_{}", Corrade::Utility::TweakableState::Recompile,
+    {"garbage after", "42.b_{}", Utility::TweakableState::Recompile,
         "Utility::TweakableParser: unexpected characters b_{} after an angle literal\n"},
-    {"different suffix", "42.0u", Corrade::Utility::TweakableState::Recompile, /* not for double */
+    {"different suffix", "42.0u", Utility::TweakableState::Recompile, /* not for double */
         "Utility::TweakableParser: 42.0u has an unexpected suffix, expected _{}\n"}
 };
 
@@ -157,7 +157,7 @@ AngleTest::AngleTest() {
         &AngleTest::tweakable<Unit<Math::Rad, Float>>,
         &AngleTest::tweakable<Radd>,
         &AngleTest::tweakable<Unit<Math::Rad, Double>>},
-        Corrade::Containers::arraySize(TweakableData));
+        Containers::arraySize(TweakableData));
 
     addInstancedTests<AngleTest>({
         &AngleTest::tweakableError<Deg>,
@@ -168,7 +168,7 @@ AngleTest::AngleTest() {
         &AngleTest::tweakableError<Unit<Math::Rad, Float>>,
         &AngleTest::tweakableError<Radd>,
         &AngleTest::tweakableError<Unit<Math::Rad, Double>>},
-        Corrade::Containers::arraySize(TweakableErrorData));
+        Containers::arraySize(TweakableErrorData));
     #endif
 }
 
@@ -351,8 +351,8 @@ template<class T> void AngleTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseTemplateName(TweakableTraits<T>::name());
     setTestCaseDescription(data.name);
-    auto result = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal()));
-    CORRADE_COMPARE(result.first(), Corrade::Utility::TweakableState::Success);
+    auto result = Utility::TweakableParser<T>::parse(Utility::format(data.data, TweakableTraits<T>::literal()));
+    CORRADE_COMPARE(result.first(), Utility::TweakableState::Success);
     CORRADE_COMPARE(result.second(), T(typename T::Type(data.result)));
 }
 
@@ -364,8 +364,8 @@ template<class T> void AngleTest::tweakableError() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
-    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<T>::parse(Corrade::Utility::format(data.data, TweakableTraits<T>::literal())).first();
-    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, TweakableTraits<T>::literal()));
+    Utility::TweakableState state = Utility::TweakableParser<T>::parse(Utility::format(data.data, TweakableTraits<T>::literal())).first();
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.error, TweakableTraits<T>::literal()));
     CORRADE_COMPARE(state, data.state);
 }
 #endif

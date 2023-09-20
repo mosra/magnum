@@ -53,7 +53,7 @@ template<> struct VectorConverter<4, float, Vec4> {
 
 namespace Test { namespace {
 
-struct Vector4Test: Corrade::TestSuite::Tester {
+struct Vector4Test: TestSuite::Tester {
     explicit Vector4Test();
 
     void construct();

@@ -34,7 +34,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct FunctionsBenchmark: Corrade::TestSuite::Tester {
+struct FunctionsBenchmark: TestSuite::Tester {
     explicit FunctionsBenchmark();
 
     void sqrt();
@@ -125,7 +125,7 @@ template<class T> void FunctionsBenchmark::sqrtInvertedFast() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_COMPARE_WITH(Test::sqrtInvertedFast(T(25.0)), 1/T(5.0),
-        Corrade::TestSuite::Compare::around(T(0.0005)));
+        TestSuite::Compare::around(T(0.0005)));
 
     T a = T(1000000.0);
 
@@ -134,7 +134,7 @@ template<class T> void FunctionsBenchmark::sqrtInvertedFast() {
     }
 
     CORRADE_COMPARE_WITH(a, T(1.0),
-        Corrade::TestSuite::Compare::around(T(0.002)));
+        TestSuite::Compare::around(T(0.002)));
 }
 
 #ifdef CORRADE_TARGET_SSE2
@@ -161,7 +161,7 @@ inline Float sqrtSseFromInverted(Float a) {
 
 void FunctionsBenchmark::sqrtSseFromInverted() {
     CORRADE_COMPARE_WITH(Test::sqrtSseFromInverted(25.0f), 5.0f,
-        Corrade::TestSuite::Compare::around(0.0005f));
+        TestSuite::Compare::around(0.0005f));
 
     Float a = 1000000.0f;
 
@@ -170,7 +170,7 @@ void FunctionsBenchmark::sqrtSseFromInverted() {
     }
 
     CORRADE_COMPARE_WITH(a, 1.0f,
-        Corrade::TestSuite::Compare::around(0.0002f));
+        TestSuite::Compare::around(0.0002f));
 }
 
 inline Float sqrtInvertedSse(Float a) {
@@ -179,7 +179,7 @@ inline Float sqrtInvertedSse(Float a) {
 
 void FunctionsBenchmark::sqrtInvertedSse() {
     CORRADE_COMPARE_WITH(Test::sqrtInvertedSse(25.0f), 1/5.0f,
-        Corrade::TestSuite::Compare::around(0.00002f));
+        TestSuite::Compare::around(0.00002f));
 
     Float a = 1000000.1f;
 
@@ -188,7 +188,7 @@ void FunctionsBenchmark::sqrtInvertedSse() {
     }
 
     CORRADE_COMPARE_WITH(a, 1.0f,
-        Corrade::TestSuite::Compare::around(0.0003f));
+        TestSuite::Compare::around(0.0003f));
 }
 #endif
 
@@ -200,7 +200,7 @@ void FunctionsBenchmark::sinCosSeparate() {
         a += 0.1f;
     }
 
-    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
+    CORRADE_COMPARE_AS(a, 10.0f, TestSuite::Compare::Greater);
 
     /* To avoid the whole loop being optimized away */
     CORRADE_VERIFY(sin == sin);
@@ -216,7 +216,7 @@ void FunctionsBenchmark::sinCosCombined() {
         a += 0.1f;
     }
 
-    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
+    CORRADE_COMPARE_AS(a, 10.0f, TestSuite::Compare::Greater);
 
     /* To avoid the whole loop being optimized away */
     CORRADE_VERIFY(sin == sin);

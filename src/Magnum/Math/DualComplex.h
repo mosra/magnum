@@ -103,7 +103,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          */
         static DualComplex<T> fromMatrix(const Matrix3<T>& matrix) {
             CORRADE_DEBUG_ASSERT(matrix.isRigidTransformation(),
-                "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation:" << Corrade::Utility::Debug::newline << matrix, {});
+                "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation:" << Debug::newline << matrix, {});
             return {Implementation::complexFromMatrix(matrix.rotationScaling()), Complex<T>(matrix.translation())};
         }
 
@@ -405,19 +405,19 @@ MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualComplex, Vector2, T)
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{DualComplex} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualComplex<T>& value) {
-    return debug << "DualComplex({" << Corrade::Utility::Debug::nospace
-          << value.real().real() << Corrade::Utility::Debug::nospace << ","
-          << value.real().imaginary() << Corrade::Utility::Debug::nospace << "}, {"
-          << Corrade::Utility::Debug::nospace
-          << value.dual().real() << Corrade::Utility::Debug::nospace << ","
-          << value.dual().imaginary() << Corrade::Utility::Debug::nospace << "})";
+template<class T> Debug& operator<<(Debug& debug, const DualComplex<T>& value) {
+    return debug << "DualComplex({" << Debug::nospace
+          << value.real().real() << Debug::nospace << ","
+          << value.real().imaginary() << Debug::nospace << "}, {"
+          << Debug::nospace
+          << value.dual().real() << Debug::nospace << ","
+          << value.dual().imaginary() << Debug::nospace << "})";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const DualComplex<Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const DualComplex<Double>&);
 #endif
 #endif
 

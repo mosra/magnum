@@ -54,7 +54,7 @@ template<> struct DualComplexConverter<Float, DualCmpl> {
 
 namespace Test { namespace {
 
-struct DualComplexTest: Corrade::TestSuite::Tester {
+struct DualComplexTest: TestSuite::Tester {
     explicit DualComplexTest();
 
     void construct();
@@ -298,8 +298,8 @@ void DualComplexTest::data() {
     CORRADE_COMPARE(a.data()[3], -7.5f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 4);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 4);
 }
 
 void DualComplexTest::isNormalized() {

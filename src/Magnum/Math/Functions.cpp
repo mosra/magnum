@@ -70,7 +70,7 @@ UnsignedInt log2(UnsignedInt number) {
 
 UnsignedLong binomialCoefficient(const UnsignedInt n, UnsignedInt k) {
     CORRADE_DEBUG_ASSERT(n >= k,
-        "Math::binomialCoefficient(): k can't be greater than n in (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", {});
+        "Math::binomialCoefficient(): k can't be greater than n in (" << Debug::nospace << n << "choose" << k << Debug::nospace << ")", {});
 
     /* k and n - k gives the same value, optimize the calculation to do fewer
        steps */
@@ -81,7 +81,7 @@ UnsignedLong binomialCoefficient(const UnsignedInt n, UnsignedInt k) {
     UnsignedLong result = n;
     for(UnsignedInt i = 2; i <= k; ++i) {
         CORRADE_DEBUG_ASSERT(result < ~UnsignedLong{} / (n-i+1),
-            "Math::binomialCoefficient(): overflow for (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", {});
+            "Math::binomialCoefficient(): overflow for (" << Debug::nospace << n << "choose" << k << Debug::nospace << ")", {});
 
         result *= n - i + 1;
         result /= i;

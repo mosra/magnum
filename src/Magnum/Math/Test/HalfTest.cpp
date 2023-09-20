@@ -40,7 +40,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct HalfTest: Corrade::TestSuite::Tester {
+struct HalfTest: TestSuite::Tester {
     explicit HalfTest();
 
     void unpack();
@@ -98,16 +98,16 @@ const struct {
 constexpr struct {
     const char* name;
     const char* data;
-    Corrade::Utility::TweakableState state;
+    Utility::TweakableState state;
     const char* error;
 } TweakableErrorData[] {
-    {"empty", "", Corrade::Utility::TweakableState::Recompile,
+    {"empty", "", Utility::TweakableState::Recompile,
         "Utility::TweakableParser:  is not a half literal\n"},
-    {"integral", "42_h", Corrade::Utility::TweakableState::Recompile,
+    {"integral", "42_h", Utility::TweakableState::Recompile,
         "Utility::TweakableParser: 42_h is not a half literal\n"},
-    {"garbage after", "42.b_h", Corrade::Utility::TweakableState::Recompile,
+    {"garbage after", "42.b_h", Utility::TweakableState::Recompile,
         "Utility::TweakableParser: unexpected characters b_h after a half literal\n"},
-    {"different suffix", "42.0u", Corrade::Utility::TweakableState::Recompile, /* not for double */
+    {"different suffix", "42.0u", Utility::TweakableState::Recompile, /* not for double */
         "Utility::TweakableParser: 42.0u has an unexpected suffix, expected _h\n"}
 };
 #endif
@@ -146,10 +146,10 @@ HalfTest::HalfTest() {
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests({&HalfTest::tweakable},
-                      Corrade::Containers::arraySize(TweakableData));
+        Containers::arraySize(TweakableData));
 
     addInstancedTests({&HalfTest::tweakableError},
-                      Corrade::Containers::arraySize(TweakableErrorData));
+        Containers::arraySize(TweakableErrorData));
     #endif
 }
 
@@ -275,16 +275,16 @@ Float unpackNaive(UnsignedShort value) {
 UnsignedShort packTable(const Float value) {
     UnsignedShort out;
     packHalfInto(
-        Corrade::Containers::StridedArrayView2D<const Float>{{&value, 1}, {1, 1}},
-        Corrade::Containers::StridedArrayView2D<UnsignedShort>{{&out, 1}, {1, 1}});
+        Containers::StridedArrayView2D<const Float>{{&value, 1}, {1, 1}},
+        Containers::StridedArrayView2D<UnsignedShort>{{&out, 1}, {1, 1}});
     return out;
 }
 
 Float unpackTable(const UnsignedShort value) {
     Float out;
     unpackHalfInto(
-        Corrade::Containers::StridedArrayView2D<const UnsignedShort>{{&value, 1}, {1, 1}},
-        Corrade::Containers::StridedArrayView2D<Float>{{&out, 1}, {1, 1}});
+        Containers::StridedArrayView2D<const UnsignedShort>{{&value, 1}, {1, 1}},
+        Containers::StridedArrayView2D<Float>{{&out, 1}, {1, 1}});
     return out;
 }
 
@@ -455,8 +455,8 @@ void HalfTest::pack1kTable() {
         src[i] = i*65;
 
     CORRADE_BENCHMARK(100) {
-        packHalfInto(Corrade::Containers::StridedArrayView2D<Float>{src, {1, 1000}},
-            Corrade::Containers::StridedArrayView2D<UnsignedShort>{dst, {1, 1000}});
+        packHalfInto(Containers::StridedArrayView2D<Float>{src, {1, 1000}},
+            Containers::StridedArrayView2D<UnsignedShort>{dst, {1, 1000}});
     }
 }
 
@@ -487,8 +487,8 @@ void HalfTest::unpack1kTable() {
         src[i] = i*65;
 
     CORRADE_BENCHMARK(100) {
-        unpackHalfInto(Corrade::Containers::StridedArrayView2D<UnsignedShort>{src, {1, 1000}},
-            Corrade::Containers::StridedArrayView2D<Float>{dst, {1, 1000}});
+        unpackHalfInto(Containers::StridedArrayView2D<UnsignedShort>{src, {1, 1000}},
+            Containers::StridedArrayView2D<Float>{dst, {1, 1000}});
     }
 }
 
@@ -638,8 +638,8 @@ void HalfTest::debug() {
 void HalfTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
-    auto result = Corrade::Utility::TweakableParser<Half>::parse(data.data);
-    CORRADE_COMPARE(result.first(), Corrade::Utility::TweakableState::Success);
+    auto result = Utility::TweakableParser<Half>::parse(data.data);
+    CORRADE_COMPARE(result.first(), Utility::TweakableState::Success);
     CORRADE_COMPARE(result.second(), data.result);
 }
 
@@ -650,7 +650,7 @@ void HalfTest::tweakableError() {
     std::ostringstream out;
     Warning redirectWarning{&out};
     Error redirectError{&out};
-    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Half>::parse(data.data).first();
+    Utility::TweakableState state = Utility::TweakableParser<Half>::parse(data.data).first();
     CORRADE_COMPARE(out.str(), data.error);
     CORRADE_COMPARE(state, data.state);
 }

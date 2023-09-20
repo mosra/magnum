@@ -34,6 +34,7 @@
 #endif
 
 #include "Magnum/visibility.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/Math/Math.h"
 #include "Magnum/Math/Tags.h"
 
@@ -180,12 +181,10 @@ inline Half operator "" _h(long double value) { return Half(Float(value)); }
 @debugoperator{Half}
 
 Prints the value with 4 significant digits.
-@see @ref Corrade::Utility::Debug::operator<<(float),
-    @ref Corrade::Utility::Debug::operator<<(double),
-    @ref Corrade::Utility::Debug::operator<<(long double value)
-@todoc remove `long double value` once doxygen can link to long double overloads properly
+@see @ref Debug::operator<<(float), @ref Debug::operator<<(double),
+    @ref Debug::operator<<(long double)
 */
-MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Half value);
 #endif
 
 #ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING

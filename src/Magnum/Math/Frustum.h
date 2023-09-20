@@ -167,9 +167,9 @@ template<class T> class Frustum {
          * @m_deprecated_since{2019,10} Use @ref operator[](std::size_t) const,
          *      @ref data() or @ref begin() / @ref end() instead.
          */
-        constexpr CORRADE_DEPRECATED("use operator[](), data() or begin() / end() instead") Corrade::Containers::StaticArrayView<6, const Vector4<T>> planes() const {
+        constexpr CORRADE_DEPRECATED("use operator[](), data() or begin() / end() instead") Containers::StaticArrayView<6, const Vector4<T>> planes() const {
             /* GCC 4.8 needs explicit construction */
-            return Corrade::Containers::StaticArrayView<6, const Vector4<T>>{_data};
+            return Containers::StaticArrayView<6, const Vector4<T>>{_data};
         }
         #endif
 
@@ -281,22 +281,22 @@ template<class T> class Frustum {
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Frustum} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Frustum<T>& value) {
-    debug << "Frustum({" << Corrade::Utility::Debug::nospace;
+template<class T> Debug& operator<<(Debug& debug, const Frustum<T>& value) {
+    debug << "Frustum({" << Debug::nospace;
     for(std::size_t i = 0; i != 6; ++i) {
-        if(i != 0) debug << Corrade::Utility::Debug::nospace << "},\n        {" << Corrade::Utility::Debug::nospace;
+        if(i != 0) debug << Debug::nospace << "},\n        {" << Debug::nospace;
         for(std::size_t j = 0; j != 4; ++j) {
-            if(j != 0) debug << Corrade::Utility::Debug::nospace << ",";
+            if(j != 0) debug << Debug::nospace << ",";
             debug << value[i][j];
         }
     }
-    return debug << Corrade::Utility::Debug::nospace << "})";
+    return debug << Debug::nospace << "})";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Frustum<Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Frustum<Double>&);
 #endif
 #endif
 

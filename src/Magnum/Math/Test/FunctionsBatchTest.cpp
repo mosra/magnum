@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct FunctionsBatchTest: Corrade::TestSuite::Tester {
+struct FunctionsBatchTest: TestSuite::Tester {
     explicit FunctionsBatchTest();
 
     void isInf();
@@ -93,7 +93,7 @@ void FunctionsBatchTest::isInf() {
     Vector2 c[]{{5.0f, -3.0f}, {-2.0f, 14.0f}, {Constants::inf(), -5.0f}};
     CORRADE_COMPARE(Math::isInf(c), BitVector<2>{1});
     /* Mutable view */
-    CORRADE_COMPARE(Math::isInf(Corrade::Containers::StridedArrayView1D<Vector2>{c}), BitVector<2>{1});
+    CORRADE_COMPARE(Math::isInf(Containers::StridedArrayView1D<Vector2>{c}), BitVector<2>{1});
 
     /* This should work without explicit casts or types */
     CORRADE_VERIFY(!Math::isInf(std::vector<Float>{5.0f, -2.0f, -1.0f}));
@@ -125,7 +125,7 @@ void FunctionsBatchTest::isNan() {
     Vector2 c[]{{5.0f, -3.0f}, {14.0f, Constants::nan()}, {-2.0f, -5.0f}};
     CORRADE_COMPARE(Math::isNan(c), BitVector<2>{2});
     /* Mutable view */
-    CORRADE_COMPARE(Math::isNan(Corrade::Containers::StridedArrayView1D<Vector2>{c}), BitVector<2>{2});
+    CORRADE_COMPARE(Math::isNan(Containers::StridedArrayView1D<Vector2>{c}), BitVector<2>{2});
 
     /* This should work without explicit casts or types */
     CORRADE_VERIFY(!Math::isNan(std::vector<Float>{5.0f, -2.0f, -1.0f}));
@@ -146,7 +146,7 @@ void FunctionsBatchTest::min() {
     CORRADE_COMPARE(Math::min(array), -2);
     /* Mutable view */
     Int marray[]{5, -2, 9};
-    CORRADE_COMPARE(Math::min(Corrade::Containers::StridedArrayView1D<Int>{marray}), -2);
+    CORRADE_COMPARE(Math::min(Containers::StridedArrayView1D<Int>{marray}), -2);
 
     /* This should work without explicit casts or types */
     CORRADE_COMPARE(Math::min(std::vector<Int>{5, -2, 9}), -2);
@@ -167,7 +167,7 @@ void FunctionsBatchTest::max() {
     CORRADE_COMPARE(Math::max(array), 9);
     /* Mutable view */
     Int marray[]{5, -2, 9};
-    CORRADE_COMPARE(Math::max(Corrade::Containers::StridedArrayView1D<Int>{marray}), 9);
+    CORRADE_COMPARE(Math::max(Containers::StridedArrayView1D<Int>{marray}), 9);
 
     /* This should work without explicit casts or types */
     CORRADE_COMPARE(Math::max(std::vector<Int>{5, -2, 9}), 9);
@@ -197,7 +197,7 @@ void FunctionsBatchTest::minmax() {
     CORRADE_COMPARE(Math::minmax(array), expected);
     /* Mutable view */
     Float marray[]{-1.0f, 2.0f, -3.0f};
-    CORRADE_COMPARE(Math::minmax(Corrade::Containers::StridedArrayView1D<Float>{marray}), expected);
+    CORRADE_COMPARE(Math::minmax(Containers::StridedArrayView1D<Float>{marray}), expected);
 
     /* This should work without explicit casts or types */
     CORRADE_COMPARE(Math::minmax(std::vector<Float>{-1.0f, 2.0f, -3.0f}), expected);
@@ -295,11 +295,11 @@ void FunctionsBatchTest::constIterable() {
     /* It shouldn't try to operate with a const type (such as trying to to
        assign to `std::pair<std::size_t, const Vector2>`) internally, instead
        it should remove the const */
-    CORRADE_COMPARE(Math::min(Corrade::Containers::arrayView(data)),
+    CORRADE_COMPARE(Math::min(Containers::arrayView(data)),
         (Vector2{-2, -5}));
-    CORRADE_COMPARE(Math::max(Corrade::Containers::stridedArrayView(data)),
+    CORRADE_COMPARE(Math::max(Containers::stridedArrayView(data)),
         (Vector2{9, 14}));
-    CORRADE_COMPARE(Math::minmax(Corrade::Containers::Array<const Vector2>{data, 3, [](const Vector2*, std::size_t){}}),
+    CORRADE_COMPARE(Math::minmax(Containers::Array<const Vector2>{data, 3, [](const Vector2*, std::size_t){}}),
         std::make_pair(Vector2{-2, -5}, Vector2{9, 14}));
 }
 

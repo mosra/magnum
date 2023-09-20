@@ -52,7 +52,7 @@ template<> struct BitVectorConverter<3, BVec3> {
 
 namespace Test { namespace {
 
-struct BitVectorTest: Corrade::TestSuite::Tester {
+struct BitVectorTest: TestSuite::Tester {
     explicit BitVectorTest();
 
     void construct();
@@ -242,8 +242,8 @@ void BitVectorTest::data() {
     CORRADE_COMPARE(c, 0x08);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a1.data()), 3);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(a1.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
 void BitVectorTest::compare() {

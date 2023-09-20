@@ -1328,7 +1328,7 @@ template<class T> Matrix3x3<T> Matrix4<T>::rotation() const {
                           (*this)[1].xyz().normalized(),
                           (*this)[2].xyz().normalized()};
     CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
+        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:" << Debug::newline << rotation, {});
     return rotation;
 }
 
@@ -1337,7 +1337,7 @@ template<class T> Matrix3x3<T> Matrix4<T>::rotationNormalized() const {
                           (*this)[1].xyz(),
                           (*this)[2].xyz()};
     CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix4::rotationNormalized(): the rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
+        "Math::Matrix4::rotationNormalized(): the rotation part is not orthogonal:" << Debug::newline << rotation, {});
     return rotation;
 }
 
@@ -1345,13 +1345,13 @@ template<class T> T Matrix4<T>::uniformScalingSquared() const {
     const T scalingSquared = (*this)[0].xyz().dot();
     CORRADE_DEBUG_ASSERT(TypeTraits<T>::equals((*this)[1].xyz().dot(), scalingSquared) &&
                    TypeTraits<T>::equals((*this)[2].xyz().dot(), scalingSquared),
-        "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling:" << Corrade::Utility::Debug::newline << rotationScaling(), {});
+        "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling:" << Debug::newline << rotationScaling(), {});
     return scalingSquared;
 }
 
 template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {
     CORRADE_DEBUG_ASSERT(isRigidTransformation(),
-        "Math::Matrix4::invertedRigid(): the matrix doesn't represent a rigid transformation:" << Corrade::Utility::Debug::newline << *this, {});
+        "Math::Matrix4::invertedRigid(): the matrix doesn't represent a rigid transformation:" << Debug::newline << *this, {});
 
     Matrix3x3<T> inverseRotation = rotationScaling().transposed();
     return from(inverseRotation, inverseRotation*-translation());

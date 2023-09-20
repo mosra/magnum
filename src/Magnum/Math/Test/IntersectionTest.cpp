@@ -35,7 +35,7 @@ namespace Magnum { namespace Math { namespace Test { namespace {
 
 using namespace Literals;
 
-struct IntersectionTest: Corrade::TestSuite::Tester {
+struct IntersectionTest: TestSuite::Tester {
     explicit IntersectionTest();
 
     void pointCircle();

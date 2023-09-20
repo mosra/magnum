@@ -36,6 +36,7 @@
 #include <Corrade/Utility/DebugAssert.h>
 #include <Corrade/Utility/StlMath.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/BitVector.h"
@@ -177,7 +178,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref Vector4::pad(const Vector<otherSize, T>&, T, T)
          */
         template<std::size_t otherSize> constexpr static Vector<size, T> pad(const Vector<otherSize, T>& a, T value = T()) {
-            return padInternal<otherSize>(typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, a, value);
+            return padInternal<otherSize>(typename Containers::Implementation::GenerateSequence<size>::Type{}, a, value);
         }
 
         /**
@@ -210,7 +211,7 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit Vector(T value) noexcept;
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value) noexcept: Vector(typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, value) {}
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value) noexcept: Vector(typename Containers::Implementation::GenerateSequence<size>::Type{}, value) {}
         #endif
 
         /**
@@ -221,7 +222,7 @@ template<std::size_t size, class T> class Vector {
          *
          * @snippet MagnumMath.cpp Vector-conversion
          */
-        template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{}, other) {}
+        template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Containers::Implementation::GenerateSequence<size>::Type{}, other) {}
 
         /** @brief Construct a vector from external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other) noexcept: Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
@@ -641,7 +642,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref RectangularMatrix::flippedRows()
          */
         constexpr Vector<size, T> flipped() const {
-            return flippedInternal(typename Corrade::Containers::Implementation::GenerateSequence<size>::Type{});
+            return flippedInternal(typename Containers::Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -715,16 +716,16 @@ template<std::size_t size, class T> class Vector {
         template<std::size_t size_, class U> friend U dot(const Vector<size_, U>&, const Vector<size_, U>&);
 
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Vector(Corrade::Containers::Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Vector(Containers::Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit Vector(Corrade::Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Vector(Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Implementation::repeat(value, sequence)...} {}
 
-        template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Corrade::Containers::Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
+        template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Containers::Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
             return {sequence < otherSize ? a[sequence] : value...};
         }
 
-        template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(Corrade::Containers::Implementation::Sequence<sequence...>) const {
+        template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(Containers::Implementation::Sequence<sequence...>) const {
             return {_data[size - 1 - sequence]...};
         }
 };
@@ -1249,32 +1250,32 @@ operator/(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Vector} */
-template<std::size_t size, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector<size, T>& value) {
+template<std::size_t size, class T> Debug& operator<<(Debug& debug, const Vector<size, T>& value) {
     /** @todo might make sense to propagate the flags also, for hex value
         printing etc */
-    const bool packed = debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed;
-    debug << (packed ? "{" : "Vector(") << Corrade::Utility::Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+    debug << (packed ? "{" : "Vector(") << Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {
-        if(i != 0) debug << Corrade::Utility::Debug::nospace << ",";
+        if(i != 0) debug << Debug::nospace << ",";
         debug << value[i];
     }
-    return debug << Corrade::Utility::Debug::nospace << (packed ? "}" : ")");
+    return debug << Debug::nospace << (packed ? "}" : ")");
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Int>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Int>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Int>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, UnsignedInt>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, UnsignedInt>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, UnsignedInt>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<2, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<3, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<2, Int>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<3, Int>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Int>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<2, UnsignedInt>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<3, UnsignedInt>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, UnsignedInt>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<2, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<3, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Vector<4, Double>&);
 #endif
 #endif
 

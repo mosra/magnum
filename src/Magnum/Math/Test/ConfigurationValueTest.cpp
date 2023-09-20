@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct ConfigurationValueTest: Corrade::TestSuite::Tester {
+struct ConfigurationValueTest: TestSuite::Tester {
     explicit ConfigurationValueTest();
 
     void deg();
@@ -86,7 +86,7 @@ ConfigurationValueTest::ConfigurationValueTest() {
 void ConfigurationValueTest::deg() {
     typedef Math::Deg<Float> Deg;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Deg angle{25.3f};
     std::string value("25.3");
@@ -99,7 +99,7 @@ void ConfigurationValueTest::deg() {
 void ConfigurationValueTest::rad() {
     typedef Math::Rad<Float> Rad;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Rad angle{3.14159f};
     std::string value("3.14159");
@@ -112,7 +112,7 @@ void ConfigurationValueTest::rad() {
 void ConfigurationValueTest::vector() {
     typedef Vector<4, Float> Vector4;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
     std::string value("3 3.125 9 9.55");
@@ -133,7 +133,7 @@ void ConfigurationValueTest::vector() {
 void ConfigurationValueTest::vector2() {
     typedef Math::Vector2<Float> Vector2;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Vector2 vec(3.125f, 9.0f);
     std::string value("3.125 9");
@@ -146,7 +146,7 @@ void ConfigurationValueTest::vector2() {
 void ConfigurationValueTest::vector3() {
     typedef Math::Vector3<Float> Vector3;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Vector3 vec(3.0f, 3.125f, 9.55f);
     std::string value("3 3.125 9.55");
@@ -159,7 +159,7 @@ void ConfigurationValueTest::vector3() {
 void ConfigurationValueTest::vector4() {
     typedef Math::Vector4<Float> Vector4;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
     std::string value("3 3.125 9 9.55");
@@ -173,7 +173,7 @@ void ConfigurationValueTest::color() {
     typedef Math::Color3<Float> Color3;
     typedef Math::Color4<Float> Color4;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Color3 color3(0.5f, 0.75f, 1.0f);
     std::string value3("0.5 0.75 1");
@@ -199,7 +199,7 @@ void ConfigurationValueTest::rectangularMatrix() {
                 Vector4(7.0f, -1.0f, 8.0f,  9.55f));
     std::string value("3 4 7 5 4 -1 8 7 8 4 3.125 9.55");
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
     c.setValue<Matrix3x4>("matrix", m);
 
     CORRADE_COMPARE(c.value("matrix"), value);
@@ -224,7 +224,7 @@ void ConfigurationValueTest::matrix() {
     typedef Math::Vector4<Float> Vector4;
     typedef Math::Matrix4x4<Float> Matrix4x4;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Matrix4x4 m(Vector4(3.0f,  5.0f, 8.0f,   4.0f),
                 Vector4(4.0f,  4.0f, 7.0f, 3.125f),
@@ -240,7 +240,7 @@ void ConfigurationValueTest::matrix() {
 void ConfigurationValueTest::matrix3() {
     typedef Math::Matrix3<Float> Matrix3;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Matrix3 m({5.0f, 8.0f,   4.0f},
               {4.0f, 7.0f, 3.125f},
@@ -255,7 +255,7 @@ void ConfigurationValueTest::matrix3() {
 void ConfigurationValueTest::matrix4() {
     typedef Math::Matrix4<Float> Matrix4;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Matrix4 m({3.0f,  5.0f, 8.0f,   4.0f},
               {4.0f,  4.0f, 7.0f, 3.125f},
@@ -271,7 +271,7 @@ void ConfigurationValueTest::matrix4() {
 void ConfigurationValueTest::complex() {
     typedef Math::Complex<Float> Complex;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Complex x{3.0f, 3.125f};
     std::string value{"3 3.125"};
@@ -292,7 +292,7 @@ void ConfigurationValueTest::complex() {
 void ConfigurationValueTest::dualComplex() {
     typedef Math::DualComplex<Float> DualComplex;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     DualComplex a{{3.0f, 3.125f}, {9.0f, 9.55f}};
     std::string value("3 3.125 9 9.55");
@@ -313,7 +313,7 @@ void ConfigurationValueTest::dualComplex() {
 void ConfigurationValueTest::quaternion() {
     typedef Math::Quaternion<Float> Quaternion;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Quaternion q{{3.0f, 3.125f, 9.0f}, 9.55f};
     std::string value{"3 3.125 9 9.55"};
@@ -334,7 +334,7 @@ void ConfigurationValueTest::quaternion() {
 void ConfigurationValueTest::dualQuaternion() {
     typedef Math::DualQuaternion<Float> DualQuaternion;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     DualQuaternion a{{{3.0f, 3.125f, 9.0f}, 9.55f}, {{-1.2f, 0.3f, 1.1f}, 92.05f}};
     std::string value{"3 3.125 9 9.55 -1.2 0.3 1.1 92.05"};
@@ -355,7 +355,7 @@ void ConfigurationValueTest::dualQuaternion() {
 void ConfigurationValueTest::range() {
     typedef Math::Range2D<Float> Range2D;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     Range2D rect({3.0f, 3.125f}, {9.0f, 9.55f});
     std::string value("3 3.125 9 9.55");
@@ -369,7 +369,7 @@ void ConfigurationValueTest::bezier() {
     typedef Math::Vector2<Float> Vector2;
     typedef Math::CubicBezier2D<Float> CubicBezier2D;
 
-    Corrade::Utility::Configuration c;
+    Utility::Configuration c;
 
     CubicBezier2D bezier{Vector2{0.0f, 1.0f}, Vector2{1.5f, -0.3f}, Vector2{2.1f, 0.5f}, Vector2{0.0f, 2.0f}};
     std::string value("0 1 1.5 -0.3 2.1 0.5 0 2");

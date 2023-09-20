@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct CubicHermiteTest: Corrade::TestSuite::Tester {
+struct CubicHermiteTest: TestSuite::Tester {
     explicit CubicHermiteTest();
 
     void constructScalar();
@@ -677,8 +677,8 @@ void CubicHermiteTest::dataScalar() {
     CORRADE_COMPARE(a.data()[2], 2.1f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::dataVector() {
@@ -702,8 +702,8 @@ void CubicHermiteTest::dataVector() {
     CORRADE_COMPARE(*ca.data(), (Vector2{1.0f, 2.0f}));
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::dataComplex() {
@@ -727,8 +727,8 @@ void CubicHermiteTest::dataComplex() {
     CORRADE_COMPARE(*ca.data(), (Complex{1.0f, 2.0f}));
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::dataQuaternion() {
@@ -762,8 +762,8 @@ void CubicHermiteTest::dataQuaternion() {
     CORRADE_COMPARE(*ca.data(), (Quaternion{{1.0f, 2.0f, -1.0f}, 3.0f}));
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
 void CubicHermiteTest::compareScalar() {

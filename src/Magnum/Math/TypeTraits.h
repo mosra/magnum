@@ -351,9 +351,9 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      *      80-bit, and @cpp 1.0e-14l @ce on platforms
      *      @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE "where it is 64-bit".
      *
-     * This matches fuzzy comparison precision in @ref Corrade::TestSuite and
-     * is always one digit less than how @ref Corrade::Utility::Debug or
-     * @ref Corrade::Utility::format() prints given type.
+     * This matches fuzzy comparison precision in
+     * @relativeref{Corrade,TestSuite} and is always one digit less than how
+     * @ref Debug or @ref Utility::format() prints given type.
      */
     constexpr static T epsilon();
 

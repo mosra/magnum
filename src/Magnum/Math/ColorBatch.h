@@ -32,6 +32,7 @@
 
 #include <Corrade/Containers/Containers.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
 namespace Magnum { namespace Math {
@@ -55,7 +56,7 @@ expected to be contiguous with size of 8.
     @ref CompressedPixelFormat::Bc1RGBAUnorm,
     @ref CompressedPixelFormat::Bc1RGBASrgb
 */
-MAGNUM_EXPORT void yFlipBc1InPlace(const Corrade::Containers::StridedArrayView4D<char>& blocks);
+MAGNUM_EXPORT void yFlipBc1InPlace(const Containers::StridedArrayView4D<char>& blocks);
 
 /**
 @brief Y-flip BC2 texture blocks in-place
@@ -74,7 +75,7 @@ expected to be contiguous with size of 16.
 @see @ref CompressedPixelFormat::Bc2RGBAUnorm,
     @ref CompressedPixelFormat::Bc2RGBASrgb
 */
-MAGNUM_EXPORT void yFlipBc2InPlace(const Corrade::Containers::StridedArrayView4D<char>& blocks);
+MAGNUM_EXPORT void yFlipBc2InPlace(const Containers::StridedArrayView4D<char>& blocks);
 
 /**
 @brief Y-flip BC3 texture blocks in-place
@@ -96,7 +97,7 @@ same as performing @ref yFlipBc4InPlace() on the first half and
 @see @ref CompressedPixelFormat::Bc3RGBAUnorm,
     @ref CompressedPixelFormat::Bc3RGBASrgb
 */
-MAGNUM_EXPORT void yFlipBc3InPlace(const Corrade::Containers::StridedArrayView4D<char>& blocks);
+MAGNUM_EXPORT void yFlipBc3InPlace(const Containers::StridedArrayView4D<char>& blocks);
 
 /**
 @brief Y-flip BC4 texture blocks in-place
@@ -115,7 +116,7 @@ expected to be contiguous with size of 8.
 @see @ref CompressedPixelFormat::Bc4RUnorm,
     @ref CompressedPixelFormat::Bc4RSnorm
 */
-MAGNUM_EXPORT void yFlipBc4InPlace(const Corrade::Containers::StridedArrayView4D<char>& blocks);
+MAGNUM_EXPORT void yFlipBc4InPlace(const Containers::StridedArrayView4D<char>& blocks);
 
 /**
 @brief Y-flip BC5 texture blocks in-place
@@ -136,7 +137,7 @@ halves of each block.
 @see @ref CompressedPixelFormat::Bc5RGUnorm,
     @ref CompressedPixelFormat::Bc5RGSnorm
 */
-MAGNUM_EXPORT void yFlipBc5InPlace(const Corrade::Containers::StridedArrayView4D<char>& blocks);
+MAGNUM_EXPORT void yFlipBc5InPlace(const Containers::StridedArrayView4D<char>& blocks);
 
 }}
 

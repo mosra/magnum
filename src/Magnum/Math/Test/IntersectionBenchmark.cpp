@@ -96,7 +96,7 @@ typedef Math::Range3D<Float> Range3D;
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
 
-struct IntersectionBenchmark: Corrade::TestSuite::Tester {
+struct IntersectionBenchmark: TestSuite::Tester {
     explicit IntersectionBenchmark();
 
     void rangeFrustumNaive();

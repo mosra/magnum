@@ -26,12 +26,13 @@
 #include <new>
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Unit.h"
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct UnitTest: Corrade::TestSuite::Tester {
+struct UnitTest: TestSuite::Tester {
     explicit UnitTest();
 
     void construct();
@@ -68,7 +69,7 @@ typedef Unit<Sec_, Float> Sec;
 typedef Unit<Sec_, Int> Seci;
 typedef Constants<Float> Constants;
 
-inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Sec value) {
+inline Debug& operator<<(Debug& debug, Sec value) {
     return debug << Float(value);
 }
 

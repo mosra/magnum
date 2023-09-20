@@ -60,7 +60,7 @@ template<> struct RectangularMatrixConverter<4, 4, float, Mat4> {
 
 namespace Test { namespace {
 
-struct Matrix4Test: Corrade::TestSuite::Tester {
+struct Matrix4Test: TestSuite::Tester {
     explicit Matrix4Test();
 
     void construct();
@@ -648,7 +648,7 @@ void Matrix4Test::lookAt() {
     CORRADE_COMPARE(dot(-a.backward(), (target - translation).normalized()), 1.0f);
 
     /* Up vector should be in the same direction as X axis */
-    CORRADE_COMPARE_AS(dot(Vector3::xAxis(), a.up()), 0.0f, Corrade::TestSuite::Compare::Greater);
+    CORRADE_COMPARE_AS(dot(Vector3::xAxis(), a.up()), 0.0f, TestSuite::Compare::Greater);
 
     /* Just to be sure */
     CORRADE_COMPARE(a, Matrix4({     0.0f,  0.253247f,  -0.967402f, 0.0f},

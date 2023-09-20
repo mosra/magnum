@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct FunctionsTest: Corrade::TestSuite::Tester {
+struct FunctionsTest: TestSuite::Tester {
     explicit FunctionsTest();
 
     template<class T> void popcount();

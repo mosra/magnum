@@ -54,7 +54,7 @@ template<> struct VectorConverter<3, Float, Vec3> {
 
 namespace Test { namespace {
 
-struct VectorTest: Corrade::TestSuite::Tester {
+struct VectorTest: TestSuite::Tester {
     explicit VectorTest();
 
     void construct();
@@ -366,8 +366,8 @@ void VectorTest::data() {
     CORRADE_COMPARE(g, 1.0f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 4);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 4);
 }
 
 void VectorTest::compare() {
@@ -605,9 +605,9 @@ void VectorTest::angle() {
     /* Same / opposite. Well, almost. It's interesting how imprecise
        normalization can get. */
     CORRADE_COMPARE_WITH(Math::angle(a, a), 0.0_radf,
-        Corrade::TestSuite::Compare::around(0.0005_radf));
+        TestSuite::Compare::around(0.0005_radf));
     CORRADE_COMPARE_WITH(Math::angle(a, -a), 180.0_degf,
-        Corrade::TestSuite::Compare::around(0.0005_radf));
+        TestSuite::Compare::around(0.0005_radf));
 }
 
 void VectorTest::angleNormalizedButOver1() {

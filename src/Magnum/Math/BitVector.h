@@ -36,7 +36,7 @@
 #include <Corrade/Utility/Debug.h>
 #endif
 
-#include "Magnum/Types.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/Math/Math.h"
 #include "Magnum/Math/Tags.h"
 
@@ -119,7 +119,7 @@ template<std::size_t size> class BitVector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit BitVector(T value) noexcept;
         #else
-        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BitVector(T value) noexcept: BitVector(typename Corrade::Containers::Implementation::GenerateSequence<DataSize>::Type{}, value ? FullSegmentMask : 0) {}
+        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BitVector(T value) noexcept: BitVector(typename Containers::Implementation::GenerateSequence<DataSize>::Type{}, value ? FullSegmentMask : 0) {}
         #endif
 
         /** @brief Construct a boolean vector from external representation */
@@ -324,7 +324,7 @@ template<std::size_t size> class BitVector {
         };
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit BitVector(Corrade::Containers::Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit BitVector(Containers::Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
 
         UnsignedByte _data[DataSize];
 };
@@ -352,22 +352,22 @@ BitVector(0b1010) BitVector(0b00001000, 0b00000011, 0b100)
 Note that this, on the other hand, makes mapping to bit indices less obvious
 --- see @ref Math-BitVector-indexing for more information.
 */
-template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const BitVector<size>& value) {
-    debug << "BitVector(0b" << Corrade::Utility::Debug::nospace;
+template<std::size_t size> Debug& operator<<(Debug& debug, const BitVector<size>& value) {
+    debug << "BitVector(0b" << Debug::nospace;
 
     /* Print the full bytes comma-separated */
     for(std::size_t byte = 0; byte != BitVector<size>::DataSize - 1; ++byte) {
         for(std::size_t i = 0; i != 8; ++i)
             debug << (((value.data()[byte] >> (8 - i - 1)) & 1) ? "1" : "0")
-                  << Corrade::Utility::Debug::nospace;
-        debug << ", 0b" << Corrade::Utility::Debug::nospace;
+                  << Debug::nospace;
+        debug << ", 0b" << Debug::nospace;
     }
 
     /* Print the last (potentially) partial byte */
     constexpr std::size_t suffixSize = size%8 ? size%8 : 8;
     for(std::size_t i = 0; i != suffixSize; ++i)
         debug << (((value.data()[size/8] >> (suffixSize - i - 1)) & 1) ? "1" : "0")
-              << Corrade::Utility::Debug::nospace;
+              << Debug::nospace;
 
     return debug << ")";
 }

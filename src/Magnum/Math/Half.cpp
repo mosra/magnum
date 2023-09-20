@@ -37,7 +37,7 @@
 
 namespace Magnum { namespace Math {
 
-Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value) {
+Debug& operator<<(Debug& debug, Half value) {
     std::ostringstream out;
     /* Wikipedia says it's 3 or 4 decimal places:
        https://en.wikipedia.org/wiki/Half-precision_floating-point_format */

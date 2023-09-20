@@ -1343,16 +1343,16 @@ template<class T> struct ColorHsv {
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{ColorHsv} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const ColorHsv<T>& value) {
-    return debug << "ColorHsv(" << Corrade::Utility::Debug::nospace << value.hue
-        << Corrade::Utility::Debug::nospace << "," << value.saturation
-        << Corrade::Utility::Debug::nospace << "," << value.value
-        << Corrade::Utility::Debug::nospace << ")";
+template<class T> Debug& operator<<(Debug& debug, const ColorHsv<T>& value) {
+    return debug << "ColorHsv(" << Debug::nospace << value.hue
+        << Debug::nospace << "," << value.saturation
+        << Debug::nospace << "," << value.value
+        << Debug::nospace << ")";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const ColorHsv<Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const ColorHsv<Float>&);
 #endif
 #endif
 
@@ -1527,22 +1527,20 @@ inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
 /**
 @debugoperator{Color3}
 
-If @ref Corrade::Utility::Debug::Flag::Color is enabled or
-@ref Corrade::Utility::Debug::color was set immediately before, prints the
-value as an ANSI 24bit color escape sequence using two successive Unicode block
-characters (to have it roughly square). To preserve at least some information
-when text is copied, the square consists of one of the five
-@cb{.shell-session} ░▒▓█ @ce shades, however the color is set for both
+If @ref Debug::Flag::Color is enabled or @ref Debug::color was set immediately
+before, prints the value as an ANSI 24bit color escape sequence using two
+successive Unicode block characters (to have it roughly square). To preserve at
+least some information when text is copied, the square consists of one of the
+five @cb{.shell-session} ░▒▓█ @ce shades, however the color is set for both
 foreground and background so the actual block character is indistinguishable
 when seen on a terminal.
 
-If @ref Corrade::Utility::Debug::Flag::Color is enabled and
-@ref Corrade::Utility::Debug::Flag::DisableColors is set, only the shaded
-character is used, without any ANSI color escape sequence.
+If @ref Debug::Flag::Color is enabled and @ref Debug::Flag::DisableColors is
+set, only the shaded character is used, without any ANSI color escape sequence.
 
-If @ref Corrade::Utility::Debug::Flag::Color is not enabled, the value is
-printed as a hex color (e.g. @cb{.shell-session} #ff33aa @ce). Other underlying
-types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+If @ref Debug::Flag::Color is not enabled, the value is printed as a hex color
+(e.g. @cb{.shell-session} #ff33aa @ce). Other underlying types are handled by
+@ref operator<<(Debug&, const Vector<size, T>&).
 
 For example, the following snippet:
 
@@ -1556,28 +1554,26 @@ prints the following on terminals that support it:
 
 @include MathColor3-debug.ansi
 */
-MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<UnsignedByte>& value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, const Color3<UnsignedByte>& value);
 
 /**
 @debugoperator{Color4}
 
-If @ref Corrade::Utility::Debug::Flag::Color is enabled or
-@ref Corrade::Utility::Debug::color was set immediately before, prints the
-value as an ANSI 24bit color escape sequence using two successive Unicode block
-characters (to have it roughly square). To preserve at least some information
-when text is copied, the square consists of one of the five
-@cb{.shell-session} ░▒▓█ @ce shades. The square shade is calculated as a
+If @ref Debug::Flag::Color is enabled or @ref Debug::color was set immediately
+before, prints the value as an ANSI 24bit color escape sequence using two
+successive Unicode block characters (to have it roughly square). To preserve at
+least some information when text is copied, the square consists of one of the
+five @cb{.shell-session} ░▒▓█ @ce shades. The square shade is calculated as a
 product of @ref Color4::value() and @ref Color4::a(). If calculated color value
 is less than alpha, the colored square has the color set for both background
 and foreground, otherwise the background is left at the default.
 
-If @ref Corrade::Utility::Debug::Flag::Color is enabled and
-@ref Corrade::Utility::Debug::Flag::DisableColors is set, only the shaded
-character is used, without any ANSI color escape sequence.
+If @ref Debug::Flag::Color is enabled and @ref Debug::Flag::DisableColors is
+set, only the shaded character is used, without any ANSI color escape sequence.
 
-If @ref Corrade::Utility::Debug::Flag::Color is not enabled, the value is
-printed as a hex color (e.g. @cb{.shell-session} #ff33aaff @ce). Other
-underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+If @ref Debug::Flag::Color is not enabled, the value is printed as a hex color
+(e.g. @cb{.shell-session} #ff33aaff @ce). Other underlying types are handled by
+@ref operator<<(Debug&, const Vector<size, T>&).
 
 For example, the following snippet:
 
@@ -1591,7 +1587,7 @@ prints the following on terminals that support it:
 
 @include MathColor4-debug.ansi
 */
-MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<UnsignedByte>& value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, const Color4<UnsignedByte>& value);
 #endif
 
 namespace Implementation {

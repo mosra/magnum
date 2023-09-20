@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct PackingTest: Corrade::TestSuite::Tester {
+struct PackingTest: TestSuite::Tester {
     explicit PackingTest();
 
     void bitMax();

@@ -790,18 +790,18 @@ template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& 
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Quaternion} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Quaternion<T>& value) {
-    return debug << "Quaternion({" << Corrade::Utility::Debug::nospace
-        << value.vector().x() << Corrade::Utility::Debug::nospace << ","
-        << value.vector().y() << Corrade::Utility::Debug::nospace << ","
-        << value.vector().z() << Corrade::Utility::Debug::nospace << "},"
-        << value.scalar() << Corrade::Utility::Debug::nospace << ")";
+template<class T> Debug& operator<<(Debug& debug, const Quaternion<T>& value) {
+    return debug << "Quaternion({" << Debug::nospace
+        << value.vector().x() << Debug::nospace << ","
+        << value.vector().y() << Debug::nospace << ","
+        << value.vector().z() << Debug::nospace << "},"
+        << value.scalar() << Debug::nospace << ")";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Quaternion<Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Quaternion<Double>&);
 #endif
 #endif
 
@@ -866,7 +866,7 @@ template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix3x3
        to Vector::isNormalized(), which compares the dot product (length
        squared) to 1 ± 2ε. */
     CORRADE_DEBUG_ASSERT(std::abs(matrix.determinant() - T(1)) < T(3)*TypeTraits<T>::epsilon(),
-        "Math::Quaternion::fromMatrix(): the matrix is not a rotation:" << Corrade::Utility::Debug::newline << matrix, {});
+        "Math::Quaternion::fromMatrix(): the matrix is not a rotation:" << Debug::newline << matrix, {});
     return Implementation::quaternionFromMatrix(matrix);
 }
 

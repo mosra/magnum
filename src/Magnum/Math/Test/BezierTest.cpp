@@ -64,7 +64,7 @@ typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
 typedef Math::CubicBezier2D<Float> CubicBezier2D;
 typedef Math::CubicHermite2D<Float> CubicHermite2D;
 
-struct BezierTest: Corrade::TestSuite::Tester {
+struct BezierTest: TestSuite::Tester {
     explicit BezierTest();
 
     void construct();
@@ -248,8 +248,8 @@ void BezierTest::data() {
     CORRADE_COMPARE(d, (Vector2{3.5f, 0.1f}));
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 3);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 3);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 3);
 }
 
 void BezierTest::compare() {

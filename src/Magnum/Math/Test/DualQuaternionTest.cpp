@@ -56,7 +56,7 @@ template<> struct DualQuaternionConverter<Float, DualQuat> {
 
 namespace Test { namespace {
 
-struct DualQuaternionTest: Corrade::TestSuite::Tester {
+struct DualQuaternionTest: TestSuite::Tester {
     explicit DualQuaternionTest();
 
     void construct();
@@ -332,8 +332,8 @@ void DualQuaternionTest::data() {
     CORRADE_COMPARE(ca.data()[4], 0.5f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 8);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 8);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 8);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 8);
 }
 
 void DualQuaternionTest::isNormalized() {

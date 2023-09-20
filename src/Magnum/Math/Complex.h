@@ -653,22 +653,22 @@ template<class T> inline Complex<T> Complex<T>::fromMatrix(const Matrix2x2<T>& m
        Vector::isNormalized(), which compares the dot product (length squared)
        to 1 ± 2ε. */
     CORRADE_DEBUG_ASSERT(std::abs(matrix.determinant() - T(1)) < T(2)*TypeTraits<T>::epsilon(),
-        "Math::Complex::fromMatrix(): the matrix is not a rotation:" << Corrade::Utility::Debug::newline << matrix, {});
+        "Math::Complex::fromMatrix(): the matrix is not a rotation:" << Debug::newline << matrix, {});
     return Implementation::complexFromMatrix(matrix);
 }
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Complex} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Complex<T>& value) {
-    return debug << "Complex(" << Corrade::Utility::Debug::nospace
-        << value.real() << Corrade::Utility::Debug::nospace << ","
-        << value.imaginary() << Corrade::Utility::Debug::nospace << ")";
+template<class T> Debug& operator<<(Debug& debug, const Complex<T>& value) {
+    return debug << "Complex(" << Debug::nospace
+        << value.real() << Debug::nospace << ","
+        << value.imaginary() << Debug::nospace << ")";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Complex<Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const Complex<Double>&);
 #endif
 #endif
 

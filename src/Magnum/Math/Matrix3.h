@@ -765,7 +765,7 @@ template<class T> Matrix2x2<T> Matrix3<T>::rotation() const {
     Matrix2x2<T> rotation{(*this)[0].xy().normalized(),
                           (*this)[1].xy().normalized()};
     CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
+        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:" << Debug::newline << rotation, {});
     return rotation;
 }
 
@@ -773,20 +773,20 @@ template<class T> Matrix2x2<T> Matrix3<T>::rotationNormalized() const {
     Matrix2x2<T> rotation{(*this)[0].xy(),
                           (*this)[1].xy()};
     CORRADE_DEBUG_ASSERT(rotation.isOrthogonal(),
-        "Math::Matrix3::rotationNormalized(): the rotation part is not orthogonal:" << Corrade::Utility::Debug::newline << rotation, {});
+        "Math::Matrix3::rotationNormalized(): the rotation part is not orthogonal:" << Debug::newline << rotation, {});
     return rotation;
 }
 
 template<class T> T Matrix3<T>::uniformScalingSquared() const {
     const T scalingSquared = (*this)[0].xy().dot();
     CORRADE_DEBUG_ASSERT(TypeTraits<T>::equals((*this)[1].xy().dot(), scalingSquared),
-        "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling:" << Corrade::Utility::Debug::newline << rotationScaling(), {});
+        "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling:" << Debug::newline << rotationScaling(), {});
     return scalingSquared;
 }
 
 template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
     CORRADE_DEBUG_ASSERT(isRigidTransformation(),
-        "Math::Matrix3::invertedRigid(): the matrix doesn't represent a rigid transformation:" << Corrade::Utility::Debug::newline << *this, {});
+        "Math::Matrix3::invertedRigid(): the matrix doesn't represent a rigid transformation:" << Debug::newline << *this, {});
 
     Matrix2x2<T> inverseRotation = rotationScaling().transposed();
     return from(inverseRotation, inverseRotation*-translation());

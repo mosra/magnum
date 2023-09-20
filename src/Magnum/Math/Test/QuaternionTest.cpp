@@ -55,7 +55,7 @@ template<> struct QuaternionConverter<Float, Quat> {
 
 namespace Test { namespace {
 
-struct QuaternionTest: Corrade::TestSuite::Tester {
+struct QuaternionTest: TestSuite::Tester {
     explicit QuaternionTest();
 
     void construct();
@@ -350,8 +350,8 @@ void QuaternionTest::data() {
     CORRADE_COMPARE(ca.data()[1], 2.0f);
 
     /* It actually returns an array */
-    CORRADE_COMPARE(Corrade::Containers::arraySize(a.data()), 4);
-    CORRADE_COMPARE(Corrade::Containers::arraySize(ca.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(a.data()), 4);
+    CORRADE_COMPARE(Containers::arraySize(ca.data()), 4);
 }
 
 void QuaternionTest::compare() {
@@ -554,9 +554,9 @@ void QuaternionTest::angle() {
     /* Same / opposite. Well, almost. It's interesting how imprecise
        normalization can get. */
     CORRADE_COMPARE_WITH(Math::halfAngle(a, a), 0.0_radf,
-        Corrade::TestSuite::Compare::around(0.0005_radf));
+        TestSuite::Compare::around(0.0005_radf));
     CORRADE_COMPARE_WITH(Math::halfAngle(a, -a), 180.0_degf,
-        Corrade::TestSuite::Compare::around(0.0005_radf));
+        TestSuite::Compare::around(0.0005_radf));
 
     /* Trivial case, to verify it's actually returning the right value (hah) */
     CORRADE_COMPARE(Math::halfAngle(
@@ -601,36 +601,36 @@ void QuaternionTest::matrix() {
     CORRADE_COMPARE((-q).toMatrix(), m);
 
     /* Trace > 0 */
-    CORRADE_COMPARE_AS(m.trace(), 0.0f, Corrade::TestSuite::Compare::Greater);
+    CORRADE_COMPARE_AS(m.trace(), 0.0f, TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m), q);
 
     /* Trace < 0, max is diagonal[2] */
     Matrix3x3 m2 = Matrix4::rotation(130.0_degf, axis).rotationScaling();
     Quaternion q2 = Quaternion::rotation(130.0_degf, axis);
-    CORRADE_COMPARE_AS(m2.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m2.trace(), 0.0f, TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m2.diagonal()[2],
         Math::max(m2.diagonal()[0], m2.diagonal()[1]),
-        Corrade::TestSuite::Compare::Greater);
+        TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m2), q2);
 
     /* Trace < 0, max is diagonal[1] */
     Vector3 axis2 = Vector3(-3.0f, 5.0f, 1.0f).normalized();
     Matrix3x3 m3 = Matrix4::rotation(130.0_degf, axis2).rotationScaling();
     Quaternion q3 = Quaternion::rotation(130.0_degf, axis2);
-    CORRADE_COMPARE_AS(m3.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m3.trace(), 0.0f, TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m3.diagonal()[1],
         Math::max(m3.diagonal()[0], m3.diagonal()[2]),
-        Corrade::TestSuite::Compare::Greater);
+        TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m3), q3);
 
     /* Trace < 0, max is diagonal[0] */
     Vector3 axis3 = Vector3(5.0f, -3.0f, 1.0f).normalized();
     Matrix3x3 m4 = Matrix4::rotation(130.0_degf, axis3).rotationScaling();
     Quaternion q4 = Quaternion::rotation(130.0_degf, axis3);
-    CORRADE_COMPARE_AS(m4.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m4.trace(), 0.0f, TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m4.diagonal()[0],
         Math::max(m4.diagonal()[1], m4.diagonal()[2]),
-        Corrade::TestSuite::Compare::Greater);
+        TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m4), q4);
 
     /* One reflection is bad (asserts in the test below), but two are fine */

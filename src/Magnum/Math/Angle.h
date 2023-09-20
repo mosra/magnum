@@ -34,6 +34,7 @@
 #endif
 
 #include "Magnum/visibility.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Math.h"
 #include "Magnum/Math/Unit.h"
@@ -230,25 +231,25 @@ template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Rad} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Unit<Rad, T>& value) {
-    if(debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed)
+template<class T> Utility::Debug& operator<<(Utility::Debug& debug, const Unit<Rad, T>& value) {
+    if(debug.immediateFlags() >= Utility::Debug::Flag::Packed)
         return debug << T(value);
-    return debug << "Rad(" << Corrade::Utility::Debug::nospace << T(value) << Corrade::Utility::Debug::nospace << ")";
+    return debug << "Rad(" << Utility::Debug::nospace << T(value) << Utility::Debug::nospace << ")";
 }
 
 /** @debugoperator{Deg} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Unit<Deg, T>& value) {
-    if(debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed)
+template<class T> Utility::Debug& operator<<(Utility::Debug& debug, const Unit<Deg, T>& value) {
+    if(debug.immediateFlags() >= Utility::Debug::Flag::Packed)
         return debug << T(value);
-    return debug << "Deg(" << Corrade::Utility::Debug::nospace << T(value) << Corrade::Utility::Debug::nospace << ")";
+    return debug << "Deg(" << Utility::Debug::nospace << T(value) << Utility::Debug::nospace << ")";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Double>&);
+extern template MAGNUM_EXPORT Utility::Debug& operator<<(Utility::Debug&, const Unit<Rad, Float>&);
+extern template MAGNUM_EXPORT Utility::Debug& operator<<(Utility::Debug&, const Unit<Deg, Float>&);
+extern template MAGNUM_EXPORT Utility::Debug& operator<<(Utility::Debug&, const Unit<Rad, Double>&);
+extern template MAGNUM_EXPORT Utility::Debug& operator<<(Utility::Debug&, const Unit<Deg, Double>&);
 #endif
 #endif
 

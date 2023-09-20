@@ -32,7 +32,7 @@
 
 #include <Corrade/Containers/Containers.h>
 
-#include "Magnum/Types.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
 namespace Magnum { namespace Math {
@@ -56,15 +56,15 @@ contain vector/matrix components, or have a size of 1 for scalars. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
 contiguous.
 @see @ref packInto(), @ref castInto(),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void unpackInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void unpackInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
 @brief Unpack signed integral values into a floating-point representation
@@ -78,15 +78,15 @@ contain vector/matrix components, or have a size of 1 for scalars. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
 contiguous.
 @see @ref packInto(), @ref castInto(),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void unpackInto(const Containers::StridedArrayView2D<const Byte>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void unpackInto(const Containers::StridedArrayView2D<const Short>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
 @brief Pack floating-point values into an integer representation
@@ -105,27 +105,27 @@ contiguous.
     range is undefined.
 
 @see @ref unpackInto(), @ref castInto(),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+MAGNUM_EXPORT void packInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+MAGNUM_EXPORT void packInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void packInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+MAGNUM_EXPORT void packInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<Short>& dst);
 
 /**
 @brief Pack 32-bit float values into 16-bit half-float representation
@@ -144,7 +144,7 @@ Algorithm used: *Jeroen van der Zijp -- Fast Half Float Conversions, 2008,
 ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf*
 @see @ref Half
 */
-MAGNUM_EXPORT void packHalfInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void packHalfInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
 @brief Unpack a range of 16-bit half-float values into 32-bit float representation
@@ -163,7 +163,7 @@ Algorithm used: *Jeroen van der Zijp -- Fast Half Float Conversions, 2008,
 ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf*
 @see @ref Half
 */
-MAGNUM_EXPORT void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void unpackHalfInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
 @brief Cast integer values into a 32-bit floating-point representation
@@ -180,40 +180,40 @@ the second dimension in both is contiguous.
 @attention Numbers with more than 23 bits of precision will not be represented
     accurately when cast into a @relativeref{Magnum,Float}.
 
-@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Float>&, const Corrade::Containers::StridedArrayView2D<UnsignedByte>&),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+@see @ref castInto(const Containers::StridedArrayView2D<const Float>&, const Containers::StridedArrayView2D<UnsignedByte>&),
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Byte>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Short>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedInt>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Int>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
 @brief Cast integer values into a 64-bit floating-point representation
@@ -230,40 +230,40 @@ the second dimension in both is contiguous.
 @attention Numbers with more than 52 bits of precision will not be represented
     accurately when cast into a @relativeref{Magnum,Double}.
 
-@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Double>&, const Corrade::Containers::StridedArrayView2D<UnsignedByte>&),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+@see @ref castInto(const Containers::StridedArrayView2D<const Double>&, const Containers::StridedArrayView2D<UnsignedByte>&),
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Byte>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Short>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedInt>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Int>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /**
 @brief Cast 32-bit floating-point values into an integer representation
@@ -280,40 +280,40 @@ the second dimension in both is contiguous.
 @attention Fractional part of the @relativeref{Magnum,Float} input will be
     silently discarded when cast into an integer type.
 
-@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>&, const Corrade::Containers::StridedArrayView2D<Float>&),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+@see @ref castInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Float>&),
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<Int>& dst);
 
 /**
 @brief Cast 64-bit floating-point values into an integer representation
@@ -330,40 +330,40 @@ the second dimension in both is contiguous.
 @attention Fractional part of the @relativeref{Magnum,Double} input will be
     silently discarded when cast into an integer type.
 
-@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>&, const Corrade::Containers::StridedArrayView2D<Double>&),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+@see @ref castInto(const Containers::StridedArrayView2D<const UnsignedByte>&, const Containers::StridedArrayView2D<Double>&),
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<Int>& dst);
 
 /**
 @brief Cast integer values into a differently sized type
@@ -378,147 +378,147 @@ the second dimension in both is contiguous.
 @attention Values that don't fit into the resulting type will have undefined
     values.
 
-@see @ref Corrade::Containers::StridedArrayView::isContiguous()
+@see @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Byte>& src, const Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Byte>& src, const Containers::StridedArrayView2D<Int>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Short>& src, const Containers::StridedArrayView2D<Int>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<UnsignedLong>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Byte>& src, const Containers::StridedArrayView2D<Long>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<UnsignedLong>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Short>& src, const Containers::StridedArrayView2D<Long>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedInt>& src, const Containers::StridedArrayView2D<UnsignedLong>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Int>& src, const Containers::StridedArrayView2D<Long>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedLong>& src, const Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Long>& src, const Containers::StridedArrayView2D<Int>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedLong>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Long>& src, const Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedLong>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Long>& src, const Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedInt>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Int>& src, const Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedInt>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
  * @m_since{2020,06}
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Int>& src, const Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Short>& src, const Containers::StridedArrayView2D<Byte>& dst);
 
 /**
 @brief Cast 32-bit floating-point values into a 64-bit floating-point representation
@@ -532,10 +532,10 @@ contain vector/matrix components, or have a size of 1 for scalars. Expects that
 @p src and @p dst have the same size and that the second dimension in both is
 contiguous.
 
-@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Double>&, const Corrade::Containers::StridedArrayView2D<Float>&),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+@see @ref castInto(const Containers::StridedArrayView2D<const Double>&, const Containers::StridedArrayView2D<Float>&),
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /**
 @brief Cast 64-bit floating-point values into a 32-bit floating-point representation
@@ -552,10 +552,10 @@ contiguous.
 @attention Numbers with more than 23 bits of precision will not be represented
     accurately when cast into a @ref Magnum::Float "Float".
 
-@see @ref castInto(const Corrade::Containers::StridedArrayView2D<const Float>&, const Corrade::Containers::StridedArrayView2D<Double>&),
-    @ref Corrade::Containers::StridedArrayView::isContiguous()
+@see @ref castInto(const Containers::StridedArrayView2D<const Float>&, const Containers::StridedArrayView2D<Double>&),
+    @relativeref{Corrade,Containers::StridedArrayView::isContiguous()}
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
 @brief Copy values
@@ -568,61 +568,61 @@ same size, for consistency with other @ref castInto() expects also that the
 second dimension in both is contiguous even though it's not required by
 @relativeref{Corrade,Utility::copy()}.
 */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedByte>& src, const Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Byte>& src, const Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedShort>& src, const Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Short>& src, const Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedInt>& src, const Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Int>& src, const Containers::StridedArrayView2D<Int>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedLong>& src, const Corrade::Containers::StridedArrayView2D<UnsignedLong>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const UnsignedLong>& src, const Containers::StridedArrayView2D<UnsignedLong>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Long>& src, const Corrade::Containers::StridedArrayView2D<Long>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Long>& src, const Containers::StridedArrayView2D<Long>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Float>& src, const Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
  * @m_since_latest
  */
-MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst);
+MAGNUM_EXPORT void castInto(const Containers::StridedArrayView2D<const Double>& src, const Containers::StridedArrayView2D<Double>& dst);
 
 /* Since 1.8.17, the original short-hand group closing doesn't work anymore.
    FFS. */

@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct VectorBenchmark: Corrade::TestSuite::Tester {
+struct VectorBenchmark: TestSuite::Tester {
     explicit VectorBenchmark();
 
     void dot();

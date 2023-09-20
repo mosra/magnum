@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
-struct SwizzleTest: Corrade::TestSuite::Tester {
+struct SwizzleTest: TestSuite::Tester {
     explicit SwizzleTest();
 
     void gather();

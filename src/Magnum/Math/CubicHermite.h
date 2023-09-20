@@ -280,27 +280,27 @@ template<class T> using CubicHermiteQuaternion = CubicHermite<Quaternion<T>>;
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{CubicHermite} */
-template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const CubicHermite<T>& value) {
-    return debug << "CubicHermite(" << Corrade::Utility::Debug::nospace
-        << value.inTangent() << Corrade::Utility::Debug::nospace << ","
-        << value.point() << Corrade::Utility::Debug::nospace << ","
-        << value.outTangent() << Corrade::Utility::Debug::nospace << ")";
+template<class T> Debug& operator<<(Debug& debug, const CubicHermite<T>& value) {
+    return debug << "CubicHermite(" << Debug::nospace
+        << value.inTangent() << Debug::nospace << ","
+        << value.point() << Debug::nospace << ","
+        << value.outTangent() << Debug::nospace << ")";
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Float>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Float>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector4<Float>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Double>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Double>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector4<Double>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Float>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Double>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Float>>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Double>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Vector2<Float>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Vector3<Float>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Vector4<Float>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Vector2<Double>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Vector3<Double>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Vector4<Double>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Complex<Float>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Complex<Double>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Quaternion<Float>>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const CubicHermite<Quaternion<Double>>&);
 #endif
 #endif
 

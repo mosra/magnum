@@ -37,9 +37,9 @@ namespace {
     constexpr const char Hex[]{"0123456789abcdef"};
 }
 
-Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<UnsignedByte>& value) {
+Debug& operator<<(Debug& debug, const Color3<UnsignedByte>& value) {
     /* Print an actual colored square if requested */
-    if(debug.immediateFlags() & Corrade::Utility::Debug::Flag::Color) {
+    if(debug.immediateFlags() & Debug::Flag::Color) {
         /* Pick a shade based on calculated lightness */
         const Float valueValue = value.value();
         const char* shade;
@@ -50,15 +50,15 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3
         else                        shade = "██";
 
         /* If ANSI colors are disabled, use just the shade */
-        if(debug.immediateFlags() & Corrade::Utility::Debug::Flag::DisableColors)
+        if(debug.immediateFlags() & Debug::Flag::DisableColors)
             return debug << shade;
         else {
             debug << "\033[38;2;";
 
             /* Disable space between values for everything after the initial
                value */
-            const Corrade::Utility::Debug::Flags previousFlags = debug.flags();
-            debug.setFlags(previousFlags|Corrade::Utility::Debug::Flag::NoSpace);
+            const Debug::Flags previousFlags = debug.flags();
+            debug.setFlags(previousFlags|Debug::Flag::NoSpace);
 
             /* Set both background and foreground, reset back after */
             debug << int(value.r()) << ";" << int(value.g()) << ";"
@@ -83,9 +83,9 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3
     }
 }
 
-Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<UnsignedByte>& value) {
+Debug& operator<<(Debug& debug, const Color4<UnsignedByte>& value) {
     /* Print an actual colored square if requested */
-    if(debug.immediateFlags() & Corrade::Utility::Debug::Flag::Color) {
+    if(debug.immediateFlags() & Debug::Flag::Color) {
         /* Pick a shade based on calculated lightness */
         const Float valueValue = value.value();
         const Float alpha = Math::unpack<Float>(value.a());
@@ -98,15 +98,15 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4
         else                        shade = "██";
 
         /* If ANSI colors are disabled, use just the shade */
-        if(debug.immediateFlags() & Corrade::Utility::Debug::Flag::DisableColors)
+        if(debug.immediateFlags() & Debug::Flag::DisableColors)
             return debug << shade;
         else {
             debug << "\033[38;2;";
 
             /* Disable space between values for everything after the initial
                value */
-            const Corrade::Utility::Debug::Flags previousFlags = debug.flags();
-            debug.setFlags(previousFlags|Corrade::Utility::Debug::Flag::NoSpace);
+            const Debug::Flags previousFlags = debug.flags();
+            debug.setFlags(previousFlags|Debug::Flag::NoSpace);
 
             /* Print foreground color */
             debug << int(value.r()) << ";" << int(value.g()) << ";"

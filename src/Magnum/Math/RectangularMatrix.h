@@ -36,21 +36,21 @@ namespace Magnum { namespace Math {
 namespace Implementation {
     template<std::size_t, std::size_t, class, class> struct RectangularMatrixConverter;
 
-    template<std::size_t cols, std::size_t rows, std::size_t otherCols, std::size_t otherRows, class T, std::size_t col, std::size_t ...row> constexpr Vector<rows, T> valueOrZeroVector(Corrade::Containers::Implementation::Sequence<row...>, const RectangularMatrix<otherCols, otherRows, T>& other) {
+    template<std::size_t cols, std::size_t rows, std::size_t otherCols, std::size_t otherRows, class T, std::size_t col, std::size_t ...row> constexpr Vector<rows, T> valueOrZeroVector(Containers::Implementation::Sequence<row...>, const RectangularMatrix<otherCols, otherRows, T>& other) {
         return {(col < otherCols && row < otherRows ? other[col][row] : T{0})...};
     }
 
     template<std::size_t cols, std::size_t rows, std::size_t otherCols, std::size_t otherRows, class T, std::size_t col> constexpr Vector<rows, T> valueOrZeroVector(const RectangularMatrix<otherCols, otherRows, T>& other) {
-        return valueOrZeroVector<cols, rows, otherCols, otherRows, T, col>(typename Corrade::Containers::Implementation::GenerateSequence<rows>::Type{}, other);
+        return valueOrZeroVector<cols, rows, otherCols, otherRows, T, col>(typename Containers::Implementation::GenerateSequence<rows>::Type{}, other);
     }
 
-    template<std::size_t cols, std::size_t rows, std::size_t otherCols, std::size_t otherRows, class T, std::size_t col, std::size_t ...row> constexpr Vector<rows, T> valueOrIdentityVector(Corrade::Containers::Implementation::Sequence<row...>, const RectangularMatrix<otherCols, otherRows, T>& other, T value) {
+    template<std::size_t cols, std::size_t rows, std::size_t otherCols, std::size_t otherRows, class T, std::size_t col, std::size_t ...row> constexpr Vector<rows, T> valueOrIdentityVector(Containers::Implementation::Sequence<row...>, const RectangularMatrix<otherCols, otherRows, T>& other, T value) {
         return {(col < otherCols && row < otherRows ? other[col][row] :
             col == row ? value : T{0})...};
     }
 
     template<std::size_t cols, std::size_t rows, std::size_t otherCols, std::size_t otherRows, class T, std::size_t col> constexpr Vector<rows, T> valueOrIdentityVector(const RectangularMatrix<otherCols, otherRows, T>& other, T value) {
-        return valueOrIdentityVector<cols, rows, otherCols, otherRows, T, col>(typename Corrade::Containers::Implementation::GenerateSequence<rows>::Type{}, other, value);
+        return valueOrIdentityVector<cols, rows, otherCols, otherRows, T, col>(typename Containers::Implementation::GenerateSequence<rows>::Type{}, other, value);
     }
 }
 
@@ -131,7 +131,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref diagonal()
          */
         constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) noexcept {
-            return RectangularMatrix(typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, diagonal);
+            return RectangularMatrix(typename Containers::Implementation::GenerateSequence<cols>::Type{}, diagonal);
         }
 
         /**
@@ -139,14 +139,14 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Equivalent to @ref RectangularMatrix(ZeroInitT).
          */
-        constexpr /*implicit*/ RectangularMatrix() noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
+        constexpr /*implicit*/ RectangularMatrix() noexcept: RectangularMatrix<cols, rows, T>{typename Containers::Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
 
         /**
          * @brief Construct a zero-filled matrix
          *
          * @see @ref RectangularMatrix(IdentityInitT, T)
          */
-        constexpr explicit RectangularMatrix(ZeroInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
+        constexpr explicit RectangularMatrix(ZeroInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Containers::Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
 
         /**
          * @brief Construct an identity matrix
@@ -156,10 +156,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * elements. The @p value allows you to specify a value on diagonal.
          * @see @ref RectangularMatrix(ZeroInitT), @ref fromDiagonal()
          */
-        constexpr explicit RectangularMatrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<DiagonalSize>::Type{}, Vector<DiagonalSize, T>(value)} {}
+        constexpr explicit RectangularMatrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<cols, rows, T>{typename Containers::Implementation::GenerateSequence<DiagonalSize>::Type{}, Vector<DiagonalSize, T>(value)} {}
 
         /** @brief Construct without initializing the contents */
-        explicit RectangularMatrix(Magnum::NoInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, Magnum::NoInit} {}
+        explicit RectangularMatrix(Magnum::NoInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Containers::Implementation::GenerateSequence<cols>::Type{}, Magnum::NoInit} {}
 
         /** @brief Construct from column vectors */
         template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next) noexcept: _data{first, next...} {
@@ -167,7 +167,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /** @brief Construct with one value for all components */
-        constexpr explicit RectangularMatrix(T value) noexcept: RectangularMatrix{typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, value} {}
+        constexpr explicit RectangularMatrix(T value) noexcept: RectangularMatrix{typename Containers::Implementation::GenerateSequence<cols>::Type{}, value} {}
 
         /**
          * @brief Construct from a matrix of a different type
@@ -177,7 +177,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @snippet MagnumMath.cpp RectangularMatrix-conversion
          */
-        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, other) {}
+        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(typename Containers::Implementation::GenerateSequence<cols>::Type{}, other) {}
 
         /**
          * @brief Construct by slicing or expanding a matrix of different size, leaving the rest at zero
@@ -186,7 +186,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * If the other matrix has less columns or rows, the corresponding
          * vectors and components are set to zeros.
          */
-        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit RectangularMatrix(ZeroInitT, const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<cols, rows, T>{ZeroInit, typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, other} {}
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit RectangularMatrix(ZeroInitT, const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<cols, rows, T>{ZeroInit, typename Containers::Implementation::GenerateSequence<cols>::Type{}, other} {}
 
         /**
          * @brief Construct by slicing or expanding a matrix of different size, leaving the rest at identity
@@ -196,7 +196,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * vectors and components are set to either zeros or @p value on the
          * diagonal.
          */
-        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit RectangularMatrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>& other, T value = T(1)) noexcept: RectangularMatrix<cols, rows, T>{IdentityInit, typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, other, value} {}
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit RectangularMatrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>& other, T value = T(1)) noexcept: RectangularMatrix<cols, rows, T>{IdentityInit, typename Containers::Implementation::GenerateSequence<cols>::Type{}, other, value} {}
 
         /**
          * @brief Construct by slicing or expanding a matrix of different size
@@ -206,7 +206,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * Note that this default is different from @ref Matrix, where it's
          * equivalent to the @ref IdentityInit variant instead.
          */
-        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit RectangularMatrix(const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<cols, rows, T>{ZeroInit, typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{}, other} {}
+        template<std::size_t otherCols, std::size_t otherRows> constexpr explicit RectangularMatrix(const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<cols, rows, T>{ZeroInit, typename Containers::Implementation::GenerateSequence<cols>::Type{}, other} {}
 
         /** @brief Construct a matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
@@ -484,7 +484,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref transposed(), @ref flippedRows(), @ref Vector::flipped()
          */
         constexpr RectangularMatrix<cols, rows, T> flippedCols() const {
-            return flippedColsInternal(typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{});
+            return flippedColsInternal(typename Containers::Implementation::GenerateSequence<cols>::Type{});
         }
 
         /**
@@ -494,7 +494,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref transposed(), @ref flippedCols(), @ref Vector::flipped()
          */
         constexpr RectangularMatrix<cols, rows, T> flippedRows() const {
-            return flippedRowsInternal(typename Corrade::Containers::Implementation::GenerateSequence<cols>::Type{});
+            return flippedRowsInternal(typename Containers::Implementation::GenerateSequence<cols>::Type{});
         }
 
         /**
@@ -506,7 +506,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             /* NVCC (from CUDA) has problems compiling this function under
                Windows when there's a separate definition due to DiagonalSize
                (see https://github.com/mosra/magnum/issues/345 for details) */
-            return diagonalInternal(typename Corrade::Containers::Implementation::GenerateSequence<DiagonalSize>::Type{});
+            return diagonalInternal(typename Containers::Implementation::GenerateSequence<DiagonalSize>::Type{});
         }
 
         /**
@@ -530,33 +530,33 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(T) and Matrix<size, T>(T) */
         /* MSVC 2015 can't handle {} here */
-        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Containers::Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and RectangularMatrix<cols, rows, T>(IdentityInitT, T) */
-        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Containers::Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT, const RectangularMatrix<otherCols, otherRows, T>&) */
-        template<std::size_t otherCols, std::size_t otherRows, std::size_t ...col> constexpr explicit RectangularMatrix(ZeroInitT, Corrade::Containers::Implementation::Sequence<col...>, const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<cols, rows, T>{Implementation::valueOrZeroVector<cols, rows, otherCols, otherRows, T, col>(other)...} {}
+        template<std::size_t otherCols, std::size_t otherRows, std::size_t ...col> constexpr explicit RectangularMatrix(ZeroInitT, Containers::Implementation::Sequence<col...>, const RectangularMatrix<otherCols, otherRows, T>& other) noexcept: RectangularMatrix<cols, rows, T>{Implementation::valueOrZeroVector<cols, rows, otherCols, otherRows, T, col>(other)...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(IdentityInitT, const RectangularMatrix<otherCols, otherRows, T>&) */
-        template<std::size_t otherCols, std::size_t otherRows, std::size_t ...col> constexpr explicit RectangularMatrix(IdentityInitT, Corrade::Containers::Implementation::Sequence<col...>, const RectangularMatrix<otherCols, otherRows, T>& other, T value) noexcept: RectangularMatrix<cols, rows, T>{Implementation::valueOrIdentityVector<cols, rows, otherCols, otherRows, T, col>(other, value)...} {}
+        template<std::size_t otherCols, std::size_t otherRows, std::size_t ...col> constexpr explicit RectangularMatrix(IdentityInitT, Containers::Implementation::Sequence<col...>, const RectangularMatrix<otherCols, otherRows, T>& other, T value) noexcept: RectangularMatrix<cols, rows, T>{Implementation::valueOrIdentityVector<cols, rows, otherCols, otherRows, T, col>(other, value)...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) and RectangularMatrix<cols, rows, T>::RectangularMatrix(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Containers::Implementation::Sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
-        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Corrade::Containers::Implementation::Sequence<sequence...>) const {
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Containers::Implementation::Sequence<sequence...>) const {
             return {_data[cols - 1 - sequence]...};
         }
 
-        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(Corrade::Containers::Implementation::Sequence<sequence...>) const {
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(Containers::Implementation::Sequence<sequence...>) const {
             return {_data[sequence].flipped()...};
         }
 
-        template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Corrade::Containers::Implementation::Sequence<sequence...>) const;
+        template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Containers::Implementation::Sequence<sequence...>) const;
 
         Vector<rows, T> _data[cols];
 };
@@ -687,44 +687,44 @@ template<std::size_t size, std::size_t cols, class T> inline RectangularMatrix<c
 
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{RectangularMatrix} */
-template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Magnum::Math::RectangularMatrix<cols, rows, T>& value) {
+template<std::size_t cols, std::size_t rows, class T> Debug& operator<<(Debug& debug, const Magnum::Math::RectangularMatrix<cols, rows, T>& value) {
     /** @todo might make sense to propagate the flags also, for hex value
         printing etc */
-    const bool packed = debug.immediateFlags() >= Corrade::Utility::Debug::Flag::Packed;
-    debug << (packed ? "{" : "Matrix(") << Corrade::Utility::Debug::nospace;
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+    debug << (packed ? "{" : "Matrix(") << Debug::nospace;
     for(std::size_t row = 0; row != rows; ++row) {
-        if(row != 0) debug << Corrade::Utility::Debug::nospace << (packed ? ",\n" : ",\n      ");
+        if(row != 0) debug << Debug::nospace << (packed ? ",\n" : ",\n      ");
         for(std::size_t col = 0; col != cols; ++col) {
-            if(col != 0) debug << Corrade::Utility::Debug::nospace << ",";
+            if(col != 0) debug << Debug::nospace << ",";
             debug << value[col][row];
         }
     }
-    return debug << Corrade::Utility::Debug::nospace << (packed ? "}" : ")");
+    return debug << Debug::nospace << (packed ? "}" : ")");
 }
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Square matrices */
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<2, 2, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<3, 3, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<4, 4, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<2, 2, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<3, 3, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<4, 4, Double>&);
 
 /* Rectangular matrices */
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 2, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 4, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Float>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 2, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 4, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Double>&);
-extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<2, 3, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<3, 2, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<2, 4, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<4, 2, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<3, 4, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<4, 3, Float>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<2, 3, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<3, 2, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<2, 4, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<4, 2, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<3, 4, Double>&);
+extern template MAGNUM_EXPORT Debug& operator<<(Debug&, const RectangularMatrix<4, 3, Double>&);
 #endif
 #endif
 
@@ -805,15 +805,15 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 #endif
 
 namespace Implementation {
-    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> constexpr Vector<rows, T> diagonalMatrixColumn2(Corrade::Containers::Implementation::Sequence<sequence...>, const T& number) {
+    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> constexpr Vector<rows, T> diagonalMatrixColumn2(Containers::Implementation::Sequence<sequence...>, const T& number) {
         return {(sequence == i ? number : T(0))...};
     }
     template<std::size_t rows, std::size_t i, class T> constexpr Vector<rows, T> diagonalMatrixColumn(const T& number) {
-        return diagonalMatrixColumn2<rows, i, T>(typename Corrade::Containers::Implementation::GenerateSequence<rows>::Type{}, number);
+        return diagonalMatrixColumn2<rows, i, T>(typename Containers::Implementation::GenerateSequence<rows>::Type{}, number);
     }
 }
 
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Corrade::Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Containers::Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
 
 template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> RectangularMatrix<cols, rows, T>::row(std::size_t row) const {
     Vector<cols, T> out;
@@ -868,7 +868,7 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<r
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Corrade::Containers::Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Containers::Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
     return {_data[sequence][sequence]...};
 }
 #endif

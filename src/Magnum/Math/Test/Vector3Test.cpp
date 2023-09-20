@@ -53,7 +53,7 @@ template<> struct VectorConverter<3, float, Vec3> {
 
 namespace Test { namespace {
 
-struct Vector3Test: Corrade::TestSuite::Tester {
+struct Vector3Test: TestSuite::Tester {
     explicit Vector3Test();
 
     void construct();
