@@ -104,8 +104,8 @@ template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& norma
     const Dual<Vector3<T>> n{direction, moment};
 
     /* q_ScLERP = q_A*(cos(t*a/2) + n*sin(t*a/2)) */
-    const std::pair<Dual<T>, Dual<T>> sincos = Math::sincos(t*Dual<Rad<T>>(aHalf));
-    return normalizedA*DualQuaternion<T>{n*sincos.first, sincos.second};
+    const Containers::Pair<Dual<T>, Dual<T>> sincos = Math::sincos(t*Dual<Rad<T>>(aHalf));
+    return normalizedA*DualQuaternion<T>{n*sincos.first(), sincos.second()};
 }
 
 /** @relatesalso DualQuaternion
@@ -170,8 +170,8 @@ template<class T> inline DualQuaternion<T> sclerpShortestPath(const DualQuaterni
     const Dual<Vector3<T>> n{direction, moment};
 
     /* q_ScLERP = q_A*(cos(t*a/2) + n*sin(t*a/2)) */
-    const std::pair<Dual<T>, Dual<T>> sincos = Math::sincos(t*Dual<Rad<T>>(aHalf));
-    return normalizedA*DualQuaternion<T>{n*sincos.first, sincos.second};
+    const Containers::Pair<Dual<T>, Dual<T>> sincos = Math::sincos(t*Dual<Rad<T>>(aHalf));
+    return normalizedA*DualQuaternion<T>{n*sincos.first(), sincos.second()};
 }
 
 /**

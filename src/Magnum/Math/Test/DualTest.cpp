@@ -281,9 +281,9 @@ void DualTest::sqrt() {
 }
 
 void DualTest::sincos() {
-    const auto result = std::make_pair(
-        Dual(0.5f, 0.8660254037844386f*Constants::pi()/2),
-        Dual(0.8660254037844386f, -0.5f*Constants::pi()/2));
+    Containers::Pair<Dual, Dual> result{
+        {0.5f, 0.8660254037844386f*Constants::pi()/2},
+        {0.8660254037844386f, -0.5f*Constants::pi()/2}};
     CORRADE_COMPARE(Math::sincos(Math::Dual<Deg>(30.0_degf, 90.0_degf)), result);
     CORRADE_COMPARE(Math::sincos(Math::Dual<Rad>(Rad(Constants::pi()/6), Rad(Constants::pi()/2))), result);
 }
@@ -293,9 +293,9 @@ void DualTest::sincosWithBase() {
     CORRADE_VERIFY(std::is_same<decltype(2*Math::Dual<Deg>{15.0_degf}), Math::Dual<Unit<Math::Deg, Float>>>::value);
     CORRADE_VERIFY(std::is_same<decltype(2*Math::Dual<Rad>{Rad{Constants::pi()/12}}), Math::Dual<Unit<Math::Rad, Float>>>::value);
 
-    const auto result = std::make_pair(
-        Dual(0.5f, 0.8660254037844386f*Constants::pi()/2),
-        Dual(0.8660254037844386f, -0.5f*Constants::pi()/2));
+    Containers::Pair<Dual, Dual> result{
+        {0.5f, 0.8660254037844386f*Constants::pi()/2},
+        {0.8660254037844386f, -0.5f*Constants::pi()/2}};
     CORRADE_COMPARE(Math::sincos(2*Math::Dual<Deg>(15.0_degf, 45.0_degf)), result);
     CORRADE_COMPARE(Math::sincos(2*Math::Dual<Rad>(Rad(Constants::pi()/12), Rad(Constants::pi()/4))), result);
 }

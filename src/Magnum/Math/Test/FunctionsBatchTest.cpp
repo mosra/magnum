@@ -176,7 +176,7 @@ void FunctionsBatchTest::max() {
 }
 
 void FunctionsBatchTest::minmax() {
-    const auto expected = std::make_pair(-3.0f, 2.0f);
+    Containers::Pair<Float, Float> expected{-3.0f, 2.0f};
     CORRADE_COMPARE(Math::minmax({-1.0f, 2.0f, -3.0f}), expected);
     CORRADE_COMPARE(Math::minmax({-1.0f, -3.0f, 2.0f}), expected);
     CORRADE_COMPARE(Math::minmax({2.0f, -1.0f, -3.0f}), expected);
@@ -184,7 +184,7 @@ void FunctionsBatchTest::minmax() {
     CORRADE_COMPARE(Math::minmax({-3.0f, 2.0f, -1.0f}), expected);
     CORRADE_COMPARE(Math::minmax({-3.0f, -1.0f, 2.0f}), expected);
 
-    const std::pair<Vector2, Vector2> expectedVec{Vector2{-3.0f, -2.0f}, Vector2{2.0f, 3.0f}};
+    Containers::Pair<Vector2, Vector2> expectedVec{{-3.0f, -2.0f}, {2.0f, 3.0f}};
     CORRADE_COMPARE(Math::minmax({Vector2{-1.0f, 3.0f}, Vector2{2.0f, 1.0f}, Vector2{-3.0f, -2.0f}}), expectedVec);
     CORRADE_COMPARE(Math::minmax({Vector2{-1.0f, 1.0f}, Vector2{-3.0f, 3.0f}, Vector2{2.0f, -2.0f}}), expectedVec);
     CORRADE_COMPARE(Math::minmax({Vector2{2.0f, -2.0f}, Vector2{-1.0f, 1.0f}, Vector2{-3.0f, 3.0f}}), expectedVec);
@@ -202,7 +202,7 @@ void FunctionsBatchTest::minmax() {
     CORRADE_COMPARE(Math::minmax(std::vector<Float>{-1.0f, 2.0f, -3.0f}), expected);
 
     /* Wrapped types */
-    CORRADE_COMPARE(Math::minmax({1.0_radf, 2.0_radf, 3.0_radf}), std::make_pair(1.0_radf, 3.0_radf));
+    CORRADE_COMPARE(Math::minmax({1.0_radf, 2.0_radf, 3.0_radf}), Containers::pair(1.0_radf, 3.0_radf));
 }
 
 void FunctionsBatchTest::nanIgnoring() {
@@ -218,11 +218,11 @@ void FunctionsBatchTest::nanIgnoring() {
     CORRADE_COMPARE(Math::max(firstNan), 1.0f);
     CORRADE_COMPARE(Math::max(allNan), Constants::nan());
 
-    CORRADE_COMPARE(Math::minmax(oneNan), std::make_pair(-3.0f, 1.0f));
-    CORRADE_COMPARE(Math::minmax(firstNan), std::make_pair(-3.0f, 1.0f));
+    CORRADE_COMPARE(Math::minmax(oneNan), Containers::pair(-3.0f, 1.0f));
+    CORRADE_COMPARE(Math::minmax(firstNan), Containers::pair(-3.0f, 1.0f));
     /* Need to compare this way because of NaNs */
-    CORRADE_COMPARE(Math::minmax(allNan).first, Constants::nan());
-    CORRADE_COMPARE(Math::minmax(allNan).second, Constants::nan());
+    CORRADE_COMPARE(Math::minmax(allNan).first(), Constants::nan());
+    CORRADE_COMPARE(Math::minmax(allNan).second(), Constants::nan());
 }
 
 void FunctionsBatchTest::nanIgnoringVector() {
@@ -267,39 +267,39 @@ void FunctionsBatchTest::nanIgnoringVector() {
     CORRADE_COMPARE(Math::max(allNan)[0], Constants::nan());
     CORRADE_COMPARE(Math::max(allNan)[1], Constants::nan());
 
-    CORRADE_COMPARE(Math::minmax(oneNan), std::make_pair(
+    CORRADE_COMPARE(Math::minmax(oneNan), Containers::pair(
         Vector2{0.4f, -3.0f}, Vector2{1.0f, 0.5f}));
-    CORRADE_COMPARE(Math::minmax(firstNan), std::make_pair(
+    CORRADE_COMPARE(Math::minmax(firstNan), Containers::pair(
         Vector2{0.4f, -3.0f}, Vector2{2.2f, -1.0f}));
-    CORRADE_COMPARE(Math::minmax(nanEveryComponent), std::make_pair(
+    CORRADE_COMPARE(Math::minmax(nanEveryComponent), Containers::pair(
         Vector2{0.4f, -3.0f}, Vector2{2.2f, -1.0f}));
     /* Need to compare this way because of NaNs */
-    CORRADE_COMPARE(Math::minmax(oneComponentNan).first[0], Constants::nan());
-    CORRADE_COMPARE(Math::minmax(oneComponentNan).first[1], 0.3f);
-    CORRADE_COMPARE(Math::minmax(oneComponentNan).second[0], Constants::nan());
-    CORRADE_COMPARE(Math::minmax(oneComponentNan).second[1], 1.5f);
-    CORRADE_COMPARE(Math::minmax(firstFullNan).first[0], 0.3f);
-    CORRADE_COMPARE(Math::minmax(firstFullNan).first[1], Constants::nan());
-    CORRADE_COMPARE(Math::minmax(firstFullNan).second[0], 1.5f);
-    CORRADE_COMPARE(Math::minmax(firstFullNan).second[1], Constants::nan());
-    CORRADE_COMPARE(Math::minmax(allNan).first[0], Constants::nan());
-    CORRADE_COMPARE(Math::minmax(allNan).first[1], Constants::nan());
-    CORRADE_COMPARE(Math::minmax(allNan).second[0], Constants::nan());
-    CORRADE_COMPARE(Math::minmax(allNan).second[1], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(oneComponentNan).first()[0], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(oneComponentNan).first()[1], 0.3f);
+    CORRADE_COMPARE(Math::minmax(oneComponentNan).second()[0], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(oneComponentNan).second()[1], 1.5f);
+    CORRADE_COMPARE(Math::minmax(firstFullNan).first()[0], 0.3f);
+    CORRADE_COMPARE(Math::minmax(firstFullNan).first()[1], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(firstFullNan).second()[0], 1.5f);
+    CORRADE_COMPARE(Math::minmax(firstFullNan).second()[1], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(allNan).first()[0], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(allNan).first()[1], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(allNan).second()[0], Constants::nan());
+    CORRADE_COMPARE(Math::minmax(allNan).second()[1], Constants::nan());
 }
 
 void FunctionsBatchTest::constIterable() {
     const Vector2 data[]{{5, -3}, {-2, 14}, {9, -5}};
 
     /* It shouldn't try to operate with a const type (such as trying to to
-       assign to `std::pair<std::size_t, const Vector2>`) internally, instead
-       it should remove the const */
+       assign to `Containers::Pair<std::size_t, const Vector2>`) internally,
+       instead it should remove the const */
     CORRADE_COMPARE(Math::min(Containers::arrayView(data)),
         (Vector2{-2, -5}));
     CORRADE_COMPARE(Math::max(Containers::stridedArrayView(data)),
         (Vector2{9, 14}));
     CORRADE_COMPARE(Math::minmax(Containers::Array<const Vector2>{data, 3, [](const Vector2*, std::size_t){}}),
-        std::make_pair(Vector2{-2, -5}, Vector2{9, 14}));
+        Containers::pair(Vector2{-2, -5}, Vector2{9, 14}));
 }
 
 }}}}

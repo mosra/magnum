@@ -211,8 +211,8 @@ void FunctionsBenchmark::sinCosCombined() {
     Float sin{}, cos{}, a{};
     CORRADE_BENCHMARK(1000) {
         auto sincos = Math::sincos(Rad(a));
-        sin += sincos.first;
-        cos += sincos.second;
+        sin += sincos.first();
+        cos += sincos.second();
         a += 0.1f;
     }
 

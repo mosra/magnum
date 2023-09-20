@@ -53,9 +53,9 @@ Trade::MeshData capsule2DWireframe(const UnsignedInt hemisphereRings, const Unsi
     /* Bottom hemisphere */
     for(UnsignedInt i = 0; i != hemisphereRings; ++i) {
         const Rad angle(Float(i+1)*angleIncrement);
-        const std::pair<Float, Float> sincos = Math::sincos(angle);
-        const Float x = sincos.first;
-        const Float y = -sincos.second-halfLength;
+        const Containers::Pair<Float, Float> sincos = Math::sincos(angle);
+        const Float x = sincos.first();
+        const Float y = -sincos.second() - halfLength;
         Containers::arrayAppend<Trade::ArrayAllocator>(vertexData,
             {{-x, y}, {x, y}});
     }
@@ -70,9 +70,9 @@ Trade::MeshData capsule2DWireframe(const UnsignedInt hemisphereRings, const Unsi
     /* Top hemisphere */
     for(UnsignedInt i = 0; i != hemisphereRings; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        const std::pair<Float, Float> sincos = Math::sincos(angle);
-        const Float x = sincos.second;
-        const Float y = sincos.first+halfLength;
+        const Containers::Pair<Float, Float> sincos = Math::sincos(angle);
+        const Float x = sincos.second();
+        const Float y = sincos.first() + halfLength;
         Containers::arrayAppend<Trade::ArrayAllocator>(vertexData,
             {{-x, y}, {x, y}});
     }

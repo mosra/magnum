@@ -529,7 +529,7 @@ void VectorTest::max() {
 }
 
 void VectorTest::minmax() {
-    const auto expected = std::make_pair(-3.0f, 2.0f);
+    const auto expected = Containers::pair(-3.0f, 2.0f);
     CORRADE_COMPARE((Vector3{-1.0f, 2.0f, -3.0f}.minmax()), expected);
     CORRADE_COMPARE((Vector3{-1.0f, -3.0f, 2.0f}.minmax()), expected);
     CORRADE_COMPARE((Vector3{2.0f, -1.0f, -3.0f}.minmax()), expected);
@@ -551,11 +551,11 @@ void VectorTest::nanIgnoring() {
     CORRADE_COMPARE(firstNan.max(), 1.0f);
     CORRADE_COMPARE(allNan.max(), Constants::nan());
 
-    CORRADE_COMPARE(oneNan.minmax(), std::make_pair(-3.0f, 1.0f));
-    CORRADE_COMPARE(firstNan.minmax(), std::make_pair(-3.0f, 1.0f));
+    CORRADE_COMPARE(oneNan.minmax(), Containers::pair(-3.0f, 1.0f));
+    CORRADE_COMPARE(firstNan.minmax(), Containers::pair(-3.0f, 1.0f));
     /* Need to compare this way because of NaNs */
-    CORRADE_COMPARE(allNan.minmax().first, Constants::nan());
-    CORRADE_COMPARE(allNan.minmax().second, Constants::nan());
+    CORRADE_COMPARE(allNan.minmax().first(), Constants::nan());
+    CORRADE_COMPARE(allNan.minmax().second(), Constants::nan());
 }
 
 void VectorTest::projected() {

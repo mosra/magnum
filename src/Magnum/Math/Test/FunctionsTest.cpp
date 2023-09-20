@@ -208,18 +208,18 @@ void FunctionsTest::max() {
 }
 
 void FunctionsTest::minmax() {
-    const auto expectedScalar = std::make_pair(-5.0f, 4.0f);
+    const auto expectedScalar = Containers::pair(-5.0f, 4.0f);
     CORRADE_COMPARE(Math::minmax(-5.0f, 4.0f), expectedScalar);
     CORRADE_COMPARE(Math::minmax(4.0f, -5.0f), expectedScalar);
 
     const Vector3 a(5.0f, -4.0f, 1.0f);
     const Vector3 b(7.0f, -3.0f, 1.0f);
-    const std::pair<Vector3, Vector3> expectedVector{{5.0f, -4.0f, 1.0f}, {7.0f, -3.0f, 1.0f}};
-    CORRADE_COMPARE_AS(Math::minmax(a, b), expectedVector, std::pair<Vector3, Vector3>);
-    CORRADE_COMPARE_AS(Math::minmax(b, a), expectedVector, std::pair<Vector3, Vector3>);
+    const Containers::Pair<Vector3, Vector3> expectedVector{{5.0f, -4.0f, 1.0f}, {7.0f, -3.0f, 1.0f}};
+    CORRADE_COMPARE((Containers::Pair<Vector3, Vector3>{Math::minmax(a, b)}), expectedVector);
+    CORRADE_COMPARE((Containers::Pair<Vector3, Vector3>{Math::minmax(b, a)}), expectedVector);
 
     /* Wrapped types */
-    CORRADE_COMPARE(Math::minmax(4.0_degf, 5.0_degf), std::make_pair(4.0_degf, 5.0_degf));
+    CORRADE_COMPARE(Math::minmax(4.0_degf, 5.0_degf), Containers::pair(4.0_degf, 5.0_degf));
 }
 
 void FunctionsTest::clamp() {
@@ -462,9 +462,9 @@ void FunctionsTest::exp() {
 }
 
 void FunctionsTest::div() {
-    std::pair<Int, Int> div = Math::div(57, 6);
-    CORRADE_COMPARE(div.first, 9);
-    CORRADE_COMPARE(div.second, 3);
+    Containers::Pair<Int, Int> div = Math::div(57, 6);
+    CORRADE_COMPARE(div.first(), 9);
+    CORRADE_COMPARE(div.second(), 3);
 }
 
 void FunctionsTest::isInf() {
@@ -558,10 +558,10 @@ void FunctionsTest::trigonometric() {
     CORRADE_COMPARE(Math::cos(Rad(Constants::pi()/3)), 0.5f);
     CORRADE_COMPARE_AS(Math::acos(0.5f), 60.0_degf, Deg);
 
-    CORRADE_COMPARE(Math::sincos(30.0_degf).first, 0.5f);
-    CORRADE_COMPARE(Math::sincos(30.0_degf).second, 0.8660254037844386f);
-    CORRADE_COMPARE(Math::sincos(Rad(Constants::pi()/6)).first, 0.5f);
-    CORRADE_COMPARE(Math::sincos(Rad(Constants::pi()/6)).second, 0.8660254037844386f);
+    CORRADE_COMPARE(Math::sincos(30.0_degf).first(), 0.5f);
+    CORRADE_COMPARE(Math::sincos(30.0_degf).second(), 0.8660254037844386f);
+    CORRADE_COMPARE(Math::sincos(Rad(Constants::pi()/6)).first(), 0.5f);
+    CORRADE_COMPARE(Math::sincos(Rad(Constants::pi()/6)).second(), 0.8660254037844386f);
 
     CORRADE_COMPARE(Math::tan(45.0_degf), 1.0f);
     CORRADE_COMPARE(Math::tan(Rad(Constants::pi()/4)), 1.0f);
@@ -579,10 +579,10 @@ void FunctionsTest::trigonometricWithBase() {
     CORRADE_COMPARE(Math::cos(2*30.0_degf), 0.5f);
     CORRADE_COMPARE(Math::cos(2*Rad(Constants::pi()/6)), 0.5f);
 
-    CORRADE_COMPARE(Math::sincos(2*15.0_degf).first, 0.5f);
-    CORRADE_COMPARE(Math::sincos(2*15.0_degf).second, 0.8660254037844386f);
-    CORRADE_COMPARE(Math::sincos(2*Rad(Constants::pi()/12)).first, 0.5f);
-    CORRADE_COMPARE(Math::sincos(2*Rad(Constants::pi()/12)).second, 0.8660254037844386f);
+    CORRADE_COMPARE(Math::sincos(2*15.0_degf).first(), 0.5f);
+    CORRADE_COMPARE(Math::sincos(2*15.0_degf).second(), 0.8660254037844386f);
+    CORRADE_COMPARE(Math::sincos(2*Rad(Constants::pi()/12)).first(), 0.5f);
+    CORRADE_COMPARE(Math::sincos(2*Rad(Constants::pi()/12)).second(), 0.8660254037844386f);
 
     CORRADE_COMPARE(Math::tan(2*22.5_degf), 1.0f);
     CORRADE_COMPARE(Math::tan(2*Rad(Constants::pi()/8)), 1.0f);
@@ -593,8 +593,8 @@ template<class T> void FunctionsTest::sincos() {
 
     /* For GCC's __builtin_sincos this verifies that all specializations are
        correct */
-    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).first, T(0.5));
-    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).second, T(0.866025403784438647l));
+    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).first(), T(0.5));
+    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).second(), T(0.866025403784438647l));
 }
 
 }}}}

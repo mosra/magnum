@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Math::Dual
  */
 
+#include <Corrade/Containers/Pair.h>
 #ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
@@ -38,6 +39,11 @@
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/Tags.h"
 #include "Magnum/Math/TypeTraits.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs returned std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace Math {
 
@@ -409,7 +415,7 @@ template<class T> Dual<T> sqrt(const Dual<T>& dual) {
 */
 /* The function accepts Unit instead of Rad to make it working with operator
    products (e.g. 2*35.0_degf, which is of type Unit) */
-template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Rad<T>>& angle)
+template<class T> Containers::Pair<Dual<T>, Dual<T>> sincos(const Dual<Rad<T>>& angle)
 {
     /* Not using Math::sincos(), because I don't want to include Functions.h */
     const T sin = std::sin(T(angle.real()));
@@ -417,9 +423,9 @@ template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Rad<T>>& angle)
     return {{sin, T(angle.dual())*cos}, {cos, -T(angle.dual())*sin}};
 }
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Deg<T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
-template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Rad, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
-template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Deg, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
+template<class T> Containers::Pair<Dual<T>, Dual<T>> sincos(const Dual<Deg<T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
+template<class T> Containers::Pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Rad, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
+template<class T> Containers::Pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Deg, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
 #endif
 
 #ifndef MAGNUM_NO_MATH_STRICT_WEAK_ORDERING

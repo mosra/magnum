@@ -96,19 +96,19 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
     const Rad segmentAngleIncrement(Constants::tau()/_segments);
     for(UnsignedInt i = 0; i != count; ++i) {
         const Rad ringAngle = startRingAngle + Float(i)*ringAngleIncrement;
-        const std::pair<Float, Float> ringSinCos = Math::sincos(ringAngle);
-        const Float x = ringSinCos.second;
-        const Float z = ringSinCos.second;
-        const Float y = ringSinCos.first;
+        const Containers::Pair<Float, Float> ringSinCos = Math::sincos(ringAngle);
+        const Float x = ringSinCos.second();
+        const Float z = ringSinCos.second();
+        const Float y = ringSinCos.first();
 
         for(UnsignedInt j = 0; j != _segments; ++j) {
             const Rad segmentAngle = Float(j)*segmentAngleIncrement;
-            const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
-            append({x*segmentSinCos.first, centerY+y, z*segmentSinCos.second},
-                   {x*segmentSinCos.first, y, z*segmentSinCos.second});
+            const Containers::Pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
+            append({x*segmentSinCos.first(), centerY+y, z*segmentSinCos.second()},
+                   {x*segmentSinCos.first(), y, z*segmentSinCos.second()});
 
             if(_flags & Flag::Tangents)
-                lastVertexTangent(1) = {segmentSinCos.second, 0.0f, -segmentSinCos.first, 1.0f};
+                lastVertexTangent(1) = {segmentSinCos.second(), 0.0f, -segmentSinCos.first(), 1.0f};
             if(_flags & Flag::TextureCoordinates)
                 lastVertexTextureCoords(1) = {j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement};
         }
@@ -133,12 +133,12 @@ void Spheroid::cylinderVertexRings(const UnsignedInt count, const Float startY, 
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != _segments; ++j) {
             const Rad segmentAngle = Float(j)*segmentAngleIncrement;
-            const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
-            append({base.x()*segmentSinCos.first, base.y(), base.x()*segmentSinCos.second},
-                   {baseNormal.x()*segmentSinCos.first, baseNormal.y(), baseNormal.x()*segmentSinCos.second});
+            const Containers::Pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
+            append({base.x()*segmentSinCos.first(), base.y(), base.x()*segmentSinCos.second()},
+                   {baseNormal.x()*segmentSinCos.first(), baseNormal.y(), baseNormal.x()*segmentSinCos.second()});
 
             if(_flags & Flag::Tangents)
-                lastVertexTangent(1) = {segmentSinCos.second, 0.0f, -segmentSinCos.first, 1.0f};
+                lastVertexTangent(1) = {segmentSinCos.second(), 0.0f, -segmentSinCos.first(), 1.0f};
             if(_flags & Flag::TextureCoordinates)
                 lastVertexTextureCoords(1) = {j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement};
         }
@@ -220,11 +220,11 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
 
     for(UnsignedInt i = 0; i != _segments; ++i) {
         const Rad segmentAngle = Float(i)*segmentAngleIncrement;
-        const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
-        append({segmentSinCos.first, y, segmentSinCos.second}, normal);
+        const Containers::Pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
+        append({segmentSinCos.first(), y, segmentSinCos.second()}, normal);
 
         if(_flags & Flag::Tangents)
-            lastVertexTangent(1) = {segmentSinCos.second, 0.0f, -segmentSinCos.first, 1.0f};
+            lastVertexTangent(1) = {segmentSinCos.second(), 0.0f, -segmentSinCos.first(), 1.0f};
         if(_flags & Flag::TextureCoordinates)
             lastVertexTextureCoords(1) = {i*1.0f/_segments, textureCoordsV};
     }

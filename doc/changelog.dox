@@ -1469,6 +1469,8 @@ See also:
     -   @ref Vk::DescriptorPoolCreateInfo and @ref Vk::AttachmentDescription
         APIs now take a @relativeref{Corrade,Containers::Pair} instead of a
         @ref std::pair
+    -   All @ref Math APIs that took or returned @ref std::pair now use
+        @relativeref{Corrade,Containers::Pair} instead
     To handle most backwards compatibility, @ref Corrade/Containers/StringStl.h
     and/or @ref Corrade/Containers/PairStl.h is included in affected headers
     for implicit conversions from/to a @ref std::string and/or @ref std::pair,

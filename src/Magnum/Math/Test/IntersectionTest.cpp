@@ -141,27 +141,27 @@ void IntersectionTest::lineLine() {
 
     /* Inside both line segments */
     CORRADE_COMPARE(Intersection::lineSegmentLineSegment(p, r,
-        {0.0f, 0.0f}, {-1.0f, 0.0f}), std::make_pair(0.5f, 0.5f));
+        {0.0f, 0.0f}, {-1.0f, 0.0f}), Containers::pair(0.5f, 0.5f));
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
-        {0.0f, 0.0f}, {-1.0f, 0.0f}), 0.5);
+        {0.0f, 0.0f}, {-1.0f, 0.0f}), 0.5f);
 
     /* Outside both line segments */
     CORRADE_COMPARE(Intersection::lineSegmentLineSegment(p, r,
-        {0.0f, -2.0f}, {-1.0f, 0.0f}), std::make_pair(-0.5f, 1.5f));
+        {0.0f, -2.0f}, {-1.0f, 0.0f}), Containers::pair(-0.5f, 1.5f));
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
         {0.0f, -2.0f}, {-1.0f, 0.0f}), -0.5f);
 
     /* Collinear lines */
     const auto tu = Intersection::lineSegmentLineSegment(p, r,
         {0.0f, 1.0f}, {-1.0f, -2.0f});
-    CORRADE_COMPARE(tu.first, -Constants::nan());
-    CORRADE_COMPARE(tu.second, -Constants::nan());
+    CORRADE_COMPARE(tu.first(), -Constants::nan());
+    CORRADE_COMPARE(tu.second(), -Constants::nan());
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
         {0.0f, 1.0f}, {-1.0f, -2.0f}), -Constants::nan());
 
     /* Parallel lines */
     CORRADE_COMPARE(Intersection::lineSegmentLineSegment(p, r,
-        {0.0f, 0.0f}, {1.0f, 2.0f}), std::make_pair(Constants::inf(), Constants::inf()));
+        {0.0f, 0.0f}, {1.0f, 2.0f}), Containers::pair(Constants::inf(), Constants::inf()));
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
         {0.0f, 0.0f}, {1.0f, 2.0f}), Constants::inf());
 }

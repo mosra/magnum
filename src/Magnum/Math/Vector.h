@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::Vector, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle()
  */
 
-#include <utility> /* std::pair */
+#include <Corrade/Containers/Pair.h>
 #ifndef CORRADE_SINGLES_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
@@ -41,6 +41,11 @@
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/BitVector.h"
 #include "Magnum/Math/TypeTraits.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs returned std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace Math {
 
@@ -681,7 +686,7 @@ template<std::size_t size, class T> class Vector {
          * <em>NaN</em>s are ignored, unless the vector is all <em>NaN</em>s.
          * @see @ref min(), @ref max(), @ref Math::minmax(), @ref Math::isNan()
          */
-        std::pair<T, T> minmax() const;
+        Containers::Pair<T, T> minmax() const;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -1572,7 +1577,7 @@ template<std::size_t size, class T> inline T Vector<size, T>::max() const {
     return out;
 }
 
-template<std::size_t size, class T> inline std::pair<T, T> Vector<size, T>::minmax() const {
+template<std::size_t size, class T> inline Containers::Pair<T, T> Vector<size, T>::minmax() const {
     std::size_t i = Implementation::firstNonNan(_data, IsFloatingPoint<T>{});
     T min{_data[i]}, max{_data[i]};
 

@@ -38,6 +38,11 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/Matrix4.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs returned std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
+
 namespace Magnum { namespace Math { namespace Intersection {
 
 /**
@@ -130,7 +135,7 @@ don't need to test that the intersection lies inside line segment defined by
 
 @see @ref isInf(), @ref isNan()
 */
-template<class T> inline std::pair<T, T> lineSegmentLineSegment(const Vector2<T>& p, const Vector2<T>& r, const Vector2<T>& q, const Vector2<T>& s) {
+template<class T> inline Containers::Pair<T, T> lineSegmentLineSegment(const Vector2<T>& p, const Vector2<T>& r, const Vector2<T>& q, const Vector2<T>& s) {
     const Vector2<T> qp = q - p;
     const T rs = cross(r, s);
     return {cross(qp, s)/rs, cross(qp, r)/rs};
@@ -508,9 +513,9 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
 template<class T> bool rayRange(const Vector3<T>& rayOrigin, const Vector3<T>& inverseRayDirection, const Range3D<T>& range) {
     const Vector3<T> t0 = (range.min() - rayOrigin)*inverseRayDirection;
     const Vector3<T> t1 = (range.max() - rayOrigin)*inverseRayDirection;
-    const std::pair<Vector3<T>, Vector3<T>> tminMax = minmax(t0, t1);
+    const Containers::Pair<Vector3<T>, Vector3<T>> tminMax{minmax(t0, t1)};
 
-    return tminMax.first.max() <= tminMax.second.min();
+    return tminMax.first().max() <= tminMax.second().min();
 }
 
 template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents, const Frustum<T>& frustum) {

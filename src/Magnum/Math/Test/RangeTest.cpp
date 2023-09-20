@@ -302,7 +302,7 @@ void RangeTest::constructPair() {
     CORRADE_COMPARE(bounds1a, bounds1c);
 
     Range2Di bounds2a = Math::minmax({a, b, c});
-    Range2Di bounds2b = std::pair<Math::Vector<2, Int>, Math::Vector<2, Int>>{{10, 18}, {30, 25}};
+    Range2Di bounds2b = Containers::Pair<Math::Vector<2, Int>, Math::Vector<2, Int>>{{10, 18}, {30, 25}};
     Range2Di bounds2c{{10, 18}, {30, 25}};
     CORRADE_COMPARE(bounds2a, bounds2c);
     CORRADE_COMPARE(bounds2b, bounds2c);
@@ -312,10 +312,27 @@ void RangeTest::constructPair() {
     Vector3i c3{c, 123};
 
     Range3Di bounds3a = Math::minmax({a3, b3, c3});
-    Range3Di bounds3b = std::pair<Math::Vector<3, Int>, Math::Vector<3, Int>>{{10, 18, 122}, {30, 25, 123}};
+    Range3Di bounds3b = Containers::Pair<Math::Vector<3, Int>, Math::Vector<3, Int>>{{10, 18, 122}, {30, 25, 123}};
     Range3Di bounds3c{{10, 18, 122}, {30, 25, 123}};
     CORRADE_COMPARE(bounds3a, bounds3c);
     CORRADE_COMPARE(bounds3b, bounds3c);
+
+    constexpr Range1Di cbounds1a = Containers::pair(10, 30);
+    constexpr Range2Di cbounds2a = Containers::Pair<Vector2i, Vector2i>{{10, 18}, {30, 25}};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's up. Also, I can't say I actually care. */
+    #endif
+    Range2Di cbounds2b = Containers::Pair<Math::Vector<2, Int>, Math::Vector<2, Int>>{{10, 18}, {30, 25}};
+    constexpr Range3Di cbounds3a = Containers::Pair<Vector3i, Vector3i>{{10, 18, 122}, {30, 25, 123}};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's up. Also, I can't say I actually care. */
+    #endif
+    Range3Di cbounds3b = Containers::Pair<Math::Vector<3, Int>, Math::Vector<3, Int>>{{10, 18, 122}, {30, 25, 123}};
+    CORRADE_COMPARE(cbounds1a, bounds1a);
+    CORRADE_COMPARE(cbounds2a, bounds2a);
+    CORRADE_COMPARE(cbounds2b, bounds2b);
+    CORRADE_COMPARE(cbounds3a, bounds3a);
+    CORRADE_COMPARE(cbounds3b, bounds3b);
 }
 
 void RangeTest::constructConversion() {

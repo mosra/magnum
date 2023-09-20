@@ -32,6 +32,11 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs were taking a std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
+
 namespace Magnum { namespace Math {
 
 namespace Implementation {
@@ -145,18 +150,15 @@ template<UnsignedInt dimensions, class T> class Range {
          * calculate bounds of a triangle:
          *
          * @snippet MagnumMath.cpp Range-construct-minmax3D
-         *
-         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair
          */
-        /*implicit*/ Range(const std::pair<VectorType, VectorType>& minmax) noexcept:
-            _min{minmax.first}, _max{minmax.second} {}
+        constexpr /*implicit*/ Range(const Containers::Pair<VectorType, VectorType>& minmax) noexcept:
+            _min{minmax.first()}, _max{minmax.second()} {}
 
         /** @overload */
-        /** @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
         #endif
-        /*implicit*/ Range(const std::pair<Vector<dimensions, T>, Vector<dimensions, T>>& minmax) noexcept: _min{minmax.first}, _max{minmax.second} {}
+        constexpr /*implicit*/ Range(const Containers::Pair<Vector<dimensions, T>, Vector<dimensions, T>>& minmax) noexcept: _min{minmax.first()}, _max{minmax.second()} {}
 
         /**
          * @brief Construct range from another of different type
@@ -419,16 +421,14 @@ template<class T> class Range2D: public Range<2, T> {
          * calculate texture bounds:
          *
          * @snippet MagnumMath.cpp Range-construct-minmax2D
-         *
-         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair
          */
-        /*implicit*/ Range2D(const std::pair<Vector2<T>, Vector2<T>>& minmax) noexcept: Range<2, T>{minmax.first, minmax.second} {}
+        constexpr /*implicit*/ Range2D(const Containers::Pair<Vector2<T>, Vector2<T>>& minmax) noexcept: Range<2, T>{minmax.first(), minmax.second()} {}
 
         /**
          * @overload
          * @m_since{2020,06}
          */
-        /*implicit*/ Range2D(const std::pair<Vector<2, T>, Vector<2, T>>& minmax) noexcept: Range<2, T>{minmax.first, minmax.second} {}
+        constexpr /*implicit*/ Range2D(const Containers::Pair<Vector<2, T>, Vector<2, T>>& minmax) noexcept: Range<2, T>{minmax.first(), minmax.second()} {}
 
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range2D(const Range2D<U>& other) noexcept: Range<2, T>(other) {}
@@ -573,16 +573,14 @@ template<class T> class Range3D: public Range<3, T> {
          * calculate bounds of a triangle:
          *
          * @snippet MagnumMath.cpp Range-construct-minmax3D
-         *
-         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14... actually, replace with Pair
          */
-        /*implicit*/ Range3D(const std::pair<Vector3<T>, Vector3<T>>& minmax) noexcept: Range<3, T>{minmax.first, minmax.second} {}
+        constexpr /*implicit*/ Range3D(const Containers::Pair<Vector3<T>, Vector3<T>>& minmax) noexcept: Range<3, T>{minmax.first(), minmax.second()} {}
 
         /**
          * @overload
          * @m_since{2020,06}
          */
-        /*implicit*/ Range3D(const std::pair<Vector<3, T>, Vector<3, T>>& minmax) noexcept: Range<3, T>{minmax.first, minmax.second} {}
+        constexpr /*implicit*/ Range3D(const Containers::Pair<Vector<3, T>, Vector<3, T>>& minmax) noexcept: Range<3, T>{minmax.first(), minmax.second()} {}
 
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range3D(const Range3D<U>& other) noexcept: Range<3, T>(other) {}

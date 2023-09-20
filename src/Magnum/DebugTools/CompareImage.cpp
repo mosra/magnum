@@ -409,8 +409,8 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, Pixe
     for(auto it = large.crbegin(); it != large.crend(); ++it) {
         if(++count > maxCount) break;
 
-        Vector2i pos;
-        std::tie(pos.y(), pos.x()) = Math::div(Int(it->second), Int(expectedPixels.size()[1]));
+        const Containers::Pair<Int, Int> div = Math::div(Int(it->second), Int(expectedPixels.size()[1]));
+        const Vector2i pos{div.second(), div.first()};
         out << Debug::newline << "          [" << Debug::nospace << pos.x()
             << Debug::nospace << "," << Debug::nospace << pos.y()
             << Debug::nospace << "]";

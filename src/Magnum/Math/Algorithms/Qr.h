@@ -29,7 +29,14 @@
  * @brief Function @ref Magnum::Math::Algorithms::qr()
  */
 
+#include <Corrade/Containers/Pair.h>
+
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs returned std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace Math { namespace Algorithms {
 
@@ -60,7 +67,7 @@ See the [associated test case](https://github.com/mosra/magnum/blob/master/src/M
 for an example.
 @see @ref svd(), @ref Matrix3::rotationShear(), @ref Matrix4::rotationShear()
 */
-template<std::size_t size, class T> std::pair<Matrix<size, T>, Matrix<size, T>> qr(const Matrix<size, T>& matrix) {
+template<std::size_t size, class T> Containers::Pair<Matrix<size, T>, Matrix<size, T>> qr(const Matrix<size, T>& matrix) {
     const Matrix<size, T> q = gramSchmidtOrthonormalize(matrix);
     Matrix<size, T> r{ZeroInit};
     for(std::size_t k = 0; k != size; ++k) {

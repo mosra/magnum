@@ -32,6 +32,11 @@
 
 #include "Magnum/Math/Vector.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs returned std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
+
 namespace Magnum { namespace Math {
 
 namespace Implementation {
@@ -194,7 +199,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * given interpolation factor. Uses the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
          * @see @ref value()
          */
-        std::pair<Bezier<order, dimensions, T>, Bezier<order, dimensions, T>> subdivide(T t) const {
+        Containers::Pair<Bezier<order, dimensions, T>, Bezier<order, dimensions, T>> subdivide(T t) const {
             Bezier<order, dimensions, T> iPoints[order + 1];
             calculateIntermediatePoints(iPoints, t);
             Bezier<order, dimensions, T> left, right;

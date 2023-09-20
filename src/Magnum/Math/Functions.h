@@ -34,12 +34,16 @@
 
 #include <cstdlib> /* std::div() */
 #include <type_traits>
-#include <utility> /* std::pair */
 #include <Corrade/Utility/Move.h>
 #include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Vector.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Some APIs returned std::pair before */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace Math {
 
@@ -73,7 +77,7 @@ Equivalent to the following, but possibly done in a single CPU instruction:
 
 @snippet MagnumMath.cpp div-equivalent
 */
-template<class Integral> inline std::pair<Integral, Integral> div(Integral x, Integral y) {
+template<class Integral> inline Containers::Pair<Integral, Integral> div(Integral x, Integral y) {
     static_assert(IsIntegral<Integral>::value && IsScalar<Integral>::value,
         "scalar integral type expected");
     const auto result = std::div(x, y);
@@ -193,18 +197,18 @@ instruction as well.
 @see @ref sin(), @ref cos(), @ref sincos(const Dual<Rad<T>>&)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline std::pair<T, T> sincos(Rad<T> angle);
+template<class T> inline Containers::Pair<T, T> sincos(Rad<T> angle);
 #else
-template<class T> inline std::pair<T, T> sincos(Unit<Rad, T> angle) {
+template<class T> inline Containers::Pair<T, T> sincos(Unit<Rad, T> angle) {
     #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG)
-    std::pair<T, T> out;
-    Implementation::sincos(T(angle), out.first, out.second);
+    Containers::Pair<T, T> out{Magnum::NoInit};
+    Implementation::sincos(T(angle), out.first(), out.second());
     return out;
     #else
     return {std::sin(T(angle)), std::cos(T(angle))};
     #endif
 }
-template<class T> inline std::pair<T, T> sincos(Unit<Deg, T> angle) { return sincos(Rad<T>(angle)); }
+template<class T> inline Containers::Pair<T, T> sincos(Unit<Deg, T> angle) { return sincos(Rad<T>(angle)); }
 #endif
 
 /** @brief Tangent */
@@ -343,18 +347,18 @@ template<std::size_t size, class T> inline Vector<size, T> max(const Vector<size
 @see @ref min(), @ref max(), @ref clamp(),
     @ref minmax(const Containers::StridedArrayView1D<const T>&),
     @ref Vector::minmax(),
-    @ref Range::Range(const std::pair<VectorType, VectorType>&)
+    @ref Range::Range(const Containers::Pair<VectorType, VectorType>&)
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, std::pair<T, T>>::type minmax(T a, T b) {
-    return a < b ? std::make_pair(a, b) : std::make_pair(b, a);
+template<class T> inline typename std::enable_if<IsScalar<T>::value, Containers::Pair<T, T>>::type minmax(T a, T b) {
+    return a < b ? Containers::pair(a, b) : Containers::pair(b, a);
 }
 
 /** @overload */
-template<std::size_t size, class T> inline std::pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
+template<std::size_t size, class T> inline Containers::Pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
     using Utility::swap;
-    std::pair<Vector<size, T>, Vector<size, T>> out{a, b};
+    Containers::Pair<Vector<size, T>, Vector<size, T>> out{a, b};
     for(std::size_t i = 0; i != size; ++i)
-        if(out.first[i] > out.second[i]) swap(out.first[i], out.second[i]);
+        if(out.first()[i] > out.second()[i]) swap(out.first()[i], out.second()[i]);
     return out;
 }
 

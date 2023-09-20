@@ -71,8 +71,8 @@ Trade::MeshData circle2DSolid(const UnsignedInt segments, const Circle2DFlags fl
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions[i + 1] = {sincos.second, sincos.first};
+        const Containers::Pair<Float, Float> sincos = Math::sincos(angle);
+        positions[i + 1] = {sincos.second(), sincos.first()};
     }
 
     /* Fill texture coords, if any */
@@ -107,8 +107,8 @@ Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions[i] = {sincos.second, sincos.first};
+        const Containers::Pair<Float, Float> sincos = Math::sincos(angle);
+        positions[i] = {sincos.second(), sincos.first()};
     }
 
     return Trade::MeshData{MeshPrimitive::LineLoop, Utility::move(vertexData),
@@ -185,9 +185,9 @@ Trade::MeshData circle3DSolid(const UnsignedInt segments, const Circle3DFlags fl
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 1; i != segments + 2; ++i) {
         const Rad angle(Float(i - 1)*angleIncrement);
-        const std::pair<Float, Float> sincos = Math::sincos(angle);
+        const Containers::Pair<Float, Float> sincos = Math::sincos(angle);
 
-        positions[i] = {sincos.second, sincos.first, 0.0f};
+        positions[i] = {sincos.second(), sincos.first(), 0.0f};
         normals[i] = {0.0f, 0.0f, 1.0f};
         if(flags & Circle3DFlag::Tangents)
             tangents[i] = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -228,8 +228,8 @@ Trade::MeshData circle3DWireframe(const UnsignedInt segments) {
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions[i] = {sincos.second, sincos.first, 0.0f};
+        const Containers::Pair<Float, Float> sincos = Math::sincos(angle);
+        positions[i] = {sincos.second(), sincos.first(), 0.0f};
     }
 
     return Trade::MeshData{MeshPrimitive::LineLoop, Utility::move(vertexData),

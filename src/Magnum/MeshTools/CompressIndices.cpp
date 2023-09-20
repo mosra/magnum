@@ -185,7 +185,7 @@ Trade::MeshData compressIndices(const Trade::MeshData& mesh, MeshIndexType atLea
 std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
     const auto minmax = Math::minmax(indices);
     Containers::Pair<Containers::Array<char>, MeshIndexType> dataType = compressIndices(indices, MeshIndexType::UnsignedByte);
-    return std::make_tuple(Utility::move(dataType.first()), dataType.second(), minmax.first, minmax.second);
+    return std::make_tuple(Utility::move(dataType.first()), dataType.second(), minmax.first(), minmax.second());
 }
 
 template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {
