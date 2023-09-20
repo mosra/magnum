@@ -46,7 +46,7 @@ sources using the builtin @ref acme "single-header generator tool".
 
 Class or library            | Single-header version
 --------------------------- | ----------------------------
-@ref Math, \n @ref EigenIntegration, \n @ref GlmIntegration | [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp)
+@ref Math, \n @ref EigenIntegration, \n @ref GlmIntegration | [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp), depends on `CorradePair.h`
 
 There are also @ref corrade-singles "single-header libraries for Corrade APIs".
 

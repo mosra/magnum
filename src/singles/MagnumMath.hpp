@@ -105,6 +105,7 @@
 
 #include "base.h"
 // {{includes}}
+
 #if (!defined(CORRADE_ASSERT) || !defined(CORRADE_CONSTEXPR_ASSERT) || !defined(CORRADE_INTERNAL_ASSERT_OUTPUT) || !defined(CORRADE_INTERNAL_ASSERT_UNREACHABLE)) && !defined(NDEBUG)
 #include <cassert>
 #endif
@@ -181,6 +182,11 @@
 #ifndef MAGNUM_EXPORT
 #define MAGNUM_EXPORT
 #endif
+
+/* CorradePair.h is a dependency */
+#pragma ACME noexpand CorradePair.h
+#pragma ACME enable Corrade_Containers_Pair_h
+#include "CorradePair.h"
 
 /* A semi-verbatim copy of Utility/StlMath.h because otherwise the includes
    don't stay in the correct place. */
