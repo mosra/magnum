@@ -91,16 +91,16 @@ void MagnumFontConverterTest::exportFont() {
             explicit FakeFont(): _opened(false) {}
 
         private:
-            void doClose() { _opened = false; }
-            bool doIsOpened() const { return _opened; }
-            Metrics doOpenFile(const std::string&, Float) {
+            void doClose() override { _opened = false; }
+            bool doIsOpened() const override { return _opened; }
+            Metrics doOpenFile(const std::string&, Float) override {
                 _opened = true;
                 return {16.0f, 25.0f, -10.0f, 39.7333f};
             }
-            FontFeatures doFeatures() const { return {}; }
-            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) { return nullptr; }
+            FontFeatures doFeatures() const override { return {}; }
+            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
 
-            UnsignedInt doGlyphId(const char32_t character) {
+            UnsignedInt doGlyphId(const char32_t character) override {
                 switch(character) {
                     case 'W': return 2;
                     case 'e': return 1;
@@ -109,7 +109,7 @@ void MagnumFontConverterTest::exportFont() {
                 return 0;
             }
 
-            Vector2 doGlyphAdvance(const UnsignedInt glyph) {
+            Vector2 doGlyphAdvance(const UnsignedInt glyph) override {
                 switch(glyph) {
                     case 0: return {8, 0};
                     case 1: return {12, 0};
