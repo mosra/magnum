@@ -155,10 +155,10 @@ Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
 
 Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     /* Set cache image */
-    Containers::Pointer<AbstractGlyphCache> cache(new Text::GlyphCache(
+    Containers::Pointer<GlyphCache> cache{InPlaceInit,
         _opened->conf.value<Vector2i>("originalImageSize"),
         _opened->image->size(),
-        _opened->conf.value<Vector2i>("padding")));
+        _opened->conf.value<Vector2i>("padding")};
     cache->setImage({}, *_opened->image);
 
     /* Fill glyph map */
@@ -166,7 +166,8 @@ Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     for(std::size_t i = 0; i != glyphs.size(); ++i)
         cache->insert(i, glyphs[i]->value<Vector2i>("position"), glyphs[i]->value<Range2Di>("rectangle"));
 
-    return cache;
+    /* GCC 4.8 needs extra help here */
+    return Containers::Pointer<AbstractGlyphCache>{Utility::move(cache)};
 }
 
 Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) {
@@ -180,7 +181,7 @@ Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCa
         glyphs.push_back(it == _opened->glyphId.end() ? 0 : it->second);
     }
 
-    return Containers::Pointer<MagnumFontLayouter>(new MagnumFontLayouter(_opened->glyphAdvance, cache, this->size(), size, Utility::move(glyphs)));
+    return Containers::pointer<MagnumFontLayouter>(_opened->glyphAdvance, cache, this->size(), size, Utility::move(glyphs));
 }
 
 namespace {
