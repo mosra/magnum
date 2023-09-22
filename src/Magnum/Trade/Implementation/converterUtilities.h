@@ -36,7 +36,7 @@
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/FormatStl.h> /** @todo drop once String::replaceAll() has a StringView overload */
-#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/String.h> /* replaceAll() */
 #include <Corrade/Utility/ConfigurationGroup.h>
 
 #include "Magnum/PixelFormat.h"

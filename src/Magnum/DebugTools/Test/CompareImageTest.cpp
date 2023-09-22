@@ -37,7 +37,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/String.h> /* replaceFirst() */
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"

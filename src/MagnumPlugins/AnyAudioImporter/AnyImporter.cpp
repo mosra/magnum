@@ -31,7 +31,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/String.h> /* lowercase() */
 
 #include "MagnumPlugins/Implementation/propagateConfiguration.h"
 

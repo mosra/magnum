@@ -34,7 +34,7 @@
 #include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/String.h> /* lowercase() */
 
 #include "MagnumPlugins/Implementation/propagateConfiguration.h"
 

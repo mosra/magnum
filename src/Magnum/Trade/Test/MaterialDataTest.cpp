@@ -31,7 +31,6 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
@@ -1147,7 +1146,7 @@ void MaterialDataTest::constructDuplicateAttribute() {
     MaterialData data{{}, Utility::move(attributes), Containers::array<UnsignedInt>({1, 1, 6})};
     /* Because with graceful asserts it doesn't exit on error, the assertion
        might get printed multiple times */
-    CORRADE_COMPARE(Utility::String::partition(out.str(), '\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2");
+    CORRADE_COMPARE(Containers::StringView{out.str()}.partition('\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates in layer 2");
 }
 
 void MaterialDataTest::constructFromImmutableSortedArray() {

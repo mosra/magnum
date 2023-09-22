@@ -31,7 +31,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h> /* for PluginMetadata::name() */
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/String.h> /* lowercase() */
 
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"

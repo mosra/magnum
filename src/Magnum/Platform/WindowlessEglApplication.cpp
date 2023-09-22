@@ -32,7 +32,6 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/GL/Version.h"
 
@@ -161,7 +160,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     EGL_NONE
                 };
                 CORRADE_INTERNAL_ASSERT_OUTPUT(eglDebugMessageControl([](EGLenum, const char* const command, EGLint, EGLLabelKHR, EGLLabelKHR, const char* message) {
-                    Debug{} << command << Debug::nospace << "():" << Utility::String::rtrim(message);
+                    Debug{} << command << Debug::nospace << "():" << Containers::StringView{message}.trimmedSuffix();
                 }, debugAttribs) == EGL_SUCCESS);
             }
 

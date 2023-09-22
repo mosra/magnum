@@ -40,10 +40,11 @@
     attribute to the <svg> element if you'd ever need that.
 */
 
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Path.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/String.h> /* lowercase() */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Bezier.h"
@@ -53,6 +54,7 @@
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
+using namespace Corrade::Containers::Literals;
 
 namespace {
 
@@ -69,7 +71,7 @@ constexpr Int ThumbEndMarkerSize = 8;
 constexpr Vector2 ThumbSize{128, 128};
 constexpr Vector2 ThumbBorder{0, 32};
 
-void generateThumb(const std::string& file, Float(*function)(Float)) {
+void generateThumb(const Containers::StringView file, Float(*function)(Float)) {
     std::string out;
 
     Range2D viewBox{{}, ThumbSize};
@@ -95,15 +97,15 @@ void generateThumb(const std::string& file, Float(*function)(Float)) {
 </svg>
 )");
 
-    Utility::Path::write("easings-" + file + "-thumb.svg", Containers::StringView{out});
+    Utility::Path::write(Utility::format("easings-{}-thumb.svg", file), Containers::StringView{out});
 }
 
-void generate(const std::string& file, Float(*function)(Float), std::initializer_list<Float(*)(Float)> related = {}, const CubicBezier2D& bezier = {}, const Color3& colorBefore = 0xcd3431_srgbf, const Color3 colorAfter = 0xcd3431_srgbf, bool extraMargin = false) {
+void generate(Containers::StringView file, Float(*function)(Float), std::initializer_list<Float(*)(Float)> related = {}, const CubicBezier2D& bezier = {}, const Color3& colorBefore = 0xcd3431_srgbf, const Color3& colorAfter = 0xcd3431_srgbf, bool extraMargin = false) {
     std::string out;
 
     Vector2 size = Size;
     Vector2 border = Border;
-    std::string extraStyle;
+    Containers::StringView extraStyle;
     if(extraMargin) {
         size.y() += 2*ExtraMargin;
         border.y() += ExtraMargin;
@@ -202,7 +204,7 @@ const Color3 success = 0x3bd267_srgbf;
 /** @todo better bezier approximations for more complex curves, easings.net has it awful */
 
 int main() {
-    #define _c(name) Utility::String::lowercase(std::string{#name}), Animation::Easing::name
+    #define _c(name) Utility::String::lowercase(#name ## _s), Animation::Easing::name
     generate(_c(linear), {},
 /* [linear] */
 CubicBezier2D{Vector2{0.0f}, Vector2{1.0f/3.0f},
