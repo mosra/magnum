@@ -26,10 +26,10 @@
 #include "MagnumFont.h"
 
 #include <sstream>
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
@@ -52,27 +52,27 @@ struct MagnumFont::Data {
     Containers::Optional<Trade::ImageData2D> image;
     Containers::Optional<Containers::String> filePath;
     std::unordered_map<char32_t, UnsignedInt> glyphId;
-    std::vector<Vector2> glyphAdvance;
+    Containers::Array<Vector2> glyphAdvance;
 };
 
 namespace {
     class MagnumFontLayouter: public AbstractLayouter {
         public:
-            explicit MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const AbstractGlyphCache& cache, Float fontSize, Float textSize, std::vector<UnsignedInt>&& glyphs);
+            explicit MagnumFontLayouter(Containers::ArrayView<const Vector2> glyphAdvance, const AbstractGlyphCache& cache, Float fontSize, Float textSize, Containers::Array<UnsignedInt>&& glyphs);
 
         private:
-            std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override;
+            Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override;
 
-            const std::vector<Vector2>& glyphAdvance;
+            const Containers::ArrayView<const Vector2> glyphAdvance;
             const AbstractGlyphCache& cache;
             const Float fontSize, textSize;
-            const std::vector<UnsignedInt> glyphs;
+            const Containers::Array<UnsignedInt> glyphs;
     };
 }
 
 MagnumFont::MagnumFont(): _opened(nullptr) {}
 
-MagnumFont::MagnumFont(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractFont{manager, plugin}, _opened(nullptr) {}
+MagnumFont::MagnumFont(PluginManager::AbstractManager& manager, const Containers::StringView& plugin): AbstractFont{manager, plugin}, _opened(nullptr) {}
 
 MagnumFont::~MagnumFont() { close(); }
 
@@ -119,9 +119,9 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
 
     /* Glyph advances */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
-    _opened->glyphAdvance.reserve(glyphs.size());
+    arrayReserve(_opened->glyphAdvance, glyphs.size());
     for(const Utility::ConfigurationGroup* const g: glyphs)
-        _opened->glyphAdvance.push_back(g->value<Vector2>("advance"));
+        arrayAppend(_opened->glyphAdvance, g->value<Vector2>("advance"));
 
     /* Fill character->glyph map */
     const std::vector<Utility::ConfigurationGroup*> chars = _opened->conf.groups("char");
@@ -137,7 +137,7 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
             _opened->conf.value<Float>("lineHeight")};
 }
 
-auto MagnumFont::doOpenFile(const std::string& filename, Float size) -> Metrics {
+auto MagnumFont::doOpenFile(const Containers::StringView filename, const Float size) -> Metrics {
     _opened.emplace();
     _opened->filePath.emplace(Utility::Path::split(filename).first());
 
@@ -170,15 +170,14 @@ Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     return Containers::Pointer<AbstractGlyphCache>{Utility::move(cache)};
 }
 
-Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) {
+Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCache& cache, const Float size, const Containers::StringView text) {
     /* Get glyph codes from characters */
-    std::vector<UnsignedInt> glyphs;
-    glyphs.reserve(text.size());
+    Containers::Array<UnsignedInt> glyphs{NoInit, text.size()};
     for(std::size_t i = 0; i != text.size(); ) {
-        UnsignedInt codepoint;
-        std::tie(codepoint, i) = Utility::Unicode::nextChar(text, i);
-        const auto it = _opened->glyphId.find(codepoint);
-        glyphs.push_back(it == _opened->glyphId.end() ? 0 : it->second);
+        const Containers::Pair<char32_t, std::size_t> codepointNext = Utility::Unicode::nextChar(text, i);
+        const auto it = _opened->glyphId.find(codepointNext.first());
+        glyphs[i] = it == _opened->glyphId.end() ? 0 : it->second;
+        i = codepointNext.second();
     }
 
     return Containers::pointer<MagnumFontLayouter>(_opened->glyphAdvance, cache, this->size(), size, Utility::move(glyphs));
@@ -186,9 +185,9 @@ Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCa
 
 namespace {
 
-MagnumFontLayouter::MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, std::vector<UnsignedInt>&& glyphs): AbstractLayouter(glyphs.size()), glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize), glyphs(Utility::move(glyphs)) {}
+MagnumFontLayouter::MagnumFontLayouter(Containers::ArrayView<const Vector2> glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, Containers::Array<UnsignedInt>&& glyphs): AbstractLayouter{UnsignedInt(glyphs.size())}, glyphAdvance{glyphAdvance}, cache(cache), fontSize{fontSize}, textSize{textSize}, glyphs{Utility::move(glyphs)} {}
 
-std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
+Containers::Triple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
     Vector2i position;
     Range2Di rectangle;
@@ -204,7 +203,7 @@ std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const Un
     /* Advance for given glyph, denormalized to requested text size */
     const Vector2 advance = glyphAdvance[glyphs[i]]*(textSize/fontSize);
 
-    return std::make_tuple(quadRectangle, textureCoordinates, advance);
+    return {quadRectangle, textureCoordinates, advance};
 }
 
 }

@@ -26,10 +26,12 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/StringStl.h> /** @todo remove once AbstractFont is <string>-free */
+#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/String.h>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/FileCallback.h"
@@ -83,6 +85,7 @@ struct AbstractFontTest: TestSuite::Tester {
     void fillGlyphCacheNotSupported();
     void fillGlyphCacheNotImplemented();
     void fillGlyphCacheNoFont();
+    void fillGlyphCacheInvalidUtf8();
 
     void createGlyphCache();
     void createGlyphCacheNotSupported();
@@ -135,6 +138,7 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::fillGlyphCacheNotSupported,
               &AbstractFontTest::fillGlyphCacheNotImplemented,
               &AbstractFontTest::fillGlyphCacheNoFont,
+              &AbstractFontTest::fillGlyphCacheInvalidUtf8,
 
               &AbstractFontTest::createGlyphCache,
               &AbstractFontTest::createGlyphCacheNotSupported,
@@ -147,6 +151,8 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::debugFeaturesPacked});
 }
 
+using namespace Containers::Literals;
+
 void AbstractFontTest::construct() {
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
@@ -155,7 +161,7 @@ void AbstractFontTest::construct() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -180,7 +186,7 @@ void AbstractFontTest::openData() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -210,7 +216,7 @@ void AbstractFontTest::openFileAsData() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -235,7 +241,7 @@ void AbstractFontTest::openFileAsDataNotFound() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -260,7 +266,7 @@ void AbstractFontTest::openFileNotImplemented() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -282,7 +288,7 @@ void AbstractFontTest::openDataNotSupported() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -303,7 +309,7 @@ void AbstractFontTest::openDataNotImplemented() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -325,7 +331,7 @@ void AbstractFontTest::setFileCallback() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -351,7 +357,7 @@ void AbstractFontTest::setFileCallbackTemplate() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -383,7 +389,7 @@ void AbstractFontTest::setFileCallbackTemplateNull() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -408,7 +414,7 @@ void AbstractFontTest::setFileCallbackTemplateConst() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -435,7 +441,7 @@ void AbstractFontTest::setFileCallbackFileOpened() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -457,7 +463,7 @@ void AbstractFontTest::setFileCallbackNotImplemented() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -482,7 +488,7 @@ void AbstractFontTest::setFileCallbackNotSupported() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -503,7 +509,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Metrics doOpenFile(const std::string& filename, Float size) override {
+        Metrics doOpenFile(Containers::StringView filename, Float size) override {
             /* Called because FileCallback is supported */
             _opened = filename == "file.dat" && fileCallback() && fileCallbackUserData();
             return {size, 1.0f, 2.0f, 3.0f};
@@ -517,7 +523,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -546,7 +552,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Metrics doOpenFile(const std::string& filename, Float size) override {
+        Metrics doOpenFile(Containers::StringView filename, Float size) override {
             openFileCalled = filename == "file.dat" && fileCallback() && fileCallbackUserData();
             return AbstractFont::doOpenFile(filename, size);
         }
@@ -558,7 +564,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -604,14 +610,14 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Metrics doOpenFile(const std::string& filename, Float size) override {
+        Metrics doOpenFile(Containers::StringView filename, Float size) override {
             openFileCalled = true;
             return AbstractFont::doOpenFile(filename, size);
         }
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -636,7 +642,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Metrics doOpenFile(const std::string&, Float) override {
+        Metrics doOpenFile(Containers::StringView, Float) override {
             openFileCalled = true;
             return {};
         }
@@ -648,7 +654,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -695,14 +701,14 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Metrics doOpenFile(const std::string&, Float) override {
+        Metrics doOpenFile(Containers::StringView, Float) override {
             openFileCalled = true;
             return {};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -734,7 +740,7 @@ void AbstractFontTest::properties() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
 
@@ -758,7 +764,7 @@ void AbstractFontTest::propertiesNoFont() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -784,7 +790,7 @@ void AbstractFontTest::glyphId() {
 
         UnsignedInt doGlyphId(char32_t a) override { return a*10; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -802,7 +808,7 @@ void AbstractFontTest::glyphIdNoFont() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -821,7 +827,7 @@ void AbstractFontTest::glyphAdvance() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt a) override { return {a*10.0f, -Float(a)/10.0f}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -839,7 +845,7 @@ void AbstractFontTest::glyphAdvanceNoFont() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;
@@ -860,7 +866,7 @@ struct DummyGlyphCache: AbstractGlyphCache {
 void AbstractFontTest::layout() {
     struct Layouter: AbstractLayouter {
         explicit Layouter(UnsignedInt count): AbstractLayouter{count} {}
-        std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override { return {}; }
+        Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override { return {}; }
     };
 
     struct MyFont: AbstractFont {
@@ -870,7 +876,7 @@ void AbstractFontTest::layout() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, const std::string& str) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView str) override {
             return Containers::pointer<Layouter>(UnsignedInt(cache.textureSize().x()*str.size()*size));
         }
     } font;
@@ -890,7 +896,7 @@ void AbstractFontTest::layoutNoFont() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
     } font;
 
     std::ostringstream out;
@@ -908,9 +914,9 @@ void AbstractFontTest::fillGlyphCache() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
-        void doFillGlyphCache(AbstractGlyphCache& cache, const std::u32string& characters) override {
+        void doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters) override {
             for(char a: characters) cache.insert(a*10, {a/2, a*2}, {});
         }
     } font;
@@ -937,7 +943,7 @@ void AbstractFontTest::fillGlyphCacheNotSupported() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
     } font;
 
     std::ostringstream out;
@@ -957,7 +963,7 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
     } font;
 
     std::ostringstream out;
@@ -977,7 +983,7 @@ void AbstractFontTest::fillGlyphCacheNoFont() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
     } font;
 
     std::ostringstream out;
@@ -985,6 +991,26 @@ void AbstractFontTest::fillGlyphCacheNoFont() {
     DummyGlyphCache cache{{100, 100}};
     font.fillGlyphCache(cache, "hello");
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::fillGlyphCache(): no font opened\n");
+}
+
+void AbstractFontTest::fillGlyphCacheInvalidUtf8() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct MyFont: AbstractFont {
+        FontFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
+    } font;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    DummyGlyphCache cache{{100, 100}};
+    font.fillGlyphCache(cache, "he\xffo");
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string: he\xffo\n");
 }
 
 void AbstractFontTest::createGlyphCache() {
@@ -995,11 +1021,11 @@ void AbstractFontTest::createGlyphCache() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
         Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override {
             Containers::Pointer<AbstractGlyphCache> cache{new DummyGlyphCache{{100, 100}}};
-            for(char a: std::string{"helo"}) cache->insert(a*10, {a/2, a*2}, {});
+            for(char a: "helo"_s) cache->insert(a*10, {a/2, a*2}, {});
             return cache;
         }
     } font;
@@ -1023,7 +1049,7 @@ void AbstractFontTest::createGlyphCacheNotSupported() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
     } font;
 
     std::ostringstream out;
@@ -1042,7 +1068,7 @@ void AbstractFontTest::createGlyphCacheNotImplemented() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
     } font;
 
     std::ostringstream out;
@@ -1061,7 +1087,7 @@ void AbstractFontTest::createGlyphCacheNoFont() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
     } font;
 
     std::ostringstream out;

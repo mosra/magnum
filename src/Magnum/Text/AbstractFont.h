@@ -29,13 +29,19 @@
  * @brief Class @ref Magnum::Text::AbstractFont, @ref Magnum::Text::AbstractLayouter, enum @ref Magnum::Text::FontFeature, enum set @ref Magnum::Text::FontFeatures
  */
 
-#include <string>
-#include <tuple>
 #include <Corrade/PluginManager/AbstractPlugin.h>
+#include <Corrade/Utility/StlForwardString.h> /** @todo remove once file callbacks are std::string-free */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Text/Text.h"
 #include "Magnum/Text/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For APIs that used to take or return a std::string */
+#include <Corrade/Containers/StringStl.h>
+/* renderGlyph() used to return a std::pair */
+#include <Corrade/Containers/PairStl.h>
+#endif
 
 namespace Magnum { namespace Text {
 
@@ -372,7 +378,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * memory view to @ref openData() instead. See @ref setFileCallback()
          * for more information.
          */
-        bool openFile(const std::string& filename, Float size);
+        bool openFile(Containers::StringView filename, Float size);
 
         /**
          * @brief Close currently opened file
@@ -461,9 +467,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Fills the cache with given characters. Fonts having
          * @ref FontFeature::PreparedGlyphCache do not support partial glyph
          * cache filling, use @ref createGlyphCache() instead. Expects that a
-         * font is opened.
+         * font is opened and @p characters is valid UTF-8.
          */
-        void fillGlyphCache(AbstractGlyphCache& cache, const std::string& characters);
+        void fillGlyphCache(AbstractGlyphCache& cache, Containers::StringView characters);
 
         /**
          * @brief Create glyph cache
@@ -486,7 +492,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * that a font is opened.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
-        Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, const std::string& text);
+        Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, Containers::StringView text);
 
     protected:
         /**
@@ -543,7 +549,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * supported --- instead, file is loaded though the callback and data
          * passed through to @ref doOpenData().
          */
-        virtual Metrics doOpenFile(const std::string& filename, Float size);
+        virtual Metrics doOpenFile(Containers::StringView filename, Float size);
 
     private:
         /** @brief Implementation for @ref features() */
@@ -586,13 +592,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * The string is converted from UTF-8 to UTF-32, duplicate characters
          * are *not* removed.
          */
-        virtual void doFillGlyphCache(AbstractGlyphCache& cache, const std::u32string& characters);
+        virtual void doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters);
 
         /** @brief Implementation for @ref createGlyphCache() */
         virtual Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache();
 
         /** @brief Implementation for @ref layout() */
-        virtual Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) = 0;
+        virtual Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) = 0;
 
         Containers::Optional<Containers::ArrayView<const char>>(*_fileCallback)(const std::string&, InputFileCallbackPolicy, void*){};
         void* _fileCallbackUserData{};
@@ -650,7 +656,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
          * updates @p rectangle with extended bounds. Expects that @p i is less
          * than @ref glyphCount().
          */
-        std::pair<Range2D, Range2D> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle);
+        Containers::Pair<Range2D, Range2D> renderGlyph(UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle);
 
     protected:
         /**
@@ -667,7 +673,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
          * Returns quad position (relative to current cursor position), texture
          * coordinates and advance to the next glyph.
          */
-        virtual std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) = 0;
+        virtual Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) = 0;
 
         UnsignedInt _glyphCount;
 };
@@ -690,7 +696,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Text.AbstractFont/0.3"
+"cz.mosra.magnum.Text.AbstractFont/0.3.1"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

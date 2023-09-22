@@ -165,7 +165,7 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
         explicit MagnumFont();
 
         /** @brief Plugin manager constructor */
-        explicit MagnumFont(PluginManager::AbstractManager& manager, const std::string& plugin);
+        explicit MagnumFont(PluginManager::AbstractManager& manager, const Containers::StringView& plugin);
 
         ~MagnumFont();
 
@@ -173,13 +173,13 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
         MAGNUM_MAGNUMFONT_LOCAL FontFeatures doFeatures() const override;
         MAGNUM_MAGNUMFONT_LOCAL bool doIsOpened() const override;
         MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenData(Containers::ArrayView<const char> data, Float) override;
-        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenFile(const std::string& filename, Float) override;
+        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenFile(Containers::StringView filename, Float) override;
         MAGNUM_MAGNUMFONT_LOCAL void doClose() override;
 
         MAGNUM_MAGNUMFONT_LOCAL UnsignedInt doGlyphId(char32_t character) override;
         MAGNUM_MAGNUMFONT_LOCAL Vector2 doGlyphAdvance(UnsignedInt glyph) override;
         MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override;
-        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) override;
+        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) override;
 
         struct Data;
         Containers::Pointer<Data> _opened;

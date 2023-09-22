@@ -93,12 +93,12 @@ void MagnumFontConverterTest::exportFont() {
         private:
             void doClose() override { _opened = false; }
             bool doIsOpened() const override { return _opened; }
-            Metrics doOpenFile(const std::string&, Float) override {
+            Metrics doOpenFile(Containers::StringView, Float) override {
                 _opened = true;
                 return {16.0f, 25.0f, -10.0f, 39.7333f};
             }
             FontFeatures doFeatures() const override { return {}; }
-            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override { return nullptr; }
+            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
             UnsignedInt doGlyphId(const char32_t character) override {
                 switch(character) {
@@ -167,7 +167,7 @@ void MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload() {
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
     } font;

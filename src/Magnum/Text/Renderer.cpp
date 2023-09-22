@@ -26,7 +26,8 @@
 #include "Renderer.h"
 
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/ArrayViewStl.h> /** @todo remove once Renderer is STL-free */
+#include <Corrade/Containers/StringStl.h> /** @todo remove once Renderer is STL-free */
 
 #include "Magnum/Mesh.h"
 #include "Magnum/GL/Context.h"
@@ -111,8 +112,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         /* Render all glyphs */
         Vector2 cursorPosition(linePosition);
         for(UnsignedInt i = 0; i != layouter->glyphCount(); ++i) {
-            Range2D quadPosition, textureCoordinates;
-            std::tie(quadPosition, textureCoordinates) = layouter->renderGlyph(i, cursorPosition, lineRectangle);
+            const Containers::Pair<Range2D, Range2D> quadPositionTextureCoordinates = layouter->renderGlyph(i, cursorPosition, lineRectangle);
 
             /* 0---2
                |   |
@@ -121,10 +121,14 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
                1---3 */
 
             vertices.insert(vertices.end(), {
-                {quadPosition.topLeft(), textureCoordinates.topLeft()},
-                {quadPosition.bottomLeft(), textureCoordinates.bottomLeft()},
-                {quadPosition.topRight(), textureCoordinates.topRight()},
-                {quadPosition.bottomRight(), textureCoordinates.bottomRight()}
+                {quadPositionTextureCoordinates.first().topLeft(),
+                    quadPositionTextureCoordinates.second().topLeft()},
+                {quadPositionTextureCoordinates.first().bottomLeft(),
+                    quadPositionTextureCoordinates.second().bottomLeft()},
+                {quadPositionTextureCoordinates.first().topRight(),
+                    quadPositionTextureCoordinates.second().topRight()},
+                {quadPositionTextureCoordinates.first().bottomRight(),
+                    quadPositionTextureCoordinates.second().bottomRight()}
             });
         }
 

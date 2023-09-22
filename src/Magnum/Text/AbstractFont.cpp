@@ -25,13 +25,15 @@
 
 #include "AbstractFont.h"
 
+#include <string> /** @todo remove once file callbacks are <string>-free */
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once file callbacks are <string>-free */
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/PluginManager/Manager.hpp>
-#include <Corrade/Utility/DebugStl.h> /** @todo remove once AbstractFont is <string>-free */
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/Unicode.h>
 
@@ -116,7 +118,7 @@ auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Metri
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
 }
 
-bool AbstractFont::openFile(const std::string& filename, const Float size) {
+bool AbstractFont::openFile(const Containers::StringView filename, const Float size) {
     close();
     Metrics metrics;
 
@@ -158,7 +160,7 @@ bool AbstractFont::openFile(const std::string& filename, const Float size) {
     return isOpened();
 }
 
-auto AbstractFont::doOpenFile(const std::string& filename, const Float size) -> Metrics {
+auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float size) -> Metrics {
     CORRADE_ASSERT(features() & FontFeature::OpenData, "Text::AbstractFont::openFile(): not implemented", {});
 
     Metrics metrics;
@@ -229,16 +231,20 @@ Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
     return doGlyphAdvance(glyph);
 }
 
-void AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const std::string& characters) {
+void AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const Containers::StringView characters) {
     CORRADE_ASSERT(isOpened(),
         "Text::AbstractFont::fillGlyphCache(): no font opened", );
     CORRADE_ASSERT(!(features() & FontFeature::PreparedGlyphCache),
         "Text::AbstractFont::fillGlyphCache(): feature not supported", );
 
-    doFillGlyphCache(cache, Utility::Unicode::utf32(characters));
+    const Containers::Optional<Containers::Array<char32_t>> utf32 = Utility::Unicode::utf32(characters);
+    CORRADE_ASSERT(utf32,
+        "Text::AbstractFont::fillGlyphCache(): not a valid UTF-8 string:" << characters, );
+
+    doFillGlyphCache(cache, *utf32);
 }
 
-void AbstractFont::doFillGlyphCache(AbstractGlyphCache&, const std::u32string&) {
+void AbstractFont::doFillGlyphCache(AbstractGlyphCache&, Containers::ArrayView<const char32_t>) {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 
@@ -255,7 +261,7 @@ Containers::Pointer<AbstractGlyphCache> AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
 }
 
-Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCache& cache, const Float size, const std::string& text) {
+Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCache& cache, const Float size, const Containers::StringView text) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
 
     return doLayout(cache, size, text);
@@ -291,17 +297,14 @@ AbstractLayouter::AbstractLayouter(UnsignedInt glyphCount): _glyphCount(glyphCou
 
 AbstractLayouter::~AbstractLayouter() = default;
 
-std::pair<Range2D, Range2D> AbstractLayouter::renderGlyph(const UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle) {
+Containers::Pair<Range2D, Range2D> AbstractLayouter::renderGlyph(const UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle) {
     CORRADE_ASSERT(i < glyphCount(), "Text::AbstractLayouter::renderGlyph(): index" << i << "out of range for" << glyphCount() << "glyphs", {});
 
     /* Render the glyph */
-    Range2D quadPosition, textureCoordinates;
-    Vector2 advance;
-    std::tie(quadPosition, textureCoordinates, advance) = doRenderGlyph(i);
+    const Containers::Triple<Range2D, Range2D, Vector2> quadPositionTextureCoordinatesAdvance = doRenderGlyph(i);
 
     /* Move the quad to cursor */
-    quadPosition.bottomLeft() += cursorPosition;
-    quadPosition.topRight() += cursorPosition;
+    const Range2D quadPosition = quadPositionTextureCoordinatesAdvance.first().translated(cursorPosition);
 
     /* Extend rectangle with current quad bounds. If zero size, replace it. */
     if(!rectangle.size().isZero()) {
@@ -310,10 +313,10 @@ std::pair<Range2D, Range2D> AbstractLayouter::renderGlyph(const UnsignedInt i, V
     } else rectangle = quadPosition;
 
     /* Advance cursor position to next character */
-    cursorPosition += advance;
+    cursorPosition += quadPositionTextureCoordinatesAdvance.third();
 
     /* Return moved quad and unchanged texture coordinates */
-    return {quadPosition, textureCoordinates};
+    return {quadPosition, quadPositionTextureCoordinatesAdvance.second()};
 }
 
 }}

@@ -59,7 +59,7 @@ struct MyFont: Text::AbstractFont {
     void doClose() override {}
     UnsignedInt doGlyphId(char32_t) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-    Containers::Pointer<Text::AbstractLayouter> doLayout(const Text::AbstractGlyphCache&, Float, const std::string&) override { return {}; }
+    Containers::Pointer<Text::AbstractLayouter> doLayout(const Text::AbstractGlyphCache&, Float, Containers::StringView) override { return {}; }
 };
 struct MyFontConverter: Text::AbstractFontConverter {
     explicit MyFontConverter(PluginManager::AbstractManager& manager, Containers::StringView plugin): Text::AbstractFontConverter{manager, plugin} {}

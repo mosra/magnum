@@ -58,7 +58,9 @@ namespace {
 std::u32string uniqueUnicode(const std::string& characters)
 {
     /* Convert UTF-8 to UTF-32 */
-    std::u32string result = Utility::Unicode::utf32(characters);
+    Containers::Optional<Containers::Array<char32_t>> utf32 = Utility::Unicode::utf32(characters);
+    /** @todo result validity check */
+    std::u32string result{utf32->begin(), utf32->end()};
 
     /* Remove duplicate glyphs */
     std::sort(result.begin(), result.end());

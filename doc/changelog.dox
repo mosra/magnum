@@ -1482,6 +1482,12 @@ See also:
         @ref std::pair
     -   All @ref Math APIs that took or returned @ref std::pair now use
         @relativeref{Corrade,Containers::Pair} instead
+    -   @ref Text::AbstractFont public APIs now take
+        @ref Containers::StringView instead of @ref std::string and return
+        @ref Containers::Pair instead of @ref std::pair. Additionally, the
+        internal implementation relies on @ref Containers::ArrayView "Containers::ArrayView<const char32_t>"
+        instead of @ref std::u32string and @ref Containers::Triple instead of
+        @ref std::tuple, but that shouldn't affect end-user code in any way.
     To handle most backwards compatibility, @ref Corrade/Containers/StringStl.h
     and/or @ref Corrade/Containers/PairStl.h is included in affected headers
     for implicit conversions from/to a @ref std::string and/or @ref std::pair,

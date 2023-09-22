@@ -24,6 +24,8 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/GL/Context.h"
@@ -59,12 +61,10 @@ class TestLayouter: public AbstractLayouter {
         explicit TestLayouter(Float size, std::size_t glyphCount): AbstractLayouter(glyphCount), _size(size) {}
 
     private:
-        std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override {
-            return std::make_tuple(
-                Range2D({}, Vector2(3.0f, 2.0f)*((i+1)*_size)),
-                Range2D::fromSize({i*6.0f, 0.0f}, {6.0f, 10.0f}),
-                (Vector2::xAxis((i+1)*3.0f)+Vector2(1.0f, -1.0f))*_size
-            );
+        Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override {
+            return {{{}, Vector2(3.0f, 2.0f)*((i+1)*_size)},
+                    Range2D::fromSize({i*6.0f, 0.0f}, {6.0f, 10.0f}),
+                    (Vector2::xAxis((i+1)*3.0f)+Vector2(1.0f, -1.0f))*_size};
         }
 
         Float _size;
@@ -79,7 +79,7 @@ class TestFont: public AbstractFont {
     UnsignedInt doGlyphId(char32_t) override { return 0; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, const Float size, const std::string& text) override {
+    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float size, Containers::StringView text) override {
         return Containers::Pointer<AbstractLayouter>(new TestLayouter(size, text.size()));
     }
 };
@@ -331,8 +331,10 @@ void RendererGLTest::multiline() {
             explicit Layouter(UnsignedInt glyphCount): AbstractLayouter(glyphCount) {}
 
         private:
-            std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
-                return std::make_tuple(Range2D({}, Vector2(1.0f)), Range2D({}, Vector2(1.0f)), Vector2::xAxis(2.0f));
+            Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
+                return {{{}, Vector2(1.0f)},
+                        Range2D({}, Vector2(1.0f)),
+                        Vector2::xAxis(2.0f)};
             }
     };
 
@@ -346,7 +348,7 @@ void RendererGLTest::multiline() {
             bool doIsOpened() const override { return _opened; }
             void doClose() override { _opened = false; }
 
-            Metrics doOpenFile(const std::string&, Float) override {
+            Metrics doOpenFile(Containers::StringView, Float) override {
                 _opened = true;
                 return {0.5f, 0.45f, -0.25f, 0.75f};
             }
@@ -354,7 +356,7 @@ void RendererGLTest::multiline() {
             UnsignedInt doGlyphId(char32_t) override { return 0; }
             Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string& text) override {
+            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView text) override {
                 return Containers::Pointer<AbstractLayouter>(new Layouter(text.size()));
             }
 

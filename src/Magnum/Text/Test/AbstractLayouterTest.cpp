@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
@@ -48,10 +49,10 @@ void AbstractLayouterTest::renderGlyph() {
     struct Layouter: AbstractLayouter {
         explicit Layouter(): AbstractLayouter{3} {}
 
-        std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
-            return std::make_tuple(Range2D({1.0f, 0.5f}, {1.1f, 1.0f}),
-                                   Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}),
-                                   Vector2(2.0f, -1.0f));
+        Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override {
+            return {{{1.0f, 0.5f}, {1.1f, 1.0f}},
+                    {{0.3f, 1.1f}, {-0.5f, 0.7f}},
+                    {2.0f, -1.0f}};
         }
     };
 
@@ -60,24 +61,21 @@ void AbstractLayouterTest::renderGlyph() {
     Vector2 cursorPosition(1.0f, 2.0f);
 
     Layouter l;
-    Range2D quadPosition;
-    Range2D textureCoords;
-
-    std::tie(quadPosition, textureCoords) = l.renderGlyph(0, cursorPosition, rectangle);
-    CORRADE_COMPARE(quadPosition, Range2D({2.0f, 2.5f}, {2.1f, 3.0f}));
-    CORRADE_COMPARE(textureCoords, Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}));
+    CORRADE_COMPARE(l.renderGlyph(0, cursorPosition, rectangle),
+        Containers::pair(Range2D{{2.0f, 2.5f}, {2.1f, 3.0f}},
+                         Range2D{{0.3f, 1.1f}, {-0.5f, 0.7f}}));
     CORRADE_COMPARE(cursorPosition, Vector2(3.0f, 1.0f));
     CORRADE_COMPARE(rectangle, Range2D({2.0f, 2.5f}, {2.1f, 3.0f}));
 
-    std::tie(quadPosition, textureCoords) = l.renderGlyph(1, cursorPosition, rectangle);
-    CORRADE_COMPARE(quadPosition, Range2D({4.0f, 1.5f}, {4.1f, 2.0f}));
-    CORRADE_COMPARE(textureCoords, Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}));
+    CORRADE_COMPARE(l.renderGlyph(1, cursorPosition, rectangle),
+        Containers::pair(Range2D{{4.0f, 1.5f}, {4.1f, 2.0f}},
+                         Range2D{{0.3f, 1.1f}, {-0.5f, 0.7f}}));
     CORRADE_COMPARE(cursorPosition, Vector2(5.0f, 0.0f));
     CORRADE_COMPARE(rectangle, Range2D({2.0f, 1.5f}, {4.1f, 3.0f}));
 
-    std::tie(quadPosition, textureCoords) = l.renderGlyph(2, cursorPosition, rectangle);
-    CORRADE_COMPARE(quadPosition, Range2D({6.0f, 0.5f}, {6.1f, 1.0f}));
-    CORRADE_COMPARE(textureCoords, Range2D({0.3f, 1.1f}, {-0.5f, 0.7f}));
+    CORRADE_COMPARE(l.renderGlyph(2, cursorPosition, rectangle),
+        Containers::pair(Range2D{{6.0f, 0.5f}, {6.1f, 1.0f}},
+                         Range2D{{0.3f, 1.1f}, {-0.5f, 0.7f}}));
     CORRADE_COMPARE(cursorPosition, Vector2(7.0f, -1.0f));
     CORRADE_COMPARE(rectangle, Range2D({2.0f, 0.5f}, {6.1f, 3.0f}));
 }
@@ -88,7 +86,7 @@ void AbstractLayouterTest::renderGlyphOutOfRange() {
     struct Layouter: AbstractLayouter {
         explicit Layouter(): AbstractLayouter{3} {}
 
-        std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override { return {}; }
+        Containers::Triple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt) override { return {}; }
     } layouter;
 
     Range2D rectangle;

@@ -160,7 +160,7 @@ struct DummyFont: AbstractFont {
 
     UnsignedInt doGlyphId(char32_t) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+    Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
         return nullptr;
     }
 } dummyFont;
