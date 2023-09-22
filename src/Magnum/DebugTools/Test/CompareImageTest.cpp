@@ -29,6 +29,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo drop once Debug is stream-free */
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>

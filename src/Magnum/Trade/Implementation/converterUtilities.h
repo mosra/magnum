@@ -32,10 +32,10 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringStl.h> /** @todo remove when Debug is stream-free */
 #include <Corrade/Containers/StringIterable.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Format.h>
-#include <Corrade/Utility/FormatStl.h> /** @todo drop once String::replaceAll() has a StringView overload */
 #include <Corrade/Utility/String.h> /* replaceAll() */
 #include <Corrade/Utility/ConfigurationGroup.h>
 
@@ -86,7 +86,6 @@ void printPluginConfigurationInfo(Debug& d, const Utility::ConfigurationGroup& c
             /* Print the value wrapped in quotes if it contains spaces, indent
                also all newlines */
             if(i.second().contains('\n'))
-                /** @todo replaceAll() without std::string */
                 d << Utility::format("\"\"\"\n  {}\n  \"\"\"", Utility::String::replaceAll(i.second(), "\n", "\n  "));
             /** @todo less wasteful API for checking leading/trailing zeros? */
             else if(i.second().trimmed() != i.second())
