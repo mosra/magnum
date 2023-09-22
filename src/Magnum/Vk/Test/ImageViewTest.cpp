@@ -154,7 +154,7 @@ void ImageViewTest::createInfoConstructFromImageFormatUknown() {
     CORRADE_COMPARE(out.str(),
         "Vk::ImageViewCreateInfo: the image has unknown format, you have to specify it explicitly\n"
         /* The second assert won't appear for the user, it's here only because
-           the graceful assert can'ŧ do an early exist in a delegeated
+           the graceful assert can't do an early exist in a delegeated
            constructor call */
         "Vk::imageAspectsFor(): can't get an aspect for Vk::PixelFormat(0)\n");
 }
