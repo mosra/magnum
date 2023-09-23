@@ -65,7 +65,7 @@ std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2
     return atlas;
 }
 
-Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i> sizes) {
+Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes) {
     CORRADE_ASSERT(layerSize.product() && layerSize.x() == layerSize.y() && (layerSize & (layerSize - Vector2i{1})).isZero(),
         "TextureTools::atlasArrayPowerOfTwo(): expected layer size to be a non-zero power-of-two square, got" << Debug::packed << layerSize, {});
 
