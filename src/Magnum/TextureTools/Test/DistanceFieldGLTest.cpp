@@ -120,7 +120,7 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
     } else
     #endif
     {
-        _testDir = DISTANCEFIELDGLTEST_FILES_DIR;
+        _testDir = Utility::Path::join(TEXTURETOOLS_TEST_DIR, "DistanceFieldGLTestFiles");
     }
 }
 

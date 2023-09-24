@@ -30,9 +30,9 @@ set(CMAKE_FOLDER "Magnum/TextureTools/Test")
 corrade_add_test(TextureToolsAtlasTest AtlasTest.cpp LIBRARIES MagnumTextureToolsTestLib)
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(DISTANCEFIELDGLTEST_FILES_DIR "DistanceFieldGLTestFiles")
+    set(TEXTURETOOLS_TEST_DIR .)
 else()
-    set(DISTANCEFIELDGLTEST_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/DistanceFieldGLTestFiles)
+    set(TEXTURETOOLS_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 if(MAGNUM_BUILD_GL_TESTS)
