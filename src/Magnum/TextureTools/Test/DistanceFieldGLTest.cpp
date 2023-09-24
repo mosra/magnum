@@ -58,10 +58,6 @@
 
 #include "configure.h"
 
-#ifdef MAGNUM_TARGET_GLES
-#include <Corrade/Containers/StringView.h> /* for SwiftShader detection */
-#endif
-
 namespace Magnum { namespace TextureTools { namespace Test { namespace {
 
 struct DistanceFieldGLTest: GL::OpenGLTester {
