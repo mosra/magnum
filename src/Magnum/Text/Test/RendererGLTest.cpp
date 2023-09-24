@@ -350,7 +350,7 @@ void RendererGLTest::multiline() {
 
             Properties doOpenFile(Containers::StringView, Float) override {
                 _opened = true;
-                return {0.5f, 0.45f, -0.25f, 0.75f};
+                return {0.5f, 0.45f, -0.25f, 0.75f, 1};
             }
 
             UnsignedInt doGlyphId(char32_t) override { return 0; }

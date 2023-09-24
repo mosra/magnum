@@ -95,7 +95,7 @@ void MagnumFontConverterTest::exportFont() {
             bool doIsOpened() const override { return _opened; }
             Properties doOpenFile(Containers::StringView, Float) override {
                 _opened = true;
-                return {16.0f, 25.0f, -10.0f, 39.7333f};
+                return {16.0f, 25.0f, -10.0f, 39.7333f, 3};
             }
             FontFeatures doFeatures() const override { return {}; }
             Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }

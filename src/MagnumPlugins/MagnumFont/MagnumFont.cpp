@@ -134,7 +134,8 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
     return {_opened->conf.value<Float>("fontSize"),
             _opened->conf.value<Float>("ascent"),
             _opened->conf.value<Float>("descent"),
-            _opened->conf.value<Float>("lineHeight")};
+            _opened->conf.value<Float>("lineHeight"),
+            UnsignedInt(glyphs.size())};
 }
 
 auto MagnumFont::doOpenFile(const Containers::StringView filename, const Float size) -> Properties {
@@ -150,7 +151,7 @@ UnsignedInt MagnumFont::doGlyphId(const char32_t character) {
 }
 
 Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
-    return glyph < _opened->glyphAdvance.size() ? _opened->glyphAdvance[glyph] : Vector2();
+    return _opened->glyphAdvance[glyph];
 }
 
 Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {

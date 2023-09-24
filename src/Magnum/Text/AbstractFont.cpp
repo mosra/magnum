@@ -114,6 +114,7 @@ bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float 
         _ascent = properties.ascent;
         _descent = properties.descent;
         _lineHeight = properties.lineHeight;
+        _glyphCount = properties.glyphCount;
         return true;
     }
 
@@ -166,6 +167,7 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
         _ascent = properties.ascent;
         _descent = properties.descent;
         _lineHeight = properties.lineHeight;
+        _glyphCount = properties.glyphCount;
         return true;
     }
 
@@ -237,6 +239,11 @@ Float AbstractFont::lineHeight() const {
     return _lineHeight;
 }
 
+UnsignedInt AbstractFont::glyphCount() const {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphCount(): no font opened", 0);
+    return _glyphCount;
+}
+
 UnsignedInt AbstractFont::glyphId(const char32_t character) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphId(): no font opened", 0);
 
@@ -245,6 +252,7 @@ UnsignedInt AbstractFont::glyphId(const char32_t character) {
 
 Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphAdvance(): no font opened", {});
+    CORRADE_ASSERT(glyph < _glyphCount, "Text::AbstractFont::glyphAdvance(): index" << glyph << "out of range for" << _glyphCount << "glyphs", {});
 
     return doGlyphAdvance(glyph);
 }

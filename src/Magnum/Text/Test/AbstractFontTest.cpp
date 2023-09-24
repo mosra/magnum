@@ -77,6 +77,7 @@ struct AbstractFontTest: TestSuite::Tester {
 
     void glyphAdvance();
     void glyphAdvanceNoFont();
+    void glyphAdvanceOutOfRange();
 
     void layout();
     void layoutNoFont();
@@ -130,6 +131,7 @@ AbstractFontTest::AbstractFontTest() {
 
               &AbstractFontTest::glyphAdvance,
               &AbstractFontTest::glyphAdvanceNoFont,
+              &AbstractFontTest::glyphAdvanceOutOfRange,
 
               &AbstractFontTest::layout,
               &AbstractFontTest::layoutNoFont,
@@ -181,7 +183,7 @@ void AbstractFontTest::openData() {
 
         Properties doOpenData(const Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xa5');
-            return {size, 1.0f, 2.0f, 3.0f};
+            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
@@ -201,6 +203,7 @@ void AbstractFontTest::openData() {
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
 void AbstractFontTest::openFileAsData() {
@@ -211,7 +214,7 @@ void AbstractFontTest::openFileAsData() {
 
         Properties doOpenData(const Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xa5');
-            return {size, 1.0f, 2.0f, 3.0f};
+            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
@@ -231,6 +234,7 @@ void AbstractFontTest::openFileAsData() {
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
 void AbstractFontTest::openFileAsDataNotFound() {
@@ -512,7 +516,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
         Properties doOpenFile(Containers::StringView filename, Float size) override {
             /* Called because FileCallback is supported */
             _opened = filename == "file.dat" && fileCallback() && fileCallbackUserData();
-            return {size, 1.0f, 2.0f, 3.0f};
+            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
         Properties doOpenData(Containers::ArrayView<const char>, Float) override {
@@ -544,6 +548,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
 void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
@@ -559,7 +564,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
 
         Properties doOpenData(Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xb0');
-            return {size, 1.0f, 2.0f, 3.0f};
+            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
@@ -602,6 +607,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
 void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() {
@@ -649,7 +655,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
 
         Properties doOpenData(Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xb0');
-            return {size, 1.0f, 2.0f, 3.0f};
+            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
@@ -693,6 +699,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
 void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
@@ -735,7 +742,7 @@ void AbstractFontTest::properties() {
 
         Properties doOpenData(const Containers::ArrayView<const char>, Float size) override {
             _opened = true;
-            return {size, 1.0f, 2.0f, 3.0f};
+            return {size, 1.0f, 2.0f, 3.0f, 15};
         }
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
@@ -752,6 +759,7 @@ void AbstractFontTest::properties() {
     CORRADE_COMPARE(font.ascent(), 1.0f);
     CORRADE_COMPARE(font.descent(), 2.0f);
     CORRADE_COMPARE(font.lineHeight(), 3.0f);
+    CORRADE_COMPARE(font.glyphCount(), 15);
 }
 
 void AbstractFontTest::propertiesNoFont() {
@@ -775,11 +783,13 @@ void AbstractFontTest::propertiesNoFont() {
     font.ascent();
     font.descent();
     font.lineHeight();
+    font.glyphCount();
     CORRADE_COMPARE(out.str(),
         "Text::AbstractFont::size(): no font opened\n"
         "Text::AbstractFont::ascent(): no font opened\n"
         "Text::AbstractFont::descent(): no font opened\n"
-        "Text::AbstractFont::lineHeight(): no font opened\n");
+        "Text::AbstractFont::lineHeight(): no font opened\n"
+        "Text::AbstractFont::glyphCount(): no font opened\n");
 }
 
 void AbstractFontTest::glyphId() {
@@ -821,17 +831,25 @@ void AbstractFontTest::glyphIdNoFont() {
 
 void AbstractFontTest::glyphAdvance() {
     struct MyFont: AbstractFont {
-        FontFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+            _opened = true;
+            return {0.0f, 0.0f, 0.0f, 0.0f, 98};
+        }
         UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt a) override { return {a*10.0f, -Float(a)/10.0f}; }
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;
         }
+
+        bool _opened = false;
     } font;
 
+    /* Have to explicitly open in order to make glyphCount() non-zero */
+    CORRADE_VERIFY(font.openData(nullptr, 0.0f));
     CORRADE_COMPARE(font.glyphAdvance(97), (Vector2{970.0f, -9.7f}));
 }
 
@@ -854,6 +872,37 @@ void AbstractFontTest::glyphAdvanceNoFont() {
     Error redirectError{&out};
     font.glyphAdvance(97);
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::glyphAdvance(): no font opened\n");
+}
+
+void AbstractFontTest::glyphAdvanceOutOfRange() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    struct MyFont: AbstractFont {
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
+            _opened = true;
+            return {0.0f, 0.0f, 0.0f, 0.0f, 3};
+        }
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+    } font;
+
+    /* Have to explicitly open in order to make glyphCount() non-zero */
+    CORRADE_VERIFY(font.openData(nullptr, 0.0f));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    font.glyphAdvance(3);
+    CORRADE_COMPARE(out.str(),
+        "Text::AbstractFont::glyphAdvance(): index 3 out of range for 3 glyphs\n");
 }
 
 struct DummyGlyphCache: AbstractGlyphCache {

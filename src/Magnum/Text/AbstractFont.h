@@ -436,6 +436,18 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         Float lineHeight() const;
 
         /**
+         * @brief Total count of glyphs in the font
+         * @m_since_latest
+         *
+         * Expects that a font is opened.
+         * @note This function is meant to be used only for font observations
+         *      and conversions. In performance-critical code the
+         *      @ref fillGlyphCache() and @ref layout() functions should be
+         *      used instead.
+         */
+        UnsignedInt glyphCount() const;
+
+        /**
          * @brief Glyph ID for given character
          *
          * Expects that a font is opened.
@@ -451,7 +463,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * Distance the cursor for the next glyph that follows @p glyph.
          * Doesn't consider kerning or any other advanced shaping features.
-         * Expects that a font is opened.
+         * Expects that a font is opened and @p glyph is less than
+         * @ref glyphCount().
          * @note This function is meant to be used only for font observations
          *      and conversions. In performance-critical code the @ref layout()
          *      function should be used instead.
@@ -503,8 +516,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         struct Properties {
             #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5
             /* Otherwise GCC 4.8 loudly complains about missing initializers */
-            constexpr /*implicit*/ Properties() noexcept: size{}, ascent{}, descent{}, lineHeight{} {}
-            constexpr /*implicit*/ Properties(Float size, Float ascent, Float descent, Float lineHeight) noexcept: size{size}, ascent{ascent}, descent{descent}, lineHeight{lineHeight} {}
+            constexpr /*implicit*/ Properties() noexcept: size{}, ascent{}, descent{}, lineHeight{}, glyphCount{} {}
+            constexpr /*implicit*/ Properties(Float size, Float ascent, Float descent, Float lineHeight, UnsignedInt glyphCount) noexcept: size{size}, ascent{ascent}, descent{descent}, lineHeight{lineHeight}, glyphCount{glyphCount} {}
             #endif
 
             /**
@@ -530,6 +543,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
              * @see @ref lineHeight()
              */
             Float lineHeight;
+
+            /**
+             * Total count of glyphs in the font
+             * @see @ref glyphCount()
+             * @m_since_latest
+             */
+            UnsignedInt glyphCount;
         };
 
     protected:
@@ -617,6 +637,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         } _fileCallbackTemplate{nullptr, nullptr};
 
         Float _size{}, _ascent{}, _descent{}, _lineHeight{};
+        UnsignedInt _glyphCount{};
 };
 
 /**
@@ -702,7 +723,7 @@ updated interface string.
 */
 /* Silly indentation to make the string appear in pluginInterface() docs */
 #define MAGNUM_TEXT_ABSTRACTFONT_PLUGIN_INTERFACE /* [interface] */ \
-"cz.mosra.magnum.Text.AbstractFont/0.3.1"
+"cz.mosra.magnum.Text.AbstractFont/0.3.2"
 /* [interface] */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

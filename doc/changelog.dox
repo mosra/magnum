@@ -767,6 +767,7 @@ See also:
 
 @subsubsection changelog-latest-changes-text Text library
 
+-   Added @ref Text::AbstractFont::glyphCount()
 -   Added @ref Text::Renderer::fontSize()
 
 @subsubsection changelog-latest-changes-trade Trade library
