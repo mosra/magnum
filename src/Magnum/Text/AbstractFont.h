@@ -501,7 +501,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Returned from @ref doOpenFile(), @ref doOpenData().
          */
         struct Properties {
-            #ifndef DOXYGEN_GENERATING_OUTPUT
+            #if defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG) && __GNUC__ < 5
             /* Otherwise GCC 4.8 loudly complains about missing initializers */
             constexpr /*implicit*/ Properties() noexcept: size{}, ascent{}, descent{}, lineHeight{} {}
             constexpr /*implicit*/ Properties(Float size, Float ascent, Float descent, Float lineHeight) noexcept: size{size}, ascent{ascent}, descent{descent}, lineHeight{lineHeight} {}
