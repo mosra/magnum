@@ -250,6 +250,13 @@ UnsignedInt AbstractFont::glyphId(const char32_t character) {
     return doGlyphId(character);
 }
 
+Vector2 AbstractFont::glyphSize(const UnsignedInt glyph) {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphSize(): no font opened", {});
+    CORRADE_ASSERT(glyph < _glyphCount, "Text::AbstractFont::glyphSize(): index" << glyph << "out of range for" << _glyphCount << "glyphs", {});
+
+    return doGlyphSize(glyph);
+}
+
 Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphAdvance(): no font opened", {});
     CORRADE_ASSERT(glyph < _glyphCount, "Text::AbstractFont::glyphAdvance(): index" << glyph << "out of range for" << _glyphCount << "glyphs", {});

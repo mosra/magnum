@@ -58,6 +58,7 @@ struct MyFont: Text::AbstractFont {
     bool doIsOpened() const override { return false; }
     void doClose() override {}
     UnsignedInt doGlyphId(char32_t) override { return {}; }
+    Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
     Containers::Pointer<Text::AbstractLayouter> doLayout(const Text::AbstractGlyphCache&, Float, Containers::StringView) override { return {}; }
 };

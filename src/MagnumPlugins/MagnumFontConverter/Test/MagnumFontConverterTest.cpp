@@ -109,6 +109,8 @@ void MagnumFontConverterTest::exportFont() {
                 return 0;
             }
 
+            Vector2 doGlyphSize(UnsignedInt) override { return {}; }
+
             Vector2 doGlyphAdvance(const UnsignedInt glyph) override {
                 switch(glyph) {
                     case 0: return {8, 0};
@@ -166,6 +168,7 @@ void MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload() {
         void doClose() override {}
 
         UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphSize(UnsignedInt) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
             return nullptr;

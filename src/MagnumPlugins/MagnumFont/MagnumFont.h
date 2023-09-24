@@ -177,6 +177,7 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
         MAGNUM_MAGNUMFONT_LOCAL void doClose() override;
 
         MAGNUM_MAGNUMFONT_LOCAL UnsignedInt doGlyphId(char32_t character) override;
+        MAGNUM_MAGNUMFONT_LOCAL Vector2 doGlyphSize(UnsignedInt glyph) override;
         MAGNUM_MAGNUMFONT_LOCAL Vector2 doGlyphAdvance(UnsignedInt glyph) override;
         MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override;
         MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, Containers::StringView text) override;

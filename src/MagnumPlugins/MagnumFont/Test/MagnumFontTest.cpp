@@ -94,6 +94,7 @@ void MagnumFontTest::properties() {
     CORRADE_COMPARE(font->descent(), -10.0f);
     CORRADE_COMPARE(font->lineHeight(), 39.7333f);
     CORRADE_COMPARE(font->glyphCount(), 3);
+    CORRADE_COMPARE(font->glyphSize(font->glyphId(U'W')), (Vector2{16.0f, 120.0f}));
     CORRADE_COMPARE(font->glyphAdvance(font->glyphId(U'W')), (Vector2{23.0f, 0.0f}));
 }
 

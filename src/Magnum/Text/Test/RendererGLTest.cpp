@@ -77,6 +77,7 @@ class TestFont: public AbstractFont {
     void doClose() override {}
 
     UnsignedInt doGlyphId(char32_t) override { return 0; }
+    Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
     Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float size, Containers::StringView text) override {
@@ -354,6 +355,7 @@ void RendererGLTest::multiline() {
             }
 
             UnsignedInt doGlyphId(char32_t) override { return 0; }
+            Vector2 doGlyphSize(UnsignedInt) override { return {}; }
             Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
             Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView text) override {

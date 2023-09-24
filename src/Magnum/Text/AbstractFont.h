@@ -458,6 +458,23 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         UnsignedInt glyphId(char32_t character);
 
         /**
+         * @brief Glyph size in pixels
+         * @param glyph     Glyph ID
+         * @m_since_latest
+         *
+         * Size of the glyph image in pixels when rasterized. Some
+         * implementations may return fractional values, in which case
+         * @ref Math::ceil() should be used to get the actual integer pixel
+         * size.
+         * @note This function is meant to be used only for font observations
+         *      and conversions. In performance-critical code the
+         *      @ref fillGlyphCache() and @ref layout() functions should be
+         *      used instead.
+         * @see @ref glyphId(), @ref size()
+         */
+        Vector2 glyphSize(UnsignedInt glyph);
+
+        /**
          * @brief Glyph advance in pixels
          * @param glyph     Glyph ID
          *
@@ -608,6 +625,12 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /** @brief Implementation for @ref glyphId() */
         virtual UnsignedInt doGlyphId(char32_t character) = 0;
+
+        /**
+         * @brief Implementation for @ref glyphSize()
+         * @m_since_latest
+         */
+        virtual Vector2 doGlyphSize(UnsignedInt glyph) = 0;
 
         /** @brief Implementation for @ref glyphAdvance() */
         virtual Vector2 doGlyphAdvance(UnsignedInt glyph) = 0;

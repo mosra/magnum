@@ -159,6 +159,7 @@ struct DummyFont: AbstractFont {
     void doClose() override {}
 
     UnsignedInt doGlyphId(char32_t) override { return {}; }
+    Vector2 doGlyphSize(UnsignedInt) override { return {}; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
     Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override {
         return nullptr;
