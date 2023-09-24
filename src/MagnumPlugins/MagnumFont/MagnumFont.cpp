@@ -82,7 +82,7 @@ bool MagnumFont::doIsOpened() const { return _opened && _opened->image; }
 
 void MagnumFont::doClose() { _opened = nullptr; }
 
-auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const Float) -> Metrics {
+auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const Float) -> Properties {
     if(!_opened) _opened.emplace();
 
     if(!_opened->filePath && !fileCallback()) {
@@ -137,7 +137,7 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
             _opened->conf.value<Float>("lineHeight")};
 }
 
-auto MagnumFont::doOpenFile(const Containers::StringView filename, const Float size) -> Metrics {
+auto MagnumFont::doOpenFile(const Containers::StringView filename, const Float size) -> Properties {
     _opened.emplace();
     _opened->filePath.emplace(Utility::Path::split(filename).first());
 

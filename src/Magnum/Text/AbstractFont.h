@@ -496,15 +496,15 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
     protected:
         /**
-         * @brief Font metrics
+         * @brief Font properties
          *
-         * @see @ref doOpenFile(), @ref doOpenData()
+         * Returned from @ref doOpenFile(), @ref doOpenData().
          */
-        struct Metrics {
+        struct Properties {
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* Otherwise GCC 4.8 loudly complains about missing initializers */
-            constexpr /*implicit*/ Metrics() noexcept: size{}, ascent{}, descent{}, lineHeight{} {}
-            constexpr /*implicit*/ Metrics(Float size, Float ascent, Float descent, Float lineHeight) noexcept: size{size}, ascent{ascent}, descent{descent}, lineHeight{lineHeight} {}
+            constexpr /*implicit*/ Properties() noexcept: size{}, ascent{}, descent{}, lineHeight{} {}
+            constexpr /*implicit*/ Properties(Float size, Float ascent, Float descent, Float lineHeight) noexcept: size{size}, ascent{ascent}, descent{descent}, lineHeight{lineHeight} {}
             #endif
 
             /**
@@ -536,8 +536,11 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for @ref openFile()
          *
-         * Return metrics of opened font on successful opening, zeros
-         * otherwise. If @ref FontFeature::OpenData is supported, default
+         * If @ref doIsOpened() returns @cpp true @ce after calling this
+         * function, it's assumed that opening was successful and the
+         * @ref Properties are expected to contain valid values. If
+         * @ref doIsOpened() returns @cpp false @ce, the returned values are
+         * ignored. If @ref FontFeature::OpenData is supported, default
          * implementation opens the file and calls @ref doOpenData() with its
          * contents. It is allowed to call this function from your
          * @ref doOpenFile() implementation --- in particular, this
@@ -549,7 +552,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * supported --- instead, file is loaded though the callback and data
          * passed through to @ref doOpenData().
          */
-        virtual Metrics doOpenFile(Containers::StringView filename, Float size);
+        virtual Properties doOpenFile(Containers::StringView filename, Float size);
 
     private:
         /** @brief Implementation for @ref features() */
@@ -572,10 +575,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for @ref openData()
          *
-         * Return metrics of opened font on successful opening, zeros
-         * otherwise.
+         * If @ref doIsOpened() returns @cpp true @ce after calling this
+         * function, it's assumed that opening was successful and the
+         * @ref Properties are expected to contain valid values. If
+         * @ref doIsOpened() returns @cpp false @ce, the returned values are
+         * ignored.
          */
-        virtual Metrics doOpenData(Containers::ArrayView<const char> data, Float size);
+        virtual Properties doOpenData(Containers::ArrayView<const char> data, Float size);
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;

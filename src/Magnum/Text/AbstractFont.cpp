@@ -105,27 +105,33 @@ bool AbstractFont::openData(Containers::ArrayView<const void> data, const Float 
        the check doesn't be done on the plugin side) because for some file
        formats it could be valid (MagnumFont in particular). */
     close();
-    const Metrics metrics = doOpenData(Containers::arrayCast<const char>(data), size);
-    _size = metrics.size;
-    _ascent = metrics.ascent;
-    _descent = metrics.descent;
-    _lineHeight = metrics.lineHeight;
-    CORRADE_INTERNAL_ASSERT(isOpened() || (!_size && !_ascent && !_descent && !_lineHeight));
-    return isOpened();
+    const Properties properties = doOpenData(Containers::arrayCast<const char>(data), size);
+
+    /* If opening succeeded, save the returned values. If not, the values were
+       set to their default values by close() already. */
+    if(isOpened()) {
+        _size = properties.size;
+        _ascent = properties.ascent;
+        _descent = properties.descent;
+        _lineHeight = properties.lineHeight;
+        return true;
+    }
+
+    return false;
 }
 
-auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Metrics {
+auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Properties {
     CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
 }
 
 bool AbstractFont::openFile(const Containers::StringView filename, const Float size) {
     close();
-    Metrics metrics;
+    Properties properties;
 
     /* If file loading callbacks are not set or the font implementation
        supports handling them directly, call into the implementation */
     if(!_fileCallback || (doFeatures() & FontFeature::FileCallback)) {
-        metrics = doOpenFile(filename, size);
+        properties = doOpenFile(filename, size);
 
     /* Otherwise, if loading from data is supported, use the callback and pass
        the data through to openData(). Mark the file as ready to be closed once
@@ -146,24 +152,30 @@ bool AbstractFont::openFile(const Containers::StringView filename, const Float s
             Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
             return isOpened();
         }
-        metrics = doOpenData(*data, size);
+
+        properties = doOpenData(*data, size);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
     } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
-    _size = metrics.size;
-    _ascent = metrics.ascent;
-    _descent = metrics.descent;
-    _lineHeight = metrics.lineHeight;
-    CORRADE_INTERNAL_ASSERT(isOpened() || (!_size && !_ascent && !_descent && !_lineHeight));
-    return isOpened();
+    /* If opening succeeded, save the returned values. If not, the values were
+       set to their default values by close() already. */
+    if(isOpened()) {
+        _size = properties.size;
+        _ascent = properties.ascent;
+        _descent = properties.descent;
+        _lineHeight = properties.lineHeight;
+        return true;
+    }
+
+    return false;
 }
 
-auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float size) -> Metrics {
+auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float size) -> Properties {
     CORRADE_ASSERT(features() & FontFeature::OpenData, "Text::AbstractFont::openFile(): not implemented", {});
 
-    Metrics metrics;
+    Properties properties;
 
     /* If callbacks are set, use them. This is the same implementation as in
        openFile(), see the comment there for details. */
@@ -173,7 +185,8 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
             Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
             return {};
         }
-        metrics = doOpenData(*data, size);
+
+        properties = doOpenData(*data, size);
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Otherwise open the file directly */
@@ -184,19 +197,24 @@ auto AbstractFont::doOpenFile(const Containers::StringView filename, const Float
             return {};
         }
 
-        metrics = doOpenData(*data, size);
+        properties = doOpenData(*data, size);
     }
 
-    return metrics;
+    return properties;
 }
 
 void AbstractFont::close() {
-    if(isOpened()) {
-        doClose();
-        _size = 0.0f;
-        _lineHeight = 0.0f;
-        CORRADE_INTERNAL_ASSERT(!isOpened());
-    }
+    if(!isOpened()) return;
+
+    doClose();
+    CORRADE_INTERNAL_ASSERT(!isOpened());
+
+    /* Clear the saved values to avoid accidental use of stale (state even
+       though their public access is guarded with isOpened()) */
+    _size = {};
+    _lineHeight = {};
+    _descent = {};
+    _lineHeight = {};
 }
 
 Float AbstractFont::size() const {

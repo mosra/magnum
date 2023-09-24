@@ -93,7 +93,7 @@ void MagnumFontConverterTest::exportFont() {
         private:
             void doClose() override { _opened = false; }
             bool doIsOpened() const override { return _opened; }
-            Metrics doOpenFile(Containers::StringView, Float) override {
+            Properties doOpenFile(Containers::StringView, Float) override {
                 _opened = true;
                 return {16.0f, 25.0f, -10.0f, 39.7333f};
             }

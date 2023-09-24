@@ -179,7 +179,7 @@ void AbstractFontTest::openData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+        Properties doOpenData(const Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xa5');
             return {size, 1.0f, 2.0f, 3.0f};
         }
@@ -209,7 +209,7 @@ void AbstractFontTest::openFileAsData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+        Properties doOpenData(const Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xa5');
             return {size, 1.0f, 2.0f, 3.0f};
         }
@@ -509,13 +509,13 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Metrics doOpenFile(Containers::StringView filename, Float size) override {
+        Properties doOpenFile(Containers::StringView filename, Float size) override {
             /* Called because FileCallback is supported */
             _opened = filename == "file.dat" && fileCallback() && fileCallbackUserData();
             return {size, 1.0f, 2.0f, 3.0f};
         }
 
-        Metrics doOpenData(Containers::ArrayView<const char>, Float) override {
+        Properties doOpenData(Containers::ArrayView<const char>, Float) override {
             /* Shouldn't be called because FileCallback is supported */
             openDataCalledNotSureWhy = true;
             return {};
@@ -552,12 +552,12 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Metrics doOpenFile(Containers::StringView filename, Float size) override {
+        Properties doOpenFile(Containers::StringView filename, Float size) override {
             openFileCalled = filename == "file.dat" && fileCallback() && fileCallbackUserData();
             return AbstractFont::doOpenFile(filename, size);
         }
 
-        Metrics doOpenData(Containers::ArrayView<const char> data, Float size) override {
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xb0');
             return {size, 1.0f, 2.0f, 3.0f};
         }
@@ -610,7 +610,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Metrics doOpenFile(Containers::StringView filename, Float size) override {
+        Properties doOpenFile(Containers::StringView filename, Float size) override {
             openFileCalled = true;
             return AbstractFont::doOpenFile(filename, size);
         }
@@ -642,12 +642,12 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
-        Metrics doOpenFile(Containers::StringView, Float) override {
+        Properties doOpenFile(Containers::StringView, Float) override {
             openFileCalled = true;
             return {};
         }
 
-        Metrics doOpenData(Containers::ArrayView<const char> data, Float size) override {
+        Properties doOpenData(Containers::ArrayView<const char> data, Float size) override {
             _opened = (data.size() == 1 && data[0] == '\xb0');
             return {size, 1.0f, 2.0f, 3.0f};
         }
@@ -701,7 +701,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
-        Metrics doOpenFile(Containers::StringView, Float) override {
+        Properties doOpenFile(Containers::StringView, Float) override {
             openFileCalled = true;
             return {};
         }
@@ -733,7 +733,7 @@ void AbstractFontTest::properties() {
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Metrics doOpenData(const Containers::ArrayView<const char>, Float size) override {
+        Properties doOpenData(const Containers::ArrayView<const char>, Float size) override {
             _opened = true;
             return {size, 1.0f, 2.0f, 3.0f};
         }

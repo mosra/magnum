@@ -172,8 +172,8 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
     private:
         MAGNUM_MAGNUMFONT_LOCAL FontFeatures doFeatures() const override;
         MAGNUM_MAGNUMFONT_LOCAL bool doIsOpened() const override;
-        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenData(Containers::ArrayView<const char> data, Float) override;
-        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenFile(Containers::StringView filename, Float) override;
+        MAGNUM_MAGNUMFONT_LOCAL Properties doOpenData(Containers::ArrayView<const char> data, Float) override;
+        MAGNUM_MAGNUMFONT_LOCAL Properties doOpenFile(Containers::StringView filename, Float) override;
         MAGNUM_MAGNUMFONT_LOCAL void doClose() override;
 
         MAGNUM_MAGNUMFONT_LOCAL UnsignedInt doGlyphId(char32_t character) override;

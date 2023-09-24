@@ -348,7 +348,7 @@ void RendererGLTest::multiline() {
             bool doIsOpened() const override { return _opened; }
             void doClose() override { _opened = false; }
 
-            Metrics doOpenFile(Containers::StringView, Float) override {
+            Properties doOpenFile(Containers::StringView, Float) override {
                 _opened = true;
                 return {0.5f, 0.45f, -0.25f, 0.75f};
             }
