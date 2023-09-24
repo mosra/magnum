@@ -452,8 +452,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * Expects that a font is opened.
          * @note This function is meant to be used only for font observations
-         *      and conversions. In performance-critical code the @ref layout()
-         *      function should be used instead.
+         *      and conversions. In performance-critical code the
+         *      @ref fillGlyphCache() and @ref layout() functions should be
+         *      used instead.
          */
         UnsignedInt glyphId(char32_t character);
 

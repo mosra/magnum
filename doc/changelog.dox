@@ -1486,10 +1486,12 @@ See also:
         @relativeref{Corrade,Containers::Pair} instead
     -   @ref Text::AbstractFont public APIs now take
         @ref Containers::StringView instead of @ref std::string and return
-        @ref Containers::Pair instead of @ref std::pair. Additionally, the
-        internal implementation relies on @ref Containers::ArrayView "Containers::ArrayView<const char32_t>"
-        instead of @ref std::u32string and @ref Containers::Triple instead of
-        @ref std::tuple, but that shouldn't affect end-user code in any way.
+        @relativeref{Corrade,Containers::Pair} instead of @ref std::pair.
+        Additionally, the internal implementation relies on
+        @ref Corrade::Containers::ArrayView "Containers::ArrayView<const char32_t>"
+        instead of @ref std::u32string and
+        @relativeref{Corrade,Containers::Triple} instead of @ref std::tuple,
+        but that shouldn't affect end-user code in any way.
     To handle most backwards compatibility, @ref Corrade/Containers/StringStl.h
     and/or @ref Corrade/Containers/PairStl.h is included in affected headers
     for implicit conversions from/to a @ref std::string and/or @ref std::pair,
@@ -1497,9 +1499,10 @@ See also:
     APIs.
 -   @ref Math::Algorithms::svd() that used to return a @ref std::tuple and
     printed a message to @relativeref{Magnum,Error} if it didn't converge now
-    returns a @ref Containers::Tuple wrapped in an @ref Containers::Optional.
-    As the optional makes this a breaking change, no backwards compatibility
-    header for tuple conversion is included.
+    returns a @relativeref{Corrade,Containers::Triple} wrapped in a
+    @relativeref{Corrade,Containers::Optional}. As the optional makes this a
+    breaking change, no backwards compatibility header for tuple conversion is
+    included.
 -   @ref Image, @ref ImageView and @ref Trade::ImageData now look for a
     @cpp pixelFormatSize() @ce API via ADL instead of @cpp pixelSize() @ce. In
     case you were passing a custom pixel format enum to the image classes, you

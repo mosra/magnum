@@ -196,7 +196,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * Contrary to what Doxygen shows, returns reference to an
          * one-dimensional fixed-size array of @cpp dimensions*2 @ce elements,
          * i.e. @cpp T(&)[dimensions*2] @ce.
-         * @ref min(), @ref max()
+         * @see @ref min(), @ref max()
          * @todoc Fix once there's a possibility to patch the signature in a
          *      post-processing step (https://github.com/mosra/m.css/issues/56)
          */

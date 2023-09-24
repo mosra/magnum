@@ -88,9 +88,9 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
     }
 
     /* Sort to have the biggest size first. Assuming the items are square,
-       which is checked below in the loop. It's highly likely there are many
+       which is checked above in the loop. It's highly likely there are many
        textures of the same size, thus use a stable sort to have output
-       consistent across platforms */
+       consistent across platforms. */
     /** @todo stable_sort allocates, would be great if i could make it reuse
         the memory allocated for output */
     std::stable_sort(sortedSizes.begin(), sortedSizes.end(), [](const Vector3i& a, const Vector3i& b) {
