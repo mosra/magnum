@@ -26,7 +26,7 @@
 #include "MagnumFont.h"
 
 #include <sstream>
-#include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/Triple.h>
@@ -119,9 +119,9 @@ auto MagnumFont::doOpenData(const Containers::ArrayView<const char> data, const 
 
     /* Glyph advances */
     const std::vector<Utility::ConfigurationGroup*> glyphs = _opened->conf.groups("glyph");
-    arrayReserve(_opened->glyphAdvance, glyphs.size());
-    for(const Utility::ConfigurationGroup* const g: glyphs)
-        arrayAppend(_opened->glyphAdvance, g->value<Vector2>("advance"));
+    _opened->glyphAdvance = Containers::Array<Vector2>{NoInit, glyphs.size()};
+    for(std::size_t i = 0; i != glyphs.size(); ++i)
+        _opened->glyphAdvance[i] = glyphs[i]->value<Vector2>("advance");
 
     /* Fill character->glyph map */
     const std::vector<Utility::ConfigurationGroup*> chars = _opened->conf.groups("char");
