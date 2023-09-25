@@ -77,14 +77,13 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
     /* Copy the input to a sorted array, together with a mapping to the
        original order stored in Z. Can't really reuse the output allocation
        as it would be overwritten in random order. */
-    Containers::Array<Vector3i> sortedSizes{NoInit, sizes.size()};
+    Containers::Array<Containers::Pair<Vector2i, UnsignedInt>> sortedSizes{NoInit, sizes.size()};
     for(std::size_t i = 0; i != sizes.size(); ++i) {
         const Vector2i size = sizes[i];
         CORRADE_ASSERT(size.product() && size.x() == size.y() && (size & (size - Vector2i{1})).isZero() && size <= layerSize,
             "TextureTools::atlasArrayPowerOfTwo(): expected size" << i << "to be a non-zero power-of-two square not larger than" << Debug::packed << layerSize << "but got" << Debug::packed << size, {});
 
-        sortedSizes[i].xy() = size;
-        sortedSizes[i].z() = i;
+        sortedSizes[i] = {size, UnsignedInt(i)};
     }
 
     /* Sort to have the biggest size first. Assuming the items are square,
@@ -93,15 +92,15 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
        consistent across platforms. */
     /** @todo stable_sort allocates, would be great if i could make it reuse
         the memory allocated for output */
-    std::stable_sort(sortedSizes.begin(), sortedSizes.end(), [](const Vector3i& a, const Vector3i& b) {
-        return a.x() > b.x();
+    std::stable_sort(sortedSizes.begin(), sortedSizes.end(), [](const Containers::Pair<Vector2i, UnsignedInt>& a, const Containers::Pair<Vector2i, UnsignedInt>& b) {
+        return a.first().x() > b.first().x();
     });
 
     /* Start with the whole first layer free */
     Int layer = 0;
     UnsignedInt free = 1;
     Vector2i previousSize = layerSize;
-    for(const Vector3i& size: sortedSizes) {
+    for(const Containers::Pair<Vector2i, UnsignedInt>& size: sortedSizes) {
         /* No free slots left, go to the next layer. Then, what's free, is one
            whole layer. */
         if(!free) {
@@ -114,11 +113,11 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
            size. If the size is the same, nothing changes. */
         /** @todo there's definitely some bit trick for dividing power-of-two
             numbers, use it */
-        free *= (previousSize/size.xy()).product();
+        free *= (previousSize/size.first()).product();
 
         /* Slot index as if the whole layer was consisting just of slots of
            this size. */
-        const UnsignedInt sideSlotCount = layerSize.x()/size.x();
+        const UnsignedInt sideSlotCount = layerSize.x()/size.first().x();
         const UnsignedInt layerDepth = Math::log2(sideSlotCount);
         const UnsignedInt slotIndex = sideSlotCount*sideSlotCount - free;
 
@@ -132,8 +131,8 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
         }
 
         /* Save to the output in the original order */
-        output[size.z()] = {coordinates, layer};
-        previousSize = size.xy();
+        output[size.second()] = {coordinates, layer};
+        previousSize = size.first();
         --free;
     }
 
