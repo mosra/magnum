@@ -51,8 +51,12 @@ struct AtlasTest: TestSuite::Tester {
     void arrayPowerOfTwoAllSameElements();
     void arrayPowerOfTwoOneLayer();
     void arrayPowerOfTwoMoreLayers();
+    void arrayPowerOfTwoInvalidViewSizes();
     void arrayPowerOfTwoWrongLayerSize();
     void arrayPowerOfTwoWrongSize();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void arrayPowerOfTwoDeprecated();
+    #endif
 };
 
 /* Could make order[15] and then Containers::arraySize(), but then it won't
@@ -104,13 +108,18 @@ AtlasTest::AtlasTest() {
     addInstancedTests({&AtlasTest::arrayPowerOfTwoOneLayer},
         Containers::arraySize(ArrayPowerOfTwoOneLayerData));
 
-    addTests({&AtlasTest::arrayPowerOfTwoMoreLayers});
+    addTests({&AtlasTest::arrayPowerOfTwoMoreLayers,
+              &AtlasTest::arrayPowerOfTwoInvalidViewSizes});
 
     addInstancedTests({&AtlasTest::arrayPowerOfTwoWrongLayerSize},
         Containers::arraySize(ArrayPowerOfTwoWrongLayerSizeData));
 
     addInstancedTests({&AtlasTest::arrayPowerOfTwoWrongSize},
         Containers::arraySize(ArrayPowerOfTwoWrongSizeData));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AtlasTest::arrayPowerOfTwoDeprecated});
+    #endif
 }
 
 void AtlasTest::basic() {
@@ -160,29 +169,27 @@ void AtlasTest::tooSmall() {
 }
 
 void AtlasTest::arrayPowerOfTwoEmpty() {
-    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({128, 128}, {});
-    CORRADE_COMPARE(out.first(), 0);
-    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
-    }), TestSuite::Compare::Container);
+    Containers::ArrayView<Vector3i> offsets;
+    CORRADE_COMPARE(atlasArrayPowerOfTwo({128, 128}, {}, offsets), 0);
 }
 
 void AtlasTest::arrayPowerOfTwoSingleElement() {
-    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({128, 128}, {{128, 128}});
-    CORRADE_COMPARE(out.first(), 1);
-    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+    Vector3i offsets[1];
+    CORRADE_COMPARE(atlasArrayPowerOfTwo({128, 128}, {{128, 128}}, offsets), 1);
+    CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector3i>({
         {0, 0, 0}
     }), TestSuite::Compare::Container);
 }
 
 void AtlasTest::arrayPowerOfTwoAllSameElements() {
-    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({128, 128}, {
+    Vector3i offsets[4];
+    CORRADE_COMPARE(atlasArrayPowerOfTwo({128, 128}, {
         {64, 64},
         {64, 64},
         {64, 64},
         {64, 64},
-    });
-    CORRADE_COMPARE(out.first(), 1);
-    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+    }, offsets), 1);
+    CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector3i>({
         {0, 0, 0},
         {64, 0, 0},
         {0, 64, 0},
@@ -245,15 +252,16 @@ void AtlasTest::arrayPowerOfTwoOneLayer() {
         expected[i] = expectedSorted[data.order[i]];
     }
 
-    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({2048, 2048}, input);
-    CORRADE_COMPARE(out.first(), 1);
-    CORRADE_COMPARE_AS(out.second(),
-        Containers::ArrayView<const Vector3i>{expected},
+    Vector3i offsets[ArrayPowerOfTwoOneLayerImageCount];
+    CORRADE_COMPARE(atlasArrayPowerOfTwo({2048, 2048}, input, offsets), 1);
+    CORRADE_COMPARE_AS(Containers::arrayView(offsets),
+        Containers::arrayView(expected),
         TestSuite::Compare::Container);
 }
 
 void AtlasTest::arrayPowerOfTwoMoreLayers() {
-    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({2048, 2048}, {
+    Vector3i offsets[11];
+    CORRADE_COMPARE(atlasArrayPowerOfTwo({2048, 2048}, {
         {2048, 2048},
 
         {1024, 1024},
@@ -267,9 +275,8 @@ void AtlasTest::arrayPowerOfTwoMoreLayers() {
         {512, 512},
         {256, 256},
         {256, 256}
-    });
-    CORRADE_COMPARE(out.first(), 3);
-    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+    }, offsets), 3);
+    CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector3i>({
         {0, 0, 0},
 
         {0, 0, 1},
@@ -286,6 +293,19 @@ void AtlasTest::arrayPowerOfTwoMoreLayers() {
     }), TestSuite::Compare::Container);
 }
 
+void AtlasTest::arrayPowerOfTwoInvalidViewSizes() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    Vector2i sizes[2];
+    Vector3i offsetsInvalid[3];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    atlasArrayPowerOfTwo({}, sizes, offsetsInvalid);
+    CORRADE_COMPARE(out.str(),
+        "TextureTools::atlasArrayPowerOfTwo(): expected sizes and offsets views to have the same size, got 2 and 3\n");
+}
+
 void AtlasTest::arrayPowerOfTwoWrongLayerSize() {
     auto&& data = ArrayPowerOfTwoWrongLayerSizeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -294,7 +314,7 @@ void AtlasTest::arrayPowerOfTwoWrongLayerSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    atlasArrayPowerOfTwo(data.size, {});
+    atlasArrayPowerOfTwo(data.size, {}, {});
     CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected layer size to be a non-zero power-of-two square, got {}\n", data.message));
 }
 
@@ -304,15 +324,39 @@ void AtlasTest::arrayPowerOfTwoWrongSize() {
 
     CORRADE_SKIP_IF_NO_ASSERT();
 
+    Vector3i offsets[3];
+
     std::ostringstream out;
     Error redirectError{&out};
     atlasArrayPowerOfTwo({256, 256}, {
         {64, 64},
         {128, 128},
         data.size
-    });
+    }, offsets);
     CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected size 2 to be a non-zero power-of-two square not larger than {{256, 256}} but got {}\n", data.message));
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AtlasTest::arrayPowerOfTwoDeprecated() {
+    /* Same as arrayPowerOfTwoAllSameElements(), but with the deprecated API */
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Containers::Pair<Int, Containers::Array<Vector3i>> out = atlasArrayPowerOfTwo({128, 128}, {
+        {64, 64},
+        {64, 64},
+        {64, 64},
+        {64, 64},
+    });
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_COMPARE(out.first(), 1);
+    CORRADE_COMPARE_AS(out.second(), Containers::arrayView<Vector3i>({
+        {0, 0, 0},
+        {64, 0, 0},
+        {0, 64, 0},
+        {64, 64, 0}
+    }), TestSuite::Compare::Container);
+}
+#endif
 
 }}}}
 

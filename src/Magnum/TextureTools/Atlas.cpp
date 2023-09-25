@@ -28,8 +28,8 @@
 #include <algorithm>
 #include <vector>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Pair.h>
+#include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Range.h"
@@ -65,14 +65,14 @@ std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2
     return atlas;
 }
 
-Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes) {
+Int atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
+    CORRADE_ASSERT(offsets.size() == sizes.size(),
+        "TextureTools::atlasArrayPowerOfTwo(): expected sizes and offsets views to have the same size, got" << sizes.size() << "and" << offsets.size(), {});
     CORRADE_ASSERT(layerSize.product() && layerSize.x() == layerSize.y() && (layerSize & (layerSize - Vector2i{1})).isZero(),
         "TextureTools::atlasArrayPowerOfTwo(): expected layer size to be a non-zero power-of-two square, got" << Debug::packed << layerSize, {});
 
     if(sizes.isEmpty())
         return {};
-
-    Containers::Array<Vector3i> output{NoInit, sizes.size()};
 
     /* Copy the input to a sorted array, together with a mapping to the
        original order stored in Z. Can't really reuse the output allocation
@@ -131,16 +131,30 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
         }
 
         /* Save to the output in the original order */
-        output[size.second()] = {coordinates, layer};
+        offsets[size.second()] = {coordinates, layer};
         previousSize = size.first();
         --free;
     }
 
-    return {layer + 1, Utility::move(output)};
+    return layer + 1;
+}
+
+Int atlasArrayPowerOfTwo(const Vector2i& layerSize, const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
+    return atlasArrayPowerOfTwo(layerSize, Containers::stridedArrayView(sizes), offsets);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes) {
+    Containers::Array<Vector3i> offsets{NoInit, sizes.size()};
+    Int layers = atlasArrayPowerOfTwo(layerSize, sizes, offsets);
+    return {layers, Utility::move(offsets)};
 }
 
 Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, const std::initializer_list<Vector2i> sizes) {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     return atlasArrayPowerOfTwo(layerSize, Containers::stridedArrayView(sizes));
+    CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 }}

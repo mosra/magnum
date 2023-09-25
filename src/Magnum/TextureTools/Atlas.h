@@ -54,32 +54,48 @@ std::vector<Range2Di> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize
 
 /**
 @brief Pack square power-of-two textures into a texture atlas array
-@param layerSize    Size of the texture layer
-@param sizes        Sizes of all textures in the atlas
-@return Total layer count and offsets of all textures in the atlas, with the Z
-    coordinate being the layer index
+@param[in]  layerSize   Size of a single layer in the texture atlas
+@param[in]  sizes       Sizes of all textures in the atlas
+@param[out] offsets     Resulting offsets in the atlas
+@return Total layer count
 @m_since_latest
 
-The @p layerSize is expected to be non-zero, square and power-of-two. All items
-in @p sizes are expected to be non-zero, square, power-of-two and not larger
-than @p layerSize. With such constraints the packing is optimal with no wasted
-space in all but the last layer. Setting @p layerSize to the size of the
-largest texture in the set will lead to the least wasted space in the last
-layer.
+The @p sizes and @p offsets views are expected to have the same size. The
+@p layerSize is expected to be non-zero, square and power-of-two. All items in
+@p sizes are expected to be non-zero, square, power-of-two and not larger than
+@p layerSize. With such constraints the packing is optimal with no wasted space
+in all but the last layer. Setting @p layerSize to the size of the largest
+texture in the set will lead to the least wasted space in the last layer.
 
 The algorithm first sorts the textures by size using @ref std::stable_sort(),
 which is usually @f$ \mathcal{O}(n \log{} n) @f$, and then performs the actual
-atlasing in a single @f$ \mathcal{O}(n) @f$ operation. Due to the sort
-involved, a temporary allocation holds the sorted array and additionally
-@ref std::stable_sort() performs its own allocation.
+atlasing in a single @f$ \mathcal{O}(n) @f$ operation. Memory complexity is
+@f$ \mathcal{0}(n) @f$ with @f$ n @f$ being a sorted copy of the input size
+array, additionally @ref std::stable_sort() performs its own allocation.
 */
-Containers::Pair<Int, Containers::Array<Vector3i>> MAGNUM_TEXTURETOOLS_EXPORT atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes);
+MAGNUM_TEXTURETOOLS_EXPORT Int atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
 
 /**
  * @overload
  * @m_since_latest
  */
-Containers::Pair<Int, Containers::Array<Vector3i>> MAGNUM_TEXTURETOOLS_EXPORT atlasArrayPowerOfTwo(const Vector2i& layerSize, std::initializer_list<Vector2i> sizes);
+MAGNUM_TEXTURETOOLS_EXPORT Int atlasArrayPowerOfTwo(const Vector2i& layerSize, std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief atlasArrayPowerOfTwo(const Vector2i&, const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector3i>&)
+@m_deprecated_since_latest Use @ref atlasArrayPowerOfTwo(const Vector2i&, const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector3i>&)
+    instead.
+*/
+MAGNUM_TEXTURETOOLS_EXPORT CORRADE_DEPRECATED("use the overload taking offsets as an output view instead") Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes);
+
+/**
+@overload
+@m_deprecated_since_latest Use @ref atlasArrayPowerOfTwo(const Vector2i&, std::initializer_list<Vector2i>, const Containers::StridedArrayView1D<Vector3i>&)
+    instead.
+*/
+MAGNUM_TEXTURETOOLS_EXPORT CORRADE_DEPRECATED("use the overload taking offsets as an output view instead") Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Vector2i& layerSize, std::initializer_list<Vector2i> sizes);
+#endif
 
 }}
 
