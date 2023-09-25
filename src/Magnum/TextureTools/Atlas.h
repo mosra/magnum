@@ -67,11 +67,19 @@ The @p sizes and @p offsets views are expected to have the same size. The
 in all but the last layer. Setting @p layerSize to the size of the largest
 texture in the set will lead to the least wasted space in the last layer.
 
+@htmlinclude atlas-array-power-of-two.svg
+
+Example usage is shown below.
+
+@snippet MagnumTextureTools.cpp atlasArrayPowerOfTwo
+
 The algorithm first sorts the textures by size using @ref std::stable_sort(),
 which is usually @f$ \mathcal{O}(n \log{} n) @f$, and then performs the actual
 atlasing in a single @f$ \mathcal{O}(n) @f$ operation. Memory complexity is
-@f$ \mathcal{0}(n) @f$ with @f$ n @f$ being a sorted copy of the input size
-array, additionally @ref std::stable_sort() performs its own allocation.
+@f$ \mathcal{O}(n) @f$ with @f$ n @f$ being a sorted copy of the input size
+array, additionally @ref std::stable_sort() performs its own allocation. See
+the [Zero-waste single-pass packing of power-of-two textures](https://blog.magnum.graphics/backstage/pot-array-packing/)
+article for a detailed description of the algorithm.
 */
 MAGNUM_TEXTURETOOLS_EXPORT Int atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
 

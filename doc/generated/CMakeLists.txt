@@ -34,7 +34,8 @@ find_package(Magnum REQUIRED
     MeshTools
     Primitives
     Shaders
-    Sdl2Application)
+    Sdl2Application
+    TextureTools)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
@@ -73,3 +74,8 @@ target_link_libraries(primitives
     Magnum::Primitives
     Magnum::Shaders
     Magnum::WindowlessApplication)
+
+add_executable(atlas atlas.cpp)
+target_link_libraries(atlas
+    Magnum::DebugTools
+    Magnum::TextureTools)

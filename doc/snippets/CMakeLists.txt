@@ -117,6 +117,15 @@ if(MAGNUM_WITH_SHADERTOOLS)
     endif()
 endif()
 
+if(MAGNUM_WITH_TEXTURETOOLS)
+    add_library(snippets-MagnumTextureTools STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        MagnumTextureTools.cpp)
+    target_link_libraries(snippets-MagnumTextureTools PRIVATE MagnumTextureTools)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumTextureTools)
+    endif()
+endif()
+
 if(MAGNUM_WITH_TRADE)
     add_library(snippets-MagnumTrade STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
         plugins.cpp
