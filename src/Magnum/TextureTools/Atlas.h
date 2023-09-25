@@ -60,8 +60,9 @@ std::vector<Range2Di> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize
     coordinate being the layer index
 @m_since_latest
 
-Both @p layerSize and all items in @p sizes are expected to be non-zero, square
-and power-of-two. With such constraints the packing is optimal with no wasted
+The @p layerSize is expected to be non-zero, square and power-of-two. All items
+in @p sizes are expected to be non-zero, square, power-of-two and not larger
+than @p layerSize. With such constraints the packing is optimal with no wasted
 space in all but the last layer. Setting @p layerSize to the size of the
 largest texture in the set will lead to the least wasted space in the last
 layer.

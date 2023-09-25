@@ -80,8 +80,8 @@ Containers::Pair<Int, Containers::Array<Vector3i>> atlasArrayPowerOfTwo(const Ve
     Containers::Array<Vector3i> sortedSizes{NoInit, sizes.size()};
     for(std::size_t i = 0; i != sizes.size(); ++i) {
         const Vector2i size = sizes[i];
-        CORRADE_ASSERT(size.product() && size.x() == size.y() && (size & (size - Vector2i{1})).isZero(),
-            "TextureTools::atlasArrayPowerOfTwo(): expected size" << i << "to be a non-zero power-of-two square, got" << Debug::packed << size, {});
+        CORRADE_ASSERT(size.product() && size.x() == size.y() && (size & (size - Vector2i{1})).isZero() && size <= layerSize,
+            "TextureTools::atlasArrayPowerOfTwo(): expected size" << i << "to be a non-zero power-of-two square not larger than" << Debug::packed << layerSize << "but got" << Debug::packed << size, {});
 
         sortedSizes[i].xy() = size;
         sortedSizes[i].z() = i;

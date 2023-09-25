@@ -74,10 +74,21 @@ const struct {
     const char* name;
     Vector2i size;
     const char* message;
-} ArrayPowerOfTwoWrongSizeData[]{
+} ArrayPowerOfTwoWrongLayerSizeData[]{
     {"non-power-of-two", {128, 127}, "{128, 127}"},
     {"non-square", {128, 256}, "{128, 256}"},
-    {"zero", {1024, 0}, "{1024, 0}"}
+    {"zero", {1024, 0}, "{1024, 0}"},
+};
+
+const struct {
+    const char* name;
+    Vector2i size;
+    const char* message;
+} ArrayPowerOfTwoWrongSizeData[]{
+    {"larger than size", {512, 512}, "{512, 512}"},
+    {"non-power-of-two", {128, 127}, "{128, 127}"},
+    {"non-square", {128, 256}, "{128, 256}"},
+    {"zero", {1024, 0}, "{1024, 0}"},
 };
 
 AtlasTest::AtlasTest() {
@@ -95,8 +106,10 @@ AtlasTest::AtlasTest() {
 
     addTests({&AtlasTest::arrayPowerOfTwoMoreLayers});
 
-    addInstancedTests({&AtlasTest::arrayPowerOfTwoWrongLayerSize,
-                       &AtlasTest::arrayPowerOfTwoWrongSize},
+    addInstancedTests({&AtlasTest::arrayPowerOfTwoWrongLayerSize},
+        Containers::arraySize(ArrayPowerOfTwoWrongLayerSizeData));
+
+    addInstancedTests({&AtlasTest::arrayPowerOfTwoWrongSize},
         Containers::arraySize(ArrayPowerOfTwoWrongSizeData));
 }
 
@@ -274,7 +287,7 @@ void AtlasTest::arrayPowerOfTwoMoreLayers() {
 }
 
 void AtlasTest::arrayPowerOfTwoWrongLayerSize() {
-    auto&& data = ArrayPowerOfTwoWrongSizeData[testCaseInstanceId()];
+    auto&& data = ArrayPowerOfTwoWrongLayerSizeData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     CORRADE_SKIP_IF_NO_ASSERT();
@@ -298,7 +311,7 @@ void AtlasTest::arrayPowerOfTwoWrongSize() {
         {128, 128},
         data.size
     });
-    CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected size 2 to be a non-zero power-of-two square, got {}\n", data.message));
+    CORRADE_COMPARE(out.str(), Utility::formatString("TextureTools::atlasArrayPowerOfTwo(): expected size 2 to be a non-zero power-of-two square not larger than {{256, 256}} but got {}\n", data.message));
 }
 
 }}}}
