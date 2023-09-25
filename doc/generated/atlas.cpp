@@ -25,6 +25,9 @@
 
 #include <random>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/StringStl.h> /** @todo remove once formatString() isn't used */
 #include <Corrade/Utility/FormatStl.h> /** @todo remove once growable String exists */
@@ -114,5 +117,40 @@ int main() {
 )");
 
         CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Path::write("atlas-array-power-of-two.svg", Containers::StringView{out}));
+
+    /* AtlasLandfill */
+    } {
+        constexpr Float displaySizeDivisor = 1.0f;
+
+        Containers::Optional<Containers::Array<char>> sizeData = Utility::Path::read(Utility::Path::join(Utility::Path::split(__FILE__).first(), "../../src/Magnum/TextureTools/Test/oxygen-glyphs.bin"));
+        CORRADE_INTERNAL_ASSERT(sizeData);
+        const auto sizes = Containers::arrayCast<const Vector2i>(*sizeData);
+
+        TextureTools::AtlasLandfill atlas{{512, 512}};
+        Containers::Array<Vector2i> offsets{NoInit, sizes.size()};
+        Containers::BitArray rotations{NoInit, sizes.size()};
+        CORRADE_INTERNAL_ASSERT(atlas.add(sizes, offsets, rotations));
+
+        Range2Di viewBox{{}, atlas.filledSize()};
+
+        std::string out;
+        Utility::formatInto(out, out.size(), R"(<svg class="m-image" style="width: {4}px; height: {5}px;" viewBox="{0} {1} {2} {3}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+)",
+            viewBox.left(), viewBox.bottom(), viewBox.sizeX(), viewBox.sizeY(), viewBox.sizeX()/displaySizeDivisor, viewBox.sizeY()/displaySizeDivisor);
+
+        for(std::size_t i = 0; i != sizes.size(); ++i) {
+            const Vector2i size = rotations[i] ? sizes[i].flipped() : sizes[i];
+            const Vector2i offset = offsets[i];
+            const Color4ub color = DebugTools::ColorMap::turbo()[colorDist(rd)];
+
+            Utility::formatInto(out, out.size(), R"(  <rect x="{}" y="{}" width="{}" height="{}" style="fill:#{:.2x}{:.2x}{:.2x}"/>
+)",
+                offset.x(), viewBox.sizeY() - size.y() - offset.y(), size.x(), size.y(), color.r(), color.g(), color.b());
+        }
+
+        Utility::formatInto(out, out.size(), R"(</svg>
+)");
+
+        CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Path::write("atlas-landfill.svg", Containers::StringView{out}));
     }
 }

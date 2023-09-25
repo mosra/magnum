@@ -24,6 +24,8 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/BitArray.h>
+#include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Algorithms.h>
 
@@ -39,6 +41,82 @@
 using namespace Magnum;
 
 int main() {
+{
+/* [AtlasLandfill-usage] */
+Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
+Containers::Array<Vector2i> offsets{NoInit, images.size()};
+Containers::BitArray rotations{NoInit, images.size()};
+
+/* Fill the atlas with an unbounded height */
+TextureTools::AtlasLandfill atlas{{1024, 0}};
+atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations);
+
+/* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
+Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize(),
+    Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product())}};
+Containers::StridedArrayView2D<Color4ub> dst = output.pixels<Color4ub>();
+for(std::size_t i = 0; i != images.size(); ++i) {
+    /* Rotate 90° counterclockwise if the image is rotated in the atlas */
+    Containers::StridedArrayView2D<const Color4ub> src = rotations[i] ?
+        images[i].pixels<Color4ub>().flipped<1>().transposed<0, 1>() :
+        images[i].pixels<Color4ub>();
+    Utility::copy(src, dst.sliceSize(
+        {std::size_t(offsets[i].y()),
+         std::size_t(offsets[i].x())}, src.size()));
+}
+/* [AtlasLandfill-usage] */
+}
+
+{
+Containers::ArrayView<const ImageView2D> images;
+Containers::Array<Vector2i> offsets{NoInit, images.size()};
+TextureTools::AtlasLandfill atlas{{1024, 0}};
+/* [AtlasLandfill-usage-no-rotation] */
+atlas.clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
+                 TextureTools::AtlasLandfillFlag::RotateLandscape)
+     .add(stridedArrayView(images).slice(&ImageView2D::size), offsets);
+
+/* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
+Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize(),
+    Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product())}};
+Containers::StridedArrayView2D<Color4ub> dst = output.pixels<Color4ub>();
+for(std::size_t i = 0; i != images.size(); ++i) {
+    Containers::StridedArrayView2D<const Color4ub> src = images[i].pixels<Color4ub>();
+    Utility::copy(src, dst.sliceSize(
+        {std::size_t(offsets[i].y()),
+         std::size_t(offsets[i].x())}, src.size()));
+}
+/* [AtlasLandfill-usage-no-rotation] */
+}
+
+{
+/* [AtlasLandfillArray-usage] */
+Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
+Containers::Array<Vector3i> offsets{NoInit, images.size()};
+Containers::BitArray rotations{NoInit, images.size()};
+
+/* Fill the atlas with an unbounded depth */
+TextureTools::AtlasLandfillArray atlas{{1024, 1024, 0}};
+atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations);
+
+/* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
+Vector3i outputSize = atlas.filledSize();
+Image3D output{PixelFormat::RGBA8Unorm, outputSize,
+    Containers::Array<char>{ValueInit, std::size_t(outputSize.product())}};
+Containers::StridedArrayView3D<Color4ub> dst = output.pixels<Color4ub>();
+for(std::size_t i = 0; i != images.size(); ++i) {
+    /* Rotate 90° counterclockwise if the image is rotated in the atlas */
+    Containers::StridedArrayView3D<const Color4ub> src = rotations[i] ?
+        images[i].pixels<Color4ub>().flipped<1>().transposed<0, 1>() :
+        images[i].pixels<Color4ub>();
+    Utility::copy(src, dst.sliceSize(
+        {std::size_t(offsets[i].z()),
+         std::size_t(offsets[i].y()),
+         std::size_t(offsets[i].x())}, src.size()));
+}
+/* [AtlasLandfillArray-usage] */
+}
+
 {
 /* [atlasArrayPowerOfTwo] */
 Containers::ArrayView<const ImageView2D> input;
