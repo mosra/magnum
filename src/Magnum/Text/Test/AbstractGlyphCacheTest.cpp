@@ -25,8 +25,10 @@
 
 #include <sstream>
 #include <tuple>
+#include <Corrade/Containers/ArrayViewStl.h> /**< @todo drop once std::vector is gone */
 #include <Corrade/Containers/StringStl.h> /**< @todo drop once Debug is stream-free */
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h> /**< @todo drop once Debug is stream-free */
 
@@ -43,6 +45,8 @@ struct AbstractGlyphCacheTest: TestSuite::Tester {
     void initialize();
     void access();
     void reserve();
+    void reserveIncremental();
+    void reserveTooSmall();
 
     void setImage();
     void setImageOutOfRange();
@@ -56,6 +60,8 @@ AbstractGlyphCacheTest::AbstractGlyphCacheTest() {
     addTests({&AbstractGlyphCacheTest::initialize,
               &AbstractGlyphCacheTest::access,
               &AbstractGlyphCacheTest::reserve,
+              &AbstractGlyphCacheTest::reserveIncremental,
+              &AbstractGlyphCacheTest::reserveTooSmall,
 
               &AbstractGlyphCacheTest::setImage,
               &AbstractGlyphCacheTest::setImageOutOfRange,
@@ -110,10 +116,37 @@ void AbstractGlyphCacheTest::access() {
 }
 
 void AbstractGlyphCacheTest::reserve() {
-    DummyGlyphCache cache{Vector2i(236)};
+    DummyGlyphCache cache{{29, 20}, {1, 2}};
 
-    /* Verify that this works for "empty" cache */
-    CORRADE_VERIFY(!cache.reserve({{5, 3}}).empty());
+    std::vector<Range2Di> out = cache.reserve({{5, 3}, {12, 6}, {10, 5}});
+    CORRADE_COMPARE_AS(Containers::arrayView(out), Containers::arrayView<Range2Di>({
+        Range2Di::fromSize({1, 2}, {5, 3}),
+        Range2Di::fromSize({15, 2}, {12, 6}),
+        Range2Di::fromSize({1, 12}, {10, 5}),
+    }), TestSuite::Compare::Container);
+}
+
+void AbstractGlyphCacheTest::reserveIncremental() {
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    DummyGlyphCache cache{{25, 12}};
+
+    /* insert() is what triggers the assert, not reserve() alone */
+    cache.insert(0, {3, 5}, {{10, 10}, {23, 45}});
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    cache.reserve({{12, 6}});
+    CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::reserve(): reserving space in non-empty cache is not yet implemented\n");
+}
+
+void AbstractGlyphCacheTest::reserveTooSmall() {
+    DummyGlyphCache cache{{20, 12}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(cache.reserve({{5, 3}, {12, 6}, {10, 5}}).empty());
+    CORRADE_COMPARE(out.str(), "TextureTools::atlas(): requested atlas size Vector(20, 12) is too small to fit 3 Vector(12, 6) textures. Generated atlas will be empty.\n");
 }
 
 void AbstractGlyphCacheTest::setImage() {
