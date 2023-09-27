@@ -116,20 +116,31 @@ void AbstractGlyphCacheTest::access() {
 }
 
 void AbstractGlyphCacheTest::reserve() {
-    DummyGlyphCache cache{{29, 20}, {1, 2}};
+    DummyGlyphCache cache{{24, 20}, {1, 2}};
 
-    std::vector<Range2Di> out = cache.reserve({{5, 3}, {12, 6}, {10, 5}});
+    /* Padding should get applied to all */
+    std::vector<Range2Di> out = cache.reserve({
+        {5, 3},
+        /* Landscape glyphs shouldn't get rotated */
+        {12, 6},
+        {10, 5},
+        /* Zero-sized glyphs should get preserved */
+        {0, 1},
+        {3, 0},
+    });
     CORRADE_COMPARE_AS(Containers::arrayView(out), Containers::arrayView<Range2Di>({
-        Range2Di::fromSize({1, 2}, {5, 3}),
-        Range2Di::fromSize({15, 2}, {12, 6}),
-        Range2Di::fromSize({1, 12}, {10, 5}),
+        Range2Di::fromSize({6, 12}, {5, 3}),
+        Range2Di::fromSize({1, 2}, {12, 6}),
+        Range2Di::fromSize({13, 12}, {10, 5}),
+        Range2Di::fromSize({1, 17}, {0, 1}),
+        Range2Di::fromSize({1, 12}, {3, 0}),
     }), TestSuite::Compare::Container);
 }
 
 void AbstractGlyphCacheTest::reserveIncremental() {
     CORRADE_SKIP_IF_NO_ASSERT();
 
-    DummyGlyphCache cache{{25, 12}};
+    DummyGlyphCache cache{{24, 20}, {1, 2}};
 
     /* insert() is what triggers the assert, not reserve() alone */
     cache.insert(0, {3, 5}, {{10, 10}, {23, 45}});
@@ -141,12 +152,12 @@ void AbstractGlyphCacheTest::reserveIncremental() {
 }
 
 void AbstractGlyphCacheTest::reserveTooSmall() {
-    DummyGlyphCache cache{{20, 12}};
+    DummyGlyphCache cache{{24, 18}, {1, 2}};
 
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(cache.reserve({{5, 3}, {12, 6}, {10, 5}}).empty());
-    CORRADE_COMPARE(out.str(), "TextureTools::atlas(): requested atlas size Vector(20, 12) is too small to fit 3 Vector(12, 6) textures. Generated atlas will be empty.\n");
+    CORRADE_COMPARE(out.str(), "Text::AbstractGlyphCache::reserve(): requested atlas size Vector(24, 18) is too small to fit 3 textures. Generated atlas will be empty.\n");
 }
 
 void AbstractGlyphCacheTest::setImage() {

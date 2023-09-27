@@ -25,6 +25,9 @@
 
 #include "AbstractGlyphCache.h"
 
+#include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/ArrayViewStl.h> /** @todo remove once std::vector is gone */
+
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -44,7 +47,38 @@ std::vector<Range2Di> AbstractGlyphCache::reserve(const std::vector<Vector2i>& s
     CORRADE_ASSERT((glyphs.size() == 1 && glyphs.at(0) == std::pair<Vector2i, Range2Di>()),
         "Text::AbstractGlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
     glyphs.reserve(glyphs.size() + sizes.size());
-    return TextureTools::atlas(_size, sizes, _padding);
+
+    /* Rotations are not yet supported */
+    TextureTools::AtlasLandfill atlas{_size};
+    atlas.setPadding(_padding)
+         .clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
+                     TextureTools::AtlasLandfillFlag::RotateLandscape);
+
+    /* Create the output array. Because the new atlas packer doesn't accept
+       zero sizes, change those to be (1, 1) instead. A new interface will
+       disallow them as well, but here we want to keep backwards
+       compatibility. */
+    std::vector<Range2Di> out(sizes.size());
+    for(std::size_t i = 0; i != sizes.size(); ++i)
+        out[i].max() = Math::max(sizes[i], Vector2i{1});
+
+    /* The error message matches what the old TextureTools::atlas() did. Not
+       great, but that's the interface we should stay compatible with. */
+    if(!atlas.add(Containers::stridedArrayView(out).slice(&Range2Di::max),
+                  Containers::stridedArrayView(out).slice(&Range2Di::min)))
+    {
+        Error{} << "Text::AbstractGlyphCache::reserve(): requested atlas size"
+                << _size << "is too small to fit" << sizes.size()
+                << "textures. Generated atlas will be empty.";
+        return {};
+    }
+
+    /* Update the ranges max values to match the new offsets, undo the zero
+       sizes being (1, 1) */
+    for(std::size_t i = 0; i != sizes.size(); ++i)
+        out[i].max() = out[i].min() + sizes[i];
+
+    return out;
 }
 
 void AbstractGlyphCache::insert(const UnsignedInt glyph, const Vector2i& position, const Range2Di& rectangle) {
