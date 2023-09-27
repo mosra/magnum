@@ -34,6 +34,7 @@
 #include <Corrade/Utility/Path.h>
 
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/PackingBatch.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/DebugTools/ColorMap.h"
 #include "Magnum/TextureTools/Atlas.h"
@@ -122,9 +123,14 @@ int main() {
     } {
         constexpr Float displaySizeDivisor = 1.0f;
 
-        Containers::Optional<Containers::Array<char>> sizeData = Utility::Path::read(Utility::Path::join(Utility::Path::split(__FILE__).first(), "../../src/Magnum/TextureTools/Test/oxygen-glyphs.bin"));
+        Containers::Optional<Containers::Array<char>> sizeData = Utility::Path::read(Utility::Path::join(Utility::Path::split(__FILE__).first(), "../../src/Magnum/TextureTools/Test/AtlasTestFiles/oxygen-glyphs.bin"));
         CORRADE_INTERNAL_ASSERT(sizeData);
-        const auto sizes = Containers::arrayCast<const Vector2i>(*sizeData);
+
+        auto sizes16 = Containers::arrayCast<Vector2s>(*sizeData);
+        Containers::Array<Vector2i> sizes{NoInit, sizes16.size()};
+        Math::castInto(
+            Containers::arrayCast<2, const Short>(stridedArrayView(sizes16)),
+            Containers::arrayCast<2, Int>(stridedArrayView(sizes)));
 
         TextureTools::AtlasLandfill atlas{{512, 512}};
         Containers::Array<Vector2i> offsets{NoInit, sizes.size()};
