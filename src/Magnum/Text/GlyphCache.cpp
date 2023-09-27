@@ -30,7 +30,6 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/TextureFormat.h"
-#include "Magnum/TextureTools/Atlas.h"
 
 namespace Magnum { namespace Text {
 
