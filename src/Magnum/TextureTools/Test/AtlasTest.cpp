@@ -50,6 +50,7 @@ struct AtlasTest: TestSuite::Tester {
     void landfillFullFit();
     void landfill();
     void landfillIncremental();
+    void landfillPadded();
     void landfillNoFit();
     void landfillCopy();
     void landfillMove();
@@ -57,6 +58,7 @@ struct AtlasTest: TestSuite::Tester {
     void landfillArrayFullFit();
     void landfillArray();
     void landfillArrayIncremental();
+    void landfillArrayPadded();
     void landfillArrayNoFit();
     void landfillArrayCopy();
     void landfillArrayMove();
@@ -66,6 +68,7 @@ struct AtlasTest: TestSuite::Tester {
     void landfillAddMissingRotations();
     void landfillAddInvalidViewSizes();
     void landfillAddTooLargeElement();
+    void landfillAddTooLargeElementPadded();
 
     void basic();
     void padding();
@@ -430,6 +433,7 @@ AtlasTest::AtlasTest() {
         Containers::arraySize(LandfillData));
 
     addTests({&AtlasTest::landfillIncremental,
+              &AtlasTest::landfillPadded,
               &AtlasTest::landfillNoFit,
               &AtlasTest::landfillCopy,
               &AtlasTest::landfillMove,
@@ -440,6 +444,7 @@ AtlasTest::AtlasTest() {
         Containers::arraySize(LandfillArrayData));
 
     addTests({&AtlasTest::landfillArrayIncremental,
+              &AtlasTest::landfillArrayPadded,
               &AtlasTest::landfillArrayNoFit,
               &AtlasTest::landfillArrayCopy,
               &AtlasTest::landfillArrayMove,
@@ -449,6 +454,7 @@ AtlasTest::AtlasTest() {
               &AtlasTest::landfillAddMissingRotations,
               &AtlasTest::landfillAddInvalidViewSizes,
               &AtlasTest::landfillAddTooLargeElement,
+              &AtlasTest::landfillAddTooLargeElementPadded,
 
               &AtlasTest::basic,
               &AtlasTest::padding,
@@ -496,6 +502,7 @@ void AtlasTest::landfillFullFit() {
     CORRADE_COMPARE(atlas.size(), (Vector2i{4, 6}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector2i{4, 0}));
     CORRADE_COMPARE(atlas.flags(), AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(atlas.padding(), Vector2i{});
 
     Vector2i offsets[4];
     UnsignedByte rotationData[1];
@@ -639,6 +646,53 @@ void AtlasTest::landfillIncremental() {
     }), TestSuite::Compare::Container);
 }
 
+void AtlasTest::landfillPadded() {
+    AtlasLandfill atlas{{15, 14}};
+    atlas.setPadding({1, 2});
+    CORRADE_COMPARE(atlas.padding(), (Vector2i{1, 2}));
+
+    Vector2i offsets[6];
+    UnsignedByte rotationData[1];
+    Containers::MutableBitArrayView rotations{rotationData, 0, 6};
+    CORRADE_VERIFY(atlas.add({
+        {6, 2}, /* 0, padded to {8, 6}, flipped */
+        {1, 3}, /* 1, padded to {3, 7} */
+        {4, 1}, /* 2, padded to {6, 5}, flipped */
+        {2, 2}, /* 3, padded to {4, 6} */
+        {2, 1}, /* 4, padded to {4, 5}, not flipped as padded it's portrait */
+        {1, 1}, /* 5, padded to {3, 5} */
+    }, offsets, rotations));
+
+    CORRADE_COMPARE(atlas.filledSize(), (Vector2i{15, 13}));
+    CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
+        true, false, true, false, false, false
+    }).sliceBit(0), TestSuite::Compare::Container);
+
+    /*       ...
+             ...----....
+      10     .5.----....
+       9     ...-44-.33.
+       8     ...----.33.
+         ______ ----....
+         __00__...  ....
+         __00__..._____
+         __00__.1.__2__
+         __00__.1.__2__
+       2 __00__.1.__2__
+       1 __00__...__2__
+         ______..._____
+
+           2  5 78  12   */
+    CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector2i>({
+        { 2,  1}, /* 0 */
+        { 7,  2}, /* 1 */
+        {11,  1}, /* 2 */
+        {12,  8}, /* 3 */
+        { 8,  9}, /* 4 */
+        { 5, 10}  /* 5 */
+    }), TestSuite::Compare::Container);
+}
+
 void AtlasTest::landfillNoFit() {
     /* Same as landfill(portrait, widest first) (which is the default flags)
        which fits into {11, 10} but limiting height to 9 */
@@ -684,6 +738,7 @@ void AtlasTest::landfillArrayFullFit() {
     CORRADE_COMPARE(atlas.size(), (Vector3i{4, 5, 2}));
     CORRADE_COMPARE(atlas.filledSize(), (Vector3i{4, 5, 0}));
     CORRADE_COMPARE(atlas.flags(), AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst);
+    CORRADE_COMPARE(atlas.padding(), Vector2i{});
 
     Vector3i offsets[6];
     UnsignedByte rotationData[1];
@@ -815,6 +870,54 @@ void AtlasTest::landfillArrayIncremental() {
         {2, 0, 1}, /* 7 */
         {6, 0, 1}, /* 8 */
         {4, 0, 1}, /* 9 */
+    }), TestSuite::Compare::Container);
+}
+
+void AtlasTest::landfillArrayPadded() {
+    /* Like landfillPadded(), but item 5 overlflowing to the next slice */
+
+    AtlasLandfillArray atlas{{15, 12, 3}};
+    atlas.setPadding({1, 2});
+    CORRADE_COMPARE(atlas.padding(), (Vector2i{1, 2}));
+
+    Vector3i offsets[6];
+    UnsignedByte rotationData[1];
+    Containers::MutableBitArrayView rotations{rotationData, 0, 6};
+    CORRADE_VERIFY(atlas.add({
+        {6, 2}, /* 0, padded to {8, 6}, flipped */
+        {1, 3}, /* 1, padded to {3, 7} */
+        {4, 1}, /* 2, padded to {6, 5}, flipped */
+        {2, 2}, /* 3, padded to {4, 6} */
+        {2, 1}, /* 4, padded to {4, 5}, not flipped as padded it's portrait */
+        {1, 1}, /* 5, padded to {3, 5} */
+    }, offsets, rotations));
+
+    CORRADE_COMPARE(atlas.filledSize(), (Vector3i{15, 12, 2}));
+    CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
+        true, false, true, false, false, false
+    }).sliceBit(0), TestSuite::Compare::Container);
+
+    /*          ----....
+                ----....
+       9        -44-.33.
+       8        ----.33.
+         ______ ----....
+         __00__...  ....
+         __00__..._____
+         __00__.1.__2__  ...
+         __00__.1.__2__  ...
+       2 __00__.1.__2__  .5.
+       1 __00__...__2__  ...
+         ______..._____  ...
+
+           2  5 78  12    1  */
+    CORRADE_COMPARE_AS(Containers::arrayView(offsets), Containers::arrayView<Vector3i>({
+        { 2, 1, 0}, /* 0 */
+        { 7, 2, 0}, /* 1 */
+        {11, 1, 0}, /* 2 */
+        {12, 8, 0}, /* 3 */
+        { 8, 9, 0}, /* 4 */
+        { 1, 2, 1}  /* 5 */
     }), TestSuite::Compare::Container);
 }
 
@@ -980,6 +1083,46 @@ void AtlasTest::landfillAddTooLargeElement() {
         "TextureTools::AtlasLandfillArray::add(): expected size 1 to be non-zero and not larger than {23, 16} but got {23, 17}\n"
         "TextureTools::AtlasLandfill::add(): expected size 1 to be non-zero and not larger than {16, 13} but got {13, 15}\n"
         "TextureTools::AtlasLandfillArray::add(): expected size 1 to be non-zero and not larger than {13, 16} but got {15, 13}\n",
+        TestSuite::Compare::String);
+}
+
+void AtlasTest::landfillAddTooLargeElementPadded() {
+    /* Sizes (except for zeros) are same as above minus padding */
+
+    CORRADE_SKIP_IF_NO_ASSERT();
+
+    /* The atlas makes the sizes portrait first, the array landscape instead */
+    AtlasLandfill atlas{{16, 23}};
+    AtlasLandfill atlas2{{16, 13}};
+    AtlasLandfillArray array{{23, 16, 3}};
+    AtlasLandfillArray array2{{13, 16, 3}};
+    atlas.setPadding({2, 1});
+    atlas2.setPadding({2, 1});
+    array.setPadding({1, 2})
+        .setFlags(AtlasLandfillFlag::RotateLandscape);
+    array2.setPadding({1, 2})
+        .setFlags(AtlasLandfillFlag::RotateLandscape);
+    Vector2i offsets[2];
+    Vector3i offsets3[2];
+    UnsignedByte rotationsData[1];
+    Containers::MutableBitArrayView rotations{rotationsData, 0, 2};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    atlas.add({{12, 21}, {0, 21}}, offsets, rotations);
+    array.add({{21, 12}, {21, 0}}, offsets3, rotations);
+    atlas.add({{12, 21}, {13, 21}}, offsets, rotations);
+    array.add({{21, 12}, {21, 13}}, offsets3, rotations);
+    /* Sizes that fit but don't after a flip */
+    atlas2.add({{9, 11}, {12, 11}}, offsets, rotations);
+    array2.add({{11, 9}, {11, 12}}, offsets3, rotations);
+    CORRADE_COMPARE_AS(out.str(),
+        "TextureTools::AtlasLandfill::add(): expected size 1 to be non-zero and not larger than {16, 23} but got {0, 21} and padding {2, 1}\n"
+        "TextureTools::AtlasLandfillArray::add(): expected size 1 to be non-zero and not larger than {23, 16} but got {21, 0} and padding {1, 2}\n"
+        "TextureTools::AtlasLandfill::add(): expected size 1 to be non-zero and not larger than {16, 23} but got {13, 21} and padding {2, 1}\n"
+        "TextureTools::AtlasLandfillArray::add(): expected size 1 to be non-zero and not larger than {23, 16} but got {21, 13} and padding {1, 2}\n"
+        "TextureTools::AtlasLandfill::add(): expected size 1 to be non-zero and not larger than {16, 13} but got {11, 12} and padding {1, 2}\n"
+        "TextureTools::AtlasLandfillArray::add(): expected size 1 to be non-zero and not larger than {13, 16} but got {12, 11} and padding {2, 1}\n",
         TestSuite::Compare::String);
 }
 

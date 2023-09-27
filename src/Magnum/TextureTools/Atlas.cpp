@@ -81,13 +81,14 @@ struct AtlasLandfillState {
     /* X = MAX and z = 1 is for 2D unbounded, z = MAX is for 3D unbounded */
     Vector3i size;
     AtlasLandfillFlags flags = AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst;
+    Vector2i padding;
 };
 
 }
 
 namespace {
 
-bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, const Int slice, const Containers::StridedArrayView1D<const Containers::Pair<Vector2i, UnsignedInt>> sortedFlippedSizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets) {
+bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, const Int slice, const Containers::StridedArrayView1D<const Containers::Pair<Vector2i, UnsignedInt>> sortedFlippedSizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets, const Containers::BitArrayView rotations) {
     /* Add a new slice if not there yet, extend the yOffsets array */
     if(UnsignedInt(slice) >= state.slices.size()) {
         CORRADE_INTERNAL_ASSERT(UnsignedInt(slice) == state.slices.size());
@@ -134,13 +135,25 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
         for(UnsignedShort& yOffset: placementYOffsets)
             yOffset = newYOffset;
 
+        /* Index of this item in the original array */
+        const UnsignedInt index = sortedFlippedSizes[i].second();
+
+        /* Figure out padding of this item. If the size was rotated, rotate it
+           as well. If the rotations aren't even present, no rotations were
+           done. */
+        const Vector2i padding = !rotations.isEmpty() && rotations[index] ?
+            state.padding.flipped() : state.padding;
+
         /* Save the position (X-flip it in case we're in reverse direction),
-           advance to the next X offset */
-        offsets[sortedFlippedSizes[i].second()] = {
+           add the (appropriately rotated) padding to it so it points to the
+           original unpadded size */
+        offsets[index] = padding + Vector2i{
             sliceState.direction > 0 ? sliceState.xOffset :
                 state.size.x() - sliceState.xOffset - size.x(),
             placementYOffset
         };
+
+        /* Advance to the next X offset */
         sliceState.xOffset += size.x();
     }
 
@@ -154,7 +167,7 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
     if(i < sortedFlippedSizes.size()) {
         if(slice + 1 == state.size.z())
             return false;
-        return atlasLandfillAddSortedFlipped(state, slice + 1,  sortedFlippedSizes.exceptPrefix(i), offsets, zOffsets);
+        return atlasLandfillAddSortedFlipped(state, slice + 1,  sortedFlippedSizes.exceptPrefix(i), offsets, zOffsets, rotations);
     }
 
     /* Everything fit, success */
@@ -180,17 +193,31 @@ bool atlasLandfillAdd(const char* messagePrefix, Implementation::AtlasLandfillSt
     Containers::Array<Containers::Pair<Vector2i, UnsignedInt>> sortedFlippedSizes{NoInit, sizes.size()};
     for(std::size_t i = 0; i != sizes.size(); ++i) {
         Vector2i size = sizes[i];
-        if((state.flags & AtlasLandfillFlag::RotateLandscape && size.x() < size.y()) ||
-           (state.flags & AtlasLandfillFlag::RotatePortrait && size.x() > size.y()))
+        #ifndef CORRADE_NO_ASSERT
+        Vector2i padding = state.padding;
+        #endif
+        Vector2i sizePadded = size + 2*state.padding;
+        if((state.flags & AtlasLandfillFlag::RotateLandscape && sizePadded.x() < sizePadded.y()) ||
+           (state.flags & AtlasLandfillFlag::RotatePortrait && sizePadded.x() > sizePadded.y()))
         {
+            #ifndef CORRADE_NO_ASSERT
             size = size.flipped();
+            padding = padding.flipped();
+            #endif
+            sizePadded = sizePadded.flipped();
             rotations.set(i);
         }
 
-        CORRADE_ASSERT(size.product() && size <= state.size.xy(),
-            messagePrefix << "expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size, {});
+        #ifndef CORRADE_NO_ASSERT
+        if(state.padding.isZero())
+            CORRADE_ASSERT(size.product() && sizePadded <= state.size.xy(),
+                messagePrefix << "expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size, {});
+        else
+            CORRADE_ASSERT(size.product() && sizePadded <= state.size.xy(),
+                messagePrefix << "expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size << "and padding" << Debug::packed << padding, {});
+        #endif
 
-        sortedFlippedSizes[i] = {size, UnsignedInt(i)};
+        sortedFlippedSizes[i] = {sizePadded, UnsignedInt(i)};
     }
 
     /* Sort to have the highest first. Assuming the items are square,
@@ -216,7 +243,7 @@ bool atlasLandfillAdd(const char* messagePrefix, Implementation::AtlasLandfillSt
             return a.first().y() > b.first().y();
         });
 
-    return atlasLandfillAddSortedFlipped(state, 0, sortedFlippedSizes, offsets, zOffsets);
+    return atlasLandfillAddSortedFlipped(state, 0, sortedFlippedSizes, offsets, zOffsets, rotations);
 }
 
 }
@@ -247,6 +274,15 @@ Vector2i AtlasLandfill::size() const {
 
 Vector2i AtlasLandfill::filledSize() const {
     return {_state->size.x(), Math::max(_state->yOffsets)};
+}
+
+Vector2i AtlasLandfill::padding() const {
+    return _state->padding;
+}
+
+AtlasLandfill& AtlasLandfill::setPadding(const Vector2i& padding) {
+    _state->padding = padding;
+    return *this;
 }
 
 AtlasLandfillFlags AtlasLandfill::flags() const {
@@ -307,6 +343,15 @@ Vector3i AtlasLandfillArray::size() const {
 
 Vector3i AtlasLandfillArray::filledSize() const {
     return {_state->size.xy(), Int(_state->slices.size())};
+}
+
+Vector2i AtlasLandfillArray::padding() const {
+    return _state->padding;
+}
+
+AtlasLandfillArray& AtlasLandfillArray::setPadding(const Vector2i& padding) {
+    _state->padding = padding;
+    return *this;
 }
 
 AtlasLandfillFlags AtlasLandfillArray::flags() const {

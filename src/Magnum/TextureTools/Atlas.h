@@ -255,6 +255,32 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
         }
 
         /**
+         * @brief Padding around each texture
+         *
+         * Default is a zero vector.
+         */
+        Vector2i padding() const;
+
+        /**
+         * @brief Set padding around each texture
+         *
+         * Sizes are extended with twice the padding value before placement but
+         * the returned offsets are without padding again. In order to have
+         * @ref AtlasLandfillFlag::RotatePortrait and
+         * @relativeref{AtlasLandfillFlag,RotateLandscape} work well also
+         * with non-uniform padding, the padding is applied *before* a
+         * potential rotation. I.e., the horizontal padding value is always
+         * applied on input image width independently on how it's rotated
+         * after. If you need different behavior, disable rotations with
+         * @ref clearFlags() or pre-pad the input sizes directly instead of
+         * using this function.
+         *
+         * Can be called with different values before each particular
+         * @ref add().
+         */
+        AtlasLandfill& setPadding(const Vector2i& padding);
+
+        /**
          * @brief Add textures to the atlas
          * @param[in]  sizes        Texture sizes
          * @param[out] offsets      Resulting offsets in the atlas
@@ -262,20 +288,22 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          *
          * The @p sizes, @p offsets and @p rotations views are expected to have
          * the same size. The @p sizes are all expected to be non-zero and not
-         * larger than @ref size() after a rotation based on
-         * @ref AtlasLandfillFlag::RotatePortrait or
+         * larger than @ref size() after appying padding and then a rotation
+         * based on @ref AtlasLandfillFlag::RotatePortrait or
          * @relativeref{AtlasLandfillFlag,RotateLandscape} being set. If
          * neither @relativeref{AtlasLandfillFlag,RotatePortrait} nor
          * @relativeref{AtlasLandfillFlag,RotateLandscape} is set, the
          * @p rotations view can be also empty or you can use the
          * @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector2i>&)
-         * overload.
+         * overload. The @p offsets always point to the original potentially
+         * rotated sizes without padding applied.
          *
          * On success returns @cpp true @ce and updates @ref filledSize(). If
          * @ref size() is bounded, can return @cpp false @ce if the items
          * didn't fit, in which case the internals and contents of @p offsets
          * and @p rotations are left in an undefined state. For an unbounded
          * @ref size() returns @cpp true @ce always.
+         * @see @ref setFlags(), @ref setPadding()
          */
         bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
 
@@ -410,6 +438,33 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfillArray {
         }
 
         /**
+         * @brief Padding around each texture
+         *
+         * Default is a zero vector.
+         */
+        Vector2i padding() const;
+
+        /**
+         * @brief Set padding around each texture
+         *
+         * Sizes are extended with twice the padding value before placement but
+         * the returned offsets are without padding again. The third dimension
+         * isn't treated in any special way. In order to have
+         * @ref AtlasLandfillFlag::RotatePortrait and
+         * @relativeref{AtlasLandfillFlag,RotateLandscape} work well also
+         * with non-uniform padding, the padding is applied *before* a
+         * potential rotation. I.e., the horizontal padding value is always
+         * applied on input image width independently on how it's rotated
+         * after. If you need different behavior, disable rotations with
+         * @ref clearFlags() or pre-pad the input sizes directly instead of
+         * using this function.
+         *
+         * Can be called with different values before each particular
+         * @ref add().
+         */
+        AtlasLandfillArray& setPadding(const Vector2i& padding);
+
+        /**
          * @brief Add textures to the atlas
          * @param[in]  sizes        Texture sizes
          * @param[out] offsets      Resulting offsets in the atlas
@@ -417,20 +472,22 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfillArray {
          *
          * The @p sizes, @p offsets and @p rotations views are expected to have
          * the same size. The @p sizes are all expected to be non-zero and not
-         * larger than @ref size() after a rotation based on
-         * @ref AtlasLandfillFlag::RotatePortrait or
+         * larger than @ref size() after applying padding and then a rotation
+         * based on @ref AtlasLandfillFlag::RotatePortrait or
          * @relativeref{AtlasLandfillFlag,RotateLandscape} being set. If
          * neither @relativeref{AtlasLandfillFlag,RotatePortrait} nor
          * @relativeref{AtlasLandfillFlag,RotateLandscape} is set, the
          * @p rotations view can be also empty or you can use the
          * @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector3i>&)
-         * overload.
+         * overload. The @p offsets always point to the original potentially
+         * rotated sizes without padding applied.
          *
          * On success returns @cpp true @ce and updates @ref filledSize(). If
          * @ref size() is bounded, can return @cpp false @ce if the items
          * didn't fit, in which case the internals and contents of @p offsets
          * and @p rotations are left in an undefined state. For an unbounded
          * @ref size() returns @cpp true @ce always.
+         * @see @ref setFlags(), @ref setPadding()
          */
         bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView rotations);
 
