@@ -86,7 +86,16 @@ enum class AtlasLandfillFlag {
      * @relativeref{AtlasLandfillFlag,NarrowestFirst} can be set. If neither is
      * set, textures of the same height keep their original order.
      */
-    NarrowestFirst = 1 << 3
+    NarrowestFirst = 1 << 3,
+
+    /**
+     * By default, when reaching an edge, the next row is filled in reverse
+     * direction only if the previous row ended lower than it started. If it
+     * ended at the same height or higher, the next row is filled in the same
+     * direction again in an attempt to level it out with decreasing heights.
+     * Enabling this flag reverses the fill direction always.
+     */
+    ReverseDirectionAlways = 1 << 4
 };
 
 /** @debugoperatorenum{AtlasLandfillFlag} */
@@ -152,7 +161,8 @@ of given `size` gets placed at a `height` that's
 @cpp max(heights[cursor], heights[cursor + size.x]) @ce, this range gets then
 set to `height + size.y` and the cursor is updated to `cursor + size.x`. If
 cursor reaches the edge that an item cannot fit there anymore, it's reset to
-@cpp 0 @ce and the process continues again in the opposite direction. With the
+@cpp 0 @ce and the process continues again in the opposite direction, or the
+same direction if the previous row ended higher than it started. With the
 assumption that the texture sizes are uniformly distributed, this results in a
 fairly leveled out height. The process is aborted if the atlas height is
 bounded and the next item cannot fit there anymore.

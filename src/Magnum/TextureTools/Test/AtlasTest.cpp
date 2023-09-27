@@ -121,11 +121,14 @@ const struct {
     /* In all of these, rectangles with the same size should keep their order.
        5 after 3, 9 after 8 after 6 (and b after a after 7 if they're rotated
        to the same orientation) */
-    {"no rotation, no width sorting", {}, {11, 12}, {11, 10}, {
-        /* 99b
-           99b77
-           8866 aac
-           88662222
+    {"no rotation, no width sorting", {}, {11, 12}, {11, 9}, {
+        /* Here it discovers that item 8 is higher than 5 and so it begins from
+           the opposite end in the same direction again, instead of flipping
+           the direction at item 8.
+
+              c
+           8866aa77b99
+           88662222b99
            000 2222555
            00011   555
            00011   555
@@ -139,18 +142,21 @@ const struct {
         {{8, 0}, false},    /* 4 */
         {{8, 3}, false},    /* 5 */
         {{2, 6}, false},    /* 6 */
-        {{3, 8}, false},    /* 7 */
+        {{6, 7}, false},    /* 7 */
         {{0, 6}, false},    /* 8 */
-        {{0, 8}, false},    /* 9 */
-        {{5, 7}, false},    /* a */
-        {{2, 8}, false},    /* b */
-        {{7, 7}, false}}},  /* c */
+        {{9, 6}, false},    /* 9 */
+        {{4, 7}, false},    /* a */
+        {{8, 6}, false},    /* b */
+        {{3, 8}, false}}},  /* c */
     /* No rotation with width sorting omitted, not interesting */
-    {"portrait, no width sorting", AtlasLandfillFlag::RotatePortrait, {11, 12}, {11, 10}, {
-        /* 99a
-           99ab
-            88bc
-            88766555
+    {"portrait, no width sorting", AtlasLandfillFlag::RotatePortrait, {11, 12}, {11, 9}, {
+        /* Here it should compare against the height of item 8, not item 0.
+           Which is again higher than item 4 on the other side so it again
+           begins from the opposite side.
+
+                  ba
+            88   cba99
+            8876655599
            00076655544
            00011 55544
            0001122  44
@@ -166,15 +172,13 @@ const struct {
         {{4, 5}, false},    /* 6 */
         {{3, 5}, true},     /* 7 */
         {{1, 6}, false},    /* 8 */
-        {{0, 8}, false},    /* 9 */
-        {{2, 8}, true},     /* a */
-        {{3, 7}, false},    /* b */
-        {{4, 7}, false}}},  /* c */
-    {"portrait, widest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 12}, {11, 10}, {
-        /* 7ab
-           7abc
-           9988
-           99886644
+        {{9, 6}, false},    /* 9 */
+        {{8, 7}, true},     /* a */
+        {{7, 7}, false},    /* b */
+        {{6, 7}, false}}},  /* c */
+    {"portrait, widest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 12}, {11, 8}, {
+        /* 9988   cba7
+           99886644ba7
            000 6644555
            00011 44555
            0001122 555
@@ -188,14 +192,40 @@ const struct {
         {{6, 4}, false},    /* 4 */
         {{8, 3}, false},    /* 5 */
         {{4, 5}, false},    /* 6 */
-        {{0, 8}, true},     /* 7 */
+        {{10,6}, true},     /* 7 */
         {{2, 6}, false},    /* 8 */
         {{0, 6}, false},    /* 9 */
-        {{1, 8}, true},     /* a */
-        {{2, 8}, false},    /* b */
-        {{3, 8}, false}}},  /* c */
-    {"portrait, widest first, unbounded height", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 0}, {11, 10}, {
-        /* Should have the same result as above
+        {{9, 6}, true},     /* a */
+        {{8, 6}, false},    /* b */
+        {{7, 7}, false}}},  /* c */
+    {"portrait, widest first, unbounded height", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst, {11, 0}, {11, 8}, {
+        /* Should have the same result as above.
+         *
+           9988   cba7
+           99886644ba7
+           000 6644555
+           00011 44555
+           0001122 555
+           0001122333
+           0001122333
+           0001122333 */
+        {{0, 0}, false},    /* 0 */
+        {{3, 0}, false},    /* 1 */
+        {{5, 0}, true},     /* 2 */
+        {{7, 0}, false},    /* 3 */
+        {{6, 4}, false},    /* 4 */
+        {{8, 3}, false},    /* 5 */
+        {{4, 5}, false},    /* 6 */
+        {{10, 6}, true},    /* 7 */
+        {{2, 6}, false},    /* 8 */
+        {{0, 6}, false},    /* 9 */
+        {{9, 6}, true},     /* a */
+        {{8, 6}, false},    /* b */
+        {{7, 7}, false}}},  /* c */
+    {"portrait, widest first, reverse direction always", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::WidestFirst|AtlasLandfillFlag::ReverseDirectionAlways, {11, 12}, {11, 10}, {
+        /* Here it continues in reverse direction after placing item 9 even
+           though it's higher than item 5 as it's forced to.
+
            7ab
            7abc
            9988
@@ -219,11 +249,10 @@ const struct {
         {{1, 8}, true},     /* a */
         {{2, 8}, false},    /* b */
         {{3, 8}, false}}},  /* c */
-    {"portrait, narrowest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::NarrowestFirst, {11, 12}, {11, 10}, {
-        /* 8899
-           8899
-           66b c
-           66ba7555
+    {"portrait, narrowest first", AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::NarrowestFirst, {11, 12}, {11, 9}, {
+        /*        99
+           66b   c9988
+           66ba7555 88
            000a7555333
            00011555333
            0001122 333
@@ -238,15 +267,19 @@ const struct {
         {{5, 4}, false},    /* 5 */
         {{0, 6}, false},    /* 6 */
         {{4, 5}, true},     /* 7 */
-        {{0, 8}, false},    /* 8 */
-        {{2, 8}, false},    /* 9 */
+        {{9, 6}, false},    /* 8 */
+        {{7, 7}, false},    /* 9 */
         {{3, 5}, true},     /* a */
         {{2, 6}, false},    /* b */
-        {{4, 7}, false}}},  /* c */
-    {"landscape, no width sorting", AtlasLandfillFlag::RotateLandscape, {11, 12}, {11, 10}, {
-        /*          99
-                  7799
-             cbbaa6688
+        {{6, 7}, false}}},  /* c */
+    {"landscape, no width sorting", AtlasLandfillFlag::RotateLandscape, {11, 12}, {11, 9}, {
+        /* After placing 3 it continues in reverse direction as 0 isn't lower
+           (i.e., same behavior as if reversal was forced, and makes sense);
+           after placing 1 it continues in reverse direction with 2 again;
+           after placing 8 it however continues in the same direction again.
+
+           99    bbc
+           9977aa 6688
            22224446688
            2222444 555
               11111555
@@ -261,17 +294,17 @@ const struct {
         {{4, 5}, true},     /* 4 */
         {{8, 3}, false},    /* 5 */
         {{7, 6}, false},    /* 6 */
-        {{7, 8}, false},    /* 7 */
+        {{2, 7}, false},    /* 7 */
         {{9, 6}, false},    /* 8 */
-        {{9, 8}, false},    /* 9 */
-        {{5, 7}, false},    /* a */
-        {{3, 7}, true},     /* b */
-        {{2, 7}, false}}},  /* c */
-    {"landscape, widest first", AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::WidestFirst, {11, 12}, {11, 10}, {
-        /* No change compared to "no width sorting" in this case
-                    99
-                  7799
-             cbbaa6688
+        {{0, 7}, false},    /* 9 */
+        {{4, 7}, false},    /* a */
+        {{6, 8}, true},     /* b */
+        {{8, 8}, false}}},  /* c */
+    {"landscape, widest first", AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::WidestFirst, {11, 12}, {11, 9}, {
+        /* No change compared to "no width sorting" in this case.
+
+           99    bbc
+           9977aa 6688
            22224446688
            2222444 555
               11111555
@@ -286,16 +319,19 @@ const struct {
         {{4, 5}, true},     /* 4 */
         {{8, 3}, false},    /* 5 */
         {{7, 6}, false},    /* 6 */
-        {{7, 8}, false},    /* 7 */
+        {{2, 7}, false},    /* 7 */
         {{9, 6}, false},    /* 8 */
-        {{9, 8}, false},    /* 9 */
-        {{5, 7}, false},    /* a */
-        {{3, 7}, true},     /* b */
-        {{2, 7}, false}}},  /* c */
+        {{0, 7}, false},    /* 9 */
+        {{4, 7}, false},    /* a */
+        {{6, 8}, true},     /* b */
+        {{8, 8}, false}}},  /* c */
     {"landscape, narrowest first", AtlasLandfillFlag::RotateLandscape|AtlasLandfillFlag::NarrowestFirst, {11, 12}, {11, 10}, {
-        /*       11111
-           bb   c11111
-            aa772222
+        /* No special behavior worth commenting on here. Flips direction after
+           placing 5, after 8, and doesn't after placing 2.
+
+                    bb
+           11111c77aa
+           111112222
            994442222
            99444000000
             8866000000
@@ -304,17 +340,17 @@ const struct {
            333555
            333555      */
         {{5, 3}, true},     /* 0 */
-        {{6, 8}, true},     /* 1 */
+        {{0, 7}, true},     /* 1 */
         {{5, 6}, false},    /* 2 */
         {{0, 0}, false},    /* 3 */
         {{2, 5}, true},     /* 4 */
         {{3, 0}, false},    /* 5 */
         {{3, 3}, false},    /* 6 */
-        {{3, 7}, false},    /* 7 */
+        {{6, 8}, false},    /* 7 */
         {{1, 3}, false},    /* 8 */
         {{0, 5}, false},    /* 9 */
-        {{1, 7}, false},    /* a */
-        {{0, 8}, true},     /* b */
+        {{8, 8}, false},    /* a */
+        {{9, 9}, true},     /* b */
         {{5, 8}, false}}},  /* c */
 };
 
@@ -602,7 +638,7 @@ void AtlasTest::landfillIncremental() {
     UnsignedByte rotationData[2];
     Containers::MutableBitArrayView rotations{rotationData, 0, Containers::arraySize(sizeData)};
 
-    AtlasLandfill atlas{{11, 10}};
+    AtlasLandfill atlas{{11, 8}};
     CORRADE_COMPARE(atlas.filledSize(), (Vector2i{11, 0}));
 
     CORRADE_VERIFY(atlas.add(
@@ -621,17 +657,15 @@ void AtlasTest::landfillIncremental() {
         sizes.exceptPrefix(9),
         offsets.exceptPrefix(9),
         rotations.exceptPrefix(9)));
-    CORRADE_COMPARE(atlas.filledSize(), (Vector2i{11, 10}));
+    CORRADE_COMPARE(atlas.filledSize(), (Vector2i{11, 8}));
 
     CORRADE_COMPARE_AS(rotations, Containers::stridedArrayView({
         true, false, false, true, false, false, false, false, true, false,
         false, true, false
     }).sliceBit(0), TestSuite::Compare::Container);
 
-    /* abc
-       abc9
-       7766
-       77665588
+    /* 7766   9cba
+       77665588cba
        111 5588444
        11133 88444
        1113300 444
@@ -648,10 +682,10 @@ void AtlasTest::landfillIncremental() {
         {2, 6}, /* 6 */
         {0, 6}, /* 7 */
         {6, 4}, /* 8 */
-        {3, 8}, /* 9 */
-        {0, 8}, /* a */
-        {1, 8}, /* b */
-        {2, 8}, /* c */
+        {7, 7}, /* 9 */
+        {10,6}, /* a */
+        {9, 6}, /* b */
+        {8, 6}, /* c */
     }), TestSuite::Compare::Container);
 }
 
@@ -704,9 +738,9 @@ void AtlasTest::landfillPadded() {
 
 void AtlasTest::landfillNoFit() {
     /* Same as landfill(portrait, widest first) (which is the default flags)
-       which fits into {11, 10} but limiting height to 9 */
+       which fits into {11, 8} but limiting height to 7 */
 
-    AtlasLandfill atlas{{11, 9}};
+    AtlasLandfill atlas{{11, 7}};
 
     Vector2i offsets[Containers::arraySize(LandfillSizes)];
     UnsignedByte rotationData[2];

@@ -55,6 +55,7 @@ Debug& operator<<(Debug& debug, const AtlasLandfillFlag value) {
         _c(RotateLandscape)
         _c(WidestFirst)
         _c(NarrowestFirst)
+        _c(ReverseDirectionAlways)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -68,6 +69,7 @@ Debug& operator<<(Debug& debug, const AtlasLandfillFlags value) {
         AtlasLandfillFlag::RotateLandscape,
         AtlasLandfillFlag::WidestFirst,
         AtlasLandfillFlag::NarrowestFirst,
+        AtlasLandfillFlag::ReverseDirectionAlways,
     });
 }
 
@@ -118,12 +120,18 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
     for(i = 0; i != sortedFlippedSizes.size(); ++i) {
         const Vector2i size = sortedFlippedSizes[i].first();
 
-        /* If the width cannnot fit into current offset, start a new row in
-           the opposite direction */
+        /* If the width cannnot fit into current offset, start a new row */
         if(sliceState.xOffset + size.x() > state.size.x()) {
+            /* Flip the direction and start from the same position if we're
+               either forced to or we ended up not higher than on the other
+               side, otherwise start from the other side in the same direction
+               in an attempt to level it up */
+            if((state.flags & AtlasLandfillFlag::ReverseDirectionAlways) || sliceYOffsets.front() >= sliceYOffsets[sliceState.xOffset - 1]) {
+                sliceState.direction *= -1;
+                sliceYOffsets = sliceYOffsets.flipped<0>();
+            }
+
             sliceState.xOffset = 0;
-            sliceState.direction *= -1;
-            sliceYOffsets = sliceYOffsets.flipped<0>();
         }
 
         /* Find the lowest Y offset where the width can be placed. If the
