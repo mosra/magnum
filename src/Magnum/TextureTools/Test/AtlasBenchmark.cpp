@@ -228,10 +228,10 @@ AtlasBenchmark::AtlasBenchmark() {
 
     /* Run all benchmarks again but with time measurement instead of
        efficiency */
-    addInstancedBenchmarks({&AtlasBenchmark::landfill}, 10,
+    addInstancedBenchmarks({&AtlasBenchmark::landfill}, 5,
         Containers::arraySize(LandfillData));
 
-    addInstancedBenchmarks({&AtlasBenchmark::stbRectPack}, 10,
+    addInstancedBenchmarks({&AtlasBenchmark::stbRectPack}, 5,
         Containers::arraySize(StbRectPackData));
 }
 
