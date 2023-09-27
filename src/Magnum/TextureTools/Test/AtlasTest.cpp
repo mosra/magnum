@@ -24,7 +24,6 @@
 */
 
 #include <sstream>
-#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedBitArrayView.h>
 #include <Corrade/Containers/Pair.h>
@@ -36,8 +35,14 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
-#include "Magnum/Math/Range.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/TextureTools/Atlas.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+
+#include "Magnum/Math/Range.h"
+#endif
 
 namespace Magnum { namespace TextureTools { namespace Test { namespace {
 
@@ -70,10 +75,12 @@ struct AtlasTest: TestSuite::Tester {
     void landfillAddTooLargeElement();
     void landfillAddTooLargeElementPadded();
 
-    void basic();
-    void padding();
-    void empty();
-    void tooSmall();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void deprecatedBasic();
+    void deprecatedPadding();
+    void deprecatedEmpty();
+    void deprecatedTooSmall();
+    #endif
 
     void arrayPowerOfTwoEmpty();
     void arrayPowerOfTwoSingleElement();
@@ -456,10 +463,12 @@ AtlasTest::AtlasTest() {
               &AtlasTest::landfillAddTooLargeElement,
               &AtlasTest::landfillAddTooLargeElementPadded,
 
-              &AtlasTest::basic,
-              &AtlasTest::padding,
-              &AtlasTest::empty,
-              &AtlasTest::tooSmall,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AtlasTest::deprecatedBasic,
+              &AtlasTest::deprecatedPadding,
+              &AtlasTest::deprecatedEmpty,
+              &AtlasTest::deprecatedTooSmall,
+              #endif
 
               &AtlasTest::arrayPowerOfTwoEmpty,
               &AtlasTest::arrayPowerOfTwoSingleElement,
@@ -1126,12 +1135,15 @@ void AtlasTest::landfillAddTooLargeElementPadded() {
         TestSuite::Compare::String);
 }
 
-void AtlasTest::basic() {
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AtlasTest::deprecatedBasic() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::vector<Range2Di> atlas = TextureTools::atlas({64, 64}, {
         {12, 18},
         {32, 15},
         {23, 25}
     });
+    CORRADE_IGNORE_DEPRECATED_POP
 
     CORRADE_COMPARE(atlas.size(), 3);
     CORRADE_COMPARE(atlas, (std::vector<Range2Di>{
@@ -1140,12 +1152,14 @@ void AtlasTest::basic() {
         Range2Di::fromSize({0, 25}, {23, 25})}));
 }
 
-void AtlasTest::padding() {
+void AtlasTest::deprecatedPadding() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::vector<Range2Di> atlas = TextureTools::atlas({64, 64}, {
         {8, 16},
         {28, 13},
         {19, 23}
     }, {2, 1});
+    CORRADE_IGNORE_DEPRECATED_POP
 
     CORRADE_COMPARE(atlas.size(), 3);
     CORRADE_COMPARE(atlas, (std::vector<Range2Di>{
@@ -1154,23 +1168,28 @@ void AtlasTest::padding() {
         Range2Di::fromSize({2, 26}, {19, 23})}));
 }
 
-void AtlasTest::empty() {
+void AtlasTest::deprecatedEmpty() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::vector<Range2Di> atlas = TextureTools::atlas({}, {});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_VERIFY(atlas.empty());
 }
 
-void AtlasTest::tooSmall() {
+void AtlasTest::deprecatedTooSmall() {
     std::ostringstream o;
     Error redirectError{&o};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::vector<Range2Di> atlas = TextureTools::atlas({64, 32}, {
         {8, 16},
         {21, 13},
         {19, 29}
     }, {2, 1});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_VERIFY(atlas.empty());
     CORRADE_COMPARE(o.str(), "TextureTools::atlas(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
 }
+#endif
 
 void AtlasTest::arrayPowerOfTwoEmpty() {
     Containers::ArrayView<Vector3i> offsets;

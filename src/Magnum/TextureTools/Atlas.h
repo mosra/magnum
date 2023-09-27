@@ -30,7 +30,6 @@
  */
 
 #include <Corrade/Containers/Pointer.h>
-#include <Corrade/Utility/StlForwardVector.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"
@@ -38,6 +37,7 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/StlForwardVector.h>
 #endif
 
 namespace Magnum { namespace TextureTools {
@@ -512,20 +512,26 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfillArray {
         Containers::Pointer<Implementation::AtlasLandfillState> _state;
 };
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief Pack textures into texture atlas
-@param atlasSize    Size of resulting atlas
+@brief Pack textures into a texture atlas
+@param atlasSize    Size of the resulting atlas
 @param sizes        Sizes of all textures in the atlas
 @param padding      Padding around each texture
 
 Packs many small textures into one larger. If the textures cannot be packed
-into required size, empty vector is returned.
+into required size, an empty vector is returned.
 
 Padding is added twice to each size and the atlas is laid out so the padding
 don't overlap. Returned sizes are the same as original sizes, i.e. without the
 padding.
+
+@m_deprecated_since_latest Use the @ref AtlasLandfill class, which has a vastly
+    better packing efficiency, supports incremental packing and doesn't force
+    the caller to use a @ref std::vector.
 */
-std::vector<Range2Di> MAGNUM_TEXTURETOOLS_EXPORT atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding = Vector2i());
+MAGNUM_TEXTURETOOLS_EXPORT CORRADE_DEPRECATED("use the AtlasLandfill class instead") std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding = {});
+#endif
 
 /**
 @brief Pack square power-of-two textures into a texture atlas array

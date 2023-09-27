@@ -26,7 +26,6 @@
 #include "Atlas.h"
 
 #include <algorithm>
-#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/BitArrayView.h>
 #include <Corrade/Containers/EnumSet.hpp>
@@ -34,9 +33,15 @@
 #include <Corrade/Containers/Pair.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/FunctionsBatch.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+
 #include "Magnum/Math/Range.h"
+#endif
 
 namespace Magnum { namespace TextureTools {
 
@@ -387,6 +392,7 @@ bool AtlasLandfillArray::add(const std::initializer_list<Vector2i> sizes, const 
     return add(Containers::stridedArrayView(sizes), offsets);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2i>& sizes, const Vector2i& padding) {
     if(sizes.empty()) return {};
 
@@ -407,7 +413,8 @@ std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2
         return atlas;
     }
 
-    /** @todo actual magic implementation, not this joke */
+    /* I could also just delegate to the AtlasLandfill class, but that'd be a
+       waste of time as the interface of this API is extremely bad anyway. */
 
     atlas.reserve(sizes.size());
     for(std::size_t i = 0; i != sizes.size(); ++i)
@@ -415,6 +422,7 @@ std::vector<Range2Di> atlas(const Vector2i& atlasSize, const std::vector<Vector2
 
     return atlas;
 }
+#endif
 
 Int atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
     CORRADE_ASSERT(offsets.size() == sizes.size(),
