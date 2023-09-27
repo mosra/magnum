@@ -751,13 +751,8 @@ void AtlasTest::landfillArray() {
 }
 
 void AtlasTest::landfillArrayIncremental() {
-        /* 000   55444
-           00011 55444
-           0001122 444
-           0001122333
-           0001122333  6688997
-           0001122333  6688997 */
-
+    /* Variant of landfillIncremental(), with less elements and different item
+       4 to test sorting across slices */
 
     Vector2i sizeData[]{
         {4, 2}, /* 0, rotated */
