@@ -50,6 +50,12 @@ endif()
 if(POLICY CMP0144)
     cmake_policy(SET CMP0144 NEW)
 endif()
+# Prefer GLVND when finding OpenGL. If this causes problems (known to fail with
+# NVidia drivers in Debian Buster, reported on 2019-04-09), users can override
+# this by setting OpenGL_GL_PREFERENCE to LEGACY.
+if(POLICY CMP0072)
+    cmake_policy(SET CMP0072 NEW)
+endif()
 # Superprojects can use just set(MAGNUM_WITH_BLAH ON) without FORCE CACHE on
 # 3.13+
 if(POLICY CMP0077)
@@ -563,13 +569,6 @@ endif()
 # Check dependencies
 if(MAGNUM_WITH_GL)
     if(NOT MAGNUM_TARGET_GLES OR (MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_EGL AND NOT CORRADE_TARGET_IOS))
-        # OpenGL library preference. Prefer to use GLVND, since that's the
-        # better approach nowadays, but allow the users to override it from
-        # outside in case it is broken for some reason (Nvidia drivers in
-        # Debian's testing (Buster) -- reported on 2019-04-09).
-        if(NOT CMAKE_VERSION VERSION_LESS 3.10 AND NOT OpenGL_GL_PREFERENCE)
-            set(OpenGL_GL_PREFERENCE GLVND)
-        endif()
         find_package(OpenGL REQUIRED)
     elseif(MAGNUM_TARGET_GLES2)
         find_package(OpenGLES2 REQUIRED)

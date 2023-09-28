@@ -227,6 +227,15 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# CMake policies used by FindMagnum are popped again at the end.
+cmake_policy(PUSH)
+# Prefer GLVND when finding OpenGL. If this causes problems (known to fail with
+# NVidia drivers in Debian Buster, reported on 2019-04-09), users can override
+# this by setting OpenGL_GL_PREFERENCE to LEGACY.
+if(POLICY CMP0072)
+    cmake_policy(SET CMP0072 NEW)
+endif()
+
 # Corrade library dependencies
 set(_MAGNUM_CORRADE_DEPENDENCIES )
 foreach(_magnum_component ${Magnum_FIND_COMPONENTS})
@@ -307,14 +316,6 @@ if(MAGNUM_BUILD_DEPRECATED)
             set(MAGNUM_TARGET_DESKTOP_GLES 1)
         endif()
     endif()
-endif()
-
-# OpenGL library preference. Prefer to use GLVND, since that's the better
-# approach nowadays, but allow the users to override it from outside in case
-# it is broken for some reason (Nvidia drivers in Debian's testing (Buster) --
-# reported on 2019-04-09).
-if(NOT CMAKE_VERSION VERSION_LESS 3.10 AND NOT OpenGL_GL_PREFERENCE)
-    set(OpenGL_GL_PREFERENCE GLVND)
 endif()
 
 # Base Magnum library
@@ -1292,3 +1293,6 @@ if(MAGNUM_PLUGINS_RELEASE_DIR)
     set(MAGNUM_PLUGINS_SCENECONVERTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/sceneconverters)
     set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/audioimporters)
 endif()
+
+# Resets CMake policies set at the top of the file to not affect other code.
+cmake_policy(POP)
