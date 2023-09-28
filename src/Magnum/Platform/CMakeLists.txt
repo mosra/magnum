@@ -422,6 +422,17 @@ if(MAGNUM_WITH_GLXAPPLICATION)
         message(FATAL_ERROR "X11 library, required by some applications, was not found. Set MAGNUM_WITH_*X*APPLICATION to OFF to skip building them.")
     endif()
 
+    # If we're targeting GLES and EGL, only the libGLES library is looked for
+    # by default. Here we need libGLX from GLVND in addition. If GLVND is not
+    # available however (or CMake < 3.10 is used), fail, as GLX symbols are
+    # only in libGL in that case, which would conflict with libGLES.
+    if(MAGNUM_TARGET_GLES AND MAGNUM_TARGET_EGL)
+        find_package(OpenGL)
+        if(NOT OpenGL_FOUND OR NOT OPENGL_opengl_LIBRARY OR NOT OpenGL_GL_PREFERENCE STREQUAL GLVND)
+            message(SEND_ERROR "Without GLVND, GlxApplication is available only if MAGNUM_TARGET_EGL is disabled. Use XEglApplication on EGL instead.")
+        endif()
+    endif()
+
     set(MagnumGlxApplication_SRCS
         GlxApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
@@ -446,6 +457,9 @@ if(MAGNUM_WITH_GLXAPPLICATION)
     # Can't use OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
     # *not* found. WTF. Also can't just check for OPENGL_opengl_LIBRARY because
     # that's set even if OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
+    #
+    # See also the logic above for preventing libGL and libGLES conflicts. If
+    # there's no conflict, this branch is taken and libGLX is linked.
     if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
         target_link_libraries(MagnumGlxApplication PUBLIC OpenGL::GLX)
     endif()
@@ -478,6 +492,10 @@ if(MAGNUM_WITH_XEGLAPPLICATION)
     if(NOT X11_FOUND)
         message(FATAL_ERROR "X11 library, required by some applications, was not found. Set MAGNUM_WITH_*X*APPLICATION to OFF to skip building them.")
     endif()
+
+    # Unlike with GlxApplication above, here no conflict between libGLES and
+    # libGL can happen -- we only either link libGLES and libEGL or libGL and
+    # libEGL.
 
     set(MagnumXEglApplication_SRCS
         XEglApplication.cpp
@@ -555,6 +573,17 @@ if(MAGNUM_WITH_WINDOWLESSGLXAPPLICATION)
     find_package(X11)
     if(NOT X11_FOUND)
         message(FATAL_ERROR "X11 library, required by some applications, was not found. Set MAGNUM_WITH_*X*APPLICATION to OFF to skip building them.")
+    endif()
+
+    # If we're targeting GLES and EGL, only the libGLES library is looked for
+    # by default. Here we need libGLX from GLVND in addition. If GLVND is not
+    # available however (or CMake < 3.10 is used), fail, as GLX symbols are
+    # only in libGL in that case, which would conflict with libGLES.
+    if(MAGNUM_TARGET_GLES AND MAGNUM_TARGET_EGL)
+        find_package(OpenGL)
+        if(NOT OpenGL_FOUND OR NOT OPENGL_opengl_LIBRARY OR NOT OpenGL_GL_PREFERENCE STREQUAL GLVND)
+            message(SEND_ERROR "Without GLVND, WindowlessGlxApplication is available only if MAGNUM_TARGET_EGL is disabled. Use WindowlessEglApplication on EGL instead.")
+        endif()
     endif()
 
     set(MagnumWindowlessGlxApplication_SRCS

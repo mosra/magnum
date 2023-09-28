@@ -374,6 +374,9 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
+      # TODO enable also GlxApplication, WindowlessGlxApplication and
+      # GlxContext once CMake 3.10+ is used to test correct libGLES + libGLX
+      # linking
       EXTRA_OPTS: >
         -DMAGNUM_WITH_XEGLAPPLICATION=ON
         -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
@@ -403,6 +406,9 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
+      # TODO enable also GlxApplication, WindowlessGlxApplication and
+      # GlxContext once CMake 3.10+ is used to test correct libGLES + libGLX
+      # linking
       EXTRA_OPTS: >
         -DMAGNUM_WITH_XEGLAPPLICATION=ON
         -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON

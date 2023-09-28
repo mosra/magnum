@@ -810,6 +810,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # *not* found. WTF. Also can't just check for
                 # OPENGL_opengl_LIBRARY because that's set even if
                 # OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
+                #
+                # If MAGNUM_TARGET_GLES and MAGNUM_TARGET_EGL is set, these
+                # applications can be built only if GLVND is available as
+                # otherwise there would be a conflict between libGL and
+                # libGLES. Thus, if GLVND is not available, it won't link
+                # libGLX here, but that shouldn't be a problem since the
+                # application library won't exist either.
                 find_package(OpenGL)
                 if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
                     set_property(TARGET Magnum::${_component} APPEND PROPERTY
