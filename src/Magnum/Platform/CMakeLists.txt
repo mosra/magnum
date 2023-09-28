@@ -440,7 +440,7 @@ if(MAGNUM_WITH_GLXAPPLICATION)
     target_link_libraries(MagnumGlxApplication PUBLIC
         MagnumGL
         ${X11_LIBRARIES})
-    # If the GLVND library (CMake 3.11+) was found and linked to, we need to
+    # If the GLVND library (CMake 3.10+) was found and linked to, we need to
     # link to GLX explicitly. Otherwise (and also on all systems except Linux)
     # the transitive dependency to classic GL lib from MagnumGL is enough.
     # Can't use OpenGL_OpenGL_FOUND, because that one is set also if GLVND is

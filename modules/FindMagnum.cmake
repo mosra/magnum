@@ -726,7 +726,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                         INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
                 endif()
 
-                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # With GLVND (since CMake 3.10) we need to explicitly link to
                 # GLX/EGL because libOpenGL doesn't provide it. For EGL we have
                 # our own EGL find module, which makes things simpler. The
                 # upstream FindOpenGL is anything but simple. Also can't use
@@ -773,7 +773,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                         INTERFACE_LINK_LIBRARIES "--js-library ${MAGNUM_PLATFORM_JS}")
                 endif()
 
-                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # With GLVND (since CMake 3.10) we need to explicitly link to
                 # GLX/EGL because libOpenGL doesn't provide it. For EGL we have
                 # our own EGL find module, which makes things simpler. The
                 # upstream FindOpenGL is anything but simple. Also can't use
@@ -803,7 +803,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
 
-                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # With GLVND (since CMake 3.10) we need to explicitly link to
                 # GLX because libOpenGL doesn't provide it. Also can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
                 # *not* found. WTF. Also can't just check for
@@ -851,7 +851,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
             # GLX context dependencies
             if(_component STREQUAL GlxContext)
-                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # With GLVND (since CMake 3.10) we need to explicitly link to
                 # GLX because libOpenGL doesn't provide it. Also can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
                 # *not* found. If GLVND is not used, link to X11 instead. Also
@@ -890,7 +890,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # GL library
         elseif(_component STREQUAL GL)
             if(NOT MAGNUM_TARGET_GLES OR (MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_EGL AND NOT CORRADE_TARGET_IOS))
-                # If the GLVND library (CMake 3.11+) was found, link to the
+                # If the GLVND library (CMake 3.10+) was found, link to the
                 # imported target. Otherwise (and also on all systems except
                 # Linux) link to the classic libGL. Can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
