@@ -31,8 +31,6 @@ cmake .. \
     -DMAGNUM_WITH_VK=OFF \
     -DMAGNUM_WITH_GLFWAPPLICATION=ON \
     -DMAGNUM_WITH_SDL2APPLICATION=ON \
-    -DMAGNUM_WITH_WINDOWLESS${PLATFORM_GL_API}APPLICATION=ON \
-    -DMAGNUM_WITH_${PLATFORM_GL_API}CONTEXT=ON \
     -DMAGNUM_WITH_OPENGLTESTER=ON \
     `# Some plugins have to be enabled in order to test rendering output` \
     `# Converter plugins are needed by the DebugTools::screenshot() test` \
@@ -57,6 +55,7 @@ cmake .. \
     -DMAGNUM_WITH_AL_INFO=OFF \
     -DMAGNUM_BUILD_TESTS=ON \
     -DMAGNUM_BUILD_GL_TESTS=ON \
+    $EXTRA_OPTS \
     -G Ninja
 ninja $NINJA_JOBS
 

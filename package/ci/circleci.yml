@@ -302,7 +302,13 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
-      PLATFORM_GL_API: GLX
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_GLXAPPLICATION=ON
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSGLXAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_GLXCONTEXT=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
@@ -324,7 +330,13 @@ jobs:
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
-      PLATFORM_GL_API: GLX
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_GLXAPPLICATION=ON
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSGLXAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_GLXCONTEXT=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
     # Not installing the old GCC 4.8 and CMake 3.5 to speed up. These are
     # tested more than enough on other jobs.
@@ -362,7 +374,10 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
-      PLATFORM_GL_API: EGL
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
     steps:
@@ -388,7 +403,10 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
-      PLATFORM_GL_API: EGL
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
     steps:
@@ -418,11 +436,18 @@ jobs:
       # to be either installed or static. Tests are however deliberately run
       # before install, so the static builds are the only case where the
       # utilities get thoroughly tested.
-      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::AnySceneConverter;Magnum::ObjImporter -DMAGNUM_IMAGECONVERTER_STATIC_PLUGINS=Magnum::AnyImageImporter;Magnum::AnyImageConverter;Magnum::TgaImporter;Magnum::TgaImageConverter
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_GLXAPPLICATION=ON
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSGLXAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_GLXCONTEXT=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
+        -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::AnySceneConverter;Magnum::ObjImporter
+        -DMAGNUM_IMAGECONVERTER_STATIC_PLUGINS=Magnum::AnyImageImporter;Magnum::AnyImageConverter;Magnum::TgaImporter;Magnum::TgaImageConverter
       CMAKE_CXX_FLAGS: --coverage
       LCOV_EXTRA_OPTS: --gcov-tool /usr/bin/gcov-4.8
       CONFIGURATION: Debug
-      PLATFORM_GL_API: GLX
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
@@ -447,7 +472,13 @@ jobs:
       BUILD_DEPRECATED: "OFF"
       CMAKE_CXX_FLAGS: -DCORRADE_NO_ASSERT
       CONFIGURATION: Release
-      PLATFORM_GL_API: GLX
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_GLXAPPLICATION=ON
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSGLXAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_GLXCONTEXT=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
@@ -473,10 +504,16 @@ jobs:
       BUILD_APPLICATIONS: "OFF"
       CMAKE_CXX_FLAGS: -fsanitize=address
       CONFIGURATION: Debug
-      PLATFORM_GL_API: GLX
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_GLXAPPLICATION=ON
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSGLXAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_GLXCONTEXT=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
     - install-base-linux:
-        extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
+        extra: libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
     - install-clang
     - install-cmake:
         version: "3.5.2"
@@ -493,10 +530,16 @@ jobs:
       BUILD_APPLICATIONS: "OFF"
       CMAKE_CXX_FLAGS: -fsanitize=thread
       CONFIGURATION: Debug
-      PLATFORM_GL_API: GLX
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_GLXAPPLICATION=ON
+        -DMAGNUM_WITH_XEGLAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSGLXAPPLICATION=ON
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_GLXCONTEXT=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
     steps:
     - install-base-linux:
-        extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
+        extra: libgl1-mesa-dev libegl1-mesa-dev libopenal-dev libvulkan-dev
     - install-clang
     - install-cmake:
         version: "3.5.2"
@@ -509,7 +552,9 @@ jobs:
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
-      PLATFORM_GL_API: CGL
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_WINDOWLESSCGLAPPLICATION=ON
+        -DMAGNUM_WITH_CGLCONTEXT=ON
     steps:
     - install-base-macos:
         extra: sdl2 glfw molten-vk
@@ -522,7 +567,9 @@ jobs:
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
-      PLATFORM_GL_API: EGL
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_WINDOWLESSEGLAPPLICATION=ON
+        -DMAGNUM_WITH_EGLCONTEXT=ON
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
     steps:
@@ -557,10 +604,12 @@ jobs:
       BUILD_STATIC: "ON"
       # Same comment as with the linux-static build -- these are the only jobs
       # that test command-line tools thoroughly
-      EXTRA_OPTS: -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::ObjImporter
+      EXTRA_OPTS: >
+        -DMAGNUM_WITH_WINDOWLESSCGLAPPLICATION=ON
+        -DMAGNUM_WITH_CGLCONTEXT=ON
+        -DMAGNUM_SCENECONVERTER_STATIC_PLUGINS=Magnum::AnySceneImporter;Magnum::ObjImporter
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
-      PLATFORM_GL_API: CGL
     steps:
     - install-base-macos:
         extra: sdl2 glfw molten-vk
