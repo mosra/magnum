@@ -32,10 +32,11 @@
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/Vector2.h"
 #include "Magnum/TextureTools/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Math/Vector2.h"
+
 #include <Corrade/Utility/Macros.h>
 #include <Corrade/Utility/StlForwardVector.h>
 #endif
