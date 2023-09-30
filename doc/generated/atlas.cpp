@@ -137,7 +137,7 @@ int main() {
         Containers::BitArray rotations{NoInit, sizes.size()};
         CORRADE_INTERNAL_ASSERT(atlas.add(sizes, offsets, rotations));
 
-        Range2Di viewBox{{}, atlas.filledSize()};
+        Range2Di viewBox{{}, atlas.filledSize().xy()};
 
         std::string out;
         Utility::formatInto(out, out.size(), R"(<svg class="m-image" style="width: {4}px; height: {5}px;" viewBox="{0} {1} {2} {3}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

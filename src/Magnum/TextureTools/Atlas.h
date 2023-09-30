@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::TextureTools::AtlasLandfill, @ref Magnum::TextureTools::AtlasLandfillArray, enum @ref Magnum::TextureTools::AtlasLandfillFlag, enum set @ref Magnum::TextureTools::AtlasLandfillFlags, function @ref Magnum::TextureTools::atlas(), @ref Magnum::TextureTools::atlasArrayPowerOfTwo()
+ * @brief Class @ref Magnum::TextureTools::AtlasLandfill, enum @ref Magnum::TextureTools::AtlasLandfillFlag, enum set @ref Magnum::TextureTools::AtlasLandfillFlags, function @ref Magnum::TextureTools::atlas(), @ref Magnum::TextureTools::atlasArrayPowerOfTwo()
  */
 
 #include <Corrade/Containers/Pointer.h>
@@ -51,9 +51,7 @@ namespace Implementation {
 @m_since_latest
 
 @see @ref AtlasLandfillFlags, @ref AtlasLandfill::setFlags(),
-    @ref AtlasLandfill::addFlags(), @ref AtlasLandfill::clearFlags(),
-    @ref AtlasLandfillArray::setFlags(), @ref AtlasLandfillArray::addFlags(),
-    @ref AtlasLandfillArray::clearFlags()
+    @ref AtlasLandfill::addFlags(), @ref AtlasLandfill::clearFlags()
 */
 enum class AtlasLandfillFlag {
     /**
@@ -106,8 +104,7 @@ MAGNUM_TEXTURETOOLS_EXPORT Debug& operator<<(Debug& output, AtlasLandfillFlag va
 @m_since_latest
 
 @see @ref Flags, @ref AtlasLandfill::setFlags(), @ref AtlasLandfill::addFlags(),
-    @ref AtlasLandfill::clearFlags(), @ref AtlasLandfillArray::setFlags(),
-    @ref AtlasLandfillArray::addFlags(), @ref AtlasLandfillArray::clearFlags()
+    @ref AtlasLandfill::clearFlags()
 */
 typedef Containers::EnumSet<AtlasLandfillFlag> AtlasLandfillFlags;
 
@@ -121,10 +118,10 @@ MAGNUM_TEXTURETOOLS_EXPORT Debug& operator<<(Debug& output, AtlasLandfillFlags v
 @m_since_latest
 
 Keeps track of currently filled height at every pixel with the aim to fill the
-available space bottom-up as evenly as possible. Packs to a 2D texture with the
-height optionally unbounded. See @ref AtlasLandfillArray for a variant that
-works with 2D texture arrays, and @ref atlasArrayPowerOfTwo() for a variant
-that always provides optimal packing for power-of-two sizes.
+available space bottom-up as evenly as possible. Packs to a 2D or a 2D array
+texture with either the height or depth optionally unbounded. See also
+@ref atlasArrayPowerOfTwo() for a variant that always provides optimal packing
+for power-of-two sizes.
 
 @htmlinclude atlas-landfill.svg
 
@@ -146,6 +143,14 @@ linear rasterizer later, they can be disabled by clearing appropriate
 overload without the rotations argument.
 
 @snippet MagnumTextureTools.cpp AtlasLandfill-usage-no-rotation
+
+@subsection TextureTools-AtlasLandfill-usage-atlas Array atlas
+
+The packing can be extended to a third dimension as well, in which case the
+packing overflows to next slices instead of expanding to potentially unbounded
+height.
+
+@snippet MagnumTextureTools.cpp AtlasLandfill-usage-array
 
 @section TextureTools-AtlasLandfill-process Packing process
 
@@ -170,9 +175,9 @@ bounded and the next item cannot fit there anymore.
 The sort is performed using @ref std::stable_sort(), which is usually
 @f$ \mathcal{O}(n \log{} n) @f$, the actual atlasing is a single
 @f$ \mathcal{O}(n) @f$ operation. Memory complexity is
-@f$ \mathcal{O}(n + w) @f$ with @f$ n @f$ being a sorted copy of the input size
-array and @f$ w @f$ being a 16-bit integer for every pixel of atlas width,
-additionally @ref std::stable_sort() performs its own allocation.
+@f$ \mathcal{O}(n + wc) @f$ with @f$ n @f$ being a sorted copy of the input
+size array and @f$ wc @f$ being a 16-bit integer for every pixel of atlas width
+times filled atlas depth. Additionally @ref std::stable_sort() performs its own allocation.
 
 @section TextureTools-AtlasLandfill-incremental Incremental population
 
@@ -182,6 +187,12 @@ ideal scenario, if the previous fill resulted in an uniform height the newly
 added data will be added in an optimal way as well, but in practice calling
 @ref add() with all data just once will always result in a more optimal
 packing than an incremental one.
+
+In case of an array atlas, the incremental process always starts from the first
+slice, finding the first that can fit the first (sorted) item. Then it attempts
+to place as many items as possible and on overflow continues searching for the
+next slice that can fit the first remaining item. If all slices are exhausted,
+adds a new one for as long as the depth (if bounded) allows.
 */
 class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
     public:
@@ -189,8 +200,17 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * @brief Constructor
          *
          * The @p size is expected to have non-zero width, and height not
-         * larger than 65536. If height is zero, the dimension is treated as
-         * unbounded, i.e. @ref add() never fails.
+         * larger than 65536. If height is @cpp 0 @ce, depth is expected to be
+         * @cpp 1 @ce and the height is treated as unbounded, i.e. @ref add()
+         * never fails. Otherwise, if depth is @cpp 0 @ce, depth is treated as
+         * unbounded.
+         */
+        explicit AtlasLandfill(const Vector3i& size);
+
+        /**
+         * @brief Construct a non-array atlas
+         *
+         * Same as calling @ref AtlasLandfill with depth set to @cpp 1 @ce.
          */
         explicit AtlasLandfill(const Vector2i& size);
 
@@ -213,17 +233,24 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          *
          * @see @ref filledSize()
          */
-        Vector2i size() const;
+        Vector3i size() const;
 
         /**
          * @brief Currently filled size
          *
-         * Width is always taken from @ref size(). The height is @cpp 0 @ce
-         * initially, and at most the height of @ref size() if it's bounded.
-         * The size is calculated with a @f$ \mathcal{O}(w) @f$ complexity,
-         * with @f$ w @f$ being the atlas width.
+         * Width is always taken from @ref size().
+         *
+         * If @ref size() depth is @cpp 1 @ce, the returned depth is always
+         * @cpp 1 @ce, height is @cpp 0 @ce initially, and at most the
+         * height of @ref size() if it's bounded. It's calculated with a
+         * @f$ \mathcal{O}(w) @f$ complexity, with @f$ w @f$ being the atlas
+         * width.
+         *
+         * Otherwise, if @ref size() depth is not @cpp 1 @ce, the height is
+         * taken from @ref size() and the depth is @cpp 0 @ce initially, and
+         * at most @ref size() depth if the size is bounded.
          */
-        Vector2i filledSize() const;
+        Vector3i filledSize() const;
 
         /**
          * @brief Behavior flags
@@ -235,15 +262,18 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
 
         /**
          * @brief Set behavior flags
+         * @return Reference to self (for method chaining)
          *
-         * Can be called with different values before each particular
-         * @ref add().
+         * Note that some flags are mutually exclusive, see documentation of
+         * particular @ref AtlasLandfillFlag values for more information. Can
+         * be called with different values before each particular @ref add().
          * @see @ref addFlags(), @ref clearFlags()
          */
         AtlasLandfill& setFlags(AtlasLandfillFlags flags);
 
         /**
          * @brief Add behavior flags
+         * @return Reference to self (for method chaining)
          *
          * Calls @ref setFlags() with the existing flags ORed with @p flags.
          * Useful for preserving the defaults.
@@ -255,6 +285,7 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
 
         /**
          * @brief Clear behavior flags
+         * @return Reference to self (for method chaining)
          *
          * Calls @ref setFlags() with the existing flags ANDed with the inverse
          * of @p flags. Useful for preserving the defaults.
@@ -273,9 +304,11 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
 
         /**
          * @brief Set padding around each texture
+         * @return Reference to self (for method chaining)
          *
          * Sizes are extended with twice the padding value before placement but
-         * the returned offsets are without padding again. In order to have
+         * the returned offsets are without padding again. The third dimension
+         * isn't treated in any special way. In order to have
          * @ref AtlasLandfillFlag::RotatePortrait and
          * @relativeref{AtlasLandfillFlag,RotateLandscape} work well also
          * with non-uniform padding, the padding is applied *before* a
@@ -305,192 +338,8 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfill {
          * @relativeref{AtlasLandfillFlag,RotateLandscape} is set, the
          * @p rotations view can be also empty or you can use the
          * @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector2i>&)
-         * overload. The @p offsets always point to the original potentially
-         * rotated sizes without padding applied.
-         *
-         * On success returns @cpp true @ce and updates @ref filledSize(). If
-         * @ref size() is bounded, can return @cpp false @ce if the items
-         * didn't fit, in which case the internals and contents of @p offsets
-         * and @p rotations are left in an undefined state. For an unbounded
-         * @ref size() returns @cpp true @ce always.
-         * @see @ref setFlags(), @ref setPadding()
-         */
-        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
-
-        /** @overload */
-        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
-
-        /**
-         * @brief Add textures to the atlas with rotations disabled
-         *
-         * Equivalent to calling @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector2i>&, Containers::MutableBitArrayView)
-         * with the @p rotations view being empty. Can be called only if
-         * neither @ref AtlasLandfillFlag::RotatePortrait nor
-         * @relativeref{AtlasLandfillFlag,RotateLandscape} is set.
-         * @see @ref clearFlags()
-         */
-        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
-
-        /** @overload */
-        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
-
-    private:
-        Containers::Pointer<Implementation::AtlasLandfillState> _state;
-};
-
-/**
-@brief Landfill texture atlas packer
-@m_since_latest
-
-Extends @ref AtlasLandfill to a third dimension. Instead of expanding to an
-unbounded height, on overflow a new texture slice is made. See also
-@ref atlasArrayPowerOfTwo() for a variant that always provides optimal packing
-for power-of-two sizes.
-
-@section TextureTools-AtlasLandfillArray-usage Example usage
-
-Compared to the @ref TextureTools-AtlasLandfill-usage "2D usage" it's extended
-to three dimensions:
-
-@snippet MagnumTextureTools.cpp AtlasLandfillArray-usage
-
-@section TextureTools-AtlasLandfillArray-process Packing process
-
-Apart from expanding to new slices on height overflow, the underlying process
-is @ref TextureTools-AtlasLandfill-process "the same as in AtlasLandfill".
-
-In this case, memory complexity is @f$ \mathcal{O}(n + wd) @f$ with @f$ n @f$
-being a sorted copy of the input size array and @f$ wd @f$ being a 16-bit
-integer for every pixel of atlas width times atlas depth.
-
-@section TextureTools-AtlasLandfillArray-incremental Incremental population
-
-Compared to the @ref TextureTools-AtlasLandfill-incremental "2D incremental population",
-the incremental process always starts from the first slice, finding the first
-that can fit the first (sorted) item. Then it attempts to place as many items
-as possible and on overflow continues searching for the next slice that can fit
-the first remaining item. If all slices are exhausted, adds a new one.
-*/
-class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfillArray {
-    public:
-        /**
-         * @brief Constructor
-         *
-         * The @p size has to have non-zero width and height. If depth is
-         * @cpp 0 @ce, the dimension is treated as unbounded, i.e. @ref add()
-         * never fails. If depth is @cpp 1 @ce, behaves the same as
-         * @ref AtlasLandfillArray with a bounded height.
-         */
-        explicit AtlasLandfillArray(const Vector3i& size);
-
-        /** @brief Copying is not allowed */
-        AtlasLandfillArray(const AtlasLandfillArray&) = delete;
-
-        /** @brief Move constructor */
-        AtlasLandfillArray(AtlasLandfillArray&&) noexcept;
-
-        ~AtlasLandfillArray();
-
-        /** @brief Copying is not allowed */
-        AtlasLandfillArray& operator=(const AtlasLandfillArray&) = delete;
-
-        /** @brief Move assignment */
-        AtlasLandfillArray& operator=(AtlasLandfillArray&&) noexcept;
-
-        /**
-         * @brief Atlas size specified in constructor
-         *
-         * @see @ref filledSize()
-         */
-        Vector3i size() const;
-
-        /**
-         * @brief Currently filled size
-         *
-         * Width and height is always taken from @ref size(). The depth is
-         * @cpp 0 @ce initially, and at most @ref size() depth if the size is
-         * bounded.
-         */
-        Vector3i filledSize() const;
-
-        /** @brief Behavior flags */
-        AtlasLandfillFlags flags() const;
-
-        /**
-         * @brief Set behavior flags
-         *
-         * Can be called with different values before each particular
-         * @ref add(). Default is @ref AtlasLandfillFlag::RotatePortrait.
-         * @see @ref addFlags(), @ref clearFlags()
-         */
-        AtlasLandfillArray& setFlags(AtlasLandfillFlags flags);
-
-        /**
-         * @brief Add behavior flags
-         *
-         * Calls @ref setFlags() with the existing flags ORed with @p flags.
-         * Useful for preserving the defaults.
-         * @see @ref clearFlags()
-         */
-        AtlasLandfillArray& addFlags(AtlasLandfillFlags flags) {
-            return setFlags(this->flags()|flags);
-        }
-
-        /**
-         * @brief Clear behavior flags
-         *
-         * Calls @ref setFlags() with the existing flags ANDed with the inverse
-         * of @p flags. Useful for preserving the defaults.
-         * @see @ref addFlags()
-         */
-        AtlasLandfillArray& clearFlags(AtlasLandfillFlags flags) {
-            return setFlags(this->flags() & ~flags);
-        }
-
-        /**
-         * @brief Padding around each texture
-         *
-         * Default is a zero vector.
-         */
-        Vector2i padding() const;
-
-        /**
-         * @brief Set padding around each texture
-         *
-         * Sizes are extended with twice the padding value before placement but
-         * the returned offsets are without padding again. The third dimension
-         * isn't treated in any special way. In order to have
-         * @ref AtlasLandfillFlag::RotatePortrait and
-         * @relativeref{AtlasLandfillFlag,RotateLandscape} work well also
-         * with non-uniform padding, the padding is applied *before* a
-         * potential rotation. I.e., the horizontal padding value is always
-         * applied on input image width independently on how it's rotated
-         * after. If you need different behavior, disable rotations with
-         * @ref clearFlags() or pre-pad the input sizes directly instead of
-         * using this function.
-         *
-         * Can be called with different values before each particular
-         * @ref add().
-         */
-        AtlasLandfillArray& setPadding(const Vector2i& padding);
-
-        /**
-         * @brief Add textures to the atlas
-         * @param[in]  sizes        Texture sizes
-         * @param[out] offsets      Resulting offsets in the atlas
-         * @param[out] rotations    Which textures got rotated
-         *
-         * The @p sizes, @p offsets and @p rotations views are expected to have
-         * the same size. The @p sizes are all expected to be non-zero and not
-         * larger than @ref size() after applying padding and then a rotation
-         * based on @ref AtlasLandfillFlag::RotatePortrait or
-         * @relativeref{AtlasLandfillFlag,RotateLandscape} being set. If
-         * neither @relativeref{AtlasLandfillFlag,RotatePortrait} nor
-         * @relativeref{AtlasLandfillFlag,RotateLandscape} is set, the
-         * @p rotations view can be also empty or you can use the
-         * @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector3i>&)
-         * overload. The @p offsets always point to the original potentially
-         * rotated sizes without padding applied.
+         * overload. The resulting @p offsets always point to the original
+         * (potentially rotated) sizes without padding applied.
          *
          * On success returns @cpp true @ce and updates @ref filledSize(). If
          * @ref size() is bounded, can return @cpp false @ce if the items
@@ -517,6 +366,31 @@ class MAGNUM_TEXTURETOOLS_EXPORT AtlasLandfillArray {
 
         /** @overload */
         bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
+
+        /**
+         * @brief Add textures to a non-array atlas
+         *
+         * Can be called only if @ref size() depth is @cpp 1 @ce.
+         */
+        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
+
+        /** @overload */
+        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView rotations);
+
+        /**
+         * @brief Add textures to a non-array atlas with rotations disabled
+         *
+         * Equivalent to calling @ref add(const Containers::StridedArrayView1D<const Vector2i>&, const Containers::StridedArrayView1D<Vector2i>&, Containers::MutableBitArrayView)
+         * with the @p rotations view being empty. Can be called only if
+         * @ref size() depth is @cpp 1 @ce and neither
+         * @ref AtlasLandfillFlag::RotatePortrait nor
+         * @relativeref{AtlasLandfillFlag,RotateLandscape} is set.
+         * @see @ref clearFlags()
+         */
+        bool add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
+
+        /** @overload */
+        bool add(std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets);
 
     private:
         Containers::Pointer<Implementation::AtlasLandfillState> _state;
@@ -572,9 +446,9 @@ array, additionally @ref std::stable_sort() performs its own allocation. See
 the [Zero-waste single-pass packing of power-of-two textures](https://blog.magnum.graphics/backstage/pot-array-packing/)
 article for a detailed description of the algorithm.
 
-See the @ref AtlasLandfill and @ref AtlasLandfillArray classes for an
-alternative that isn't restricted to power-of-two sizes and can be used in an
-incremental way but doesn't always produce optimal packing.
+See the @ref AtlasLandfill class for an alternative that isn't restricted to
+power-of-two sizes and can be used in an incremental way but doesn't always
+produce optimal packing.
 */
 MAGNUM_TEXTURETOOLS_EXPORT Int atlasArrayPowerOfTwo(const Vector2i& layerSize, const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets);
 

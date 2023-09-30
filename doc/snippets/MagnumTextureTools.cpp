@@ -52,7 +52,7 @@ TextureTools::AtlasLandfill atlas{{1024, 0}};
 atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations);
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
-Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize(),
+Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize().xy(),
     Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product())}};
 Containers::StridedArrayView2D<Color4ub> dst = output.pixels<Color4ub>();
 for(std::size_t i = 0; i != images.size(); ++i) {
@@ -77,7 +77,7 @@ atlas.clearFlags(TextureTools::AtlasLandfillFlag::RotatePortrait|
      .add(stridedArrayView(images).slice(&ImageView2D::size), offsets);
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
-Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize(),
+Image2D output{PixelFormat::RGBA8Unorm, atlas.filledSize().xy(),
     Containers::Array<char>{ValueInit, std::size_t(atlas.filledSize().product())}};
 Containers::StridedArrayView2D<Color4ub> dst = output.pixels<Color4ub>();
 for(std::size_t i = 0; i != images.size(); ++i) {
@@ -90,13 +90,13 @@ for(std::size_t i = 0; i != images.size(); ++i) {
 }
 
 {
-/* [AtlasLandfillArray-usage] */
+/* [AtlasLandfill-usage-array] */
 Containers::ArrayView<const ImageView2D> images = DOXYGEN_ELLIPSIS({});
 Containers::Array<Vector3i> offsets{NoInit, images.size()};
 Containers::BitArray rotations{NoInit, images.size()};
 
 /* Fill the atlas with an unbounded depth */
-TextureTools::AtlasLandfillArray atlas{{1024, 1024, 0}};
+TextureTools::AtlasLandfill atlas{{1024, 1024, 0}};
 atlas.add(stridedArrayView(images).slice(&ImageView2D::size), offsets, rotations);
 
 /* Copy the image data to the atlas, assuming all are RGBA8Unorm as well */
@@ -114,7 +114,7 @@ for(std::size_t i = 0; i != images.size(); ++i) {
          std::size_t(offsets[i].y()),
          std::size_t(offsets[i].x())}, src.size()));
 }
-/* [AtlasLandfillArray-usage] */
+/* [AtlasLandfill-usage-array] */
 }
 
 {

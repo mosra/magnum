@@ -381,7 +381,7 @@ void AtlasBenchmark::landfill() {
     CORRADE_COMPARE_WITH(
         Containers::pair(Containers::StridedArrayView1D<const Vector2i>{offsets}, Containers::BitArrayView{flips}),
         _sizes,
-        (CompareAtlasPacking{data.image, atlas.filledSize()}));
+        (CompareAtlasPacking{data.image, atlas.filledSize().xy()}));
 }
 
 void AtlasBenchmark::stbRectPack() {

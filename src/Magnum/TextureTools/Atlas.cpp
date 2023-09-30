@@ -187,16 +187,77 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
     return true;
 }
 
-bool atlasLandfillAdd(const char* messagePrefix, Implementation::AtlasLandfillState& state, const Containers::StridedArrayView1D<const Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets, const Containers::MutableBitArrayView rotations) {
+}
+
+AtlasLandfill::AtlasLandfill(const Vector3i& size):_state{InPlaceInit} {
+    CORRADE_ASSERT(size.x(), "TextureTools::AtlasLandfill: expected non-zero width, got" << Debug::packed << size, );
+    CORRADE_ASSERT(size.y() || size.z() == 1, "TextureTools::AtlasLandfill: expected a single array slice for unbounded height, got" << Debug::packed << size, );
+    CORRADE_ASSERT(size.x() <= 65536, "TextureTools::AtlasLandfill: expected width to fit into 16 bits, got" << Debug::packed << size, );
+
+    /* Change y / z = 0 to y / z = MAX so the algorithm doesn't need to branch
+       on that internally */
+    _state->size = {size.x(),
+                    size.y() ? size.y() : 0x7fffffff,
+                    size.z() ? size.z() : 0x7fffffff};
+}
+
+AtlasLandfill::AtlasLandfill(const Vector2i& size): AtlasLandfill{{size, 1}} {}
+
+AtlasLandfill::AtlasLandfill(AtlasLandfill&&) noexcept = default;
+
+AtlasLandfill::~AtlasLandfill() = default;
+
+AtlasLandfill& AtlasLandfill::operator=(AtlasLandfill&&) noexcept = default;
+
+Vector3i AtlasLandfill::size() const {
+    /* Change y / z = MAX (that's there so the algorithm doesn't need to branch
+       on that internally) back to y / z = 0 */
+    return {_state->size.x(),
+            _state->size.y() == 0x7fffffff ? 0 : _state->size.y(),
+            _state->size.z() == 0x7fffffff ? 0 : _state->size.z()};
+}
+
+Vector3i AtlasLandfill::filledSize() const {
+    if(_state->size.z() == 1)
+        return {_state->size.x(), Math::max(_state->yOffsets), 1};
+
+    CORRADE_INTERNAL_ASSERT(_state->size.y());
+    return {_state->size.xy(), Int(_state->slices.size())};
+}
+
+Vector2i AtlasLandfill::padding() const {
+    return _state->padding;
+}
+
+AtlasLandfill& AtlasLandfill::setPadding(const Vector2i& padding) {
+    _state->padding = padding;
+    return *this;
+}
+
+AtlasLandfillFlags AtlasLandfill::flags() const {
+    return _state->flags;
+}
+
+AtlasLandfill& AtlasLandfill::setFlags(AtlasLandfillFlags flags) {
+    CORRADE_ASSERT(!(flags & AtlasLandfillFlag::RotatePortrait) ||
+                   !(flags & AtlasLandfillFlag::RotateLandscape),
+        "TextureTools::AtlasLandfill::setFlags(): only one of RotatePortrait and RotateLandscape can be set", *this);
+    CORRADE_ASSERT(!(flags & AtlasLandfillFlag::WidestFirst) ||
+                   !(flags & AtlasLandfillFlag::NarrowestFirst),
+        "TextureTools::AtlasLandfill::setFlags(): only one of WidestFirst and NarrowestFirst can be set", *this);
+    _state->flags = flags;
+    return *this;
+}
+
+namespace {
+
+bool atlasLandfillAdd(Implementation::AtlasLandfillState& state, const Containers::StridedArrayView1D<const Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i> offsets, const Containers::StridedArrayView1D<Int> zOffsets, const Containers::MutableBitArrayView rotations) {
     CORRADE_ASSERT(offsets.size() == sizes.size(),
-        messagePrefix << "expected sizes and offsets views to have the same size, got" << sizes.size() << "and" << offsets.size(), {});
+        "TextureTools::AtlasLandfill::add(): expected sizes and offsets views to have the same size, got" << sizes.size() << "and" << offsets.size(), {});
     CORRADE_ASSERT((!(state.flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)) && rotations.isEmpty()) || rotations.size() == sizes.size(),
-        messagePrefix << "expected sizes and rotations views to have the same size, got" << sizes.size() << "and" << rotations.size(), {});
+        "TextureTools::AtlasLandfill::add(): expected sizes and rotations views to have the same size, got" << sizes.size() << "and" << rotations.size(), {});
     /* These are sliced internally from a Vector3i input, so should match */
     CORRADE_INTERNAL_ASSERT(!zOffsets || zOffsets.size() == sizes.size());
-    #ifdef CORRADE_NO_ASSERT
-    static_cast<void>(messagePrefix);
-    #endif
 
     /* Nothing is flipped by default */
     rotations.resetAll();
@@ -224,10 +285,10 @@ bool atlasLandfillAdd(const char* messagePrefix, Implementation::AtlasLandfillSt
         #ifndef CORRADE_NO_ASSERT
         if(state.padding.isZero())
             CORRADE_ASSERT(size.product() && sizePadded <= state.size.xy(),
-                messagePrefix << "expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size, {});
+                "TextureTools::AtlasLandfill::add(): expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size, {});
         else
             CORRADE_ASSERT(size.product() && sizePadded <= state.size.xy(),
-                messagePrefix << "expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size << "and padding" << Debug::packed << padding, {});
+                "TextureTools::AtlasLandfill::add(): expected size" << i << "to be non-zero and not larger than" << Debug::packed << state.size.xy() << "but got" << Debug::packed << size << "and padding" << Debug::packed << padding, {});
         #endif
 
         sortedFlippedSizes[i] = {sizePadded, UnsignedInt(i)};
@@ -261,60 +322,28 @@ bool atlasLandfillAdd(const char* messagePrefix, Implementation::AtlasLandfillSt
 
 }
 
-AtlasLandfill::AtlasLandfill(const Vector2i& size):_state{InPlaceInit} {
-    CORRADE_ASSERT(size.x(), "TextureTools::AtlasLandfill: expected non-zero width, got" << Debug::packed << size, );
-    CORRADE_ASSERT(size.x() <= 65536, "TextureTools::AtlasLandfill: expected width to fit into 16 bits, got" << Debug::packed << size, );
-
-    /* Change y = 0 to y = MAX so the algorithm doesn't need to branch on that
-       internally */
-    _state->size = {size.x(),
-                    size.y() ? size.y() : 0x7fffffff,
-                    1};
+bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
+    return atlasLandfillAdd(*_state, sizes, offsets.slice(&Vector3i::xy), offsets.slice(&Vector3i::z), flips);
 }
 
-AtlasLandfill::AtlasLandfill(AtlasLandfill&&) noexcept = default;
-
-AtlasLandfill::~AtlasLandfill() = default;
-
-AtlasLandfill& AtlasLandfill::operator=(AtlasLandfill&&) noexcept = default;
-
-Vector2i AtlasLandfill::size() const {
-    /* Change y = MAX (that's there so the algorithm doesn't need to branch on
-       that internally) back to y = 0 */
-    return {_state->size.x(),
-            _state->size.y() == 0x7fffffff ? 0 : _state->size.y()};
+bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
+    return add(Containers::stridedArrayView(sizes), offsets, flips);
 }
 
-Vector2i AtlasLandfill::filledSize() const {
-    return {_state->size.x(), Math::max(_state->yOffsets)};
+bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
+    CORRADE_ASSERT(!(_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)),
+        "TextureTools::AtlasLandfill::add():" << (_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)) << "set, expected a rotations view", {});
+    return add(sizes, offsets, nullptr);
 }
 
-Vector2i AtlasLandfill::padding() const {
-    return _state->padding;
-}
-
-AtlasLandfill& AtlasLandfill::setPadding(const Vector2i& padding) {
-    _state->padding = padding;
-    return *this;
-}
-
-AtlasLandfillFlags AtlasLandfill::flags() const {
-    return _state->flags;
-}
-
-AtlasLandfill& AtlasLandfill::setFlags(AtlasLandfillFlags flags) {
-    CORRADE_ASSERT(!(flags & AtlasLandfillFlag::RotatePortrait) ||
-                   !(flags & AtlasLandfillFlag::RotateLandscape),
-        "TextureTools::AtlasLandfill::setFlags(): only one of RotatePortrait and RotateLandscape can be set", *this);
-    CORRADE_ASSERT(!(flags & AtlasLandfillFlag::WidestFirst) ||
-                   !(flags & AtlasLandfillFlag::NarrowestFirst),
-        "TextureTools::AtlasLandfill::setFlags(): only one of WidestFirst and NarrowestFirst can be set", *this);
-    _state->flags = flags;
-    return *this;
+bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
+    return add(Containers::stridedArrayView(sizes), offsets);
 }
 
 bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView flips) {
-    return atlasLandfillAdd("TextureTools::AtlasLandfill::add():", *_state, sizes, offsets, nullptr, flips);
+    CORRADE_ASSERT(_state->size.z() == 1,
+        "TextureTools::AtlasLandfill::add(): use the three-component overload for an array atlas", {});
+    return atlasLandfillAdd(*_state, sizes, offsets, nullptr, flips);
 }
 
 bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets, Containers::MutableBitArrayView flips) {
@@ -328,75 +357,6 @@ bool AtlasLandfill::add(const Containers::StridedArrayView1D<const Vector2i>& si
 }
 
 bool AtlasLandfill::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector2i>& offsets) {
-    return add(Containers::stridedArrayView(sizes), offsets);
-}
-
-AtlasLandfillArray::AtlasLandfillArray(const Vector3i& size):_state{InPlaceInit} {
-    CORRADE_ASSERT(size.xy().product(), "TextureTools::AtlasLandfillArray: expected non-zero width and height, got" << Debug::packed << size, );
-    CORRADE_ASSERT(size.x() <= 65536, "TextureTools::AtlasLandfillArray: expected width to fit into 16 bits, got" << Debug::packed << size, );
-
-    /* Change z = 0 to z = MAX so the algorithm doesn't need to branch on that
-       internally */
-    _state->size = {size.xy(),
-                    size.z() ? size.z() : 0x7fffffff};
-}
-
-AtlasLandfillArray::AtlasLandfillArray(AtlasLandfillArray&&) noexcept = default;
-
-AtlasLandfillArray::~AtlasLandfillArray() = default;
-
-AtlasLandfillArray& AtlasLandfillArray::operator=(AtlasLandfillArray&&) noexcept = default;
-
-Vector3i AtlasLandfillArray::size() const {
-    /* Change z = MAX (that's there so the algorithm doesn't need to branch on
-       that internally) back to z = 0 */
-    return {_state->size.xy(),
-            _state->size.z() == 0x7fffffff ? 0 : _state->size.z()};
-}
-
-Vector3i AtlasLandfillArray::filledSize() const {
-    return {_state->size.xy(), Int(_state->slices.size())};
-}
-
-Vector2i AtlasLandfillArray::padding() const {
-    return _state->padding;
-}
-
-AtlasLandfillArray& AtlasLandfillArray::setPadding(const Vector2i& padding) {
-    _state->padding = padding;
-    return *this;
-}
-
-AtlasLandfillFlags AtlasLandfillArray::flags() const {
-    return _state->flags;
-}
-
-AtlasLandfillArray& AtlasLandfillArray::setFlags(AtlasLandfillFlags flags) {
-    CORRADE_ASSERT(!(flags & AtlasLandfillFlag::RotatePortrait) ||
-                   !(flags & AtlasLandfillFlag::RotateLandscape),
-        "TextureTools::AtlasLandfillArray::setFlags(): only one of RotatePortrait and RotateLandscape can be set", *this);
-    CORRADE_ASSERT(!(flags & AtlasLandfillFlag::WidestFirst) ||
-                   !(flags & AtlasLandfillFlag::NarrowestFirst),
-        "TextureTools::AtlasLandfillArray::setFlags(): only one of WidestFirst and NarrowestFirst can be set", *this);
-    _state->flags = flags;
-    return *this;
-}
-
-bool AtlasLandfillArray::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
-    return atlasLandfillAdd("TextureTools::AtlasLandfillArray::add():", *_state, sizes, offsets.slice(&Vector3i::xy), offsets.slice(&Vector3i::z), flips);
-}
-
-bool AtlasLandfillArray::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets, Containers::MutableBitArrayView flips) {
-    return add(Containers::stridedArrayView(sizes), offsets, flips);
-}
-
-bool AtlasLandfillArray::add(const Containers::StridedArrayView1D<const Vector2i>& sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
-    CORRADE_ASSERT(!(_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)),
-        "TextureTools::AtlasLandfillArray::add():" << (_state->flags & (AtlasLandfillFlag::RotatePortrait|AtlasLandfillFlag::RotateLandscape)) << "set, expected a rotations view", {});
-    return add(sizes, offsets, nullptr);
-}
-
-bool AtlasLandfillArray::add(const std::initializer_list<Vector2i> sizes, const Containers::StridedArrayView1D<Vector3i>& offsets) {
     return add(Containers::stridedArrayView(sizes), offsets);
 }
 
