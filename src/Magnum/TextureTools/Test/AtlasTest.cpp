@@ -979,23 +979,23 @@ void AtlasTest::landfillInvalidSize() {
 
     /* These are fine */
     AtlasLandfill{{16, 0}};
-    AtlasLandfill{{65536, 16}};
+    AtlasLandfill{{16, 65536}};
     AtlasLandfill{{16, 16, 0}};
-    AtlasLandfill{{65536, 16, 16}};
+    AtlasLandfill{{16, 65536, 16}};
 
     std::ostringstream out;
     Error redirectError{&out};
     AtlasLandfill{{0, 16}};
-    AtlasLandfill{{65537, 16}};
+    AtlasLandfill{{16, 65537}};
     AtlasLandfill{{0, 16, 16}};
     AtlasLandfill{{16, 0, 16}};
-    AtlasLandfill{{65537, 16, 16}};
+    AtlasLandfill{{16, 65537, 16}};
     CORRADE_COMPARE_AS(out.str(),
         "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 1}\n"
-        "TextureTools::AtlasLandfill: expected width to fit into 16 bits, got {65537, 16, 1}\n"
+        "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 1}\n"
         "TextureTools::AtlasLandfill: expected non-zero width, got {0, 16, 16}\n"
         "TextureTools::AtlasLandfill: expected a single array slice for unbounded height, got {16, 0, 16}\n"
-        "TextureTools::AtlasLandfill: expected width to fit into 16 bits, got {65537, 16, 16}\n",
+        "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got {16, 65537, 16}\n",
         TestSuite::Compare::String);
 }
 

@@ -192,7 +192,7 @@ bool atlasLandfillAddSortedFlipped(Implementation::AtlasLandfillState& state, co
 AtlasLandfill::AtlasLandfill(const Vector3i& size):_state{InPlaceInit} {
     CORRADE_ASSERT(size.x(), "TextureTools::AtlasLandfill: expected non-zero width, got" << Debug::packed << size, );
     CORRADE_ASSERT(size.y() || size.z() == 1, "TextureTools::AtlasLandfill: expected a single array slice for unbounded height, got" << Debug::packed << size, );
-    CORRADE_ASSERT(size.x() <= 65536, "TextureTools::AtlasLandfill: expected width to fit into 16 bits, got" << Debug::packed << size, );
+    CORRADE_ASSERT(size.y() <= 65536, "TextureTools::AtlasLandfill: expected height to fit into 16 bits, got" << Debug::packed << size, );
 
     /* Change y / z = 0 to y / z = MAX so the algorithm doesn't need to branch
        on that internally */
