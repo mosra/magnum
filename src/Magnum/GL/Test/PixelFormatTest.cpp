@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -50,6 +51,7 @@ struct PixelFormatTest: TestSuite::Tester {
     void mapTextureFormatImplementationSpecific();
     void mapTextureFormatUnsupported();
     void mapTextureFormatInvalid();
+    void mapGenericFormatUnsupported();
 
     void size();
     void sizeInvalid();
@@ -61,6 +63,7 @@ struct PixelFormatTest: TestSuite::Tester {
     void mapCompressedTextureFormatImplementationSpecific();
     void mapCompressedTextureFormatUnsupported();
     void mapCompressedTextureFormatInvalid();
+    void mapGenericCompressedFormatUnsupported();
 
     void debugPixelFormat();
     void debugPixelType();
@@ -80,6 +83,7 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::mapTextureFormatImplementationSpecific,
               &PixelFormatTest::mapTextureFormatUnsupported,
               &PixelFormatTest::mapTextureFormatInvalid,
+              &PixelFormatTest::mapGenericFormatUnsupported,
 
               &PixelFormatTest::size,
               &PixelFormatTest::sizeInvalid,
@@ -91,6 +95,7 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::mapCompressedTextureFormatImplementationSpecific,
               &PixelFormatTest::mapCompressedTextureFormatUnsupported,
               &PixelFormatTest::mapCompressedTextureFormatInvalid,
+              &PixelFormatTest::mapGenericCompressedFormatUnsupported,
 
               &PixelFormatTest::debugPixelFormat,
               &PixelFormatTest::debugPixelType,
@@ -103,12 +108,18 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
     CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::RGBA8Unorm));
     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::RGBA8Unorm), PixelFormat::RGBA);
     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::RGBA8Unorm), PixelType::UnsignedByte);
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::RGB, PixelType::UnsignedByte), Magnum::PixelFormat::RGB8Unorm);
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(hasTextureFormat(Magnum::PixelFormat::RGBA8Unorm));
     CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::RGBA8Unorm), TextureFormat::RGBA8);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB8), Magnum::PixelFormat::RGB8Unorm);
     #else
     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::RGBA8Unorm));
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB), Containers::NullOpt);
     #endif
+    /* sRGB formats have N:1 mapping, conversion back is losing the sRGB bit */
+    CORRADE_COMPARE(genericPixelFormat(pixelFormat(Magnum::PixelFormat::R8Srgb), pixelType(Magnum::PixelFormat::R8Srgb)), Magnum::PixelFormat::R8Unorm);
+    CORRADE_COMPARE(genericPixelFormat(pixelFormat(Magnum::PixelFormat::RGBA8Srgb), pixelType(Magnum::PixelFormat::RGBA8Srgb)), Magnum::PixelFormat::RGBA8Unorm);
 
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
@@ -134,11 +145,51 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::format)); \
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), Magnum::GL::PixelFormat::expectedFormat); \
                     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
+                    CORRADE_COMPARE(genericPixelFormat(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), Magnum::PixelFormat::format); \
                     CORRADE_VERIFY(hasTextureFormat(Magnum::PixelFormat::format)); \
                     CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::format), Magnum::GL::TextureFormat::expectedTextureFormat); \
+                    CORRADE_COMPARE(genericPixelFormat(Magnum::GL::TextureFormat::expectedTextureFormat), Magnum::PixelFormat::format); \
+                    ++nextHandled; \
+                    continue;
+            /* For duplicate format/type mappings compared to _c() it only
+               checks the forward mapping and genericPixelFormat() from a
+               TextureFormat. The duplicate mapping is tested in the touchstone
+               verification above. */
+            #define _d(format, expectedFormat, expectedType, expectedTextureFormat) \
+                case Magnum::PixelFormat::format: \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xffff); \
+                    CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::format)); \
+                    CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), Magnum::GL::PixelFormat::expectedFormat); \
+                    CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
+                    CORRADE_VERIFY(hasTextureFormat(Magnum::PixelFormat::format)); \
+                    CORRADE_COMPARE(textureFormat(Magnum::PixelFormat::format), Magnum::GL::TextureFormat::expectedTextureFormat); \
+                    CORRADE_COMPARE(genericPixelFormat(Magnum::GL::TextureFormat::expectedTextureFormat), Magnum::PixelFormat::format); \
                     ++nextHandled; \
                     continue;
             #define _n(format, expectedFormat, expectedType) \
+                case Magnum::PixelFormat::format: { \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xffff); \
+                    CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::format)); \
+                    CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), Magnum::GL::PixelFormat::expectedFormat); \
+                    CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
+                    CORRADE_COMPARE(genericPixelFormat(Magnum::GL::PixelFormat::expectedFormat, Magnum::GL::PixelType::expectedType), Magnum::PixelFormat::format); \
+                    CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
+                    std::ostringstream out; \
+                    { /* Redirected otherwise graceful assert would abort */ \
+                        Error redirectError{&out}; \
+                        textureFormat(Magnum::PixelFormat::format); \
+                    } \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
+                    ++nextHandled; \
+                    continue; \
+                }
+            /* For duplicate format/type mappings compared to _n() it only
+               checks the forward mapping and genericPixelFormat() from a
+               TextureFormat. The duplicate mapping is tested in the touchstone
+               verification above. */
+            #define _dn(format, expectedFormat, expectedType) \
                 case Magnum::PixelFormat::format: { \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
@@ -175,6 +226,7 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
             #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
             #undef _s
             #undef _n
+            #undef _d
             #undef _c
         }
         #ifdef CORRADE_TARGET_GCC
@@ -319,6 +371,18 @@ void PixelFormatTest::mapTextureFormatInvalid() {
         "GL::textureFormat(): invalid format PixelFormat(0x123)\n");
 }
 
+void PixelFormatTest::mapGenericFormatUnsupported() {
+    /* These don't have any generic equivalent yet */
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::BGRA, PixelType::UnsignedByte), Containers::NullOpt);
+    #endif
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::RGBA, PixelType::UnsignedShort565), Containers::NullOpt);
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::RGB565), Containers::NullOpt);
+    /* For compressed texture formats it returns NullOpt too, instead of
+       asserting. See comment in the source for reasons. */
+    CORRADE_COMPARE(genericPixelFormat(TextureFormat::CompressedR11Eac), Containers::NullOpt);
+}
+
 void PixelFormatTest::size() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(pixelFormatSize(PixelFormat::RGB, PixelType::UnsignedByte332), 1);
@@ -350,6 +414,9 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
     CORRADE_COMPARE(compressedPixelFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_VERIFY(hasTextureFormat(Magnum::CompressedPixelFormat::Astc8x8RGBASrgb));
     CORRADE_COMPARE(textureFormat(Magnum::CompressedPixelFormat::Astc8x8RGBASrgb), TextureFormat::CompressedSRGB8Alpha8Astc8x8);
+    /* ASTC Unorm formats have N:1 mapping, conversion back is losing the
+       Unorm/F distinction */
+    CORRADE_COMPARE(genericCompressedPixelFormat(compressedPixelFormat(Magnum::CompressedPixelFormat::Astc4x4RGBAUnorm)), Magnum::CompressedPixelFormat::Astc4x4RGBAF);
 
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
@@ -369,6 +436,21 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
         #endif
         switch(format) {
             #define _c(format, expectedFormat) \
+                case Magnum::CompressedPixelFormat::format: \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xffff); \
+                    CORRADE_VERIFY(hasCompressedPixelFormat(Magnum::CompressedPixelFormat::format)); \
+                    CORRADE_COMPARE(genericCompressedPixelFormat(Magnum::GL::CompressedPixelFormat::expectedFormat), Magnum::CompressedPixelFormat::format); \
+                    CORRADE_VERIFY(hasTextureFormat(Magnum::CompressedPixelFormat::format)); \
+                    CORRADE_COMPARE(compressedPixelFormat(Magnum::CompressedPixelFormat::format), Magnum::GL::CompressedPixelFormat::expectedFormat); \
+                    CORRADE_COMPARE(textureFormat(Magnum::CompressedPixelFormat::format), Magnum::GL::TextureFormat::Compressed ## expectedFormat); \
+                    CORRADE_COMPARE(genericCompressedPixelFormat(Magnum::GL::TextureFormat::Compressed ## expectedFormat), Magnum::CompressedPixelFormat::format); \
+                    ++nextHandled; \
+                    continue;
+            /* For duplicate mappings compared to _c() it only checks the
+               forward mapping. The duplicate mapping is tested in the
+               touchstone verification above */
+            #define _d(format, expectedFormat) \
                 case Magnum::CompressedPixelFormat::format: \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
@@ -396,6 +478,7 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
                 }
             #include "Magnum/GL/Implementation/compressedPixelFormatMapping.hpp"
             #undef _s
+            #undef _d
             #undef _c
         }
         #ifdef CORRADE_TARGET_GCC
@@ -499,6 +582,17 @@ void PixelFormatTest::mapCompressedTextureFormatInvalid() {
         "GL::hasTextureFormat(): invalid format CompressedPixelFormat(0x123)\n"
         "GL::textureFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "GL::textureFormat(): invalid format CompressedPixelFormat(0x123)\n");
+}
+
+void PixelFormatTest::mapGenericCompressedFormatUnsupported() {
+    /* Generic formats don't have any generic equivalent yet (heh) */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(genericCompressedPixelFormat(CompressedPixelFormat::Red), Containers::NullOpt);
+    CORRADE_COMPARE(genericCompressedPixelFormat(TextureFormat::CompressedRed), Containers::NullOpt);
+    #endif
+    /* For uncompressed texture formats it returns NullOpt too, instead of
+       asserting. See comment in the source for reasons. */
+    CORRADE_COMPARE(genericCompressedPixelFormat(TextureFormat::RGB), Containers::NullOpt);
 }
 
 void PixelFormatTest::debugPixelFormat() {

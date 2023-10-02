@@ -48,17 +48,20 @@ Can act also as a wrapper for implementation-specific pixel format values using
 generic and implementation-specific formats can be done using
 @ref isPixelFormatImplementationSpecific().
 
-In case of OpenGL, corresponds to @ref GL::PixelFormat and @ref GL::PixelType
-and is convertible to them using @ref GL::pixelFormat() and
-@ref GL::pixelType(). See documentation of each value for more information
-about the mapping. Note that not every format is available on all targets, use
-@ref GL::hasPixelFormat() to check for its presence.
+In case of OpenGL, corresponds to @ref GL::PixelFormat, @ref GL::PixelType
+and uncompressed @ref GL::TextureFormat values, is convertible to them using
+@ref GL::pixelFormat(), @ref GL::pixelType() and @ref GL::textureFormat(), and
+an inverse mapping can be done via @ref GL::genericPixelFormat(PixelFormat, PixelType)
+and @ref GL::genericPixelFormat(TextureFormat). See documentation of each value
+for more information about the mapping. Note that not every format is available
+on all targets, use @ref GL::hasPixelFormat() to check for its presence.
 
-In case of Vulkan, corresponds to @ref Vk::PixelFormat and is convertible
-to it using @ref Vk::pixelFormat(Magnum::PixelFormat). See documentation of
-each value for more information about the mapping. Note that not every format
-may be available, use @ref Vk::hasPixelFormat(Magnum::PixelFormat) to check for
-its presence.
+In case of Vulkan, corresponds to uncompressed @ref Vk::PixelFormat values, is
+convertible to it using @ref Vk::pixelFormat(Magnum::PixelFormat), and an
+inverse mapping can be done via @ref Vk::genericPixelFormat(). See
+documentation of each value for more information about the mapping. Note that
+not every format may be available, use
+@ref Vk::hasPixelFormat(Magnum::PixelFormat) to check for its presence.
 
 For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for
@@ -982,17 +985,22 @@ Can act also as a wrapper for implementation-specific pixel format values using
 Distinction between generic and implementation-specific formats can be done
 using @ref isCompressedPixelFormatImplementationSpecific().
 
-In case of OpenGL, corresponds to @ref GL::CompressedPixelFormat and is
-convertible to it using @ref GL::compressedPixelFormat(). See documentation of
+In case of OpenGL, corresponds to @ref GL::CompressedPixelFormat and compressed
+@ref GL::TextureFormat values, is convertible to them using
+@ref GL::compressedPixelFormat() and @ref GL::textureFormat(), and an inverse
+mapping can be done via @ref GL::genericCompressedPixelFormat(CompressedPixelFormat)
+and @ref GL::genericCompressedPixelFormat(TextureFormat). See documentation of
 each value for more information about the mapping. Note that not every format
 is available on all targets, use @ref GL::hasCompressedPixelFormat() to check
 for its presence.
 
-In case of Vulkan, corresponds to @ref Vk::PixelFormat and is convertible to it
-using @ref Vk::pixelFormat(Magnum::CompressedPixelFormat). See documentation
-of each value for more information about the mapping. Note that not every
-format may be available, use @ref Vk::hasPixelFormat(Magnum::CompressedPixelFormat)
-to check for its presence.
+In case of Vulkan, corresponds to compressed @ref Vk::PixelFormat values, is
+convertible to it using @ref Vk::pixelFormat(Magnum::CompressedPixelFormat),
+and an inverse mapping can be done via @ref Vk::genericCompressedPixelFormat().
+See documentation of each value for more information about the mapping. Note
+that not every format may be available, use
+@ref Vk::hasPixelFormat(Magnum::CompressedPixelFormat) to check for its
+presence.
 
 For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for

@@ -26,6 +26,7 @@
 #include "PixelFormat.h"
 
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/PixelFormat.h"
@@ -46,9 +47,11 @@ constexpr PixelFormat PixelFormatMapping[] {
 constexpr PixelFormat CompressedPixelFormatMapping[] {
     /* GCC 4.8 doesn't like just a {} for default enum values */
     #define _c(input, format) PixelFormat::Compressed ## format,
+    #define _d _c
     #define _s(input) PixelFormat{},
     #include "Magnum/Vk/Implementation/compressedPixelFormatMapping.hpp"
     #undef _s
+    #undef _d
     #undef _c
 };
 
@@ -243,6 +246,52 @@ PixelFormat pixelFormat(const Magnum::CompressedPixelFormat format) {
     CORRADE_ASSERT(UnsignedInt(out),
         "Vk::pixelFormat(): unsupported format" << format, {});
     return out;
+}
+
+Containers::Optional<Magnum::PixelFormat> genericPixelFormat(const PixelFormat format) {
+    switch(format) {
+        #define _c(format)                                                  \
+            case PixelFormat::format:                                       \
+                return Magnum::PixelFormat::format;
+        #include "Magnum/Vk/Implementation/pixelFormatMapping.hpp"
+        #undef _c
+
+        /* For compressed formats it returns NullOpt too instead of asserting,
+           as -- compared to the generic-to-Vk translation, which is O(1) --
+           the inverse mapping is potentially a linear lookup and forcing the
+           user to check some isPixelFormatCompressed() first (which would do
+           another linear lookup) makes no sense from a perf PoV. Plus for
+           unknown formats it's unknown whether it's a compressed format or
+           not, and the function suddenly starting to assert when a format
+           becomes known isn't good for backwards compatibility. */
+        default:
+            return {};
+    }
+}
+
+Containers::Optional<Magnum::CompressedPixelFormat> genericCompressedPixelFormat(const PixelFormat format) {
+    switch(format) {
+        #define _c(input, format)                                           \
+            case PixelFormat::Compressed ## format:                         \
+                return Magnum::CompressedPixelFormat::input;
+        #define _d(input, format)
+        #define _s(input)
+        #include "Magnum/Vk/Implementation/compressedPixelFormatMapping.hpp"
+        #undef _s
+        #undef _d
+        #undef _c
+
+       /* For uncompressed formats it returns NullOpt too instead of asserting,
+          as -- compared to the generic-to-GL translation, which is O(1) -- the
+          inverse mapping is potentially a linear lookup and forcing the user
+          to check some isTextureFormatCompressed() first (which would do
+          another linear lookup) makes no sense from a perf PoV. Plus for
+          unknown formats it's unknown whether it's a compressed format or not,
+          and the function suddenly starting to assert when a format becomes
+          known isn't good for backwards compatibility. */
+        default:
+            return {};
+    }
 }
 
 }}

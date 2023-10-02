@@ -23,7 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* See Magnum/Vk/Enums.cpp and Magnum/Vk/Test/EnumsTest.cpp */
+/* See Magnum/Vk/Enums.cpp and Magnum/Vk/Test/EnumsTest.cpp. _c() is a mapping,
+   _s() denotes a skipped value (so the enum numbering is preserved), _d()
+   denotes a _c() value with duplicated result, i.e. a N:1 mapping from a
+   generic format. The _c2() is just a shortand for the input and output name
+   being the same. */
 #ifdef _c
 #define _c2(input) _c(input, input)
 _c2(Bc1RGBUnorm)
@@ -128,12 +132,12 @@ _s(Astc6x6x6RGBASrgb) //, ASTC_6x6x6_SRGB_BLOCK)
 _s(Astc6x6x6RGBAF) //, ASTC_6x6x6_SFLOAT_BLOCK_EXT)
 
 /* https://github.com/KhronosGroup/Vulkan-Docs/issues/512 */
-_c(PvrtcRGB2bppUnorm, PvrtcRGBA2bppUnorm)
-_c(PvrtcRGB2bppSrgb, PvrtcRGBA2bppSrgb)
+_d(PvrtcRGB2bppUnorm, PvrtcRGBA2bppUnorm)
+_d(PvrtcRGB2bppSrgb, PvrtcRGBA2bppSrgb)
 _c2(PvrtcRGBA2bppUnorm)
 _c2(PvrtcRGBA2bppSrgb)
-_c(PvrtcRGB4bppUnorm, PvrtcRGBA4bppUnorm)
-_c(PvrtcRGB4bppSrgb, PvrtcRGBA4bppSrgb)
+_d(PvrtcRGB4bppUnorm, PvrtcRGBA4bppUnorm)
+_d(PvrtcRGB4bppSrgb, PvrtcRGBA4bppSrgb)
 _c2(PvrtcRGBA4bppUnorm)
 _c2(PvrtcRGBA4bppSrgb)
 #undef _c2

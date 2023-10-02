@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::hasPixelFormat(), @ref Magnum::GL::pixelFormat(), @ref Magnum::GL::pixelType(), @ref Magnum::GL::pixelFormatSize(), @ref Magnum::GL::hasCompressedPixelFormat(), @ref Magnum::GL::compressedPixelFormat()
+ * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::hasPixelFormat(), @ref Magnum::GL::pixelFormat(), @ref Magnum::GL::pixelType(), @ref Magnum::GL::pixelFormatSize(), @ref Magnum::GL::genericPixelFormat(), @ref Magnum::GL::hasCompressedPixelFormat(), @ref Magnum::GL::compressedPixelFormat(), @ref Magnum::GL::genericCompressedPixelFormat()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -648,6 +648,7 @@ value is expected to be valid.
     extension. Such check is outside of the scope of this function and you are
     expected to verify extension availability before using such format.
 
+The mapping operation is done with an @f$ \mathcal{O}(1) @f$ complexity.
 @see @ref pixelFormat(), @ref pixelType(), @ref hasCompressedPixelFormat()
 */
 MAGNUM_GL_EXPORT bool hasPixelFormat(Magnum::PixelFormat format);
@@ -671,7 +672,9 @@ to query availability of given format.
     @gl_extension{EXT,texture_rg} being present or not. If you wish to use @ref PixelFormat::Red and @ref PixelFormat::RG instead, specify the GL-specific
     pixel format directly instead of using the generic enum.
 
-@see @ref pixelType(), @ref compressedPixelFormat()
+The mapping operation is done with an @f$ \mathcal{O}(1) @f$ complexity.
+@see @ref pixelType(), @ref compressedPixelFormat(),
+    @ref genericPixelFormat(PixelFormat, PixelType)
 */
 MAGNUM_GL_EXPORT PixelFormat pixelFormat(Magnum::PixelFormat format);
 
@@ -687,7 +690,10 @@ In case @ref isPixelFormatImplementationSpecific() returns @cpp false @ce for
 Not all generic pixel formats may be available on all targets and this function
 expects that given format is available on the target. Use @ref hasPixelFormat()
 to query availability of given format.
-@see @ref pixelFormat(), @ref compressedPixelFormat()
+
+The mapping operation is done with an @f$ \mathcal{O}(1) @f$ complexity.
+@see @ref pixelFormat(), @ref compressedPixelFormat(),
+    @ref genericPixelFormat(PixelFormat, PixelType)
 */
 MAGNUM_GL_EXPORT PixelType pixelType(Magnum::PixelFormat format, UnsignedInt extra = 0);
 
@@ -707,6 +713,27 @@ CORRADE_DEPRECATED("use pixelFormatSize() instead") inline UnsignedInt pixelSize
     return pixelFormatSize(format, type);
 }
 #endif
+
+/**
+@brief Convert OpenGL pixel format and type combination to a generic pixel format
+@m_since_latest
+
+Returns @ref Containers::NullOpt if given combination doesn't match any generic
+pixel format. Otherwise the returned value will result in the same @p format
+and @p type when passed back to @ref pixelFormat(Magnum::PixelFormat) and
+@ref pixelType(Magnum::PixelFormat, UnsignedInt).
+
+An exception is sRGB formats --- those map to the same OpenGL format + type
+combination, e.g. @ref Magnum::PixelFormat::RGBA8Unorm and
+@relativeref{Magnum::PixelFormat,RGBA8Srgb} both result in
+@ref GL::PixelFormat::RGBA + @ref GL::PixelType::UnsignedByte. This function
+always maps the OpenGL format + type combination to the linear type, not sRGB.
+
+Unlike mapping *from* a generic pixel format, the inverse operation is done
+with an @f$ \mathcal{O}(n) @f$ complexity.
+@see @ref genericCompressedPixelFormat(CompressedPixelFormat)
+*/
+MAGNUM_GL_EXPORT Containers::Optional<Magnum::PixelFormat> genericPixelFormat(PixelFormat format, PixelType type);
 
 /** @debugoperatorenum{PixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);
@@ -2103,6 +2130,7 @@ expected to be valid.
     extension. Such check is outside of the scope of this function and you are
     expected to verify extension availability before using such format.
 
+The mapping operation is done with an @f$ \mathcal{O}(1) @f$ complexity.
 @see @ref compressedPixelFormat(), @ref hasPixelFormat(),
     @ref hasTextureFormat()
 */
@@ -2120,9 +2148,33 @@ returns @ref compressedPixelFormatUnwrap() cast to @ref GL::CompressedPixelForma
 Not all generic pixel formats may be available on all targets and this function
 expects that given format is available on the target. Use
 @ref hasCompressedPixelFormat() to query availability of given format.
-@see @ref pixelFormat(), @ref textureFormat()
+
+The mapping operation is done with an @f$ \mathcal{O}(1) @f$ complexity.
+@see @ref pixelFormat(), @ref textureFormat(),
+    @ref genericCompressedPixelFormat(CompressedPixelFormat)
 */
 MAGNUM_GL_EXPORT CompressedPixelFormat compressedPixelFormat(Magnum::CompressedPixelFormat format);
+
+/**
+@brief Convert OpenGL compressed pixel format to a generic compressed pixel format
+@m_since_latest
+
+Returns @ref Containers::NullOpt if given format doesn't match any generic
+pixel format. Otherwise the returned value will result in the same @p format
+when passed back to @ref compressedPixelFormat(Magnum::CompressedPixelFormat).
+
+An exception is ASTC float and normalized formats --- those map to the same
+OpenGL format, e.g. @ref Magnum::CompressedPixelFormat::Astc4x4RGBAUnorm and
+@relativeref{Magnum::CompressedPixelFormat,Astc4x4RGBAF} both result in
+@ref GL::CompressedPixelFormat::RGBAAstc4x4. To avoid potential information
+loss, this function always maps the OpenGL ASTC format back to the float
+variant.
+
+Unlike mapping *from* a generic pixel format, the inverse operation is done
+with an @f$ \mathcal{O}(n) @f$ complexity.
+@see @ref genericPixelFormat(PixelFormat, PixelType)
+*/
+MAGNUM_GL_EXPORT Containers::Optional<Magnum::CompressedPixelFormat> genericCompressedPixelFormat(CompressedPixelFormat format);
 
 /** @debugoperatorenum{CompressedPixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);

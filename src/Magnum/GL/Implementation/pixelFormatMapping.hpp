@@ -26,7 +26,10 @@
 /* See Magnum/GL/PixelFormat.cpp, Magnum/GL/Test/PixelFormatTest.cpp and
    DebugTools/Screenshot.cpp. _c() is a mapping, _s() denotes a skipped value
    (so the enum numbering is preserved), _n() denotes a value where pixel
-   format mapping is defined, but texture format is not */
+   format mapping is defined, but texture format is not; _d() denotes a
+   _c() value with duplicated format/type combination, i.e. a N:1 mapping from
+   a generic format, _dn() then a _n() value with duplicated format/type
+   combination. */
 #ifdef _c
 #ifndef MAGNUM_TARGET_GLES2
 _c(R8Unorm, Red, UnsignedByte, R8)
@@ -58,23 +61,26 @@ _s(RGBA8Snorm)
    texture format tho. */
 #ifndef MAGNUM_TARGET_GLES2
 #ifndef MAGNUM_TARGET_WEBGL
-_c(R8Srgb, Red, UnsignedByte, SR8)
-_c(RG8Srgb, RG, UnsignedByte, SRG8)
+_d(R8Srgb, Red, UnsignedByte, SR8)
+_d(RG8Srgb, RG, UnsignedByte, SRG8)
 #else
-_n(R8Srgb, Red, UnsignedByte)
-_n(RG8Srgb, RG, UnsignedByte)
+_dn(R8Srgb, Red, UnsignedByte)
+_dn(RG8Srgb, RG, UnsignedByte)
 #endif
 #else
 /* SLUMINANCE / SLUMINANCE_ALPHA texture formats not exposed */
-_n(R8Srgb, Luminance, UnsignedByte)
-_n(RG8Srgb, LuminanceAlpha, UnsignedByte)
+_dn(R8Srgb, Luminance, UnsignedByte)
+_dn(RG8Srgb, LuminanceAlpha, UnsignedByte)
 #endif
+/* Again, GL's pixel format doesn't distinguish between linear and sRGB, so
+   mapping is the same as in case of the Unorm types. It's encoded in the
+   texture format tho. */
 #ifndef MAGNUM_TARGET_GLES2
-_c(RGB8Srgb, RGB, UnsignedByte, SRGB8)
-_c(RGBA8Srgb, RGBA, UnsignedByte, SRGB8Alpha8)
+_d(RGB8Srgb, RGB, UnsignedByte, SRGB8)
+_d(RGBA8Srgb, RGBA, UnsignedByte, SRGB8Alpha8)
 #else
-_n(RGB8Srgb, RGB, UnsignedByte)
-_n(RGBA8Srgb, RGBA, UnsignedByte)
+_dn(RGB8Srgb, RGB, UnsignedByte)
+_dn(RGBA8Srgb, RGBA, UnsignedByte)
 #endif
 #ifndef MAGNUM_TARGET_GLES2
 _c(R8UI, RedInteger, UnsignedByte, R8UI)

@@ -25,8 +25,9 @@
 
 #include "PixelFormat.h"
 
-#include <Corrade/Utility/Assert.h>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/PixelFormat.h"
@@ -41,24 +42,32 @@ constexpr struct {
     PixelFormat format;
     PixelType type;
 } FormatMapping[] {
-    #define _c(input, format, type, textureFormat) {PixelFormat::format, PixelType::type},
-    /* GCC 4.8 doesn't like just a {} for default enum values */
     #define _n(input, format, type) {PixelFormat::format, PixelType::type},
+    #define _dn _n
+    #define _c(input, format, type, textureFormat) _n(input, format, type)
+    #define _d _c
+    /* GCC 4.8 doesn't like just a {} for default enum values */
     #define _s(input) {PixelFormat{}, PixelType{}},
     #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
     #undef _s
-    #undef _n
+    #undef _d
     #undef _c
+    #undef _nd
+    #undef _n
 };
 
 constexpr TextureFormat TextureFormatMapping[] {
     #define _c(input, format, type, textureFormat) TextureFormat::textureFormat,
+    #define _d _c
     /* GCC 4.8 doesn't like just a {} for default enum values */
-    #define _n(input, format, type) TextureFormat{},
     #define _s(input) TextureFormat{},
+    #define _n(input, format, type) _s(input)
+    #define _dn _n
     #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
-    #undef _s
+    #undef _dn
     #undef _n
+    #undef _s
+    #undef _d
     #undef _c
 };
 #endif
@@ -261,6 +270,57 @@ UnsignedInt pixelFormatSize(const PixelFormat format, const PixelType type) {
     CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
+Containers::Optional<Magnum::PixelFormat> genericPixelFormat(const PixelFormat format, PixelType type) {
+    /* Assuming a switch will get better optimized to some LUT than an if
+       cascade */
+    switch((UnsignedLong(format) << 32)|UnsignedLong(type)) {
+        #define _n(input, format, type)                                     \
+            case (UnsignedLong(PixelFormat::format) << 32)|                 \
+                  UnsignedLong(PixelType::type):                            \
+                return Magnum::PixelFormat::input;
+        #define _c(input, format, type, textureFormat) _n(input, format, type)
+        #define _d(input, format, type, textureFormat)
+        #define _dn(input, format, type)
+        #define _s(input)
+        #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
+        #undef _s
+        #undef _dn
+        #undef _n
+        #undef _d
+        #undef _c
+    }
+
+    return {};
+}
+
+Containers::Optional<Magnum::PixelFormat> genericPixelFormat(const TextureFormat format) {
+    switch(format) {
+        #define _c(input, format, type, textureFormat)                      \
+            case TextureFormat::textureFormat: return Magnum::PixelFormat::input;
+        #define _d _c
+        #define _n(input, format, type)
+        #define _dn(input, format, type)
+        #define _s(input)
+        #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
+        #undef _s
+        #undef _dn
+        #undef _n
+        #undef _d
+        #undef _c
+
+        /* For compressed formats it returns NullOpt too instead of asserting,
+           as -- compared to the generic-to-GL translation, which is O(1) --
+           the inverse mapping is potentially a linear lookup and forcing the
+           user to check some isTextureFormatCompressed() first (which would do
+           another linear lookup) makes no sense from a perf PoV. Plus for
+           unknown formats it's unknown whether it's a compressed format or
+           not, and the function suddenly starting to assert when a format
+           becomes known isn't good for backwards compatibility. */
+        default:
+            return {};
+    }
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
     debug << "GL::PixelFormat" << Debug::nospace;
@@ -402,9 +462,11 @@ namespace {
    having just a single table for both */
 constexpr CompressedPixelFormat CompressedFormatMapping[] {
     #define _c(input, format) CompressedPixelFormat::format,
+    #define _d _c
     #define _s(input) CompressedPixelFormat{},
     #include "Magnum/GL/Implementation/compressedPixelFormatMapping.hpp"
     #undef _s
+    #undef _d
     #undef _c
 };
 #endif
@@ -453,6 +515,38 @@ TextureFormat textureFormat(const Magnum::CompressedPixelFormat format) {
     CORRADE_ASSERT(UnsignedInt(out),
         "GL::textureFormat(): format" << format << "is not supported on this target", {});
     return out;
+}
+
+Containers::Optional<Magnum::CompressedPixelFormat> genericCompressedPixelFormat(const CompressedPixelFormat format) {
+    switch(format) {
+        #define _c(input, format)                                           \
+            case CompressedPixelFormat::format:                             \
+                return Magnum::CompressedPixelFormat::input;
+        #define _d(input, format)
+        #define _s(input)
+        #include "Magnum/GL/Implementation/compressedPixelFormatMapping.hpp"
+        #undef _s
+        #undef _d
+        #undef _c
+
+        default:
+            return {};
+    }
+}
+
+Containers::Optional<Magnum::CompressedPixelFormat> genericCompressedPixelFormat(const TextureFormat format) {
+    /* Enum values are the same between CompressedPixelFormat and
+       TextureFormat, so just casting and delegating.
+
+       For uncompressed formats it returns NullOpt too instead of asserting, as
+       -- compared to the generic-to-GL translation, which is O(1) -- the
+       inverse mapping is potentially a linear lookup and forcing the user to
+       check some isTextureFormatCompressed() first (which would do another
+       linear lookup) makes no sense from a perf PoV. Plus for unknown formats
+       it's unknown whether it's a compressed format or not, and the function
+       suddenly starting to assert when a format becomes known isn't good for
+       backwards compatibility. */
+    return genericCompressedPixelFormat(CompressedPixelFormat(UnsignedInt(format)));
 }
 
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {

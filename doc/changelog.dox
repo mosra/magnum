@@ -606,6 +606,11 @@ See also:
     in @ref GL::Extensions for compatibility with older browsers.
 -   Re-enabled @fn_gl{DrawRangeElements} for WebGL 2, this time hopefully for
     the last time (see [mosra/magnum#97](https://github.com/mosra/magnum/issues/97))
+-   Added @ref GL::genericPixelFormat() and
+    @ref GL::genericCompressedPixelFormat() helpers for convenient mapping of
+    @ref GL::PixelFormat, @ref GL::PixelType, @ref GL::CompressedPixelFormat
+    and @ref GL::TextureFormat values back to the generic @ref PixelFormat and
+    @ref CompressedPixelFormat
 
 @subsubsection changelog-latest-changes-math Math library
 

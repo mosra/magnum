@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -39,11 +40,13 @@ struct PixelFormatTest: TestSuite::Tester {
     void mapImplementationSpecific();
     void mapUnsupported();
     void mapInvalid();
+    void mapGenericUnsupported();
 
     void mapCompressed();
     void mapCompressedImplementationSpecific();
     void mapCompressedUnsupported();
     void mapCompressedInvalid();
+    void mapGenericCompressedUnsupported();
 
     void debug();
 };
@@ -53,11 +56,13 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::mapImplementationSpecific,
               &PixelFormatTest::mapUnsupported,
               &PixelFormatTest::mapInvalid,
+              &PixelFormatTest::mapGenericUnsupported,
 
               &PixelFormatTest::mapCompressed,
               &PixelFormatTest::mapCompressedImplementationSpecific,
               &PixelFormatTest::mapCompressedUnsupported,
               &PixelFormatTest::mapCompressedInvalid,
+              &PixelFormatTest::mapGenericCompressedUnsupported,
 
               &PixelFormatTest::debug});
 }
@@ -90,6 +95,7 @@ void PixelFormatTest::map() {
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::format)); \
+                    CORRADE_COMPARE(genericPixelFormat(PixelFormat::format), Magnum::PixelFormat::format); \
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), PixelFormat::format); \
                     { \
                         std::ostringstream out; \
@@ -166,11 +172,23 @@ void PixelFormatTest::mapInvalid() {
         "Vk::pixelFormat(): invalid format PixelFormat(0x123)\n");
 }
 
+void PixelFormatTest::mapGenericUnsupported() {
+    /* This one doesn't have any generic equivalent yet, and isn't in the
+       enum either */
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat(VK_FORMAT_R5G6B5_UNORM_PACK16)), Containers::NullOpt);
+    /* For compressed texture formats it returns NullOpt too, instead of
+       asserting. See comment in the source for reasons. */
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::CompressedAstc4x4RGBAF), Containers::NullOpt);
+}
+
 void PixelFormatTest::mapCompressed() {
     /* Touchstone verification. Using Vulkan enums directly to sidestep
        potential problems in enum mapping as well. */
     CORRADE_VERIFY(hasPixelFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm));
     CORRADE_COMPARE(pixelFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm), PixelFormat(VK_FORMAT_BC1_RGBA_UNORM_BLOCK));
+    /* PVRTC RGB and RGBA formats have N:1 mapping, conversion back makes them
+       always RGBA */
+    CORRADE_COMPARE(genericCompressedPixelFormat(pixelFormat(Magnum::CompressedPixelFormat::PvrtcRGB4bppSrgb)), Magnum::CompressedPixelFormat::PvrtcRGBA4bppSrgb);
 
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
@@ -190,6 +208,23 @@ void PixelFormatTest::mapCompressed() {
         #endif
         switch(format) {
             #define _c(format, expectedFormat) \
+                case Magnum::CompressedPixelFormat::format: \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xffff); \
+                    CORRADE_VERIFY(hasPixelFormat(Magnum::CompressedPixelFormat::format)); \
+                    CORRADE_COMPARE(genericCompressedPixelFormat(PixelFormat::Compressed ## expectedFormat), Magnum::CompressedPixelFormat::format); \
+                    CORRADE_COMPARE(pixelFormat(Magnum::CompressedPixelFormat::format), PixelFormat::Compressed ## expectedFormat); \
+                    { \
+                        std::ostringstream out; \
+                        Debug{&out} << pixelFormat(Magnum::CompressedPixelFormat::format); \
+                        CORRADE_COMPARE(out.str(), "Vk::PixelFormat::Compressed" #expectedFormat "\n"); \
+                    } \
+                    ++nextHandled; \
+                    continue;
+            /* For duplicate mappings compared to _c() it only checks the
+               forward mapping. The duplicate mapping is tested in the
+               touchstone verification above */
+            #define _d(format, expectedFormat) \
                 case Magnum::CompressedPixelFormat::format: \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
@@ -265,6 +300,14 @@ void PixelFormatTest::mapCompressedInvalid() {
         "Vk::hasPixelFormat(): invalid format CompressedPixelFormat(0x123)\n"
         "Vk::pixelFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "Vk::pixelFormat(): invalid format CompressedPixelFormat(0x123)\n");
+}
+
+void PixelFormatTest::mapGenericCompressedUnsupported() {
+    /* PVRTC2 doesn't have any generic equivalent yet */
+    CORRADE_COMPARE(genericPixelFormat(PixelFormat::CompressedPvrtc2RGBA2bppUnorm), Containers::NullOpt);
+    /* For uncompressed texture formats it returns NullOpt too, instead of
+       asserting. See comment in the source for reasons. */
+    CORRADE_COMPARE(genericCompressedPixelFormat(PixelFormat::RGB8Unorm), Containers::NullOpt);
 }
 
 void PixelFormatTest::debug() {

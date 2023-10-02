@@ -34,9 +34,11 @@
 
 namespace Magnum { namespace GL {
 
-/* the textureFormat() and hasTextureFormat() utilities share mapping tables
-   with pixelFormat() / hasPixelFormat() so are defined in PixelFormat.cpp
-   instead (and tested there too) */
+/* compressed textureFormat(), hasTextureFormat() and
+   genericCompressedPixelFormat(TextureFormat) utilities share mapping tables
+   with compressedPixelFormat(), hasCompressedPixelFormat() and
+   genericCompressedPixelFormat(CompressedPixelFormat) so are defined in
+   PixelFormat.cpp instead (and tested there too) */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const TextureFormat value) {
