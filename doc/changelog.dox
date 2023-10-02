@@ -993,6 +993,9 @@ See also:
     for most shader-related limits
 -   Fixed @ref GL::Shader reporting errors and warnings with line numbers
     off-by-one on desktop GLSL < 330.
+-   Fixed accidentally incorrect @ref GL::textureFormat() mapping for
+    @ref PixelFormat::RG8Snorm, @relativeref{PixelFormat,RGB8Snorm},
+    @relativeref{PixelFormat,RGBA8Snorm} and @relativeref{PixelFormat,RGB32UI}
 -   Fixed assertions related to OpenGL driver workarounds when the proprietary
     AMDGPU PRO drivers are used on Linux
 -   Fixed @relativeref{Corrade,Utility::Tweakable} parsers to compile with
