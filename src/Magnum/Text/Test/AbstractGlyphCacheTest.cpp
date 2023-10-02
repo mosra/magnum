@@ -143,7 +143,7 @@ void AbstractGlyphCacheTest::reserveIncremental() {
     DummyGlyphCache cache{{24, 20}, {1, 2}};
 
     /* insert() is what triggers the assert, not reserve() alone */
-    cache.insert(0, {3, 5}, {{10, 10}, {23, 45}});
+    cache.insert(34, {3, 5}, {{10, 10}, {23, 10}});
 
     std::ostringstream out;
     Error redirectError{&out};
