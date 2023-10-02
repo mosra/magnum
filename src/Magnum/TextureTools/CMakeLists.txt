@@ -44,6 +44,7 @@ set(MagnumTextureTools_GracefulAssert_SRCS
 
 set(MagnumTextureTools_HEADERS
     Atlas.h
+    TextureTools.h
 
     visibility.h)
 
