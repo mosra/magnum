@@ -40,6 +40,7 @@
 #include <Corrade/Utility/Path.h>
 #include <Corrade/Utility/String.h> /* replaceFirst() */
 
+#include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
@@ -48,6 +49,7 @@
 #include "Magnum/Math/Half.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/ImageData.h"
 
 #include "configure.h"
 
@@ -115,6 +117,9 @@ struct CompareImageTest: TestSuite::Tester {
     void fileToImagePluginLoadFailed();
     void fileToImageActualLoadFailed();
     void fileToImageActualIsCompressed();
+
+    void mutableImageViewImageImageData();
+    void mutableImageViewImageImageDataToFile();
 
     template<unsigned dimensions> void pixelFormatFor();
     void pixelFormatForColor();
@@ -222,7 +227,13 @@ CompareImageTest::CompareImageTest() {
         &CompareImageTest::setupExternalPluginManager,
         &CompareImageTest::teardownExternalPluginManager);
 
-    addTests({&CompareImageTest::fileToImageActualIsCompressed});
+    addTests({&CompareImageTest::fileToImageActualIsCompressed,
+
+              &CompareImageTest::mutableImageViewImageImageData});
+
+    addTests({&CompareImageTest::mutableImageViewImageImageDataToFile},
+        &CompareImageTest::setupExternalPluginManager,
+        &CompareImageTest::teardownExternalPluginManager);
 
     addTests({&CompareImageTest::pixelFormatFor<1>,
               &CompareImageTest::pixelFormatFor<2>,
@@ -1686,6 +1697,70 @@ void CompareImageTest::fileToImageActualIsCompressed() {
 
     CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."),
         "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
+}
+
+void CompareImageTest::mutableImageViewImageImageData() {
+    /* All other cases use an ImageView, so verify that the other variants all
+       compile too */
+
+    char pixels[]{
+        '\x56', '\xf8', '\x3a', '\x56', '\x47', '\xec', '\0', '\0',
+        '\x23', '\x57', '\x10', '\xab', '\xcd', '\x85', '\0', '\0'
+    };
+    MutableImageView2D view{PixelFormat::RGB8Unorm, {2, 2}, pixels};
+
+    Image2D image{PixelFormat::RGB8Unorm, {2, 2}, Containers::array({
+        '\x56', '\xf8', '\x3a', '\x56', '\x47', '\xec', '\0', '\0',
+        '\x23', '\x57', '\x10', '\xab', '\xcd', '\x85', '\0', '\0'
+    })};
+
+    Trade::ImageData2D data{PixelFormat::RGB8Unorm, {2, 2}, Trade::DataFlags{}, pixels};
+
+    CORRADE_COMPARE_AS(view, view, CompareImage);
+    CORRADE_COMPARE_AS(view, image, CompareImage);
+    CORRADE_COMPARE_AS(view, data, CompareImage);
+    CORRADE_COMPARE_AS(image, view, CompareImage);
+    CORRADE_COMPARE_AS(image, image, CompareImage);
+    CORRADE_COMPARE_AS(image, data, CompareImage);
+    CORRADE_COMPARE_AS(data, view, CompareImage);
+    CORRADE_COMPARE_AS(data, image, CompareImage);
+    CORRADE_COMPARE_AS(data, data, CompareImage);
+}
+
+void CompareImageTest::mutableImageViewImageImageDataToFile() {
+    if(!(_importerManager->loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager->loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    /* All other cases use an ImageView, so verify that the other variants all
+       compile too */
+
+    char pixels[]{
+        '\x55', '\xf8', '\x3a', '\x56', '\x10', '\xed', '\0', '\0',
+        '\x23', '\x27', '\x10', '\xab', '\xcd', '\xfa', '\0', '\0'
+    };
+    MutableImageView2D view{PixelFormat::RGB8Unorm, {2, 2}, pixels};
+
+    Image2D image{PixelFormat::RGB8Unorm, {2, 2}, Containers::array({
+        '\x55', '\xf8', '\x3a', '\x56', '\x10', '\xed', '\0', '\0',
+        '\x23', '\x27', '\x10', '\xab', '\xcd', '\xfa', '\0', '\0'
+    })};
+
+    Trade::ImageData2D data{PixelFormat::RGB8Unorm, {2, 2}, Trade::DataFlags{}, pixels};
+
+    Containers::String filename = Utility::Path::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga");
+    CORRADE_COMPARE_WITH(filename, view,
+        CompareFileToImage{*_importerManager});
+    CORRADE_COMPARE_WITH(filename, image,
+        CompareFileToImage{*_importerManager});
+    CORRADE_COMPARE_WITH(filename, data,
+        CompareFileToImage{*_importerManager});
+    CORRADE_COMPARE_WITH(view, filename,
+        CompareImageToFile{*_importerManager});
+    CORRADE_COMPARE_WITH(image, filename,
+        CompareImageToFile{*_importerManager});
+    CORRADE_COMPARE_WITH(data, filename,
+        CompareImageToFile{*_importerManager});
 }
 
 template<UnsignedInt dimensions> void CompareImageTest::pixelFormatFor() {

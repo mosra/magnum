@@ -525,6 +525,8 @@ See also:
 -   @ref DebugTools::CompareImage now supports comparing half-float pixel
     formats as well, pixel format autodetection for pixel views tries to
     match sRGB and normalization properties of the expected image format
+-   @ref DebugTools::CompareImage now accepts @ref MutableImageView2D as well,
+    in addition to @ref Image2D, @ref ImageView2D and @ref Trade::ImageData2D
 
 @subsubsection changelog-latest-changes-gl GL library
 

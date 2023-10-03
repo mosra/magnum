@@ -174,7 +174,7 @@ namespace Implementation {
 
 /* Explicit ComparatorTraits specialization because
    Comparator<CompareImage>::operator() is overloaded */
-template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImage, Magnum::ImageView2D, T> {
+template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareImage, Magnum::ImageView<2, U>, T> {
     typedef Magnum::ImageView2D ActualType;
     typedef Magnum::ImageView2D ExpectedType;
 };
@@ -187,7 +187,7 @@ template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareIm
 
 /* Explicit ComparatorTraits specialization because
    Comparator<CompareImageToFile>::operator() is overloaded */
-template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView2D, T> {
+template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView<2, U>, T> {
     typedef Magnum::ImageView2D ActualType;
     typedef Containers::StringView ExpectedType;
 };
