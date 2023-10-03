@@ -793,14 +793,17 @@ template<UnsignedInt dimensions, class T> inline bool intersects(const Range<dim
 #ifndef CORRADE_SINGLES_NO_DEBUG
 /** @debugoperator{Range} */
 template<UnsignedInt dimensions, class T> Debug& operator<<(Debug& debug, const Range<dimensions, T>& value) {
-    debug << "Range({" << Debug::nospace << Vector<dimensions, T>{value.min()}[0];
+    /** @todo might make sense to propagate the flags also, for hex value
+        printing etc */
+    const bool packed = debug.immediateFlags() >= Debug::Flag::Packed;
+    debug << (packed ? "{{" : "Range({") << Debug::nospace << Vector<dimensions, T>{value.min()}[0];
     for(UnsignedInt i = 1; i != dimensions; ++i)
         debug << Debug::nospace << "," << Vector<dimensions, T>{value.min()}[i];
     debug << Debug::nospace << "}, {"
           << Debug::nospace << Vector<dimensions, T>{value.max()}[0];
     for(UnsignedInt i = 1; i != dimensions; ++i)
         debug << Debug::nospace << "," << Vector<dimensions, T>{value.max()}[i];
-    return debug << Debug::nospace << "})";
+    return debug << Debug::nospace << (packed ? "}}" : "})");
 }
 
 /* Explicit instantiation for commonly used types */

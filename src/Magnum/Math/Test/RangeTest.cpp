@@ -144,6 +144,7 @@ struct RangeTest: TestSuite::Tester {
     void subclass();
 
     void debug();
+    void debugPacked();
 };
 
 using Magnum::Range1D;
@@ -192,7 +193,8 @@ RangeTest::RangeTest() {
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
 
-              &RangeTest::debug});
+              &RangeTest::debug,
+              &RangeTest::debugPacked});
 }
 
 void RangeTest::construct() {
@@ -964,6 +966,13 @@ void RangeTest::debug() {
     Debug(&o) << Range2Di({34, 23}, {47, 30});
 
     CORRADE_COMPARE(o.str(), "Range({34, 23}, {47, 30})\n");
+}
+
+void RangeTest::debugPacked() {
+    std::ostringstream out;
+    /* Second is not packed, the first should not make any flags persistent */
+    Debug{&out} << Debug::packed << Range2Di{{34, 23}, {47, 30}} << Range2Di{};
+    CORRADE_COMPARE(out.str(), "{{34, 23}, {47, 30}} Range({0, 0}, {0, 0})\n");
 }
 
 }}}}
