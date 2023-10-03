@@ -92,7 +92,7 @@ if(MAGNUM_WITH_GL)
         MagnumGL.cpp
         MagnumMeshTools-gl.cpp
         MagnumShaders-gl.cpp
-        MagnumText.cpp)
+        MagnumText-gl.cpp)
     target_link_libraries(snippets-MagnumGL PRIVATE MagnumGL)
     if(CORRADE_TESTSUITE_TEST_TARGET)
         add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumGL)
@@ -114,6 +114,15 @@ if(MAGNUM_WITH_SHADERTOOLS)
     target_link_libraries(snippets-MagnumShaderTools PRIVATE MagnumShaderTools)
     if(CORRADE_TESTSUITE_TEST_TARGET)
         add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumShaderTools)
+    endif()
+endif()
+
+if(MAGNUM_WITH_TEXT)
+    add_library(snippets-MagnumText STATIC ${EXCLUDE_FROM_ALL_IF_TEST_TARGET}
+        MagnumText.cpp)
+    target_link_libraries(snippets-MagnumText PRIVATE MagnumText)
+    if(CORRADE_TESTSUITE_TEST_TARGET)
+        add_dependencies(${CORRADE_TESTSUITE_TEST_TARGET} snippets-MagnumText)
     endif()
 endif()
 

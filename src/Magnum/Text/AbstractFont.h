@@ -109,7 +109,7 @@ In the following example a font is loaded from the filesystem using the
 @ref StbTrueTypeFont plugin, prerendering all needed glyphs, completely with
 all error handling:
 
-@snippet MagnumText.cpp AbstractFont-usage
+@snippet MagnumText-gl.cpp AbstractFont-usage
 
 See @ref plugins for more information about general plugin usage and the list
 of @m_class{m-doc} [derived classes](#derived-classes) for available font

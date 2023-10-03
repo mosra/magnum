@@ -66,7 +66,7 @@ outlining, thinning, thickening or shadow effects will be used when rendering,
 using them leads to precision loss when the distance field is stored in 8-bit
 channels.
 
-@snippet MagnumText.cpp DistanceFieldGlyphCache-usage
+@snippet MagnumText-gl.cpp DistanceFieldGlyphCache-usage
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
