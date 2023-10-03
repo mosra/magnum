@@ -79,40 +79,42 @@ struct DummyGlyphCache: AbstractGlyphCache {
 };
 
 void AbstractGlyphCacheTest::initialize() {
-    DummyGlyphCache cache{{1024, 2048}};
+    DummyGlyphCache cache{{1024, 2048}, {23, 46}};
 
     CORRADE_COMPARE(cache.textureSize(), (Vector2i{1024, 2048}));
+    CORRADE_COMPARE(cache.padding(), (Vector2i{23, 46}));
 }
 
 void AbstractGlyphCacheTest::access() {
-    DummyGlyphCache cache{Vector2i(236)};
+    DummyGlyphCache cache{{100, 200}, {2, 3}};
     Vector2i position;
     Range2Di rectangle;
 
     /* Default "Not Found" glyph */
     CORRADE_COMPARE(cache.glyphCount(), 1);
     std::tie(position, rectangle) = cache[0];
-    CORRADE_COMPARE(position, Vector2i(0, 0));
-    CORRADE_COMPARE(rectangle, Range2Di({0, 0}, {0, 0}));
+    CORRADE_COMPARE(position, (Vector2i{0, 0}));
+    CORRADE_COMPARE(rectangle, (Range2Di{{0, 0}, {0, 0}}));
 
     /* Overwrite the "Not Found" glyph */
     cache.insert(0, {3, 5}, {{10, 10}, {23, 45}});
     CORRADE_COMPARE(cache.glyphCount(), 1);
     std::tie(position, rectangle) = cache[0];
-    CORRADE_COMPARE(position, Vector2i(3, 5));
-    CORRADE_COMPARE(rectangle, Range2Di({10, 10}, {23, 45}));
+    /* The position is with negative padding, rectangle with positive */
+    CORRADE_COMPARE(position, (Vector2i{1, 2}));
+    CORRADE_COMPARE(rectangle, (Range2Di{{8, 7}, {25, 48}}));
 
     /* Querying available glyph */
     cache.insert(25, {3, 4}, {{15, 30}, {45, 35}});
     CORRADE_COMPARE(cache.glyphCount(), 2);
     std::tie(position, rectangle) = cache[25];
-    CORRADE_COMPARE(position, Vector2i(3, 4));
-    CORRADE_COMPARE(rectangle, Range2Di({15, 30}, {45, 35}));
+    CORRADE_COMPARE(position, (Vector2i{1, 1}));
+    CORRADE_COMPARE(rectangle, (Range2Di{{13, 27}, {47, 38}}));
 
     /* Querying not available glyph falls back to "Not Found" */
     std::tie(position, rectangle) = cache[42];
-    CORRADE_COMPARE(position, Vector2i(3, 5));
-    CORRADE_COMPARE(rectangle, Range2Di({10, 10}, {23, 45}));
+    CORRADE_COMPARE(position, (Vector2i{1, 2}));
+    CORRADE_COMPARE(rectangle, (Range2Di{{8, 7}, {25, 48}}));
 }
 
 void AbstractGlyphCacheTest::reserve() {
