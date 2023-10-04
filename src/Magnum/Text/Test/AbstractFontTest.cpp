@@ -30,6 +30,7 @@
 #include <Corrade/Containers/StringStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Containers/Triple.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/String.h>
 #include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 #include <Corrade/Utility/Path.h>
@@ -1001,20 +1002,23 @@ void AbstractFontTest::fillGlyphCache() {
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
         void doFillGlyphCache(AbstractGlyphCache& cache, Containers::ArrayView<const char32_t> characters) override {
-            for(char a: characters) cache.insert(a*10, {a/2, a*2}, {});
+            CORRADE_COMPARE(cache.textureSize(), (Vector2i{100, 100}));
+            CORRADE_COMPARE_AS(characters, Containers::arrayView<char32_t>({
+                'h', 'e', 'l', 'o'
+            }), TestSuite::Compare::Container);
+            called = true;
         }
+
+        bool called = false;
     } font;
+
+    /* Capture correct function name */
+    CORRADE_VERIFY(true);
 
     DummyGlyphCache cache{{100, 100}};
 
-    CORRADE_COMPARE(cache.glyphCount(), 1);
     font.fillGlyphCache(cache, "helo");
-
-    CORRADE_COMPARE(cache.glyphCount(), 5);
-    CORRADE_COMPARE(cache['h'*10], (std::pair<Vector2i, Range2Di>{{52, 208}, {}}));
-    CORRADE_COMPARE(cache['e'*10], (std::pair<Vector2i, Range2Di>{{50, 202}, {}}));
-    CORRADE_COMPARE(cache['l'*10], (std::pair<Vector2i, Range2Di>{{54, 216}, {}}));
-    CORRADE_COMPARE(cache['o'*10], (std::pair<Vector2i, Range2Di>{{55, 222}, {}}));
+    CORRADE_VERIFY(font.called);
 }
 
 void AbstractFontTest::fillGlyphCacheNotSupported() {
@@ -1113,19 +1117,14 @@ void AbstractFontTest::createGlyphCache() {
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, Containers::StringView) override { return nullptr; }
 
         Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override {
-            Containers::Pointer<DummyGlyphCache> cache{InPlaceInit, Vector2i{100, 100}};
-            for(char a: "helo"_s) cache->insert(a*10, {a/2, a*2}, {});
-            return cache;
+            return Containers::pointer<DummyGlyphCache>(Vector2i{123, 345});
         }
     } font;
 
     Containers::Pointer<AbstractGlyphCache> cache = font.createGlyphCache();
+    CORRADE_VERIFY(cache);
 
-    CORRADE_COMPARE(cache->glyphCount(), 5);
-    CORRADE_COMPARE((*cache)['h'*10], (std::pair<Vector2i, Range2Di>{{52, 208}, {}}));
-    CORRADE_COMPARE((*cache)['e'*10], (std::pair<Vector2i, Range2Di>{{50, 202}, {}}));
-    CORRADE_COMPARE((*cache)['l'*10], (std::pair<Vector2i, Range2Di>{{54, 216}, {}}));
-    CORRADE_COMPARE((*cache)['o'*10], (std::pair<Vector2i, Range2Di>{{55, 222}, {}}));
+    CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
 }
 
 void AbstractFontTest::createGlyphCacheNotSupported() {
