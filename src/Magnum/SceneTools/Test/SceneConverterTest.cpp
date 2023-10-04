@@ -1270,7 +1270,7 @@ const struct {
             Utility::Path::join(SCENETOOLS_TEST_DIR, "SceneConverterTestFiles/images-3d.gltf"),
             Utility::Path::join(SCENETOOLS_TEST_OUTPUT_DIR, "SceneConverterTestFiles/whatever.gltf")
         }},
-        "GltfImporter", "PngImporter", "GltfSceneConverter", "StbResizeImageConverter",
+        "GltfImporter", "KtxImporter", "GltfSceneConverter", "StbResizeImageConverter",
         "\n" /* Just a suffix */
         "Trade::GltfSceneConverter::add(): can't load NonexistentImageConverter for image conversion\n"
         "Cannot add 3D image 0\n"},
